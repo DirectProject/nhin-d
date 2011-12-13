@@ -25,19 +25,16 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.ResolverPlugins.Ldap;
 
 namespace Health.Direct.ResolverPlugins
 {
     /// <summary>
     /// Implements a certificate resolver using one or more public LDAP server using DNS SRV to resolve server locations
     /// </summary>
-    public class LdapCertResolver : ICertificateResolver 
+    public class LdapCertResolver : ICertificateResolver
     {
-        private static readonly String CERT_ATTRIBUTE_BINARY = "userSMIMECertificate;binary";
-        private static readonly String CERT_ATTRIBUTE = "userSMIMECertificate";
-        private static readonly String NAMING_CONTEXTS_ATTRIBUTE = "namingContexts";
-        private static readonly String WILDCARD_OBJECT_CLASS_SEARCH = "objectclass=*";
-        private static readonly String EMAIL_ATTRIBUTE = "mail";
+
         private static readonly String LDAP_SRV_PREFIX = "_ldap._tcp.";
 
         private static readonly Int32 LdapProtoVersion = 3;
@@ -77,23 +74,7 @@ namespace Health.Direct.ResolverPlugins
         {
             if (dnsServerIp == null)
             {
-                // a DNS server was not provided, so try to resolve one from
-                // an active network interfaces
-                NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
-                foreach (NetworkInterface ni in nics)
-                {
-                    if (ni.OperationalStatus == OperationalStatus.Up)
-                    {
-                        IPAddressCollection ips = ni.GetIPProperties().DnsAddresses;
-                        foreach (IPAddress ip in ips)
-                        {
-                            dnsServerIp = ip;
-                            break;
-                        }
-                    }
-                    if (dnsServerIp != null)
-                        break;
-                }
+                dnsServerIp = GetLocalServerDns(dnsServerIp);
             }
             if (dnsServerIp == null)
                 throw new ArgumentNullException("dnsServerIP could not be resolved");
@@ -108,6 +89,30 @@ namespace Health.Direct.ResolverPlugins
             m_cacheEnabled = cacheEnabled;
         }
 
+        /// <summary>
+        /// Find the first dns from the active network interfaces.
+        /// </summary>
+        /// <param name="dnsServerIp"></param>
+        /// <returns></returns>
+        private IPAddress GetLocalServerDns(IPAddress dnsServerIp)
+        {
+            NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface ni in nics)
+            {
+                if (ni.OperationalStatus == OperationalStatus.Up)
+                {
+                    IPAddressCollection ips = ni.GetIPProperties().DnsAddresses;
+                    foreach (IPAddress ip in ips)
+                    {
+                        dnsServerIp = ip;
+                        break;
+                    }
+                }
+                if (dnsServerIp != null)
+                    break;
+            }
+            return dnsServerIp;
+        }
 
 
         /// <summary>
@@ -136,18 +141,21 @@ namespace Health.Direct.ResolverPlugins
         /// or <c>null</c> if no certificates are found.</returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            //
-            // First, try to resolve the full email address directly
-            //                
-            X509Certificate2Collection certs = GetCertificatesBySubect(address.Address);
-            if (certs.IsNullOrEmpty())
+            IEnumerable<SRVRecord> srvRecords;
+
+            // get the location of the LDAP servers using DNS SRV
+            using (var client = CreateDnsClient())
             {
-                //
-                // No certificates found. Perhaps certificates are available at the the (Domain) level
-                //
-                certs = GetCertificatesBySubect(address.Host);
+                var lookupName = GetSrvLdapLookupName(address.Address);
+                srvRecords = RequestSrv(client, lookupName);
             }
 
+            // get certs from Ldap
+            var certs = GetCertificatesBySubect(srvRecords, address.Address);
+            if (certs == null || certs.Count == 0)
+            {
+                certs = GetCertificatesBySubect(srvRecords, address.Host);
+            }
             return certs;
         }
 
@@ -163,11 +171,25 @@ namespace Health.Direct.ResolverPlugins
             {
                 throw new ArgumentException("domain");
             }
-
-            return GetCertificatesBySubect(domain);
+            // get the location of the LDAP servers using DNS SRV
+            using (var client = CreateDnsClient())
+            {
+                return GetCertificatesBySubect(RequestSrv(client, GetSrvLdapLookupName(domain)), domain);
+            }
         }
 
         #endregion
+
+        static IEnumerable<SRVRecord> RequestSrv(DnsClient client, string domain)
+        {
+            var dnsRequest = new DnsRequest(DnsStandard.RecordType.SRV, domain);
+            var response = client.Resolve(dnsRequest);
+            if (response == null || !response.HasAnswerRecords)
+            {
+                return null;
+            }
+            return response.AnswerRecords.SRV;
+        }
 
         /// <summary>
         /// Event to subscribe to for notification of errors.
@@ -177,14 +199,86 @@ namespace Health.Direct.ResolverPlugins
         /// <summary>
         /// Resolves X509 certificates for a specific subject.  May either be an address or a domain name.
         /// </summary>
-        /// <param name="subjectName">The <see cref="String"/> subject to resolve. </param>
+        /// <param name="srvRecords">List of <see cref="SRVRecord"/> to resolve. </param>
+        /// /// <param name="subjectName">The <see cref="String"/> subject to resolve. </param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        protected X509Certificate2Collection GetCertificatesBySubect(String subjectName)
+        X509Certificate2Collection GetCertificatesBySubect(IEnumerable<SRVRecord> srvRecords, string subjectName)
         {
+            if (srvRecords == null)
+            {
+                return null;
+            }
             var retVal = new X509Certificate2Collection();
 
-            // find by host
+            // get the LDAP connection from the SRV records
+            using (var connection = GetLdapConnection(srvRecords))
+            {
+                if (connection != null)
+                {
+                    // gate the base naming contexts
+                    var distNames = GetBaseNamingContext(connection);
+
+                    foreach (var dn in distNames)
+                    {
+                        // search each base context
+                        var request = Search.MimeCertRequest(dn, subjectName);
+                        try
+                        {
+                            SetCerts(connection, request, retVal);
+                        }
+                        catch (Exception ldapEx)
+                        {
+                            NotifyException(ldapEx);
+                        }
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        private void SetCerts(LdapConnection connection, SearchRequest request, X509Certificate2Collection retVal)
+        {
+            // send the LDAP request using the mail attribute as the search filter and return the smimeUserCertificate attribute
+            var response = (SearchResponse)connection.SendRequest(request);
+            if (response != null && response.Entries.Count > 0)
+            {
+                foreach (SearchResultEntry entry in response.Entries)
+                {
+                    SetCerts(entry, retVal);
+                }
+            }
+        }
+
+        private void SetCerts(SearchResultEntry entry, X509Certificate2Collection retVal)
+        {
+            if (entry.Attributes.Count > 0)
+            {
+                foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
+                {
+                    if (entryAttr.Count > 0)
+                    {
+                        // search could possibly return more than one entry and each entry may contain
+                        // more that one certificates
+                        foreach (object t in entryAttr)
+                        {
+                            try
+                            {
+                                var cert = new X509Certificate2((byte[])t);
+                                retVal.Add(cert);
+                            }
+                            catch (Exception ex)
+                            {
+                                NotifyException(ex);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private string GetSrvLdapLookupName(string subjectName)
+        {
             String domainName;
             int index;
             if ((index = subjectName.IndexOf("@")) > -1)
@@ -192,101 +286,35 @@ namespace Health.Direct.ResolverPlugins
             else
                 domainName = subjectName;
 
-            string lookupName = LDAP_SRV_PREFIX + domainName;
-
-            // get the LDAP connection from the SRV records
-            LdapConnection connection = GetLdapConnection(lookupName);
-
-            if (connection != null)
-            {
-                // gate the base naming contexts
-                List<String> distNames = getBaseNamingContext(connection);
-
-                foreach (String dn in distNames)
-                {
-                    // search each base context
-                    var request = new SearchRequest(dn, EMAIL_ATTRIBUTE + "=" + subjectName, SearchScope.Subtree,
-                                                    new[] {CERT_ATTRIBUTE, CERT_ATTRIBUTE_BINARY});
-
-                    try
-                    {
-                        // send the LDAP request using the mail attribute as the search filter and return the smimeUserCertificate attribute
-                        var response = (SearchResponse) connection.SendRequest(request);
-                        if (response != null && response.Entries.Count > 0)
-                        {
-                            foreach (SearchResultEntry entry in response.Entries)
-                            {
-                                if (entry.Attributes.Count > 0)
-                                {
-                                    foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
-                                    {
-                                        if (entryAttr.Count > 0)
-                                        {
-                                            // search could possibly return more than one entry and each entry may contain
-                                            // more that one certificates
-                                            for (int i = 0; i < entryAttr.Count; ++i)
-                                            {
-                                                try
-                                                {
-                                                    var cert = new X509Certificate2((byte[]) entryAttr[i]);
-                                                    retVal.Add(cert);
-                                                }
-                                                catch (Exception ex)
-                                                {
-                                                    NotifyException(ex);
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception ldapEx)
-                    {
-                        NotifyException(ldapEx);
-                    }
-                }
-
-                connection.Dispose();
-            }
-
-            return retVal;
+            return LDAP_SRV_PREFIX + domainName;
         }
 
         /// <summary>
         /// Get the base distiguished names that will be searched for certificate resolution.
         /// </summary>
         /// <param name="connection">The <see cref="LdapConnection"/> connection to the LDAP server that will be searched.. </param>
-        /// <returns>A <see cref="List<String>"/> of string representing the base distiguished names of the LDAP server.</returns>
-        protected List<String> getBaseNamingContext(LdapConnection connection)
+        /// <returns>A List of strings representing the base distiguished names of the LDAP server.</returns>
+        protected List<String> GetBaseNamingContext(LdapConnection connection)
         {
             var retVal = new List<String>();
 
             // get the base DNs
-            var request = new SearchRequest("", WILDCARD_OBJECT_CLASS_SEARCH, SearchScope.Base,
-                                            new[] {NAMING_CONTEXTS_ATTRIBUTE});
-            var searchResponse = (SearchResponse) connection.SendRequest(request);
+            var request = Search.NamingContextRequest();
 
+            var searchResponse = (SearchResponse)connection.SendRequest(request);
+            if (searchResponse == null || searchResponse.Entries == null || searchResponse.Entries.Count == 0)
+            {
+                return null;
+            }
             try
             {
-                if (searchResponse != null && searchResponse.Entries.Count > 0)
+                foreach (SearchResultEntry entry in searchResponse.Entries)
                 {
-                    foreach (SearchResultEntry entry in searchResponse.Entries)
+                    if (entry.Attributes != null && entry.Attributes.Values != null && entry.Attributes.Count > 0)
                     {
-                        if (entry.Attributes.Count > 0)
+                        foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
                         {
-                            foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
-                            {
-                                if (entryAttr.Count > 0)
-                                {
-                                    // search the attributes for the context names and add them the return value
-                                    for (int i = 0; i < entryAttr.Count; ++i)
-                                    {
-                                        retVal.Add((String) entryAttr[i]);
-                                    }
-                                }
-                            }
+                            SetAttribute(entryAttr, retVal);
                         }
                     }
                 }
@@ -298,50 +326,50 @@ namespace Health.Direct.ResolverPlugins
             return retVal;
         }
 
+        private static void SetAttribute(DirectoryAttribute entryAttr, List<string> retVal)
+        {
+            if (entryAttr.Count > 0)
+            {
+                // search the attributes for the context names and add them the return value
+                for (int i = 0; i < entryAttr.Count; ++i)
+                {
+                    retVal.Add((String)entryAttr[i]);
+                }
+            }
+        }
+
         /// <summary>
         /// Creates a connection to an LDAP server based on the DNS SRV resolution of the lookup name.
         /// </summary>
-        /// <param name="lookupName">The <see cref="String"/> lookup name used for DNS SRV resolution of the LDAP servers. </param>
+        /// <param name="srvRecords">List of <see cref="SRVRecord"/> to resolve. </param>
         /// <returns>An <see cref="LdapConnection"/> to the server that will be searched for certificates.</returns>
-        protected LdapConnection GetLdapConnection(String lookupName)
+        protected LdapConnection GetLdapConnection(IEnumerable<SRVRecord> srvRecords)
         {
             LdapConnection retVal = null;
 
-            // get an instance of the DNS client
-            using (var client = CreateDnsClient())
+            // create the LDAP client
+            // try each record until we get one that connects
+            foreach (SRVRecord srvRec in srvRecords)
             {
-                // get the location of the LDAP servers using DNS SRV
-                var request = new DnsRequest(DnsStandard.RecordType.SRV, lookupName);
-                var response = client.Resolve(request);
-
-
-                if (response != null && response.HasAnswerRecords)
+                var ldapIdentifier = new LdapDirectoryIdentifier(srvRec.Target, srvRec.Port);
+                try
                 {
-                    // create the LDAP client
-                    // try each record until we get one that connects
-                    foreach (SRVRecord srvRec in response.AnswerRecords.SRV)
+                    retVal = new LdapConnection(ldapIdentifier);
+                    retVal.AuthType = AuthType.Anonymous; // use anonymous bind
+                    retVal.SessionOptions.ProtocolVersion = LdapProtoVersion;
+
+                    if (Timeout.Ticks > 0)
                     {
-                        var ldapIdentifier = new LdapDirectoryIdentifier(srvRec.Target, srvRec.Port);
-                        try
-                        {
-                            retVal = new LdapConnection(ldapIdentifier);
-                            retVal.AuthType = AuthType.Anonymous; // use anonymous bind
-                            retVal.SessionOptions.ProtocolVersion = LdapProtoVersion;
-
-                            if (Timeout.Ticks > 0)
-                            {
-                                retVal.Timeout = Timeout;
-                            }
-                            retVal.Bind();
-
-                            break;
-                        }
-                        catch (Exception)
-                        {
-                            // didn't connenct.... go onto the next record
-                            retVal = null;
-                        }
+                        retVal.Timeout = Timeout;
                     }
+                    retVal.Bind();
+
+                    break;
+                }
+                catch (Exception)
+                {
+                    // didn't connenct.... go onto the next record
+                    retVal = null;
                 }
             }
 
@@ -361,7 +389,7 @@ namespace Health.Direct.ResolverPlugins
 
             return client;
         }
-         
+
         void NotifyException(Exception ex)
         {
             Action<ICertificateResolver, Exception> errorHandler = Error;
@@ -376,7 +404,5 @@ namespace Health.Direct.ResolverPlugins
                 }
             }
         }
-
-        
     }
 }

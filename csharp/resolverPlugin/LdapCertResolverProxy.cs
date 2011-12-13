@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
 
@@ -31,17 +30,32 @@ namespace Health.Direct.ResolverPlugins
     {
         ICertificateResolver m_innerResolver;
 
+        /// <summary>
+        /// Required default constructor to be activated as a plugin.
+        /// </summary>
         public LdapCertResolverProxy()
         {
         }
 
         #region ICertificateResolver Members
 
+        /// <summary>
+        /// Proxy to the implemented certificate resolver.
+        /// </summary>
+        /// <param name="address">The <see cref="MailAddress"/> instance to resolve. </param>
+        /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
+        /// or <c>null</c> if no certificates are found.</returns>
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
             return m_innerResolver.GetCertificates(address);
         }
 
+        /// <summary>
+        /// Proxy to the implemented certificate resolver.
+        /// </summary>
+        /// <param name="domain">The domain for which certificates should be resolved.</param>
+        /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
+        /// or <c>null</c> if no certificates are found.</returns>
         public X509Certificate2Collection GetCertificatesForDomain(string domain)
         {
             return m_innerResolver.GetCertificatesForDomain(domain);

@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Net;
 using System.Xml.Serialization;
-using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 
