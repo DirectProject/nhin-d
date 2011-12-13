@@ -46,7 +46,7 @@ namespace Health.Direct.ResolverPlugins.Tests
                 <PublicCerts>
                     <PluginResolver>
                         <Definition>
-                            <TypeName>Health.Direct.ResolverPlugins.DnsFakeResolver, Health.Direct.ResolverPlugins</TypeName>
+                            <TypeName>Health.Direct.ResolverPlugins.Tests.Fakes.DnsFakeResolver, Health.Direct.ResolverPlugins.Tests</TypeName>
                             <Settings> 
                                <ServerIP>0.0.0.0</ServerIP>
                             </Settings>
