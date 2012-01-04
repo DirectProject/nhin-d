@@ -140,7 +140,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 			entry.addAttribute("mail", "gm2552@cerner.com");
 
 			X509Certificate cert = TestUtils.loadCertificate("gm2552.der");
-			entry.addAttribute("userSMIMECertificate", cert.getEncoded());
+			entry.addAttribute("userCertificate", cert.getEncoded());
 			entry.addAttribute("ou", "gm2552");
 			entry.addAttribute("cn", "Greg Meyer");
 			entry.addAttribute("sn", "");
@@ -206,7 +206,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 
 				X509Certificate cert = TestUtils.loadCertificate("gm2552.der");
 
-				entry.addAttribute("userSMIMECertificate", cert.getEncoded());
+				entry.addAttribute("userCertificate", cert.getEncoded());
 				entry.addAttribute("ou", "gm2552");
 				entry.addAttribute("cn", "Greg Meyer");
 				entry.addAttribute("sn", "");
@@ -248,9 +248,9 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 				entry.addAttribute("objectClass", "iNetOrgPerson");
 				entry.addAttribute("mail", "cerner.com");
 
-				entry.addAttribute("userSMIMECertificate", check1Cert.getEncoded());
+				entry.addAttribute("userCertificate", check1Cert.getEncoded());
 
-				entry.putAttribute("userSMIMECertificate", check2Cert.getEncoded());
+				entry.putAttribute("userCertificate", check2Cert.getEncoded());
 				
 				entry.addAttribute("ou", "gm2552");
 				entry.addAttribute("cn", "Greg Meyer");

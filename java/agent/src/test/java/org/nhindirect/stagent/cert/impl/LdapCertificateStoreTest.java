@@ -187,7 +187,7 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 
 		X509Certificate cert = TestUtils.loadCertificate("cert-a.der");
 
-		entry.addAttribute("userSMIMECertificate", cert.getEncoded());
+		entry.addAttribute("userCertificate", cert.getEncoded());
 		entry.addAttribute("ou", "user");
 		entry.addAttribute("cn", "Test User");
 		entry.addAttribute("sn", "");
@@ -204,7 +204,7 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 		cert = TestUtils.loadCertificate("cert-b.der");
 
 
-		entry.addAttribute("userSMIMECertificate", cert.getEncoded());
+		entry.addAttribute("userCertificate", cert.getEncoded());
 		entry.addAttribute("ou", "testdomain.com");
 		entry.addAttribute("cn", "Test Domain");
 		entry.addAttribute("sn", "");
