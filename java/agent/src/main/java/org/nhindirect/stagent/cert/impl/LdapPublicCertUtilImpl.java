@@ -79,8 +79,8 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 	private static final String LDAP_TIMEOUT = "com.sun.jndi.ldap.read.timeout";
 	private static final String LDAP_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 	private static final String LDAP_SRV_PREFIX = "_ldap._tcp.";
-	private static final String CERT_ATTRIBUTE_BINARY = "userSMIMECertificate;binary";
-	private static final String CERT_ATTRIBUTE = "userSMIMECertificate";
+	private static final String CERT_ATTRIBUTE_BINARY = "userCertificate;binary";
+	private static final String CERT_ATTRIBUTE = "userCertificate";
 	private static final String EMAIL_ATTRIBUTE = "mail";
 	private static final String BASE_DN_ATTRIBUTE = "namingContexts";
 	
@@ -220,7 +220,7 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 			env.put(Context.PROVIDER_URL, ldapURL);
 			env.put(Context.SECURITY_AUTHENTICATION, "none");
 			env.put(LDAP_TIMEOUT, DEFAULT_LDAP_TIMEOUT);
-			env.put("java.naming.ldap.attributes.binary", "userSMIMECertificate, usersmimecertificate");
+			env.put("java.naming.ldap.attributes.binary", "userCertificate, usercertificate");
 			
 			ctx =  new InitialDirContext(env);
 		}

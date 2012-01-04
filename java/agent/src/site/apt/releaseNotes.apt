@@ -6,6 +6,21 @@
         Greg Meyer
         ---
 
+{1.2.2}
+
+    Changes included with release 1.2.2
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Public LDAP certificate uses the "userCertificate" field instead of "userSMIMECertificate" 
 
 {1.2.1}
 
