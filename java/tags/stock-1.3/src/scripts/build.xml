@@ -46,7 +46,7 @@
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 
 	<!-- tomcat properties -->
-	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.3/bin/apache-tomcat-7.0.23.tar.gz"></property>
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.23/bin/apache-tomcat-7.0.23.tar.gz"></property>
 	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.23.tar.gz"></property>
 	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.23"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
