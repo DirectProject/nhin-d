@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.AgentError;
 import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.CryptoExtensions;
@@ -57,6 +59,7 @@ public class TrustModel
     public static final TrustModel Default = new TrustModel();
     
     private final TrustChainValidator certChainValidator;
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(TrustModel.class);
     
     /**
      * Constructs a model with a default validator.
@@ -125,9 +128,15 @@ public class TrustModel
 	                recipient.setStatus(trustedSignature.isThumbprintVerified() ? TrustEnforcementStatus.Success 
 	                		: TrustEnforcementStatus.Success_ThumbprintMismatch);
 	        	}
+	        	else
+	        	{
+	        		LOGGER.warn("enforce(IncomingMessage message) - could not find a trusted certificate for recipient " + recipient.getAddress());
+	        	}
         	}
-        		
-        		
+        	else
+        	{
+        		LOGGER.warn("enforce(IncomingMessage message) - recipient " + recipient.getAddress() + " does not have a bound certificate");
+        	}
         }
     }
     
@@ -148,9 +157,15 @@ public class TrustModel
         {
             recipient.setStatus(TrustEnforcementStatus.Failed);                
             
-            recipient.setCertificates(findTrustedCerts(recipient.getCertificates(), sender.getTrustAnchors()));
-            if (recipient.hasCertificates())
-            	recipient.setStatus(TrustEnforcementStatus.Success);
+            Collection<X509Certificate> certs = recipient.getCertificates();
+            if (certs == null || certs.size() == 0)
+            	LOGGER.warn("enforce(OutgoingMessage message) - recipient " + recipient.getAddress() + " has no bound certificates");
+
+        	recipient.setCertificates(findTrustedCerts(certs, sender.getTrustAnchors()));
+        	if (recipient.hasCertificates())
+        		recipient.setStatus(TrustEnforcementStatus.Success);
+        	else
+        		LOGGER.warn("enforce(OutgoingMessage message) - could not trust any certificates for recipient " + recipient.getAddress());
 
         }
     }

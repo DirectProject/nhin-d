@@ -255,18 +255,26 @@ public class LDAPCertificateStore extends CertificateStore implements
     				}
     			}
     			// couldn't retrieve the certificate from the real server, so have to go to the bootstrap
-    			else {
-    				if(localStoreDelegate!=null) {
+    			else 
+    			{
+    				if(localStoreDelegate!=null) 
+    				{
     					retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
     				}
     			}
+    			if (retVal == null || retVal.size() == 0)
+    			{
+    				LOGGER.info("getCertificates(String subjectName) - Could not find an LDAP certificate for subject " + subjectName);
+    			}    			
     		}
     	}
     	else // cache miss
     	{
     		retVal = ldapCertUtil.ldapSearch(realSubjectName);
-    		if(localStoreDelegate!=null) {
-    			if (retVal == null ||  retVal.size() == 0) {
+    		if(localStoreDelegate!=null) 
+    		{
+    			if (retVal == null ||  retVal.size() == 0) 
+    			{
     				retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
     			}
     			else if (!subjectName.contains("*"))
@@ -275,6 +283,10 @@ public class LDAPCertificateStore extends CertificateStore implements
     				addOrUpdateLocalStoreDelegate(retVal);
     			}
     		}
+			if (retVal == null || retVal.size() == 0)
+			{
+				LOGGER.info("getCertificates(String subjectName) - Could not find an LDAP certificate for subject " + subjectName);
+			}       		
     	}
     	return retVal;
     }     

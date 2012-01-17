@@ -29,6 +29,8 @@ import java.util.GregorianCalendar;
 
 import javax.mail.internet.InternetAddress;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 
@@ -42,6 +44,7 @@ import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
  */
 public abstract class CertificateStore implements X509Store, CertificateResolver
 {	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(CertificateStore.class);
 	
 	/**
 	 * {@inheritDoc}
@@ -130,11 +133,18 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
     public void update(X509Certificate cert)
     {
 
-        if (contains(cert))
-        {
-            remove(cert);
-        }
-        add(cert);
+    	try
+    	{
+	        if (contains(cert))
+	        {
+	            remove(cert);
+	        }
+	        add(cert);
+    	}
+    	catch (Exception e)
+    	{
+    		LOGGER.warn("Exception attempting to update cert in certificate store: " + e.getMessage());
+    	}
     }
     
 	/**
@@ -233,7 +243,10 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         		if (!revocationManager.isRevoked(cert))
                     filteredCerts.add(cert);
         	} 
-            catch (Exception e) {/* no op.... the cert is not valid for the given time */}
+            catch (Exception e) 
+            {
+            	LOGGER.warn("filterUsable(Collection<X509Certificate> certs) - Certificate with DN " + cert.getSubjectDN() + " is not valid.", e);
+            }
         }
         
         return filteredCerts.size() == 0 ? null : filteredCerts;
