@@ -27,11 +27,10 @@ import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
-import org.nhindirect.gateway.smtp.module.SmtpAgentConfigModule;
 import org.nhindirect.stagent.NHINDAgent;
 
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
@@ -123,15 +122,16 @@ public class SmtpAgentFactory
 		
 		return retVal;		
 	}
+	
+	
 	/*
 	 * Creates an injector for getting SmtpAgent instances
 	 */
 	protected static Injector buildAgentInjector(URL configLocation, Provider<SmtpAgentConfig> configProvider, Provider<NHINDAgent> agentProvider)
 	{
-		Injector configInjector = Guice.createInjector(SmtpAgentConfigModule.create(configLocation, configProvider, agentProvider));
-		
-		SmtpAgentConfig config = configInjector.getInstance(SmtpAgentConfig.class);
+		SmtpAgentConfig config = SmptAgentConfigFactory.createSmtpAgentConfig(configLocation, configProvider, agentProvider);		
 		
 		return config.getAgentInjector();
 	}
+	
 }

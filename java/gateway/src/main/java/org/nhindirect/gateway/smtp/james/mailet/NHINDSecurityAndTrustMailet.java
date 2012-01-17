@@ -36,10 +36,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.base.GenericMailet;
+import org.nhindirect.gateway.smtp.DefaultSmtpAgent;
+import org.nhindirect.gateway.smtp.GatewayState;
 import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentFactory;
+import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
@@ -115,6 +118,15 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}	
 		///CLOVER:ON
 		
+		// set the agent and config in the Gateway state
+		GatewayState gwState = GatewayState.getInstance();
+		if (gwState.isAgentSettingManagerRunning())
+			gwState.stopAgentSettingsManager();
+		
+		gwState.setSmtpAgent(agent);
+		gwState.setSmptAgentConfig(SmptAgentConfigFactory.createSmtpAgentConfig(configURL, this.getConfigProvider(), null));
+		gwState.startAgentSettingsManager();
+		
 		LOGGER.info("NHINDSecurityAndTrustMailet initialization complete.");
 	}
 
@@ -126,144 +138,153 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	@Override
 	public void service(Mail mail) throws MessagingException 
 	{ 		
-		LOGGER.trace("Entering service(Mail mail)");
-		
-		onPreprocessMessage(mail);
-		
-		NHINDAddressCollection recipients = new NHINDAddressCollection();		
-		
-		MimeMessage msg = mail.getMessage();
-		
-		// uses the RCPT TO commands
-		Collection<MailAddress> recips = mail.getRecipients();
-		if (recips == null || recips.size() == 0)
-		{
-			// fall back to the mime message list of recipients
-			Address[] recipsAddr = msg.getAllRecipients();
-			for (Address addr : recipsAddr)
-			{
-				
-				recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
-			}
-		}
-		else
-		{
-			for (MailAddress addr : recips)
-			{
-				recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
-			}
-		}
-		
-		// get the sender
-		InternetAddress senderAddr = NHINDSecurityAndTrustMailet.getSender(mail);
-		if (senderAddr == null)
-			throw new MessagingException("Failed to process message.  The sender cannot be null or empty.");
-						
-			// not the best way to do this
-		NHINDAddress sender = new NHINDAddress(senderAddr, AddressSource.From);	
-		
-		LOGGER.info("Proccessing incoming message from sender " + sender.toString());
-		MessageProcessResult result = null;
-				
+		GatewayState.getInstance().lockForProcessing();
 		try
 		{
-			// process the message with the agent stack
-			LOGGER.trace("Calling agent.processMessage");
-			result = agent.processMessage(msg, recipients, sender);
-			LOGGER.trace("Finished calling agent.processMessage");
+		
+			LOGGER.trace("Entering service(Mail mail)");
 			
-			if (result == null)
-			{				
-				LOGGER.error("Failed to process message.  processMessage returned null.");		
+			onPreprocessMessage(mail);
+			
+			NHINDAddressCollection recipients = new NHINDAddressCollection();		
+			
+			MimeMessage msg = mail.getMessage();
+			
+			// uses the RCPT TO commands
+			Collection<MailAddress> recips = mail.getRecipients();
+			if (recips == null || recips.size() == 0)
+			{
+				// fall back to the mime message list of recipients
+				Address[] recipsAddr = msg.getAllRecipients();
+				for (Address addr : recipsAddr)
+				{
+					
+					recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
+				}
+			}
+			else
+			{
+				for (MailAddress addr : recips)
+				{
+					recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
+				}
+			}
+			
+			// get the sender
+			InternetAddress senderAddr = NHINDSecurityAndTrustMailet.getSender(mail);
+			if (senderAddr == null)
+				throw new MessagingException("Failed to process message.  The sender cannot be null or empty.");
+							
+				// not the best way to do this
+			NHINDAddress sender = new NHINDAddress(senderAddr, AddressSource.From);	
+			
+			LOGGER.info("Proccessing incoming message from sender " + sender.toString());
+			MessageProcessResult result = null;
+					
+			try
+			{
+				// process the message with the agent stack
+				LOGGER.trace("Calling agent.processMessage");
+				result = agent.processMessage(msg, recipients, sender);
+				LOGGER.trace("Finished calling agent.processMessage");
 				
-				onMessageRejected(mail, recipients, sender, null);
+				if (result == null)
+				{				
+					LOGGER.error("Failed to process message.  processMessage returned null.");		
+					
+					onMessageRejected(mail, recipients, sender, null);
+					
+					mail.setState(Mail.GHOST);
+					
+					LOGGER.trace("Exiting service(Mail mail)");
+					return;
+				}
+			}	
+			catch (Exception e)
+			{
+				// catch all
+				
+				LOGGER.error("Failed to process message: " + e.getMessage(), e);					
+				
+				onMessageRejected(mail, recipients, sender, e);
 				
 				mail.setState(Mail.GHOST);
-				
 				LOGGER.trace("Exiting service(Mail mail)");
+				
+				if (e instanceof SmtpAgentException)
+					throw (SmtpAgentException)e;
+				
+				throw new MessagingException("Failed to process message: " + e.getMessage());
+	
+			}
+			
+			
+			if (result.getProcessedMessage() != null)
+			{
+				mail.setMessage(result.getProcessedMessage().getMessage());
+			}
+			else
+			{
+				/*
+				 * TODO: Handle exception... GHOST the message for now and eat it
+				 */		
+				LOGGER.debug("Processed message is null.  GHOST and eat the message.");
+	
+				onMessageRejected(mail, recipients, sender, null);
+	
+				mail.setState(Mail.GHOST);
+	
 				return;
 			}
-		}	
-		catch (Exception e)
-		{
-			// catch all
 			
-			LOGGER.error("Failed to process message: " + e.getMessage(), e);					
+			// remove reject recipients from the RCTP headers
+			if (result.getProcessedMessage().getRejectedRecipients() != null && 
+					result.getProcessedMessage().getRejectedRecipients().size() > 0 && mail.getRecipients() != null &&
+					mail.getRecipients().size() > 0)
+			{
+				
+				Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
+				for (MailAddress rctpAdd : (Collection<MailAddress>)mail.getRecipients())
+				{
+					if (!isRcptRejected(rctpAdd, result.getProcessedMessage().getRejectedRecipients()))
+					{
+						newRCPTList.add(rctpAdd);
+					}
+				}
+				
+				mail.setRecipients(newRCPTList);
+			}
 			
-			onMessageRejected(mail, recipients, sender, e);
-			
-			mail.setState(Mail.GHOST);
-			LOGGER.trace("Exiting service(Mail mail)");
-			
-			if (e instanceof SmtpAgentException)
-				throw (SmtpAgentException)e;
-			
-			throw new MessagingException("Failed to process message: " + e.getMessage());
-
-		}
-		
-		
-		if (result.getProcessedMessage() != null)
-		{
-			mail.setMessage(result.getProcessedMessage().getMessage());
-		}
-		else
-		{
 			/*
-			 * TODO: Handle exception... GHOST the message for now and eat it
-			 */		
-			LOGGER.debug("Processed message is null.  GHOST and eat the message.");
-
-			onMessageRejected(mail, recipients, sender, null);
-
-			mail.setState(Mail.GHOST);
-
-			return;
-		}
-		
-		// remove reject recipients from the RCTP headers
-		if (result.getProcessedMessage().getRejectedRecipients() != null && 
-				result.getProcessedMessage().getRejectedRecipients().size() > 0 && mail.getRecipients() != null &&
-				mail.getRecipients().size() > 0)
-		{
-			
-			Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
-			for (MailAddress rctpAdd : (Collection<MailAddress>)mail.getRecipients())
+			 * Handle sending MDN messages
+			 */
+			Collection<NotificationMessage> notifications = result.getNotificationMessages();
+			if (notifications != null && notifications.size() > 0)
 			{
-				if (!isRcptRejected(rctpAdd, result.getProcessedMessage().getRejectedRecipients()))
+				LOGGER.info("MDN messages requested.  Sending MDN \"processed\" messages");
+				// create a message for each notification and put it on James "stack"
+				for (NotificationMessage message : notifications)
 				{
-					newRCPTList.add(rctpAdd);
+					try
+					{
+						this.getMailetContext().sendMail(message);
+					}
+					catch (Throwable t)
+					{
+						// don't kill the process if this fails
+						LOGGER.error("Error sending MDN message.", t);
+					}
 				}
 			}
 			
-			mail.setRecipients(newRCPTList);
+			onPostprocessMessage(mail, result);
+			
+			LOGGER.trace("Exiting service(Mail mail)");
 		}
-		
-		/*
-		 * Handle sending MDN messages
-		 */
-		Collection<NotificationMessage> notifications = result.getNotificationMessages();
-		if (notifications != null && notifications.size() > 0)
+		finally
 		{
-			LOGGER.info("MDN messages requested.  Sending MDN \"processed\" messages");
-			// create a message for each notification and put it on James "stack"
-			for (NotificationMessage message : notifications)
-			{
-				try
-				{
-					this.getMailetContext().sendMail(message);
-				}
-				catch (Throwable t)
-				{
-					// don't kill the process if this fails
-					LOGGER.error("Error sending MDN message.", t);
-				}
-			}
+			GatewayState.getInstance().unlockFromProcessing();
 		}
-		
-		onPostprocessMessage(mail, result);
-		
-		LOGGER.trace("Exiting service(Mail mail)");
 	}
 	
 	/*
@@ -361,5 +382,18 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 	
 		return retVal;
+	}
+	
+	public void shutdown()
+	{
+		GatewayState.getInstance().lockForUpdating();
+		try
+		{
+			// place holder for shutdown code
+		}
+		finally
+		{
+			GatewayState.getInstance().unlockFromUpdating();
+		}
 	}
 }

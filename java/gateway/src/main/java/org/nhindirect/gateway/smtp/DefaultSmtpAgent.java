@@ -178,77 +178,86 @@ public class DefaultSmtpAgent implements SmtpAgent
 	 */
 	public MessageProcessResult processMessage(MimeMessage message, NHINDAddressCollection recipients, NHINDAddress sender)
 	{
-		LOGGER.trace("Entering processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
-		
-		MessageProcessResult retVal = null;
-		
-		verifyInitialized();
-		
-		preProcessMessage(message, sender);
-
-		Collection<NHINDAddress> originalRecipList = new ArrayList<NHINDAddress>(recipients);
-		
-		DefaultMessageEnvelope envelopeToProcess = null;
+		GatewayState.getInstance().lockForProcessing();
 		try
 		{
-			envelopeToProcess = new DefaultMessageEnvelope(new Message(message), recipients, sender);			
-			envelopeToProcess.setAgent(agent);
-			
-			// should always result in either a non null object or an exception
-			MessageEnvelope processEvn = processEnvelope(envelopeToProcess);
-			retVal = new MessageProcessResult(processEvn, null);
-			
-			if (retVal.getProcessedMessage() != null)
-				postProcessMessage(retVal);						
-		}
-		catch (SmtpAgentException e)
-		{
-			// rethrow
-			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
-			throw e;
-		}
-		catch (Exception e)
-		{
-			// audit the message rejection
-			if (envelopeToProcess != null)
-			{
-				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelopeToProcess,
-					Arrays.asList(AuditEvents.DEFAULT_HEADER_CONTEXT));
-				
-				if (e instanceof NHINDException)
-				{					
-					NHINDException exception = (NHINDException)e;
-					if (exception.getError() != null)
-					{						
-						contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_MESSAGE_REASON_CONTEXT, exception.getError().toString()));
-						
-						if (exception.getError() != null && exception.getError() instanceof AgentException
-								&& ((AgentException)exception.getError()).getError() == AgentError.NoTrustedRecipients)
-						{
-							StringBuilder rejectedRecips = new StringBuilder();
-				        	int cnt = 0;
-				        	for (NHINDAddress address : originalRecipList)
-				        	{
-				        		rejectedRecips.append(address.getAddress());
-				        		
-				        		if (++cnt < originalRecipList.size())
-				        			rejectedRecips.append(", ");
-				        	}
-				        	contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_RECIPIENTS_CONTEXT, rejectedRecips.toString()));							
-						}
-						
-					}
 		
+			LOGGER.trace("Entering processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
+			
+			MessageProcessResult retVal = null;
+			
+			verifyInitialized();
+			
+			preProcessMessage(message, sender);
+	
+			Collection<NHINDAddress> originalRecipList = new ArrayList<NHINDAddress>(recipients);
+			
+			DefaultMessageEnvelope envelopeToProcess = null;
+			try
+			{
+				envelopeToProcess = new DefaultMessageEnvelope(new Message(message), recipients, sender);			
+				envelopeToProcess.setAgent(agent);
+				
+				// should always result in either a non null object or an exception
+				MessageEnvelope processEvn = processEnvelope(envelopeToProcess);
+				retVal = new MessageProcessResult(processEvn, null);
+				
+				if (retVal.getProcessedMessage() != null)
+					postProcessMessage(retVal);						
+			}
+			catch (SmtpAgentException e)
+			{
+				// rethrow
+				LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
+				throw e;
+			}
+			catch (Exception e)
+			{
+				// audit the message rejection
+				if (envelopeToProcess != null)
+				{
+					Collection<AuditContext> contexts = createContextCollectionFromMessage(envelopeToProcess,
+						Arrays.asList(AuditEvents.DEFAULT_HEADER_CONTEXT));
+					
+					if (e instanceof NHINDException)
+					{					
+						NHINDException exception = (NHINDException)e;
+						if (exception.getError() != null)
+						{						
+							contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_MESSAGE_REASON_CONTEXT, exception.getError().toString()));
+							
+							if (exception.getError() != null && exception.getError() instanceof AgentException
+									&& ((AgentException)exception.getError()).getError() == AgentError.NoTrustedRecipients)
+							{
+								StringBuilder rejectedRecips = new StringBuilder();
+					        	int cnt = 0;
+					        	for (NHINDAddress address : originalRecipList)
+					        	{
+					        		rejectedRecips.append(address.getAddress());
+					        		
+					        		if (++cnt < originalRecipList.size())
+					        			rejectedRecips.append(", ");
+					        	}
+					        	contexts.add(new DefaultAuditContext(AuditEvents.REJECTED_RECIPIENTS_CONTEXT, rejectedRecips.toString()));							
+							}
+							
+						}
+			
+					}
+					auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.REJECTED_MESSAGE_NAME, AuditEvents.EVENT_TYPE), contexts);
 				}
-				auditor.audit(PRINICPAL, new AuditEvent(AuditEvents.REJECTED_MESSAGE_NAME, AuditEvents.EVENT_TYPE), contexts);
+				
+				LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
+				throw new SmtpAgentException(SmtpAgentError.Unknown, e);
 			}
 			
-			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress", e);
-			throw new SmtpAgentException(SmtpAgentError.Unknown, e);
+			LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
+			return retVal;
 		}
-		
-		LOGGER.trace("Exiting processMessage(MimeMessage, NHINDAddressCollection, NHINDAddress");
-		return retVal;
+		finally
+		{
+			GatewayState.getInstance().unlockFromProcessing();
+		}
 	}
 	
 	/*

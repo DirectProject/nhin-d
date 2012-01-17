@@ -533,17 +533,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
 			
-				boolean execptionOccured = false;
-				try				
-				{
-					store.update((X509Certificate)null);
-				}
-				catch (UnsupportedOperationException e)
-				{
-					execptionOccured = true;					
-				}
-				
-				assertTrue(execptionOccured);
+
+				store.update((X509Certificate)null);
 			}
 		}.perform();
 	}		

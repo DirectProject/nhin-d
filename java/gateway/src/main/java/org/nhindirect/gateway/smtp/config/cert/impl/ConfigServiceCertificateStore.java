@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
@@ -37,6 +39,8 @@ import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
  */
 public class ConfigServiceCertificateStore extends CertificateStore implements CacheableCertStore
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceCertificateStore.class);
+	
 	private static final String CACHE_NAME = "CONFIG_SERVICE_CERT_CACHE";
 	
 	protected CertificateStore localStoreDelegate;
@@ -223,13 +227,25 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
     	{
     		retVal = (Collection<X509Certificate>)cache.get(realSubjectName);
     		if (retVal == null || retVal.size() == 0)
+    		{
     			retVal = this.lookupFromConfigStore(realSubjectName);
+    			if (retVal == null || retVal.size() == 0)
+    			{
+    				LOGGER.info("getCertificates(String subjectName) - Could not find a ConfigService certificate for subject " + subjectName);
+    			}
+    		}
     	}
     	else // cache miss
     	{
     		retVal = this.lookupFromConfigStore(realSubjectName);
     		if (retVal.size() == 0 && localStoreDelegate != null)
+    		{
     			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
+    			if (retVal == null || retVal.size() == 0)
+    			{
+    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
+    			}
+    		}
     	}
     	
     	return retVal;
