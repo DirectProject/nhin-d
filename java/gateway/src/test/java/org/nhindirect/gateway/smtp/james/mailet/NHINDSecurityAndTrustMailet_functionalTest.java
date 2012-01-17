@@ -10,9 +10,15 @@ import java.security.KeyStore;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.mail.internet.MimeMessage;
 
@@ -25,6 +31,7 @@ import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 import org.nhind.config.Setting;
+import org.nhindirect.gateway.smtp.GatewayState;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet;
@@ -67,6 +74,9 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 				cleanConfig();
 				
 				addConfiguration();
+				
+				// setup the GatewayState to run every 1 second to test for concurrency
+				GatewayState.getInstance().setSettingsUpdateInterval(1);
 			}
 			catch (Exception e)
 			{
@@ -79,7 +89,16 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
             delete.delete();
         }
 		
-        
+    	protected void tearDownMocks() 
+    	{
+    		// reset the gateway state
+			// setup the GatewayState to run every 1 second to test for concurrency
+			GatewayState.getInstance().setSettingsUpdateInterval(300);
+			if (GatewayState.getInstance().isAgentSettingManagerRunning())
+			{
+				GatewayState.getInstance().stopAgentSettingsManager();
+			}
+    	}
         
 
 		
@@ -323,6 +342,99 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 				assertEquals(originalMessage, compareMessage.toString());
 				
 
+				
+			}				
+					
+		}.perform();
+	}
+	
+	public void testProcessOutgoingMessageEndToEnd_multipleProcessThreads() throws Exception 
+	{
+		new TestPlan() 
+		{			
+			protected String getMessageToProcess() throws Exception
+			{
+				return TestUtils.readMessageResource("PlainOutgoingMessage.txt");
+			}	
+
+			
+			final class MessageEncrypter implements Callable<MimeMessage>
+			{
+				private final Mailet theMailet;
+				public MessageEncrypter(Mailet theMailet)
+				{
+					this.theMailet = theMailet;
+				}
+				
+				public MimeMessage call() throws Exception
+				{
+					// encrypt
+					String originalMessage = getMessageToProcess();
+					
+					MimeMessage msg = EntitySerializer.Default.deserialize(originalMessage);
+					
+					// add an MDN request
+					msg.setHeader(MDNStandard.Headers.DispositionNotificationTo, msg.getHeader(MailStandard.Headers.From, ","));
+					
+					MockMail theMessage = new MockMail(msg);
+					
+	
+					theMailet.service(theMessage);
+					
+					
+					assertNotNull(theMessage);
+					assertNotNull(theMessage.getMessage());
+					
+					msg = theMessage.getMessage();
+					
+					return msg;
+				}
+			}
+			
+			protected void performInner() throws Exception
+			{
+
+				ExecutorService execService = Executors.newFixedThreadPool(10);
+				String originalMessage = getMessageToProcess();
+				
+				// execute 100 times
+				GatewayState.getInstance().setSettingsUpdateInterval(1);
+				Mailet theMailet = getMailet("ValidConfig.xml");
+				List<Future<MimeMessage>> futures = new ArrayList<Future<MimeMessage>>();
+				for (int i = 0; i < 100; ++i)
+				{
+					futures.add(execService.submit(new MessageEncrypter(theMailet)));
+				}
+				
+				assertEquals(100, futures.size());
+				
+				GatewayState.getInstance().setSettingsUpdateInterval(300);
+				for (Future<MimeMessage> future : futures)
+				{
+									
+					// decrypt
+					theMailet = getMailet("ValidConfigStateLine.txt");				
+					
+					MockMail theMessage = new MockMail(future.get());
+					
+					theMailet.service(theMessage);
+					
+					assertNotNull(theMessage);
+					assertNotNull(theMessage.getMessage());
+					
+					
+					MimeMessage msg = theMessage.getMessage();
+					assertFalse(SMIMEStandard.isEncrypted(msg));
+					assertEquals(theMessage.getState(), Mail.TRANSPORT);
+	
+					Message compareMessage = new Message(theMessage.getMessage());
+					
+					// remove the MDN before comparison				
+					compareMessage.removeHeader(MDNStandard.Headers.DispositionNotificationTo);
+					
+					assertEquals(originalMessage, compareMessage.toString());
+					
+				}
 				
 			}				
 					
