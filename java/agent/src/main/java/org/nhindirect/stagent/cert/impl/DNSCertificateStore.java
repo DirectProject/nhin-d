@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.jcs.JCS;
 import org.apache.jcs.access.exception.CacheException;
 import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
@@ -86,6 +88,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	private JCS cache;
 	private CertStoreCachePolicy cachePolicy;
 
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSCertificateStore.class);
 	static 
 	{
 		Cache ch = Lookup.getDefaultCache(DClass.IN);
@@ -272,13 +275,25 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
     	{
     		retVal = (Collection<X509Certificate>)cache.get(realSubjectName);//localStoreDelegate.getCertificates(subjectName);
     		if (retVal == null || retVal.size() == 0)
+    		{
     			retVal = this.lookupDNS(realSubjectName);
+    			if (retVal == null || retVal.size() == 0)
+    			{
+    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
+    			}
+    		}
     	}
     	else // cache miss
     	{
     		retVal = this.lookupDNS(realSubjectName);
     		if (retVal.size() == 0 && localStoreDelegate != null)
+    		{
     			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
+    			if (retVal == null || retVal.size() == 0)
+    			{
+    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
+    			}
+    		}
     	}
     	
     	return retVal;

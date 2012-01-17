@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.mail.Header;
 import javax.mail.MessagingException;
@@ -68,13 +70,15 @@ import org.nhindirect.stagent.trust.TrustModel;
 import com.google.inject.Inject;
 
 /**
- * Default agent implementation.
+ * Default agent implementation.  Implements {@l MutableAgent} to support updating agent properties at runtime.
  * @author Greg Meyer
  * @author Umesh Madan
- *
+ * @since 1.0
  */
-public class DefaultNHINDAgent implements NHINDAgent
+public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 {
+    protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
+	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultNHINDAgent.class);
 	
 	static MimeMultipart lastMMPart = null;
@@ -200,31 +204,91 @@ public class DefaultNHINDAgent implements NHINDAgent
     }    
     
     /**
-     * Gets the list of domains that the agent is serving.
-     * @return The domains that the agent is serving.
+     * {@inheritDoc}
+     */
+	public void setDomains(Collection<String> domains)
+	{
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{
+    		this.domains = domains;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
+	}
+    
+    
+    /**
+     * {@inheritDoc}
      */
     public Collection<String> getDomains()
     {
-        return Collections.unmodifiableCollection(domains);
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return Collections.unmodifiableCollection(domains);
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }
 
+    
     /**
-     * Gets the Cryptographer used by the agent to perform cryptography operations.
-     * @return The Cryptographer used by the agent to perform cryptography operations.
+     * {@inheritDoc}
      */
     public Cryptographer getCryptographer()
     {
-        return this.cryptographer;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return this.cryptographer;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }
 
+    /**
+     * {@inheritDoc}
+     */
+	public void setCryptographer(Cryptographer cryptographer)
+	{
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{
+    		this.cryptographer = cryptographer;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
+	}
+    
     /**
      * Indicates if messages are required to be encrypted in the agent.
      * @return True if messages are required to be encrypted in the agent.  False otherwise.
      */
     public boolean isEncryptMessages()
     {
-
-        return this.encryptionEnabled;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return this.encryptionEnabled;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     } 
     
     /**
@@ -233,26 +297,51 @@ public class DefaultNHINDAgent implements NHINDAgent
      */
     public void setEncryptMessages(boolean value)
     {
-        this.encryptionEnabled = value;
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{    	
+    		this.encryptionEnabled = value;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }
 
     /**
-     * Indicates if the agent automatically wraps messages into RFC822 envelopes for hiding headers.
-     * @return True if the agent automatically wraps messages.
+     * {@inheritDoc}
      */
     public boolean isWrappingEnabled() 
     {
-		return wrappingEnabled;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{       	
+    		return wrappingEnabled;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
+    		
 	}
 
     /**
-     * Sets the auto message wrapping feature of the agent.  Message wrapping takes the original message and wraps it into a message of type RFC822 pushing all headers
-     * into the message body.  Only routing information is propagated up from the original message.
-     * @param wrappingEnabled
+     * {@inheritDoc}
      */
 	public void setWrappingEnabled(boolean wrappingEnabled) 
 	{
-		this.wrappingEnabled = wrappingEnabled;
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{   
+    		this.wrappingEnabled = wrappingEnabled;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
 	}
 
 
@@ -263,46 +352,139 @@ public class DefaultNHINDAgent implements NHINDAgent
      */
     public CertificateResolver getPublicCertResolver()
     {
-    	if (publicCertResolver != null && publicCertResolver.size() > 0)
-    		return this.publicCertResolver.iterator().next();
-    	
-    	return null;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{   
+	    	if (publicCertResolver != null && publicCertResolver.size() > 0)
+	    		return this.publicCertResolver.iterator().next();
+	    	
+	    	return null;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }
 
-	/**
-     * Gets the certificate stores used to encrypt messages and validate signatures.  This store generally contains only public certificates
-     * @return The certificate stores used to encrypt messages and validate signatures.
+    /**
+     * {@inheritDoc}
      */
     public Collection<CertificateResolver> getPublicCertResolvers()
     {
-        return this.publicCertResolver;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{   
+    		return this.publicCertResolver;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }    
     
     /**
-     * Gets the certificate store used to decrypt and sign messages.  Certificates in this store must have access to the certifcate's private key.
-     * @return The certificate store used to decrypt and sign messages.
+     * {@inheritDoc}
+     */
+	public void setPublicCertResolvers(Collection<CertificateResolver> resolvers)
+	{
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{   
+    		this.publicCertResolver = resolvers;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
+	}
+    
+    /**
+     * {@inheritDoc}
      */
     public CertificateResolver getPrivateCertResolver()
     {
-        return this.privateCertResolver;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{     	
+    		return this.privateCertResolver;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }
 
     /**
-     * Gets the certificate store that contains the certificate anchors that validate if certificates are trusted.
-     * @return The certificate store that contains the certificate anchors that validate if certificates are trusted.
+     * {@inheritDoc}
+     */
+    public void setPrivateCertResolver(CertificateResolver resolver)
+    {
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{ 
+    		this.privateCertResolver = resolver;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
+    }
+    
+    /**
+     * {@inheritDoc}
      */
     public TrustAnchorResolver getTrustAnchors()
     {
-        return this.trustAnchors;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{        
+    		return this.trustAnchors;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}		
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void setTrustAnchorResolver(TrustAnchorResolver resolver)
+    {
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{ 
+    		this.trustAnchors = resolver;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
+    }
+    
     /**
      * Gets the minimum trust status applied to messages by the agent.
      * @return The minimum trust status applied to messages by the agent.
      */
     public TrustEnforcementStatus getMinTrustRequirement()
     {
-    	return this.minTrustRequirement;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{     	
+    		return this.minTrustRequirement;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }
         
     /**
@@ -311,28 +493,58 @@ public class DefaultNHINDAgent implements NHINDAgent
      */
     public void setMinTrustRequirement(TrustEnforcementStatus value)
     {
-        if (value.compareTo(TrustEnforcementStatus.Success_Offline) < 0)
-        {
-            throw new IllegalArgumentException();
-        }
-        this.minTrustRequirement = value;
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{ 
+	        if (value.compareTo(TrustEnforcementStatus.Success_Offline) < 0)
+	        {
+	            throw new IllegalArgumentException();
+	        }
+	        this.minTrustRequirement = value;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }
 
     /**
-     * Sets the event listener that will receive notifications at different stages of message processing. 
-     * @param listener A concrete implementation of an NHINDAgentEventListener.
+     * {@inheritDoc}
      */
     public void setEventListener(NHINDAgentEventListener listener)
     {
-    	m_listener = listener;
+    	Lock lock = readWriteLock.writeLock();
+    	lock.lock();
+    	try
+    	{     	
+    		m_listener = listener;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }
     
-    public void setCryptographer(Cryptographer _cryptographer)
+    
+    /**
+     * {@inheritDoc}
+     */
+    public NHINDAgentEventListener getEventListener()
     {
-    	cryptographer = _cryptographer;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{ 
+    		return m_listener;
+      	}
+    	finally
+    	{
+    		lock.unlock();
+    	}		
     }
-
     
+
 	/**
 	 * Processes an incoming message represented by a raw string.  The message will be decrypted and validated that it meets trust assertions.
 	 * @param messageText The raw contents of the incoming message that will be processed.
@@ -415,42 +627,51 @@ public class DefaultNHINDAgent implements NHINDAgent
 	 */  
     public IncomingMessage processIncoming(IncomingMessage message)
     {          
-    	if (message == null)
-        {
-            throw new IllegalArgumentException();
-        }    	
-
-    	if (LOGGER.isDebugEnabled())
-    		LOGGER.debug("Processing incoming message:\r\n" + message.toString() + "\r\n");    	
-    	    	
-        try
-        {
-            message.setAgent(this);
-            message.validate();
-            
-            if (m_listener != null)
-            	m_listener.preProcessIncoming(message);            
-
-            processMessage(message);
-
-            if (m_listener != null)
-            	m_listener.postProcessIncoming(message);                
-            
-        	if (LOGGER.isDebugEnabled())
-        		LOGGER.debug("Completed processing incoming message.  Result message:\r\n" + EntitySerializer.Default.serialize(message.getMessage()) + "\r\n");              
-            
-            return message;
-        }
-        catch (Exception error)
-        {        	
-        	LOGGER.error("Error processing incoming message: " + error.getMessage(), error);        	
-        	
-        	NHINDException throwError = new NHINDException(error);
-        	
-            if (m_listener != null)
-            	m_listener.errorIncoming(message, error);  
-            throw throwError;  // rethrow error
-        }
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{ 
+	    	if (message == null)
+	        {
+	            throw new IllegalArgumentException();
+	        }    	
+	
+	    	if (LOGGER.isDebugEnabled())
+	    		LOGGER.debug("Processing incoming message:\r\n" + message.toString() + "\r\n");    	
+	    	    	
+	        try
+	        {
+	            message.setAgent(this);
+	            message.validate();
+	            
+	            if (m_listener != null)
+	            	m_listener.preProcessIncoming(message);            
+	
+	            processMessage(message);
+	
+	            if (m_listener != null)
+	            	m_listener.postProcessIncoming(message);                
+	            
+	        	if (LOGGER.isDebugEnabled())
+	        		LOGGER.debug("Completed processing incoming message.  Result message:\r\n" + EntitySerializer.Default.serialize(message.getMessage()) + "\r\n");              
+	            
+	            return message;
+	        }
+	        catch (Exception error)
+	        {        	
+	        	LOGGER.error("Error processing incoming message: " + error.getMessage(), error);        	
+	        	
+	        	NHINDException throwError = new NHINDException(error);
+	        	
+	            if (m_listener != null)
+	            	m_listener.errorIncoming(message, error);  
+	            throw throwError;  // rethrow error
+	        }
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
     }
 
     /*
@@ -518,8 +739,16 @@ public class DefaultNHINDAgent implements NHINDAgent
 
         for (NHINDAddress recipient : message.getDomainRecipients())
         {
-            recipient.setCertificates(this.resolvePrivateCerts(recipient, false));
-            recipient.setTrustAnchors(this.trustAnchors.getIncomingAnchors().getCertificates(recipient));
+        	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(recipient, false);
+        	if (privateCerts == null || privateCerts.size() == 0)
+        		LOGGER.warn("bindAddresses(IncomingMessage message) - Could not resolve a private certificate for recipient " + recipient.getAddress());
+        		
+            recipient.setCertificates(privateCerts);
+            
+            Collection<X509Certificate> anchors = this.trustAnchors.getIncomingAnchors().getCertificates(recipient);
+            if (anchors == null || anchors.size() == 0)
+            	LOGGER.warn("bindAddresses(IncomingMessage message) - Could not obtain incoming trust anchors for recipient " + recipient.getAddress());
+            recipient.setTrustAnchors(anchors);
         }
     }
 
@@ -656,12 +885,21 @@ public class DefaultNHINDAgent implements NHINDAgent
 	 */      
     public OutgoingMessage processOutgoing(String messageText)
     {
-    	if (messageText == null || messageText.length() == 0)
-    		throw new IllegalArgumentException();
-    	
-        OutgoingMessage message = new OutgoingMessage(this.wrapMessage(messageText));
-        
-        return this.processOutgoing(message);
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{ 
+	    	if (messageText == null || messageText.length() == 0)
+	    		throw new IllegalArgumentException();
+	    	
+	        OutgoingMessage message = new OutgoingMessage(this.wrapMessage(messageText));
+	        
+	        return this.processOutgoing(message);
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }
     
 	/**
@@ -673,10 +911,19 @@ public class DefaultNHINDAgent implements NHINDAgent
 	 */        
     public OutgoingMessage processOutgoing(String messageText, NHINDAddressCollection recipients, NHINDAddress sender)
     {
-        this.checkEnvelopeAddresses(recipients, sender);
-
-        OutgoingMessage message = new OutgoingMessage(this.wrapMessage(messageText), recipients, sender);            
-        return this.processOutgoing(message);            
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{ 
+	        this.checkEnvelopeAddresses(recipients, sender);
+	
+	        OutgoingMessage message = new OutgoingMessage(this.wrapMessage(messageText), recipients, sender);            
+	        return this.processOutgoing(message);  
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }    
     
 	/**
@@ -686,13 +933,22 @@ public class DefaultNHINDAgent implements NHINDAgent
 	 */    
     public OutgoingMessage processOutgoing(MessageEnvelope envelope)
     {
-        if (envelope == null)
-            throw new IllegalArgumentException();
-        
-        this.checkEnvelopeAddresses(envelope);
-
-        OutgoingMessage message = new OutgoingMessage(envelope);
-        return this.processOutgoing(message);
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{ 
+	        if (envelope == null)
+	            throw new IllegalArgumentException();
+	        
+	        this.checkEnvelopeAddresses(envelope);
+	
+	        OutgoingMessage message = new OutgoingMessage(envelope);
+	        return this.processOutgoing(message);
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }    
     
 	/**
@@ -702,41 +958,50 @@ public class DefaultNHINDAgent implements NHINDAgent
 	 */ 
     public OutgoingMessage processOutgoing(OutgoingMessage message)
     {
-        if (message == null)
-            throw new IllegalArgumentException();
-     
-    	//LOGGER.debug("Processing outgoing message:\r\n" + message.getMessage().g + "\r\n");    	        
-        
-        message.setAgent(this);    
-                
-        message.validate();
-
-        try
-        {
-
-            if (m_listener != null)
-            	m_listener.preProcessOutgoing(message);                
-
-            processMessage(message);
-
-            if (m_listener != null)
-            	m_listener.postProcessOutgoing(message);      
-            
-        	//if (LOGGER.isDebugEnabled())
-        	//	LOGGER.debug("Completed processing outing message.  Result message:\r\n" + EntitySerializer.Default.serialize(message) + "\r\n");             
-        }
-        catch (Exception error)
-        {        	        	        
-        	LOGGER.error("Error processing outgoing message: " + error.getMessage(), error);
-        	
-        	NHINDException throwError = new NHINDException(error);
-        	
-            if (m_listener != null)
-            	m_listener.errorOutgoing(message, error);  
-            throw throwError;  // rethrow error
-        }
-        
-        return message;
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{ 
+	        if (message == null)
+	            throw new IllegalArgumentException();
+	     
+	    	//LOGGER.debug("Processing outgoing message:\r\n" + message.getMessage().g + "\r\n");    	        
+	        
+	        message.setAgent(this);    
+	                
+	        message.validate();
+	
+	        try
+	        {
+	
+	            if (m_listener != null)
+	            	m_listener.preProcessOutgoing(message);                
+	
+	            processMessage(message);
+	
+	            if (m_listener != null)
+	            	m_listener.postProcessOutgoing(message);      
+	            
+	        	//if (LOGGER.isDebugEnabled())
+	        	//	LOGGER.debug("Completed processing outing message.  Result message:\r\n" + EntitySerializer.Default.serialize(message) + "\r\n");             
+	        }
+	        catch (Exception error)
+	        {        	        	        
+	        	LOGGER.error("Error processing outgoing message: " + error.getMessage(), error);
+	        	
+	        	NHINDException throwError = new NHINDException(error);
+	        	
+	            if (m_listener != null)
+	            	m_listener.errorOutgoing(message, error);  
+	            throw throwError;  // rethrow error
+	        }
+	        
+	        return message;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}
     }
 
 	/*
@@ -798,14 +1063,26 @@ public class DefaultNHINDAgent implements NHINDAgent
         //
         // Retrieving the sender's private certificate is requied for encryption
         //
-        message.getSender().setCertificates(this.resolvePrivateCerts(message.getSender(), true));
-        message.getSender().setTrustAnchors(this.trustAnchors.getOutgoingAnchors().getCertificates(message.getSender()));
+    	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(message.getSender(), true);
+    	if (privateCerts == null || privateCerts.size() == 0)
+    		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a private certificate for sender " + message.getSender().getAddress());
+    	message.getSender().setCertificates(privateCerts);
+    	
+    	Collection<X509Certificate> anchors = this.trustAnchors.getOutgoingAnchors().getCertificates(message.getSender());
+        if (anchors == null || anchors.size() == 0)
+        	LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not obtain outgoing trust anchors for sender " + message.getSender().getAddress());    	
+        message.getSender().setTrustAnchors(anchors);
 
         //
         // Bind each recipient's certs
         //
         for(NHINDAddress recipient : message.getRecipients())
-            recipient.setCertificates(this.resolvePublicCerts(recipient, false));
+        {
+        	Collection<X509Certificate> publicCerts = this.resolvePublicCerts(recipient, false);
+        	if (publicCerts == null || publicCerts.size() == 0)
+        		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a public certificate for recipient " + recipient.getAddress());
+            recipient.setCertificates(publicCerts);
+        }
     }
 
     /*
@@ -964,6 +1241,7 @@ public class DefaultNHINDAgent implements NHINDAgent
         }
         catch (Exception ex)
         {
+        	LOGGER.warn("Exception thrown resolving private certs for address " + address.getAddress(), ex);
             if (required)
             {
             	// for logging, tracking etc...
@@ -997,6 +1275,7 @@ public class DefaultNHINDAgent implements NHINDAgent
         }
         catch (Exception ex)
         {
+        	LOGGER.warn("Exception thrown resolving public certs for address " + address.getAddress(), ex);
             if (required)
             {
             	// for logging, tracking etc...

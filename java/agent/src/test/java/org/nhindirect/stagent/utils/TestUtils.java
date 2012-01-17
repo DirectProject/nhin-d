@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.Key;
@@ -150,6 +151,7 @@ public class TestUtils
 		int BUF_SIZE = 2048;		
 		int count = 0;
 	
+		InputStream str = NHINDAgentTest.class.getResourceAsStream(_rec);
 		BufferedInputStream imgStream = new BufferedInputStream(NHINDAgentTest.class.getResourceAsStream(_rec));
 				
 		ByteArrayOutputStream ouStream = new ByteArrayOutputStream();
