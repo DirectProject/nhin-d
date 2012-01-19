@@ -2,10 +2,8 @@ package org.nhindirect.gateway.smtp.config.cert.impl;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+
 
 import javax.mail.internet.InternetAddress;
 
@@ -13,8 +11,6 @@ import org.apache.jcs.JCS;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
-import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceCertificateStore_CertBootstrap_Test.TestPlan;
-import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceCertificateStore_CertBootstrap_Test.TestPlan.TestConfigServiceCertificateStore;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.NHINDException;
@@ -122,7 +118,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				assertEquals(0, store.getAllCertificates().size());
 			}
 		}.perform();
@@ -153,7 +150,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				Collection<X509Certificate> foundCerts = store.getAllCertificates();
 				
 				assertEquals(2, foundCerts.size());
@@ -195,7 +193,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				Collection<X509Certificate> foundCerts = store.getCertificates(new InternetAddress("test1@example.com"));
 				
 				assertNull(foundCerts);
@@ -278,7 +277,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				Collection<X509Certificate> foundCerts = store.getCertificates(new InternetAddress("test1@example.com"));
 				
 				assertEquals(2, foundCerts.size());
@@ -309,7 +309,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				Collection<X509Certificate> foundCerts = store.getCertificates(new InternetAddress("test1@example.com"));
 				
 				assertEquals(2, foundCerts.size());
@@ -357,7 +358,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(null);
-			
+				store.flush(true);
+				
 				boolean exceptionOccured = false;
 				try
 				{
@@ -382,7 +384,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				Collection<X509Certificate> foundCerts = store.getCertificates("test1@example.com");
 				
 				assertEquals(0, foundCerts.size());
@@ -439,7 +442,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
 			{
 				
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
-			
+				store.flush(true);
+				
 				Collection<X509Certificate> foundCerts = store.getCertificates("test1@example.com");
 				
 				assertEquals(2, foundCerts.size());

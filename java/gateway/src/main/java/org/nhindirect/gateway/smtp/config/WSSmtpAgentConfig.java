@@ -627,7 +627,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore")), new DefaultCertStoreCachePolicy());			
+						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());			
 			}
 			
 			resolverProviders.add(resolverProvider);

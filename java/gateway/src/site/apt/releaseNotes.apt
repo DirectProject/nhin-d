@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{1.4}
+
+    Changes included with release 1.4
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=171}171}}: Adding support refresh agent setting after 5 minute delay.
+    
+    * Added RefreshSecurityAndTrustMailet to support refreshing agent settings with a specific email address.
+
+    [] 
+     
+    Bug Fixes
+
+    *  Fixed issue with WS config not providing a keystore password for the DNSCertResolver.
+
 {1.3}
 
     Changes included with release 1.3

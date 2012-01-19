@@ -727,7 +727,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	assertNotNull(certs);
             	assertEquals(1, certs.size());
             	assertTrue(privResl instanceof LDAPCertificateStore);
-            	
+            	((LDAPCertificateStore)privResl).flush(true);
             	
             	Collection<CertificateResolver> publicResls = nAgent.getPublicCertResolvers();
             	assertNotNull(publicResls);
@@ -740,6 +740,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             		if (res instanceof ConfigServiceCertificateStore)
             		{
             			wsRes = res;
+            			((ConfigServiceCertificateStore)wsRes).flush(true);
             			break;
             		}
             	}
