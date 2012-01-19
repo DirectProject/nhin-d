@@ -43,6 +43,7 @@ import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
 import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CacheableCertStore;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreBootstrap;
@@ -151,40 +152,13 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		try
 		{
 			// create instance
-			cache = JCS.getInstance(CACHE_NAME);		
-			applyCachePolicy(cachePolicy == null ? getDefaultPolicy() : cachePolicy);
-					
+			cache = CertCacheFactory.getInstance().getCertCache(CACHE_NAME, cachePolicy == null ? getDefaultPolicy() : cachePolicy);	
+			if (cachePolicy == null)
+				cachePolicy = getDefaultPolicy();
 		}
 		catch (CacheException e)
 		{
 			// TODO: log error
-		}
-	}
-	
-	private void applyCachePolicy(CertStoreCachePolicy policy)
-	{
-		if (getCache() != null)
-		{
-			try
-			{
-				ICompositeCacheAttributes attributes = cache.getCacheAttributes();
-				attributes.setMaxObjects(policy.getMaxItems());
-				attributes.setUseLateral(false);
-				attributes.setUseRemote(false);
-				cache.setCacheAttributes(attributes);
-				
-				IElementAttributes eattributes = cache.getDefaultElementAttributes();
-				eattributes.setMaxLifeSeconds(policy.getSubjectTTL());
-				eattributes.setIsEternal(false);
-				eattributes.setIsLateral(false);
-				eattributes.setIsRemote(false);		
-				
-				cache.setDefaultElementAttributes(eattributes);
-			}
-			catch (CacheException e)
-			{
-				// TODO: Handle exception
-			}
 		}
 	}
 	
@@ -503,6 +477,33 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	{		
 		this.cachePolicy = policy;
 		applyCachePolicy(policy);
+	}
+	
+	private void applyCachePolicy(CertStoreCachePolicy policy)
+	{
+		if (getCache() != null)
+		{
+			try
+			{
+				ICompositeCacheAttributes attributes = cache.getCacheAttributes();
+				attributes.setMaxObjects(policy.getMaxItems());
+				attributes.setUseLateral(false);
+				attributes.setUseRemote(false);
+				cache.setCacheAttributes(attributes);
+				
+				IElementAttributes eattributes = cache.getDefaultElementAttributes();
+				eattributes.setMaxLifeSeconds(policy.getSubjectTTL());
+				eattributes.setIsEternal(false);
+				eattributes.setIsLateral(false);
+				eattributes.setIsRemote(false);		
+				
+				cache.setDefaultElementAttributes(eattributes);
+			}
+			catch (CacheException e)
+			{
+				// TODO: Handle exception
+			}
+		}
 	}
 	
 	private static class DefaultDNSCachePolicy implements CertStoreCachePolicy

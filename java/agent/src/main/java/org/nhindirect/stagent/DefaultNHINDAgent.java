@@ -76,12 +76,14 @@ import com.google.inject.Inject;
  * @since 1.0
  */
 public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
-{
-    protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
-	
+{	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultNHINDAgent.class);
 	
+	private static boolean initialConstruct = true;
+	
 	static MimeMultipart lastMMPart = null;
+
+    protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 	
 	private Cryptographer cryptographer;
     private CertificateResolver privateCertResolver;
@@ -164,11 +166,17 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
             throw new IllegalArgumentException();
         }
 
-    	StringBuilder domainLogInfo = new StringBuilder("Initializing NHINDAgent\r\nLocal domains:");
-    	for (String domain : domains)
-    		domainLogInfo.append("\r\n\t" + domain);
+    	if (initialConstruct)
+    	{
+	    	StringBuilder domainLogInfo = new StringBuilder("Initializing NHINDAgent\r\nLocal domains:");
+	    	for (String domain : domains)
+	    		domainLogInfo.append("\r\n\t" + domain);
+	    			
+	    	LOGGER.info(domainLogInfo);
+	    	initialConstruct = false;
+    	}
     	
-    	LOGGER.info(domainLogInfo);
+    	
     	
         this.domains = domains;
         this.privateCertResolver = privateCerts;
