@@ -24,7 +24,6 @@ package org.nhindirect.stagent.cert.impl;
 import java.io.File;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,6 +33,7 @@ import org.apache.jcs.engine.behavior.ICompositeCacheAttributes;
 import org.apache.jcs.engine.behavior.IElementAttributes;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CacheableCertStore;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.Thumbprint;
@@ -120,9 +120,9 @@ public class LDAPCertificateStore extends CertificateStore implements
 		{
 			// create instance
 			// create cache with a different region everytime a new cache is created
-			cache = JCS.getInstance(CACHE_NAME+UUID.randomUUID());		
-			applyCachePolicy(cachePolicy == null ? getDefaultPolicy() : cachePolicy);
-					
+			cache = CertCacheFactory.getInstance().getCertCache(CACHE_NAME, cachePolicy == null ? getDefaultPolicy() : cachePolicy);		
+			if (cachePolicy == null)
+				cachePolicy = getDefaultPolicy();
 		}
 		catch (CacheException e)
 		{
@@ -322,8 +322,18 @@ public class LDAPCertificateStore extends CertificateStore implements
 
 	public void flush(boolean purgeBootStrap) 
 	{
-		// TODO Auto-generated method stub
-
+		JCS cache = getCache();
+		if (cache != null)
+		{
+			try
+			{
+				cache.clear();
+			}
+			catch (CacheException e)
+			{
+				LOGGER.warn("Failed to clear cache " + CACHE_NAME);
+			}
+		}
 	}
 
 	public void loadBootStrap() 
@@ -346,7 +356,8 @@ public class LDAPCertificateStore extends CertificateStore implements
 
 	public void setCachePolicy(CertStoreCachePolicy policy) 
 	{
-		
+		this.cachePolicy = policy;
+		applyCachePolicy(policy);
 	}
 	
 	private static class DefaultLDAPCachePolicy implements CertStoreCachePolicy

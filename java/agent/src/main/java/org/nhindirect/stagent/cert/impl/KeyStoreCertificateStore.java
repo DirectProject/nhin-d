@@ -194,8 +194,6 @@ public class KeyStoreCertificateStore extends CertificateStore
 		try
 		{
 			ks = KeyStore.getInstance(KeyStore.getDefaultType());
-			
-			System.out.println("Loading certs from keystore file " + keyStoreFile.getAbsolutePath());
 			 
 			if (!keyStoreFile.exists())
 			{

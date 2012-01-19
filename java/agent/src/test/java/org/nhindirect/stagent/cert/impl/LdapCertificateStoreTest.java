@@ -260,6 +260,7 @@ public class LdapCertificateStoreTest extends AbstractServerTest
     	LdapStoreConfiguration ldapStoreConfiguration = new LdapStoreConfiguration(new String[]{url}, "", "email", "privKeyStore", "X509");
     	LdapCertificateStoreProvider provider = new LdapCertificateStoreProvider(ldapStoreConfiguration, null, null);
     	LDAPCertificateStore certificateResolver = (LDAPCertificateStore) provider.get();
+    	certificateResolver.flush(true);
     	Collection<X509Certificate> certs = certificateResolver.getCertificates("gm2552@cerner.com");
 		assertEquals(2, certs.size());
 		Iterator<X509Certificate> iterator = certs.iterator();
@@ -281,6 +282,7 @@ public class LdapCertificateStoreTest extends AbstractServerTest
     	ldapStoreConfiguration.setLdapCertPassphrase("1kingpuff");
     	LdapCertificateStoreProvider provider = new LdapCertificateStoreProvider(ldapStoreConfiguration, null, null);
     	LDAPCertificateStore certificateResolver = (LDAPCertificateStore) provider.get();
+    	certificateResolver.flush(true);
     	Collection<X509Certificate> certs = certificateResolver.getCertificates("gm2552@cerner.com");
 		assertEquals(1, certs.size());
 		X509Certificate cert = certs.iterator().next();
