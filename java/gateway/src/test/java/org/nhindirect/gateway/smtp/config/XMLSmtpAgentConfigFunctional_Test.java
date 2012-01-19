@@ -31,6 +31,7 @@ import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.MutableAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 
@@ -109,6 +110,12 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             SmtpAgentConfig config = createSmtpAgentConfig();
             Injector injector = config.getAgentInjector();
             SmtpAgent agent = injector.getInstance(SmtpAgent.class);
+            
+            TrustAnchorResolver trustResolver = ((MutableAgent)agent.getAgent()).getTrustAnchors();
+            CertificateResolver incomingResolver = trustResolver.getIncomingAnchors();
+            CertificateResolver outgoingResolver = trustResolver.getOutgoingAnchors();
+            
+            
             doAssertions(agent);
             removeTestFiles();
         }   
@@ -373,7 +380,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
             @Override
             protected int createNumberOfCerts(){
-                return 3;
+                return 2;
             }
 
             @Override

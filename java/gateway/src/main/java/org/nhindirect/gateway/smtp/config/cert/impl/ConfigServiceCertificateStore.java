@@ -26,6 +26,7 @@ import org.nhind.config.ConfigurationServiceProxy;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CacheableCertStore;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.X509CertificateEx;
@@ -107,13 +108,11 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		try
 		{
 			// create instance
-			cache = JCS.getInstance(CACHE_NAME);	
+			cache = CertCacheFactory.getInstance().getCertCache(CACHE_NAME, cachePolicy == null ? getDefaultPolicy() : cachePolicy);
 			if (cachePolicy == null)
 				cachePolicy = getDefaultPolicy();
-			
-			applyCachePolicy(cachePolicy);
-			cache.clear();
-					
+				
+				
 		}
 		catch (CacheException e)
 		{
