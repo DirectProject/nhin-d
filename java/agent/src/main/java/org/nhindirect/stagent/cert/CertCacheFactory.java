@@ -23,6 +23,7 @@ package org.nhindirect.stagent.cert;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,6 +98,19 @@ public class CertCacheFactory
 		}
 		
 		return retVal;
+	}
+	
+	public synchronized void flushAll()
+	{
+		for (Entry<String, JCS> entry : certCacheMap.entrySet())
+		{
+			try
+			{
+				LOGGER.info("Flushing cache " + entry.getKey());
+				entry.getValue().clear();
+			}
+			catch (CacheException e) {/* no-op */}
+		}
 	}
 	
 	/*

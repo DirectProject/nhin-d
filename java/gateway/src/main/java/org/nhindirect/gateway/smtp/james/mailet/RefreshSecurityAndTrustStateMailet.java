@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.base.GenericMailet;
 import org.nhindirect.gateway.smtp.GatewayState;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 
 /**
  * Mailet used to refresh the state of the security and trust mailet.  Specifically it forces the {@link GatewayState} to stop and restart the 
@@ -60,6 +61,9 @@ public class RefreshSecurityAndTrustStateMailet extends GenericMailet
 				gwState.stopAgentSettingsManager();
 					
 			gwState.startAgentSettingsManager();
+			
+			// flush the caches
+			CertCacheFactory.getInstance().flushAll();
 		}
 		catch (Exception e)
 		{
