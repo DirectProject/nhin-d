@@ -67,7 +67,7 @@ public class NotificationProducer implements NotificationCreator
 		builder.append("\n\r\tMDN Producer Name: " + settings.getProductName());
 		builder.append("\n\r\tMDN Response Test: " + settings.getText());
 		
-		LOGGER.info(builder.toString());
+		LOGGER.debug(builder.toString());
 	}
 	
 	/**

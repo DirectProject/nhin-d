@@ -188,6 +188,7 @@ public class GatewayState
 		 // an ExeutorService to create and manage long running daemon threads
 		 Thread managerThread = Executors.defaultThreadFactory().newThread(settingsManager);
 		 managerThread.setDaemon(true);
+		 managerThread.setName("SMTP Gateway State Update Thread");
 		 managerThread.start();
 	 }
 	 
@@ -303,8 +304,9 @@ public class GatewayState
 				{
 					try
 					{
+						if (isRunning())
 						// wait for the configured interval
-						this.wait(waitInterval);
+							this.wait(waitInterval);
 					}
 					catch (InterruptedException e) {/*no-op*/}
 				}

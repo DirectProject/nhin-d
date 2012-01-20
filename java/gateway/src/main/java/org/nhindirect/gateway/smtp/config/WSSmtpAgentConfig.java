@@ -141,7 +141,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	/**
 	 * {@inheritDoc}
 	 */
-	public Injector getAgentInjector()
+	public synchronized Injector getAgentInjector()
 	{
 		return buildAgentInjector();
 	}	
