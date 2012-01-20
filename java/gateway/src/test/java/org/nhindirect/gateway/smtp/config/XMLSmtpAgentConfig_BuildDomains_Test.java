@@ -23,6 +23,7 @@ import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.module.TrustAnchorModule;
 import org.nhindirect.stagent.trust.provider.UniformTrustAnchorResolverProvider;
 import org.w3c.dom.Element;
@@ -36,6 +37,8 @@ public class XMLSmtpAgentConfig_BuildDomains_Test extends TestCase
 		@Override
 		protected void performInner() throws Exception 
 		{
+			CertCacheFactory.getInstance().flushAll();
+			
 			SmtpAgentConfig config = createSmtpAgentConfig();
 			Injector injector = config.getAgentInjector();
 			SmtpAgent agent = injector.getInstance(SmtpAgent.class);

@@ -5,6 +5,7 @@ import org.nhindirect.gateway.smtp.SmtpAgentError;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 
 import com.google.inject.Injector;
 
@@ -18,6 +19,8 @@ public class XMLSmtpAgentConfig_GetAgentInjector_Test extends TestCase
 		@Override
 		protected void performInner() throws Exception 
 		{
+			CertCacheFactory.getInstance().flushAll();
+			
 			SmtpAgentConfig config = new XMLSmtpAgentConfig(TestUtils.getTestConfigFile(getConfigFileName()), null);
 			Injector injector = config.getAgentInjector();
 			doAssertions(injector);

@@ -16,6 +16,7 @@ import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.ElementAdapter;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
@@ -30,7 +31,10 @@ import org.w3c.dom.Node;
 public class XMLSmtpAgentConfig_BuildPrivateCertStore_Test extends TestCase {
     abstract class TestPlan extends BaseTestPlan {
         @Override
-        protected void performInner() throws Exception {
+        protected void performInner() throws Exception 
+        {
+        	CertCacheFactory.getInstance().flushAll();
+        	
             XMLSmtpAgentConfig impl = createXMLSmtpAgentConfig();
             try {
                 impl.buildPrivateCertStore(createPublicCertNode());
