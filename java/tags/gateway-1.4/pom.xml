@@ -43,7 +43,7 @@
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.3-SNAPSHOT</version>
+	        <version>1.3</version>
 	        <scope>compile</scope>
 	    </dependency> 
 	    <dependency>
@@ -61,7 +61,7 @@
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.3-SNAPSHOT</version>
+	        <version>1.3</version>
 	         <type>test-jar</type>
 	        <scope>test</scope>
 	    </dependency>  
