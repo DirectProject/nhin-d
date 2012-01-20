@@ -27,6 +27,7 @@ import org.apache.directory.server.core.configuration.MutablePartitionConfigurat
 import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema;
 import org.apache.directory.server.unit.AbstractServerTest;
 import org.apache.directory.shared.ldap.ldif.Entry;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.LdapStoreConfiguration;
@@ -113,6 +114,8 @@ public class LDAPResearchTest extends AbstractServerTest
 	
 	public void testDummy() throws Exception
 	{
+		CertCacheFactory.getInstance().flushAll();
+		
 		DirContext dirContext = createContext("cn=lookupTest");
         	
     	
@@ -143,6 +146,8 @@ public class LDAPResearchTest extends AbstractServerTest
 	
 	public void testLdapSearch() throws Exception
 	{
+		CertCacheFactory.getInstance().flushAll();
+		
 		int port = configuration.getLdapPort();
 		
 		String url = "ldap://localhost:" + port + "/" + "cn=lookupTest";
