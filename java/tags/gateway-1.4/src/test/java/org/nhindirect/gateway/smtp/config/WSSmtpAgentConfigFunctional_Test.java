@@ -52,6 +52,7 @@ import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
@@ -83,6 +84,8 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	@Override
 	public void setUp() throws Exception
 	{
+		CertCacheFactory.getInstance().flushAll();
+		
 		/*
 		 * Setup the LDAP Server
 		 */

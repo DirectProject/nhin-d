@@ -32,6 +32,7 @@ import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.MutableAgent;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 
@@ -51,6 +52,8 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	@Override
 	public void setUp() throws Exception
 	{
+		CertCacheFactory.getInstance().flushAll();
+		
 	    MutablePartitionConfiguration pcfg = new MutablePartitionConfiguration();
 	    pcfg.setName( "lookupTest" );
 	    pcfg.setSuffix( "cn=lookupTest" );
@@ -380,11 +383,13 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             }
             @Override
             protected int createNumberOfCerts(){
-                return 2;
+                return 3;
             }
 
             @Override
             protected void addCertificates() throws NamingException {
+            	
+            	CertCacheFactory.getInstance().flushAll();
                 addCertificatesToLdap(new String[]{"/certs/cacert.der", "/certs/bob.der"}, "gm2552@cerner.com"); 
                 addCertificatesToLdap(new String[]{"/certs/cacert.der"}, "gm25@cerner.com"); 
             }
