@@ -126,7 +126,7 @@
 -->
 <!--  END ORACLE JPA CONFIGURATION -->
 
-<!-- MySQL JPA CONFIGURATION TEMPLATE
+<!-- MySQL JPA CONFIGURATION TEMPLATE-->
    <bean id="entityManagerFactory"
                 class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
                 <property name="jpaVendorAdapter">
@@ -141,19 +141,18 @@
     </bean>           
     <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
                
-                <property name="url" value="jdbc:mysql://synapsefs01:3306/nhind"/>                         
+                <property name="url" value="jdbc:mysql://10.110.210.60:3306/nhind"/>                         
                 <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-				<property name="username" value="root" />
-				<property name="password" value="1kingpuff" />
+				<property name="username" value="nhind" />
+				<property name="password" value="nhind" />
     </bean> 
--->
 <!--  END MySQL JPA CONFIGURATION -->
 
 
 <!-- EMBEDDED DERBY JPA CONFIGURATION FOR A WORKING OUT OF THE BOX CONFIGURATION WITH NO PREREQUISITES OF
      SETTING UP AN EXTERNAL DATABASE.  REMOVE THIS SECTION AND REPLACE WITH REAL JPA CONFIGURATION (SEE
      ABOVE SECTION) FOR PRODUCTION -->
-	<bean id="entityManagerFactory"
+	<!--bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
@@ -171,7 +170,7 @@
 		<property name="url" value="jdbc:derby:nhindconfig;create=true" />
 		<property name="username" value="nhind" />
 		<property name="password" value="nhind" />
-	</bean> 	
+	</bean--> 	
 
 <!--  END DERBY JPA CONFIGURATION -->
 	   

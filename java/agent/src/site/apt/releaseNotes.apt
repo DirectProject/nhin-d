@@ -6,6 +6,41 @@
         Greg Meyer
         ---
 
+{1.3}
+
+    Changes included with release 1.3
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=171}171}}: Default agent implements new MutableAgent for updating agent at runtime.
+    
+    * Added additional logging to certificate resolvers and trust enforcement negative actions.
+    
+    * Added cert cache factory for maintaining cache content when creating multiple resolver instances.
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed concurrency issue with key store updating from multiple threads.
+
+{1.2.2}
+
+    Changes included with release 1.2.2
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Public LDAP certificate uses the "userCertificate" field instead of "userSMIMECertificate" 
 
 {1.2.1}
 
