@@ -26,8 +26,8 @@ namespace Health.Direct.ResolverPlugins.Ldap
     {
         private const String NAMING_CONTEXTS_ATTRIBUTE = "namingContexts";
         private const String WILDCARD_OBJECT_CLASS_SEARCH = "objectclass=*";
-        private const String CERT_ATTRIBUTE_BINARY = "userSMIMECertificate;binary";
-        private const String CERT_ATTRIBUTE = "userSMIMECertificate";
+        private const String CERT_ATTRIBUTE_BINARY = "userCertificate;binary";
+        private const String CERT_ATTRIBUTE = "userCertificate";
         private const String EMAIL_ATTRIBUTE = "mail";
         
         /// <summary>
