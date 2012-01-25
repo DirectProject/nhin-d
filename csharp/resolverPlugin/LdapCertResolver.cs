@@ -239,7 +239,7 @@ namespace Health.Direct.ResolverPlugins
 
         private void SetCerts(LdapConnection connection, SearchRequest request, X509Certificate2Collection retVal)
         {
-            // send the LDAP request using the mail attribute as the search filter and return the smimeUserCertificate attribute
+            // send the LDAP request using the mail attribute as the search filter and return the userCertificate attribute
             var response = (SearchResponse)connection.SendRequest(request);
             if (response != null && response.Entries.Count > 0)
             {
