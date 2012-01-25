@@ -386,7 +386,7 @@ namespace Health.Direct.Common.Mail
         /// </summary>        
         public void Timestamp()
         {
-            this.DateValue = DateTime.Now.ToString("d MMM yyyy HH:mm:ss.ffffzzz");
+            this.DateValue = DateTime.Now.ToString("d MMM yyyy HH:mm:ss zzz");
         }
         
         /// <summary>
