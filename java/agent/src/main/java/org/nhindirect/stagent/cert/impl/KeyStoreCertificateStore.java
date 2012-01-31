@@ -36,6 +36,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.X509CertificateEx;
@@ -56,6 +58,8 @@ import com.google.inject.internal.Nullable;
 public class KeyStoreCertificateStore extends CertificateStore 
 {
 	private Set<X509Certificate> certs = new HashSet<X509Certificate>();
+	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(KeyStoreCertificateStore.class);
 	
 	/*
 	 * TODO: change the way the passwords and the keystore are held
@@ -285,7 +289,7 @@ public class KeyStoreCertificateStore extends CertificateStore
     		}
     		catch (Exception e)
     		{
-    			throw new NHINDException(e);
+    			LOGGER.warn("Error attempting to remove certificate: " + e.getMessage());
     		}
     	}
     }
@@ -308,13 +312,14 @@ public class KeyStoreCertificateStore extends CertificateStore
     public void add(X509Certificate cert, String alias)
     {
     	if (certs.contains(cert))
-    		throw new IllegalArgumentException("Cert already contained in store.  Use update() to update a certificate");
-    	
-    	certs.add(cert);
+    	{
+    		LOGGER.warn("Certificate already exists in store.  Use update() instead.");
+    		return;
+    	}
     	
 		try
 		{
-			
+			certs.add(cert);
 			if (cert instanceof X509CertificateEx)
 				ks.setKeyEntry(alias, ((X509CertificateEx)cert).getPrivateKey(),
 						privateKeyPassword == null ? null : privateKeyPassword.toCharArray(), new Certificate[] {cert});
@@ -328,7 +333,7 @@ public class KeyStoreCertificateStore extends CertificateStore
 		}
 		catch (Throwable e)
 		{
-			throw new NHINDException(e);
+			LOGGER.warn("Error adding certificate to store: " + e.getMessage());
 		}     		
     }
     
