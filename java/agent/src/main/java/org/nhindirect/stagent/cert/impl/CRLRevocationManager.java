@@ -66,12 +66,10 @@ public class CRLRevocationManager implements RevocationManager {
 
     private static final int CRL_FETCH_TIMEOUT = 3000;
     
-    private Set<CRL> crlCollection;
-    
     private static CertificateFactory certificateFactory;
    
     // TODO: convert to JCS cache
-    private static Map<String, X509CRL> cache;
+    private final static Map<String, X509CRL> cache;
     
     protected static final CRLRevocationManager INSTANCE;
     
@@ -100,7 +98,6 @@ public class CRLRevocationManager implements RevocationManager {
      */
     public CRLRevocationManager() 
     { 
-        this.crlCollection = new HashSet<CRL>();
     }
     
     /**
@@ -108,9 +105,12 @@ public class CRLRevocationManager implements RevocationManager {
      * 
      * @return a read-only set of CRL objects.
      */
-    public synchronized Set<CRL> getCRLCollection() 
+    public Set<CRL> getCRLCollection() 
     {
-        return Collections.unmodifiableSet(crlCollection);
+    	synchronized (cache)
+    	{
+    		return Collections.unmodifiableSet(new HashSet<CRL>(cache.values()));
+    	}
     }
 
     /**
@@ -145,9 +145,8 @@ public class CRLRevocationManager implements RevocationManager {
                            distPointURL = getNameString(distPointURL);
                     }     
 
-                	X509CRL crlImpl = getCrlFromUri(distPointURL);
-                            if (crlImpl != null)
-                                crlCollection.add(crlImpl);
+                	if (getCrlFromUri(distPointURL) != null)
+                		break;  // do we need to retrieve the list from each CRL, or is each dist point identical?
                 }
             } 
         }
@@ -162,11 +161,12 @@ public class CRLRevocationManager implements RevocationManager {
 	 * {@inheritDoc}
 	 */
     @Override
-    public synchronized boolean isRevoked(X509Certificate certificate)
+    public boolean isRevoked(X509Certificate certificate)
     {
         loadCRLs(certificate);
 
-        for (CRL crl : getCRLCollection()) 
+        final Set<CRL> crls = getCRLCollection();
+        for (CRL crl : crls) 
         {
             if (crl.isRevoked(certificate))
                 return true;
@@ -187,47 +187,57 @@ public class CRLRevocationManager implements RevocationManager {
     {
         if (crlUrlString == null || crlUrlString.trim().length() == 0)
             return null;
-            
+        
+        X509CRL crlImpl;
+        
         synchronized(cache) 
         { 
-        	
-            X509CRL crlImpl = cache.get(crlUrlString);
-            
+            crlImpl = cache.get(crlUrlString);
             if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
             {
                 cache.remove(crlUrlString);
                 crlImpl = null;
             }
-            
-            if (crlImpl == null)
+        }
+        
+        if (crlImpl == null)
+        {
+            try 
             {
+                URLConnection urlConnection = new URL(crlUrlString).openConnection();
+                urlConnection.setConnectTimeout(CRL_FETCH_TIMEOUT);
+                
+                InputStream crlInputStream = urlConnection.getInputStream();
+                
                 try 
                 {
-                    URLConnection urlConnection = new URL(crlUrlString).openConnection();
-                    urlConnection.setConnectTimeout(CRL_FETCH_TIMEOUT);
-                    
-                    InputStream crlInputStream = urlConnection.getInputStream();
-                    
-                    try 
-                    {
-                        crlImpl = (X509CRL)certificateFactory.generateCRL(crlInputStream);
-                    } 
-                    finally 
-                    {
-                        crlInputStream.close();
-                    }
-                    
-                    cache.put(crlUrlString, crlImpl);
-                }
-                catch (Exception e)
+                   crlImpl = (X509CRL)certificateFactory.generateCRL(crlInputStream);
+                } 
+                catch (Throwable t)
                 {
-                    if (LOGGER.isWarnEnabled())
-                        LOGGER.warn("Unable to retrieve or parse CRL " + crlUrlString);
+                	LOGGER.warn("Failed to load CRL from URL " + crlUrlString, t);
+                }
+                finally 
+                {
+                    crlInputStream.close();
+                }
+                
+                if (crlImpl != null)
+                {
+                	synchronized(cache)
+                	{
+                		cache.put(crlUrlString, crlImpl);
+                	}
                 }
             }
-            
-            return crlImpl;
+            catch (Exception e)
+            {
+                if (LOGGER.isWarnEnabled())
+                    LOGGER.warn("Unable to retrieve or parse CRL " + crlUrlString);
+            }
         }
+        
+        return crlImpl;
     }
        
     /**
@@ -240,9 +250,24 @@ public class CRLRevocationManager implements RevocationManager {
     protected String getNameString(String generalNameString) 
     {
     	generalNameString = generalNameString.trim();
+    	
+    	// try http
     	int index = generalNameString.indexOf("http");
     	if (index > -1)
+    	{
     		generalNameString = generalNameString.substring(index);
+    	}
+    	else
+    	{    	
+    		// try ldap
+        	index = generalNameString.indexOf("ldap");
+        	if (index > -1)
+        	{
+        		generalNameString = generalNameString.substring(index);
+        	}
+    	}
+
+    	
     	
     	return generalNameString;
     }
