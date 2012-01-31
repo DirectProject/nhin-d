@@ -23,6 +23,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.cert.impl;
 
 import java.io.InputStream;
+import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.cert.CRL;
@@ -69,13 +70,13 @@ public class CRLRevocationManager implements RevocationManager {
     private static CertificateFactory certificateFactory;
    
     // TODO: convert to JCS cache
-    private final static Map<String, X509CRL> cache;
+    private final static Map<String, SoftReference<X509CRL>> cache;
     
     protected static final CRLRevocationManager INSTANCE;
     
     static 
     {
-        cache = new HashMap<String, X509CRL>();
+        cache = new HashMap<String, SoftReference<X509CRL>>();
         
         try 
         {
@@ -109,7 +110,14 @@ public class CRLRevocationManager implements RevocationManager {
     {
     	synchronized (cache)
     	{
-    		return Collections.unmodifiableSet(new HashSet<CRL>(cache.values()));
+    		final Set<CRL> retVal = new HashSet<CRL>();
+    		for (SoftReference<X509CRL> ref : cache.values())
+    		{
+    			final CRL crl = ref.get();
+    			if (crl != null)
+    				retVal.add(crl);
+    		}
+    		return Collections.unmodifiableSet(retVal);
     	}
     }
 
@@ -122,11 +130,13 @@ public class CRLRevocationManager implements RevocationManager {
      *            The certificate from which to extract and fetch CRLs.
      * @throws CRLException
      */
-    private void loadCRLs(X509Certificate certificate)
+    private X509CRL loadCRLs(X509Certificate certificate)
     {
         if (certificate == null)
-            return;
-              
+            return null;
+          
+        X509CRL retVal = null;
+        
         try {
         	
         	CRLDistPoint distPoints = CRLDistPoint.getInstance(getExtensionValue(certificate,
@@ -145,8 +155,9 @@ public class CRLRevocationManager implements RevocationManager {
                            distPointURL = getNameString(distPointURL);
                     }     
 
-                	if (getCrlFromUri(distPointURL) != null)
-                		break;  // do we need to retrieve the list from each CRL, or is each dist point identical?
+                    retVal = getCrlFromUri(distPointURL);
+                    if (retVal != null) 
+                    	return retVal;  // do we need to retrieve the list from each CRL, or is each dist point identical?
                 }
             } 
         }
@@ -155,6 +166,8 @@ public class CRLRevocationManager implements RevocationManager {
             if (LOGGER.isWarnEnabled()) 
                 LOGGER.warn("Unable to handle CDP CRL(s): " + e.getMessage());
         }
+        
+        return null;
     }
 
 	/**
@@ -163,16 +176,10 @@ public class CRLRevocationManager implements RevocationManager {
     @Override
     public boolean isRevoked(X509Certificate certificate)
     {
-        loadCRLs(certificate);
-
-        final Set<CRL> crls = getCRLCollection();
-        for (CRL crl : crls) 
-        {
-            if (crl.isRevoked(certificate))
-                return true;
-        }
+    	final CRL crl = loadCRLs(certificate);
         
-        return false;
+        return (crl != null && crl.isRevoked(certificate));
+
     }
           
     /**
@@ -188,16 +195,20 @@ public class CRLRevocationManager implements RevocationManager {
         if (crlUrlString == null || crlUrlString.trim().length() == 0)
             return null;
         
-        X509CRL crlImpl;
+        X509CRL crlImpl = null;
         
         synchronized(cache) 
         { 
-            crlImpl = cache.get(crlUrlString);
-            if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
-            {
-                cache.remove(crlUrlString);
-                crlImpl = null;
-            }
+        	final SoftReference<X509CRL> crlRef = cache.get(crlUrlString);
+        	if (crlRef != null)
+        	{
+        		crlImpl = crlRef.get();
+	            if ((crlImpl != null && crlImpl.getNextUpdate().before(new Date()))  || (crlImpl == null)) 
+	            {
+	                cache.remove(crlUrlString);
+	                crlImpl = null;
+	            }
+        	}
         }
         
         if (crlImpl == null)
@@ -226,7 +237,7 @@ public class CRLRevocationManager implements RevocationManager {
                 {
                 	synchronized(cache)
                 	{
-                		cache.put(crlUrlString, crlImpl);
+                		cache.put(crlUrlString, new SoftReference<X509CRL>(crlImpl));
                 	}
                 }
             }
