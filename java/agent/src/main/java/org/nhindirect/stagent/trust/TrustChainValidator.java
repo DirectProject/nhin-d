@@ -148,10 +148,16 @@ public class TrustChainValidator
         	
             PKIXParameters params = new PKIXParameters(trustAnchorSet); 
             
+        			
+        	/*
+        	 *  Disable CRL checking in cert path validation for now until a better implementation is put together
+        	 */
+        	params.setRevocationEnabled(false);
         	// JCE will only allow OSCP checking when revocation checking is enabled
         	// however some implementations will fail if revocation checking is turned on, but the CRL
         	// extension does not exist. for compatibility reasons, only turn this on if CRL extension points are defined
-	        params.setRevocationEnabled(CRLRevocationManager.isCRLDispPointDefined(certificate));
+	        /*
+        	params.setRevocationEnabled(CRLRevocationManager.isCRLDispPointDefined(certificate));
 	        {
 	        	// populate the CRL store from the revocation manager
 	        	CRLRevocationManager mgr = CRLRevocationManager.getInstance();
@@ -160,7 +166,7 @@ public class TrustChainValidator
 	        	CertStore crlStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls), CryptoExtensions.getJCEProviderName()); 
 	        	params.addCertStore(crlStore);
 	        }
-            
+            */
         	certPath = factory.generateCertPath(certs);
         	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderName());    		
     		
