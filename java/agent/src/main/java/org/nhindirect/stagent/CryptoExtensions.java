@@ -47,6 +47,8 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.nhindirect.stagent.cert.SignerCertPair;
 import org.nhindirect.stagent.cert.Thumbprint;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 
 /**
  * Utility functions for searching for certificates.
@@ -57,7 +59,6 @@ import org.nhindirect.stagent.cert.Thumbprint;
 public class CryptoExtensions 
 {
 	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
-	private static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.stagent.cryptography.JCEProviderName";
 	
 	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
 	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
@@ -86,9 +87,10 @@ public class CryptoExtensions
 	 */
 	public static String getJCEProviderName()
 	{
-		String retVal = System.getProperty(JCE_PROVIDER_STRING_SYS_PARAM);
+		String retVal = "";
+		OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_PROVIDER);
 		
-		if (retVal == null || retVal.isEmpty())
+		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
 			retVal = DEFAULT_JCE_PROVIDER_STRING;
 		
 		return retVal;
@@ -101,10 +103,14 @@ public class CryptoExtensions
 	 */
 	public static void setJCEProviderName(String name)
 	{
+		OptionsParameter param;
+		
 		if (name == null || name.isEmpty())
-			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, DEFAULT_JCE_PROVIDER_STRING);
+			param = new OptionsParameter(OptionsParameter.JCE_PROVIDER, DEFAULT_JCE_PROVIDER_STRING);
 		else
-			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, name);
+			param = new OptionsParameter(OptionsParameter.JCE_PROVIDER, name);
+		
+		OptionsManager.getInstance().setOptionsParameter(param);
 	}
 	
 	/**
