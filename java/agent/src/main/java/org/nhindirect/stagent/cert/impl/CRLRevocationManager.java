@@ -266,12 +266,12 @@ public class CRLRevocationManager implements RevocationManager
     				// make sure the file exists before attempting to load
     				if (cacheFile.exists())
     				{
-    					// load the CRL from an input stream
-    					fileInStream = FileUtils.openInputStream(cacheFile);
-    					crlImpl = (X509CRL)certificateFactory.generateCRL(fileInStream);
-    					
     			        synchronized(cache) 
     			        { 
+        					// load the CRL from an input stream
+        					fileInStream = FileUtils.openInputStream(cacheFile);
+
+        					crlImpl = (X509CRL)certificateFactory.generateCRL(fileInStream);
 	    					// make sure the CRL isn't expired
 	    		            if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
 	    		            {
