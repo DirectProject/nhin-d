@@ -25,6 +25,8 @@ public class CRLRevocationManager_initCRLCacheLocationTest extends TestCase
 	@Override
 	public void setUp()
 	{
+		CRLRevocationManager.initCRLCacheLocation();
+		CRLRevocationManager.getInstance().flush();		
 		CRLRevocationManager.crlCacheLocation = null;
 		OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(OptionsParameter.CRL_CACHE_LOCATION, ""));
 	}
@@ -33,6 +35,7 @@ public class CRLRevocationManager_initCRLCacheLocationTest extends TestCase
 	public void tearDown()
 	{
 		CRLRevocationManager.getInstance().flush();
+		OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(OptionsParameter.CRL_CACHE_LOCATION, ""));
 		CRLRevocationManager.initCRLCacheLocation();
 	}
 	

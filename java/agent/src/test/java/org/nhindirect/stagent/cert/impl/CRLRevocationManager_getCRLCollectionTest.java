@@ -14,6 +14,7 @@ public class CRLRevocationManager_getCRLCollectionTest extends TestCase
 	@Override
 	public void setUp()
 	{
+		CRLRevocationManager.initCRLCacheLocation();
 		CRLRevocationManager.getInstance().flush();
 		CRLRevocationManager.crlCacheLocation = null;
 	}
