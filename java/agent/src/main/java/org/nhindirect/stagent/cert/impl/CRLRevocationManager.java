@@ -99,41 +99,12 @@ public class CRLRevocationManager implements RevocationManager
             e.printStackTrace();
         }
         
-        // get the location from the OptionsManager.... if it doesn't exist, then set a default location
-        // of CrlCache off the working directory
-        final OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.CRL_CACHE_LOCATION);
-        final String cacheLoc = (param == null || param.getParamValue() == null || param.getParamValue().isEmpty()) ?
-        		DEFAULT_CRL_CACHE_LOCATION : param.getParamValue();
-        
-        // initialize the CRL cache location
-        try
-        {
-        	crlCacheLocation = new File(cacheLoc); 
-        	if (crlCacheLocation.exists())
-        	{
-        		// if the file location already exists and is not a directory
-        		// then log a warning and disable caching
-        		if (!crlCacheLocation.isDirectory())
-        		{
-        			LOGGER.warn("Configured CRL cache location " + cacheLoc + " already exists and is not a directory. " +
-        				"CRL file caching will be disable");
-        		
-        			crlCacheLocation = null;
-        		}
-        	}
-        	else
-        	{
-        		// force the directory to be created
-        		FileUtils.forceMkdir(crlCacheLocation);
-        	}
-        }
-        catch (Throwable t)
-        {
-			LOGGER.warn("Failed to initialize CRL cache location " + cacheLoc, t);
-        }
-        
+        // initialize the cache location
+        initCRLCacheLocation();
+ 
         INSTANCE = new CRLRevocationManager();
     }
+    
     
     /**
      * Gets the instance of the revocation manager.
@@ -281,7 +252,7 @@ public class CRLRevocationManager implements RevocationManager
         
         // try to load the CRL from a cache file.... file names are a SHA-1 hash of the 
         // CRLs distribution point URI
-        if (crlImpl == null && crlCacheLocation != null)
+        if (crlImpl == null)
         {
         	// get the file name
     		final String uriFileName = getCacheFileName(crlUrlString);
@@ -310,7 +281,7 @@ public class CRLRevocationManager implements RevocationManager
 	    		                removeCrlCacheFile(crlUrlString);
 	    		                crlImpl = null;
 	    		            }
-	    		            else if (crlImpl != null)
+	    		            else
 	    		            {
 	    		            	// file load successful... add it the cache
 	    	                	cache.put(crlUrlString, new SoftReference<X509CRL>(crlImpl));
@@ -444,7 +415,11 @@ public class CRLRevocationManager implements RevocationManager
 			{
 				// if the file already exists, try to delete it
 				if (cacheFile.exists())
-					cacheFile.delete();
+					if (!cacheFile.delete())
+					{
+						LOGGER.warn("Could not delete old CRL cache file for URI " + cacheURI + "  File may become stale");
+						return;
+					}
 
 				// write the CRL to a file by using the encoded bytes of the CRL
 				FileUtils.writeByteArrayToFile(cacheFile, crl.getEncoded());	
@@ -517,6 +492,27 @@ public class CRLRevocationManager implements RevocationManager
     }
     
     /**
+     * Creates a string representation from a digest byte array.
+     * @param digest The digest as bytes
+     * @return A human readable String representation of the digest.
+     */
+	protected static String createDigestStringRep(byte[] digest)
+	{
+	    final char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', 
+            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};		
+		
+        StringBuffer buf = new StringBuffer(digest.length * 2);
+
+        for (byte bt : digest) 
+        {
+            buf.append(hexDigits[(bt & 0xf0) >> 4]);
+            buf.append(hexDigits[bt & 0x0f]);
+        }
+
+        return buf.toString();
+	}
+    
+    /**
      * Flushes the contents of the in memory cache and deletes
      * all cache files in the CRL cache location.
      */
@@ -546,25 +542,46 @@ public class CRLRevocationManager implements RevocationManager
     }
     
     /**
-     * Creates a string representation from a digest byte array.
-     * @param digest The digest as bytes
-     * @return A human readable String representation of the digest.
+     * Initializes the CRL cache location option
      */
-	protected static String createDigestStringRep(byte[] digest)
-	{
-	    final char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', 
-            '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};		
-		
-        StringBuffer buf = new StringBuffer(digest.length * 2);
-
-        for (byte bt : digest) 
+    protected static void initCRLCacheLocation()
+    {
+        // get the location from the OptionsManager.... if it doesn't exist, then set a default location
+        // of CrlCache off the working directory
+        final OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.CRL_CACHE_LOCATION);
+        final String cacheLoc = (param == null || param.getParamValue() == null || param.getParamValue().isEmpty()) ?
+        		DEFAULT_CRL_CACHE_LOCATION : param.getParamValue();
+        
+        // initialize the CRL cache location
+        try
         {
-            buf.append(hexDigits[(bt & 0xf0) >> 4]);
-            buf.append(hexDigits[bt & 0x0f]);
+        	crlCacheLocation = new File(cacheLoc); 
+        	if (crlCacheLocation.exists())
+        	{
+        		// if the file location already exists and is not a directory
+        		// then log a warning and disable caching
+        		if (!crlCacheLocation.isDirectory())
+        		{
+        			LOGGER.warn("Configured CRL cache location " + cacheLoc + " already exists and is not a directory. " +
+        				"CRL file caching will be disable");
+        		
+        			crlCacheLocation = null;
+        		}
+        	}
+        	else
+        	{
+        		// force the directory to be created
+        		FileUtils.forceMkdir(crlCacheLocation);
+        	}
         }
-
-        return buf.toString();
-	}
+        catch (Throwable t)
+        {
+			LOGGER.warn("Failed to initialize CRL cache location " + cacheLoc + " CRL file caching will be disable" , t);
+			crlCacheLocation = null;
+        }
+        
+    }
+    
     
     protected static DERObject getExtensionValue(
             java.security.cert.X509Extension    ext,
