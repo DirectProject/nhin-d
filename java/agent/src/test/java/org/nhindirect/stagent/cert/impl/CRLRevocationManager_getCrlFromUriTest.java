@@ -26,6 +26,8 @@ public class CRLRevocationManager_getCrlFromUriTest extends TestCase
 	@Override
 	public void setUp()
 	{
+		CRLRevocationManager.initCRLCacheLocation();
+		CRLRevocationManager.getInstance().flush();		
 		CRLRevocationManager.crlCacheLocation = null;
 	}
 	

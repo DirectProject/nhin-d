@@ -13,6 +13,8 @@ public class CRLRevocationManager_removeCRLCacheFileTest extends TestCase
 	@Override
 	public void setUp()
 	{
+		CRLRevocationManager.initCRLCacheLocation();
+		CRLRevocationManager.getInstance().flush();
 		CRLRevocationManager.crlCacheLocation = null;
 	}
 	

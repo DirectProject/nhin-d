@@ -19,7 +19,8 @@ public class CRLRevocationManager_performanceTest extends TestCase
 		
 	}
 
-	public void testGetCRL_multipleDispPoints() throws Exception
+	/*
+	public void testGetCRL_performanceTest() throws Exception
 	{
 		X509Certificate cert = TestUtils.loadCertificate("uhin.cer");
 		
@@ -60,5 +61,5 @@ public class CRLRevocationManager_performanceTest extends TestCase
 		
 		System.out.println("Revocation checking time for CRL in memory cache: " + (endTime - startTime) + "ms");
 	}
-
+*/
 }
