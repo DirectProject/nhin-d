@@ -10,16 +10,22 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.Key;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
+import java.security.cert.CRL;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.x509.X509V2CRLGenerator;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDAgentTest;
@@ -35,6 +41,9 @@ public class TestUtils
 {
 	// base directory for test certificates
 	private static final String certBasePath = "src/test/resources/certs/"; 
+	
+	// base directory for test crls
+	private static final String crlBasePath = "src/test/resources/crl/"; 
 	
 	// use a local key store for tests
 	private static KeyStore keyStore;
@@ -192,6 +201,19 @@ public class TestUtils
 		return retVal;
 	}	
 	
+	public static CRL loadCRL(String certFileName) throws Exception
+	{
+		File fl = new File(crlBasePath + certFileName);
+		
+		InputStream str =  FileUtils.openInputStream(fl);
+		
+		CRL retVal = CertificateFactory.getInstance("X.509").generateCRL(str);
+		
+		str.close();
+		
+		return retVal;
+	}	
+	
     private static X509Certificate certFromData(byte[] data)
     {
     	X509Certificate retVal = null;
@@ -247,4 +269,5 @@ public class TestUtils
         
         return retVal;
     }	
+    
 }
