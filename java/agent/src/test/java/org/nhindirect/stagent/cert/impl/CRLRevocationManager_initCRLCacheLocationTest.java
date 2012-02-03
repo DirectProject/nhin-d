@@ -42,7 +42,7 @@ public class CRLRevocationManager_initCRLCacheLocationTest extends TestCase
 	public void testInitCRLCacheLocation_noOptionParameter()
 	{	
 		CRLRevocationManager.initCRLCacheLocation();
-		assertTrue(CRLRevocationManager.crlCacheLocation.getAbsolutePath().endsWith("/CrlCache"));
+		assertTrue(CRLRevocationManager.crlCacheLocation.getAbsolutePath().endsWith("CrlCache"));
 	}
 	
 	public void testInitCRLCacheLocation_customOptionParameter()
@@ -50,7 +50,7 @@ public class CRLRevocationManager_initCRLCacheLocationTest extends TestCase
 		String crlLocation = UUID.randomUUID().toString();
 		OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(OptionsParameter.CRL_CACHE_LOCATION, "target/" + crlLocation));
 		CRLRevocationManager.initCRLCacheLocation();
-		assertTrue(CRLRevocationManager.crlCacheLocation.getAbsolutePath().endsWith("target/" + crlLocation));
+		assertTrue(CRLRevocationManager.crlCacheLocation.getAbsolutePath().endsWith(crlLocation));
 	}
 	
 	public void testInitCRLCacheLocation_locExistsAndNotADirectory() throws Exception

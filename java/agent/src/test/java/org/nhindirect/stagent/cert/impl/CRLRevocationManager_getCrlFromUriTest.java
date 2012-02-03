@@ -216,15 +216,15 @@ public class CRLRevocationManager_getCrlFromUriTest extends TestCase
             @Override
             protected String getNameString(String generalNameString) 
             {
-                return "file://" + crlFile.getAbsolutePath();
+                return "file:///" + crlFile.getAbsolutePath();
             }
 		};
 		
 		String uri = crlFile.getAbsolutePath();
-		X509CRL retCRL = mgr.getCrlFromUri("file://" + uri);
+		X509CRL retCRL = mgr.getCrlFromUri("file:///" + uri);
 		assertEquals(crl, retCRL);
 		
-		String cacheFileName = CRLRevocationManager.getCacheFileName("file://" + uri);
+		String cacheFileName = CRLRevocationManager.getCacheFileName("file:///" + uri);
 		File cacheFile = new File(cacheFileName);
 		assertTrue(cacheFile.exists());
 	}
@@ -243,15 +243,15 @@ public class CRLRevocationManager_getCrlFromUriTest extends TestCase
             @Override
             protected String getNameString(String generalNameString) 
             {
-                return "file://" + crlFile.getAbsolutePath();
+                return "file:///" + crlFile.getAbsolutePath();
             }
 		};
 		
 		String uri = crlFile.getAbsolutePath();
-		X509CRL retCRL = mgr.getCrlFromUri("file://" + uri);
+		X509CRL retCRL = mgr.getCrlFromUri("file:///" + uri);
 		assertNull(retCRL);
 		
-		String cacheFileName = CRLRevocationManager.getCacheFileName("file://" + uri);
+		String cacheFileName = CRLRevocationManager.getCacheFileName("file:///" + uri);
 		File cacheFile = new File(cacheFileName);
 		assertFalse(cacheFile.exists());
 	}
