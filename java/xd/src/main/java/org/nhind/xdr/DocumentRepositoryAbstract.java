@@ -181,7 +181,7 @@ public abstract class DocumentRepositoryAbstract
             // TODO patID and subsetId  for atn
             String patId = messageId;
             String subsetId = messageId;
-           
+            getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
 
             // Send to SMTP endpoints
             if (getResolver().hasSmtpEndpoints(forwards)) 
@@ -212,7 +212,7 @@ public abstract class DocumentRepositoryAbstract
                 MailClient mailClient = getMailClient();
                 String fileName = messageId.replaceAll("urn:uuid:", "");
                 mailClient.mail(message, fileName, suffix);
-                getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+                getAuditMessageGenerator().provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
             }
 
             // Send to XD endpoints
@@ -331,6 +331,7 @@ public abstract class DocumentRepositoryAbstract
             try
             {
                 configService = getServletContext().getInitParameter(PARAM_CONFIG_SERVICE);
+                
             }
             catch (Exception x)
             {
@@ -342,6 +343,7 @@ public abstract class DocumentRepositoryAbstract
                 try
                 {
                     resolver = new RoutingResolverImpl(configService);
+                    config = new XdConfig(configService);
                 }
                 catch (Exception e)
                 {
@@ -360,7 +362,8 @@ public abstract class DocumentRepositoryAbstract
     
     private ServletContext getServletContext()
     {
-        return (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
+        ServletContext sc = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
+        return sc;
     }
 
     private AuditMessageGenerator getAuditMessageGenerator()
