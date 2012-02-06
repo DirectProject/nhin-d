@@ -103,11 +103,40 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
                 LOGGER.info("Handling multipart/mixed - " + mimeMessage.getContentType());
 
                 MimeMultipart mimeMultipart = (MimeMultipart) mimeMessage.getContent();
-
+               BodyPart xdmBodyPart = null;
+                
+                for (int i = 0; i < mimeMultipart.getCount(); i++) {
+                    //check for XDM
+                     BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+                     documentType = DirectDocumentType.lookup(bodyPart);
+                    if (DirectDocumentType.XDM.equals(documentType)) {
+                        xdmBodyPart =  bodyPart;
+                    }
+                }
+                
+                
                 // For each BodyPart
                 for (int i = 0; i < mimeMultipart.getCount(); i++) {
-                    BodyPart bodyPart = mimeMultipart.getBodyPart(i);
+                    
+  /*
+                     * Special handling for XDM attachments.
+                     * 
+                     * Spec says if XDM package is present, this will be the
+                     * only attachment.
+                     * 
+                     * Overwrite all documents with XDM content and then break
+                     */
+                    if (xdmBodyPart != null) {
+                        XdmPackage xdmPackage = XdmPackage.fromXdmZipDataHandler(xdmBodyPart.getDataHandler());
 
+                        // Spec says if XDM package is present, this will be the only attachment
+                        // Overwrite all documents with XDM content and then break
+                        System.out.println("XDM FILE FOUND");
+                        documents = xdmPackage.getDocuments();
+
+                        break;
+                    }
+                    BodyPart bodyPart = mimeMultipart.getBodyPart(i);
                     // Skip empty BodyParts
                     if (bodyPart.getSize() <= 0) {
                         LOGGER.warn("Empty body, skipping");
@@ -127,23 +156,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
                         LOGGER.info("DocumentType: " + documentType.toString());
                     }
 
-                    /*
-                     * Special handling for XDM attachments.
-                     * 
-                     * Spec says if XDM package is present, this will be the
-                     * only attachment.
-                     * 
-                     * Overwrite all documents with XDM content and then break
-                     */
-                    if (DirectDocumentType.XDM.equals(documentType)) {
-                        XdmPackage xdmPackage = XdmPackage.fromXdmZipDataHandler(bodyPart.getDataHandler());
-
-                        // Spec says if XDM package is present, this will be the only attachment
-                        // Overwrite all documents with XDM content and then break
-                        documents = xdmPackage.getDocuments();
-
-                        break;
-                    }
+                  
 
                     // Get the format code and MIME type
                     xdsFormatCode = documentType.getFormatCode();
