@@ -98,7 +98,12 @@
                     <artifactId>activation</artifactId>
                 </exclusion>
             </exclusions>                           
-        </dependency>       
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.4</version>
+        </dependency>
     </dependencies>
 
     <build>
