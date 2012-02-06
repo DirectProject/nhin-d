@@ -25,6 +25,7 @@ package org.nhindirect.stagent.cert.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.ref.SoftReference;
 import java.net.URL;
 import java.net.URLConnection;
@@ -272,6 +273,12 @@ public class CRLRevocationManager implements RevocationManager
         					fileInStream = FileUtils.openInputStream(cacheFile);
 
         					crlImpl = (X509CRL)certificateFactory.generateCRL(fileInStream);
+        					
+        					// close the stream now because we can't delete it on windows
+        					// if the stream is open
+        					try {fileInStream.close();} catch (IOException e){/*no-op */}
+        					fileInStream = null;
+        					
 	    					// make sure the CRL isn't expired
 	    		            if (crlImpl != null && crlImpl.getNextUpdate().before(new Date())) 
 	    		            {
@@ -294,6 +301,10 @@ public class CRLRevocationManager implements RevocationManager
 			        synchronized(cache) 
 			        { 
 			        	LOGGER.warn("CRL cache file " + uriFileName + " appears to be corrupt.  Deleting file.", e);
+	    				// have to close the file stream or else we can't delete file on windows
+			        	if (fileInStream != null)
+	    					try{fileInStream.close();} catch(IOException ex) {/*no-op*/}
+	    				
 			        	removeCrlCacheFile(crlUrlString);
 			        }
     			}
@@ -411,6 +422,7 @@ public class CRLRevocationManager implements RevocationManager
 		{
 			// build a file descriptor
 			final File cacheFile = new File(uriFileName);
+			OutputStream outStream = null;
 			try
 			{
 				// if the file already exists, try to delete it
@@ -422,11 +434,18 @@ public class CRLRevocationManager implements RevocationManager
 					}
 
 				// write the CRL to a file by using the encoded bytes of the CRL
-				FileUtils.writeByteArrayToFile(cacheFile, crl.getEncoded());	
+				//outStream = FileUtils.openOutputStream(cacheFile);
+				//outStream.write(crl.getEncoded());
+				FileUtils.writeByteArrayToFile(cacheFile, crl.getEncoded());
 			}
 			catch (Throwable t)
 			{
 				LOGGER.warn("Failed to write CRL to cache file " + uriFileName, t);
+			}
+			finally
+			{
+				if (outStream != null) 
+					try {outStream.close();} catch (IOException e){/*no-oip*/}
 			}
 		}
 
@@ -444,7 +463,7 @@ public class CRLRevocationManager implements RevocationManager
 		if (!uriFileName.isEmpty())
 		{
 			// build a file descriptor
-			File cacheFile = new File(uriFileName);
+			final File cacheFile = new File(uriFileName);
 			try
 			{
 				// make sure the file exists, then try to delete it
