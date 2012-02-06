@@ -277,7 +277,7 @@ public class AuditMessageGenerator {
             poits.add(subset);
 
 
-            QName messName = new QName("http://www.xml.org/xml/schema/7f0d86bd/healthcare-security-audit");
+            QName messName = new QName("http://www.xml.org/xml/schema/7f0d86bd/healthcare-security-audit","AuditMessage");
             String message = marshal(messName, am, org.xml.xml.schema._7f0d86bd.healthcare_security_audit.ObjectFactory.class);
             System.out.println(message);
 

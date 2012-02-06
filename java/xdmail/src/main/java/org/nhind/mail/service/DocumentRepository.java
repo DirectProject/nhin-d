@@ -72,7 +72,7 @@ public class DocumentRepository
 
         LOGGER.info(" SENDING TO ENDPOINT " + endpoint);
 
-        this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
+        this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b";
         this.messageId = UUID.randomUUID().toString();
         this.to = endpoint;
         
