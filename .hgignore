@@ -26,6 +26,8 @@ java/gateway/RawMsgFolder/
 java/xd-common/war
 java/gateway/war
 java/install/build
+java/config/config-service/src/main/webapp/WEB-INF/beans.xml
+
 nhindconfig/service.properties
 config-service-client/war/config-service.war
 java/install/direct
