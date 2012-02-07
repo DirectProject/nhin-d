@@ -204,8 +204,16 @@ public class CRLRevocationManager implements RevocationManager
     public boolean isRevoked(X509Certificate certificate)
     {
     	final CRL crl = loadCRLs(certificate);
+        if(crl == null){
+            LOGGER.warn("CRL is NULL in isRevoked check");
+            return false;
+        }
         
-        return (crl != null && crl.isRevoked(certificate));
+        if(crl.isRevoked(certificate)){
+             LOGGER.warn("Certificate for " + certificate.getSubjectDN().getName() + " is revoked by CRL");
+             return true;
+        }
+        return false;
     }
           
     /**
