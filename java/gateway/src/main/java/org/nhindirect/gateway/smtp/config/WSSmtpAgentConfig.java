@@ -98,7 +98,6 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	protected ProcessOutgoingSettings outgoingSettings;
 	protected ProcessBadMessageSettings badSettings;
 	protected NotificationProducer notificationProducer;	
-	protected Collection<Provider<CertificateResolver>> resolverProviders;
 	
 	protected final ConfigurationServiceProxy cfService;
 	
@@ -132,7 +131,6 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	 */
 	public WSSmtpAgentConfig(URL configServiceLocation, Provider<NHINDAgent> agentProvider)
 	{
-		resolverProviders = new ArrayList<Provider<CertificateResolver>>();
 		this.agentProvider = agentProvider;		
 		
 		cfService = new ConfigurationServiceProxy(configServiceLocation.toExternalForm());
@@ -554,6 +552,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	protected void buildPublicCertStore()
 	{
 		Provider<CertificateResolver> resolverProvider = null;
+		Collection<Provider<CertificateResolver>> resolverProviders = new ArrayList<Provider<CertificateResolver>>();
 		
 		Setting setting = null;
 		String storeTypes;
