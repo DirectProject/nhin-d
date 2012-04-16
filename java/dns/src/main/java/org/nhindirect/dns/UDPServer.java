@@ -36,6 +36,9 @@ public class UDPServer extends DNSSocketServer
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(UDPServer.class);
 	
+	private static final int MAX_WIRE_SIZE = 512;
+	
+	
 	private DatagramSocket serverSock;
 	
 	private volatile long missCount = 0;
@@ -230,7 +233,7 @@ public class UDPServer extends DNSSocketServer
 					else
 						++errorCount;					
 					
-					byte[] writeBytes = response.toWire();
+					byte[] writeBytes = response.toWire(MAX_WIRE_SIZE);
 					outPacket = new DatagramPacket(writeBytes,
 							writeBytes.length,
 							inPacket.getAddress(),
