@@ -1,4 +1,4 @@
-/* 
+/*
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
@@ -6,7 +6,7 @@
     Umesh Madan     umeshma@microsoft.com
     Chris Lomonico  chris.lomonico@surescripts.com
     Greg Meyer      gm2552@cerner.com
- 
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -33,13 +33,13 @@ import org.xbill.DNS.Section;
  * @author Greg Meyer
  * @since 1.0
  */
-public abstract class DNSResponder 
+public abstract class DNSResponder
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSResponder.class);
-	
+
 	protected DNSServerSettings settings;
 	protected DNSStore store;
-	
+
 	/**
 	 * Creates a DNS responder using the provided settings and DNS store.  The responder will not handle requests
 	 * until {@link #start()} is called.
@@ -52,7 +52,7 @@ public abstract class DNSResponder
 		this.settings = settings;
 		this.store = store;
 	}
-	
+
 	/**
 	 * Starts the responder.  Concrete implementation bind their protocol specific handlers and start accepting DNS requests.
 	 * @throws DNSException
@@ -64,9 +64,9 @@ public abstract class DNSResponder
 	 * @throws DNSException
 	 */
 	public abstract void stop() throws DNSException;
-	
+
 	/**
-	 * Processes a DNS request and returns a DNS response.  The request is in raw DNS wire protocol format. 
+	 * Processes a DNS request and returns a DNS response.  The request is in raw DNS wire protocol format.
 	 * @param rawMessage The raw DNS wire protocol format of the request.
 	 * @return A response to the DNS request.
 	 * @throws DNSException
@@ -75,7 +75,7 @@ public abstract class DNSResponder
 	{
 		if (rawMessage == null || rawMessage.length == 0)
 			throw new DNSException(DNSError.newError(Rcode.FORMERR), "Message cannot be null or empty.");
-		
+
 		Message msg;
 		try
 		{
@@ -85,10 +85,10 @@ public abstract class DNSResponder
 		{
 			throw new DNSException(DNSError.newError(Rcode.FORMERR), "IO Exception reading raw message.", e);
 		}
-		
+
 		return processRequest(msg);
 	}
-	
+
 	/**
 	 * Processes a DNS request and returns a DNS response.
 	 * @param request The DNS request message.
@@ -98,29 +98,32 @@ public abstract class DNSResponder
 	{
 		if (request == null)
 			throw new IllegalArgumentException("Missing request.  Request cannot be null.");
-		
+
 		Message response;
 		try
 		{
 			response = store.get(request);
             if (response == null || response.getHeader() == null)
             {
-            	
-            	response = processError(request, DNSError.newError(Rcode.NXDOMAIN));	
-            }   
+
+            	response = processError(request, DNSError.newError(Rcode.NXDOMAIN));
+            }
             else if (response.getHeader().getRcode() != Rcode.NOERROR)
             	response = processError(request, DNSError.newError(response.getHeader().getRcode()));
 		}
 		catch (DNSException e)
 		{
-
-			LOGGER.error("Error processing DNS request: " + e.getMessage(), e);
-			response = processError(request, e.getError());			
+			// don't log as an error if it's just a non implemented query type
+			if (!e.getError().getError().equals(Rcode.NOTIMP))
+			{
+				LOGGER.error("Error processing DNS request: " + e.getMessage(), e);
+			}
+			response = processError(request, e.getError());
 		}
-		
+
 		return response;
 	}
-	
+
 	/**
 	 * Processes a DNS error condition and creates an appropriate DNS response.
 	 * @param request The original DNS request.
@@ -135,24 +138,24 @@ public abstract class DNSResponder
     		Header respHeader = new Header(request.toWire());
     		Message response = new Message();
     		response.setHeader(respHeader);
-    		
+
     		for (int i = 0; i < 4; i++)
     			response.removeAllRecords(i);
 
     		response.addRecord(request.getQuestion(), Section.QUESTION);
-    		
+
             response.getHeader().setFlag(Flags.QR);
         	if (request.getHeader().getFlag(Flags.RD))
-        		response.getHeader().setFlag(Flags.RD);    		
-    		respHeader.setRcode(Integer.parseInt(error.getError().toString()));    		    		
-    		
+        		response.getHeader().setFlag(Flags.RD);
+    		respHeader.setRcode(Integer.parseInt(error.getError().toString()));
+
     		return response;
     	}
     	catch (IOException e) {}
-    	
+
     	return errorResponse;
     }
-    
+
     /**
      * Converts a raw DNS wire protocol format message to a Message structure.
      * @param buffer The raw DNS wire protocol format.
@@ -163,7 +166,7 @@ public abstract class DNSResponder
     {
     	if (buffer.length <= 0 || buffer.length > settings.getMaxRequestSize())
     		throw new DNSException(DNSError.newError(Rcode.REFUSED), "Invalid request size " + buffer.length);
-    	
+
     	try
     	{
     		return new Message(buffer);
@@ -173,7 +176,7 @@ public abstract class DNSResponder
     		throw new DNSException(DNSError.newError(Rcode.FORMERR), "Failed to deserialize raw byte message.");
     	}
     }
-    
+
     /**
      * Converts a Message object to a raw DNS wire format byte array.
      * @param msg The message to convert.
