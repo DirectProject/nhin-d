@@ -49,6 +49,8 @@ import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreBootstrap;
 import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreCachePolicy;
 import org.nhindirect.stagent.cert.impl.annotation.DNSCertStoreServers;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Cache;
@@ -84,11 +86,22 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 {
 	private static final String CACHE_NAME = "DNS_REMOTE_CERT_CACHE";
 	
-	private CertificateStore localStoreDelegate;
-	private List<String> servers = new ArrayList<String>();
-	private JCS cache;
-	private CertStoreCachePolicy cachePolicy;
+	protected static final int DEFAULT_DNS_TIMEOUT = 3; // 3 seconds
+	protected static final int DEFAULT_DNS_RETRIES = 2;
+	protected static final boolean DEFAULT_DNS_USE_TCP = true;
+	
+	protected static final int DEFAULT_DNS_MAX_CAHCE_ITEMS = 1000;
+	protected static final int DEFAULT_DNS_TTL = 3600; // 1 hour
+	
+	protected CertificateStore localStoreDelegate;
+	protected List<String> servers = new ArrayList<String>();
+	protected JCS cache;
+	protected CertStoreCachePolicy cachePolicy;
 
+	protected int timeout;
+	protected int retries;
+	protected boolean useTCP;
+	
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(DNSCertificateStore.class);
 	static 
 	{
@@ -102,6 +115,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 */
 	public DNSCertificateStore()
 	{
+		getServerQuerySettings();
 		setServers(null);		
 		localStoreDelegate = createDefaultLocalStore();
 		loadBootStrap();
@@ -114,6 +128,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 */
 	public DNSCertificateStore(Collection<String> servers)
 	{
+		getServerQuerySettings();
 		setServers(servers);
 		localStoreDelegate = createDefaultLocalStore();		
 		loadBootStrap();
@@ -132,6 +147,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		if (bootstrapStore == null)
 			throw new IllegalArgumentException();
 		
+		getServerQuerySettings();
 		setServers(servers);
 		
 		this.cachePolicy = policy;			
@@ -139,6 +155,18 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		loadBootStrap();
 	}	
 		
+	private void getServerQuerySettings()
+	{
+		OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.DNS_CERT_RESOLVER_TIMEOUT);
+		timeout = OptionsParameter.getParamValueAsInteger(param, DEFAULT_DNS_TIMEOUT);
+		
+		param = OptionsManager.getInstance().getParameter(OptionsParameter.DNS_CERT_RESOLVER_RETRIES);
+		retries = OptionsParameter.getParamValueAsInteger(param, DEFAULT_DNS_RETRIES);
+		
+		param = OptionsManager.getInstance().getParameter(OptionsParameter.DNS_CERT_RESOLVER_USE_TCP);
+		useTCP = OptionsParameter.getParamValueAsBoolean(param, DEFAULT_DNS_USE_TCP);
+	}
+	
 	private synchronized JCS getCache()
 	{
 		if (cache == null)
@@ -156,10 +184,12 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			if (cachePolicy == null)
 				cachePolicy = getDefaultPolicy();
 		}
+		///CLOVER:OFF
 		catch (CacheException e)
 		{
-			// TODO: log error
+			LOGGER.warn("DNSCertificateStore - Could not create certificate cache " + CACHE_NAME, e);
 		}
+		///CLOVER:ON
 	}
 	
 	private CertStoreCachePolicy getDefaultPolicy()
@@ -299,7 +329,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		{
 			// try the configured servers first
 			Lookup lu = new Lookup(new Name(lookupName), Type.CERT);
-			lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2, 3)); // default retries is 3, limite to 2
+			lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]), retries, timeout)); // default retries is 3, limite to 2
 			
 			Record[] retRecords = lu.run();
 			
@@ -310,7 +340,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				// try to find the resource's name server records
 				// the address may be an alias so check if there is a CNAME record
 				lu = new Lookup(new Name(lookupName), Type.CNAME);
-				lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2,3));
+				lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]), retries, timeout));
 				
 				retRecords = lu.run();	
 				if (retRecords != null && retRecords.length > 0)
@@ -325,7 +355,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				while (tempDomain.labels() > 1)
 				{
 					lu = new Lookup(tempDomain, Type.NS);
-					lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]), 2, 3));
+					lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]), retries, timeout));
 					retRecords = lu.run();
 					
 					if (retRecords != null && retRecords.length > 0)
@@ -401,6 +431,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	
 	public void flush(boolean purgeBootStrap) 
 	{
+		
 		if (cache != null)
 		{
 			try
@@ -421,6 +452,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void loadBootStrap() 
 	{
 		if (localStoreDelegate == null)
@@ -506,22 +538,33 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		}
 	}
 	
-	private static class DefaultDNSCachePolicy implements CertStoreCachePolicy
+	public static class DefaultDNSCachePolicy implements CertStoreCachePolicy
 	{
-
+		protected final int maxItems;
+		protected final int subjectTTL;
+		
+		public DefaultDNSCachePolicy()
+		{
+			OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.DNS_CERT_RESOLVER_MAX_CACHE_SIZE);
+			maxItems =  OptionsParameter.getParamValueAsInteger(param, DEFAULT_DNS_MAX_CAHCE_ITEMS); 
+			
+			param = OptionsManager.getInstance().getParameter(OptionsParameter.DNS_CERT_RESOLVER_CACHE_TTL);
+			subjectTTL =  OptionsParameter.getParamValueAsInteger(param, DEFAULT_DNS_TTL); 
+		}
+		
 		public int getMaxItems() 
 		{
-			return 1000; 
+			return maxItems;
 		}
 
 		public int getSubjectTTL() 
 		{
-			return 3600 * 24; // 1 day
+			return subjectTTL;
 		}
 		
 	}
 	
-	private ExtendedResolver createExResolver(String[] servers, int retries, int timeout)
+	protected ExtendedResolver createExResolver(String[] servers, int retries, int timeout)
 	{
 		ExtendedResolver retVal = null;
 		try
@@ -529,7 +572,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			retVal = new ExtendedResolver(servers);
 			retVal.setRetries(retries);
 			retVal.setTimeout(timeout);
-			retVal.setTCP(true);
+			retVal.setTCP(useTCP);
 		}
 		catch (UnknownHostException e) {/* no-op */}
 		return retVal;

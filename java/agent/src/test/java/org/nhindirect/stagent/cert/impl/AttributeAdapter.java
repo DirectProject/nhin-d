@@ -5,6 +5,7 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.DirContext;
 
+@SuppressWarnings("serial")
 public class AttributeAdapter implements Attribute {
 
 	public boolean add(Object attrVal) {

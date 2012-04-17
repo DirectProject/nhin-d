@@ -96,12 +96,11 @@ public class TrustChainValidator_crlCheckTest extends TestCase
     	
     	TrustChainValidator validator = new TrustChainValidator();
     	
-    	boolean isTrusted = false;
     	try
     	{	
     		// preload the revocation manager with the CRL
     		CRLRevocationManager.getInstance().isRevoked(certToValidate);    		
-    		isTrusted = validator.isTrusted(certToValidate, Arrays.asList(anchor));
+    		validator.isTrusted(certToValidate, Arrays.asList(anchor));
     	}
     	catch (Exception e) {}
     	

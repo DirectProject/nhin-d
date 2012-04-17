@@ -41,6 +41,7 @@ import java.util.Map;
 
 import javax.security.auth.x500.X500Principal;
 
+import org.apache.commons.io.IOUtils;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
@@ -352,8 +353,8 @@ public class CryptoExtensions
     		InputStream stream = new BufferedInputStream(new ByteArrayInputStream(certToConvert.getEncoded()));
     	
     		retVal = (X509Certificate)certFactory.generateCertificate(stream);
-    	
-    		stream.close();
+
+    		IOUtils.closeQuietly(stream);	
     	}
     	catch (Exception e)
     	{

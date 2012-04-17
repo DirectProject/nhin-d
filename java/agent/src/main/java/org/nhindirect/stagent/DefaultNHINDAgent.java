@@ -709,9 +709,6 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         //
         this.decryptSignedContent(message);
         
-        //
-        // The standard requires that the original message be wrapped to protect headers
-        //
         message.setMessage(this.unwrapMessage(message.getMessage()));
 
         // Enforce trust requirements, including checking signatures
@@ -739,7 +736,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     protected void bindAddresses(IncomingMessage message)
     {
 
-   		message.getSender().setCertificates(this.resolvePublicCerts(message.getSender(), false));
+   		message.getSender().setCertificates(this.resolvePublicCerts(message.getSender(), false, true));
     	
         //
         // Bind each recpient's certs and trust settings
@@ -747,7 +744,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 
         for (NHINDAddress recipient : message.getDomainRecipients())
         {
-        	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(recipient, false);
+        	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(recipient, false, true);
         	if (privateCerts == null || privateCerts.size() == 0)
         		LOGGER.warn("bindAddresses(IncomingMessage message) - Could not resolve a private certificate for recipient " + recipient.getAddress());
         		
@@ -1053,14 +1050,15 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         }        
 
         //
+        // Not all recipients may be trusted. Remove them from Routing headers
+        //
+        message.updateRoutingHeaders();  
+        
+        //
         // Finally, sign and encrypt the message
         //
         this.signAndEncryptMessage(message);
-        
-        //
-        // Not all recipients may be trusted. Remove them from Routing headers
-        //
-        message.updateRoutingHeaders();        
+             
     }
 
     /*
@@ -1071,7 +1069,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         //
         // Retrieving the sender's private certificate is requied for encryption
         //
-    	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(message.getSender(), true);
+    	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(message.getSender(), true, false);
     	if (privateCerts == null || privateCerts.size() == 0)
     		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a private certificate for sender " + message.getSender().getAddress());
     	message.getSender().setCertificates(privateCerts);
@@ -1086,7 +1084,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         //
         for(NHINDAddress recipient : message.getRecipients())
         {
-        	Collection<X509Certificate> publicCerts = this.resolvePublicCerts(recipient, false);
+        	Collection<X509Certificate> publicCerts = this.resolvePublicCerts(recipient, false, false);
         	if (publicCerts == null || publicCerts.size() == 0)
         		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a public certificate for recipient " + recipient.getAddress());
             recipient.setCertificates(publicCerts);
@@ -1236,7 +1234,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     /*
      * Get the private certificates for the address
      */
-    private Collection<X509Certificate> resolvePrivateCerts(InternetAddress address, boolean required)
+    private Collection<X509Certificate> resolvePrivateCerts(InternetAddress address, boolean required, boolean incoming)
     {
     	Collection<X509Certificate> certs = null;
         try
@@ -1244,8 +1242,17 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
             certs = this.privateCertResolver.getCertificates(address);
             if (certs == null && required)
             {
-                throw new AgentException(AgentError.UntrustedSender);
+            	if (incoming)
+            		throw new AgentException(AgentError.MissingRecipientCertificate);
+            	else
+            		throw new AgentException(AgentError.MissingSenderCertificate);
             }
+        }
+        catch (AgentException ex)
+        {
+        	LOGGER.warn("Exception thrown resolving private certs for address " + address.getAddress(), ex);
+        	if (required)
+        		throw ex;
         }
         catch (Exception ex)
         {
@@ -1263,7 +1270,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     /*
      * Get the public certificates for the address
      */
-    private Collection<X509Certificate> resolvePublicCerts(InternetAddress address, boolean required) throws NHINDException
+    private Collection<X509Certificate> resolvePublicCerts(InternetAddress address, boolean required, boolean incoming) throws NHINDException
     {
     	Collection<X509Certificate> certs = null;
         try
@@ -1278,8 +1285,18 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         	
             if (certs == null && required)
             {
-                throw new AgentException(AgentError.UnknownRecipient);
+            	if (incoming)
+            		throw new AgentException(AgentError.MissingSenderCertificate);
+            	else 
+            		throw new AgentException(AgentError.MissingRecipientCertificate);
+            	
             }
+        }
+        catch (AgentException ex)
+        {
+        	LOGGER.warn("Exception thrown resolving public certs for address " + address.getAddress(), ex);
+            if (required)
+            	throw ex;
         }
         catch (Exception ex)
         {

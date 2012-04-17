@@ -23,14 +23,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.trust;
 
 import java.security.Security;
-import java.security.cert.CRL;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
-import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
-import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
@@ -51,7 +48,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.Thumbprint;
-import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 
 /**
  * Validates the trust chain of a certificate with a set of anchors.  If a certificate resolver is present, the validator will search

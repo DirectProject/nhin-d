@@ -32,5 +32,28 @@ public enum DigestAlgorithm
     SHA1,
     SHA256,
     SHA384,
-    SHA512
+    SHA512;
+    
+    /**
+     * Gets the digest algorithm from an algorithm name
+     * @param algorithmNam The digest algorithm name
+     * @param defaultAlgorithm The default algorithm to return is a corresponding name cannot be found
+     * @return A digest algorithm enumeration object corresponding the name
+     */
+    public static DigestAlgorithm fromString(String algorithmName, DigestAlgorithm defaultAlgorithm)
+    {
+    	if (algorithmName == null || algorithmName.isEmpty())
+    		return defaultAlgorithm;
+    	
+    	if (algorithmName.equalsIgnoreCase("SHA1"))
+    		return SHA1;
+    	else if (algorithmName.equalsIgnoreCase("SHA256"))
+    		return SHA256;
+    	else if (algorithmName.equalsIgnoreCase("SHA384"))
+    		return SHA384;
+    	else if (algorithmName.equalsIgnoreCase("SHA512"))
+    		return SHA512;
+    	else
+    		return defaultAlgorithm;
+    }
 }

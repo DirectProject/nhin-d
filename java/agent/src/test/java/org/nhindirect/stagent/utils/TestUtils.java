@@ -10,22 +10,17 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.CRL;
 import java.security.cert.CertificateFactory;
-import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Enumeration;
 
 import org.apache.commons.io.FileUtils;
-import org.bouncycastle.x509.X509V2CRLGenerator;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDAgentTest;
@@ -160,7 +155,6 @@ public class TestUtils
 		int BUF_SIZE = 2048;		
 		int count = 0;
 	
-		InputStream str = NHINDAgentTest.class.getResourceAsStream(_rec);
 		BufferedInputStream imgStream = new BufferedInputStream(NHINDAgentTest.class.getResourceAsStream(_rec));
 				
 		ByteArrayOutputStream ouStream = new ByteArrayOutputStream();

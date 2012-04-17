@@ -35,6 +35,7 @@ import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 
 public class LDAPResearchTest extends AbstractServerTest
 {
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setUp() throws Exception
 	{
@@ -112,6 +113,7 @@ public class LDAPResearchTest extends AbstractServerTest
         
 	}	
 	
+	@SuppressWarnings("unchecked")
 	public void testDummy() throws Exception
 	{
 		CertCacheFactory.getInstance().flushAll();
@@ -144,6 +146,7 @@ public class LDAPResearchTest extends AbstractServerTest
         
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void testLdapSearch() throws Exception
 	{
 		CertCacheFactory.getInstance().flushAll();
@@ -235,6 +238,7 @@ public class LDAPResearchTest extends AbstractServerTest
 	}
 	
 
+	
     private Set<SearchResult> searchDNs( String filter, String partition, String base, int scope , DirContext appRoot)  throws Exception
     {
     	if (appRoot == null)
@@ -242,7 +246,7 @@ public class LDAPResearchTest extends AbstractServerTest
 
     	SearchControls controls = new SearchControls();
     	controls.setSearchScope( scope );
-	    NamingEnumeration result = appRoot.search( base, filter, controls );
+	    NamingEnumeration<SearchResult> result = appRoot.search( base, filter, controls );
 	
 	    // collect all results
 	    Set<SearchResult> entries = new HashSet<SearchResult>();

@@ -1,10 +1,6 @@
 package org.nhindirect.stagent.cert.impl;
 
-import java.security.cert.X509Certificate;
-
 import junit.framework.TestCase;
-
-import org.nhindirect.stagent.utils.TestUtils;
 
 /*
  * This class may not fully run as part of a general build as it is intended to be a performance checker and requires

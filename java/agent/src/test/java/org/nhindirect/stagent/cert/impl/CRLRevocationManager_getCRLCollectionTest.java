@@ -49,6 +49,7 @@ public class CRLRevocationManager_getCRLCollectionTest extends TestCase
 		assertEquals(1, CRLRevocationManager.getInstance().getCRLCollection().size());
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void testGetCRLCollection_singleCRL_softRefExpired_assertEmpty()
 	{
 		String uri = "http://localhost:8080/master.crl";

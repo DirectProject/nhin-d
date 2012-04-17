@@ -41,6 +41,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.NHINDException;
@@ -170,8 +171,7 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 											}
 											finally
 											{
-												if (inputStream != null)
-													inputStream.close();
+												IOUtils.closeQuietly(inputStream);
 											}
 										}
 									}

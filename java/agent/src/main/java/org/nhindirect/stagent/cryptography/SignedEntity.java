@@ -32,6 +32,7 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.ParseException;
 
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.mail.MimeError;
 import org.nhindirect.stagent.mail.MimeException;
@@ -72,9 +73,9 @@ public class SignedEntity
                 InputStream stream = new ByteArrayInputStream(bos.toByteArray());
 
                 MimeEntity ent = new MimeEntity(stream);
-        	    
-                bos.close();	        	
-	        	
+        	            	
+                IOUtils.closeQuietly(bos);	
+                
 	        	if (contentType.contains("application/pkcs7-signature") 
 	        			|| contentType.contains("application/x-pkcs7-signature"))
 	        	{	        		
@@ -178,7 +179,7 @@ public class SignedEntity
     	{
     		originalMMPart.writeTo(oStream);
     		retVal = oStream.toByteArray();
-    		oStream.close();
+    		IOUtils.closeQuietly(oStream);	
     	}
     	catch (Exception e)
     	{

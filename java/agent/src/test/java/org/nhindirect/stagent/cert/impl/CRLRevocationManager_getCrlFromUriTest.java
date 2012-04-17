@@ -86,6 +86,7 @@ public class CRLRevocationManager_getCrlFromUriTest extends TestCase
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void testGetCrlFromUri_existsInCache_softRefRemoved_assertCRLNotFound()
 	{
 		String uri = "http://localhost:8080/master.crl";

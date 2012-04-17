@@ -30,6 +30,7 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
 
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 /**
@@ -180,7 +181,7 @@ public class MimeEntity extends MimeBodyPart
 	    		oStream.write(buffer, 0, read);
 	    	
 	    	retVal = oStream.toByteArray();
-	    	oStream.close();
+	    	IOUtils.closeQuietly(oStream);	
     	}
     	catch (Exception e)
     	{

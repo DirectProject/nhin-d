@@ -44,6 +44,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.CryptoExtensions;
 ///CLOVER:OFF
 public class CreatePKCS12 
@@ -191,7 +192,8 @@ public class CreatePKCS12
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
 			inStr = new ByteArrayInputStream(certData);
 			java.security.cert.Certificate cert = cf.generateCertificate(inStr);
-			inStr.close();
+			
+			IOUtils.closeQuietly(inStr);
 			
 			KeyFactory kf = KeyFactory.getInstance("RSA", CryptoExtensions.getJCEProviderName());
 			PKCS8EncodedKeySpec keysp = null;
@@ -228,22 +230,8 @@ public class CreatePKCS12
 		}
 		finally
 		{
-			if (outStr != null)
-			{
-				try
-				{
-					outStr.close();
-				}
-				catch (Exception e) {/* no-op */}
-			}
-			if (outStr != null)
-			{
-				try
-				{
-					inStr.close();
-				}
-				catch (Exception e) {/* no-op */}
-			}			
+			IOUtils.closeQuietly(outStr);
+			IOUtils.closeQuietly(inStr);		
 		}
 		
 		

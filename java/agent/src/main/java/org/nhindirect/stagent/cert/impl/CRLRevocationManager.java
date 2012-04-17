@@ -44,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.ASN1InputStream;
@@ -284,7 +285,8 @@ public class CRLRevocationManager implements RevocationManager
         					
         					// close the stream now because we can't delete it on windows
         					// if the stream is open
-        					try {fileInStream.close();} catch (IOException e){/*no-op */}
+        					IOUtils.closeQuietly(fileInStream);
+        					
         					fileInStream = null;
         					
 	    					// make sure the CRL isn't expired
@@ -310,9 +312,8 @@ public class CRLRevocationManager implements RevocationManager
 			        { 
 			        	LOGGER.warn("CRL cache file " + uriFileName + " appears to be corrupt.  Deleting file.", e);
 	    				// have to close the file stream or else we can't delete file on windows
-			        	if (fileInStream != null)
-	    					try{fileInStream.close();} catch(IOException ex) {/*no-op*/}
-	    				
+	    				IOUtils.closeQuietly(fileInStream);
+			        	
 			        	removeCrlCacheFile(crlUrlString);
 			        }
     			}
@@ -324,7 +325,7 @@ public class CRLRevocationManager implements RevocationManager
     			{
     				if (fileInStream != null)
     				{
-    					try{fileInStream.close();} catch(IOException e) {/*no-op*/}
+    					IOUtils.closeQuietly(fileInStream);
     				}
     			}
     		}
@@ -353,8 +354,7 @@ public class CRLRevocationManager implements RevocationManager
                 }
                 finally 
                 {
-                	if (crlInputStream != null)
-                	try {crlInputStream.close();} catch (IOException e) {/*no-op*/}
+                	IOUtils.closeQuietly(crlInputStream);
                 }
                 
                 if (crlImpl != null)
@@ -452,8 +452,7 @@ public class CRLRevocationManager implements RevocationManager
 			}
 			finally
 			{
-				if (outStream != null) 
-					try {outStream.close();} catch (IOException e){/*no-oip*/}
+				IOUtils.closeQuietly(outStream);
 			}
 		}
 

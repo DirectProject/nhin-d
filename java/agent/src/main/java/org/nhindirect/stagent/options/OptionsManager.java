@@ -21,14 +21,33 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.options;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Manages options tuning and configuration parameters of the agent.  Parameters are initialized from JVM parameters if they are set and can be overridden
- * programmatically.
+ * Manages options tuning and configuration parameters of the agent.  Parameters are initialized from JVM parameters or from a properties file
+ * if present and can be overridden programmatically.
+ * <br>
+ * The following is the order or precedence for applying options: 
+ * <ol>
+ * <li>Programmatic settings</li>
+ * <li>JVM Settings</li>
+ * <li>Properties based settings</li>
+ * <li>Default settings</li>
+ * <ol>
+ * By default, the manager looks for a properties file named <i>agentSettings.properties</i> in the working directory, but can be overriden using the JVM parameter
+ * org.nhindirect.stagent.PropertiesFile providing either the full path and file name or just file name that needs to be located in the working directory.
+ * <br>Property and JVM setting names are defined in the {@link OptionsParameter} class.
  * <br>
  * The manager is implemented as a singleton and an instance can be obtained using the {@link #getInstance()} method.
  * <br>
@@ -38,6 +57,12 @@ import java.util.Map;
  */
 public class OptionsManager 
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(OptionsManager.class);
+
+	protected final static String OPTIONS_PROPERTIES_FILE_JVM_PARAM = "org.nhindirect.stagent.PropertiesFile";
+	
+	protected static final String DEFAULT_PROPERTIES_FILE = "agentSettings.properties";
+	
 	protected static final Map<String, String> JVM_PARAMS;
 	
 	protected final Map<String, OptionsParameter> options;
@@ -49,6 +74,50 @@ public class OptionsManager
 		JVM_PARAMS = new HashMap<String, String>();
 		JVM_PARAMS.put(OptionsParameter.JCE_PROVIDER, "org.nhindirect.stagent.cryptography.JCEProviderName");
 		JVM_PARAMS.put(OptionsParameter.CRL_CACHE_LOCATION, "org.nhindirect.stagent.cert.CRLCacheLocation");
+		
+		/*
+		 * DNS resolver parameters
+		 */
+		JVM_PARAMS.put(OptionsParameter.DNS_CERT_RESOLVER_RETRIES, "org.nhindirect.stagent.cert.dnsresolver.ServerRetries");
+		JVM_PARAMS.put(OptionsParameter.DNS_CERT_RESOLVER_TIMEOUT, "org.nhindirect.stagent.cert.dnsresolver.ServerTimeout");
+		JVM_PARAMS.put(OptionsParameter.DNS_CERT_RESOLVER_USE_TCP, "org.nhindirect.stagent.cert.dnsresolver.ServerUseTCP");
+		JVM_PARAMS.put(OptionsParameter.DNS_CERT_RESOLVER_MAX_CACHE_SIZE, "org.nhindirect.stagent.cert.dnsresolver.MaxCacheSize");
+		JVM_PARAMS.put(OptionsParameter.DNS_CERT_RESOLVER_CACHE_TTL, "org.nhindirect.stagent.cert.dnsresolver.CacheTTL");
+		
+		/*
+		 * LDAP resolver parameters
+		 */
+		JVM_PARAMS.put(OptionsParameter.LDAP_CERT_RESOLVER_MAX_CACHE_SIZE, "org.nhindirect.stagent.cert.ldapresolver.MaxCacheSize");
+		JVM_PARAMS.put(OptionsParameter.LDAP_CERT_RESOLVER_CACHE_TTL, "org.nhindirect.stagent.cert.ldapresolver.CacheTTL");	
+		
+		/*
+		 * Cryptography parameters
+		 */
+		JVM_PARAMS.put(OptionsParameter.CRYPTOGRAHPER_SMIME_ENCRYPTION_ALGORITHM, "org.nhindirect.stagent.cryptographer.smime.EncryptionAlgorithm");
+		JVM_PARAMS.put(OptionsParameter.CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM, "org.nhindirect.stagent.cryptographer.smime.DigestAlgorithm");
+	}
+	
+	
+	/**
+	 * Adds custom init parameters used for options.  Initialization parameters are added as a map of names to JVM parameters/properties.  Although not required, names
+	 * should be name appropriately using the same convention as {@link OptionParameter option parameters}.  Names are the string used when calling
+	 * {@link OptionsManager#getParameter(String)}.
+	 * <br>
+	 * If the OptionsManager has already been initialized with a previous call to {@link OptionsManager#getInstance()}, the manager immediately searched
+	 * for JVM parameters in the map's values and loads them into the manager.
+	 * @param initParams A map of option names to JVM parameters.
+	 */
+	public static synchronized void addInitParameters(Map<String, String> initParams)
+	{
+		JVM_PARAMS.putAll(initParams);
+		
+		// if an instance already exists,
+		// then lookup and load the settings immediately from JVM options
+		if (INSTANCE != null)
+		{
+			for (String param : initParams.keySet())
+				INSTANCE.initParam(param);
+		}
 	}
 	
 	/**
@@ -128,8 +197,71 @@ public class OptionsManager
 	 */
 	protected void initParams()
 	{
+
+		loadParamsFromPropertiesFile();
+
+		
 		for (String param : JVM_PARAMS.keySet())
 			initParam(param);
+	}
+	
+	/**
+	 * Loads options from a properties file if it exists and applies any option not already
+	 * set by a JVM option to the system properties
+	 */
+	protected void loadParamsFromPropertiesFile()
+	{
+		// get options from the properties file if it exists and set any parameter that has not been set
+		// via JVM parameters
+
+		// check if the file name parameter is set		
+		String propFileName = System.getProperty(OPTIONS_PROPERTIES_FILE_JVM_PARAM, DEFAULT_PROPERTIES_FILE);
+		if (propFileName.isEmpty())
+			propFileName = DEFAULT_PROPERTIES_FILE;
+		
+		// now load the file into a properties object
+		final File optionsFile = new File(propFileName);
+		if (optionsFile.exists())
+		{
+			InputStream inStream = null;
+			
+			try
+			{
+				inStream = FileUtils.openInputStream(optionsFile);
+				final Properties props = new Properties();
+				props.load(inStream);
+				
+				// search through each JVM param and determine if 
+				// 1. the parameter does not exist in the system properties
+				// 2. the parameter exists in the properties file
+				// if the these criteria are met, add the properties file based
+				// setting to the system properties
+				for (Object paramName : props.keySet())
+				{
+					final String paramValue = System.getProperty(paramName.toString(), "");
+
+					if (paramValue.isEmpty())
+					{
+						final String propValue = props.getProperty(paramName.toString(), null);
+						if (propValue != null)
+						{
+							System.setProperty(paramName.toString(), propValue);
+							options.put(paramName.toString(), new OptionsParameter(paramName.toString(), propValue));	
+						}
+					}
+				}
+			}
+			///CLOVER:OFF
+			catch (Exception e)
+			{
+				LOGGER.warn("Exception occured loading options settings from properties file " + optionsFile, e);
+			}
+			///CLOVER:ON
+			finally
+			{
+				IOUtils.closeQuietly(inStream);
+			}
+		}
 	}
 	
 	/**

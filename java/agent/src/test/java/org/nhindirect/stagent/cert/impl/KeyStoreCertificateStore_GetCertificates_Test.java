@@ -13,6 +13,7 @@ import org.nhindirect.stagent.utils.BaseTestPlan;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class KeyStoreCertificateStore_GetCertificates_Test extends TestCase 
 {
 	abstract class TestPlan extends BaseTestPlan 

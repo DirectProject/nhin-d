@@ -93,7 +93,7 @@ public class EntitySerializer
     		serialize(message, oStream);
     		oStream.flush();
     		IOUtils.write(oStream.toByteArray(), writer, "ASCII");
-    		oStream.close();
+    		IOUtils.closeQuietly(oStream);	
     		
     	}
     	catch (Exception e)
@@ -117,7 +117,7 @@ public class EntitySerializer
     		serialize(message, oStream);
     		oStream.flush();
     		retVal = oStream.toString("ASCII");
-    		oStream.close();
+    		IOUtils.closeQuietly(oStream);	
     		
     	}
     	catch (Exception e)
@@ -143,7 +143,7 @@ public class EntitySerializer
     		serialize(message, oStream);
     		oStream.flush();
     		retVal = oStream.toByteArray();
-    		oStream.close();
+    		IOUtils.closeQuietly(oStream);	
     		
     	}
     	catch (Exception e)
@@ -174,7 +174,7 @@ public class EntitySerializer
     		oStream.flush();
     		String str = oStream.toString("ASCII");
     		writer.write(str, 0, str.length());
-    		oStream.close();	        
+    		IOUtils.closeQuietly(oStream);		        
         }
     	catch (Exception e)
     	{
@@ -199,7 +199,7 @@ public class EntitySerializer
     		oStream.flush();
     		retVal = oStream.toString("ASCII");
 
-    		oStream.close();	        
+    		IOUtils.closeQuietly(oStream);	        
         }
     	catch (Exception e)
     	{
