@@ -22,7 +22,7 @@ public class MockMailetConfig implements MailetConfig
 		return initParameters.get(param);
 	}
 
-	public Iterator getInitParameterNames() 
+	public Iterator<String> getInitParameterNames() 
 	{
 		return initParameters.keySet().iterator();
 	}

@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyStore;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;

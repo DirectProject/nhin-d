@@ -90,8 +90,8 @@ public class ConfigServiceCertificateStore_Construct_Test extends TestCase
 				assertTrue(store.localStoreDelegate instanceof KeyStoreCertificateStore);
 				
 				assertNotNull(store.cachePolicy);
-				assertEquals(1000, store.cachePolicy.getMaxItems());
-				assertEquals((3600 * 24), store.cachePolicy.getSubjectTTL());
+				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_MAX_CAHCE_ITEMS, store.cachePolicy.getMaxItems());
+				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_TTL, store.cachePolicy.getSubjectTTL());
 			}
 		}.perform();
 	}
@@ -112,8 +112,8 @@ public class ConfigServiceCertificateStore_Construct_Test extends TestCase
 				assertTrue(store.localStoreDelegate instanceof KeyStoreCertificateStore);
 				
 				assertNotNull(store.cachePolicy);
-				assertEquals(1000, store.cachePolicy.getMaxItems());
-				assertEquals((3600 * 24), store.cachePolicy.getSubjectTTL());
+				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_MAX_CAHCE_ITEMS, store.cachePolicy.getMaxItems());
+				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_TTL, store.cachePolicy.getSubjectTTL());
 			}
 		}.perform();
 	}	
@@ -135,8 +135,8 @@ public class ConfigServiceCertificateStore_Construct_Test extends TestCase
 				assertTrue(store.localStoreDelegate instanceof KeyStoreCertificateStore);
 				
 				assertNotNull(store.cachePolicy);
-				assertEquals(1000, store.cachePolicy.getMaxItems());
-				assertEquals((3600 * 24), store.cachePolicy.getSubjectTTL());
+				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_MAX_CAHCE_ITEMS, store.cachePolicy.getMaxItems());
+				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_TTL, store.cachePolicy.getSubjectTTL());
 			}
 		}.perform();
 	}	

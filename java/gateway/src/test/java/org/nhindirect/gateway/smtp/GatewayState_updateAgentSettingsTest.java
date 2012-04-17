@@ -204,7 +204,7 @@ public class GatewayState_updateAgentSettingsTest extends TestCase
         	proxy.addAnchor(vec.toArray(new Anchor[vec.size()]));                	
             
         	// wait 5 seconds to let the service get updated
-        	Thread.currentThread().sleep(5000);
+        	Thread.sleep(5000);
         	
         	
         	doAssertionsNewAgentSettings(agent);

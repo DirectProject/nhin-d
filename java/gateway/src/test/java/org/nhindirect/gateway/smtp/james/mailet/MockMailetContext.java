@@ -29,12 +29,12 @@ public class MockMailetContext implements MailetContext
 		return null;
 	}
 
-	public Iterator getAttributeNames() {
+	public Iterator<String> getAttributeNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public Collection getMailServers(String arg0) {
+	public Collection<String> getMailServers(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -59,7 +59,7 @@ public class MockMailetContext implements MailetContext
 		return null;
 	}
 
-	public Iterator getSMTPHostAddresses(String arg0) {
+	public Iterator<String> getSMTPHostAddresses(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -99,12 +99,14 @@ public class MockMailetContext implements MailetContext
 		
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void sendMail(MailAddress arg0, Collection arg1, MimeMessage arg2,
 			String arg3) throws MessagingException {
 		// TODO Auto-generated method stub
 		
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void sendMail(MailAddress arg0, Collection arg1, MimeMessage arg2)
 			throws MessagingException {
 		// TODO Auto-generated method stub

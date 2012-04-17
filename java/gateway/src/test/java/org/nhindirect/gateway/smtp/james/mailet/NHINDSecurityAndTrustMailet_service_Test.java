@@ -1,7 +1,6 @@
 package org.nhindirect.gateway.smtp.james.mailet;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -268,6 +267,7 @@ public class NHINDSecurityAndTrustMailet_service_Test extends TestCase
 		
 	}		
 
+	@SuppressWarnings("unused")
 	public void testService_RejectRecipients_AssertRejectedList() throws Exception
 	{		
 		final MimeMessage mimeMsg = EntitySerializer.Default.deserialize(TestUtils.readMessageResource("PlainOutgoingMessage.txt"));		

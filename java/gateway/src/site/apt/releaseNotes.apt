@@ -5,6 +5,40 @@
         ---
         Greg Meyer
         ---
+        
+{1.5}
+
+    Changes included with release 1.5
+    
+    []
+    
+    Enhancements
+    
+    * Requires minimum version of agent 1.4 as a dependency.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=183}183}}: Web services config can be fine tuned through JVM parameters or a properties file.
+
+    [] 
+     
+    Bug Fixes
+
+    *  NA
+
+{1.4.1}
+
+    Changes included with release 1.4.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+
+    [] 
+     
+    Bug Fixes
+
+    *  Fixed issue with the public certificate resolver size growning in the agent with each agent setting refresh.
 
 {1.4}
 
