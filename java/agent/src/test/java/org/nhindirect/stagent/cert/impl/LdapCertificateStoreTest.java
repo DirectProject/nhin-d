@@ -52,6 +52,7 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 	/**
      * Initialize the server.
      */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setUp() throws Exception
 	{

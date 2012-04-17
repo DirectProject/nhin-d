@@ -69,9 +69,12 @@ import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.mail.MimeError;
 import org.nhindirect.stagent.mail.MimeException;
 import org.nhindirect.stagent.mail.MimeStandard;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -103,8 +106,11 @@ public class SMIMECryptographerImpl implements Cryptographer
      */
     public SMIMECryptographerImpl()
     {
-        this.m_encryptionAlgorithm = EncryptionAlgorithm.AES128;
-        this.m_digestAlgorithm = DigestAlgorithm.SHA1;
+    	OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.CRYPTOGRAHPER_SMIME_ENCRYPTION_ALGORITHM);
+        this.m_encryptionAlgorithm = (param == null) ? EncryptionAlgorithm.AES128 : EncryptionAlgorithm.fromString(param.getParamValue(), EncryptionAlgorithm.AES128);
+        
+        param = OptionsManager.getInstance().getParameter(OptionsParameter.CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM);
+        this.m_digestAlgorithm = (param == null) ? DigestAlgorithm.SHA1 : DigestAlgorithm.fromString(param.getParamValue(), DigestAlgorithm.SHA1);
     }
 
     /**
@@ -214,7 +220,7 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    	
 	    	
 	    	entToEncrypt = new MimeEntity(headers, oStream.toByteArray());
-	    	oStream.close();
+	    	IOUtils.closeQuietly(oStream);	
     	}    	
     	catch (Exception e)
     	{
@@ -842,7 +848,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     		
     		oStream.write(message, 0, message.length);
     		oStream.flush();
-    		oStream.close();    		
+    		IOUtils.closeQuietly(oStream);	
     	}
     	catch (Exception e)
     	{
@@ -877,7 +883,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     		
     		oStream.write(message, 0, message.length);
     		oStream.flush();
-    		oStream.close();    		
+    		IOUtils.closeQuietly(oStream);			
     	}
     	catch (Exception e)
     	{
@@ -913,7 +919,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     		
     		oStream.write(message, 0, message.length);
     		oStream.flush();
-    		oStream.close();    		
+    		IOUtils.closeQuietly(oStream);			
     	}
     	catch (Exception e)
     	{
@@ -949,7 +955,7 @@ public class SMIMECryptographerImpl implements Cryptographer
     		
     		oStream.write(message, 0, message.length);
     		oStream.flush();
-    		oStream.close();
+    		IOUtils.closeQuietly(oStream);	
     	}
     	catch (Exception e)
     	{

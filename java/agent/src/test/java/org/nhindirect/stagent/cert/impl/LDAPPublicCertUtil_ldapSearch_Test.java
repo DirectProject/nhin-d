@@ -36,6 +36,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 {
 	private Lookup mockLookup;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setUp() throws Exception
 	{
@@ -403,7 +404,6 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 	{
 		new TestPlan()
 		{
-			X509Certificate checkCert = TestUtils.loadCertificate("gm2552.der");
 			
 			@Override
 			protected void performInner() throws Exception

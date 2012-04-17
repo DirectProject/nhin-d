@@ -61,6 +61,7 @@ public class DefaultNHINDAgent_DecryptSignedContent_Test extends TestCase {
 		protected MimeEntity theDecryptMessage;
 		protected int decryptMessageCalls = 0;
 
+		@SuppressWarnings("unchecked")
 		protected MimeEntity decryptMessage_Internal(IncomingMessage message) {
 			try {
 				String testMessage = TestUtils.readResource("MultipartMimeMessage.txt");
@@ -78,10 +79,10 @@ public class DefaultNHINDAgent_DecryptSignedContent_Test extends TestCase {
 				    		
 					        if (this.headers.getAllHeaders().hasMoreElements())
 					        {
-					        	Enumeration hEnum = this.headers.getAllHeaders();
+					        	Enumeration<javax.mail.Header> hEnum = this.headers.getAllHeaders();
 					        	while (hEnum.hasMoreElements())
 					        	{
-					        		javax.mail.Header hdr = (javax.mail.Header)hEnum.nextElement();
+					        		javax.mail.Header hdr = hEnum.nextElement();
 					        		if (MimeStandard.startsWith(hdr.getName(), MimeStandard.HeaderPrefix))
 					        			headers.addHeader(hdr.getName(), hdr.getValue());
 					        	}
@@ -261,6 +262,7 @@ public class DefaultNHINDAgent_DecryptSignedContent_Test extends TestCase {
 	 * 
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unchecked")
 	public void testAllNonContentHeadersAreAddedBackToDecryptedMessage() throws Exception {
 		new ContentTypeIsMultipartSignature() {
 			protected MimeEntity decryptMessage_Internal(IncomingMessage message) {
@@ -269,7 +271,7 @@ public class DefaultNHINDAgent_DecryptSignedContent_Test extends TestCase {
 			}
 			
 			protected void doAssertions() throws Exception {
-				Enumeration allHeaders = theCreateMessage.getMessage().getAllHeaders();
+				Enumeration<javax.mail.Header> allHeaders = theCreateMessage.getMessage().getAllHeaders();
 				int i = 0;
 				for (; allHeaders.hasMoreElements();) {
 					allHeaders.nextElement();

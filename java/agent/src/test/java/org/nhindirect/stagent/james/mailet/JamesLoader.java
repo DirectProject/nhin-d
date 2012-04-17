@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 public class JamesLoader 
 {
+	
+	@SuppressWarnings("deprecation")
 	public static void main(String[] args)
 	{
 	       try
@@ -35,8 +37,8 @@ public class JamesLoader
 	            URLClassLoader childClassLoader =
 	                new URLClassLoader(classLoaderURLArray, JamesLoader.class.getClassLoader());	            	            	           
 	            
-	            final Class mainClass = childClassLoader.loadClass( "org.apache.avalon.phoenix.launcher.Main" );
-	            final Class[] paramTypes =
+	            final Class<?> mainClass = childClassLoader.loadClass( "org.apache.avalon.phoenix.launcher.Main" );
+	            final Class<?>[] paramTypes =
 	                new Class[]{args.getClass()};
 	            final Method method = mainClass.getMethod( "main", paramTypes );
 	            Object main_instance = mainClass.newInstance();

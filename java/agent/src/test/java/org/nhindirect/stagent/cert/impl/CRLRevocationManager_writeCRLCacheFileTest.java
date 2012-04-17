@@ -62,7 +62,7 @@ public class CRLRevocationManager_writeCRLCacheFileTest extends TestCase
 		long originalFileDate = crlFile.lastModified();
 		
 		// sleep 2000 ms to make sure we get a new date
-		Thread.currentThread().sleep(2000);
+		Thread.sleep(2000);
 		// write it again
 		CRLRevocationManager.getInstance().writeCRLCacheFile(distURI, (X509CRL)crlToWrite);
 		

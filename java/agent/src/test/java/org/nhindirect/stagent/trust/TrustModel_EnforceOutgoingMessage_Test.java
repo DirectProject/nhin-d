@@ -82,6 +82,7 @@ public class TrustModel_EnforceOutgoingMessage_Test extends TestCase {
 		protected int getRecipientsCalls=0;
 		protected NHINDAddress recip;
 		
+		@SuppressWarnings("serial")
 		protected NHINDAddressCollection getRecipients_Internal(){
 			  theGetRecipients=new NHINDAddressCollection();
 			  recip = new NHINDAddress("") {
@@ -105,6 +106,8 @@ public class TrustModel_EnforceOutgoingMessage_Test extends TestCase {
 		
 		protected NHINDAddress theGetSender;
 		protected int getSenderCalls=0;
+		
+		@SuppressWarnings("serial")
 		protected NHINDAddress getSender_Internal(){
 		  theGetSender=new NHINDAddress("") {
 
@@ -120,7 +123,7 @@ public class TrustModel_EnforceOutgoingMessage_Test extends TestCase {
 		protected Collection<X509Certificate> theGetTrustAnchors;
 		protected int getTrustAnchorsCalls=0;
 		protected Collection<X509Certificate> getTrustAnchors_Internal(){
-		  theGetTrustAnchors=new ArrayList();
+		  theGetTrustAnchors=new ArrayList<X509Certificate>();
 		  return theGetTrustAnchors;
 		}
 

@@ -36,6 +36,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.NHINDException;
@@ -206,8 +207,8 @@ public class KeyStoreCertificateStore extends CertificateStore
 				
 				FileOutputStream outStream = new FileOutputStream(keyStoreFile);
 				ks.store(outStream, keyStorePassword == null ? null : keyStorePassword.toCharArray());
-				
-				outStream.close();
+
+				IOUtils.closeQuietly(outStream);
 			}
 			else
 			{
@@ -216,7 +217,7 @@ public class KeyStoreCertificateStore extends CertificateStore
 				
 				ks.load(inStream, keyStorePassword == null ? null : keyStorePassword.toCharArray());
 				
-				inStream.close();
+				IOUtils.closeQuietly(inStream);	
 				
 				Enumeration<String> aliases = ks.aliases();
 				
@@ -284,7 +285,7 @@ public class KeyStoreCertificateStore extends CertificateStore
     				FileOutputStream outStream = new FileOutputStream(keyStoreFile);
     				ks.store(outStream, keyStorePassword == null ? null : keyStorePassword.toCharArray());	
     				
-    				outStream.close();
+    				IOUtils.closeQuietly(outStream);	
     			}
     		}
     		catch (Exception e)
@@ -329,7 +330,7 @@ public class KeyStoreCertificateStore extends CertificateStore
 			// persist
 			FileOutputStream outStream = new FileOutputStream(keyStoreFile);
 			ks.store(outStream, keyStorePassword == null ? null : keyStorePassword.toCharArray());	
-			outStream.close();
+			IOUtils.closeQuietly(outStream);
 		}
 		catch (Throwable e)
 		{

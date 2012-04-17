@@ -33,6 +33,7 @@ import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
@@ -180,15 +181,7 @@ public class StripP12Passphrase
 		}
 		finally
 		{
-			if (outStr != null)
-			{
-				try
-				{
-					outStr.close();
-				}
-				catch (Exception e) {/* no-op */}
-			}
-		
+			IOUtils.closeQuietly(outStr);		
 		}
 	}
 	
@@ -286,7 +279,7 @@ public class StripP12Passphrase
             	System.out.println("Error decoding p12 input file: " + e.getMessage());
             }
    
-            bais.close();
+            IOUtils.closeQuietly(bais);
         } 
         catch (Exception e) 
         {

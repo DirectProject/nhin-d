@@ -22,25 +22,94 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.options;
 
 /**
- * Tuning and configuration options for components of the security and trust agent.  Options can be set either programmatically or set as JVM options.
- * JVM settings can be overridden by setting options programmatically. 
+ * Tuning and configuration options for components of the security and trust agent.  Options can be set either programmatically, as JVM options, or from a properties file.
+ * JVM and/or property based settings can be overridden by setting options programmatically.  
  * @author Greg Meyer
  * @since 1.4
  */
 public class OptionsParameter 
-{
+{	
 	/**
-	 * String value that indicates the JCE provider that should be used for cryptography and certificate operations.
-	 * <p><b>JVM Parameter:</b> -Dorg.nhindirect.stagent.cryptography.JCEProviderName
+	 * String value that specifies the JCE provider that should be used for cryptography and certificate operations.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptography.JCEProviderName
 	 */
 	public final static String JCE_PROVIDER = "JCE_PROVIDER";
 
 	/**
-	 * String value that indicates the directory where CRLs will be cached.  The directory may a full or relative path.
-	 * <p><b>JVM Parameter:</b> -Dorg.nhindirect.stagent.cert.CRLCacheLocation
+	 * String value that specifies the directory where CRLs will be cached.  The directory may a full or relative path.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.CRLCacheLocation
 	 */
 	public final static String CRL_CACHE_LOCATION = "CRL_CACHE_LOCATION";
 	
+	/**
+	 * Integer value that specifies the number of times the DNS certificate resolvers will retry a query
+	 * to the DNS server.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.dnsresolver.ServerRetries
+	 */
+	public final static String DNS_CERT_RESOLVER_RETRIES = "DNS_CERT_RESOLVER_RETRIES";
+	
+	/**
+	 * Integer value that specifies the query timeout in seconds for a DNS record.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.dnsresolver.ServerTimeout
+	 */
+    public final static String DNS_CERT_RESOLVER_TIMEOUT = "DNS_CERT_RESOLVER_TIMEOUT";
+	
+ 	/**
+ 	 * Boolean value that specifies if the DNS server should use TCP connections for queries.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.dnsresolver.ServerUseTCP
+ 	 */
+    public final static String DNS_CERT_RESOLVER_USE_TCP = "DNS_CERT_RESOLVER_USE_TCP"; 
+
+ 	/**
+ 	 * Integer value specifies the maximum number of certificates that can be held in the DNS certificate cache.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.dnsresolver.MaxCacheSize
+ 	 */
+    public final static String DNS_CERT_RESOLVER_MAX_CACHE_SIZE = "DNS_CERT_RESOLVER_MAX_CACHE_SIZE";     
+    
+ 	/**
+ 	 * Integer value specifies the time to live in seconds that a certificate can be held in the DNS certificate cache.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.dnsresolver.CacheTTL
+ 	 */
+    public final static String DNS_CERT_RESOLVER_CACHE_TTL = "DNS_CERT_RESOLVER_CACHE_TTL"; 
+    
+ 	/**
+ 	 * Integer value specifies the maximum number of certificates that can be held in the LDAP certificate cache.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.ldapresolver.MaxCacheSize
+ 	 */
+    public final static String LDAP_CERT_RESOLVER_MAX_CACHE_SIZE = "LDAP_CERT_RESOLVER_MAX_CACHE_SIZE";     
+    
+ 	/**
+ 	 * Integer value specifies the time to live in seconds that a certificate can be held in the LDAP certificate cache.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.ldapresolver.CacheTTL
+ 	 */
+    public final static String LDAP_CERT_RESOLVER_CACHE_TTL = "LDAP_CERT_RESOLVER_CACHE_TTL"; 
+    
+	/**
+	 * String value that specifies the encryption algorithm used to encrypt messages by the SMIME cryptographer
+	 * <br>Valid option values:
+	 * <ul>
+	 * <li>RSA_3DES</li>
+	 * <li>AES128</li>
+	 * <li>AES192</li>
+	 * <li>AES256</li>
+	 * </ul>
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptographer.smime.EncryptionAlgorithm
+	 */
+    public final static String CRYPTOGRAHPER_SMIME_ENCRYPTION_ALGORITHM = "CRYPTOGRAHPER_SMIME_ENCRYPTION_ALGORITHM";
+    
+	/**
+	 * String value that specifies the digest algorithm used to hash messages by the SMIME cryptographer
+	 * <br>Valid option values:
+	 * <ul>
+	 * <li>SHA1</li>
+	 * <li>SHA256</li>
+	 * <li>SHA384</li>
+	 * <li>SHA512</li>
+	 * </ul>
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptographer.smime.DigestAlgorithm
+	 */
+    public final static String CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM = "CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM";
+    
 	private final String paramName;
 	private final String paramValue;
 	
@@ -49,7 +118,7 @@ public class OptionsParameter
 	 * @param name The name of the parameter
 	 * @param value The String value of the parameter
 	 */
-	public OptionsParameter(String name, String value)
+	public OptionsParameter(final String name, final String value)
 	{
 		if (name == null || name.isEmpty())
 			throw new IllegalArgumentException("Parameter name cannot be null or empty");
@@ -74,5 +143,45 @@ public class OptionsParameter
 	public String getParamValue()
 	{
 		return paramValue;
+	}
+	
+	/**
+	 * Gets the value of an options parameter as an integer.
+	 * @param param The parameter to retrieve the value from
+	 * @param defaultValue The default value to return if the parameter is null, the parameter value is null, of if
+	 * the value cannot be parse.
+	 * @return The parameter value as an integer
+	 */
+	public static int getParamValueAsInteger(final OptionsParameter param , final int defaultValue)
+	{
+		int retVal = defaultValue;
+		if (param != null && param.getParamValue() != null && !param.getParamValue().isEmpty())
+		{
+			try
+			{
+				retVal = Integer.parseInt(param.getParamValue());
+			}
+			catch (NumberFormatException e)
+			{
+				/*no-op, return default value */
+			}
+		}
+		return retVal;
+	}
+	
+	/**
+	 * Gets the value of an options parameter as a boolean.
+	 * @param param The parameter to retrieve the value from
+	 * @param defaultValue The default value to return if the parameter is null, the parameter value is null, of if
+	 * the value cannot be parse.
+	 * @return The parameter value as a boolean
+	 */
+	public static boolean getParamValueAsBoolean(final OptionsParameter param , final boolean defaultValue)
+	{
+		boolean retVal = defaultValue;
+		if (param != null && param.getParamValue() != null && !param.getParamValue().isEmpty())
+			retVal = Boolean.parseBoolean(param.getParamValue());
+
+		return retVal;
 	}
 }

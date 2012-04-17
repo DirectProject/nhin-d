@@ -139,6 +139,8 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 		
 		protected SearchResult theNextElement_SearchResult;
 		protected int nextElementCalls_SearchResult=0;
+		
+		@SuppressWarnings("serial")
 		protected SearchResult nextElement_SearchResult_Internal(){
 			theNextElement_SearchResult=new SearchResult("",null,new AttributesAdapter()) {
 
@@ -153,6 +155,8 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 		
 		protected SearchResult theNext;
 		protected int nextCalls=0;
+		
+		@SuppressWarnings("serial")
 		protected SearchResult next_Internal() throws NamingException {
 		  theNext=new SearchResult("",null,new AttributesAdapter()) {
 
@@ -167,6 +171,8 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 		
 		protected Attributes theGetAttributes;
 		protected int getAttributesCalls=0;
+		
+		@SuppressWarnings("serial")
 		protected Attributes getAttributes_Internal(){
 		  theGetAttributes=new AttributesAdapter() {
 			  
@@ -182,6 +188,8 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 		
 		protected Attribute theGetByAttrId;
 		protected int getCallsByAttrId=0;
+		
+		@SuppressWarnings("serial")
 		protected Attribute get_Internal(String attrID){
 			theGetByAttrId=new AttributeAdapter() {
   
@@ -198,7 +206,7 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 		protected NamingEnumeration<?> theGetAll;
 		protected int getAllCalls=0;
 		protected NamingEnumeration<?> getAll_Internal() throws NamingException {
-		  theGetAll=new NamingEnumeration() {
+		  theGetAll=new NamingEnumeration<Object>() {
 			public void close() throws NamingException {
 			}
 				

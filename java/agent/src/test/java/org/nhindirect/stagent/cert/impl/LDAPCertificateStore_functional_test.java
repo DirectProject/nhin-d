@@ -30,6 +30,7 @@ import org.nhindirect.stagent.utils.BaseTestPlan;
 public class LDAPCertificateStore_functional_test extends AbstractServerTest 
 {
 	
+	@SuppressWarnings("unchecked")
 	@Override 
 	public void setUp() throws Exception
 	{

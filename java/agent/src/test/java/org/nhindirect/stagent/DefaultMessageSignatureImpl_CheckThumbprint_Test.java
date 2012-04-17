@@ -60,6 +60,7 @@ public class DefaultMessageSignatureImpl_CheckThumbprint_Test extends TestCase {
 
 		protected NHINDAddress theCreateMessageSender;
 
+		@SuppressWarnings("serial")
 		protected NHINDAddress createMessageSender() throws Exception {
 			theCreateMessageSender = new NHINDAddress("") {
 
@@ -93,6 +94,7 @@ public class DefaultMessageSignatureImpl_CheckThumbprint_Test extends TestCase {
 			return theHasCertificates;
 		}
 
+		@SuppressWarnings("unchecked")
 		protected SignerInformation createSignerInformation() throws Exception {
 			X509CertificateEx internalCert = TestUtils.getInternalCert("user1");
 			String testMessage = TestUtils
@@ -159,8 +161,8 @@ public class DefaultMessageSignatureImpl_CheckThumbprint_Test extends TestCase {
 					new CMSProcessableBodyPartInbound(partToSign), verifyMM
 							.getBodyPart(1).getInputStream());
 			SignerInformationStore signers = signeddata.getSignerInfos();
-			Collection c = signers.getSigners();
-			Iterator it = c.iterator();
+			Collection<Object> c = signers.getSigners();
+			Iterator<Object> it = c.iterator();
 			while (it.hasNext()) {
 				SignerInformation signer = (SignerInformation) it.next();
 				return signer;

@@ -37,6 +37,8 @@ import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.Thumbprint;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 
 import com.google.inject.Inject;
 
@@ -53,6 +55,7 @@ import com.google.inject.Inject;
  * is pruned to make room for new entries.  Pruning by default uses a least recently used algorithm.
  * 
  * @author NM019057
+ * @author Greg Meyer
  *
  */
 public class LDAPCertificateStore extends CertificateStore implements
@@ -61,11 +64,14 @@ public class LDAPCertificateStore extends CertificateStore implements
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(LDAPCertificateStore.class);
 	private static final String CACHE_NAME = "LDAP_REMOTE_CERT_CACHE";
 	
-	private CertificateStore localStoreDelegate;
-	private JCS cache;
-	private CertStoreCachePolicy cachePolicy;
-	private LdapCertUtil ldapCertUtil;
-
+	protected static final int DEFAULT_LDAP_MAX_CAHCE_ITEMS = 1000;
+	protected static final int DEFAULT_LDAP_TTL = 3600; // 1 hour
+	
+	protected CertificateStore localStoreDelegate;
+	protected JCS cache;
+	protected CertStoreCachePolicy cachePolicy;
+	protected LdapCertUtil ldapCertUtil;
+	
 	/**
 	 * Constructs a service using the machines local DNS server configuration and a default key store implementation for
 	 * local lookups.
@@ -124,10 +130,12 @@ public class LDAPCertificateStore extends CertificateStore implements
 			if (cachePolicy == null)
 				cachePolicy = getDefaultPolicy();
 		}
+		///CLOVER:OFF
 		catch (CacheException e)
 		{
-			// TODO: log error
+			LOGGER.warn("LDAPCertificateStore - Could not create certificate cache " + CACHE_NAME, e);
 		}
+		///CLOVER:ON
 	}
 	
 	private void applyCachePolicy(CertStoreCachePolicy policy)
@@ -338,20 +346,23 @@ public class LDAPCertificateStore extends CertificateStore implements
 
 	public void loadBootStrap() 
 	{
-		// TODO Auto-generated method stub
-
+		// just load the cache for now to be in
+		// functional synch with the other resolvers
+		getCache();
 	}
 
 	public void loadBootStrap(CertificateStore bootstrapStore) 
 	{
-		// TODO Auto-generated method stub
-
+		// just load the cache for now to be in
+		// functional synch with the other resolvers
+		getCache();
 	}
 
 	public void setBootStrap(CertificateStore bootstrapStore) 
 	{
-		// TODO Auto-generated method stub
-
+		// just load the cache for now to be in
+		// functional synch with the other resolvers
+		getCache();
 	}
 
 	public void setCachePolicy(CertStoreCachePolicy policy) 
@@ -360,17 +371,28 @@ public class LDAPCertificateStore extends CertificateStore implements
 		applyCachePolicy(policy);
 	}
 	
-	private static class DefaultLDAPCachePolicy implements CertStoreCachePolicy
+	public static class DefaultLDAPCachePolicy implements CertStoreCachePolicy
 	{
+		protected final int maxItems;
+		protected final int subjectTTL;
+		
+		public DefaultLDAPCachePolicy()
+		{
+			OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.LDAP_CERT_RESOLVER_MAX_CACHE_SIZE);
+			maxItems =  OptionsParameter.getParamValueAsInteger(param, DEFAULT_LDAP_MAX_CAHCE_ITEMS); 
+			
+			param = OptionsManager.getInstance().getParameter(OptionsParameter.LDAP_CERT_RESOLVER_CACHE_TTL);
+			subjectTTL =  OptionsParameter.getParamValueAsInteger(param, DEFAULT_LDAP_TTL); 
+		}
 
 		public int getMaxItems() 
 		{
-			return 1000; 
+			return maxItems;
 		}
 
 		public int getSubjectTTL() 
 		{
-			return 3600 * 24; // 1 day
+			return subjectTTL;
 		}
 		
 	}

@@ -32,5 +32,28 @@ public enum EncryptionAlgorithm
     RSA_3DES,
     AES128,
     AES192,
-    AES256,
+    AES256;
+    
+    /**
+     * Gets the encryption algorithm from an algorithm name
+     * @param algorithmNam The encryption algorithm name
+     * @param defaultAlgorithm The default algorithm to return is a corresponding name cannot be found
+     * @return A encryption algorithm enumeration object corresponding the name
+     */
+    public static EncryptionAlgorithm fromString(String algorithmName, EncryptionAlgorithm defaultAlgorithm)
+    {
+    	if (algorithmName == null || algorithmName.isEmpty())
+    		return defaultAlgorithm;
+    	
+    	if (algorithmName.equalsIgnoreCase("RSA_3DES"))
+    		return RSA_3DES;
+    	else if (algorithmName.equalsIgnoreCase("AES128"))
+    		return AES128;
+    	else if (algorithmName.equalsIgnoreCase("AES192"))
+    		return AES192;
+    	else if (algorithmName.equalsIgnoreCase("AES256"))
+    		return AES256;
+    	else
+    		return defaultAlgorithm;
+    }
 }

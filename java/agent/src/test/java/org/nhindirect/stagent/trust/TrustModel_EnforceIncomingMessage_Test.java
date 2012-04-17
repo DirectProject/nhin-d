@@ -274,6 +274,7 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 		
 		protected NHINDAddress recip;
 		
+		@SuppressWarnings("serial")
 		protected NHINDAddressCollection getDomainRecipients_Internal(){
 			  theGetDomainRecipients=new NHINDAddressCollection();
 			  recip = new NHINDAddress("") {
@@ -298,6 +299,7 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 		
 		protected X509CertificateEx internalCert;
 		
+		@SuppressWarnings("unchecked")
 		protected SignerInformation createSignerInformation() throws Exception {
 			internalCert = TestUtils.getInternalCert("user1");
 			String testMessage = TestUtils
@@ -362,8 +364,8 @@ public class TrustModel_EnforceIncomingMessage_Test extends TestCase {
 					new CMSProcessableBodyPartInbound(partToSign), verifyMM
 							.getBodyPart(1).getInputStream());
 			SignerInformationStore signers = signeddata.getSignerInfos();
-			Collection c = signers.getSigners();
-			Iterator it = c.iterator();
+			Collection<Object> c = signers.getSigners();
+			Iterator<Object> it = c.iterator();
 			while (it.hasNext()) {
 				SignerInformation signer = (SignerInformation) it.next();
 				return signer;

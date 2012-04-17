@@ -41,6 +41,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.CryptoExtensions;
 
 /**
@@ -66,7 +67,8 @@ class CertLoader
 		InputStream inStr = new ByteArrayInputStream(certData);
 		java.security.cert.Certificate holdCert = cf.generateCertificate(inStr);
 		X509Certificate cert = (X509Certificate)holdCert;
-		inStr.close();
+		
+		IOUtils.closeQuietly(inStr);
 		
 		KeyFactory kf = KeyFactory.getInstance("RSA", CryptoExtensions.getJCEProviderName());
 		PKCS8EncodedKeySpec keysp = null;

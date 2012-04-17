@@ -48,6 +48,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 
@@ -133,7 +134,8 @@ public class LdapCertUtilImpl implements LdapCertUtil{
 			ArrayList<X509Certificate> certificates) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, UnrecoverableKeyException {
 		KeyStore localKeyStore = KeyStore.getInstance("PKCS12");
 		localKeyStore.load(inputStream, keyStorePassword == null ? null : keyStorePassword.toCharArray());
-		inputStream.close();
+		
+		IOUtils.closeQuietly(inputStream);
 		
 		Enumeration<String> aliases = localKeyStore.aliases();
 
