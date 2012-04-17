@@ -49,6 +49,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	/**
      * Initialize the server.
      */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setUp() throws Exception
 	{
@@ -105,6 +106,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	
 	abstract class TestPlan extends BaseTestPlan 
     {
+		@SuppressWarnings("unused")
         @Override
         protected void performInner() throws Exception 
         {     
@@ -123,6 +125,7 @@ public class XMLSmtpAgentConfigFunctional_Test extends AbstractServerTest
             removeTestFiles();
         }   
     
+		@SuppressWarnings("deprecation")
         protected void doAssertions(SmtpAgent agent) throws Exception
         {
             

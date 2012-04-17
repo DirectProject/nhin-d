@@ -13,6 +13,7 @@ import javax.mail.internet.MimeMessage;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 
+@SuppressWarnings("serial")
 public class MockMail implements Mail 
 {
 	private MimeMessage mimeMessage;
@@ -31,7 +32,7 @@ public class MockMail implements Mail
 		return null;
 	}
 
-	public Iterator getAttributeNames() {
+	public Iterator<Object> getAttributeNames() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -61,7 +62,8 @@ public class MockMail implements Mail
 		return null;
 	}
 
-	public Collection getRecipients() 
+	
+	public Collection<MailAddress> getRecipients() 
 	{
 	
 		if (recipAddr != null)
@@ -74,7 +76,7 @@ public class MockMail implements Mail
 		{
 			for (Address addr : mimeMessage.getAllRecipients())
 			{
-				addrs.add(new MailAddress(addrs.toString()));
+				addrs.add(new MailAddress(addr.toString()));
 			}
 		}
 		catch (Exception e)
@@ -166,10 +168,10 @@ public class MockMail implements Mail
 		
 	}
 
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void setRecipients(Collection arg0) 
 	{
 		recipAddr = arg0;
-		
 	}
 
 	public void setState(String state) 

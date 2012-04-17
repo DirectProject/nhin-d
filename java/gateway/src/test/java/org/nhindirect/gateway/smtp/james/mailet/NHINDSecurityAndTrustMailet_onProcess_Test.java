@@ -14,13 +14,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.mailet.Mail;
 import org.apache.mailet.Mailet;
 import org.apache.mailet.MailetConfig;
 import org.nhind.config.Certificate;
@@ -29,13 +27,10 @@ import org.nhind.config.Domain;
 import org.nhind.config.Setting;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
-import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet_functionalTest.TestPlan;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.CryptoExtensions;
-import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
-import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.notifications.MDNStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
 

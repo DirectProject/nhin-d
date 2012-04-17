@@ -19,9 +19,11 @@ import javax.mail.internet.InternetAddress;
 
 
 import org.nhind.config.Anchor;
+import org.nhind.config.ConfigurationService;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 import org.nhind.config.Setting;
+import org.nhindirect.config.service.impl.ConfigurationServiceImplServiceSoapBindingStub;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.MessageProcessingSettings;
 import org.nhindirect.gateway.smtp.NotificationProducer;
@@ -34,12 +36,13 @@ import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentError;
 import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
+import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceCertificateStore;
 import org.nhindirect.gateway.smtp.config.cert.impl.provider.ConfigServiceCertificateStoreProvider;
 import org.nhindirect.gateway.smtp.module.SmtpAgentModule;
 import org.nhindirect.gateway.smtp.provider.DefaultSmtpAgentProvider;
 import org.nhindirect.stagent.NHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
-import org.nhindirect.stagent.cert.DefaultCertStoreCachePolicy;
+import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
 import org.nhindirect.stagent.cert.impl.EmployLdapAuthInformation;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
@@ -52,6 +55,8 @@ import org.nhindirect.stagent.module.AgentModule;
 import org.nhindirect.stagent.module.PrivateCertStoreModule;
 import org.nhindirect.stagent.module.PublicCertStoreModule;
 import org.nhindirect.stagent.module.TrustAnchorModule;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.trust.provider.MultiDomainTrustAnchorResolverProvider;
 import org.nhindirect.stagent.trust.provider.UniformTrustAnchorResolverProvider;
@@ -134,6 +139,22 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		this.agentProvider = agentProvider;		
 		
 		cfService = new ConfigurationServiceProxy(configServiceLocation.toExternalForm());
+
+		ConfigurationService internalService = cfService.getConfigurationService();
+
+		if (internalService != null && internalService instanceof ConfigurationServiceImplServiceSoapBindingStub)
+		{
+
+			ConfigServiceCertificateStore.initJVMParams();
+			/*
+			 * The comments in the Axis code appear to be ambiguous.  Some comments appear to be referencing connection timeouts while
+			 * others refer to transactions timeouts.  Only one timeout method is available, so we will use the connection timeout property 
+			 */
+			OptionsParameter param = OptionsManager.getInstance().getParameter(ConfigServiceCertificateStore.WS_CERT_RESOLVER_CONNECTION_TIMEOUT);
+			int connectionTimeOut =  OptionsParameter.getParamValueAsInteger(param, ConfigServiceCertificateStore.DEFAULT_WS_CONNECTION_TIMEOUT); 
+			
+			((ConfigurationServiceImplServiceSoapBindingStub) internalService).setTimeout(connectionTimeOut);
+		}
 	}
 		
 	/**
@@ -541,7 +562,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	    String passphrase = (ldapCertPassphrase == null || ldapCertPassphrase.isEmpty()) ? "DefaultPassphrase" : ldapCertPassphrase;
 	    
 	    LdapCertificateStoreProvider ldapCertificateStoreProvider = new LdapCertificateStoreProvider(ldapStoreConfiguration,
-	    		new KeyStoreCertificateStore(new File(cacheStoreName),passphrase, passphrase), new DefaultCertStoreCachePolicy());
+	    		new KeyStoreCertificateStore(new File(cacheStoreName),passphrase, passphrase), new LDAPCertificateStore.DefaultLDAPCachePolicy());
 	    return ldapCertificateStoreProvider;
 	}	
 	
@@ -601,7 +622,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else if(storeType.equalsIgnoreCase(STORE_TYPE_DNS))
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());								
+						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DNSCertificateStore.DefaultDNSCachePolicy());								
 			}
 			/*
 			 * Web Services
@@ -609,7 +630,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else if (storeType.equalsIgnoreCase(STORE_TYPE_WS))
 			{
 				resolverProvider = new ConfigServiceCertificateStoreProvider(cfService, 
-						new KeyStoreCertificateStore(new File("WSPublicCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());
+						new KeyStoreCertificateStore(new File("WSPublicCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new ConfigServiceCertificateStore.DefaultConfigStoreCachePolicy());
 
 			}
 			/*
@@ -618,7 +639,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else if (storeType.equalsIgnoreCase(STORE_TYPE_PUBLIC_LDAP))
 			{
 				resolverProvider = new PublicLdapCertificateStoreProvider(new KeyStoreCertificateStore(new File("PublicLDAPCacheStore"), "DefaultFilePass", "DefaultKeyPass"), 
-						new DefaultCertStoreCachePolicy());
+						new LDAPCertificateStore.DefaultLDAPCachePolicy());
 			}			
 			/*
 			 * Default to DNS with a default cache policy
@@ -626,7 +647,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());			
+						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DNSCertificateStore.DefaultDNSCachePolicy());			
 			}
 			
 			resolverProviders.add(resolverProvider);
@@ -687,7 +708,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		else if (storeType.equalsIgnoreCase(STORE_TYPE_WS))
 		{
 			resolverProvider = new ConfigServiceCertificateStoreProvider(cfService, 
-					new KeyStoreCertificateStore(new File("WSPrivCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());
+					new KeyStoreCertificateStore(new File("WSPrivCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new ConfigServiceCertificateStore.DefaultConfigStoreCachePolicy());
 		}
 		else
 		{

@@ -131,12 +131,12 @@ public class XMLSmtpAgentConfig_BuildTrustAnchorResolver_Test extends TestCase {
 
         protected Map<String, Collection<String>> theCreateIncomingAnchorHolder;
 
-        @SuppressWarnings({ "unchecked", "serial" })
+        @SuppressWarnings("serial")
         protected Map<String, Collection<String>> createAnchorHolder() throws Exception {
-            theCreateIncomingAnchorHolder = new HashMap(){
+            theCreateIncomingAnchorHolder = new HashMap<String, Collection<String>>(){
                 @Override
                 public Set<Entry<String, Collection<String>>>  entrySet() {  
-                    Entry entry = new Map.Entry<String, Collection<String>>(){
+                    Entry<String, Collection<String>> entry = new Map.Entry<String, Collection<String>>(){
                         public String getKey() {                            
                             return null;
                         }
@@ -149,7 +149,7 @@ public class XMLSmtpAgentConfig_BuildTrustAnchorResolver_Test extends TestCase {
                             return null;
                         }                       
                     };
-                    HashSet hs = new HashSet<Entry<String, Collection<String>>>();
+                    HashSet<Entry<String, Collection<String>>> hs = new HashSet<Entry<String, Collection<String>>>();
                     hs.add(entry);
                     return hs;
                 }

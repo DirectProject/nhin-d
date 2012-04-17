@@ -31,6 +31,8 @@ import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 
 
 /**
@@ -40,6 +42,44 @@ import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
  */
 public class ConfigServiceCertificateStore extends CertificateStore implements CacheableCertStore
 {
+ 	/**
+ 	 * Integer value specifies the maximum number of certificates that can be held in the web service certificate cache.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.wsresolver.MaxCacheSize
+ 	 */
+    public final static String WS_CERT_RESOLVER_MAX_CACHE_SIZE = "WS_CERT_RESOLVER_MAX_CACHE_SIZE";     
+    
+ 	/**
+ 	 * Integer value specifies the time to live in seconds that a certificate can be held in the web service certificate cache.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.wsresolver.CacheTTL
+ 	 */
+    public final static String WS_CERT_RESOLVER_CACHE_TTL = "WS_CERT_RESOLVER_CACHE_TTL"; 
+    
+	/**
+	 * Integer value that specifies the socket timeout in seconds for a web service record.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.wsresolver.SOTimeout
+	 */
+    public final static String WS_CERT_RESOLVER_SO_TIMEOUT = "WS_CERT_RESOLVER_SO_TIMEOUT";
+
+	/**
+	 * Integer value that specifies the connection timeout in seconds for a web service record.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.wsresolver.ConnectionTimeout
+	 */
+    public final static String WS_CERT_RESOLVER_CONNECTION_TIMEOUT = "WS_CERT_RESOLVER_CONNECTION_TIMEOUT";
+	
+    
+    /**
+     * Default connection timeout to the configuration service in milliseconds
+     */
+    public static final int DEFAULT_WS_CONNECTION_TIMEOUT = 30000; // 30 seconds
+    
+    /**
+     * Default transport timeout to the configuration service in milliseconds
+     */
+    public static final int DEFAULT_WS_SO_TIMEOUT = 10000; // 10 seconds
+    
+	protected static final int DEFAULT_WS_MAX_CAHCE_ITEMS = 1000;
+	protected static final int DEFAULT_WS_TTL = 3600; // 1 hour
+    
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceCertificateStore.class);
 	
 	private static final String CACHE_NAME = "CONFIG_SERVICE_CERT_CACHE";
@@ -52,6 +92,22 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 	static
 	{
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		
+		initJVMParams();
+	}
+	
+	public synchronized static void initJVMParams()
+	{
+		/*
+		 * Web service resolver parameters
+		 */
+		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
+		JVM_PARAMS.put(WS_CERT_RESOLVER_MAX_CACHE_SIZE, "org.nhindirect.stagent.cert.wsresolver.MaxCacheSize");
+		JVM_PARAMS.put(WS_CERT_RESOLVER_SO_TIMEOUT, "org.nhindirect.stagent.cert.wsresolver.SOTimeout");		
+		JVM_PARAMS.put(WS_CERT_RESOLVER_CACHE_TTL, "org.nhindirect.stagent.cert.wsresolver.CacheTTL");	
+		JVM_PARAMS.put(WS_CERT_RESOLVER_CONNECTION_TIMEOUT, "org.nhindirect.stagent.cert.wsresolver.ConnectionTimeout");	
+		
+		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
 	
 	/**
@@ -162,20 +218,6 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		return retVal;
 	}
 	
-	private static class DefaultConfigStoreCachePolicy implements CertStoreCachePolicy
-	{
-
-		public int getMaxItems() 
-		{
-			return 1000; 
-		}
-
-		public int getSubjectTTL() 
-		{
-			return 3600 * 24; // 1 day
-		}
-		
-	}	
 	
 	/**
 	 * {@inheritDoc}
@@ -451,6 +493,7 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	public void loadBootStrap() 
 	{
 		///CLOVER:OFF
@@ -506,5 +549,31 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		this.cachePolicy = policy;
 		applyCachePolicy(policy);
 	}	
+	
+	public static class DefaultConfigStoreCachePolicy implements CertStoreCachePolicy
+	{
+		protected final int maxItems;
+		protected final int subjectTTL;
+		
+		public DefaultConfigStoreCachePolicy()
+		{
+			OptionsParameter param = OptionsManager.getInstance().getParameter(WS_CERT_RESOLVER_MAX_CACHE_SIZE);
+			maxItems =  OptionsParameter.getParamValueAsInteger(param, DEFAULT_WS_MAX_CAHCE_ITEMS); 
+			
+			param = OptionsManager.getInstance().getParameter(WS_CERT_RESOLVER_CACHE_TTL);
+			subjectTTL =  OptionsParameter.getParamValueAsInteger(param, DEFAULT_WS_TTL); 
+		}
+		
+		public int getMaxItems() 
+		{
+			return maxItems;
+		}
+
+		public int getSubjectTTL() 
+		{
+			return subjectTTL;
+		}
+		
+	}
 	
 }

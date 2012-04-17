@@ -81,6 +81,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 	/**
      * Initialize the servers- LDAP and HTTP.
      */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void setUp() throws Exception
 	{
@@ -669,6 +670,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
                 addCertificatesToLdap(new String[]{"/cacert.der"}, "jp018858@securehealthemail.com"); 
             }
             
+        	@SuppressWarnings("deprecation")
             protected void doAssertions(SmtpAgent agent) throws Exception
             {
             	super.doAssertions(agent);
@@ -813,6 +815,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	// already in the keystore file
             }
             
+            @SuppressWarnings("deprecation")
             protected void doAssertions(SmtpAgent agent) throws Exception
             {
             	super.doAssertions(agent);
