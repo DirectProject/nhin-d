@@ -261,7 +261,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
                     else if (StringUtils.contains(header.toString(), "RelatesTo"))
                     {
                         relatesTo = header.getTextContent();
-                        LOGGER.info(action);
+                        LOGGER.info(relatesTo);
                     }
                     else if (StringUtils.contains(header.toString(), "ReplyTo"))
                     {
@@ -490,6 +490,7 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
         ThreadData threadData = new ThreadData(threadId);
         threadData.setReplyAddress(endpoint);
         threadData.setMessageId(messageId);
+        threadData.setRelatesTo(relatesTo);
         threadData.setAction(action);
         threadData.setThisHost(thisHost);
         threadData.setRemoteHost(remoteHost);
