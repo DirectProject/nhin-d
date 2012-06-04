@@ -3,9 +3,9 @@
     <groupId>org.nhind</groupId>    
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gateway</artifactId>    
-    <name>NHIN Direct Agent Gateways.</name>
-    <version>1.5-SNAPSHOT</version>
-    <description>NHIN Direct security agent gateways and bridges.</description>
+    <name>Direct Project Agent Gateways.</name>
+    <version>1.6-SNAPSHOT</version>
+    <description>Direct Project security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>        
     <developers>
@@ -43,7 +43,7 @@
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.4-SNAPSHOT</version>
+	        <version>1.4</version>
 	        <scope>compile</scope>
 	    </dependency> 
 	    <dependency>
@@ -61,7 +61,7 @@
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.4-SNAPSHOT</version>
+	        <version>1.4</version>
 	         <type>test-jar</type>
 	        <scope>test</scope>
 	    </dependency>  
@@ -175,7 +175,7 @@
 				</exclusion>
 			</exclusions>		    	 			
 		</dependency>    																																																																															
-  </dependencies>      
+  </dependencies>        
   <build>
   	<extensions>
   		<extension>
@@ -372,7 +372,7 @@
                 </dependency>
 			</dependencies>
 		</plugin>   
-	      <!--  only for release		
+         <!--  for releases only				
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -411,8 +411,8 @@
                      </goals>
               </execution>
             </executions>
-         </plugin>
-          -->              
+         </plugin> 
+         -->           
     </plugins>
     <pluginManagement>
        <plugins>
