@@ -58,7 +58,7 @@ As with the previous set, the first constructor uses the same resolver for both 
 
 h2. UniformCertificateStore
 
-The UniformCertificateStore is a very simple certificate resolver for trust anchors.  It is initialized from either a set of certificates or an [X509Store|http://api.nhindirect.org/java/site/agent/1.2-SNAPSHOT/apidocs/org/nhindirect/stagent/cert/X509Store.html].  In the latter case, the UniformCertificateStore initializes itself by calling getAllCertificates on the X509 store.
+The UniformCertificateStore is a very simple certificate resolver for trust anchors.  It is initialized from either a set of certificates or an [X509Store|http://api.nhindirect.org/java/site/agent/1.4/apidocs/org/nhindirect/stagent/cert/X509Store.html].  In the latter case, the UniformCertificateStore initializes itself by calling getAllCertificates on the X509 store.
 
 The UniformCertificateStore satisfies the use case where every address owned by the agent or consumer code uses the same set of trust anchors.  This is typically used in a test environment or a single domain HISP that does not support separate trust per user.
 
@@ -79,9 +79,9 @@ Part of the agent's logic is to resolve trust anchors for recipients of an incom
 
 h2. TrustModel
 
-The [TrustModel|http://api.nhindirect.org/java/site/agent/1.2-SNAPSHOT/apidocs/org/nhindirect/stagent/trust/TrustModel.html] class enforces the trust portion of the security and trust specification.  Although the TrustModel exposes two constructors, it is only really necessary to use the default empty constructor unless you need to subclass the [TrustChainValidator|http://api.nhindirect.org/java/site/agent/1.2-SNAPSHOT/apidocs/org/nhindirect/stagent/trust/TrustChainValidator.html] class.
+The [TrustModel|http://api.nhindirect.org/java/site/agent/1.4/apidocs/org/nhindirect/stagent/trust/TrustModel.html] class enforces the trust portion of the security and trust specification.  Although the TrustModel exposes two constructors, it is only really necessary to use the default empty constructor unless you need to subclass the [TrustChainValidator|http://api.nhindirect.org/java/site/agent/1.4/apidocs/org/nhindirect/stagent/trust/TrustChainValidator.html] class.
 
-The trust model supports different levels of trust called the [TrustEnforcementStatus|http://api.nhindirect.org/java/site/agent/1.2-SNAPSHOT/apidocs/org/nhindirect/stagent/trust/TrustEnforcementStatus.html].  During the enforcement phase, each address is flagged with a status indicating if the address trusts the incoming or outgoing message.  It is up to the agent or client code to assert what level of trust status it will allow through the security and trust processes.  The default threshold level is Success_Offline.
+The trust model supports different levels of trust called the [TrustEnforcementStatus|http://api.nhindirect.org/java/site/agent/1.4/apidocs/org/nhindirect/stagent/trust/TrustEnforcementStatus.html].  During the enforcement phase, each address is flagged with a status indicating if the address trusts the incoming or outgoing message.  It is up to the agent or client code to assert what level of trust status it will allow through the security and trust processes.  The default threshold level is Success_Offline.
 
 
 h3. Enforce(IncomingMessage)

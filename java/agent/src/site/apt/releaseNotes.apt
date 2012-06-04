@@ -13,7 +13,7 @@
     []
     
     Enhancements
-    
+
     * Revocation manager now caches CRLs off line in a configurable location.
     
     * {{{http://code.google.com/p/nhin-d/issues/detail?id=183}183}}: CRL, built in resolvers, and cryptography algorithms can be configured through JVM parameters or a properties file.
@@ -26,9 +26,9 @@
     
     * {{{http://code.google.com/p/nhin-d/issues/detail?id=149}149}} Fixed exceptions thrown for not finding the sender's certificates.
     
-    * {{http://code.google.com/p/nhin-d/issues/detail?id=142}142}} Changed the order of the final updating of routing headers and encryption/signing of outgoing messages to be consist with the .Net implementation 
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=142}142}} Changed the order of the final updating of routing headers and encryption/signing of outgoing messages to be consist with the .Net implementation 
 
-    * {{http://code.google.com/p/nhin-d/issues/detail?id=133}133}} Removed incorrect comment that message wrapping is required by the applicability statement.
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=133}133}} Removed incorrect comment that message wrapping is required by the applicability statement.
     
     * Resolved compilation warnings.
     
