@@ -3,9 +3,9 @@
     <groupId>org.nhind</groupId>    
     <modelVersion>4.0.0</modelVersion>
     <artifactId>agent</artifactId>    
-    <name>NHIN Direct Security And Trust Agent</name>
-    <version>1.4-SNAPSHOT</version>
-    <description>NHIN Direct Security And Trust Agent</description>
+    <name>Direct Project Security And Trust Agent</name>
+    <version>1.5-SNAPSHOT</version>
+    <description>Direct Project Security And Trust Agent</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url> 
     <developers>
@@ -362,7 +362,7 @@
                 </dependency>	
 			</dependencies>			
 		</plugin>       
-	      <!--  only for releases
+<!--  only for releases
         <plugin>
 
 	      	<groupId>org.apache.maven.plugins</groupId> 
@@ -404,7 +404,7 @@
               </execution>
             </executions>
          </plugin>
-          -->
+-->
     </plugins>
     <pluginManagement>
        <plugins>
