@@ -100,7 +100,7 @@ When running in an development environment, you can launch the configuration ser
 
 h3. Prebuilt Assembly Configuration
 
-A full [stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|http://api.nhindirect.org/java/site/assembly/stock/1.2/] for installation and configuration details.
+A full [stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|http://api.nhindirect.org/java/site/assembly/stock/1.3.2/] for installation and configuration details.
 
 h2. Deployment Configuration Scenarios
 
