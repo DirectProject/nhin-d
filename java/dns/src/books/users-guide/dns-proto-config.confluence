@@ -4,7 +4,7 @@ The DNS server has several configuration parameters for tuning the DNS communica
 
 h2. Protocol Configuration Parameters
 
-Protocol configuration parameters are set using the same section of the configuration UI web tool as SMTP server [settings|http://api.nhindirect.org/java/site/gateway/1.0.1/users-guide/smtp-depl-wsconfig.html#Anchors].
+Protocol configuration parameters are set using the same section of the configuration UI web tool as SMTP server [settings|http://api.nhindirect.org/java/site/gateway/1.5/users-guide/smtp-depl-wsconfig.html#Anchors].
 
 !images/dnsconfigsetting.png!
 
