@@ -6,4 +6,4 @@ It is strongly advised and encouraged to back the reference implementation with 
 
 The Bare Metal install is not HIPAA compliant nor does it describe a highly available and/or fault tolerant deployment.
 
-* [HISP Only Deployment (no source)|./depl-hisp-onlyh.html]
+* [HISP Only Deployment (no source)|./depl-hisp-only.html]
