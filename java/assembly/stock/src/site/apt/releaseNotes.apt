@@ -6,6 +6,26 @@
         Greg Meyer
         ---
    
+{1.4}
+
+    Changes included with release 1.4
+    
+    []
+    
+    Enhancements/Bug Fixes
+    
+    * Support for Ubuntu 12.04 - Precise Pangolin
+    
+    * Tomcat updated to Version 7.0.27
+    
+    * Agent Version 1.4.  See agent {{{http://api.nhindirect.org/java/site/agent/1.4/releaseNotes.html}release notes}}:
+    
+    * Gateway Version 1.5.  See gateway {{{http://api.nhindirect.org/java/site/gateway/1.5/releaseNotes.html}release notes}}:
+    
+    * DNS Version 1.2.1.  See DNS {{{http://api.nhindirect.org/java/site/dns/1.2.1/releaseNotes.html}release notes}}:
+    
+    * XD Version 1.0.2   
+   
 {1.3}
 
     Changes included with release 1.3
