@@ -177,7 +177,7 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         return getUsableCerts(address);
     }
 	
-    private Collection<X509Certificate> getUsableCerts(InternetAddress address)
+    protected Collection<X509Certificate> getUsableCerts(InternetAddress address)
     {
         if (address == null)
         {
@@ -204,7 +204,9 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         
         Collection<X509Certificate> certs = getCertificates("EMAILADDRESS=" + theAddress);
 
-        if (certs == null || certs.size() == 0)
+        Collection<X509Certificate> filteredCerts = filterUsable(certs);
+        
+        if (filteredCerts == null || filteredCerts.size() == 0)
         {
         	// find by host
         	
@@ -212,9 +214,10 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         	{
         		theAddress = theAddress.substring(index + 1);
         		certs = getCertificates("EMAILADDRESS=" + theAddress);
+        		filteredCerts = filterUsable(certs);
         	}
         	else
-        		return null;
+        		return filteredCerts;
         }
 
         return filterUsable(certs);
@@ -223,7 +226,7 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
     /*
      * Removed certs that are not valid due to date expiration, CLR lists, or other revocation criteria
      */
-    private Collection<X509Certificate> filterUsable(Collection<X509Certificate> certs)
+    protected Collection<X509Certificate> filterUsable(Collection<X509Certificate> certs)
     {
     	Collection<X509Certificate> filteredCerts = new ArrayList<X509Certificate>();
     	
