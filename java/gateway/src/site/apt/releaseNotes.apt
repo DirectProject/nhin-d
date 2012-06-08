@@ -5,7 +5,23 @@
         ---
         Greg Meyer
         ---
-        
+ 
+{1.5.1}
+
+    Changes included with release 1.4.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=184}184}}: Certificates resolvers now support null file based caches.  This now the default behavior of the resolvers and the default configuration of the gateway 
+
 {1.5}
 
     Changes included with release 1.5

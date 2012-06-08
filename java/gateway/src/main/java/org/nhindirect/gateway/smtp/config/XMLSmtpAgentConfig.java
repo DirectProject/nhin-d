@@ -524,7 +524,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			else if(storeType.equalsIgnoreCase("dns"))
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DefaultCertStoreCachePolicy());								
+						null, new DefaultCertStoreCachePolicy());								
 			}
 			/*
 			 * Default to DNS with a default cache policy
@@ -532,7 +532,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 			else
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore")), new DefaultCertStoreCachePolicy());			
+						null, new DefaultCertStoreCachePolicy());			
 			}
 		}
 		
@@ -675,7 +675,7 @@ public class XMLSmtpAgentConfig implements SmtpAgentConfig
 	        ldapStoreConfiguration.setLdapCertPassphrase(ldapCertPassphrase);
 	    }
 
-	    LdapCertificateStoreProvider ldapCertificateStoreProvider = new LdapCertificateStoreProvider(ldapStoreConfiguration,new KeyStoreCertificateStore(new File(cacheStoreName),ldapCertPassphrase, ldapCertPassphrase), new DefaultCertStoreCachePolicy());
+	    LdapCertificateStoreProvider ldapCertificateStoreProvider = new LdapCertificateStoreProvider(ldapStoreConfiguration,null, new DefaultCertStoreCachePolicy());
 	    return ldapCertificateStoreProvider;
 	}
 }

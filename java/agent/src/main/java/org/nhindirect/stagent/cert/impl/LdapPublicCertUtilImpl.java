@@ -267,7 +267,7 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 			retVal = new ExtendedResolver(servers);
 			retVal.setRetries(retries);
 			retVal.setTimeout(timeout);
-			retVal.setTCP(true);
+			retVal.setTCP(false);
 		}catch (UnknownHostException e) {/* no-op */}
 		
 		return retVal;

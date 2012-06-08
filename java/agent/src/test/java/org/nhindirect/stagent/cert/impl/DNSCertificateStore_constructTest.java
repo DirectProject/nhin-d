@@ -32,7 +32,7 @@ public class DNSCertificateStore_constructTest extends TestCase
 		DNSCertificateStore store = new DNSCertificateStore();
 		
 		assertEquals(ResolverConfig.getCurrentConfig().servers().length, store.servers.size());
-		assertNotNull(store.localStoreDelegate);
+		assertNull(store.localStoreDelegate);
 		assertNotNull(store.cachePolicy);
 	}
 	
@@ -41,7 +41,7 @@ public class DNSCertificateStore_constructTest extends TestCase
 		DNSCertificateStore store = new DNSCertificateStore(null);
 		
 		assertEquals(ResolverConfig.getCurrentConfig().servers().length, store.servers.size());
-		assertNotNull(store.localStoreDelegate);
+		assertNull(store.localStoreDelegate);
 		assertNotNull(store.cachePolicy);
 	}
 	
@@ -50,7 +50,7 @@ public class DNSCertificateStore_constructTest extends TestCase
 		DNSCertificateStore store = new DNSCertificateStore(new ArrayList<String>());
 		
 		assertEquals(ResolverConfig.getCurrentConfig().servers().length, store.servers.size());
-		assertNotNull(store.localStoreDelegate);
+		assertNull(store.localStoreDelegate);
 		assertNotNull(store.cachePolicy);
 	}
 	
@@ -62,24 +62,17 @@ public class DNSCertificateStore_constructTest extends TestCase
 		
 		assertEquals(1, store.servers.size());
 		assertEquals("159.140.168.3", store.servers.iterator().next());
-		assertNotNull(store.localStoreDelegate);
+		assertNull(store.localStoreDelegate);
 		assertNotNull(store.cachePolicy);
 	}
 	
-	public void testContructDNSCertificateStore_fullConstructor_nullBootStrap_assertException()
+	public void testContructDNSCertificateStore_fullConstructor_nullBootStrap()
 	{
-		boolean exceptionOccured = false;
-		
-		try
-		{
-			new DNSCertificateStore(null, null, null);
-		}
-		catch (IllegalArgumentException e)
-		{
-			exceptionOccured = true;
-		}
-		
-		assertTrue(exceptionOccured);
+
+		DNSCertificateStore store =	new DNSCertificateStore(null, null, null);
+
+		assertNotNull(store.cachePolicy);
+		assertNull(store.localStoreDelegate);
 	}
 	
 	public void testContructDNSCertificateStore_fullConstructor_providedServers()

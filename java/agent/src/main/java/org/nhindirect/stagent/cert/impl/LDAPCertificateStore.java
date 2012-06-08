@@ -41,6 +41,7 @@ import org.nhindirect.stagent.options.OptionsManager;
 import org.nhindirect.stagent.options.OptionsParameter;
 
 import com.google.inject.Inject;
+import com.google.inject.internal.Nullable;
 
 /**
  * Certificate store backed by LDAP-based provider directories (RFC 4398) for dynamic lookup and a configurable local cache of off line lookup. 
@@ -78,8 +79,11 @@ public class LDAPCertificateStore extends CertificateStore implements
 	 */
 	public LDAPCertificateStore()
 	{
-		localStoreDelegate = createDefaultLocalStore();
-		loadBootStrap();
+		// no longer create a default local
+		// bootstrap store by default
+		
+		// create the in memory cache
+		createCache();
 	}
 	
 	/**
@@ -90,7 +94,7 @@ public class LDAPCertificateStore extends CertificateStore implements
 	 */
 	@Inject 
 	public LDAPCertificateStore(LdapCertUtilImpl ldapCertUtil, 
-			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
+			@Nullable CertificateStore bootstrapStore, CertStoreCachePolicy policy)
 	{
 
 		this((LdapCertUtil)ldapCertUtil, bootstrapStore, policy);
@@ -103,13 +107,18 @@ public class LDAPCertificateStore extends CertificateStore implements
 		this.ldapCertUtil = ldapCertUtil;
 		
 		this.cachePolicy = policy;
-		if (bootstrapStore == null) {
-			this.localStoreDelegate = createDefaultLocalStore();
-		}
-		else {
+
+		createCache();		
+		
+		// no longer create a default local
+		// bootstrap store by default
+		if (bootstrapStore != null) 
+		{
 			this.localStoreDelegate = bootstrapStore;
+			loadBootStrap();
 		}
-		loadBootStrap();
+
+
 	}	
 	
 	protected synchronized JCS getCache()
@@ -299,15 +308,19 @@ public class LDAPCertificateStore extends CertificateStore implements
     	return retVal;
     }     
     
-    protected void addOrUpdateLocalStoreDelegate(Collection<X509Certificate> retVal) {
-    	if(retVal!=null && localStoreDelegate!=null) {
-    		for (X509Certificate cert : retVal)
-    		{	
-    			if (localStoreDelegate.contains(cert)) 
-    				localStoreDelegate.update(cert);
-    			else
-    				localStoreDelegate.add(cert);
-    		}
+    protected void addOrUpdateLocalStoreDelegate(Collection<X509Certificate> retVal) 
+    {
+    	if (localStoreDelegate != null)
+    	{
+	    	if(retVal!=null && localStoreDelegate!=null) {
+	    		for (X509Certificate cert : retVal)
+	    		{	
+	    			if (localStoreDelegate.contains(cert)) 
+	    				localStoreDelegate.update(cert);
+	    			else
+	    				localStoreDelegate.add(cert);
+	    		}
+	    	}
     	}
     }
 

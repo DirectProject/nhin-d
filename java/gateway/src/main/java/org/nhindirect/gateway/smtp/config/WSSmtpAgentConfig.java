@@ -558,11 +558,9 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	    {
 	        ldapStoreConfiguration.setLdapCertPassphrase(ldapCertPassphrase);
 	    }
-
-	    String passphrase = (ldapCertPassphrase == null || ldapCertPassphrase.isEmpty()) ? "DefaultPassphrase" : ldapCertPassphrase;
 	    
 	    LdapCertificateStoreProvider ldapCertificateStoreProvider = new LdapCertificateStoreProvider(ldapStoreConfiguration,
-	    		new KeyStoreCertificateStore(new File(cacheStoreName),passphrase, passphrase), new LDAPCertificateStore.DefaultLDAPCachePolicy());
+	    		null, new LDAPCertificateStore.DefaultLDAPCachePolicy());
 	    return ldapCertificateStoreProvider;
 	}	
 	
@@ -622,7 +620,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else if(storeType.equalsIgnoreCase(STORE_TYPE_DNS))
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DNSCertificateStore.DefaultDNSCachePolicy());								
+						null, new DNSCertificateStore.DefaultDNSCachePolicy());								
 			}
 			/*
 			 * Web Services
@@ -630,7 +628,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else if (storeType.equalsIgnoreCase(STORE_TYPE_WS))
 			{
 				resolverProvider = new ConfigServiceCertificateStoreProvider(cfService, 
-						new KeyStoreCertificateStore(new File("WSPublicCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new ConfigServiceCertificateStore.DefaultConfigStoreCachePolicy());
+						null, new ConfigServiceCertificateStore.DefaultConfigStoreCachePolicy());
 
 			}
 			/*
@@ -638,7 +636,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			 */
 			else if (storeType.equalsIgnoreCase(STORE_TYPE_PUBLIC_LDAP))
 			{
-				resolverProvider = new PublicLdapCertificateStoreProvider(new KeyStoreCertificateStore(new File("PublicLDAPCacheStore"), "DefaultFilePass", "DefaultKeyPass"), 
+				resolverProvider = new PublicLdapCertificateStoreProvider(null, 
 						new LDAPCertificateStore.DefaultLDAPCachePolicy());
 			}			
 			/*
@@ -647,7 +645,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 			else
 			{
 				resolverProvider = new DNSCertStoreProvider(Collections.EMPTY_LIST, 
-						new KeyStoreCertificateStore(new File("DNSCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new DNSCertificateStore.DefaultDNSCachePolicy());			
+						null, new DNSCertificateStore.DefaultDNSCachePolicy());			
 			}
 			
 			resolverProviders.add(resolverProvider);
@@ -708,7 +706,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		else if (storeType.equalsIgnoreCase(STORE_TYPE_WS))
 		{
 			resolverProvider = new ConfigServiceCertificateStoreProvider(cfService, 
-					new KeyStoreCertificateStore(new File("WSPrivCacheStore"), "DefaultFilePass", "DefaultKeyPass"), new ConfigServiceCertificateStore.DefaultConfigStoreCachePolicy());
+					null, new ConfigServiceCertificateStore.DefaultConfigStoreCachePolicy());
 		}
 		else
 		{

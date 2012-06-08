@@ -1,7 +1,6 @@
 package org.nhindirect.gateway.smtp.config.cert.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -30,7 +29,6 @@ import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 import org.nhindirect.stagent.cert.X509CertificateEx;
-import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.options.OptionsManager;
 import org.nhindirect.stagent.options.OptionsParameter;
 
@@ -118,8 +116,9 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 	public ConfigServiceCertificateStore(ConfigurationServiceProxy proxy)
 	{
 		setConfigurationServiceProxy(proxy);		
-		localStoreDelegate = createDefaultLocalStore();
-		loadBootStrap();
+		createCache();
+		// no longer create 
+		// the local store by default
 	}	
 
 
@@ -134,16 +133,19 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 	public ConfigServiceCertificateStore(ConfigurationServiceProxy proxy, 
 			CertificateStore bootstrapStore, CertStoreCachePolicy policy)
 	{
-		if (bootstrapStore == null)
-			localStoreDelegate = createDefaultLocalStore();
-		else
+		this.cachePolicy = policy;	
+		createCache();
+		
+		// no longer create 
+		// the local store by default
+		if (bootstrapStore != null)
+		{
 			this.localStoreDelegate = bootstrapStore;
-		
-		setConfigurationServiceProxy(proxy);
-		
-		this.cachePolicy = policy;			
+			loadBootStrap();
+		}
+
+		setConfigurationServiceProxy(proxy);		
 					
-		loadBootStrap();
 	}	
 	
 	public void setConfigurationServiceProxy(ConfigurationServiceProxy proxy)
@@ -208,17 +210,6 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 		return new DefaultConfigStoreCachePolicy();
 	}
 	
-	/*
-	 * Create the default local key store service.
-	 */
-	private CertificateStore createDefaultLocalStore()
-	{
-		KeyStoreCertificateStore retVal = new KeyStoreCertificateStore(new File("ConfigServiceKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
-		
-		return retVal;
-	}
-	
-	
 	/**
 	 * {@inheritDoc}
 	 * Not supported in this certificate store implementation.
@@ -279,13 +270,19 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
     	else // cache miss
     	{
     		retVal = this.lookupFromConfigStore(realSubjectName);
-    		if (retVal.size() == 0 && localStoreDelegate != null)
+    		if (retVal.size() == 0)
+    			
     		{
-    			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
-    			if (retVal == null || retVal.size() == 0)
+    			if (localStoreDelegate != null)
     			{
-    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
+	    			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
+	    			if (retVal == null || retVal.size() == 0)
+	    			{
+	    				LOGGER.info("getCertificates(String subjectName) - Could not find a ConfigService certificate for subject " + subjectName);
+	    			}
     			}
+    			else 
+    				LOGGER.info("getCertificates(String subjectName) - Could not find a ConfigService certificate for subject " + subjectName);
     		}
     	}
     	

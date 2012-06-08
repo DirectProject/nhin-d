@@ -22,7 +22,6 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.cert.impl;
 
-import java.io.File;
 import java.net.UnknownHostException;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -65,6 +64,7 @@ import org.xbill.DNS.Type;
 import org.xbill.DNS.security.CERTConverter;
 
 import com.google.inject.Inject;
+import com.google.inject.internal.Nullable;
 
 /**
  * Certificate store backed by DNS CERT records (RFC 4398) for dynamic lookup and a configurable local cache of off line lookup. 
@@ -117,9 +117,15 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	{
 		getServerQuerySettings();
 		setServers(null);		
-		localStoreDelegate = createDefaultLocalStore();
-		loadBootStrap();
+		
+		// no longer create a default local
+		// bootstrap store by default
+		
+		// create the in memory cache
+		createCache();
 	}
+	
+	
 	
 	/**
 	 * Constructs a service using the server list for DNS lookups and a default key store implementation for
@@ -130,8 +136,11 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	{
 		getServerQuerySettings();
 		setServers(servers);
-		localStoreDelegate = createDefaultLocalStore();		
-		loadBootStrap();
+		// no longer create a default local
+		// bootstrap store by default
+		
+		// create the in memory cache
+		createCache();
 	}
 	
 	/**
@@ -139,20 +148,27 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	 * local lookups.
 	 * @param servers The DNS users to use for initial certificate resolution.
 	 * @param localStoreDelegate The certificate store used for local lookups.  This store is also the boot strap store.
+	 * The boot strap store may be null.
 	 */
 	@Inject 
 	public DNSCertificateStore(@DNSCertStoreServers Collection<String> servers, 
-			@DNSCertStoreBootstrap CertificateStore bootstrapStore, @DNSCertStoreCachePolicy CertStoreCachePolicy policy)
+			@Nullable @DNSCertStoreBootstrap CertificateStore bootstrapStore, @DNSCertStoreCachePolicy CertStoreCachePolicy policy)
 	{
-		if (bootstrapStore == null)
-			throw new IllegalArgumentException();
+		// null boot strap store is OK
 		
 		getServerQuerySettings();
 		setServers(servers);
 		
 		this.cachePolicy = policy;			
-		this.localStoreDelegate = bootstrapStore;			
-		loadBootStrap();
+		this.localStoreDelegate = bootstrapStore;	
+		
+		// create the in memory cache
+		createCache();
+		
+		// no longer create a default local
+		// bootstrap store by default if the boot strap is null
+		if (localStoreDelegate != null)
+			loadBootStrap();
 	}	
 		
 	private void getServerQuerySettings()
@@ -195,16 +211,6 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	private CertStoreCachePolicy getDefaultPolicy()
 	{
 		return new DefaultDNSCachePolicy();
-	}
-	
-	/*
-	 * Create the default local key store service.
-	 */
-	private CertificateStore createDefaultLocalStore()
-	{
-		KeyStoreCertificateStore retVal = new KeyStoreCertificateStore(new File("DNSNHINKeyStore"), "nH!NdK3yStor3", "31visl!v3s");
-		
-		return retVal;
 	}
 	
 	/**
@@ -277,7 +283,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
     	
     	if (cache != null)
     	{
-    		retVal = (Collection<X509Certificate>)cache.get(realSubjectName);//localStoreDelegate.getCertificates(subjectName);
+    		retVal = (Collection<X509Certificate>)cache.get(realSubjectName);
     		if (retVal == null || retVal.size() == 0)
     		{
     			retVal = this.lookupDNS(realSubjectName);
@@ -290,13 +296,18 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
     	else // cache miss
     	{
     		retVal = this.lookupDNS(realSubjectName);
-    		if (retVal.size() == 0 && localStoreDelegate != null)
+    		if (retVal.size() == 0)
     		{
-    			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
-    			if (retVal == null || retVal.size() == 0)
+    			if (localStoreDelegate != null)
     			{
-    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
+	    			retVal = localStoreDelegate.getCertificates(realSubjectName); // last ditch effort is to go to the bootstrap cache
+	    			if (retVal == null || retVal.size() == 0)
+	    			{
+	    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
+	    			}
     			}
+    			else 
+    				LOGGER.info("getCertificates(String subjectName) - Could not find a DNS certificate for subject " + subjectName);
     		}
     	}
     	
@@ -398,6 +409,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			throw new NHINDException(e);
 		}
 		
@@ -407,11 +419,13 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			for (X509Certificate cert : retVal)
 			{
 
-				
-				if (localStoreDelegate.contains(cert)) 
-					localStoreDelegate.update(cert);
-				else
-					localStoreDelegate.add(cert);
+				if (localStoreDelegate != null)
+				{
+					if (localStoreDelegate.contains(cert)) 
+						localStoreDelegate.update(cert);
+					else
+						localStoreDelegate.add(cert);
+				}
 			}			
 			try
 			{

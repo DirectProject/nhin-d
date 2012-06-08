@@ -86,8 +86,7 @@ public class ConfigServiceCertificateStore_Construct_Test extends TestCase
 				
 				assertNotNull(store.cache);
 				
-				assertNotNull(store.localStoreDelegate);
-				assertTrue(store.localStoreDelegate instanceof KeyStoreCertificateStore);
+				assertNull(store.localStoreDelegate);
 				
 				assertNotNull(store.cachePolicy);
 				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_MAX_CAHCE_ITEMS, store.cachePolicy.getMaxItems());
@@ -108,8 +107,7 @@ public class ConfigServiceCertificateStore_Construct_Test extends TestCase
 				
 				assertNotNull(store.cache);
 				
-				assertNotNull(store.localStoreDelegate);
-				assertTrue(store.localStoreDelegate instanceof KeyStoreCertificateStore);
+				assertNull(store.localStoreDelegate);
 				
 				assertNotNull(store.cachePolicy);
 				assertEquals(TestConfigServiceCertificateStore.DEFAULT_WS_MAX_CAHCE_ITEMS, store.cachePolicy.getMaxItems());

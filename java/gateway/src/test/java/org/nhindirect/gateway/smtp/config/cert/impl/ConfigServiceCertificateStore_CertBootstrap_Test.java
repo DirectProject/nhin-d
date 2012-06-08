@@ -82,7 +82,7 @@ public class ConfigServiceCertificateStore_CertBootstrap_Test extends TestCase
 								
 				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
 				
-				assertNotNull(store.localStoreDelegate);
+				assertNull(store.localStoreDelegate);
 				assertEquals(0, store.getAllCertificates().size());
 			}
 		}.perform();
