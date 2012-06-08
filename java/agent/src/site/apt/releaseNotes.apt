@@ -6,6 +6,21 @@
         Greg Meyer
         ---
 
+{1.4.2}
+
+    Changes included with release 1.4.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=185}185}}: Fixed certificate resolver issue not retrieving domain certificate if user certificate is invalid.
+
+
 {1.4.1}
 
     Changes included with release 1.4.1
