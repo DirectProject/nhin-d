@@ -216,26 +216,26 @@ _Windows_
 
 From a browser, download the desired version of the assembly from one the repositories above.  
 
-Example: Download version 1.4-RC1 - [direct-project-stock-1.4-RC1.tar.gz|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/1.4-RC1/direct-project-stock-1.4-RC1.tar.gz].  After downloading, unzip the contents to appropriate installation location.
+Example: Download version 1.4 - [direct-project-stock-1.4.tar.gz|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/1.4/direct-project-stock-1.4.tar.gz].  After downloading, unzip the contents to appropriate installation location.
 
 _All Linux/Unix_
 
-Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-1.4-RC1.tar.gz from maven central, use the following commands:
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-1.4.tar.gz from maven central, use the following commands:
 {code}
  cd /opt
- wget http://repo2.maven.org/maven2/org/nhind/direct-project-stock/1.4-RC1/direct-project-stock-1.4-RC1.tar.gz
+ wget http://repo2.maven.org/maven2/org/nhind/direct-project-stock/1.4/direct-project-stock-1.4.tar.gz
 {code}
 
 If you are denied access to the location above, try the Sonatype repostitory using the following command.
 {code}
  cd /opt
- wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/1.4-RC1/direct-project-stock-1.4-RC1.tar.gz
+ wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/1.4/direct-project-stock-1.4.tar.gz
 {code}
 
 Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
 
 {code}
- tar xvfz direct-project-stock-1.4-RC1.tar.gz
+ tar xvfz direct-project-stock-1.4.tar.gz
  export DIRECT_HOME=`pwd`/direct
  echo "export DIRECT_HOME=$DIRECT_HOME" >> ~/.bashrc
 {code}
@@ -264,7 +264,7 @@ To validate that Tomcat and the configuration services loaded successfully, laun
  http://<server>:8081/config-ui
 {code}
 
-You should be presented with the configuration ui login [screen|http://api.nhindirect.org/java/site/gateway/1.5/users-guide/smtp-depl-wsconfig.html]
+You should be presented with the configuration ui login [screen|http://api.nhindirect.org/java/site/gateway/1.5.1/users-guide/smtp-depl-wsconfig.html]
 
 h2. Domain Name and Certificate Generation
 
@@ -304,7 +304,7 @@ After creating the CA, create a leaf cert and using your domain name as the CN: 
 
 h2. Import Anchors and Certificates
 
-Before the James mail server can be run, you must create you domain in the configuration ui tool and import anchors and certificates.  Follow the steps below to create your domain and import your trust anchor and certificate.  A full description of the config ui and operations can be found [here|http://api.nhindirect.org/java/site/gateway/1.5/users-guide/smtp-depl-wsconfig.html].
+Before the James mail server can be run, you must create you domain in the configuration ui tool and import anchors and certificates.  Follow the steps below to create your domain and import your trust anchor and certificate.  A full description of the config ui and operations can be found [here|http://api.nhindirect.org/java/site/gateway/1.5.1/users-guide/smtp-depl-wsconfig.html].
 
 # Log into http://<server>:8081/config-ui with username: admin and password: adm1nD1r3ct
 ## Click Create New Domain.
