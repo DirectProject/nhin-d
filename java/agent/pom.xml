@@ -170,13 +170,18 @@
 	    <extension>
 	      <groupId>org.apache.maven.wagon</groupId>
 	       <artifactId>wagon-ssh-external</artifactId>
-	       <version>1.0-beta-6</version>
+	       <version>2.2</version>
 	    </extension>
 	    <extension>
 	      <groupId>org.apache.maven.wagon</groupId>
 	       <artifactId>wagon-ssh</artifactId>
-	       <version>1.0-beta-6</version>
-	    </extension>  		
+	       <version>2.2</version>
+	    </extension>  	
+	    <extension>
+	      <groupId>org.apache.maven.wagon</groupId>
+	       <artifactId>wagon-ssh-common</artifactId>
+	       <version>2.2</version>
+	    </extension>  	    	
    	</extensions>
     <resources>
       <resource>
@@ -254,7 +259,7 @@
         <plugin>
             <groupId>com.atlassian.maven.plugins</groupId>
             <artifactId>maven-clover2-plugin</artifactId>
-            <version>3.0.2</version>
+            <version>3.0.5</version>
             <configuration>
                 <jdk>1.6</jdk>
 			<licenseLocation>
@@ -361,10 +366,9 @@
                     <version>1.2</version>
                 </dependency>	
 			</dependencies>			
-		</plugin>       
-<!--  only for releases
+		</plugin>
+		<!--  for release only       
         <plugin>
-
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
 	        <version>2.6.1</version>
@@ -404,7 +408,7 @@
               </execution>
             </executions>
          </plugin>
--->
+         -->
     </plugins>
     <pluginManagement>
        <plugins>
@@ -431,7 +435,7 @@
                    <artifactId>commons-logging</artifactId>
                  </exclusion>
                </exclusions>
-             </dependency>
+             </dependency>         
             </dependencies>
           </plugin>
        </plugins>
@@ -442,12 +446,12 @@
           <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-site-plugin</artifactId>
-             <version>2.1.1</version>
+             <version>2.1.1</version>          
           </plugin>  
           <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-project-info-reports-plugin</artifactId>
-             <version>2.2</version>
+             <version>2.4</version>
           </plugin>    
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
@@ -489,7 +493,7 @@
 	            <configuration>
 	                <dates>
 	                    <!-- Insert the date of the most recent release -->
-                        <date>2010-11-10</date>
+                        <date>2012-05-01</date>
 	                </dates>
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>
@@ -505,7 +509,7 @@
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId> 
 	            <artifactId>findbugs-maven-plugin</artifactId>
-	            <version>1.2</version> 
+	            <version>2.5</version> 
 	            <configuration>
 	                <effort>Max</effort>
 	                <excludeFilterFile>${project.basedir}/src/report/findbugs-exclude.xml</excludeFilterFile>
@@ -526,7 +530,7 @@
 			<plugin>
 	            <groupId>com.atlassian.maven.plugins</groupId>
 	            <artifactId>maven-clover2-plugin</artifactId>
-	            <version>3.0.2</version>
+	            <version>3.0.5</version>
 				<configuration>
 					<licenseLocation>
 						${project.basedir}/../licenses/clover.license
