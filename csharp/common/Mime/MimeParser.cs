@@ -102,7 +102,7 @@ namespace Health.Direct.Common.Mime
 
             if (separatorPosition == headerText.Length)
             {
-                throw new MimeException(MimeError.MissingHeaderValue);
+                return new KeyValuePair<string, string>(name, string.Empty);
             }
 
             string value = headerText.Substring(separatorPosition).TrimStart();
