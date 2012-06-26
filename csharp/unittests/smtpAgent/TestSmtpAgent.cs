@@ -126,6 +126,7 @@ CC: <jim@nhind.hsgincubator.com>
 Subject: Simple Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700
 MIME-Version: 1.0
+X-something:
 Content-Type: text/plain
 
 Yo. Wassup?";

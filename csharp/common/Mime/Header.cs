@@ -100,10 +100,26 @@ namespace Health.Direct.Common.Mime
             get
             {
                 this.EnsureNameValue();
+                if (string.IsNullOrEmpty(m_value))
+                {
+                    throw new MimeException(MimeError.MissingHeaderValue);
+                }
                 return m_value;    
             }
         }
-        
+
+        /// <summary>
+        /// Gets the raw header value for this header.
+        /// </summary>
+        public string ValueRaw
+        {
+            get
+            {
+                this.EnsureNameValue();
+                return m_value;
+            }
+        }
+
         /// <summary>
         /// Tests if this header is named the supplied <paramref name="name"/>
         /// </summary>
