@@ -41,7 +41,10 @@ import org.nhindirect.common.tx.model.TxDetailType;
  */
 public class GeneralCompletionCondition extends AbstractCompletionCondition
 {
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Collection<String> getIncompleteRecipients(Collection<Tx> txs)
 	{

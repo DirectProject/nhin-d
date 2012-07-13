@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.monitor.resources;
 
 import javax.ws.rs.Consumes;
@@ -18,6 +39,14 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * Jax-RS resource that acts as a RESTful entry point into a Camel route that handles message monitoring and tracking.  The route
+ * starting point is contained in a Camel producer template that injected at creation time.
+ * <p>
+ * The resource returns a status of 201 (created) if the message is successfully added to the route.  A 500 is thrown other wise.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 @Component
 @Path("txs/")
 @Singleton
@@ -40,17 +69,29 @@ public class TxsResource
 		noCache.setNoCache(true);
 	}
     
-    
+    /**
+     * Constructor
+     */
 	public TxsResource()
 	{
 		
 	}
 	
+	/**
+	 * Constructor 
+	 * @param template Production template used for placing message into the Camel route.
+	 */
 	public TxsResource(ProducerTemplate template)
 	{
 		this.template = template;
 	}
 	
+	/**
+	 * Adds a message into the system
+	 * @param tx The message to add.
+	 * @return Jax-RS response object containing the http status code.  If the message is successfully added to the route, then status 201 (created)
+	 * is returned.  500 is returned if an error occurs.
+	 */
     @TypeHint(Tx.class)  
     @POST
     @Consumes(MediaType.APPLICATION_JSON)  

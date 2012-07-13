@@ -42,6 +42,9 @@ import org.nhindirect.monitor.condition.TxConditionConstants;
 public class TimelyAndReliableCompletionCondition extends AbstractCompletionCondition
 {
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Collection<String> getIncompleteRecipients(Collection<Tx> txs)
 	{
