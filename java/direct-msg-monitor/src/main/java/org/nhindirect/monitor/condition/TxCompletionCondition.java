@@ -41,5 +41,12 @@ public interface TxCompletionCondition
 	 */
 	public boolean isComplete(Collection<Tx> txs);
 	
+	/**
+	 * Gets the list of message recipients that are not considered complete.  Before a correlation of messages is considered complete,
+	 * all recipients must meet the completion criteria.
+	 * @param txs A collection of {@link Tx} objects that have been aggregated together by an Aggregator.  The collection
+	 * of messages have a relation as determined by a correlator.
+	 * @return List of message recipients that are incomplete.
+	 */
 	public Collection<String> getIncompleteRecipients(Collection<Tx> txs);
 }
