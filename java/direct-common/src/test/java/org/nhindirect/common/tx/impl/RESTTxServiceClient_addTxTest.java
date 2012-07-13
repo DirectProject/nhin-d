@@ -23,7 +23,7 @@ import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.common.util.TestUtils;
 
-public class RESTTxServiceClient_testAddTx 
+public class RESTTxServiceClient_addTxTest 
 {
 	
 	protected RESTTxServiceClient client;

@@ -9,6 +9,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
@@ -16,6 +17,12 @@ import org.nhindirect.common.tx.model.TxMessageType;
 
 public class TestUtils 
 {
+	@Test
+	public void dummy()
+	{
+		
+	}
+	
 	public static String readMessageFromFile(String fileName) throws Exception
 	{
 		return FileUtils.readFileToString(new File("./src/test/resources/messages/" + fileName));

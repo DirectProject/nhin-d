@@ -23,7 +23,7 @@ import org.nhindirect.common.mail.dsn.impl.HumanReadableTextAssemblerFactory;
 
 
 
-public class DNSGenerator_testCreateDSNMessage 
+public class DNSGenerator_CreateDSNMessageTest 
 {
 
 	
