@@ -41,6 +41,18 @@
   </licenses>      
   <dependencies>    
 		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.3</version>
+	        <scope>compile</scope>			
+		</dependency>  
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>dsn</artifactId>
+			<version>1.4.3</version>
+			<scope>compile</scope>
+		</dependency>		
+		<dependency>
 		  <groupId>com.google.inject</groupId>
 		  <artifactId>guice</artifactId>
 		  <version>2.0</version>
@@ -54,13 +66,98 @@
 	    	<groupId>commons-io</groupId>
 	    	<artifactId>commons-io</artifactId>
 	    	<version>1.4</version>
-	    </dependency>	             
+	    </dependency>	 
+	    <dependency>
+	    	<groupId>org.jdom</groupId>
+	    	<artifactId>jdom</artifactId>
+	    	<version>1.1</version>
+	    </dependency>		 
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.5</version>
+		</dependency>	 
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.7.5</version>
+            <scope>compile</scope>
+        </dependency>	
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
+        </dependency>	        	
+        <dependency>
+            <groupId>org.codehaus.enunciate</groupId>
+            <artifactId>enunciate-core-annotations</artifactId>
+            <version>1.23</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency> 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.1.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>	
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>         		                  
 	    <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
 			<scope>test</scope>
-		</dependency>  																																																																																													
+		</dependency>  	   
+	    <dependency>
+	       <groupId>com.sun.jersey.contribs</groupId>
+	       <artifactId>jersey-spring</artifactId>
+	       <version>1.6</version>
+	        <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+           </exclusions>
+           <scope>test</scope>
+	    </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.5.6</version>
+			<scope>test</scope>			
+		</dependency>	    
+		<dependency>  
+			<groupId>org.mortbay.jetty</groupId>  
+			<artifactId>jetty-servlet-tester</artifactId>  
+			<version>6.1.14</version>  
+		    <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>		    	 			
+		</dependency> 	
+		<dependency>
+		    <groupId>org.apache.mina</groupId>
+		    <artifactId>mina-core</artifactId>
+		    <version>1.0.2</version>
+		    <scope>test</scope>	    
+		</dependency>	
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-all</artifactId>
+          <version>1.8.5</version>
+          <scope>test</scope>
+        </dependency>			    			   																																																																																												
   </dependencies>      
   <build>
   	<extensions>
@@ -119,6 +216,7 @@
 			</execution>
 		</executions>
 		<configuration>
+		    <fork>true</fork>
 			<optimize>true</optimize>
 			<showDeprecation>true</showDeprecation>
 			<encoding>UTF-8</encoding>
@@ -250,7 +348,8 @@
 	          <source>1.6</source>
 	          <show>public</show>    
 	          <excludePackageNames>
-	          </excludePackageNames>	           	          
+	              org.nhindirect.common.mail.dsn.mail:org.nhindirect.common.tx.impl
+	          </excludePackageNames>      	           	          
 	        </configuration>
 	      </plugin>
 			<plugin>
