@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.common.util.TestUtils;
 
-public class TxUtil_getMessageTypeType 
+public class TxUtil_getMessageTypeTypeTest 
 {
 	@Test
 	public void testGetMessageType_DSNMessage() throws Exception
