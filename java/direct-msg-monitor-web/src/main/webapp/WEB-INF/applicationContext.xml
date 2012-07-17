@@ -80,7 +80,7 @@
   </bean>
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">  
-    
+    <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
     <route id="direct-reliable">
       <from uri="direct:start"/>
       <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true">
