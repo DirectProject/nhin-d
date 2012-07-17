@@ -46,9 +46,9 @@
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 
 	<!-- tomcat properties -->
-	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.27/bin/apache-tomcat-7.0.27.tar.gz"></property>
-	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.27.tar.gz"></property>
-	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.27"></property>
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.29/bin/apache-tomcat-7.0.29.tar.gz"></property>
+	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.29.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.29"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
 	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
@@ -73,6 +73,14 @@
 	<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
 	<property name="xd.service.dest.war" value="xd.war"></property>
 	
+	
+	<!-- message monitor server files -->
+	<property name="msg-monitor.root" value="${config.root}/../msg-monitor"></property>
+	<property name="msg-monitor.service.dir" value="${config.root}/msg-monitor/target"></property>
+	<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.0-SNAPSHOT.war"></property>
+	<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>
+	
+	
 	<!-- Support libraries -->
 	<property name="lib.activation" value="${install.root.dir}/lib/activation-1.1.1.jar"></property>
 	<property name="lib.aopalliance" value="${install.root.dir}/lib/aopalliance-1.0.jar"></property>
@@ -84,10 +92,16 @@
 	<property name="lib.commons-io" value="${install.root.dir}/lib/commons-io-1.4.jar"></property>
 	<property name="lib.commons-logging" value="${install.root.dir}/lib/commons-logging-1.1.1.jar"></property>
 	<property name="lib.commons-lang" value="${install.root.dir}/lib/commons-lang-2.5.jar"></property>
-	<property name="lib.mail" value="${install.root.dir}/lib/mail-1.4.1.jar"></property>
+	<property name="lib.mail" value="${install.root.dir}/lib/mail-1.4.3.jar"></property>
+	<property name="lib.dsn" value="${install.root.dir}/lib/dsn-1.4.3.jar"></property>	
 	<property name="lib.guice" value="${install.root.dir}/lib/guice-2.0.jar"></property>
 	<property name="lib.apache-jsieve" value="${install.root.dir}/lib/apache-jsieve-0.4.jar"></property>	
 	<property name="lib.apache-jsieve-mailet" value="${install.root.dir}/lib/apache-jsieve-mailet-0.4.jar"></property>		
+	<property name="lib.httpclient" value="${install.root.dir}/lib/httpclient-4.1.1.jar"></property>		
+	<property name="lib.httpcore" value="${install.root.dir}/lib/httpcore-4.1.jar"></property>	
+	<property name="lib.jackson-core-asl" value="${install.root.dir}/lib/jackson-core-asl-1.7.5.jar"></property>	
+	<property name="lib.jackson-jaxrs" value="${install.root.dir}/lib/jackson-jaxrs-1.7.5.jar"></property>		
+	<property name="lib.jackson-mapper-asl" value="${install.root.dir}/lib/jackson-mapper-asl-1.7.5.jar"></property>		
 	
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${install.root.dir}/lib/jcs-1.3.jar"></property>
@@ -108,8 +122,8 @@
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
 	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.4.2.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-1.5.1.jar"></property>
-	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.0.jar"></property>	
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.0-SNAPSHOT.jar"></property>
+	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1-SNAPSHOT.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0.1.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
 	
@@ -240,6 +254,7 @@
 		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.dsn}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.direct-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
@@ -255,7 +270,12 @@
 	    <copy file="${lib.config.proxy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 	    <copy file="${lib.apache-jsieve}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 	    <copy file="${lib.apache-jsieve-mailet}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
-			
+	    <copy file="${lib.httpclient}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
+	    <copy file="${lib.httpcore}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+	    <copy file="${lib.jackson-core-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+	    <copy file="${lib.jackson-jaxrs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
+	    <copy file="${lib.jackson-mapper-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+		
 		<!-- edit the config.xml file -->
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
@@ -276,11 +296,14 @@
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
 		<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
 		<property name="xd.service.dest.war" value="xd.war"></property>
+		<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.0-SNAPSHOT.war"></property>
+		<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>		
 		
 		<!-- Copy war files -->
 		<copy file="${install.root.dir}/lib/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${xd.service.orig.war}" tofile="${tomcat.webapp.dir}/${xd.service.dest.war}"></copy>
+		<copy file="${install.root.dir}/lib/${msg-monitor.service.orig.war}" tofile="${tomcat.webapp.dir}/${msg-monitor.service.dest.war}"></copy>
 		
 		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
 		    <param name="port" expression="8081"></param>

@@ -529,6 +529,7 @@ Regards, Postmaster XXX.YYY
          <mailet match="RecipientIsLocalAndSMTPAuthUserIs=direct" class="LocalDelivery" />
          <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
             <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
+            <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
          </mailet>
 
          <mailet match="RecipientIsXdAndNotSMIME=http://localhost:8081/config-service/ConfigurationService" class="DirectXdMailet">
