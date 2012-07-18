@@ -23,6 +23,7 @@ package org.nhindirect.monitor.condition.impl;
 
 import java.util.Collection;
 
+import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.monitor.condition.TxTimeoutCondition;
 
@@ -95,7 +96,7 @@ public class VariableTimeoutCondition implements TxTimeoutCondition
 	 */
 	protected boolean isRelAndTimelyRequired(Tx messageToTrack)
 	{
-		return VariableCompletionCondition.isRelAndTimelyRequired(messageToTrack);
+		return TxUtil.isReliableAndTimelyRequested(messageToTrack);
 	}
 	///CLOVER:ON
 }

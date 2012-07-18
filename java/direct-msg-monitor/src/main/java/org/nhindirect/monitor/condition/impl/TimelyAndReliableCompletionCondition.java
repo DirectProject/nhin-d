@@ -32,7 +32,6 @@ import org.nhindirect.common.mail.dsn.DSNStandard;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
-import org.nhindirect.monitor.condition.TxConditionConstants;
 
 /**
  * A completion condition that implements the timely and reliable messaging for Direct specification.
@@ -92,7 +91,7 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 						   {
 							   // check for the reliable and timely option
 							   final TxDetail mdnOptionDetail = tx.getDetail(TxDetailType.DISPOSITION_OPTIONS);
-							   if (mdnOptionDetail != null && mdnOptionDetail.getDetailValue().contains(TxConditionConstants.TIMLEY_REL_OPTION))
+							   if (mdnOptionDetail != null && mdnOptionDetail.getDetailValue().contains(MDNStandard.DispositionOption_TimelyAndReliable))
 								   recipStatus.addReceivedStatus(RecipientResponseStatus.MDNDispatchedReceived);
 						   }
 						   // check if this is an MDN failed message

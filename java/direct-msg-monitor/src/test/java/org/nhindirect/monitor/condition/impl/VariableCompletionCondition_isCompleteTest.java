@@ -50,7 +50,7 @@ public class VariableCompletionCondition_isCompleteTest
 		Tx msgToTrack = mock(Tx.class);
 		
 		when(spy.getMessageToTrackInternal((Collection<Tx>)any())).thenReturn(msgToTrack);
-		when(spy.isRelAndTimelyRequiredInternal((Tx)any())).thenReturn(true);
+		when(spy.isRelAndTimelyRequired((Tx)any())).thenReturn(true);
 		
 		assertTrue(spy.isComplete(null));
 		
@@ -74,7 +74,7 @@ public class VariableCompletionCondition_isCompleteTest
 		Tx msgToTrack = mock(Tx.class);
 		
 		when(spy.getMessageToTrackInternal((Collection<Tx>)any())).thenReturn(msgToTrack);
-		when(spy.isRelAndTimelyRequiredInternal((Tx)any())).thenReturn(true);
+		when(spy.isRelAndTimelyRequired((Tx)any())).thenReturn(true);
 		
 		assertFalse(spy.isComplete(null));
 		
@@ -97,7 +97,7 @@ public class VariableCompletionCondition_isCompleteTest
 		Tx msgToTrack = mock(Tx.class);
 		
 		when(spy.getMessageToTrackInternal((Collection<Tx>)any())).thenReturn(msgToTrack);
-		when(spy.isRelAndTimelyRequiredInternal((Tx)any())).thenReturn(false);
+		when(spy.isRelAndTimelyRequired((Tx)any())).thenReturn(false);
 		
 		assertTrue(spy.isComplete(null));
 		
@@ -121,7 +121,7 @@ public class VariableCompletionCondition_isCompleteTest
 		Tx msgToTrack = mock(Tx.class);
 		
 		when(spy.getMessageToTrackInternal((Collection<Tx>)any())).thenReturn(msgToTrack);
-		when(spy.isRelAndTimelyRequiredInternal((Tx)any())).thenReturn(false);
+		when(spy.isRelAndTimelyRequired((Tx)any())).thenReturn(false);
 		
 		assertFalse(spy.isComplete(null));
 		

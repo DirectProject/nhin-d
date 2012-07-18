@@ -23,14 +23,9 @@ package org.nhindirect.monitor.condition.impl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Locale;
-import java.util.Map;
-
+import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
-import org.nhindirect.common.tx.model.TxDetail;
-import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.monitor.condition.TxCompletionCondition;
-import org.nhindirect.monitor.condition.TxConditionConstants;
 
 /**
  * A concrete completion condition container that holds two specific completion condition implementations.  Specifically these conditions
@@ -73,7 +68,7 @@ public class VariableCompletionCondition extends AbstractCompletionCondition
 		if (msgToTrack == null)
 			return false;
 		
-		return (isRelAndTimelyRequiredInternal(msgToTrack)) ? timelyRelCondition.isComplete(txs) : generalCondition.isComplete(txs);
+		return (isRelAndTimelyRequired(msgToTrack)) ? timelyRelCondition.isComplete(txs) : generalCondition.isComplete(txs);
 	}
 	
 	@Override
@@ -83,7 +78,7 @@ public class VariableCompletionCondition extends AbstractCompletionCondition
 		if (msgToTrack == null)
 			return Collections.emptyList();
 		
-		return (isRelAndTimelyRequiredInternal(msgToTrack)) ? timelyRelCondition.getIncompleteRecipients(txs) : generalCondition.getIncompleteRecipients(txs);
+		return (isRelAndTimelyRequired(msgToTrack)) ? timelyRelCondition.getIncompleteRecipients(txs) : generalCondition.getIncompleteRecipients(txs);
 	}
 	
 	/**
@@ -92,38 +87,8 @@ public class VariableCompletionCondition extends AbstractCompletionCondition
 	 * @param imfMessage The original IMF message that is being tracked.
 	 * @return true if the original message indicates that it requires timely and reliable tracking; false otherwise
 	 */
-	public static boolean isRelAndTimelyRequired(Tx imfMessage)
+	protected boolean isRelAndTimelyRequired(Tx imfMessage)
 	{
-		boolean relAndTimelyRequired = false;
-		
-		if (imfMessage != null)
-		{
-			// check to see if this message requires the timely and reliable messaging 
-			// logic as defined by the implementation guide
-			Map<String, TxDetail> details = imfMessage.getDetails();
-			if (!details.isEmpty())
-			{
-				// look for the Disposition options detail
-				TxDetail dispositionOptionDetail = details.get(TxDetailType.DISPOSITION_OPTIONS.getType());
-				if(dispositionOptionDetail != null)
-					// check for the X-DIRECT-FINAL-DESTINATION-DELIVERY option
-					if (dispositionOptionDetail.getDetailValue().toLowerCase(Locale.getDefault()).
-							contains(TxConditionConstants.TIMLEY_REL_OPTION.toLowerCase(Locale.getDefault())))
-						relAndTimelyRequired = true;
-			}
-		}
-		
-		return relAndTimelyRequired;
-	}
-	
-	/**
-	 * Determines if the timely and reliable completion condition should be used for a message.  This is determined by 
-     * the existence of the X-DIRECT-FINAL-DESTINATION-DELIVERY message disposition option on the original message.
-	 * @param imfMessage The original IMF message that is being tracked.
-	 * @return true if the original message indicates that it requires timely and reliable tracking; false otherwise
-	 */
-	protected boolean isRelAndTimelyRequiredInternal(Tx imfMessage)
-	{
-		return isRelAndTimelyRequired(imfMessage);
+		return TxUtil.isReliableAndTimelyRequested(imfMessage);
 	}
 }
