@@ -185,6 +185,10 @@ public class MDNStandard
     public static final String  ReportType = "report-type";
     public static final String  ReportTypeValueNotification = "disposition-notification";  
     
+    /**
+     * Direct specific dispostion options for requesting timely and reliable messaging.
+     */
+    public static final String DispositionOption_TimelyAndReliable = "X-DIRECT-FINAL-DESTINATION-DELIVERY";
     
 	/**
 	 * Gets an MDN field such as the message dispostion from a MimeMessage.

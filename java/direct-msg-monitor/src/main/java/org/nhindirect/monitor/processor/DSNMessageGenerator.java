@@ -151,7 +151,7 @@ public class DSNMessageGenerator
 	    	    
 	    	    final MimeBodyPart textBodyPart = textGenerator.generate(originalSender, failedRecipAddresses, fullMessageHeaders);
 	    	    
-	    	    MimeMessage dnsMessage = generator.createDSNMessage(originalSender, originalSubject, postmaster, recipientDSNHeaders, messageDSNHeaders, textBodyPart);
+	    	    final MimeMessage dnsMessage = generator.createDSNMessage(originalSender, originalSubject, postmaster, recipientDSNHeaders, messageDSNHeaders, textBodyPart);
 
 	    	    ex.getIn().setBody(dnsMessage);
     		}
