@@ -1,5 +1,6 @@
 package org.nhindirect.gateway.smtp.james.mailet;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -12,7 +13,9 @@ import org.apache.mailet.MailetContext;
 
 public class MockMailetContext implements MailetContext 
 {
-
+	protected Collection<Mail> sentMessages  = new ArrayList<Mail>();
+	
+	
 	public void bounce(Mail arg0, String arg1, MailAddress arg2)
 			throws MessagingException {
 		// TODO Auto-generated method stub
@@ -94,8 +97,9 @@ public class MockMailetContext implements MailetContext
 		
 	}
 
-	public void sendMail(Mail arg0) throws MessagingException {
-		// TODO Auto-generated method stub
+	public void sendMail(Mail arg0) throws MessagingException 
+	{
+		sentMessages.add(arg0);
 		
 	}
 
@@ -114,10 +118,15 @@ public class MockMailetContext implements MailetContext
 	}
 
 	public void sendMail(MimeMessage arg0) throws MessagingException {
-		// TODO Auto-generated method stub
+		sentMessages.add(new MockMail(arg0));
 		
 	}
 
+	public Collection<Mail> getSentMessages()
+	{
+		return this.sentMessages;
+	}
+		
 	public void setAttribute(String arg0, Object arg1) {
 		// TODO Auto-generated method stub
 		

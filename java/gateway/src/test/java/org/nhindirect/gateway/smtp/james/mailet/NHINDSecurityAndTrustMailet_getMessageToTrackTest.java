@@ -109,7 +109,7 @@ public class NHINDSecurityAndTrustMailet_getMessageToTrackTest extends TestCase
 		}.perform();
 	}
 	
-	public void testMessageToTrackTest_nonIMFMessage_assertNullTx() throws Exception 
+	public void testMessageToTrackTest_nonIMFMessage_assertMDNTx() throws Exception 
 	{
 		new TestPlan() 
 		{
@@ -122,28 +122,16 @@ public class NHINDSecurityAndTrustMailet_getMessageToTrackTest extends TestCase
 			@Override
 			protected void doAssertions(Tx tx) throws Exception
 			{
-				assertNull(tx);
+				assertNotNull(tx);
+				assertEquals(TxMessageType.MDN, tx.getMsgType());
+				
+				MimeMessage msg = new MimeMessage(null, IOUtils.toInputStream(TestUtils.readMessageResource(getMessageToSend())));
+				assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
+						tx.getDetail(TxDetailType.FROM).getDetailValue());
 			}				
 		}.perform();
 	}
 	
-	public void testMessageToTrackTest_nonOutgoing_assertNullTx() throws Exception 
-	{
-		new TestPlan() 
-		{
-			@Override
-			protected boolean isMessageOutgoing()
-			{
-				return false;
-			}
-			
-			@Override
-			protected void doAssertions(Tx tx) throws Exception
-			{
-				assertNull(tx);
-			}				
-		}.perform();
-	}
 	
 	public void testMessageToTrackTest_regularOutgoingMessage_assertTx() throws Exception 
 	{

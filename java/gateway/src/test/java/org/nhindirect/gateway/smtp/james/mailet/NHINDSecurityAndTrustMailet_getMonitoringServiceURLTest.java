@@ -49,7 +49,7 @@ public class NHINDSecurityAndTrustMailet_getMonitoringServiceURLTest extends Tes
 			MailetConfig config = getMailetConfig();
 			
 			theMailet.init(config);
-			doAssertions(theMailet.getMonitoringServiceURL());
+			doAssertions(SecurityAndTrustMailetOptions.getConfigurationParam(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, theMailet, null));
 		}
 		
 		
@@ -131,7 +131,7 @@ public class NHINDSecurityAndTrustMailet_getMonitoringServiceURLTest extends Tes
 			protected void setupMocks() 
 			{
 				super.setupMocks();
-				OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(NHINDSecurityAndTrustMailet.SANDT_MAILET_TX_SERVICE_URL, "http://localhost"));
+				OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, "http://localhost"));
 			}
 			
 			@Override
