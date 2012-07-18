@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.Address;
@@ -38,12 +39,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
 import org.apache.mailet.base.GenericMailet;
+import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.tx.TxDetailParser;
 import org.nhindirect.common.tx.TxService;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
+import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.common.tx.module.DefaultTxDetailParserModule;
 import org.nhindirect.common.tx.module.ProviderTxServiceModule;
@@ -56,13 +59,14 @@ import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.SmtpAgentFactory;
 import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
+import org.nhindirect.gateway.smtp.dsn.DSNCreator;
+import org.nhindirect.gateway.smtp.dsn.impl.RejectedRecipientDSNCreator;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.options.OptionsManager;
-import org.nhindirect.stagent.options.OptionsParameter;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -76,19 +80,19 @@ import com.google.inject.Provider;
  * @since 1.0
  */
 public class NHINDSecurityAndTrustMailet extends GenericMailet 
-{
- 	/**
- 	 * String value indicating the URL of the message tracking/monitoring service.  The setting should contain
- 	 * the URL of the application context of the service.  The service client will determine the full URL
- 	 * to the appropriate operation resource
- 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.TxServiceURL
- 	 */
-    public final static String SANDT_MAILET_TX_SERVICE_URL = "SANDT_MAILET_TX_SERVICE_URL";     
-	
+{    
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDSecurityAndTrustMailet.class);	
+	
+	protected static final String GENERAL_DSN_OPTION = "General";
+	protected static final String RELIABLE_DSN_OPTION = "ReliableAndTimely";
+	
 	protected SmtpAgent agent;
 	protected TxDetailParser txParser;
 	protected TxService txService;	
+	protected boolean consumeMDNProcessed;
+	protected boolean autoDSNForGeneral  = false;
+	protected boolean autoDSNForTimelyAndReliable  = false;
+	protected DSNCreator dsnCreator;
 	
 	static
 	{		
@@ -98,10 +102,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	private synchronized static void initJVMParams()
 	{
 		/*
-		 * TxServiceURL parameters
+		 * Mailet configuration parameters
 		 */
 		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
-		JVM_PARAMS.put(SANDT_MAILET_TX_SERVICE_URL, "org.nhindirect.gateway.smtp.james.mailet.TxServiceURL");
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, "org.nhindirect.gateway.smtp.james.mailet.TxServiceURL");
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM, "org.nhindirect.gateway.smtp.james.mailet.ConsumeMDNProcessed");
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM, "org.nhindirect.gateway.smtp.james.mailet.AutoDSNFailueCreation");
 		
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
@@ -115,7 +121,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		LOGGER.info("Initializing NHINDSecurityAndTrustMailet");
 		
 		// Get the configuration URL
-		final String configURLParam = getInitParameter("ConfigURL");
+		final String configURLParam = getInitParameter(SecurityAndTrustMailetOptions.CONFIG_URL_PARAM);
 		
 		if (configURLParam == null || configURLParam.isEmpty())
 		{
@@ -139,7 +145,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 
 		try
 		{
-			Provider<SmtpAgentConfig> configProvider = this.getConfigProvider();
+			final Provider<SmtpAgentConfig> configProvider = this.getConfigProvider();
 			agent = SmtpAgentFactory.createAgent(configURL, configProvider, null, modules);
 			
 		}
@@ -159,58 +165,30 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}	
 		///CLOVER:ON
 		
-		// now try to get the TxParser
-		// attempt to use the existing modules first
-		final boolean usingDefaultTxServiceMoudles = (modules == null);
-		if (modules == null)
+		// create the Tx services
+		createTxServices(modules);
+		
+		// get the consume processed MDN message setting
+		// default is faluse
+		consumeMDNProcessed = SecurityAndTrustMailetOptions.getConfigurationParamAsBoolean(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM,
+				this, false);
+		
+		// get the DSN creation options
+		// default is RELIABLE_DSN_OPTION
+		final String dnsCreateOptions =  SecurityAndTrustMailetOptions.getConfigurationParam(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM,
+				this, RELIABLE_DSN_OPTION); 
+	
+		for (String dsnOption : dnsCreateOptions.split(","))
 		{
-			// create a default module for the TxService
-			modules = createDefaultTxServiceModules();
+			if (dsnOption.equalsIgnoreCase(RELIABLE_DSN_OPTION))
+				autoDSNForTimelyAndReliable = true;
+			else if(dsnOption.equalsIgnoreCase(GENERAL_DSN_OPTION))
+				autoDSNForGeneral = true;
 		}
 		
-		Injector txInjector = Guice.createInjector(modules);
-		try
-		{
-			txParser = txInjector.getInstance(TxDetailParser.class);
-			txService = txInjector.getInstance(TxService.class);
-		}
-		catch (Exception e)
-		{
-
-			LOGGER.debug("First attempt to create message monitoring service failed.", e);
-			if (!usingDefaultTxServiceMoudles)
-				LOGGER.debug("Will attempt to create from default Tx service Guice module.");
-			///CLOVER:OFF
-			else
-				LOGGER.warn("Monitoring service already attempted to use the defualt Tx service Guice module.  Monitoring will be disabled.");
-			///CLOVER:ON
-
-		}
-		
-		// if we can't create the parser or the service, and we haven't already use the default service Guice module, then
-		// try again using the default Guice module
-		if ((txParser == null || txService == null) && !usingDefaultTxServiceMoudles)
-		{
-			try
-			{
-				// create a default module for the TxService
-				modules = createDefaultTxServiceModules();
-				txInjector = Guice.createInjector(modules);
-				if (txParser == null)
-					txParser = txInjector.getInstance(TxDetailParser.class);
-				
-				if (txService == null)
-					txService = txInjector.getInstance(TxService.class);
-				
-			}
-			///CLOVER:OFF
-			catch (Exception e)
-			{
-				LOGGER.warn("Failed to create message monitoring service.  Monitoring will be disabled");
-			}
-			///CLOVER:ON
-		}
-		
+		// create the DSN creator
+		// TODO: maybe do this with Guice to be consistent with the creation of other objects
+		dsnCreator = new RejectedRecipientDSNCreator(this);
 		
 		// set the agent and config in the Gateway state
 		final GatewayState gwState = GatewayState.getInstance();
@@ -236,6 +214,8 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		try
 		{
 		
+			Tx txToMonitor = null;
+			
 			LOGGER.trace("Entering service(Mail mail)");
 			
 			onPreprocessMessage(mail);
@@ -245,11 +225,11 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			final MimeMessage msg = mail.getMessage();
 			
 			// uses the RCPT TO commands
-			Collection<MailAddress> recips = mail.getRecipients();
+			final Collection<MailAddress> recips = mail.getRecipients();
 			if (recips == null || recips.size() == 0)
 			{
 				// fall back to the mime message list of recipients
-				Address[] recipsAddr = msg.getAllRecipients();
+				final Address[] recipsAddr = msg.getAllRecipients();
 				for (Address addr : recipsAddr)
 				{
 					
@@ -275,10 +255,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			LOGGER.info("Proccessing incoming message from sender " + sender.toString());
 			MessageProcessResult result = null;
 					
-			// before processing message, determine if it is a message that needs to be tracked
-			// by the monitoring service... this needs to be done now because the message
-			// processing operation will change the contents of the message headers
-			final Tx txToMonitor = getTxToTrack(msg, sender);
+			final boolean isOutgoing = this.isOutgoing(msg, sender);
+			
+			// if the message is outgoing, then the tracking information must be
+			// gathered now before the message is transformed
+			if (isOutgoing)
+				txToMonitor = getTxToTrack(msg, sender);
 			
 			try
 			{
@@ -291,7 +273,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				{				
 					LOGGER.error("Failed to process message.  processMessage returned null.");		
 					
-					onMessageRejected(mail, recipients, sender, null);
+					onMessageRejected(mail, recipients, sender, isOutgoing, txToMonitor, null);
 					
 					mail.setState(Mail.GHOST);
 					
@@ -305,7 +287,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				
 				LOGGER.error("Failed to process message: " + e.getMessage(), e);					
 				
-				onMessageRejected(mail, recipients, sender, e);
+				onMessageRejected(mail, recipients, sender, isOutgoing, txToMonitor, e);
 				
 				mail.setState(Mail.GHOST);
 				LOGGER.trace("Exiting service(Mail mail)");
@@ -342,7 +324,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 					mail.getRecipients().size() > 0)
 			{
 				
-				Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
+				final Collection<MailAddress> newRCPTList = new ArrayList<MailAddress>();
 				for (MailAddress rctpAdd : (Collection<MailAddress>)mail.getRecipients())
 				{
 					if (!isRcptRejected(rctpAdd, result.getProcessedMessage().getRejectedRecipients()))
@@ -376,22 +358,21 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				}
 			}
 			
-			onPostprocessMessage(mail, result);
 			
-			// now that processing is complete and successful, determine if the message is an outbound IMF message
-			// if so, send a Tx to monitoring service to track this message
-			if (txToMonitor != null && txService != null)
-			{
-				try
-				{
-					txService.trackMessage(txToMonitor);
-				}
-				catch (ServiceException ex)
-				{
-					LOGGER.warn("Failed to submit message to monitoring service.", ex);
-				}
-			}
+			// determine now if the message is incoming.... if it is incoming,
+			// then the message has been decrypted and the tracking information can
+			// be extraced
+			if (!isOutgoing)
+				txToMonitor = getTxToTrack(result.getProcessedMessage().getMessage(), sender);
 			
+			// track message
+			trackMessage(txToMonitor, isOutgoing);
+			
+			// determine if this is a message message that needs to be consumed
+			if (consumeMessage(txToMonitor, isOutgoing))
+				mail.setState(Mail.GHOST);
+			
+			onPostprocessMessage(mail, result, isOutgoing, txToMonitor);
 			
 			LOGGER.trace("Exiting service(Mail mail)");
 		}
@@ -401,7 +382,10 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 	}
 	
+	
+	
 	/*
+	 * 
 	 * Determine if the recipient has been rejected
 	 * 
 	 * @param rejectedRecips
@@ -456,6 +440,38 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		/* no-op */
 	}
 	
+	
+	/**
+	 * Overridable method for custom processing when a message is rejected by the SMTP agent.  Includes the tracking information
+	 * if available and the message direction.  For passivity, this method calls {@link #onMessageRejected(Mail, NHINDAddressCollection, NHINDAddress, Throwable)}
+	 * by default after performing its operations.
+	 * @param message The mail message that the agent attempted to process. 
+	 * @param recipients A collection of recipients that this message was intended to be delievered to.
+	 * @param sender The sender of the message.
+	 * @param isOutgoing Indicate the direction of the message: incoming or outgoing.
+	 * @param tx Contains tracking information if available.  Generally this information will only be available for outgoing messages
+	 * as rejected incoming messages more than likely will not have been decrypted yet.
+	 * @param t Exception thrown by the agent when the message was rejected.  May be null;
+	 */
+	protected void onMessageRejected(Mail mail, NHINDAddressCollection recipients, NHINDAddress sender, boolean isOutgoing,
+			Tx tx, Throwable t)
+	{
+		// if this is an outgoing IMF message, then we may need to send a DSN message
+		boolean sendDSN = false;
+		if (isOutgoing && tx != null && tx.getMsgType() == TxMessageType.IMF)
+		{
+			final boolean timely = TxUtil.isReliableAndTimelyRequested(tx);
+			if ((timely && this.autoDSNForTimelyAndReliable) ||
+					(!timely && this.autoDSNForGeneral))
+				sendDSN = true;
+		}
+		
+		if (sendDSN)
+			sendDSN(tx, recipients);
+		
+		this.onMessageRejected(mail, recipients, sender, t);
+	}
+	
 	/**
 	 * Overridable method for custom processing after the message has been processed by the SMTP agent.  
 	 * @param mail The incoming mail message.  The contents of the message may have changed from when it was originally
@@ -465,6 +481,48 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	protected void onPostprocessMessage(Mail mail, MessageProcessResult result)
 	{
 		/* no-op */
+	}
+	
+	/**
+	 * Overridable method for custom processing after the message has been processed by the SMTP agent.  Includes the tracking information
+	 * if available and the message direction.  For passivity, this method calls {@link #onPostprocessMessage(Mail, MessageProcessResult)}
+	 * by default after performing its operations.
+	 * @param mail The incoming mail message.  The contents of the message may have changed from when it was originally
+	 * received. 
+	 * @param result Contains results of the message processing including the resulting message.
+	 * @param isOutgoing Indicate the direction of the message: incoming or outgoing.
+	 * @param tx Contains tracking information if available.
+	 */
+	protected void onPostprocessMessage(Mail mail, MessageProcessResult result, boolean isOutgoing, Tx tx)
+	{
+		// if there are rejected recipients and an outgoing IMF message, then we may need to send a DSN message
+		boolean sendDSN = false;
+		if (isOutgoing && tx != null && tx.getMsgType() == TxMessageType.IMF && result.getProcessedMessage().hasRejectedRecipients())
+		{
+			final boolean timely = TxUtil.isReliableAndTimelyRequested(tx);
+			if ((timely && this.autoDSNForTimelyAndReliable) ||
+					(!timely && this.autoDSNForGeneral))
+				sendDSN = true;
+		}
+		
+		if (sendDSN)
+			sendDSN(tx, result.getProcessedMessage().getRejectedRecipients());
+		
+		this.onPostprocessMessage(mail, result);
+	}
+	
+	protected void sendDSN(Tx tx,  NHINDAddressCollection failedRecipeints)
+	{
+		try
+		{
+			final MimeMessage msg = dsnCreator.createDSNFailure(tx, failedRecipeints);
+			this.getMailetContext().sendMail(msg);
+		}
+		catch (Throwable e)
+		{
+			// don't kill the process if this fails
+			LOGGER.error("Error sending DSN failure message.", e);
+		}
 	}
 	
 	/**
@@ -512,6 +570,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	 */
 	protected boolean isOutgoing(MimeMessage msg, NHINDAddress sender)
 	{		
+		if (agent.getAgent() == null || agent.getAgent().getDomains() == null)
+			return false;
+		
 		// if the sender is not from our domain, then is has to be an incoming message
 		if (!sender.isInDomain(agent.getAgent().getDomains()))
 			return false;
@@ -529,28 +590,16 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	}
 	
 	/**
-	 * Creates a trackable monitoring object for a message.  A trackable objects is only created if the message
-	 * if an outbound IMF message.
+	 * Creates a trackable monitoring object for a message. 
 	 * @param msg The message that is being processed
 	 * @param sender The sender of the message
-	 * @return A trackable Tx object.  Returns null if the message is either inbound or not an IMF message.
+	 * @return A trackable Tx object.
 	 */
 	protected Tx getTxToTrack(MimeMessage msg, NHINDAddress sender)
-	{
-		/*
-		 * only get outgoing IMF messages
-		 */
-		
+	{		
 		if (this.txParser == null)
 			return null;
-		
-		final TxMessageType type = TxUtil.getMessageType(msg);
-		if (type != TxMessageType.IMF)
-			return null;
-		
-		if (!isOutgoing(msg, sender))
-			return null;
-		
+				
 		try
 		{	
 			final Map<String, TxDetail> details = txParser.getMessageDetails(msg);
@@ -574,14 +623,16 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	 */
 	protected Collection<Module> createDefaultTxServiceModules()
 	{
-		Collection<Module> modules = new ArrayList<Module>();
+		final Collection<Module> modules = new ArrayList<Module>();
 		modules.add(DefaultTxDetailParserModule.create());
 		
 		
 		// default implementation will use try to use the REST based service
 		// must first determine if the REST service url exist
-		final String monitoringURLParam = getMonitoringServiceURL();
-		if (monitoringURLParam != null && !monitoringURLParam.isEmpty())
+		final String monitoringURLParam = 
+				SecurityAndTrustMailetOptions.getConfigurationParam(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, this, "");
+		
+		if (!monitoringURLParam.isEmpty())
 			modules.add(ProviderTxServiceModule.create(new RESTTxServiceClientProvider(monitoringURLParam)));
 		else
 		{
@@ -592,26 +643,152 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		
 		return modules;
 	}
+
 	
 	/**
-	 * Gets the configured monitoring service URL from either
-	 * the mailet configuration MessageMonitoringServiceURL parameter or in the agent OptionsParameter named org.nhindirect.gateway.smtp.james.mailet.TxServiceURL
-	 * @return  The URL of the monitoring service.  Returns null or an empty string if the service URL has not been configured.
+	 * Tracks message that meet the following qualifications
+	 * <br>
+	 * 1. Outgoing IMF message
+	 * <br>
+	 * 2. Incoming MDN message
+	 * <br>
+	 * 3. Incoming DSN message
+	 * @param tx The message to monitor and track
+	 * @param isOutgoing Indicates the message direction: incoming or outgoing
 	 */
-	protected String getMonitoringServiceURL()
+	protected void trackMessage(Tx tx, boolean isOutgoing)
 	{
-		// get from the mailet init parameter first
-		String monitoringURLParam = getInitParameter("MessageMonitoringServiceURL");
-		if (monitoringURLParam == null || monitoringURLParam.isEmpty())
+		// only track the following message..
+		// 1. Outgoing IMF message
+		// 2. Incoming MDN message
+		// 3. Incoming DSN message
+		boolean track = false;
+		if (tx != null)
 		{
-			// if not in the mailet config, then try the 
-			// Options manager
-			OptionsParameter param = OptionsManager.getInstance().getParameter(SANDT_MAILET_TX_SERVICE_URL);
-			if (param != null)
-				monitoringURLParam =  param.getParamValue();
+			switch (tx.getMsgType())
+			{
+				case IMF:
+				{
+					track = isOutgoing;
+					break;
+				}
+				case DSN:
+				case MDN:
+				{
+					track = !isOutgoing;
+					break;
+				}
+			}
 		}
 		
-		return monitoringURLParam;
+		if (track)
+		{
+			try
+			{
+				txService.trackMessage(tx);
+			}
+			catch (ServiceException ex)
+			{
+				LOGGER.warn("Failed to submit message to monitoring service.", ex);
+			}
+		}
+		
+	}
+	
+	/**
+	 * Creates the Tx services
+	 * @param initModules The initial Guice modules created by the init() method
+	 */
+	protected void createTxServices(final Collection<Module> initModules)
+	{
+		Collection<Module> modules = initModules;
+		
+		// now try to get the TxParser
+		// attempt to use the existing modules first
+		final boolean usingDefaultTxServiceMoudles = (modules == null);
+		if (modules == null)
+		{
+			// create a default module for the TxService
+			modules = createDefaultTxServiceModules();
+		}
+		
+		Injector txInjector = Guice.createInjector(modules);
+		try
+		{
+			txParser = txInjector.getInstance(TxDetailParser.class);
+			txService = txInjector.getInstance(TxService.class);
+		}
+		catch (Exception e)
+		{
+
+			LOGGER.debug("First attempt to create message monitoring service failed.", e);
+			if (!usingDefaultTxServiceMoudles)
+				LOGGER.debug("Will attempt to create from default Tx service Guice module.");
+			///CLOVER:OFF
+			else
+				LOGGER.warn("Monitoring service already attempted to use the defualt Tx service Guice module.  Monitoring will be disabled.");
+			///CLOVER:ON
+
+		}
+		
+		// if we can't create the parser or the service, and we haven't already use the default service Guice module, then
+		// try again using the default Guice module
+		if ((txParser == null || txService == null) && !usingDefaultTxServiceMoudles)
+		{
+			try
+			{
+				// create a default module for the TxService
+				modules = createDefaultTxServiceModules();
+				txInjector = Guice.createInjector(modules);
+				if (txParser == null)
+					txParser = txInjector.getInstance(TxDetailParser.class);
+				
+				if (txService == null)
+					txService = txInjector.getInstance(TxService.class);
+				
+			}
+			///CLOVER:OFF
+			catch (Exception e)
+			{
+				LOGGER.warn("Failed to create message monitoring service.  Monitoring will be disabled");
+			}
+			///CLOVER:ON
+		}		
+	}
+	
+	/**
+	 * Determines if a message should be consumed by the gateway
+	 * @param tx The message that is being evaluated
+	 * @param isOutgoing Indicates the message directions: incoming or outgoing
+	 * @return true if the message should be consumed by the gateway; false otherwise
+	 */
+	protected boolean consumeMessage(Tx tx, boolean isOutgoing)
+	{
+		boolean consumeMessage = false;
+		
+		if (tx != null)
+		{
+			switch (tx.getMsgType())
+			{
+				case MDN:
+				{
+					// incoming MDN message
+					if (consumeMDNProcessed && !isOutgoing)
+					{
+						// check for "processed" disposition
+						final TxDetail detail = tx.getDetail(TxDetailType.DISPOSITION);
+						if (detail != null)
+						{
+							if (detail.getDetailValue().contains(MDNStandard.Disposition_Processed.toLowerCase(Locale.getDefault())))
+								consumeMessage = true;
+						}		
+					}
+					break;
+				}				
+			}
+		}
+		
+		return consumeMessage;
 	}
 	
 	/**

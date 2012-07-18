@@ -10,11 +10,13 @@ public class MockMailetConfig implements MailetConfig
 {
 	private final Map<String, String> initParameters;
 	private final String mailetName;
+	private final MockMailetContext context;
 	
 	public MockMailetConfig(Map<String, String> initParameters, String mailetName)
 	{
 		this.initParameters = initParameters;
 		this.mailetName = mailetName;
+		this.context = new MockMailetContext();
 	}
 	
 	public String getInitParameter(String param) 
@@ -29,7 +31,7 @@ public class MockMailetConfig implements MailetConfig
 
 	public MailetContext getMailetContext() 
 	{
-		return new MockMailetContext();
+		return context;
 	}
 
 	public String getMailetName() 

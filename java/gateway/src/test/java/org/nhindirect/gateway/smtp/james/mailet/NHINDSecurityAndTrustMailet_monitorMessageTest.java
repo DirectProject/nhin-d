@@ -38,7 +38,7 @@ public class NHINDSecurityAndTrustMailet_monitorMessageTest extends TestCase
 			String configfile = TestUtils.getTestConfigFile(getConfigFileName());
 			Map<String,String> params = new HashMap<String, String>();
 			
-			params.put("ConfigURL", "file://" + configfile);
+			params.put(SecurityAndTrustMailetOptions.CONFIG_URL_PARAM, "file://" + configfile);
 			
 			return new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");	
 		}
@@ -137,6 +137,30 @@ public class NHINDSecurityAndTrustMailet_monitorMessageTest extends TestCase
 			protected String getMessageToSend()
 			{
 				return "MDNMessage.txt";
+			}
+			
+			@Override
+			protected void doAssertions(MockTxService service) throws Exception
+			{
+				assertEquals(0, service.txs.size());
+			}			
+		}.perform();
+	}
+	
+	public void testMonitorMessage_trackDSNMessage_assertMessageNotTracked() throws Exception 
+	{
+		new TestPlan() 
+		{
+			@Override
+			protected String getConfigFileName()
+			{
+				return "ValidConfigStateLine.txt";
+			}
+			
+			@Override
+			protected String getMessageToSend()
+			{
+				return "DSNMessage.txt";
 			}
 			
 			@Override
