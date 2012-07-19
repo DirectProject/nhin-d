@@ -48,12 +48,22 @@
 
   <bean id="msgIdCorrelator" class="org.nhindirect.monitor.expression.MessageIdCorrelationExpression" />
 
+  <!-- a persistent aggregation repository using camel-hawtdb -->
+  <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository">
+    <!-- store the repo in the hawtdb.dat file -->
+    <property name="persistentFileName" value="target/data/hawtdb.dat"/>
+    <!-- and use directMonitoring as the repository name -->
+    <property name="repositoryName" value="directMonitoring"/>
+  </bean>
+
+
   <camelContext id="web-camel-context" xmlns="http://camel.apache.org/schema/spring">  
     <template id="testProducerTemplate" defaultEndpoint="direct:start"/>
     <route id="direct-reliable">
 
       <from uri="direct:start"/>
-      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true">
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
+           aggregationRepositoryRef="directMonitoringRepo">
         <correlationExpression>
             <ref>msgIdCorrelator</ref>
         </correlationExpression>
