@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.gateway.smtp.james.mailet;
 
 import java.util.ArrayList;
@@ -38,6 +59,12 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 
+/**
+ * Abstract mailet class that instantiates instances of the monitoring service, parser, and DSNCreator.  Also include utility methods for retrieving the message sender and 
+ * recipients based on the SMTP envelope (if available) and parsing messages into monitoring Tx objects.
+ * @author Greg Meyer
+ * @Since 2.0
+ */
 public abstract class AbstractNotificationAwareMailet extends GenericMailet
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(AbstractNotificationAwareMailet.class);	
@@ -46,6 +73,10 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 	protected TxDetailParser txParser;
 	protected TxService txService;	
 	
+	/**
+	 * {@inheritDoc}
+	 * Creates the monitoring service and DSNCreator.
+	 */
 	public void init() throws MessagingException
 	{
 		super.init();
@@ -128,8 +159,19 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 		}	
 	}
 	
+	/**
+	 * Gets the DSNCreator provider specific to the type of DSN messages that should be created by the mailet.
+	 * @return A DSNCreator provider that will be used to instantiate the DSNCreate.
+	 */
 	protected abstract Provider<DSNCreator> getDSNProvider();
 	
+	/**
+	 * Sends a DSN message using information in a pre-parsed Tx object and a list of failed message recipients.  This builds the DSN message using
+	 * the {@link DSNCreator} specified by {@link #getDSNProvider()} and sends the message using the mailet context sendMail method.  This effectively
+	 * places the message on top of the mail stack to be processed as a new incoming message.
+	 * @param tx Tx object containing information about the original message.
+	 * @param undeliveredRecipeints A collection of recipients that could not receive the original message
+	 */
 	protected void sendDSN(Tx tx, NHINDAddressCollection undeliveredRecipeints)
 	{
 		try
@@ -271,6 +313,13 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 		return modules;
 	}
 
+	/**
+	 * Get the recipients of Mail message by retrieving the recipient list from the SMTP envelope first, then falling back to the recipients
+	 * in the message if the recipients cannot be retrieved from the SMTP envelope.
+	 * @param mail The mail object that contains information from the SMTP envelope.
+	 * @return Collection of message recipients.
+	 * @throws MessagingException
+	 */
 	@SuppressWarnings("unchecked")
 	protected NHINDAddressCollection getMailRecipients(Mail mail) throws MessagingException
 	{
@@ -299,6 +348,12 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 		return recipients;
 	}
 	
+	/**
+	 * Gets the sender of the message.
+	 * @param mail The mail object to get the mail information from.
+	 * @return The sender of the message.
+	 * @throws MessagingException
+	 */
 	protected NHINDAddress getMailSender(Mail mail) throws MessagingException
 	{
 		// get the sender

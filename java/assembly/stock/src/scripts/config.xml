@@ -548,7 +548,7 @@ Regards, Postmaster XXX.YYY
          </mailet>
 
          <!-- Is the recipient is for a local account, deliver it locally -->
-         <mailet match="RecipientIsLocal" class="LocalDelivery"/>
+         <mailet match="RecipientIsLocal" class="TimelyAndReliableLocalDelivery"/>
 
          <!-- If the host is handled by this server and it did not get -->
          <!-- locally delivered, this is an invalid recipient -->

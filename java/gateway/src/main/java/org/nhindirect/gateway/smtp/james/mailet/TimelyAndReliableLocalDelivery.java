@@ -49,7 +49,13 @@ import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 
 import com.google.inject.Provider;
 
-
+/**
+ * This mailet override the built in Apache James LocalDelivery mailet and sends an MDN dispatched message on successful delivery to a local mailbox
+ * if the message request timely and reliable message delivery.
+ * In addition, it also sends a DSN failure message if the message cannot be placed into the local mailbox.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMailet
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(TimelyAndReliableLocalDelivery.class);	
@@ -62,6 +68,9 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 	
 	protected NotificationProducer notificationProducer;
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void init() throws MessagingException
 	{
 		super.init();
@@ -85,6 +94,9 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Local Direct Delivery Agent", ""));
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void service(Mail mail) throws MessagingException 
 	{
@@ -150,6 +162,9 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		LOGGER.debug("Exiting timely and reliable service method.");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Provider<DSNCreator> getDSNProvider() 
 	{
