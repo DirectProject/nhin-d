@@ -192,7 +192,7 @@ public class NHINDSecurityAndTrustMailet_service_Test extends TestCase
 			exceptionOccured = true;
 		}
 		
-		assertTrue(exceptionOccured);
+		assertFalse(exceptionOccured);
 		assertEquals(Mail.GHOST, mockMail.getState());
 		
 	}	
@@ -229,7 +229,7 @@ public class NHINDSecurityAndTrustMailet_service_Test extends TestCase
 			exceptionOccured = true;
 		}
 		
-		assertTrue(exceptionOccured);
+		assertFalse(exceptionOccured);
 		assertEquals(Mail.GHOST, mockMail.getState());
 		
 	}

@@ -102,6 +102,7 @@
 	<property name="lib.jackson-core-asl" value="${install.root.dir}/lib/jackson-core-asl-1.7.5.jar"></property>	
 	<property name="lib.jackson-jaxrs" value="${install.root.dir}/lib/jackson-jaxrs-1.7.5.jar"></property>		
 	<property name="lib.jackson-mapper-asl" value="${install.root.dir}/lib/jackson-mapper-asl-1.7.5.jar"></property>		
+	<property name="lib.jdom" value="${install.root.dir}/lib/jdom-1.1.jar"></property>		
 	
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${install.root.dir}/lib/jcs-1.3.jar"></property>
@@ -121,7 +122,7 @@
 	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.4.2.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5-SNAPSHOT.jar"></property>
 	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.0-SNAPSHOT.jar"></property>
 	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1-SNAPSHOT.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.0.1.jar"></property>
@@ -275,6 +276,7 @@
 	    <copy file="${lib.jackson-core-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
 	    <copy file="${lib.jackson-jaxrs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
 	    <copy file="${lib.jackson-mapper-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+	    <copy file="${lib.jdom}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
 		
 		<!-- edit the config.xml file -->
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>

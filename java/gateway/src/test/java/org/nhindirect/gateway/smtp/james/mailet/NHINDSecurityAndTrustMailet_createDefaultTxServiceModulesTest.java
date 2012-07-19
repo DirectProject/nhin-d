@@ -19,7 +19,7 @@ import org.nhindirect.gateway.testutils.TestUtils;
 
 import com.google.inject.Module;
 
-public class NHINDSecurityAndTrustMailet_createDefaultServiceModulesTest extends TestCase
+public class NHINDSecurityAndTrustMailet_createDefaultTxServiceModulesTest extends TestCase
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{		

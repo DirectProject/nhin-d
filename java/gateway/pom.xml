@@ -43,7 +43,7 @@
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.4.2</version>
+	        <version>1.5-SNAPSHOT</version>
 	        <scope>compile</scope>
 	    </dependency> 
 	    <dependency>
@@ -61,7 +61,7 @@
 	    <dependency>
 	        <groupId>org.nhind</groupId>
 	        <artifactId>agent</artifactId>
-	        <version>1.4.2</version>
+	        <version>1.5-SNAPSHOT</version>
 	         <type>test-jar</type>
 	        <scope>test</scope>
 	    </dependency>  
@@ -92,7 +92,7 @@
 	    	<groupId>commons-io</groupId>
 	    	<artifactId>commons-io</artifactId>
 	    	<version>1.4</version>
-	    </dependency>	
+	    </dependency>	    	
 	    <dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -115,12 +115,12 @@
 		    <groupId>org.apache.james</groupId>
 		    <artifactId>apache-mailet</artifactId>
 		    <version>2.4</version>	    
-		</dependency>
+		</dependency>						
 		<dependency>
 		    <groupId>org.apache.james</groupId>
 		    <artifactId>apache-mailet-base</artifactId>
 		    <version>1.1</version>	    
-		</dependency>	
+		</dependency>			
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-core</artifactId>
@@ -470,7 +470,7 @@
 	          <source>1.6</source>
 	          <show>public</show>
 	          <excludePackageNames>
-	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider:org.nhindirect.gateway.smtp.config.cert.impl
+	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider:org.nhindirect.gateway.smtp.config.cert.impl:org.nhindirect.gateway.smtp.dsn.impl
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>

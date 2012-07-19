@@ -65,5 +65,38 @@ public enum NotificationType implements DispositionType
 	    {
 	    	return NotificationHelper.asString(this);
 	    }
-	}	
+	},	
+	
+	/**
+	 * Indicates message was dispatched.
+	 */
+	Dispatched
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	},	
+	
+	/**
+	 * Indicates message was denied.
+	 */
+	Denied
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	},	
+	
+	/**
+	 * Indicates message was in error.
+	 */
+	Error
+	{
+	    public String toString() 
+	    {
+	    	return NotificationHelper.asString(this);
+	    }
+	}		
 }

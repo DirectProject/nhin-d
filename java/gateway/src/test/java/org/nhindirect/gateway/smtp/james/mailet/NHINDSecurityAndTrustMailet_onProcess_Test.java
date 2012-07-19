@@ -341,7 +341,7 @@ public class NHINDSecurityAndTrustMailet_onProcess_Test extends TestCase
 					exceptionOccured = true;
 				}
 				
-				assertTrue(exceptionOccured);
+				assertFalse(exceptionOccured);
 				assertEquals(0, theMailet.getOnPostProcessCount());
 				assertEquals(1, theMailet.getOnPreProcessCount());
 				assertEquals(1, theMailet.getOnRejectedCount());

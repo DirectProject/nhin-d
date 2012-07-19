@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.mail.Address;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -18,7 +19,9 @@ import org.nhindirect.common.tx.model.TxMessageType;
 
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
+import org.nhindirect.stagent.NHINDAddressCollection;
 
 
 public class NHINDSecurityAndTrustMailet_getMessageToTrackTest extends TestCase
@@ -67,7 +70,18 @@ public class NHINDSecurityAndTrustMailet_getMessageToTrackTest extends TestCase
 			MimeMessage msg = new MimeMessage(null, IOUtils.toInputStream(TestUtils.readMessageResource(getMessageToSend())));
 			NHINDAddress sender = new NHINDAddress((InternetAddress)msg.getFrom()[0]);
 			
-			doAssertions(theMailet.getTxToTrack(msg, sender));
+			
+			final NHINDAddressCollection recipients = new NHINDAddressCollection();		
+
+
+			final Address[] recipsAddr = msg.getAllRecipients();
+			for (Address addr : recipsAddr)
+			{
+				
+				recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
+			}
+			
+			doAssertions(theMailet.getTxToTrack(msg, sender, recipients));
 		}
 		
 		protected String getMessageToSend()

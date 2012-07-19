@@ -19,31 +19,47 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.common.mail.dsn;
+package org.nhindirect.gateway.smtp.dsn.provider;
 
-import java.util.Enumeration;
-import java.util.List;
+import org.apache.mailet.Mailet;
+import org.nhindirect.gateway.smtp.dsn.DSNCreator;
+import org.nhindirect.gateway.smtp.dsn.impl.RejectedRecipientDSNCreator;
 
-import javax.mail.Address;
-import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
+
+import com.google.inject.Provider;
 
 /**
- * Generator interface for creating the human readable part of a DSN message.
- * @author gm2552
- * @since 1.1
+ * Guice provider for creating instances of a RejectedRecipientDSNCreator objects
+ * @author Greg Meyer
+ * @since 1.0
  */
-public interface DSNFailureTextBodyPartGenerator 
-{
+public class RejectedRecipientDSNCreatorProvider implements Provider<DSNCreator> 
+{	
+	protected final Mailet mailet;
+	
 	/**
-	 * Generates the human readable section of a DSN message with pre-populated information.
-	 * @param originalSender The original sender of the message.
-	 * @param failedRecipients List of recipients that did not receive the original message.
-	 * @param originalMessageHeaders Enumeration of the headers of the original message.
-	 * @return A mime body part containing the content of the human readable section of the DSN message
-	 * @throws MessagingException
+	 * Constructor
 	 */
-    public MimeBodyPart generate(Address originalSender, List<Address> failedRecipients,
-    	    Enumeration<Header> originalMessageHeaders) throws MessagingException;
+	public RejectedRecipientDSNCreatorProvider()
+	{
+		this.mailet = null;
+	}	
+	
+	
+	/**
+	 * Construtor
+	 * @param mailet Mailet used to retrive configuration parameters
+	 */
+	public RejectedRecipientDSNCreatorProvider(Mailet mailet)
+	{
+		this.mailet = mailet;
+	}	
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public DSNCreator get()
+	{
+		return new RejectedRecipientDSNCreator(mailet);
+	}
 }

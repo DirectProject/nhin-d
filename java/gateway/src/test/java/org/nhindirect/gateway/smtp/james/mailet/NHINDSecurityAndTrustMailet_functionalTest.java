@@ -32,15 +32,11 @@ import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 import org.nhind.config.Setting;
 import org.nhindirect.gateway.smtp.GatewayState;
-import org.nhindirect.gateway.smtp.SmtpAgentException;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
-import org.nhindirect.stagent.AgentError;
-import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.CryptoExtensions;
-import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
@@ -524,28 +520,9 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 				
 				theMailet.service(theMessage);
 				
+				assertEquals(Mail.GHOST, theMessage.getState());
 			}				
-					
-			protected void assertException(Exception exception) throws Exception 
-			{
-				assertNotNull(exception);
-				
-				assertTrue(exception instanceof SmtpAgentException);
-				SmtpAgentException ex = (SmtpAgentException)exception;
-				assertNotNull(ex.getCause());
-				assertTrue(ex.getCause() instanceof NHINDException);
-				
-				NHINDException nEx = (NHINDException)ex.getCause();
-				
-				assertNotNull(nEx.getError());
-				assertTrue(nEx.getError() instanceof AgentException);
-				
-				AgentException aEx = (AgentException)nEx.getError();				
-				AgentError err = (AgentError)aEx.getError();
-				assertNotNull(err);
-				
-				assertEquals(AgentError.NoTrustedRecipients, err);
-			}			
+						
 			
 		}.perform();
 		

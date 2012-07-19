@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.mailet.MailetConfig;
+import org.nhindirect.gateway.GatewayConfiguration;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.options.OptionsManager;
@@ -49,7 +50,7 @@ public class NHINDSecurityAndTrustMailet_getMonitoringServiceURLTest extends Tes
 			MailetConfig config = getMailetConfig();
 			
 			theMailet.init(config);
-			doAssertions(SecurityAndTrustMailetOptions.getConfigurationParam(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, theMailet, null));
+			doAssertions(GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, theMailet, null));
 		}
 		
 		

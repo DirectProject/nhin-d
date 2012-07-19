@@ -139,17 +139,20 @@ public class MDNStandard extends MailStandard
     	public static final String Warning = "Warning";    	
     }
         
-    static final String Action_Manual = "manual-action";
-    static final String Action_Automatic = "automatic-action";
-    static final String Send_Manual = "MDN-sent-manually";
-    static final String Send_Automatic = "MDN-sent-automatically";
-    static final String Disposition_Displayed = "displayed";
-    static final String Disposition_Processed = "processed";
-    static final String Disposition_Deleted = "deleted";
-    static final String Modifier_Error = "error";    
+    public static final String Action_Manual = "manual-action";
+    public static final String Action_Automatic = "automatic-action";
+    public static final String Send_Manual = "MDN-sent-manually";
+    public static final String Send_Automatic = "MDN-sent-automatically";
+    public static final String Disposition_Displayed = "displayed";
+    public static final String Disposition_Processed = "processed";
+    public static final String Disposition_Dispatched = "dispatched";  
+    public static final String Disposition_Deleted = "deleted";
+    public static final String Disposition_Denied = "denied";    
+    public static final String Disposition_Error = "error";  
+    public static final String Modifier_Error = "error";    
     
-    static final String  ReportType = "report-type";
-    static final String  ReportTypeValueNotification = "disposition-notification";  
+    public static final String  ReportType = "report-type";
+    public static final String  ReportTypeValueNotification = "disposition-notification";  
     
     /**
      * Tests the entity to see if it contains an MDN request.
@@ -347,6 +350,15 @@ public class MDNStandard extends MailStandard
             
             case Deleted:
                 return Disposition_Deleted;
+              
+            case Dispatched:
+                return Disposition_Dispatched; 
+                
+            case Denied:
+                return Disposition_Denied;  
+                
+            case Error:
+                return Disposition_Error;         
         }
     }    
     
