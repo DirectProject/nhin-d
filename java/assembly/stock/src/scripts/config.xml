@@ -531,7 +531,7 @@ Regards, Postmaster XXX.YYY
             <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
             <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
             <AutoDSNFailueCreation>General,ReliableAndTimely</AutoDSNFailueCreation> 
-            <ConsumeMDNProcessed>true</ConsumeMDNProcessed>>
+            <ConsumeMDNProcessed>true</ConsumeMDNProcessed>
          </mailet>
 
          <!-- This mailet is only needed if the security and trust agent uses a matcher that bi-passes
