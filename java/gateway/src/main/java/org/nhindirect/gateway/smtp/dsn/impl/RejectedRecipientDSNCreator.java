@@ -46,7 +46,7 @@ public class RejectedRecipientDSNCreator extends AbstractDSNCreator
 	private synchronized static void initJVMParams()
 	{
 		/*
-		 * Mailet configuration parameters
+		 * Configuration parameters
 		 */
 		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
 		JVM_PARAMS.put(RejectedRecipientDSNCreatorOptions.DSN_FAILED_PREFIX, "org.nhindirect.gateway.smtp.dsn.impl.DSNFailedPrefix");

@@ -35,6 +35,11 @@ public class DSNCreatorProviderModule extends AbstractModule
 {
 	protected final Provider<DSNCreator> dsnCreator;
 	
+	/**
+	 * Creates an instance of the module with a DSNCreator provider.
+	 * @param dsnCreator Guice provider that will create instances of a specific DNSCreator type.
+	 * @return Instance of the module.
+	 */
 	public static DSNCreatorProviderModule create(Provider<DSNCreator> dsnCreator)
 	{
 		return new DSNCreatorProviderModule(dsnCreator);
@@ -45,6 +50,9 @@ public class DSNCreatorProviderModule extends AbstractModule
 		this.dsnCreator = dsnCreator;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	protected void configure()
 	{	
 		bind(DSNCreator.class).toProvider(dsnCreator);
