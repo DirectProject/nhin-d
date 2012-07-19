@@ -34,7 +34,7 @@
 	<property name="resources.dir" value="${src}/main/resources"></property>
 	<property name="build.dir" value="${install.root.dir}/build"></property>
 	<property name="build.download.dir" value="${build.dir}/download"></property>
-	<property name="apache.james.binary.url" value="http://ftp.wayne.edu/apache//james/server/apache-james-2.3.2.zip"></property>
+	<property name="apache.james.binary.url" value="http://www.gtlib.gatech.edu/pub/apache/james/server/apache-james-2.3.2.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
