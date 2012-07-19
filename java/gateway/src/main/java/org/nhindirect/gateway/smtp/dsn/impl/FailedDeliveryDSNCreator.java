@@ -57,6 +57,7 @@ public class FailedDeliveryDSNCreator extends AbstractDSNCreator
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
 	
+	///CLOVER:OFF
 	public FailedDeliveryDSNCreator(DSNGenerator generator, String postmasterMailbox, String reportingMta, 
 			DSNFailureTextBodyPartGenerator textGenerator)
 	{
@@ -67,6 +68,7 @@ public class FailedDeliveryDSNCreator extends AbstractDSNCreator
 		this.textGenerator = textGenerator;
 		this.dsnStatus = DSNStatus.DELIVERY_OTHER;
 	}
+	///CLOVER:ON
 	
 	public FailedDeliveryDSNCreator(Mailet mailet)
 	{

@@ -103,10 +103,12 @@ public class TrackIncomingNotification extends AbstractNotificationAwareMailet
 			{
 				txService.trackMessage(txToMonitor);
 			}
+			///CLOVER:OFF
 			catch (ServiceException ex)
 			{
 				LOGGER.warn("Failed to submit message to monitoring service.", ex);
 			}
+			///CLOVER:ON
 		}
 		
 		LOGGER.debug("Exiting track incoming notification service");

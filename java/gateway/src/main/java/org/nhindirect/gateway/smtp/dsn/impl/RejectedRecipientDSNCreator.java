@@ -60,6 +60,7 @@ public class RejectedRecipientDSNCreator extends AbstractDSNCreator
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
 	
+	///CLOVER:OFF
 	public RejectedRecipientDSNCreator(DSNGenerator generator, String postmasterMailbox, String reportingMta, 
 			DSNFailureTextBodyPartGenerator textGenerator)
 	{
@@ -71,6 +72,7 @@ public class RejectedRecipientDSNCreator extends AbstractDSNCreator
 		
 		this.dsnStatus = DSNStatus.UNDEFINED_STATUS;
 	}
+	///CLOVER:ON
 	
 	public RejectedRecipientDSNCreator(Mailet mailet)
 	{

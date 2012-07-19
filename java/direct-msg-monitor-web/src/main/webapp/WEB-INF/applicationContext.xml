@@ -79,11 +79,29 @@
   	<property name="SMTPClientFactory" ref="smtpClientFactory"/>  	
   </bean>
 
+  <!-- A persistent aggregation repository using camel-hawtdb.
+       This could be replaced using a JDBC repository as described by the 
+       camel SQL component documentation: http://camel.apache.org/sql-component.html  -->
+  <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository">
+    <!-- store the repo in the hawtdb.dat file -->
+    <property name="persistentFileName" value="${monitor.recovery.recoveryFileName}"/>
+    <!-- and use directMonitoring as the repository name -->
+    <property name="repositoryName" value="${monitor.recovery.repositoryName}"/>
+    <!--  retry interval for failed delivery of notifications... It doesn't appear the
+    HawtDB repository supports a delay multiplier like Camel error handling; it only
+    supports a constant delay.  Set this delay to an appropriate time in ms with 
+    an appropriate maximum retry limit. -->
+    <property name="recoveryInterval" value="${monitor.recovery.retryInterval}" />
+    <property name="maximumRedeliveries" value="${monitor.recovery.maxRetryAttemps}" />   
+    <property name="deadLetterUri" value="${monitor.recovery.deadLetterURL}" />      
+  </bean>
+
   <camelContext xmlns="http://camel.apache.org/schema/spring">  
     <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
     <route id="direct-reliable">
       <from uri="direct:start"/>
-      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true">
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
+                aggregationRepositoryRef="directMonitoringRepo">
         <correlationExpression>
             <ref>msgIdCorrelator</ref>
         </correlationExpression>
@@ -99,17 +117,20 @@
               <stop/>
            </when>
            <otherwise>
-              <to uri="direct:error-generator"/>
+              <bean ref="dsnMessageProcessor"/>
+              <bean ref="dsnSender"/>  
            </otherwise>
         </choice>      
       </aggregate>
     </route>
- 
+ <!-- 
     <route id="errorgen">
       <from uri="direct:error-generator"/>
       <bean ref="dsnMessageProcessor"/>
       <bean ref="dsnSender"/>      
     </route>
+    
+ -->    
   </camelContext>
 
 </beans>
