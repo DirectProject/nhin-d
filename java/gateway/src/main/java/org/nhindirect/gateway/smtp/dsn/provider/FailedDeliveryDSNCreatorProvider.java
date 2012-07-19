@@ -40,11 +40,12 @@ public class FailedDeliveryDSNCreatorProvider implements Provider<DSNCreator>
 	/**
 	 * Constructor
 	 */
+	///CLOVER:OFF
 	public FailedDeliveryDSNCreatorProvider()
 	{
 		this.mailet = null;
 	}	
-	
+	///CLOVER:ON
 	
 	/**
 	 * Construtor

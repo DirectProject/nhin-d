@@ -40,11 +40,12 @@ public class RejectedRecipientDSNCreatorProvider implements Provider<DSNCreator>
 	/**
 	 * Constructor
 	 */
+	///CLOVER:OFF
 	public RejectedRecipientDSNCreatorProvider()
 	{
 		this.mailet = null;
 	}	
-	
+	///CLOVER:ON
 	
 	/**
 	 * Construtor

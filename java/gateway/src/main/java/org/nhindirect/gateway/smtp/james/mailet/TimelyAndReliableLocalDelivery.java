@@ -49,6 +49,8 @@ import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 
 import com.google.inject.Provider;
 
+///CLOVER:OFF
+///Can't test this with automated tests due to the LocalDelivery mailet not being available via the central maven repository.
 /**
  * This mailet override the built in Apache James LocalDelivery mailet and sends an MDN dispatched message on successful delivery to a local mailbox
  * if the message request timely and reliable message delivery.
@@ -170,6 +172,5 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 	{
 		return new FailedDeliveryDSNCreatorProvider(this);
 	}
-	
-	
 }
+///CLOVER:ON

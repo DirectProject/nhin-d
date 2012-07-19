@@ -126,17 +126,16 @@
 	        <artifactId>camel-mail</artifactId>
 	        <version>2.9.2</version>
 	      </dependency>
+	     <dependency>
+	        <groupId>org.apache.camel</groupId>
+	        <artifactId>camel-hawtdb</artifactId>
+	        <version>2.9.2</version>      
+	    </dependency>		      
 	      <dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
 			<version>2.0</version>
 		  </dependency>	 
-	      <dependency>
-	        <groupId>org.apache.camel</groupId>
-	        <artifactId>camel-test</artifactId>
-	        <version>2.9.2</version>
-            <scope>test</scope>	        
-	     </dependency>	
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
