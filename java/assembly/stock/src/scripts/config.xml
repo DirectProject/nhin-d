@@ -721,8 +721,6 @@ Regards, Postmaster XXX.YYY
 		<!-- 
          <mailet match="All" class="ToRepository">
             <repositoryPath> file://var/mail/address-error/</repositoryPath>
-            <!-- An alternative database repository example follows. -->
-            <!--
             <repositoryPath> db://maildb/deadletter/address-error </repositoryPath>
 
          </mailet>
