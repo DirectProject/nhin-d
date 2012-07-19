@@ -138,4 +138,24 @@ public class Tx implements Serializable
 		
 		return details.get(detailName);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		final StringBuilder builder = new StringBuilder("TxType: ").append(msgType.toString());
+		
+		if (details.isEmpty())
+			builder.append("\r\nNo Details");
+		else
+		{
+			for (TxDetail detail: details.values())
+				builder.append("\r\n\r\n").append(detail.toString());
+		}
+		
+		return builder.toString();
+		
+	}
 }
