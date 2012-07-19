@@ -21,6 +21,7 @@ import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
+import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import com.google.inject.Module;
@@ -84,7 +85,7 @@ public class NHINDSecurityAndTrustMailet_trackMessageTest extends TestCase
 			final InternetAddress senderAddr = NHINDSecurityAndTrustMailet.getSender(theMessage);
 			final NHINDAddress sender = new NHINDAddress(senderAddr, AddressSource.From);	
 			
-			final Tx tx = theMailet.getTxToTrack(msg, sender);
+			final Tx tx = theMailet.getTxToTrack(msg, sender, new NHINDAddressCollection());
 			
 			theMailet.trackMessage(tx, isOutgoing());
 			

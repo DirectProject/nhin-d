@@ -29,29 +29,21 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.mail.Address;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
-import org.apache.mailet.base.GenericMailet;
 import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.rest.exceptions.ServiceException;
-import org.nhindirect.common.tx.TxDetailParser;
-import org.nhindirect.common.tx.TxService;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.common.tx.model.TxMessageType;
-import org.nhindirect.common.tx.module.DefaultTxDetailParserModule;
-import org.nhindirect.common.tx.module.ProviderTxServiceModule;
-import org.nhindirect.common.tx.provider.NoOpTxServiceClientProvider;
-import org.nhindirect.common.tx.provider.RESTTxServiceClientProvider;
+import org.nhindirect.gateway.GatewayConfiguration;
 import org.nhindirect.gateway.smtp.GatewayState;
 import org.nhindirect.gateway.smtp.MessageProcessResult;
 import org.nhindirect.gateway.smtp.SmtpAgent;
@@ -60,16 +52,13 @@ import org.nhindirect.gateway.smtp.SmtpAgentFactory;
 import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
-import org.nhindirect.gateway.smtp.dsn.impl.RejectedRecipientDSNCreator;
-import org.nhindirect.stagent.AddressSource;
+import org.nhindirect.gateway.smtp.dsn.provider.RejectedRecipientDSNCreatorProvider;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.options.OptionsManager;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.Provider;
 
@@ -79,7 +68,7 @@ import com.google.inject.Provider;
  * @author Greg Meyer
  * @since 1.0
  */
-public class NHINDSecurityAndTrustMailet extends GenericMailet 
+public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet 
 {    
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(NHINDSecurityAndTrustMailet.class);	
 	
@@ -87,12 +76,9 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	protected static final String RELIABLE_DSN_OPTION = "ReliableAndTimely";
 	
 	protected SmtpAgent agent;
-	protected TxDetailParser txParser;
-	protected TxService txService;	
 	protected boolean consumeMDNProcessed;
 	protected boolean autoDSNForGeneral  = false;
 	protected boolean autoDSNForTimelyAndReliable  = false;
-	protected DSNCreator dsnCreator;
 	
 	static
 	{		
@@ -119,6 +105,8 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	public void init() throws MessagingException
 	{
 		LOGGER.info("Initializing NHINDSecurityAndTrustMailet");
+		
+		super.init();
 		
 		// Get the configuration URL
 		final String configURLParam = getInitParameter(SecurityAndTrustMailetOptions.CONFIG_URL_PARAM);
@@ -165,17 +153,15 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}	
 		///CLOVER:ON
 		
-		// create the Tx services
-		createTxServices(modules);
-		
+				
 		// get the consume processed MDN message setting
 		// default is faluse
-		consumeMDNProcessed = SecurityAndTrustMailetOptions.getConfigurationParamAsBoolean(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM,
+		consumeMDNProcessed = GatewayConfiguration.getConfigurationParamAsBoolean(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM,
 				this, false);
 		
 		// get the DSN creation options
 		// default is RELIABLE_DSN_OPTION
-		final String dnsCreateOptions =  SecurityAndTrustMailetOptions.getConfigurationParam(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM,
+		final String dnsCreateOptions =  GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM,
 				this, RELIABLE_DSN_OPTION); 
 	
 		for (String dsnOption : dnsCreateOptions.split(","))
@@ -185,11 +171,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			else if(dsnOption.equalsIgnoreCase(GENERAL_DSN_OPTION))
 				autoDSNForGeneral = true;
 		}
-		
-		// create the DSN creator
-		// TODO: maybe do this with Guice to be consistent with the creation of other objects
-		dsnCreator = new RejectedRecipientDSNCreator(this);
-		
+				
 		// set the agent and config in the Gateway state
 		final GatewayState gwState = GatewayState.getInstance();
 		if (gwState.isAgentSettingManagerRunning())
@@ -220,37 +202,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			
 			onPreprocessMessage(mail);
 			
-			final NHINDAddressCollection recipients = new NHINDAddressCollection();		
-			
 			final MimeMessage msg = mail.getMessage();
 			
-			// uses the RCPT TO commands
-			final Collection<MailAddress> recips = mail.getRecipients();
-			if (recips == null || recips.size() == 0)
-			{
-				// fall back to the mime message list of recipients
-				final Address[] recipsAddr = msg.getAllRecipients();
-				for (Address addr : recipsAddr)
-				{
-					
-					recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
-				}
-			}
-			else
-			{
-				for (MailAddress addr : recips)
-				{
-					recipients.add(new NHINDAddress(addr.toString(), (AddressSource)null));
-				}
-			}
+			final NHINDAddressCollection recipients = getMailRecipients(mail);
 			
 			// get the sender
-			final InternetAddress senderAddr = NHINDSecurityAndTrustMailet.getSender(mail);
-			if (senderAddr == null)
-				throw new MessagingException("Failed to process message.  The sender cannot be null or empty.");
-							
-				// not the best way to do this
-			final NHINDAddress sender = new NHINDAddress(senderAddr, AddressSource.From);	
+			final NHINDAddress sender = getMailSender(mail);
 			
 			LOGGER.info("Proccessing incoming message from sender " + sender.toString());
 			MessageProcessResult result = null;
@@ -260,7 +217,11 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			// if the message is outgoing, then the tracking information must be
 			// gathered now before the message is transformed
 			if (isOutgoing)
-				txToMonitor = getTxToTrack(msg, sender);
+				txToMonitor = getTxToTrack(msg, sender, recipients);
+			
+			// recipients can get modified by the security and trust agent, so make a local copy
+			// before processing
+			final NHINDAddressCollection originalRecipList = NHINDAddressCollection.create(recipients);
 			
 			try
 			{
@@ -273,7 +234,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				{				
 					LOGGER.error("Failed to process message.  processMessage returned null.");		
 					
-					onMessageRejected(mail, recipients, sender, isOutgoing, txToMonitor, null);
+					onMessageRejected(mail, originalRecipList, sender, isOutgoing, txToMonitor, null);
 					
 					mail.setState(Mail.GHOST);
 					
@@ -287,16 +248,12 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				
 				LOGGER.error("Failed to process message: " + e.getMessage(), e);					
 				
-				onMessageRejected(mail, recipients, sender, isOutgoing, txToMonitor, e);
+				onMessageRejected(mail, originalRecipList, sender, isOutgoing, txToMonitor, e);
 				
 				mail.setState(Mail.GHOST);
 				LOGGER.trace("Exiting service(Mail mail)");
-				
-				if (e instanceof SmtpAgentException)
-					throw (SmtpAgentException)e;
-				
-				throw new MessagingException("Failed to process message: " + e.getMessage());
 	
+				return;
 			}
 			
 			
@@ -363,7 +320,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 			// then the message has been decrypted and the tracking information can
 			// be extraced
 			if (!isOutgoing)
-				txToMonitor = getTxToTrack(result.getProcessedMessage().getMessage(), sender);
+				txToMonitor = getTxToTrack(result.getProcessedMessage().getMessage(), sender, recipients);
 			
 			// track message
 			trackMessage(txToMonitor, isOutgoing);
@@ -397,17 +354,6 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 				return true;
 		
 		return false;
-	}
-	
-	/**
-	 * Gets a collection of Guice {@link @Module Modules} to create custom bindings for Agent creation.  If this method returns null,
-	 * the Mailet will use the simple {@link SmtpAgentFactory#createAgent(URL)} method to create the {@link SmtpAgent) and 
-	 * {@link NHINDAgent}.
-	 * @return A collection of Guice Modules.
-	 */
-	protected Collection<Module> getInitModules()
-	{
-		return null;
 	}
 	
 	/**
@@ -510,56 +456,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		
 		this.onPostprocessMessage(mail, result);
 	}
-	
-	protected void sendDSN(Tx tx,  NHINDAddressCollection failedRecipeints)
-	{
-		try
-		{
-			final MimeMessage msg = dsnCreator.createDSNFailure(tx, failedRecipeints);
-			this.getMailetContext().sendMail(msg);
-		}
-		catch (Throwable e)
-		{
-			// don't kill the process if this fails
-			LOGGER.error("Error sending DSN failure message.", e);
-		}
-	}
-	
-	/**
-	 * Gets the sender attribute of a Mail message
-	 * @param mail The message to retrive the sender from
-	 * @return The message sender.
-	 */
-	public static InternetAddress getSender(Mail mail) 
-	{
-		InternetAddress retVal = null;
 		
-		if (mail.getSender() != null)
-			retVal = mail.getSender().toInternetAddress();	
-		else
-		{
-			// try to get the sender from the message
-			Address[] senderAddr = null;
-			try
-			{
-				if (mail.getMessage() == null)
-					return null;
-				
-				senderAddr = mail.getMessage().getFrom();
-				if (senderAddr == null || senderAddr.length == 0)
-					return null;
-			}
-			catch (MessagingException e)
-			{
-				return null;
-			}
-						
-			// not the best way to do this
-			retVal = (InternetAddress)senderAddr[0];	
-		}
-	
-		return retVal;
-	}
 	
 	/**
 	 * Determines if a message is incoming or outgoing based on the domains available in the configured agent
@@ -590,60 +487,13 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 	}
 	
 	/**
-	 * Creates a trackable monitoring object for a message. 
-	 * @param msg The message that is being processed
-	 * @param sender The sender of the message
-	 * @return A trackable Tx object.
+	 * {@inheritDoc}
 	 */
-	protected Tx getTxToTrack(MimeMessage msg, NHINDAddress sender)
-	{		
-		if (this.txParser == null)
-			return null;
-				
-		try
-		{	
-			final Map<String, TxDetail> details = txParser.getMessageDetails(msg);
-			return new Tx(TxUtil.getMessageType(msg), details);
-		}
-		///CLOVER:OFF
-		catch (Exception e)
-		{
-			LOGGER.warn("Failed to parse message to Tx object.", e);
-			return null;
-		}
-		///CLOVER:ON
-	}
-	
-	/**
-	 * Creates Guice modules to instantiate the default tracking service.  If a tracking/monitoring service URL is present in either the
-	 * mailet configuration MessageMonitoringServiceURL parameter or in the agent OptionsParameter named org.nhindirect.gateway.smtp.james.mailet.TxServiceURL, 
-	 * then an instance of the RESTful Tx service will be created.  Otherwise, a NoOp Tx service will be created resulting in
-	 * no messages being tracked and monitoried.
-	 * @return A collection of Guice modules to be used by an injector to create the TxService instance.
-	 */
-	protected Collection<Module> createDefaultTxServiceModules()
+	@Override
+	protected Provider<DSNCreator> getDSNProvider() 
 	{
-		final Collection<Module> modules = new ArrayList<Module>();
-		modules.add(DefaultTxDetailParserModule.create());
-		
-		
-		// default implementation will use try to use the REST based service
-		// must first determine if the REST service url exist
-		final String monitoringURLParam = 
-				SecurityAndTrustMailetOptions.getConfigurationParam(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, this, "");
-		
-		if (!monitoringURLParam.isEmpty())
-			modules.add(ProviderTxServiceModule.create(new RESTTxServiceClientProvider(monitoringURLParam)));
-		else
-		{
-			LOGGER.info("MessageMonitoringServiceURL is null or empty.  Will fall back to the the NoOp message monitor.");
-			// use the no-op provider if the service URL is not available
-			modules.add(ProviderTxServiceModule.create(new NoOpTxServiceClientProvider()));
-		}
-		
-		return modules;
+		return new RejectedRecipientDSNCreatorProvider(this);
 	}
-
 	
 	/**
 	 * Tracks message that meet the following qualifications
@@ -694,67 +544,7 @@ public class NHINDSecurityAndTrustMailet extends GenericMailet
 		}
 		
 	}
-	
-	/**
-	 * Creates the Tx services
-	 * @param initModules The initial Guice modules created by the init() method
-	 */
-	protected void createTxServices(final Collection<Module> initModules)
-	{
-		Collection<Module> modules = initModules;
-		
-		// now try to get the TxParser
-		// attempt to use the existing modules first
-		final boolean usingDefaultTxServiceMoudles = (modules == null);
-		if (modules == null)
-		{
-			// create a default module for the TxService
-			modules = createDefaultTxServiceModules();
-		}
-		
-		Injector txInjector = Guice.createInjector(modules);
-		try
-		{
-			txParser = txInjector.getInstance(TxDetailParser.class);
-			txService = txInjector.getInstance(TxService.class);
-		}
-		catch (Exception e)
-		{
 
-			LOGGER.debug("First attempt to create message monitoring service failed.", e);
-			if (!usingDefaultTxServiceMoudles)
-				LOGGER.debug("Will attempt to create from default Tx service Guice module.");
-			///CLOVER:OFF
-			else
-				LOGGER.warn("Monitoring service already attempted to use the defualt Tx service Guice module.  Monitoring will be disabled.");
-			///CLOVER:ON
-
-		}
-		
-		// if we can't create the parser or the service, and we haven't already use the default service Guice module, then
-		// try again using the default Guice module
-		if ((txParser == null || txService == null) && !usingDefaultTxServiceMoudles)
-		{
-			try
-			{
-				// create a default module for the TxService
-				modules = createDefaultTxServiceModules();
-				txInjector = Guice.createInjector(modules);
-				if (txParser == null)
-					txParser = txInjector.getInstance(TxDetailParser.class);
-				
-				if (txService == null)
-					txService = txInjector.getInstance(TxService.class);
-				
-			}
-			///CLOVER:OFF
-			catch (Exception e)
-			{
-				LOGGER.warn("Failed to create message monitoring service.  Monitoring will be disabled");
-			}
-			///CLOVER:ON
-		}		
-	}
 	
 	/**
 	 * Determines if a message should be consumed by the gateway

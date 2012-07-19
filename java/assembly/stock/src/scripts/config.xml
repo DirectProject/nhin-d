@@ -526,9 +526,18 @@ Regards, Postmaster XXX.YYY
             <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
             <EndpointURL>http://localhost:8081/xd/services/DocumentRepository_Service</EndpointURL>
          </mailet>
-         <mailet match="RecipientIsLocalAndSMTPAuthUserIs=direct" class="LocalDelivery" />
+
          <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
             <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
+            <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
+            <AutoDSNFailueCreation>General,ReliableAndTimely</AutoDSNFailueCreation> 
+         </mailet>
+
+         <!-- This mailet is only needed if the security and trust agent uses a matcher that bi-passes
+         the agent for local recipients to ensure notifications are properly tracked.  All messages at this point are not encrypted, so they
+         should be incoming in direction.  If a different matcher is used that does not bi-pass the agent, then this 
+         mailet should be commented out. -->
+         <mailet match="IsNotSMIMEEncrypted" class="TrackIncomingNotification">
             <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
          </mailet>
 
@@ -701,26 +710,22 @@ Regards, Postmaster XXX.YYY
          <mailet match="HasMailAttribute=isSpam" class="Null" onMatchException="noMatch"/>
          -->
 
-         <!-- To notify the sender the address was invalid, uncomment this matcher/mailet configuration -->
-         <!-- The original message is not attached to keep the bounce processor from deliverying spam -->
-         <!--
-         <mailet match="All" class="Bounce">
-            <attachment>none</attachment>
-         </mailet>
-         -->
+        <!-- Creates a bounce message using the direct project bounce message generator -->
+		<mailet match="All" class="DirectBounce"/>
 
          <!-- To notify the postmaster that a message had an invalid address, uncomment this matcher/mailet configuration -->
          <!--
          <mailet match="All" class="NotifyPostmaster"/>
          -->
-
+		<!-- 
          <mailet match="All" class="ToRepository">
             <repositoryPath> file://var/mail/address-error/</repositoryPath>
             <!-- An alternative database repository example follows. -->
             <!--
             <repositoryPath> db://maildb/deadletter/address-error </repositoryPath>
-            -->
+
          </mailet>
+         --> 
       </processor>
 
       <!-- This processor handles messages that are for foreign domains, where relaying is denied -->

@@ -19,31 +19,34 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.common.mail.dsn;
+package org.nhindirect.gateway.smtp.dsn.module;
 
-import java.util.Enumeration;
-import java.util.List;
+import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 
-import javax.mail.Address;
-import javax.mail.Header;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeBodyPart;
+import com.google.inject.AbstractModule;
+import com.google.inject.Provider;
 
 /**
- * Generator interface for creating the human readable part of a DSN message.
- * @author gm2552
- * @since 1.1
+ * Guice module for creating instances of a DSNCreator object using a DSNCreator provider.
+ * @author Greg Meyer
+ * @since 2.0
  */
-public interface DSNFailureTextBodyPartGenerator 
+public class DSNCreatorProviderModule extends AbstractModule
 {
-	/**
-	 * Generates the human readable section of a DSN message with pre-populated information.
-	 * @param originalSender The original sender of the message.
-	 * @param failedRecipients List of recipients that did not receive the original message.
-	 * @param originalMessageHeaders Enumeration of the headers of the original message.
-	 * @return A mime body part containing the content of the human readable section of the DSN message
-	 * @throws MessagingException
-	 */
-    public MimeBodyPart generate(Address originalSender, List<Address> failedRecipients,
-    	    Enumeration<Header> originalMessageHeaders) throws MessagingException;
+	protected final Provider<DSNCreator> dsnCreator;
+	
+	public static DSNCreatorProviderModule create(Provider<DSNCreator> dsnCreator)
+	{
+		return new DSNCreatorProviderModule(dsnCreator);
+	}
+	
+	private DSNCreatorProviderModule(Provider<DSNCreator> dsnCreator)
+	{
+		this.dsnCreator = dsnCreator;
+	}
+	
+	protected void configure()
+	{	
+		bind(DSNCreator.class).toProvider(dsnCreator);
+	}
 }

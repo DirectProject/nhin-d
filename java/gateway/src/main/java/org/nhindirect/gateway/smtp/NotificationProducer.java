@@ -49,7 +49,7 @@ public class NotificationProducer implements NotificationCreator
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(NotificationProducer.class);	
 
-	private final NotificationSettings settings;
+	protected final NotificationSettings settings;
 	
 	/**
 	 * Constructs a producer with the notification settings. 
@@ -109,7 +109,7 @@ public class NotificationProducer implements NotificationCreator
     /*
      * Creates an ack message.
      */
-    private Notification createAck(InternetAddress address)
+    protected Notification createAck(InternetAddress address)
     {
         Notification notification = new Notification(NotificationType.Processed);
         if (settings.hasText())
