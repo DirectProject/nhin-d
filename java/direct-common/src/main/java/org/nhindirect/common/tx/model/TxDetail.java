@@ -117,4 +117,15 @@ public class TxDetail implements Serializable
 	{
 		return this.detailValue;
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{	
+		final StringBuilder builder = new StringBuilder(detailName).append("\r\n").append(detailValue);
+		
+		return builder.toString();
+	}
 }
