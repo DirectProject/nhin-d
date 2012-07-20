@@ -155,7 +155,7 @@ public class DirectXdMailet extends AbstractNotificationAwareMailet
                     	successfulTransaction = true;
                     	// send MDN dispatch for messages the recipients that were successful
         				final Collection<NotificationMessage> notifications = 
-        						notificationProducer.produce(new IncomingMessage(new Message(msg), xdRecipients,  sender));
+        						notificationProducer.produce(new Message(msg), xdRecipients.toInternetAddressCollection());
         				if (notifications != null && notifications.size() > 0)
         				{
         					LOGGER.debug("Sending MDN \"dispathed\" messages");
@@ -260,7 +260,7 @@ public class DirectXdMailet extends AbstractNotificationAwareMailet
             // eat it
         }
         
-        notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Direct XD Delivery Agent", ""));
+        notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Direct XD Delivery Agent", "Your message was successfully dispatched."));
     }
 
     /**

@@ -41,7 +41,6 @@ import org.nhindirect.gateway.smtp.NotificationSettings;
 import org.nhindirect.gateway.smtp.ReliableDispatchedNotificationProducer;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.gateway.smtp.dsn.provider.FailedDeliveryDSNCreatorProvider;
-import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.Message;
@@ -94,7 +93,7 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 			throw new MessagingException("Failed to initialize TimelyAndReliableLocalDelivery.", e);
 		}
 		
-		notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Local Direct Delivery Agent", ""));
+		notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Local Direct Delivery Agent", "Your message was successfully dispatched."));
 	}
 	
 	/**
@@ -122,22 +121,25 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		}
 		catch (Exception e)
 		{
-			throw new MessagingException("Failed to invoke service method.", e);
+			LOGGER.error("Failed to invoke service method.", e);
 		}
 		
 		final Tx txToTrack = this.getTxToTrack(msg, sender, recipients);
 		
+		LOGGER.info("Checking if delivery is successful");
 		if (deliverySuccessful)
 		{	
+			LOGGER.info("Checking if timely and reliable");
 			if (isReliableAndTimely && txToTrack.getMsgType() == TxMessageType.IMF)
 			{
 
+				LOGGER.info("Producing MDN message");
 				// send back an MDN dispatched message
 				final Collection<NotificationMessage> notifications = 
-						notificationProducer.produce(new IncomingMessage(new Message(msg), recipients,  sender));
+						notificationProducer.produce(new Message(msg), recipients.toInternetAddressCollection());
 				if (notifications != null && notifications.size() > 0)
 				{
-					LOGGER.debug("Sending MDN \"dispathed\" messages");
+					LOGGER.info("Sending MDN \"dispathed\" messages");
 					// create a message for each notification and put it on James "stack"
 					for (NotificationMessage message : notifications)
 					{
