@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAddress;
+import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.notifications.Notification;
 import org.nhindirect.stagent.mail.notifications.NotificationCreator;
 import org.nhindirect.stagent.mail.notifications.NotificationHelper;
@@ -106,6 +107,19 @@ public class NotificationProducer implements NotificationCreator
         return notifications;
     }	
 	
+    public Collection<NotificationMessage> produce(Message msg, Collection<InternetAddress> recipients)
+    {
+        if (msg == null || recipients == null || recipients.size() == 0)
+        {
+            throw new IllegalArgumentException();
+        }
+
+        Collection<InternetAddress> senders = recipients;
+        Collection<NotificationMessage> notifications = NotificationHelper.createNotificationMessages(msg, senders, this); 
+        
+        return notifications;
+    }
+    
     /*
      * Creates an ack message.
      */
