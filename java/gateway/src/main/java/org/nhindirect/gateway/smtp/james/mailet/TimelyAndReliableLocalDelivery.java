@@ -35,6 +35,7 @@ import org.apache.mailet.MailetConfig;
 import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
+import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.gateway.smtp.NotificationProducer;
 import org.nhindirect.gateway.smtp.NotificationSettings;
 import org.nhindirect.gateway.smtp.ReliableDispatchedNotificationProducer;
@@ -126,10 +127,11 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		
 		final Tx txToTrack = this.getTxToTrack(msg, sender, recipients);
 		
-		if (isReliableAndTimely)
-		{
-			if (deliverySuccessful)
+		if (deliverySuccessful)
+		{	
+			if (isReliableAndTimely && txToTrack.getMsgType() == TxMessageType.IMF)
 			{
+
 				// send back an MDN dispatched message
 				final Collection<NotificationMessage> notifications = 
 						notificationProducer.produce(new IncomingMessage(new Message(msg), recipients,  sender));
@@ -152,13 +154,13 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 						}
 					}
 				}
-				
 			}
-			else
-			{
-				// create a DSN message
+		}
+		else
+		{
+			// create a DSN message regarless if timely and reliable was requested
+			if (txToTrack != null && txToTrack.getMsgType() == TxMessageType.IMF)
 				this.sendDSN(txToTrack, recipients);
-			}
 		}
 		
 		LOGGER.debug("Exiting timely and reliable service method.");
