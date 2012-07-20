@@ -26,6 +26,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.mailet.Mail;
 import org.nhindirect.common.tx.model.Tx;
+import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.gateway.smtp.dsn.provider.FailedDeliveryDSNCreatorProvider;
 import org.nhindirect.stagent.NHINDAddress;
@@ -65,7 +66,8 @@ public class DirectBounce extends AbstractNotificationAwareMailet
 		
 
 		// create a DSN message
-		this.sendDSN(txToTrack, recipients);
+		if (txToTrack != null && txToTrack.getMsgType() == TxMessageType.IMF)
+			this.sendDSN(txToTrack, recipients);
 
 	}
 		
