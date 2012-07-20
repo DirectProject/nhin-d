@@ -50,6 +50,7 @@
 	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.29.tar.gz"></property>
 	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.29"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
+	<property name="tomcat.bin.dir" value="${tomcat.stage.dir}/bin"></property>	
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
 	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
 	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
@@ -306,6 +307,9 @@
 		<copy file="${install.root.dir}/lib/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${xd.service.orig.war}" tofile="${tomcat.webapp.dir}/${xd.service.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${msg-monitor.service.orig.war}" tofile="${tomcat.webapp.dir}/${msg-monitor.service.dest.war}"></copy>
+		
+		<!-- Copy catalina.sh file -->
+		<copy file="${src}/scripts/catalina.sh" tofile="${tomcat.bin.dir}/catalina.sh"></copy>
 		
 		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
 		    <param name="port" expression="8081"></param>

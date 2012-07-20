@@ -47,6 +47,21 @@
                             <xsl:apply-templates select="node()|@*"/>
                         </xsl:copy>
                     </xsl:for-each>
+                    <xsl:for-each select="MessageMonitoringServiceURL">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>  
+                    <xsl:for-each select="AutoDSNFailueCreation">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>                                        
+                    <xsl:for-each select="ConsumeMDNProcessed">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>                      
                 </xsl:element>
             </xsl:when>
 
