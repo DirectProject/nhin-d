@@ -49,8 +49,6 @@ import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 
 import com.google.inject.Provider;
 
-///CLOVER:OFF
-///Can't test this with automated tests due to the LocalDelivery mailet not being available via the central maven repository.
 /**
  * This mailet override the built in Apache James LocalDelivery mailet and sends an MDN dispatched message on successful delivery to a local mailbox
  * if the message request timely and reliable message delivery.
@@ -80,8 +78,7 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		try
 		{
 			// create an instance of the local delivery if we can
-			Class<?> clazz = TimelyAndReliableLocalDelivery.class.getClassLoader().loadClass("org.apache.james.transport.mailets.LocalDelivery");
-			localDeliveryMailet = clazz.newInstance();
+			localDeliveryMailet = createLocalDeliveryClass();
 			
 			Method initMethod = Mailet.class.getDeclaredMethod("init", MailetConfig.class);
 			serviceMethod = Mailet.class.getDeclaredMethod("service", Mail.class);
@@ -94,6 +91,12 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		}
 		
 		notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Local Direct Delivery Agent", "Your message was successfully dispatched."));
+	}
+	
+	protected Object createLocalDeliveryClass() throws Exception
+	{
+		Class<?> clazz = TimelyAndReliableLocalDelivery.class.getClassLoader().loadClass("org.apache.james.transport.mailets.LocalDelivery");
+		return clazz.newInstance();
 	}
 	
 	/**
@@ -126,20 +129,17 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		
 		final Tx txToTrack = this.getTxToTrack(msg, sender, recipients);
 		
-		LOGGER.info("Checking if delivery is successful");
 		if (deliverySuccessful)
 		{	
-			LOGGER.info("Checking if timely and reliable");
 			if (isReliableAndTimely && txToTrack.getMsgType() == TxMessageType.IMF)
 			{
 
-				LOGGER.info("Producing MDN message");
 				// send back an MDN dispatched message
 				final Collection<NotificationMessage> notifications = 
 						notificationProducer.produce(new Message(msg), recipients.toInternetAddressCollection());
 				if (notifications != null && notifications.size() > 0)
 				{
-					LOGGER.info("Sending MDN \"dispathed\" messages");
+					LOGGER.debug("Sending MDN \"dispatched\" messages");
 					// create a message for each notification and put it on James "stack"
 					for (NotificationMessage message : notifications)
 					{
@@ -149,11 +149,13 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 							message.saveChanges();
 							getMailetContext().sendMail(message);
 						}
+						///CLOVER:OFF
 						catch (Throwable t)
 						{
 							// don't kill the process if this fails
 							LOGGER.error("Error sending MDN dispatched message.", t);
 						}
+						///CLOVER:ON
 					}
 				}
 			}
@@ -177,4 +179,3 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		return new FailedDeliveryDSNCreatorProvider(this);
 	}
 }
-///CLOVER:ON

@@ -49,7 +49,6 @@ import org.nhindirect.gateway.smtp.ReliableDispatchedNotificationProducer;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.gateway.smtp.dsn.provider.FailedDeliveryDSNCreatorProvider;
 import org.nhindirect.gateway.smtp.james.mailet.AbstractNotificationAwareMailet;
-import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.Message;

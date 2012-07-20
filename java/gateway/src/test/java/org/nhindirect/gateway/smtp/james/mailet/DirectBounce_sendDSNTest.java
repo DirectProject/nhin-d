@@ -30,7 +30,7 @@ public class DirectBounce_sendDSNTest extends TestCase
 		{
 			Map<String,String> params = new HashMap<String, String>();
 			
-			return new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");	
+			return new MockMailetConfig(params, "DirectBounce");	
 		}
 		
 		@Override
@@ -81,7 +81,7 @@ public class DirectBounce_sendDSNTest extends TestCase
 		}			
 	}
 	
-	public void testSendDSN_assertDSNSent() throws Exception 
+	public void testSendDSN_IMFMessage_assertDSNSent() throws Exception 
 	{
 		new TestPlan() 
 		{
@@ -107,4 +107,22 @@ public class DirectBounce_sendDSNTest extends TestCase
 			}			
 		}.perform();
 	}	
+	
+	public void testSendDSN_MDNMessage_assertNotDSNSent() throws Exception 
+	{
+		new TestPlan() 
+		{
+			@Override
+			protected String getMessageToSend()
+			{
+				return "MDNMessage.txt";
+			}
+			
+			@Override
+			protected void doAssertions(MockMailetContext context) throws Exception
+			{
+				assertEquals(0, context.getSentMessages().size());
+			}			
+		}.perform();
+	}
 }
