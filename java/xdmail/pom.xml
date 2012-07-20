@@ -125,6 +125,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
+                <fork>true</fork>
                     <archive>
                         <index />
                     </archive>
