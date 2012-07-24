@@ -15,20 +15,33 @@ public class MockTxService implements TxService
 	protected Collection<Tx> txs  = new ArrayList<Tx>();
 
 	@Override
-	public void trackMessage(MimeMessage msg) throws ServiceException {
-		// TODO Auto-generated method stub
+	public void trackMessage(MimeMessage msg) throws ServiceException 
+	{
 		
 	}
 
 	@Override
-	public void trackMessage(InternetHeaders headers) throws ServiceException {
-		// TODO Auto-generated method stub
+	public void trackMessage(InternetHeaders headers) throws ServiceException 
+	{
 		
 	}
 
 	@Override
-	public void trackMessage(Tx tx) throws ServiceException {
+	public void trackMessage(Tx tx) throws ServiceException 
+	{
 		txs.add(tx);
+	}
+
+	@Override
+	public boolean suppressNotification(MimeMessage msg) throws ServiceException 
+	{
+		return false;
+	}
+
+	@Override
+	public boolean suppressNotification(Tx notificationMessage) throws ServiceException 
+	{
+		return false;
 	}
 	
 	

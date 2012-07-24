@@ -34,7 +34,7 @@ import org.nhindirect.monitor.condition.TxCompletionCondition;
 import org.nhindirect.monitor.condition.impl.GeneralCompletionCondition;
 import org.nhindirect.monitor.util.TestUtils;
 
-public class DSNMessageGenerator_generateDSNFailureMessage 
+public class DSNMessageGenerator_generateDSNFailureMessageTest 
 {
 	DSNMessageGenerator createGenerator()
 	{

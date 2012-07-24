@@ -24,6 +24,7 @@ package org.nhindirect.monitor.resources;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,7 +44,7 @@ import com.google.inject.Singleton;
  * Jax-RS resource that acts as a RESTful entry point into a Camel route that handles message monitoring and tracking.  The route
  * starting point is contained in a Camel producer template that injected at creation time.
  * <p>
- * The resource returns a status of 201 (created) if the message is successfully added to the route.  A 500 is thrown other wise.
+ * The resource returns a status of 201 (created) if the message is successfully added to the route.  A status of 500 is returned other wise.
  * @author Greg Meyer
  * @since 1.0
  */
@@ -121,5 +122,29 @@ public class TxsResource
     	///CLOVER:ON
     	
 		return Response.status(Status.CREATED).cacheControl(noCache).build();
+    }
+    
+    /**
+	 * Indicates if a notification message should be suppressed from being delivered to the original message edge client
+	 * based on existing notifications being received, if the original message is subject to the timely and reliable guidance,
+	 * and other policies based on a specific HISP implementation.
+	 * <p>
+	 * This resource implements an overloaded POST paradigm using an RPC type pattern.  Typically, an operation such as this would use a GET verb with query parameters.  
+	 * However, due to the large number of possible recipients in the message (potentially resulting in a URI size that may be too large from some
+	 * servers), this resource uses a POST verb with the notification message as the payload.
+     * @param notificationMessage The notification message in question.
+     * @return If the resource execution is successful, the resource returns status 200 (OK) with the content being a JSON representation of a boolean value indicating if
+     * the notification message should be suppressed.  500 is returned if an error occurs.
+     */
+    @Path("suppressNotification")
+    @TypeHint(Boolean.class)  
+    @POST
+    @Produces(MediaType.APPLICATION_JSON) 
+    @Consumes(MediaType.APPLICATION_JSON) 
+    public Response supressNotification(Tx notificationMessage)
+    {
+    	Boolean retEntity = Boolean.FALSE;
+    
+		return Response.ok(retEntity).cacheControl(noCache).build();
     }
 }

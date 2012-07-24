@@ -12,7 +12,7 @@ import org.nhindirect.stagent.options.OptionsParameter;
 
 import junit.framework.TestCase;
 
-public class NHINDSecurityAndTrustMailet_isConusmingProcessedMDNTest extends TestCase
+public class NotificationSupressor_isConusmingProcessedMDNTest extends TestCase
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{		
@@ -25,7 +25,7 @@ public class NHINDSecurityAndTrustMailet_isConusmingProcessedMDNTest extends Tes
 			params.put(SecurityAndTrustMailetOptions.CONFIG_URL_PARAM, "file://" + configfile);
 			params.put(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM, getConsumeMDNSetting());
 			
-			return new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");	
+			return new MockMailetConfig(params, "NotificationSuppressor");	
 		}
 		
 		@Override
@@ -44,7 +44,7 @@ public class NHINDSecurityAndTrustMailet_isConusmingProcessedMDNTest extends Tes
 		@Override
 		protected void performInner() throws Exception
 		{
-			NHINDSecurityAndTrustMailet theMailet = new NHINDSecurityAndTrustMailet();
+			NotificationSuppressor theMailet = new NotificationSuppressor();
 
 			MailetConfig config = getMailetConfig();
 			

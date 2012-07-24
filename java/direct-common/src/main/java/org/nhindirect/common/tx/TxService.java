@@ -60,4 +60,22 @@ public interface TxService
 	 * @throws ServiceException
 	 */
 	public void trackMessage(Tx tx) throws ServiceException;
+	
+	/**
+	 * Indicates if a notification message should be suppressed from being delivered to the original message edge client
+	 * based on existing notifications being received, if the original message is subject to the timely and reliable guidance,
+	 * and other policies based on a specific HISP implementation.
+	 * @param msg The notification message.  If the message is not a notification message, false will be returned.
+	 * @return True if the notification message should be suppressed and not delivered to original edge client.
+	 */
+	public boolean suppressNotification(MimeMessage msg) throws ServiceException;
+	
+	/**
+	 * Indicates if a notification message should be suppressed from being delivered to the original message edge client
+	 * based on existing notifications being received, if the original message is subject to the timely and reliable guidance,
+	 * and other policies based on a specific HISP implementation.
+	 * @param notificationMessage Pre-parsed Tx object of the notification message.
+	 * @return True if the notification message should be suppressed and not delivered to original edge client.
+	 */
+	public boolean suppressNotification(Tx notificationMessage) throws ServiceException;
 }

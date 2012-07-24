@@ -53,5 +53,19 @@ public class NoOpTxServiceClient implements TxService
 	{
 		/*no-op*/
 	}
+
+	@Override
+	public boolean suppressNotification(MimeMessage msg) throws ServiceException 
+	{
+		/*no-op*/
+		return false;
+	}
+
+	@Override
+	public boolean suppressNotification(Tx notificationMessage) throws ServiceException 
+	{
+		/*no-op*/
+		return false;
+	}
 }
 ///CLOVER:ON
