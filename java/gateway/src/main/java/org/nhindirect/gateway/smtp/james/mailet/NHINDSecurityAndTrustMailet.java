@@ -26,7 +26,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -36,12 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
-import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
-import org.nhindirect.common.tx.model.TxDetail;
-import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.gateway.GatewayConfiguration;
 import org.nhindirect.gateway.smtp.GatewayState;
@@ -76,7 +72,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 	protected static final String RELIABLE_DSN_OPTION = "ReliableAndTimely";
 	
 	protected SmtpAgent agent;
-	protected boolean consumeMDNProcessed;
 	protected boolean autoDSNForGeneral  = false;
 	protected boolean autoDSNForTimelyAndReliable  = false;
 	
@@ -92,7 +87,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		 */
 		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, "org.nhindirect.gateway.smtp.james.mailet.TxServiceURL");
-		JVM_PARAMS.put(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM, "org.nhindirect.gateway.smtp.james.mailet.ConsumeMDNProcessed");
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM, "org.nhindirect.gateway.smtp.james.mailet.AutoDSNFailueCreation");
 		
 		OptionsManager.addInitParameters(JVM_PARAMS);
@@ -152,12 +146,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 			throw new MessagingException("Failed to create the SMTP agent.  Reason unknown.");
 		}	
 		///CLOVER:ON
-		
-				
-		// get the consume processed MDN message setting
-		// default is faluse
-		consumeMDNProcessed = GatewayConfiguration.getConfigurationParamAsBoolean(SecurityAndTrustMailetOptions.CONSUME_MND_PROCESSED_PARAM,
-				this, false);
+	
 		
 		// get the DSN creation options
 		// default is RELIABLE_DSN_OPTION
@@ -324,10 +313,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 			
 			// track message
 			trackMessage(txToMonitor, isOutgoing);
-			
-			// determine if this is a message message that needs to be consumed
-			if (consumeMessage(txToMonitor, isOutgoing))
-				mail.setState(Mail.GHOST);
 			
 			onPostprocessMessage(mail, result, isOutgoing, txToMonitor);
 			
@@ -545,41 +530,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		
 	}
 
-	
-	/**
-	 * Determines if a message should be consumed by the gateway
-	 * @param tx The message that is being evaluated
-	 * @param isOutgoing Indicates the message directions: incoming or outgoing
-	 * @return true if the message should be consumed by the gateway; false otherwise
-	 */
-	protected boolean consumeMessage(Tx tx, boolean isOutgoing)
-	{
-		boolean consumeMessage = false;
-		
-		if (tx != null)
-		{
-			switch (tx.getMsgType())
-			{
-				case MDN:
-				{
-					// incoming MDN message
-					if (consumeMDNProcessed && !isOutgoing)
-					{
-						// check for "processed" disposition
-						final TxDetail detail = tx.getDetail(TxDetailType.DISPOSITION);
-						if (detail != null)
-						{
-							if (detail.getDetailValue().contains(MDNStandard.Disposition_Processed.toLowerCase(Locale.getDefault())))
-								consumeMessage = true;
-						}		
-					}
-					break;
-				}				
-			}
-		}
-		
-		return consumeMessage;
-	}
 	
 	/**
 	 * Shutsdown the gateway and cleans up resources associated with it.

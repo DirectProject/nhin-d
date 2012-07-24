@@ -62,4 +62,16 @@ public class RESTTxServiceClient extends AbstractUnsecuredService implements TxS
 		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, tx));
 	}
 
+	@Override
+	public boolean suppressNotification(MimeMessage msg) throws ServiceException 
+	{
+		return callWithRetry(new SuppressNotificationRequest(httpClient, serviceURL, jsonMapper, parser, msg));
+	}
+
+	@Override
+	public boolean suppressNotification(Tx notificationMessage) throws ServiceException 
+	{
+		return callWithRetry(new SuppressNotificationRequest(httpClient, serviceURL, jsonMapper, parser, notificationMessage));
+	}
+	
 }

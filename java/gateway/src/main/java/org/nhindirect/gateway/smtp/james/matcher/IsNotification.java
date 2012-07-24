@@ -19,6 +19,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+
 package org.nhindirect.gateway.smtp.james.matcher;
 
 import java.util.Collection;
@@ -27,18 +28,17 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.mailet.Mail;
-
 import org.apache.mailet.base.GenericMatcher;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.TxMessageType;
 
 /**
- * Matcher that is a negation of the provided James SMIMEEncrypted matcher.
+ * Matcher indicating if a message is a notification type message.  Notification type message include both DSN and MDN messages.
  * @author Greg Meyer
  * @since 2.0
  */
-public class IsNotSMIMEEncrypted extends GenericMatcher
-{    
+public class IsNotification extends GenericMatcher
+{
 	/**
 	 * {@inheritDoc}
 	 */
@@ -54,7 +54,7 @@ public class IsNotSMIMEEncrypted extends GenericMatcher
         
         TxMessageType type = TxUtil.getMessageType(message);
         
-        if (type != TxMessageType.SMIME)
+        if (type == TxMessageType.DSN || type == TxMessageType.MDN )
         {
             return mail.getRecipients();
         } 

@@ -114,6 +114,9 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 		{	
 			// create a default module
 			final Provider<DSNCreator> provider = getDSNProvider();
+			if (provider == null)
+				return;
+			
 			final DSNCreatorProviderModule module = DSNCreatorProviderModule.create(provider);
 			modules = Arrays.asList((Module)module);
 		}
@@ -143,6 +146,9 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 			{
 				// create a default module
 				final Provider<DSNCreator> provider = getDSNProvider();
+				if (provider == null)
+					return;
+				
 				final DSNCreatorProviderModule module = DSNCreatorProviderModule.create(provider);
 				modules = Arrays.asList((Module)module);
 				
