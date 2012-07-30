@@ -30,7 +30,7 @@ public class TestJaxRSResourceMonitorRoute extends CamelSpringTestSupport
 		// send original message
 		final String originalMessageId = UUID.randomUUID().toString();	
 		
-		TxsResource resource = new TxsResource(configuredTemplate);
+		TxsResource resource = new TxsResource(configuredTemplate, null);
 		
 		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
 		resource.addTx(originalMessage);

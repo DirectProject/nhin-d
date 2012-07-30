@@ -20,7 +20,7 @@ public class TxsResource_addTxTest
 	{
 		Tx tx = mock(Tx.class);
 		
-		TxsResource resource = new TxsResource(null);
+		TxsResource resource = new TxsResource(null, null);
 		
 		boolean exceptionOccured = false;
 		
@@ -44,7 +44,7 @@ public class TxsResource_addTxTest
 		
 		Tx tx = mock(Tx.class);
 		
-		TxsResource resource = new TxsResource(template);
+		TxsResource resource = new TxsResource(template, null);
 
 		Response res = resource.addTx(tx);
 		
@@ -58,7 +58,7 @@ public class TxsResource_addTxTest
 		
 		Tx tx = mock(Tx.class);
 		
-		TxsResource resource = new TxsResource(template);
+		TxsResource resource = new TxsResource(template, null);
 
 		Response res = resource.addTx(tx);
 		

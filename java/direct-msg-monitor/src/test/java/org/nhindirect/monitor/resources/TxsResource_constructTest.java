@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 
 import org.apache.camel.ProducerTemplate;
 import org.junit.Test;
+import org.nhindirect.monitor.processor.DuplicateNotificationStateManager;
 
 public class TxsResource_constructTest 
 {
@@ -16,24 +17,28 @@ public class TxsResource_constructTest
 		TxsResource resource = new TxsResource();
 		
 		assertNull(resource.template);
+		assertNull(resource.dupStateManager);
 	}
 	
 	@Test
 	public void testConstruct_nullProducer()
 	{
-		TxsResource resource = new TxsResource(null);
+		TxsResource resource = new TxsResource(null, null);
 		
 		assertNull(resource.template);
+		assertNull(resource.dupStateManager);
 	}
 	
 	@Test
 	public void testConstruct_nonNullProducer()
 	{
 		ProducerTemplate template = mock(ProducerTemplate.class);
+		DuplicateNotificationStateManager dupMgr = mock(DuplicateNotificationStateManager.class);
 		
-		TxsResource resource = new TxsResource(template);
+		TxsResource resource = new TxsResource(template, dupMgr);
 		
 		assertEquals(template, resource.template);
+		assertEquals(dupMgr, resource.dupStateManager);
 	}
 
 }

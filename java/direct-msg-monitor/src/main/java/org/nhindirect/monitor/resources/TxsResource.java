@@ -35,6 +35,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.enunciate.jaxrs.TypeHint;
 import org.nhindirect.common.tx.model.Tx;
+import org.nhindirect.monitor.processor.DuplicateNotificationStateManager;
+import org.nhindirect.monitor.processor.DuplicateNotificationStateManagerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -64,6 +66,9 @@ public class TxsResource
     @Autowired
 	protected ProducerTemplate template;
 	
+    @Autowired 
+    protected DuplicateNotificationStateManager dupStateManager;
+    
     static
 	{
 		noCache = new CacheControl();
@@ -82,9 +87,10 @@ public class TxsResource
 	 * Constructor 
 	 * @param template Production template used for placing message into the Camel route.
 	 */
-	public TxsResource(ProducerTemplate template)
+	public TxsResource(ProducerTemplate template, DuplicateNotificationStateManager dupMgr)
 	{
 		this.template = template;
+		this.dupStateManager = dupMgr;
 	}
 	
 	/**
@@ -141,10 +147,20 @@ public class TxsResource
     @POST
     @Produces(MediaType.APPLICATION_JSON) 
     @Consumes(MediaType.APPLICATION_JSON) 
-    public Response supressNotification(Tx notificationMessage)
+    public Response supressNotification(Tx notificationMessage) 
     {
-    	Boolean retEntity = Boolean.FALSE;
-    
-		return Response.ok(retEntity).cacheControl(noCache).build();
+    	if (dupStateManager == null)
+    		throw new IllegalStateException("Duplicatoin state manager cannot be null.  Please examine the txs resource configuration");
+    	
+    	try
+    	{
+    		Boolean retEntity = dupStateManager.suppressNotification(notificationMessage);
+    		return Response.ok(retEntity).cacheControl(noCache).build();
+    	}
+    	catch (DuplicateNotificationStateManagerException e)
+    	{
+    		return Response.serverError().cacheControl(noCache).build();
+    	}
+		
     }
 }
