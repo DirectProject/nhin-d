@@ -533,23 +533,15 @@ Regards, Postmaster XXX.YYY
             <AutoDSNFailueCreation>General,ReliableAndTimely</AutoDSNFailueCreation> 
          </mailet>
 
-         <!-- This mailet is only needed if the security and trust agent uses a matcher that bi-passes
-         the agent for local recipients to ensure notifications are properly tracked.  All messages at this point should not encrypted, so they
-         should be incoming in direction.  If a different matcher is used that does not bi-pass the agent, then this 
-         mailet should be commented out. -->
-         <mailet match="IsNotification" class="TrackIncomingNotification">
+         <!-- This mailet tracks all incoming notification messages.  All messages at this point should not encrypted, so they
+         should be incoming in direction.  In addtion this mailet determines if a notification should be suppressed from being 
+         delivered to the edge client.  Generally this applies to duplicate notification checking of messages that were sent with 
+         the timely and reliable disposition option, but implementations can vary by HISP.  The default configuration defers to 
+         the message monitoring service to dictate if messages should be supresses. -->
+         <mailet match="IsNotification" class="SuppressAndTrackAggregate">
             <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
+            <ConsumeMDNProcessed>true</ConsumeMDNProcessed>            
          </mailet>
-
-         <!--  This mailet determines if a notification should be suppressed from being delivered to the edge client.
-         Generally this applies to duplicate notification checking of messages that were sent with the timely and reliable
-         disposition option, but implementations can vary by HISP.  The default configuration derers to the message monitoring
-         service to dictate if messages should be supresses.  -->
-         <mailet match="IsNotification" class="NotificationSuppressor">
-            <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
-            <ConsumeMDNProcessed>true</ConsumeMDNProcessed>
-         </mailet>
-
 
          <mailet match="RecipientIsXdAndNotSMIME=http://localhost:8081/config-service/ConfigurationService" class="DirectXdMailet">
             <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>

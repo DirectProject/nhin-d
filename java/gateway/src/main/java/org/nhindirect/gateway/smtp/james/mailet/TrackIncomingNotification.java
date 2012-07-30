@@ -42,10 +42,8 @@ import org.nhindirect.stagent.options.OptionsManager;
 import com.google.inject.Provider;
 
 /**
- * The mailet is necessary for configurations the choose to bypass the security and trust mailet for messages that are from and destined to
- * local recipients.  In this case, notification messages are not processed by the security and trust mailet, and there for notification messages
- * are not monitored.  This mail should be configured to follow the security and trust mailet in this use configuration use case to ensure DNS and MDN
- * message are properly tracked and monitored.
+ * Notification messages are not tracked by the security and trust mailet to allow for a modular tracking design.  This mailet should be configured to 
+ * follow the security and trust mailet in to ensure DNS and MDN message are properly tracked and monitored.
  * @author Greg Meyer
  * @since 2.0
  */

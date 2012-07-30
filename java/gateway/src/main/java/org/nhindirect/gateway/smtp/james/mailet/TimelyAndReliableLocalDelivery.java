@@ -21,9 +21,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp.james.mailet;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -61,7 +63,22 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(TimelyAndReliableLocalDelivery.class);	
 	
 	protected static final String RELIABLE_DELIVERY_OPTION = MDNStandard.DispositionOption_TimelyAndReliable + "=optional,true";
-	
+
+	/*
+	 * Annotated resources are used for James 3 LocalDelivery mailet support
+	 * This is completely experimental
+	 */
+	@Resource(name = "recipientrewritetable")
+    private Object rrt;
+	@Resource(name = "usersrepository")
+	private Object usersRepository;
+	@Resource(name = "mailboxmanager")
+	private Object mailboxManager;
+	@Resource(name = "domainlist")
+	private Object domainList;
+	@Resource(name = "filesystem")
+	private Object fileSystem;
+		
 	protected Object localDeliveryMailet;
 	
 	protected Method serviceMethod;
@@ -80,8 +97,47 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 			// create an instance of the local delivery if we can
 			localDeliveryMailet = createLocalDeliveryClass();
 			
-			Method initMethod = Mailet.class.getDeclaredMethod("init", MailetConfig.class);
+			final Method initMethod = Mailet.class.getDeclaredMethod("init", MailetConfig.class);
+			
 			serviceMethod = Mailet.class.getDeclaredMethod("service", Mail.class);
+			
+			// set private objects if they exist
+			final Class<?> localDeliveryMailetClass = localDeliveryMailet.getClass();
+			Field field = getDeclaredFieldQuietly(localDeliveryMailetClass, "rrt");
+			if (field != null)
+			{
+				field.setAccessible(true);
+				field.set(localDeliveryMailet, rrt);
+			}
+			
+			field = getDeclaredFieldQuietly(localDeliveryMailetClass, "usersRepository");
+			if (field != null)
+			{
+				field.setAccessible(true);
+				field.set(localDeliveryMailet, usersRepository);
+			}
+			
+			field = getDeclaredFieldQuietly(localDeliveryMailetClass, "mailboxManager");
+			if (field != null)
+			{
+				field.setAccessible(true);
+				field.set(localDeliveryMailet, mailboxManager);
+			}
+			
+			
+			field = getDeclaredFieldQuietly(localDeliveryMailetClass, "domainList");
+			if (field != null)
+			{
+				field.setAccessible(true);
+				field.set(localDeliveryMailet, domainList);
+			}
+			
+			field = getDeclaredFieldQuietly(localDeliveryMailetClass, "fileSystem");
+			if (field != null)
+			{
+				field.setAccessible(true);
+				field.set(localDeliveryMailet, fileSystem);
+			}
 			
 			initMethod.invoke(localDeliveryMailet, this.getMailetConfig());
 		}
@@ -91,6 +147,22 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		}
 		
 		notificationProducer = new ReliableDispatchedNotificationProducer(new NotificationSettings(true, "Local Direct Delivery Agent", "Your message was successfully dispatched."));
+	}
+	
+	protected Field getDeclaredFieldQuietly(Class<?> clazz, String fieldName)
+	{
+		Field retVal = null;
+		
+		try
+		{
+			retVal = clazz.getDeclaredField(fieldName);
+		}
+		catch(Throwable t)
+		{
+			/* no-op... handled quietly */
+		}
+		
+		return retVal;
 	}
 	
 	protected Object createLocalDeliveryClass() throws Exception
