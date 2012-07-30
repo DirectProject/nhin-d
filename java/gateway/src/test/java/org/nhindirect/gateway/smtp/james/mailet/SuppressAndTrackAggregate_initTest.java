@@ -3,14 +3,13 @@ package org.nhindirect.gateway.smtp.james.mailet;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import org.apache.mailet.MailetConfig;
 import org.nhindirect.common.tx.impl.DefaultTxDetailParser;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 
 import junit.framework.TestCase;
 
-public class TrackIncomingNotification_initializationTest extends TestCase
+public class SuppressAndTrackAggregate_initTest extends TestCase
 {
 	abstract class TestPlan extends BaseTestPlan 
 	{		
@@ -28,7 +27,7 @@ public class TrackIncomingNotification_initializationTest extends TestCase
 		@Override
 		protected void performInner() throws Exception
 		{
-			TrackIncomingNotification theMailet = new TrackIncomingNotification();
+			SuppressAndTrackAggregate theMailet = new SuppressAndTrackAggregate();
 
 			MailetConfig config = getMailetConfig();
 			
@@ -42,7 +41,7 @@ public class TrackIncomingNotification_initializationTest extends TestCase
 			return "";
 		}
 
-		protected void doAssertions(TrackIncomingNotification notif) throws Exception
+		protected void doAssertions(SuppressAndTrackAggregate notif) throws Exception
 		{
 
 		}		
@@ -53,11 +52,15 @@ public class TrackIncomingNotification_initializationTest extends TestCase
 	{
 		new TestPlan() 
 		{
-			protected void doAssertions(TrackIncomingNotification notif) throws Exception
+			protected void doAssertions(SuppressAndTrackAggregate notif) throws Exception
 			{
-				assertNotNull(notif.txParser);
-				assertNotNull(notif.txService);
-				assertTrue(notif.txParser instanceof DefaultTxDetailParser);
+				assertNotNull(notif.suppessor.txParser);
+				assertNotNull(notif.suppessor.txService);
+				assertTrue(notif.suppessor.txParser instanceof DefaultTxDetailParser);
+				
+				assertNotNull(notif.tracker.txParser);
+				assertNotNull(notif.tracker.txService);
+				assertTrue(notif.tracker.txParser instanceof DefaultTxDetailParser);
 			}	
 		}.perform();
 	}	
@@ -72,11 +75,15 @@ public class TrackIncomingNotification_initializationTest extends TestCase
 				return null;
 			}
 			
-			protected void doAssertions(TrackIncomingNotification notif) throws Exception
+			protected void doAssertions(SuppressAndTrackAggregate notif) throws Exception
 			{
-				assertNotNull(notif.txParser);
-				assertNotNull(notif.txService);
-				assertTrue(notif.txParser instanceof DefaultTxDetailParser);
+				assertNotNull(notif.suppessor.txParser);
+				assertNotNull(notif.suppessor.txService);
+				assertTrue(notif.suppessor.txParser instanceof DefaultTxDetailParser);
+				
+				assertNotNull(notif.tracker.txParser);
+				assertNotNull(notif.tracker.txService);
+				assertTrue(notif.tracker.txParser instanceof DefaultTxDetailParser);
 			}	
 		}.perform();
 	}	
@@ -91,11 +98,15 @@ public class TrackIncomingNotification_initializationTest extends TestCase
 				return "http://localhost/msg-monitor";
 			}
 			
-			protected void doAssertions(TrackIncomingNotification notif) throws Exception
+			protected void doAssertions(SuppressAndTrackAggregate notif) throws Exception
 			{
-				assertNotNull(notif.txParser);
-				assertNotNull(notif.txService);
-				assertTrue(notif.txParser instanceof DefaultTxDetailParser);
+				assertNotNull(notif.suppessor.txParser);
+				assertNotNull(notif.suppessor.txService);
+				assertTrue(notif.suppessor.txParser instanceof DefaultTxDetailParser);
+				
+				assertNotNull(notif.tracker.txParser);
+				assertNotNull(notif.tracker.txService);
+				assertTrue(notif.tracker.txParser instanceof DefaultTxDetailParser);
 			}	
 		}.perform();
 	}

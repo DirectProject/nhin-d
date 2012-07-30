@@ -304,13 +304,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 				}
 			}
 			
-			
-			// determine now if the message is incoming.... if it is incoming,
-			// then the message has been decrypted and the tracking information can
-			// be extraced
-			if (!isOutgoing)
-				txToMonitor = getTxToTrack(result.getProcessedMessage().getMessage(), sender, recipients);
-			
 			// track message
 			trackMessage(txToMonitor, isOutgoing);
 			
@@ -484,10 +477,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 	 * Tracks message that meet the following qualifications
 	 * <br>
 	 * 1. Outgoing IMF message
-	 * <br>
-	 * 2. Incoming MDN message
-	 * <br>
-	 * 3. Incoming DSN message
 	 * @param tx The message to monitor and track
 	 * @param isOutgoing Indicates the message direction: incoming or outgoing
 	 */
@@ -495,8 +484,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 	{
 		// only track the following message..
 		// 1. Outgoing IMF message
-		// 2. Incoming MDN message
-		// 3. Incoming DSN message
 		boolean track = false;
 		if (tx != null)
 		{
@@ -505,12 +492,6 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 				case IMF:
 				{
 					track = isOutgoing;
-					break;
-				}
-				case DSN:
-				case MDN:
-				{
-					track = !isOutgoing;
 					break;
 				}
 			}

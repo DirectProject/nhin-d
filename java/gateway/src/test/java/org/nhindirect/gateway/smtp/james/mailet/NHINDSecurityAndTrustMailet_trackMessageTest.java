@@ -167,7 +167,7 @@ public class NHINDSecurityAndTrustMailet_trackMessageTest extends TestCase
 		}.perform();
 	}	
 	
-	public void testMonitorMessage_trackIncomingMDNMessage_assertMessageTracked() throws Exception 
+	public void testMonitorMessage_trackIncomingMDNMessage_assertNotMessageTracked() throws Exception 
 	{
 		new TestPlan() 
 		{
@@ -186,13 +186,7 @@ public class NHINDSecurityAndTrustMailet_trackMessageTest extends TestCase
 			@Override
 			protected void doAssertions(MockTxService service) throws Exception
 			{
-				assertEquals(1, service.txs.size());
-				Tx tx = service.txs.iterator().next();
-				assertEquals(TxMessageType.MDN, tx.getMsgType());
-				
-				MimeMessage msg = new MimeMessage(null, IOUtils.toInputStream(TestUtils.readMessageResource(getMessageToSend())));
-				assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
-						tx.getDetail(TxDetailType.FROM).getDetailValue());
+				assertEquals(0, service.txs.size());
 			}			
 		}.perform();
 	}	
@@ -215,7 +209,7 @@ public class NHINDSecurityAndTrustMailet_trackMessageTest extends TestCase
 		}.perform();
 	}
 	
-	public void testMonitorMessage_trackIncomingDSNMessage_assertMessageTracked() throws Exception 
+	public void testMonitorMessage_trackIncomingDSNMessage_assertNotMessageTracked() throws Exception 
 	{
 		new TestPlan() 
 		{
@@ -234,13 +228,7 @@ public class NHINDSecurityAndTrustMailet_trackMessageTest extends TestCase
 			@Override
 			protected void doAssertions(MockTxService service) throws Exception
 			{
-				assertEquals(1, service.txs.size());
-				Tx tx = service.txs.iterator().next();
-				assertEquals(TxMessageType.DSN, tx.getMsgType());
-				
-				MimeMessage msg = new MimeMessage(null, IOUtils.toInputStream(TestUtils.readMessageResource(getMessageToSend())));
-				assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
-						tx.getDetail(TxDetailType.FROM).getDetailValue());
+				assertEquals(0, service.txs.size());
 			}			
 		}.perform();
 	}	
