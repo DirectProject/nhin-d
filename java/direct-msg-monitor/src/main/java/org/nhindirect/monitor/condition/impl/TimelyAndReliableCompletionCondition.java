@@ -27,11 +27,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.mail.dsn.DSNStandard;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
+import org.nhindirect.monitor.dao.NotificationDAOException;
+import org.nhindirect.monitor.dao.NotificationDuplicationDAO;
+
 
 /**
  * A completion condition that implements the timely and reliable messaging for Direct specification.
@@ -40,6 +45,15 @@ import org.nhindirect.common.tx.model.TxDetailType;
  */
 public class TimelyAndReliableCompletionCondition extends AbstractCompletionCondition
 {
+	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(TimelyAndReliableCompletionCondition.class);
+	
+	protected NotificationDuplicationDAO dao;
+	
+	public void setDupDAO(NotificationDuplicationDAO dao)
+	{
+		this.dao = dao;
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -137,9 +151,30 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 				// have been accounted for
 				retVal.add(status.getRecipient());
 			}
+			else
+			{
+				TxDetail detail = originalMessage.getDetail(TxDetailType.MSG_ID);
+				if (detail != null)
+					addMessageToDuplicateStore(detail.getDetailValue(), status.getRecipient());
+			}
 		}
 		
 		return retVal;
+	}
+	
+	protected void addMessageToDuplicateStore(String messageId, String address)
+	{
+		if (dao != null)
+		{
+			try
+			{
+				dao.addNotification(messageId, address);
+			}
+			catch (NotificationDAOException e)
+			{
+				LOGGER.warn("Could not add transaction to duplication state manager.", e);
+			}
+		}
 	}
 	
 	private static class RecipientResponseStatus
