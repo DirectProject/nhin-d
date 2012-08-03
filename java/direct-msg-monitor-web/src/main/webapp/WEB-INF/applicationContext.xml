@@ -48,7 +48,7 @@
   <bean id="notificationDuplicationDAO" class="org.nhindirect.monitor.dao.impl.NotificationDuplicationDAOImpl" />
 
   <bean id="duplicationStateManager" class="org.nhindirect.monitor.processor.impl.DefaultDuplicateNotificationStateManager" >
-        <property name="messageRetention" value="7" />
+        <property name="messageRetention" value="${monitor.dupStateDAO.retensionTime}" />
 		<property name="dao" ref="notificationDuplicationDAO" />
   </bean>
 
@@ -161,14 +161,16 @@
         </choice>      
       </aggregate>
     </route>
- <!-- 
-    <route id="errorgen">
-      <from uri="direct:error-generator"/>
-      <bean ref="dsnMessageProcessor"/>
-      <bean ref="dsnSender"/>      
-    </route>
     
- -->    
+    <!--  Simple timer to purge exchanges in the duplication data base.
+          This can replaced more sophisticated quartz configuration using 
+          the Camel Quartz component and cron expressions.  Default configuration
+          purges the table once every 6 hours.
+     -->    
+    <route id="duplicate-store-purge">
+      <from uri="timer://purgeTimer?period=6h"/>
+      <bean ref="duplicationStateManager" method="purge"/>
+    </route> 
   </camelContext>
 
 </beans>
