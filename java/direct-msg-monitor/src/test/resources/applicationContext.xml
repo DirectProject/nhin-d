@@ -98,6 +98,8 @@
 
   <camelContext id="web-camel-context" xmlns="http://camel.apache.org/schema/spring">  
     <template id="testProducerTemplate" defaultEndpoint="direct:start"/>
+    
+    
     <route id="direct-reliable">
 
       <from uri="direct:start"/>
@@ -116,6 +118,15 @@
       </aggregate>
     </route>
  
+    <!--  Simple timer to purge exchanges in the duplication data base.
+          This can replaced more sophisticated quartz configuration using 
+          the Camel Quartz component and cron expressions.  Default configuration
+          purges the table once every 6 hours.
+     -->
+     <route id="duplicate-store-purge">
+       <from uri="timer://purgeTimer?period=6h"/>
+       <bean ref="duplicationStateManager" method="purge"/>
+     </route>
   </camelContext>
 
 </beans>
