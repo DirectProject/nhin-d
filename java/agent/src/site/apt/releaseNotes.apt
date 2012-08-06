@@ -16,7 +16,7 @@
     
     [] 
      
-    Bug Fixes
+    Enhancements
 
     * {{{http://code.google.com/p/nhin-d/issues/detail?id=187}187}}: Added support for MDN dispatch notification production.
 
