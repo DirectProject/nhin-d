@@ -58,6 +58,24 @@ public class NotificationTest extends TestCase
 		assertTrue(content.contains("automatic-action/MDN-sent-automatically;processed"));	
 	}
 	
+	public void testCreateNotification_AssertDispatched() throws Exception
+	{
+		Notification noti = new Notification(NotificationType.Dispatched);
+		
+		ArrayList<MimeEntity> entities = (ArrayList<MimeEntity>)noti.getParts();
+		
+		MimeEntity entity = entities.get(0);
+		assertEquals("Your message was successfully processed.", entity.getContent().toString());
+		
+		entity = entities.get(1);
+		assertTrue(entity.getContentType().startsWith("message/disposition-notification"));
+		ByteArrayInputStream str = (ByteArrayInputStream)entity.getContent();
+		byte[] bytes = new byte[str.available()];
+		str.read(bytes);
+		String content = new String(bytes);
+		assertTrue(content.contains("automatic-action/MDN-sent-automatically;dispatched"));	
+	}
+	
 	public void testCreateNotification_AssertInputStream() throws Exception
 	{
 		Notification noti = new Notification(NotificationType.Processed);
