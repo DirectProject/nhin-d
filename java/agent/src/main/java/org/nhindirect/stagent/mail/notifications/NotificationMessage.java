@@ -136,10 +136,11 @@ public class NotificationMessage extends Message
 	        if (subject == null)
 	        	subject = "";
 
-	        notificationMessage.setHeader(MailStandard.Headers.Subject, "Processed: " + subject);
+	        final String subjectPrefix = NotificationHelper.asString(notification.getDisposition().getNotification(), true);
+	        notificationMessage.setHeader(MailStandard.Headers.Subject, subjectPrefix + ": " + subject);
         }
         catch (MessagingException e) {/* no-op */}
         
         return notificationMessage;
-    }    
+    }   
 }

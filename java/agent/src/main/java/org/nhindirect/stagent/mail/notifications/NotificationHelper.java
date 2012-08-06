@@ -271,6 +271,25 @@ public class NotificationHelper
      */
     public static String asString (NotificationType type)
     {
-        return MDNStandard.toString(type);
+    	return asString(type, false);
+    }
+    
+    /**
+     * Provides the appropriate Disposition header value for the type
+     * @param type The type to translate
+     * @return A string representation suitable for inclusion in the disposition type section of the Disposition header value
+     */
+    public static String asString (NotificationType type, boolean cap)
+    {
+    	
+        String retVal = MDNStandard.toString(type);
+        if (cap)
+        {
+        	char[] asArray = retVal.toCharArray();
+        	asArray[0] = Character.toTitleCase(asArray[0]);
+        	retVal = new String(asArray);
+        }
+        
+        return retVal;
     }
 }
