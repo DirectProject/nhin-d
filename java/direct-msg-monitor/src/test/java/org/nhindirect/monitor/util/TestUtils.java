@@ -9,6 +9,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
@@ -25,6 +26,12 @@ public class TestUtils
 {
 	private static final Integer CONNECTION_TIMEOUT = 10000; // 10 seconds
 	private static final Integer READ_TIMEOUT = 10000000; // 10 seconds
+	
+	@Test
+	public void testDummy()
+	{
+		
+	}
 	
 	public static String readMessageFromFile(String fileName) throws Exception
 	{
