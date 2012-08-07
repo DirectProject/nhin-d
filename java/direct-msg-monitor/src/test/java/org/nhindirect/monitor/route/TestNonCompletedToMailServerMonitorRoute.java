@@ -21,6 +21,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class TestNonCompletedToMailServerMonitorRoute extends CamelSpringTestSupport 
 {
+	@Test
+	public void testDummy()
+	{
+		
+	}
+	
 	/*
 	@Test
 	public void testNonCompleted_assertDSNGenerated() throws Exception

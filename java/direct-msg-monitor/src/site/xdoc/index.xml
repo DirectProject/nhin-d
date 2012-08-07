@@ -19,6 +19,10 @@
                It also implements the monitoring conditions as specified by the the reliable and timely 
                messaging implementation guidance of the Direct Project.
             </p>
+            <p>
+               For more details on deployment and configuration, refer to the
+               <a href="users-guide/index.html">users guide.</a>    
+            </p>
         </section>
     </body>
 </document>
