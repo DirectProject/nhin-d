@@ -5,6 +5,24 @@
         ---
         Greg Meyer
         ---
+
+{2.0}
+
+    Changes included with release 2.0
+    
+    []
+    
+    Enhancements
+    
+    * Requires minimum version of agent 1.5 as a dependency.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=187}187}}: Support for timely and reliable delivery.  Includes new mailets and matchers for bounce message and additional configuration parameters.
+
+    [] 
+     
+    Bug Fixes
+
+    *  NA
  
 {1.5.1}
 
