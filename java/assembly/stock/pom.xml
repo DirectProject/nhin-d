@@ -64,7 +64,7 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>direct-msg-monitor-web</artifactId>
 	      <type>war</type>
-	      <version>1.0-SNAPSHOT</version>
+	      <version>1.0</version>
 	   </dependency>      
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -98,17 +98,17 @@
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>agent</artifactId>
-	      <version>1.5-SNAPSHOT</version>
+	      <version>1.5</version>
 	   </dependency>  	
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>gateway</artifactId>
-	      <version>2.0-SNAPSHOT</version>
+	      <version>2.0</version>
        </dependency>
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>direct-common</artifactId>
-	      <version>1.1-SNAPSHOT</version>
+	      <version>1.1</version>
        </dependency>       
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -123,7 +123,7 @@
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>xdmail</artifactId>
-	      <version>1.1-SNAPSHOT</version>
+	      <version>1.1</version>
        </dependency>    
 	   <dependency>
 			<groupId>org.apache.james</groupId>
