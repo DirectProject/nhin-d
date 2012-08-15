@@ -391,7 +391,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		}
 		
 		if (sendDSN)
-			sendDSN(tx, recipients);
+			sendDSN(tx, recipients, true);
 		
 		this.onMessageRejected(mail, recipients, sender, t);
 	}
@@ -430,7 +430,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		}
 		
 		if (sendDSN)
-			sendDSN(tx, result.getProcessedMessage().getRejectedRecipients());
+			sendDSN(tx, result.getProcessedMessage().getRejectedRecipients(), true);
 		
 		this.onPostprocessMessage(mail, result);
 	}

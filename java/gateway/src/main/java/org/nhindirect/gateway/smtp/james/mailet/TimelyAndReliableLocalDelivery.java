@@ -236,7 +236,7 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 		{
 			// create a DSN message regarless if timely and reliable was requested
 			if (txToTrack != null && txToTrack.getMsgType() == TxMessageType.IMF)
-				this.sendDSN(txToTrack, recipients);
+				this.sendDSN(txToTrack, recipients, false);
 		}
 		
 		LOGGER.debug("Exiting timely and reliable service method.");

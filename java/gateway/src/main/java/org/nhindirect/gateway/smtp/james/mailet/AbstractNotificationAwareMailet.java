@@ -177,15 +177,32 @@ public abstract class AbstractNotificationAwareMailet extends GenericMailet
 	 * places the message on top of the mail stack to be processed as a new incoming message.
 	 * @param tx Tx object containing information about the original message.
 	 * @param undeliveredRecipeints A collection of recipients that could not receive the original message
+	 * @deprecated As of 2.0.1 Use {@link #sendDSN(Tx, NHINDAddressCollection, boolean)}.  
 	 */
 	protected void sendDSN(Tx tx, NHINDAddressCollection undeliveredRecipeints)
+	{
+		sendDSN(tx, undeliveredRecipeints, true);
+	}
+	
+	/**
+	 * Sends a DSN message using information in a pre-parsed Tx object and a list of failed message recipients.  This builds the DSN message using
+	 * the {@link DSNCreator} specified by {@link #getDSNProvider()} and sends the message using the mailet context sendMail method.  This effectively
+	 * places the message on top of the mail stack to be processed as a new incoming message.
+	 * @param tx Tx object containing information about the original message.
+	 * @param undeliveredRecipeints A collection of recipients that could not receive the original message
+	 * @param useSenderAsPostmaster Indicates if the sender's domain should be used as the postmaster.  This is generally set to true for failed outgoing messages and
+	 * false for failed incoming messages.
+	 */
+	protected void sendDSN(Tx tx, NHINDAddressCollection undeliveredRecipeints, boolean useSenderAsPostmaster)
 	{
 		try
 		{
 			if (dsnCreator != null)
 			{
-				final MimeMessage msg = dsnCreator.createDSNFailure(tx, undeliveredRecipeints);
-				this.getMailetContext().sendMail(msg);
+				final Collection<MimeMessage> msgs = dsnCreator.createDSNFailure(tx, undeliveredRecipeints, useSenderAsPostmaster);
+				if (msgs != null && msgs.size() > 0)
+					for (MimeMessage msg : msgs)
+						this.getMailetContext().sendMail(msg);
 			}
 		}
 		catch (Throwable e)

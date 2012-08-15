@@ -17,6 +17,7 @@ import org.nhindirect.common.mail.MailUtil;
 import org.nhindirect.common.mail.dsn.DSNStandard;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import com.sun.mail.dsn.DeliveryStatus;
@@ -120,6 +121,12 @@ public class NHINDSecurityAndTrustMailet_autoGeneratorDSNTest extends TestCase
 				
 				assertEquals(MailStandard.getHeader(originalMsg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
 						MailStandard.getHeader(dsnMessage, MailStandard.Headers.To).toLowerCase(Locale.getDefault()));
+				
+				NHINDAddress originalSenderAddress = new NHINDAddress(MailStandard.getHeader(originalMsg, MailStandard.Headers.From));
+				NHINDAddress dsnFromAddress = new NHINDAddress(MailStandard.getHeader(dsnMessage, MailStandard.Headers.From));
+				
+				assertTrue(dsnFromAddress.getHost().toLowerCase(Locale.getDefault()).contains(originalSenderAddress.getHost().toLowerCase(Locale.getDefault())));
+
 				
 			}			
 		}.perform();
@@ -280,6 +287,11 @@ public class NHINDSecurityAndTrustMailet_autoGeneratorDSNTest extends TestCase
 				
 				assertEquals(MailStandard.getHeader(originalMsg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
 						MailStandard.getHeader(dsnMessage, MailStandard.Headers.To).toLowerCase(Locale.getDefault()));
+				
+				NHINDAddress originalSenderAddress = new NHINDAddress(MailStandard.getHeader(originalMsg, MailStandard.Headers.From));
+				NHINDAddress dsnFromAddress = new NHINDAddress(MailStandard.getHeader(dsnMessage, MailStandard.Headers.From));
+				
+				assertTrue(dsnFromAddress.getHost().toLowerCase(Locale.getDefault()).contains(originalSenderAddress.getHost().toLowerCase(Locale.getDefault())));
 			}			
 		}.perform();
 	}

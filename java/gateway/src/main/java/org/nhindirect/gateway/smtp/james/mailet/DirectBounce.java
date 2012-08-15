@@ -67,7 +67,7 @@ public class DirectBounce extends AbstractNotificationAwareMailet
 
 		// create a DSN message
 		if (txToTrack != null && txToTrack.getMsgType() == TxMessageType.IMF)
-			this.sendDSN(txToTrack, recipients);
+			this.sendDSN(txToTrack, recipients, false);
 
 	}
 		
