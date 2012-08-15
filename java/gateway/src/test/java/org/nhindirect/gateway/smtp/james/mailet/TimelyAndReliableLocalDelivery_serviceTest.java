@@ -1,6 +1,7 @@
 package org.nhindirect.gateway.smtp.james.mailet;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -20,6 +21,7 @@ import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
+import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 public class TimelyAndReliableLocalDelivery_serviceTest extends TestCase
@@ -196,8 +198,17 @@ public class TimelyAndReliableLocalDelivery_serviceTest extends TestCase
 			{
 				assertEquals(1, context.getSentMessages().size());
 				
-				MimeMessage msg = context.getSentMessages().iterator().next().getMessage();
-				assertEquals(TxMessageType.DSN, TxUtil.getMessageType(msg));
+				MimeMessage dsnMessage = context.getSentMessages().iterator().next().getMessage();
+				assertEquals(TxMessageType.DSN, TxUtil.getMessageType(dsnMessage));
+				
+				String originalMessageString = TestUtils.readMessageResource(getMessageToSend());
+				
+				MimeMessage originalMsg = EntitySerializer.Default.deserialize(originalMessageString);
+				
+				NHINDAddress originalRecipAddress = new NHINDAddress(MailStandard.getHeader(originalMsg, MailStandard.Headers.To));
+				NHINDAddress dsnFromAddress = new NHINDAddress(MailStandard.getHeader(dsnMessage, MailStandard.Headers.From));
+				
+				assertTrue(dsnFromAddress.getHost().toLowerCase(Locale.getDefault()).contains(originalRecipAddress.getHost().toLowerCase(Locale.getDefault())));
 				
 			}			
 		}.perform();

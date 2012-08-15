@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{2.0.1}
+
+    Changes included with release 2.0.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed bug where the postmaster address of failed incoming delivered messages was set incorrectly.
+    
+    * Fixed bug where the DSN message for failed incoming delivered messages was not split into separate DSN messages by domain.  i.e. Each unique failed recipient domain should create a separate DSN message.
+
 {2.0}
 
     Changes included with release 2.0
