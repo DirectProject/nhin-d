@@ -23,8 +23,13 @@ package org.nhindirect.gateway.smtp.dsn.impl;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.mail.Address;
 import javax.mail.Header;
@@ -50,6 +55,11 @@ import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 
+/**
+ * Abstract implementation of the DSNCreator interface.
+ * @author Greg Meyer
+ *
+ */
 public abstract class AbstractDSNCreator implements DSNCreator 
 {
 	protected Mailet mailet;
@@ -62,37 +72,29 @@ public abstract class AbstractDSNCreator implements DSNCreator
 	@Override
 	public MimeMessage createDSNFailure(Tx tx, NHINDAddressCollection failedRecipeints) throws MessagingException
 	{
+		final Collection<MimeMessage> dsnMessages = createDSNFailure(tx, failedRecipeints, true);
+		
+		if (dsnMessages != null && dsnMessages.size() > 0)
+			return dsnMessages.iterator().next();
+		else
+			return null;
+	}
+	
+	@Override
+	public Collection<MimeMessage> createDSNFailure(Tx tx, NHINDAddressCollection failedRecipeints, boolean useSenderDomainForPostmaster) throws MessagingException
+	{
+		Collection<MimeMessage> retVal = new ArrayList<MimeMessage>();
 	    InternetAddress originalSender = null;
 	    String originalSubject = "";
-	    InternetAddress postmaster = null;
+	   
 	    String originalMessageId = "";
 	    Enumeration<Header> fullMessageHeaders = null;
 	    
-	    final List<DSNRecipientHeaders> recipientDSNHeaders = new ArrayList<DSNRecipientHeaders>();
 	    final List<Address> failedRecipAddresses = new ArrayList<Address>();
-	    
-	    final TxDetail sender = tx.getDetail(TxDetailType.FROM);
-	    if (sender != null)
-	    {
-	    	originalSender = new InternetAddress(sender.getDetailValue());
-	    	postmaster = new InternetAddress(postmasterMailbox + "@" + getAddressDomain(originalSender));
-	    }
 	    
 	    final TxDetail subject = tx.getDetail(TxDetailType.SUBJECT);
 	    if (subject != null)
 	    	originalSubject = subject.getDetailValue();
-	    
-	    
-	    for (NHINDAddress incompleteRecip : failedRecipeints)
-	    {
-	    	
-	    	DSNRecipientHeaders dsnRecipHeaders = 
-	    			new DSNRecipientHeaders(DSNAction.FAILED, 
-	    			DSNStatus.getStatus(DSNStatus.PERMANENT, dsnStatus), incompleteRecip);
-	    	
-	    	recipientDSNHeaders.add(dsnRecipHeaders);
-	    	failedRecipAddresses.add(incompleteRecip);
-	    }
 	    
 	    ///CLOVER:OFF
 	    final TxDetail origMessId = tx.getDetail(TxDetailType.MSG_ID);
@@ -100,16 +102,91 @@ public abstract class AbstractDSNCreator implements DSNCreator
 	    	originalMessageId = origMessId.getDetailValue();
 	    ///CLOVER:ON
 	    
-	    final DSNMessageHeaders messageDSNHeaders = new DSNMessageHeaders(reportingMta, originalMessageId, MtaNameType.DNS);
-	    
 	    final TxDetail fullHeaders = tx.getDetail(TxDetailType.MSG_FULL_HEADERS);
 	    if (fullHeaders != null)
 	    	fullMessageHeaders = this.convertStringToHeaders(fullHeaders.getDetailValue());
 	    
-	    final MimeBodyPart textBodyPart = textGenerator.generate(originalSender, failedRecipAddresses, fullMessageHeaders);
+	    final DSNMessageHeaders messageDSNHeaders = new DSNMessageHeaders(reportingMta, originalMessageId, MtaNameType.DNS);
 	    
-	    return generator.createDSNMessage(originalSender, originalSubject, postmaster, recipientDSNHeaders, messageDSNHeaders, textBodyPart);
+	    final TxDetail sender = tx.getDetail(TxDetailType.FROM);
+	    if (sender != null)
+	    	originalSender = new InternetAddress(sender.getDetailValue());
+	    
+	    final Map<InternetAddress, Collection<NHINDAddress>> dsnMessagePostmasterToFailedRecipMap = 
+	    		groupPostMasterAndFailedRecips(sender, failedRecipeints, useSenderDomainForPostmaster);
+	    
+	    if (dsnMessagePostmasterToFailedRecipMap.size() > 0)
+	    {
+	    	for (Entry<InternetAddress, Collection<NHINDAddress>> entry: dsnMessagePostmasterToFailedRecipMap.entrySet())
+	    	{	
+	    	    final List<DSNRecipientHeaders> recipientDSNHeaders = new ArrayList<DSNRecipientHeaders>();
+			    for (NHINDAddress incompleteRecip : entry.getValue())
+			    {
+			    	
+			    	final DSNRecipientHeaders dsnRecipHeaders = 
+			    			new DSNRecipientHeaders(DSNAction.FAILED, 
+			    			DSNStatus.getStatus(DSNStatus.PERMANENT, dsnStatus), incompleteRecip);
+			    	
+			    	recipientDSNHeaders.add(dsnRecipHeaders);
+			    	failedRecipAddresses.add(incompleteRecip);
+			    	
+			    }
+			    
+			    final MimeBodyPart textBodyPart = textGenerator.generate(originalSender, failedRecipAddresses, fullMessageHeaders);
+			    final MimeMessage dsnMessage = 
+			    		generator.createDSNMessage(originalSender, originalSubject, entry.getKey(), recipientDSNHeaders, messageDSNHeaders, textBodyPart);
+			    
+			    retVal.add(dsnMessage);
+	    	}
+	    }
 
+	    return retVal;
+
+	}
+	
+	/**
+	 * Groups postmasters with the proper list of failed recipients
+	 * @param sender The sender of the original message
+	 * @param failedRecipeints List of all failed recipients
+	 * @param useSenderAsPostmaster Indicates if the sender's domain should be used as the postmaster domain.
+	 * @return Map grouping a collection of failed recipients with a postmaster.  If the useSenderAsPostmaster flag is true, all failed recipients with be associated
+	 * with one postmaster (using the senders domain).  Otherwise, a postmaster address is created per unique failed recipient domain and failed recipients are grouped by domain.
+	 */
+	protected Map<InternetAddress, Collection<NHINDAddress>> groupPostMasterAndFailedRecips(TxDetail sender, NHINDAddressCollection failedRecipeints, 
+			boolean useSenderAsPostmaster) throws MessagingException
+	{
+		final Map<InternetAddress, Collection<NHINDAddress>> postmasterToFailed = new HashMap<InternetAddress, Collection<NHINDAddress>>();
+		
+		if (useSenderAsPostmaster)
+		{
+			// just group all failed recipients into one collection
+			if (sender != null)
+			{
+		    	final InternetAddress originalSender = new InternetAddress(sender.getDetailValue());
+		    	final InternetAddress postmaster = new InternetAddress(postmasterMailbox + "@" + getAddressDomain(originalSender));
+		    	
+		    	postmasterToFailed.put(postmaster, failedRecipeints);
+			}
+		}
+		else
+		{
+			// group by domain
+			for (NHINDAddress failedRecipeint : failedRecipeints)
+			{
+				// get the postmaster for the failed recip
+		    	final InternetAddress postmaster = new InternetAddress(postmasterMailbox + "@" + failedRecipeint.getHost().toLowerCase(Locale.getDefault()));
+		    	Collection<NHINDAddress> group = postmasterToFailed.get(postmaster);
+		    	if (group == null)
+		    	{
+		    		group = new ArrayList<NHINDAddress>();
+		    		postmasterToFailed.put(postmaster, group);
+		    	}
+		    	group.add(failedRecipeint);
+				
+			}
+		}
+		
+		return postmasterToFailed;
 	}
 	
     /**
