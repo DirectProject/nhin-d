@@ -205,7 +205,7 @@ public class DirectXdMailet extends AbstractNotificationAwareMailet
         	{
 	        	// for good measure, send DSN messages back to the original sender on failure
 				// create a DSN message
-				this.sendDSN(txToTrack, xdRecipients);
+				this.sendDSN(txToTrack, xdRecipients, true);
         	}
         }
     }
