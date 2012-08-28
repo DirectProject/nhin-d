@@ -85,6 +85,19 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public Domain[] GetAgentDomains(string agentName, EntityStatus? status)
+        {
+            try
+            {
+                return Store.Domains.Get(agentName, status);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetDomains", ex);
+            }
+        }
+
+
         public void RemoveDomain(string domainName)
         {
             try

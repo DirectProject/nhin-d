@@ -199,6 +199,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="GetAgentDomains">
+      <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/GetAgentDomains" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="RemoveDomain">
       <soap:operation soapAction="urn:directproject:config/store/082010/IDomainManager/RemoveDomain" style="document" />
       <wsdl:input>

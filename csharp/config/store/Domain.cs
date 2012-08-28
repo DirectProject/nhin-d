@@ -25,8 +25,10 @@ namespace Health.Direct.Config.Store
     public class Domain
     {
         public const int MaxDomainNameLength = 255;
-        
+        public const int MaxGroupNameLength = 25;
+
         string m_name;
+        string m_agentName;
         
         public Domain()
         {
@@ -71,6 +73,26 @@ namespace Health.Direct.Config.Store
                 m_name = value;
             }
         }
+
+        [Column(Name = "AgentName", DbType = "varchar(25)", CanBeNull = true, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = false)]
+        public string AgentName
+        {
+            get
+            {
+                return m_agentName;
+            }
+            set
+            {
+                value = value ?? string.Empty;
+                if (value.Length > MaxGroupNameLength)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.AgentNameLength);
+                }
+
+                m_agentName = value;
+            }
+        }
         
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -107,6 +129,7 @@ namespace Health.Direct.Config.Store
         internal void ApplyChanges(Domain source)
         {
             this.Status = source.Status;
+            this.AgentName = source.AgentName;
             this.UpdateDate = DateTimeHelper.Now;
         }
         

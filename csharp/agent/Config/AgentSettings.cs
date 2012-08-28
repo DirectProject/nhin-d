@@ -18,6 +18,7 @@ using System.Xml.Serialization;
 
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Domains;
 
 namespace Health.Direct.Agent.Config
 {
@@ -76,7 +77,7 @@ namespace Health.Direct.Agent.Config
                 m_wrapOutgoing = value;
             }
         }
-        
+
         /// <summary>
         /// The domains the agent manages
         /// </summary>
@@ -86,7 +87,17 @@ namespace Health.Direct.Agent.Config
             get;
             set;
         }
-        
+
+        /// <summary>
+        /// <see cref="DomainSettings"/> for domain tenant selection
+        /// </summary>
+        [XmlElement("Domains")]
+        public DomainSettings DomainTenants
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// <see cref="CertificateSettings"/> for private certificates
         /// </summary>
@@ -155,10 +166,7 @@ namespace Health.Direct.Agent.Config
         /// <exception cref="AgentConfigException">When configuration settings are missing or malformed.</exception>
         public virtual void Validate()
         {
-            if (!AgentDomains.Validate(this.Domains))
-            {
-                throw new AgentConfigException(AgentConfigError.InvalidDomainList);
-            }
+            ValidateAgentDomains();
                         
             if (this.PrivateCerts == null)
             {
@@ -183,7 +191,25 @@ namespace Health.Direct.Agent.Config
                 this.Trust.Validate();
             }
         }
-        
+
+        //
+        // AgentDomains can either statically configure domains or use a DomainSettings
+        // configuration to plug in a domain configuration solution.
+        // Static configured domains are validated at initialization.  Custom solutions
+        // validate at runtime as needed.
+        // Static configured domains are domains in the root confuration.
+        //
+        private void ValidateAgentDomains()
+        {
+            if (this.Domains == null)
+            return;
+            
+            if (!AgentDomains.Validate(this.Domains))
+            {
+                throw new AgentConfigException(AgentConfigError.InvalidDomainList);
+            }
+        }
+
         /// <summary>
         /// Creates a agent from settings.
         /// </summary>
@@ -197,14 +223,29 @@ namespace Health.Direct.Agent.Config
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
             TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel() : TrustModel.Default;
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
+
+            IDomainResolver domainResolver = this.CreateResolver();
             
-            DirectAgent agent = new DirectAgent(this.Domains, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer);
+            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
-                        
+            
             return agent;
         }
-        
+
+        //
+        // Agent hands back a StaticDomainTenancy to maintain original static domain configuration
+        // New DomainSettings hands back a configured IDomainTenancy
+        //
+        private IDomainResolver CreateResolver()
+        {
+            if(this.DomainTenants == null)
+            {
+                return new StaticDomainResolver(this.Domains);
+            }
+            return this.DomainTenants.CreateResolver();
+        }
+
         /// <summary>
         /// Load agent settings from an XML string containing settings.
         /// </summary>

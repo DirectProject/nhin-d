@@ -19,7 +19,7 @@ begin
       //set Result to value part
       Result := ParamStr(i+1);   
       exit;            
-    end 
+    end; 
     i := i + 1;
   end;
 end;
@@ -42,7 +42,7 @@ begin
     begin
       Result := true;   
       exit;            
-    end 
+    end;
     i := i + 1;
   end;
   Result := false;

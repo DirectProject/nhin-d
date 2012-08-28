@@ -36,6 +36,15 @@ echo ******************************
 domain_status_set redmond.hsgincubator.com Enabled
 domain_status_set nhind.hsgincubator.com Enabled
 
+
+echo ******************************
+//
+// Set agent name to identify domain groups
+//
+domain_agent_set redmond.hsgincubator.com Agent1
+domain_agent_set nhind.hsgincubator.com Agent2
+
+
 echo ******************************
 //
 // Enable all addresses in the domains

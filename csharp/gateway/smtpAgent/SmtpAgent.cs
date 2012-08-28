@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
@@ -174,6 +175,11 @@ namespace Health.Direct.SmtpAgent
         
         void InitDomainsFromConfigService()
         {
+            if (m_settings.Domains == null)
+            {
+                Logger.Info("Static Domains not configured.  See Domains.ServiceResolver for dynamic domain configuration.");
+                return;
+            }
             if (!m_settings.HasDomainManagerService)
             {
                 Logger.Info("Domains not loaded from config service");
