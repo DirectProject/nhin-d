@@ -189,6 +189,7 @@
   <xs:complexType name="Domain">
     <xs:sequence>
       <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element minOccurs="0" name="GroupName" nillable="true" type="xs:string" />
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Name" nillable="true" type="xs:string" />
       <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q9:EntityStatus" />
@@ -262,6 +263,21 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ArrayOfDomain" nillable="true" type="tns:ArrayOfDomain" />
+  <xs:element name="GetAgentDomains">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="agentName" nillable="true" type="xs:string" />
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q12:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAgentDomainsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAgentDomainsResult" nillable="true" type="tns:ArrayOfDomain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="RemoveDomain">
     <xs:complexType>
       <xs:sequence>
@@ -336,7 +352,7 @@
   <xs:element name="Count">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="recordType" nillable="true" type="q12:DnsStandard.RecordType" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="recordType" nillable="true" type="q13:DnsStandard.RecordType" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -352,7 +368,7 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="lastRecordID" type="xs:long" />
         <xs:element minOccurs="0" name="maxResults" type="xs:int" />
-        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q13:DnsStandard.RecordType" />
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q14:DnsStandard.RecordType" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -380,7 +396,7 @@
   <xs:element name="GetDnsRecords">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="recordIDs" nillable="true" type="q14:ArrayOflong" />
+        <xs:element xmlns:q15="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="recordIDs" nillable="true" type="q15:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -409,7 +425,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
-        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q15:DnsStandard.RecordType" />
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q16:DnsStandard.RecordType" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -488,7 +504,7 @@
       <xs:sequence>
         <xs:element minOccurs="0" name="lastID" type="xs:long" />
         <xs:element minOccurs="0" name="maxResults" type="xs:int" />
-        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="type" type="q16:DnsStandard.RecordType" />
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="type" type="q17:DnsStandard.RecordType" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

@@ -364,6 +364,7 @@ namespace Health.Direct.SmtpAgent
             ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
             serializer.AddElementOption<CertificateSettings>("Resolvers", "ServiceResolver", typeof(CertServiceResolverSettings));
             serializer.AddElementOption<TrustAnchorSettings>("Resolver", "ServiceResolver", typeof(AnchorServiceResolverSettings));
+            serializer.AddElementOption<DomainSettings>("Resolver", "ServiceResolver", typeof(DomainServiceResolverSettings));
 
             using (Stream stream = File.OpenRead(configFilePath))
             {

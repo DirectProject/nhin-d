@@ -85,9 +85,9 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.yahoo.com")]
         [InlineData("www.google.com")]
         [InlineData("www.apple.com")]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("hvnhind.hsgincubator.com")]
-        [InlineData("dns.hsgincubator.com")]
+        //[InlineData("nhind.hsgincubator.com")]
+        //[InlineData("hvnhind.hsgincubator.com")]
+        //[InlineData("dns.hsgincubator.com")]
         public void ResolveAEnsureInCache(string domain)
         {
             // try with ResolveCert
@@ -147,7 +147,7 @@ namespace Health.Direct.Common.Tests.Caching
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
         [Theory]
-        [InlineData("nhind.hsgincubator.com")]
+        //[InlineData("nhind.hsgincubator.com")]
         [InlineData("direct.healthvault-stage.com")]
         [InlineData("www.microsoft.com")]
         public void ResolveMXEnsureInCache(string domain)

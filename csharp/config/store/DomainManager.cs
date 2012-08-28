@@ -129,6 +129,14 @@ namespace Health.Direct.Config.Store
                 return this.Get(db, names, status).ToArray();
             }
         }
+
+        public Domain[] Get(string groupName, EntityStatus? status)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, groupName, status).ToArray();
+            }
+        }
         
         public IEnumerable<Domain> Get(ConfigDatabase db, string[] names, EntityStatus? status)
         {
@@ -147,6 +155,25 @@ namespace Health.Direct.Config.Store
             }
             
             return db.Domains.Get(names, status.Value);
+        }
+
+        public IEnumerable<Domain> Get(ConfigDatabase db, string agentName, EntityStatus? status)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (string.IsNullOrEmpty(agentName))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAgentName);
+            }
+
+            if (status == null)
+            {
+                return db.Domains.GetDomainGroup(agentName);
+            }
+
+            return db.Domains.GetDomainGroup(agentName, status.Value);
         }
 
         public Domain[] Get(string lastDomain, int maxResults)

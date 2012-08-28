@@ -61,7 +61,8 @@ namespace Health.Direct.Config.Console.Command
         {            
             Domain domain = new Domain(args.GetRequiredValue(0))
                                 {
-                                    Status = args.GetOptionalEnum(1, EntityStatus.New)
+                                    Status = args.GetOptionalEnum(1, EntityStatus.New),
+                                    AgentName = args.GetOptionalValue(2, null)
                                 };
 
             if (Client.DomainExists(domain.Name))
@@ -79,7 +80,8 @@ namespace Health.Direct.Config.Console.Command
             = "Add a new domain."
             + Constants.CRLF + "    domainName [status]"
             + Constants.CRLF + "\t domainName: New domain name"
-            + Constants.CRLF + "\t status " + Constants.EntityStatusString;
+            + Constants.CRLF + "\t status: " + Constants.EntityStatusString
+            + Constants.CRLF + "\t agentName: " + "Domain grouping identifier";
         
         /// <summary>
         /// Retrieve a domain
@@ -123,7 +125,27 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "    domainName status"
               + Constants.CRLF + "\t domainName: Set status for this domain"
               + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
-        
+
+        /// <summary>
+        /// Set the agent name for a domain
+        /// </summary>                        
+        [Command(Name = "Domain_Agent_Set", Usage = DomainAgentSetUsage)]
+        public void DomainAgentSet(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            string agentName = args.GetRequiredValue(1);
+
+            Domain domain = this.DomainGet(name);
+            domain.AgentName = agentName;
+            Client.UpdateDomain(domain);
+        }
+
+        private const string DomainAgentSetUsage
+            = "Change a domain's agent name"
+              + Constants.CRLF + "    domain agentName"
+              + Constants.CRLF + "\t domainName: Set agent name for this domain"
+              + Constants.CRLF + "\t agentName: " + "Domain grouping identifier";
+
         /// <summary>
         /// Set the status for all addresses in a domain
         /// </summary>
@@ -143,6 +165,8 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "\t domainName: Set status for this domain"
               + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
         
+
+
         // We think this is no longer needed. Remove when confirmed
         /*
         [Command(Name = "Domain_Postmaster_Get", Usage = DomainPostmasterGetUsage)]
@@ -230,6 +254,7 @@ namespace Health.Direct.Config.Console.Command
         public void Print(Domain domain)
         {
             CommandUI.Print("Name", domain.Name);
+            CommandUI.Print("AgentName", domain.AgentName);
             CommandUI.Print("ID", domain.ID);
             CommandUI.Print("CreateDate", domain.CreateDate);
             CommandUI.Print("UpdateDate", domain.UpdateDate);
