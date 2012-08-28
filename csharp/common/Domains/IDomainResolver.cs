@@ -1,9 +1,9 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2012, Direct Project
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
+    Joe Shook     jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -13,45 +13,38 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System.ServiceModel;
 
-using Health.Direct.Config.Store;
 
-namespace Health.Direct.Config.Service
+using System.Collections.Generic;
+
+namespace Health.Direct.Common.Domains
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IDomainManager
+    /// <summary>
+    /// Supports resolution of domain tenancy.
+    /// If no domains exist and empty string array is returned.
+    /// Throw exceptions if there was an error during retrieval, such as network issues
+    /// Implementations may use implementation specific caching policies.
+    /// </summary>
+    public interface IDomainResolver
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain AddDomain(Domain domain);
+        /// <summary>
+        /// List of domains
+        /// </summary>
+        IEnumerable<string> Domains { get; }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateDomain(Domain domain);
+        /// <summary>
+        /// Tests if an address is managed.
+        /// </summary>
+        /// <param name="domain">The domain in <c>string</c> form to test</param>
+        /// <returns><c>true</c> if the address's domain is managed by the agent,
+        /// <c>false</c> otherwise.</returns>
+        bool IsManaged(string domain);
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain GetDomain(long id);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        int GetDomainCount();
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] GetDomains(string[] domainNames, EntityStatus? status);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] GetAgentDomains(string agentName, EntityStatus? status);
-        
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomain(string domainName);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] EnumerateDomains(string lastDomainName, int maxResults);
-    }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domains"></param>
+        /// <returns></returns>
+        bool Validate(string[] domains);
+    };
 }

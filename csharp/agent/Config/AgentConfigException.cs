@@ -31,6 +31,14 @@ namespace Health.Direct.Agent.Config
         /// </summary>
         InvalidDomainList,
         /// <summary>
+        /// Missing domain tenancy settings
+        /// </summary>
+        MissingDomainTenancySettings,
+        /// <summary>
+        /// Missing domain group
+        /// </summary>
+        MissingAgentName,
+        /// <summary>
         /// Missing private certificate settings
         /// </summary>
         MissingPrivateCertSettings,

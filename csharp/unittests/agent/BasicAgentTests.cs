@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Domains;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 using Health.Direct.Common.DnsResolver;
@@ -180,7 +181,7 @@ namespace Health.Direct.Agent.Tests
             // Return the wrong certificate, forcing decryption to fail
             //
             DirectAgent baseAgent = m_tester.AgentB;
-            DirectAgent badAgent = new DirectAgent(baseAgent.Domains.Domains.ToArray(), 
+            DirectAgent badAgent = new DirectAgent(new StaticDomainResolver(baseAgent.Domains.Domains.ToArray()), 
                                                  new BadCertResolver(m_tester.AgentA.PrivateCertResolver, baseAgent.PrivateCertResolver, false),  // returns the wrong private certs
                                                  baseAgent.PublicCertResolver, 
                                                  baseAgent.TrustAnchors);
@@ -189,7 +190,7 @@ namespace Health.Direct.Agent.Tests
             //
             // Now, it returns BOTH wrong and right certs, so decryption should eventually succeed
             //
-            badAgent = new DirectAgent(baseAgent.Domains.Domains.ToArray(),
+            badAgent = new DirectAgent(new StaticDomainResolver(baseAgent.Domains.Domains.ToArray()),
                                       new BadCertResolver(m_tester.AgentA.PrivateCertResolver, baseAgent.PrivateCertResolver, true),  // returns both wrong and right certs
                                       baseAgent.PublicCertResolver,
                                       baseAgent.TrustAnchors);
@@ -245,7 +246,7 @@ namespace Health.Direct.Agent.Tests
                 AgentError.NoTrustedRecipients
             );
 
-            DirectAgent badAgent = new DirectAgent(m_tester.AgentA.Domains.Domains.ToArray(),
+            DirectAgent badAgent = new DirectAgent(new StaticDomainResolver(m_tester.AgentA.Domains.Domains.ToArray()),
                                                  new NullResolver(),  // returns null private certs
                                                  m_tester.AgentA.PublicCertResolver,
                                                  m_tester.AgentA.TrustAnchors);
@@ -257,8 +258,8 @@ namespace Health.Direct.Agent.Tests
             );
             
             OutgoingMessage outgoing = m_tester.AgentA.ProcessOutgoing(messageText);
-            
-            badAgent = new DirectAgent(m_tester.AgentB.Domains.Domains.ToArray(),
+
+            badAgent = new DirectAgent(new StaticDomainResolver(m_tester.AgentB.Domains.Domains.ToArray()),
                                                  new NullResolver(),  // returns null private certs
                                                  m_tester.AgentB.PublicCertResolver,
                                                  m_tester.AgentB.TrustAnchors);
@@ -268,7 +269,7 @@ namespace Health.Direct.Agent.Tests
                 AgentError.CouldNotResolvePrivateKey
             );
 
-            badAgent = new DirectAgent(m_tester.AgentB.Domains.Domains.ToArray(),
+            badAgent = new DirectAgent(new StaticDomainResolver(m_tester.AgentB.Domains.Domains.ToArray()),
                                                  new NullResolver(true),  // returns empty private cert collections
                                                  m_tester.AgentB.PublicCertResolver,
                                                  m_tester.AgentB.TrustAnchors);
