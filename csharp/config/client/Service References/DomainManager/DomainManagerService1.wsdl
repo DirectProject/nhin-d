@@ -153,6 +153,15 @@
   <wsdl:message name="IDomainManager_GetDomains_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IDomainManager_GetAgentDomains_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAgentDomains" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetAgentDomains_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAgentDomainsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetAgentDomains_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IDomainManager_RemoveDomain_InputMessage">
     <wsdl:part name="parameters" element="tns:RemoveDomain" />
   </wsdl:message>
@@ -379,6 +388,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomains" message="tns:IDomainManager_GetDomains_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainsResponse" message="tns:IDomainManager_GetDomains_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomains_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAgentDomains">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetAgentDomains" message="tns:IDomainManager_GetAgentDomains_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetAgentDomainsResponse" message="tns:IDomainManager_GetAgentDomains_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetAgentDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetAgentDomains_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="RemoveDomain">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/RemoveDomain" message="tns:IDomainManager_RemoveDomain_InputMessage" />

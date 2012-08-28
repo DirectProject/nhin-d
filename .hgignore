@@ -101,3 +101,7 @@ glob:csharp/installer/configui/*.*
 glob:csharp/installer/configui/Config
 glob:csharp/installer/configui/Content/
 glob:csharp/installer/configui/**
+
+
+# Ignore JetBrains Files
+*.dotCover

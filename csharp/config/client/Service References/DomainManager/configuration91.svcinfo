@@ -75,9 +75,6 @@
         <property path="/security/transport/proxyCredentialType" isComplexType="false" isExplicitlyDefined="true" clrType="System.ServiceModel.HttpProxyCredentialType, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>None</serializedValue>
         </property>
-        <property path="/security/transport/realm" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue />
-        </property>
         <property path="/security/transport/extendedProtectionPolicy" isComplexType="true" isExplicitlyDefined="false" clrType="System.Security.Authentication.ExtendedProtection.Configuration.ExtendedProtectionPolicyElement, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.Security.Authentication.ExtendedProtection.Configuration.ExtendedProtectionPolicyElement</serializedValue>
         </property>
@@ -89,6 +86,9 @@
         </property>
         <property path="/security/transport/extendedProtectionPolicy/customServiceNames" isComplexType="true" isExplicitlyDefined="false" clrType="System.Security.Authentication.ExtendedProtection.Configuration.ServiceNameElementCollection, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>(Collection)</serializedValue>
+        </property>
+        <property path="/security/transport/realm" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <serializedValue />
         </property>
         <property path="/security/message" isComplexType="true" isExplicitlyDefined="false" clrType="System.ServiceModel.Configuration.BasicHttpMessageSecurityElement, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.ServiceModel.Configuration.BasicHttpMessageSecurityElement</serializedValue>
@@ -184,9 +184,6 @@
         <property path="/security/transport/proxyCredentialType" isComplexType="false" isExplicitlyDefined="true" clrType="System.ServiceModel.HttpProxyCredentialType, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>None</serializedValue>
         </property>
-        <property path="/security/transport/realm" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue />
-        </property>
         <property path="/security/transport/extendedProtectionPolicy" isComplexType="true" isExplicitlyDefined="false" clrType="System.Security.Authentication.ExtendedProtection.Configuration.ExtendedProtectionPolicyElement, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.Security.Authentication.ExtendedProtection.Configuration.ExtendedProtectionPolicyElement</serializedValue>
         </property>
@@ -198,6 +195,9 @@
         </property>
         <property path="/security/transport/extendedProtectionPolicy/customServiceNames" isComplexType="true" isExplicitlyDefined="false" clrType="System.Security.Authentication.ExtendedProtection.Configuration.ServiceNameElementCollection, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>(Collection)</serializedValue>
+        </property>
+        <property path="/security/transport/realm" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <serializedValue />
         </property>
         <property path="/security/message" isComplexType="true" isExplicitlyDefined="false" clrType="System.ServiceModel.Configuration.BasicHttpMessageSecurityElement, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.ServiceModel.Configuration.BasicHttpMessageSecurityElement</serializedValue>
@@ -293,9 +293,6 @@
         <property path="/security/transport/proxyCredentialType" isComplexType="false" isExplicitlyDefined="true" clrType="System.ServiceModel.HttpProxyCredentialType, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>None</serializedValue>
         </property>
-        <property path="/security/transport/realm" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue />
-        </property>
         <property path="/security/transport/extendedProtectionPolicy" isComplexType="true" isExplicitlyDefined="false" clrType="System.Security.Authentication.ExtendedProtection.Configuration.ExtendedProtectionPolicyElement, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.Security.Authentication.ExtendedProtection.Configuration.ExtendedProtectionPolicyElement</serializedValue>
         </property>
@@ -307,6 +304,9 @@
         </property>
         <property path="/security/transport/extendedProtectionPolicy/customServiceNames" isComplexType="true" isExplicitlyDefined="false" clrType="System.Security.Authentication.ExtendedProtection.Configuration.ServiceNameElementCollection, System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>(Collection)</serializedValue>
+        </property>
+        <property path="/security/transport/realm" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <serializedValue />
         </property>
         <property path="/security/message" isComplexType="true" isExplicitlyDefined="false" clrType="System.ServiceModel.Configuration.BasicHttpMessageSecurityElement, System.ServiceModel, Version=3.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>System.ServiceModel.Configuration.BasicHttpMessageSecurityElement</serializedValue>

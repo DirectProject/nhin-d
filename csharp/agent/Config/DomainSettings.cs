@@ -1,9 +1,9 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2012, Direct Project
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
+    Joe Shook     jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -13,45 +13,55 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System.ServiceModel;
 
-using Health.Direct.Config.Store;
+using System.Xml.Serialization;
+using Health.Direct.Common.Domains;
 
-namespace Health.Direct.Config.Service
+namespace Health.Direct.Agent.Config
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IDomainManager
+    /// <summary>
+    /// Settings for Domain tenant selection.
+    /// </summary>
+    [XmlType("DomainSettings")]
+    public class DomainSettings
     {
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain AddDomain(Domain domain);
+        /// <summary>
+        /// Creates an instance, normally called from one of the <see cref="AgentSettings"/> static factory methods.
+        /// </summary>
+        public DomainSettings()
+        {
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateDomain(Domain domain);
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain GetDomain(long id);
+        /// <summary>
+        /// Settings for the domain tenancy selection.
+        /// </summary>
+        [XmlElement("PluginResolver", typeof(PluginDomainResolverSettings))]
+        public DomainResolverSettings Resolver
+        {
+            get;
+            set;
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        int GetDomainCount();
+        /// <summary>
+        /// Validates the configuration settings.
+        /// </summary>
+        public void Validate()
+        {
+            if (this.Resolver == null)
+            {
+                throw new AgentConfigException(AgentConfigError.MissingDomainTenancySettings);
+            }
+            this.Resolver.Validate();
+        }
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] GetDomains(string[] domainNames, EntityStatus? status);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] GetAgentDomains(string agentName, EntityStatus? status);
-        
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void RemoveDomain(string domainName);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Domain[] EnumerateDomains(string lastDomainName, int maxResults);
+        /// <summary>
+        /// Creates the configured domain resolver.
+        /// </summary>
+        /// <returns>The configured domain resolver.</returns>
+        public IDomainResolver CreateResolver()
+        {
+            return Resolver.CreateResolver();
+        }
     }
 }

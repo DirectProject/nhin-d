@@ -75,6 +75,8 @@
     <Compile Include="ConfigAnchorResolver.cs" />
     <Compile Include="ConfigCertificateResolver.cs" />
     <Compile Include="ConfigService.cs" />
+    <Compile Include="DomainServiceResolver.cs" />
+    <Compile Include="DomainServiceResolverSettings.cs" />
     <Compile Include="MessageRoute.cs" />
     <Compile Include="InternalMessageSettings.cs" />
     <Compile Include="ISmtpMessage.cs" />
