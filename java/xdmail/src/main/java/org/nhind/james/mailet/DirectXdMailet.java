@@ -149,31 +149,35 @@ public class DirectXdMailet extends AbstractNotificationAwareMailet
                         LOGGER.error(response);
                         
                     }
-                    else if (isReliableAndTimely && txToTrack != null && txToTrack.getMsgType() == TxMessageType.IMF)
+                    else
                     {
                     	successfulTransaction = true;
-                    	// send MDN dispatch for messages the recipients that were successful
-        				final Collection<NotificationMessage> notifications = 
-        						notificationProducer.produce(new Message(msg), xdRecipients.toInternetAddressCollection());
-        				if (notifications != null && notifications.size() > 0)
-        				{
-        					LOGGER.debug("Sending MDN \"dispathed\" messages");
-        					// create a message for each notification and put it on James "stack"
-        					for (NotificationMessage message : notifications)
-        					{
-        						try
-        						{
-        							message.setHeader(MDNStandard.Headers.DispositionNotificationOptions, RELIABLE_DELIVERY_OPTION);
-        							message.saveChanges();
-        							getMailetContext().sendMail(message);
-        						}
-        						catch (Throwable t)
-        						{
-        							// don't kill the process if this fails
-        							LOGGER.error("Error sending MDN dispatched message.", t);
-        						}
-        					}
-        				}
+	                    if (isReliableAndTimely && txToTrack != null && txToTrack.getMsgType() == TxMessageType.IMF)
+	                    {
+	
+	                    	// send MDN dispatch for messages the recipients that were successful
+	        				final Collection<NotificationMessage> notifications = 
+	        						notificationProducer.produce(new Message(msg), xdRecipients.toInternetAddressCollection());
+	        				if (notifications != null && notifications.size() > 0)
+	        				{
+	        					LOGGER.debug("Sending MDN \"dispathed\" messages");
+	        					// create a message for each notification and put it on James "stack"
+	        					for (NotificationMessage message : notifications)
+	        					{
+	        						try
+	        						{
+	        							message.setHeader(MDNStandard.Headers.DispositionNotificationOptions, RELIABLE_DELIVERY_OPTION);
+	        							message.saveChanges();
+	        							getMailetContext().sendMail(message);
+	        						}
+	        						catch (Throwable t)
+	        						{
+	        							// don't kill the process if this fails
+	        							LOGGER.error("Error sending MDN dispatched message.", t);
+	        						}
+	        					}
+	        				}
+	                    }
                     }
                 }
             }
