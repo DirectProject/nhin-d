@@ -1,0 +1,236 @@
+h1. Web Deployment and Configuration
+
+The monitoring service is typically deployed as a RESTful web service in a J2EE container such as Apache Tomcat.  The service is packaged a war file name direct-msg-monitor-web-<version>.war.  The application context is determined by the deployer and web container.  To validate deployment, the service contains a simple health check URI that can be accessed by simply pointing a browser to the following URI:
+
+{code}
+ http://<server:port>/<application context>/health
+{code}
+
+If the monitor service is running, the service will return a simple HTML page indicating that the service is running.
+
+h2. Service Configuration
+
+The service is configured using Spring XML in a file name applicationContext.xml under the WEB-INF folder of the web application.  Generally, you should not need to make any changes to this file unless you are providing custom components or routes.  Almost all of the configurable parameters are externalized into a properties file named monitor.properties under the <app home>/WEB-INF/classes/properties directory.  The following is the typical content of the applicationContext.xml.
+
+{code}
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd"       
+       default-autowire="byName">
+       
+   	<context:annotation-config />
+    <context:component-scan base-package="org.nhindirect.monitor.providers"/>
+    <context:component-scan base-package="org.nhindirect.monitor.resources"/>
+    <context:component-scan base-package="org.nhindirect.monitor.dao"/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+  <!-- Exception translation bean post processor -->
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+  <bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+			</bean>
+		</property>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="persistenceUnitName" value="direct-msg-monitor-store" />
+  </bean>
+	
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${monitor.dupStateDAO.driverClass}" />
+		<property name="url" value="${monitor.dupStateDAO.url}" />
+		<property name="username" value="${monitor.dupStateDAO.username}" />
+		<property name="password" value="${monitor.dupStateDAO.password}" />
+  </bean>
+   
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />   
+
+  <bean id="notificationDuplicationDAO" class="org.nhindirect.monitor.dao.impl.NotificationDuplicationDAOImpl" />
+
+  <bean id="duplicationStateManager" class="org.nhindirect.monitor.processor.impl.DefaultDuplicateNotificationStateManager" >
+        <property name="messageRetention" value="${monitor.dupStateDAO.retensionTime}" />
+		<property name="dao" ref="notificationDuplicationDAO" />
+  </bean>
+
+
+  <context:property-placeholder location="classpath:properties/monitor.properties"/>	
+
+  <bean id="generalTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="${monitor.condition.generalConditionTimeout}"/>
+  </bean>
+
+  <bean id="reliableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="${monitor.condition.reliableConditionTimeout}"/>
+  </bean>
+
+  <bean id="varaiableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.VariableTimeoutCondition">
+		<constructor-arg ref="generalTimeoutCondition" />
+		<constructor-arg ref="reliableTimeoutCondition" />
+  </bean>
+
+  <bean id="generalCompletionCondition" class="org.nhindirect.monitor.condition.impl.GeneralCompletionCondition" />
+
+  <bean id="reliableCompletionCondition" class="org.nhindirect.monitor.condition.impl.TimelyAndReliableCompletionCondition" >
+        <property name="dupDAO" ref="notificationDuplicationDAO" />
+  </bean>
+  
+  <bean id="variableCompletionCondition" class="org.nhindirect.monitor.condition.impl.VariableCompletionCondition">
+		<constructor-arg ref="reliableCompletionCondition" />
+		<constructor-arg ref="generalCompletionCondition" />
+  </bean>
+
+  <bean id="aggregationStrategy" class="org.nhindirect.monitor.aggregator.BasicTxAggregator">
+		<constructor-arg ref="variableCompletionCondition" />  
+		<constructor-arg ref="varaiableTimeoutCondition" />  		
+  </bean>
+
+  <bean id="msgIdCorrelator" class="org.nhindirect.monitor.expression.MessageIdCorrelationExpression" />
+
+  <bean id="textAssemblerFactory" class="org.nhindirect.common.mail.dsn.impl.HumanReadableTextAssemblerFactory">
+  </bean> 
+
+  <bean id="textBodyGenerator" class="org.nhindirect.common.mail.dsn.impl.DefaultDSNFailureTextBodyPartGenerator">
+        <constructor-arg value="${monitor.dsnGenerator.header}"/>
+        <constructor-arg value="${monitor.dsnGenerator.footer}"/>        
+        <constructor-arg value="${monitor.dsnGenerator.failedRecipientsTitle}"/>    
+        <constructor-arg value="${monitor.dsnGenerator.errorMessageTitle}"/>            
+        <constructor-arg value="${monitor.dsnGenerator.defaultErrorMessage}"/>
+        <constructor-arg ref="textAssemblerFactory"/>    
+  </bean>
+
+  <bean id="dsnGenerator" class="org.nhindirect.common.mail.dsn.DSNGenerator">
+        <constructor-arg value="${monitor.dsnGenerator.subjectPrefix}"/>
+  </bean>
+
+  <bean id="dsnMessageProcessor" class="org.nhindirect.monitor.processor.DSNMessageGenerator">
+		<constructor-arg ref="dsnGenerator" />
+		<constructor-arg value="${monitor.dsnGenerator.postmasterName}" />	
+		<constructor-arg ref="variableCompletionCondition" />	
+		<constructor-arg value="${monitor.dsnGenerator.mtaName}" />	
+		<constructor-arg ref="textBodyGenerator" />							
+  </bean>
+
+  <bean id="smtpClientFactory" class="org.nhindirect.monitor.processor.SMTPClientFactory"/>
+
+  <bean id="dsnSender" class="org.nhindirect.monitor.processor.DSNMailSender">
+  	<property name="gatewayURL" value="${monitor.dsnSender.gatewayURL}" />
+  	<property name="SMTPClientFactory" ref="smtpClientFactory"/>  	
+  </bean>
+
+  <!-- A persistent aggregation repository using camel-hawtdb.
+       This could be replaced using a JDBC repository as described by the 
+       camel SQL component documentation: http://camel.apache.org/sql-component.html  -->
+  <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository">
+    <!-- store the repo in the hawtdb.dat file -->
+    <property name="persistentFileName" value="${monitor.recovery.recoveryFileName}"/>
+    <!-- and use directMonitoring as the repository name -->
+    <property name="repositoryName" value="${monitor.recovery.repositoryName}"/>
+    <!--  retry interval for failed delivery of notifications... It doesn't appear the
+    HawtDB repository supports a delay multiplier like Camel error handling; it only
+    supports a constant delay.  Set this delay to an appropriate time in ms with 
+    an appropriate maximum retry limit. -->
+    <property name="recoveryInterval" value="${monitor.recovery.retryInterval}" />
+    <property name="maximumRedeliveries" value="${monitor.recovery.maxRetryAttemps}" />   
+    <property name="deadLetterUri" value="${monitor.recovery.deadLetterURL}" />      
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">  
+    <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
+    <route id="direct-reliable">
+      <from uri="direct:start"/>
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
+                aggregationRepositoryRef="directMonitoringRepo">
+        <correlationExpression>
+            <ref>msgIdCorrelator</ref>
+        </correlationExpression>
+        <completionPredicate>
+          <method bean="aggregationStrategy" method="isAggregationComplete"/>
+        </completionPredicate>     
+        <completionTimeout>
+          <method bean="aggregationStrategy" method="getAggregationTime"/>
+        </completionTimeout>  
+        <choice>
+           <when>
+              <method bean="aggregationStrategy" method="isAggregationComplete"/>
+              <stop/>
+           </when>
+           <otherwise>
+              <bean ref="dsnMessageProcessor"/>
+              <bean ref="dsnSender"/>  
+           </otherwise>
+        </choice>      
+      </aggregate>
+    </route>
+    
+    <!--  Simple timer to purge exchanges in the duplication data base.
+          This can replaced more sophisticated quartz configuration using 
+          the Camel Quartz component and cron expressions.  Default configuration
+          purges the table once every 6 hours.
+     -->    
+    <route id="duplicate-store-purge">
+      <from uri="timer://purgeTimer?period=6h"/>
+      <bean ref="duplicationStateManager" method="purge"/>
+    </route> 
+  </camelContext>
+
+</beans>
+{code}
+
+The next sections break down the different configuration parameters in the monitor.properties file.
+
+h3. Aggregation Timeout
+
+The following properties tune the configuration for aggregation timeout:
+
+* monitor.condition.generalConditionTimeout - The time in milliseconds the general messages are held in the aggregator before timing out.  The default is 3600000 (1 hour).
+* monitor.condition.reliableConditionTimeout - The time in milliseconds the general messages are held in the aggregator before timing out.  The default is 3600000 (1 hour).
+
+h3. Message Failure Generator
+
+The following properties control the content of different parts of the DNSMessageGenerator.  The generator and support HTML content for rich presentation formats.
+
+* monitor.dsnGenerator.postmasterName - The postmaster account name used as the from attribute for DSN messages.  The postmaster name will be pre-appended to the domain name of the original sender.  Default value is 'postmaster'.
+* monitor.dsnGenerator.mtaName - The name of the agent creating the DSN message.
+* monitor.dsnGenerator.subjectPrefix - A string prefixed to the subject of the DSN message.
+* monitor.dsnGenerator.failedRecipientsTitle - Title that goes above the list of failed recipients in the human readable section of the DSN message.
+* monitor.dsnGenerator.errorMessageTitle - Title that goes at the top of the human readable section of the DSN message.
+* monitor.dsnGenerator.defaultErrorMessage - A human readable description of why the message failed to be delivered.
+* monitor.dsnGenerator.header - A message header that appears at the top of the human readable section of the DSN message.  This generally used as the message introduction.
+* monitor.dsnGenerator.footer - A footer at the bottom of the human readable section of the DSN message.  This is generally used to provide troubleshooting information.
+
+monitor.dsnSender.gatewayURL - SMTP URL of the mail gateway that will either deliver or relay DSN message.
+
+h3. Aggregator Persistence, Recovery, and Retry
+
+The default Camel implementation of the aggregator holds active message in memory.  If the service were to crash, the active messages would be lost.  To prevent message loss, Camel provides a configurable mechanism for persisting and recovering active messages.  After the aggregator completion condition is met (or timesout), Camel delivers the aggregated message to the next step in the route.  As you can see in our Spring DSL, messages are moved onto the DSN generator.  If for some reason the messages cannot be delivered to the gatewayURL, it is necessary to retry sending the messages to the gateway.  The properties file contains configuration properties for controlling all of these parameters.
+
+* monitor.recovery.recoveryFileName - The default configuration uses the Camel HawtDB implementation for persistence and recovery.  HawtDB is a file based database, and this parameter indicates the name of the database file.
+* monitor.recovery.repositoryName - HawtDB support multiple repositories in one file.  This parameter is the name of the repository used for monitoring persistence and recovery.
+* monitor.recovery.retryInterval - If the DSN message cannot be sent to the gateway URL, this parameter in the interval in milliseconds between each retry attempt.
+* monitor.recovery.maxRetryAttemps - The maximum retry attempts to send the DSN message to the gateway URL.
+* monitor.recovery.deadLetterURL - If the DSN message exhausts all retry attempts, the parameter indicates a dead letter URL that aggregated message will be sent to.  By default, this a file.  The contents of the file is a .toString() representation of the collection of Tx objects in the aggregated message.
+
+h3. Duplication State Manager
+
+The duplication state manager uses a SQL database to persist duplication state.  The following parameters control the database properties and purge configuration.
+
+* monitor.dupStateDAO.driverClass - The JDBC driver class used to connect to the database.  The default deployment uses the Derby embedded database.
+* monitor.dupStateDAO.url - The JDBC URL of the database.
+* monitor.dupStateDAO.username - The database username.
+* monitor.dupStateDAO.password - The database password.
+* monitor.dupStateDAO.retensionTime - The amount of time in days the duplication state is persisted in the database.
