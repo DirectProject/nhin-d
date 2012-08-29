@@ -20,7 +20,7 @@
 
 #include "InnoScripts\IISUtils.iss"
 #include "InnoScripts\VcRuntimeInstalled.iss"
-#include "InnoScripts\WindowsServicesUtils.iss"
+
 #include "InnoScripts\GetCommandLineParams.iss"
 
 [Setup]
@@ -30,7 +30,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.13
+AppVerName=Direct Project .NET Gateway 1.0.0.14
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -39,10 +39,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.0.0.13-NET35
+OutputBaseFilename=Direct-1.0.0.14-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.13
+VersionInfoVersion=1.0.0.14
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -959,14 +959,14 @@ begin
   begin
     Result := true;
     exit;
-  end
+  end;
   if(not toolsRegistered) then
   begin
     ExtractTemporaryFile('Health.Direct.Install.Tools.dll');     
     Exec(ExpandConstant('{dotnet2032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
     Exec(ExpandConstant('{dotnet2064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
     toolsRegistered := true;
-  end
+  end;
 
   try                           
     SmtpTools := CreateOleObject('Direct.Installer.SmtpTools');

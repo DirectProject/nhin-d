@@ -61,7 +61,9 @@ namespace Health.Direct.Config.Store
         InvalidPropertyNameLength,
         InvalidTextBlobName,
         InvalidTextBlobNameLength,
-        InvalidBlob
+        InvalidBlob,
+        AgentNameLength,
+        InvalidAgentName
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>

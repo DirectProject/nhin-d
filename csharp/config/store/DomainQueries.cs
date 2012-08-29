@@ -91,6 +91,35 @@ namespace Health.Direct.Config.Store
                    select domain;
         }
 
+        public static IEnumerable<Domain> GetDomainGroup(this Table<Domain> table, string agentName)
+        {
+            if (string.IsNullOrEmpty(agentName))
+            {
+                throw new ArgumentException("value was null or empty", "groupName");
+            }
+            //
+            // We cannot precompile this (throws at runtime) because domains.Length can change at runtime
+            //
+            return from domain in table.GetDB().Domains
+                   where domain.AgentName == agentName
+                   select domain;
+        }
+
+        public static IEnumerable<Domain> GetDomainGroup(this Table<Domain> table, string agentName, EntityStatus status)
+        {
+            if (string.IsNullOrEmpty(agentName))
+            {
+                throw new ArgumentException("value was null or empty", "groupName");
+            }
+            //
+            // We cannot precompile this (throws at runtime) because domains.Length can change at runtime
+            //
+            return from domain in table.GetDB().Domains
+                   where domain.AgentName == agentName && domain.Status == status
+                   select domain;
+
+        }
+
         public static IQueryable<Domain> Get(this Table<Domain> table, long lastDomainID, int maxResults)
         {
             return EnumDomainsByID(table.GetDB(), lastDomainID, maxResults);

@@ -42,11 +42,18 @@
       <xs:enumeration value="InvalidMXSMTPName" />
       <xs:enumeration value="MXSMTPNameLength" />
       <xs:enumeration value="InvalidMX" />
-      <xs:enumeration value="InvaildDnsRecord" />
+      <xs:enumeration value="InvalidDnsRecord" />
       <xs:enumeration value="NotesLength" />
       <xs:enumeration value="InvalidAdministrator" />
       <xs:enumeration value="InvalidUsername" />
       <xs:enumeration value="InvalidPassword" />
+      <xs:enumeration value="InvalidPropertyName" />
+      <xs:enumeration value="InvalidPropertyNameLength" />
+      <xs:enumeration value="InvalidTextBlobName" />
+      <xs:enumeration value="InvalidTextBlobNameLength" />
+      <xs:enumeration value="InvalidBlob" />
+      <xs:enumeration value="GroupNameLength" />
+      <xs:enumeration value="InvalidGroupName" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
