@@ -38,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.monitor.dao.NotificationDAOException;
 import org.nhindirect.monitor.dao.NotificationDuplicationDAO;
 import org.nhindirect.monitor.dao.entity.ReceivedNotification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +51,7 @@ public class NotificationDuplicationDAOImpl implements NotificationDuplicationDA
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(NotificationDuplicationDAOImpl.class);
 	
-    @PersistenceContext
-    @Autowired
+    @PersistenceContext(unitName="direct-msg-monitor-store")
     protected EntityManager entityManager;
     
     /**
