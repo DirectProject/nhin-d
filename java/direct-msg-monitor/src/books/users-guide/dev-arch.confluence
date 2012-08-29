@@ -19,6 +19,10 @@ At its heart, Camel is a highly configurable rules and processing engine where t
     <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
     <route id="direct-reliable">
       <from uri="direct:start"/>
+      <onException>
+           <exception>org.nhindirect.monitor.dao.AggregationVersionException</exception>
+           <redeliveryPolicy maximumRedeliveries="-1" redeliveryDelay="200" collisionAvoidanceFactor="0.15"/>
+      </onException>      
       <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
                 aggregationRepositoryRef="directMonitoringRepo">
         <correlationExpression>

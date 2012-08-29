@@ -132,18 +132,15 @@ The service is configured using Spring XML in a file name applicationContext.xml
   	<property name="SMTPClientFactory" ref="smtpClientFactory"/>  	
   </bean>
 
-  <!-- A persistent aggregation repository using camel-hawtdb.
-       This could be replaced using a JDBC repository as described by the 
-       camel SQL component documentation: http://camel.apache.org/sql-component.html  -->
-  <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository">
-    <!-- store the repo in the hawtdb.dat file -->
-    <property name="persistentFileName" value="${monitor.recovery.recoveryFileName}"/>
-    <!-- and use directMonitoring as the repository name -->
-    <property name="repositoryName" value="${monitor.recovery.repositoryName}"/>
-    <!--  retry interval for failed delivery of notifications... It doesn't appear the
-    HawtDB repository supports a delay multiplier like Camel error handling; it only
-    supports a constant delay.  Set this delay to an appropriate time in ms with 
-    an appropriate maximum retry limit. -->
+  <!--  aggregation repository DAO... use if the ConcurrentJPAAggregationRepository is utilized -->
+  <bean id="aggregationDAO" class="org.nhindirect.monitor.dao.impl.AggregationDAOImpl"/>
+
+
+  <!-- A persistent aggregation repository using the JPA based com.cerner.healthe.messaging.camel.aggregate.ConcurrentJPAAggregationRepository
+    This repository can distribute state across multiple monitor instances, JVMs, and application server cluster node
+    Use this repository when an HA, fail over, or scalable deployment is needed. -->
+    <bean id="directMonitoringRepo" class="org.nhindirect.monitor.aggregator.repository.ConcurrentJPAAggregationRepository">
+    <!--  retry interval for failed delivery of notifications... -->
     <property name="recoveryInterval" value="${monitor.recovery.retryInterval}" />
     <property name="maximumRedeliveries" value="${monitor.recovery.maxRetryAttemps}" />   
     <property name="deadLetterUri" value="${monitor.recovery.deadLetterURL}" />      
@@ -153,6 +150,10 @@ The service is configured using Spring XML in a file name applicationContext.xml
     <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
     <route id="direct-reliable">
       <from uri="direct:start"/>
+      <onException>
+           <exception>org.nhindirect.monitor.dao.AggregationVersionException</exception>
+           <redeliveryPolicy maximumRedeliveries="-1" redeliveryDelay="200" collisionAvoidanceFactor="0.15"/>
+      </onException>         
       <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
                 aggregationRepositoryRef="directMonitoringRepo">
         <correlationExpression>
@@ -219,15 +220,20 @@ h3. Aggregator Persistence, Recovery, and Retry
 
 The default Camel implementation of the aggregator holds active message in memory.  If the service were to crash, the active messages would be lost.  To prevent message loss, Camel provides a configurable mechanism for persisting and recovering active messages.  After the aggregator completion condition is met (or timesout), Camel delivers the aggregated message to the next step in the route.  As you can see in our Spring DSL, messages are moved onto the DSN generator.  If for some reason the messages cannot be delivered to the gatewayURL, it is necessary to retry sending the messages to the gateway.  The properties file contains configuration properties for controlling all of these parameters.
 
-* monitor.recovery.recoveryFileName - The default configuration uses the Camel HawtDB implementation for persistence and recovery.  HawtDB is a file based database, and this parameter indicates the name of the database file.
-* monitor.recovery.repositoryName - HawtDB support multiple repositories in one file.  This parameter is the name of the repository used for monitoring persistence and recovery.
+*NOTE* The hawtdb specific settings have been removed from the defautl configuration as of version 1.1.  You may still use these if you continue to use hawtdb as your
+repository location; however the default repository implementation now uses a JPA implementation backed by a relational database.  
+
+
 * monitor.recovery.retryInterval - If the DSN message cannot be sent to the gateway URL, this parameter in the interval in milliseconds between each retry attempt.
 * monitor.recovery.maxRetryAttemps - The maximum retry attempts to send the DSN message to the gateway URL.
 * monitor.recovery.deadLetterURL - If the DSN message exhausts all retry attempts, the parameter indicates a dead letter URL that aggregated message will be sent to.  By default, this a file.  The contents of the file is a .toString() representation of the collection of Tx objects in the aggregated message.
 
 h3. Duplication State Manager
 
-The duplication state manager uses a SQL database to persist duplication state.  The following parameters control the database properties and purge configuration.
+The duplication state manager uses an SQL database to persist duplication state.  If you choose to use the JPA based
+aggregation repository, the repository also uses an SQL database to persist aggregation exchange state.
+
+The following parameters control the database properties and purge configuration.
 
 * monitor.dupStateDAO.driverClass - The JDBC driver class used to connect to the database.  The default deployment uses the Derby embedded database.
 * monitor.dupStateDAO.url - The JDBC URL of the database.
