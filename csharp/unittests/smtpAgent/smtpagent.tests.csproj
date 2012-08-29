@@ -36,6 +36,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -64,6 +66,10 @@
     <Compile Include="TestSmtpAgent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SmtpAgentTestFiles\TestDomainTenancyConfig.xml">
+      <SubType>Form</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="SmtpAgentTestFiles\TestPlugin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

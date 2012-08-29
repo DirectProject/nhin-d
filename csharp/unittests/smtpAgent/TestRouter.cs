@@ -84,7 +84,7 @@ namespace Health.Direct.SmtpAgent.Tests
 
             foreach (MessageRoute route in m_agent.Router)
             {
-                TestRoundRobin(route);
+                RoundRobinTest(route);
             }
         }
 
@@ -126,7 +126,7 @@ namespace Health.Direct.SmtpAgent.Tests
             this.CheckRoutedCounts(1);
         }
 
-        void TestRoundRobin(MessageRoute route)
+        void RoundRobinTest(MessageRoute route)
         {
             int folderCount = route.CopyFolders.Length;
             int prevFolder = -1;

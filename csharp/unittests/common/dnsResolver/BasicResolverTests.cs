@@ -51,8 +51,8 @@ namespace Health.Direct.Common.Tests.DnsResolver
         [InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         [InlineData("www.bing.com")]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("dns.hsgincubator.com")]
+        //[InlineData("nhind.hsgincubator.com")]
+        //[InlineData("dns.hsgincubator.com")]
         [InlineData("www.nhindirect.org")]
         [InlineData("www.relayhealth.com")]
         [InlineData("www.epic.com")]
@@ -95,8 +95,8 @@ namespace Health.Direct.Common.Tests.DnsResolver
         }
 
         [Theory]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("redmond.hsgincubator.com")]
+        //[InlineData("nhind.hsgincubator.com")]
+        //[InlineData("redmond.hsgincubator.com")]
         [InlineData("www.microsoft.com")]
         [InlineData("www.hotmail.com")]
         [InlineData("www.gmail.com")]

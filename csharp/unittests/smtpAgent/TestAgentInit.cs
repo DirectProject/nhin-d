@@ -52,6 +52,15 @@ namespace Health.Direct.SmtpAgent.Tests
             m_handler.InitFromConfigFile(Fullpath(fileName));
         }
 
+        [Theory(Skip = "Requires Config Service to be running on the local server")]
+        [PropertyData("DirectTenancConfigFiles")]
+        public void TestDirectTenantWithService(string fileName)
+        {
+            m_handler.InitFromConfigFile(Fullpath(fileName));
+        }
+
+        
+
         [Fact]
         public void TestContainer()
         {
@@ -88,18 +97,42 @@ namespace Health.Direct.SmtpAgent.Tests
             
             Assert.NotNull(settings.Anchors);
             this.Verify(settings.Anchors);
+
         }
+
         
         public static IEnumerable<object[]> ConfigFiles
         {
             get
             {
-                yield return new[] {"TestSmtpAgentConfig.xml"};
+                yield return new[] { "TestSmtpAgentConfig.xml"};
                 yield return new[] { "TestSmtpAgentConfigService.xml" };
                 yield return new[] { "TestSmtpAgentConfigServiceProd.xml" };
             }
         }
-        
+
+
+        [Theory]
+        [PropertyData("DirectTenancConfigFiles")]
+        public void TestDirectTenantLoadConfig(string fileName)
+        {
+            SmtpAgentSettings settings = null;
+
+            Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath(fileName)));
+            Assert.NotNull(settings);
+
+            this.Verify(settings.DomainTenants);
+        }
+
+
+        public static IEnumerable<object[]> DirectTenancConfigFiles
+        {
+            get
+            {
+                yield return new[] { "TestDomainTenancyConfig.xml" };
+            }
+        }
+
         string Fullpath(string fileName)
         {
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "SmtpAgentTestFiles");
@@ -164,6 +197,19 @@ namespace Health.Direct.SmtpAgent.Tests
                 Assert.True(((CertificateResolver)serviceResolver.IncomingAnchors).OrgCertificatesOnly);
                 Assert.True(((CertificateResolver)serviceResolver.OutgoingAnchors).OrgCertificatesOnly);
             }            
+        }
+
+        private void Verify(DomainSettings settings)
+        {
+            Assert.NotNull(settings.Resolver);
+            Assert.DoesNotThrow(() => settings.Validate());
+
+            DomainServiceResolverSettings serviceResolverSettings = settings.Resolver as DomainServiceResolverSettings;
+            if (serviceResolverSettings != null)
+            {
+                Assert.True(serviceResolverSettings.AgentName == "Agent1");
+                Assert.True(serviceResolverSettings.ClientSettings.Url == "http://localhost:6692/DomainManagerService.svc/Domains");
+            }
         }
     }
 
