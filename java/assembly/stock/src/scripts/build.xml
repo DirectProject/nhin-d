@@ -78,7 +78,7 @@
 	<!-- message monitor server files -->
 	<property name="msg-monitor.root" value="${config.root}/../msg-monitor"></property>
 	<property name="msg-monitor.service.dir" value="${config.root}/msg-monitor/target"></property>
-	<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.0.war"></property>
+	<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.1.war"></property>
 	<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>
 	
 	
@@ -126,7 +126,7 @@
 	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.jar"></property>
 	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.0.1.jar"></property>
 	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1.jar"></property>	
-	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.1.jar"></property>
+	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.2.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
 	
 	<!-- Stylesheet to edit the config file -->
@@ -299,7 +299,7 @@
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
 		<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
 		<property name="xd.service.dest.war" value="xd.war"></property>
-		<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.0.war"></property>
+		<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.1.war"></property>
 		<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>		
 		
 		<!-- Copy war files -->
