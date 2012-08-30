@@ -26,7 +26,7 @@
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="jpaVendorAdapter">
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-				<property name="showSql" value="true" />
+				<property name="showSql" value="false" />
 				<property name="generateDdl" value="true" />
 				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
 			</bean>
@@ -118,12 +118,14 @@
   </bean>
 
   <!--  aggregation repository DAO... use if the ConcurrentJPAAggregationRepository is utilized -->
-  <bean id="aggregationDAO" class="org.nhindirect.monitor.dao.impl.AggregationDAOImpl"/>
+  <bean id="aggregationDAO" class="org.nhindirect.monitor.dao.impl.AggregationDAOImpl">
+	<property name="recoveryLockInterval" value="${monitor.aggregatorDAO.recoveryLockInterval}" />	  
+  </bean>
 
 
   <!-- A persistent aggregation repository using the JPA based com.cerner.healthe.messaging.camel.aggregate.ConcurrentJPAAggregationRepository
-    This repository can distribute state across multiple monitor instances, JVMs, and application server cluster node
-    Use this repository when an HA, fail over, or scalable deployment is needed. -->
+    This repository can distribute state across multiple monitor instances, JVMs, and application server cluster nodes.
+    Use this repository when an HA, fail over, and/or scalable deployment is needed. -->
     <bean id="directMonitoringRepo" class="org.nhindirect.monitor.aggregator.repository.ConcurrentJPAAggregationRepository">
     <!-- store the repo in the hawtdb.dat file -->
     <property name="aggreationDAO" ref="aggregationDAO"/>
@@ -132,23 +134,6 @@
     <property name="maximumRedeliveries" value="${monitor.recovery.maxRetryAttemps}" />   
     <property name="deadLetterUri" value="${monitor.recovery.deadLetterURL}" />      
   </bean>
-
-  <!-- A persistent aggregation repository using camel-hawtdb.
-       This could be replaced using a JDBC repository as described by the 
-       camel SQL component documentation: http://camel.apache.org/sql-component.html  -->
-<!--   <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository"> -->
-    <!-- store the repo in the hawtdb.dat file -->
-<!--     <property name="persistentFileName" value="${monitor.recovery.recoveryFileName}"/> -->
-    <!-- and use directMonitoring as the repository name -->
-<!--     <property name="repositoryName" value="${monitor.recovery.repositoryName}"/> -->
-    <!--  retry interval for failed delivery of notifications... It doesn't appear the
-    HawtDB repository supports a delay multiplier like Camel error handling; it only
-    supports a constant delay.  Set this delay to an appropriate time in ms with 
-    an appropriate maximum retry limit. -->
-<!--     <property name="recoveryInterval" value="${monitor.recovery.retryInterval}" /> -->
-<!--     <property name="maximumRedeliveries" value="${monitor.recovery.maxRetryAttemps}" />    -->
-<!--     <property name="deadLetterUri" value="${monitor.recovery.deadLetterURL}" />       -->
-<!--   </bean> -->
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">  
     <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
