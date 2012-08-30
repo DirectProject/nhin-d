@@ -48,6 +48,11 @@ namespace Health.Direct.Common.Domains
         {
             if (m_settings.Cache)
             {
+                if (m_settings.NegativeCache)
+                {
+                    throw new InvalidOperationException("NegativeCacheWithCacheDisabled");
+                }
+
                 if (!m_settings.CacheTTLSeconds.HasValue)
                 {
                     m_settings.CacheTTLSeconds = DefaultCacheTTLSeconds;
@@ -60,13 +65,7 @@ namespace Health.Direct.Common.Domains
 
                 m_cache = new Cache<Dictionary<string, string>>(m_settings.Name);
             }
-            else
-            {
-                if (m_settings.NegativeCache)
-                {
-                    throw new InvalidOperationException("NegativeCacheWithCacheDisabled");
-                }
-            }
+            
         }
 
         /// <summary>

@@ -27,14 +27,7 @@ namespace Health.Direct.SmtpAgent
 {
     public class DomainServiceResolver : IDomainResolver
     {
-        //
-        // Currently, we use this dictionary as a fast lookup table
-        // In the future, we may maintain additional state for each domain
-        //
-        // *******  NEED TO MAKE m_managedDomains cache aware.... ***************
         Dictionary<string, string> m_managedDomains;
-
-
         string m_agentName;
         ClientSettings m_domainClientSettings;
         DomainCache m_domainCache;
@@ -54,7 +47,19 @@ namespace Health.Direct.SmtpAgent
             m_domainClientSettings = domainClientSettings;
             if (cacheSettings != null && cacheSettings.Cache)
             {
-                m_domainCache = new DomainCache(cacheSettings);
+                CacheSettings agentDomainCacheSettings = new CacheSettings(cacheSettings) { Name = "AgentDomainCache" };
+                m_domainCache = new DomainCache(agentDomainCacheSettings);
+            }
+        }
+
+        /// <summary>
+        /// This resolver's domain cache.
+        /// </summary>
+        public DomainCache Cache
+        {
+            get
+            {
+                return m_domainCache;
             }
         }
 
@@ -79,24 +84,23 @@ namespace Health.Direct.SmtpAgent
                         return managedDomains;
                     }
                 }
-                else
+                
+                using (DomainManagerClient client = CreateClient())
                 {
-                    using (DomainManagerClient client = CreateClient())
+                    Domain[] domains = client.GetAgentDomains(m_agentName, EntityStatus.Enabled);
+                    m_managedDomains = new Dictionary<string, string>(MailStandard.Comparer); // Case-IN-sensitive
+                    for (int i = 0; i < domains.Length; ++i)
                     {
-                        Domain[] domains = client.GetAgentDomains(m_agentName, EntityStatus.Enabled);
-                        m_managedDomains = new Dictionary<string, string>(MailStandard.Comparer); // Case-IN-sensitive
-                        for (int i = 0; i < domains.Length; ++i)
-                        {
-                            string domain = domains[i].Name;
-                            m_managedDomains[domain] = domain;
-                        }
-                    }
-
-                    if (m_domainCache != null)
-                    {
-                        m_domainCache.Put(m_agentName, m_managedDomains);
+                        string domain = domains[i].Name;
+                        m_managedDomains[domain] = domain;
                     }
                 }
+
+                if (m_domainCache != null)
+                {
+                    m_domainCache.Put(m_agentName, m_managedDomains);
+                }
+                
 
                 return m_managedDomains;
             

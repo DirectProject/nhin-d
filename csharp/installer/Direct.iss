@@ -20,7 +20,7 @@
 
 #include "InnoScripts\IISUtils.iss"
 #include "InnoScripts\VcRuntimeInstalled.iss"
-
+#include "InnoScripts\WindowsServicesUtils.iss"
 #include "InnoScripts\GetCommandLineParams.iss"
 
 [Setup]

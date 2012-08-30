@@ -60,6 +60,7 @@
     <Compile Include="SmtpAgentTester.cs" />
     <Compile Include="TestAgentInit.cs" />
     <Compile Include="TestConfigService.cs" />
+    <Compile Include="TestDomainServiceResolver.cs" />
     <Compile Include="TestHandler.cs" />
     <Compile Include="TestNotifications.cs" />
     <Compile Include="TestRouter.cs" />

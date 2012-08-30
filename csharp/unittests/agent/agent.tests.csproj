@@ -61,6 +61,7 @@
     <Compile Include="BasicAgentTests.cs" />
     <Compile Include="AddressTest.cs" />
     <Compile Include="DnsResolverTest.cs" />
+    <Compile Include="PlugingDomainResolverTests.cs" />
     <Compile Include="PluginResolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCertificates.cs" />
