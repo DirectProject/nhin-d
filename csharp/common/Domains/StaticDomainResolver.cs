@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Common.Domains
@@ -40,6 +41,11 @@ namespace Health.Direct.Common.Domains
         public StaticDomainResolver(string[] domains)
         {
             m_managedDomains = new Dictionary<string, string>(MailStandard.Comparer); // Case-IN-sensitive
+            if(domains.IsNullOrEmpty())
+            {
+                return;
+            }
+
             for (int i = 0; i < domains.Length; ++i)
             {
                 string domain = domains[i];
@@ -55,7 +61,9 @@ namespace Health.Direct.Common.Domains
         {
         }
 
-        
+        /// <summary>
+        /// List of domains
+        /// </summary>
         public IEnumerable<string> Domains
         {
             get
@@ -64,6 +72,12 @@ namespace Health.Direct.Common.Domains
             }
         }
 
+        /// <summary>
+        /// Tests if an address is managed.
+        /// </summary>
+        /// <param name="domain">The domain in <c>string</c> form to test</param>
+        /// <returns><c>true</c> if the address's domain is managed by the agent,
+        /// <c>false</c> otherwise.</returns>
         public bool IsManaged(string domain)
         {
             if (string.IsNullOrEmpty(domain))
@@ -74,6 +88,11 @@ namespace Health.Direct.Common.Domains
             return m_managedDomains.ContainsKey(domain);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="domains"></param>
+        /// <returns></returns>
         public bool Validate(string[] domains)
         {
             if (domains == null || domains.Length == 0)

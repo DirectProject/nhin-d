@@ -68,7 +68,7 @@ namespace Health.Direct.SmtpAgent
         public override IDomainResolver CreateResolver()
         {
             this.Validate();
-
+            
             return new DomainServiceResolver(AgentName, ClientSettings, CacheSettings);
 
         }
