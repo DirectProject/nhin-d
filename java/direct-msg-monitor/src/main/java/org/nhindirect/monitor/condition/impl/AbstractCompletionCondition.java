@@ -87,4 +87,23 @@ public abstract class AbstractCompletionCondition implements TxCompletionConditi
 			
 		return incompleteRecips.isEmpty();
 	}
+	
+	/**
+	 * Final recipients may begin with something like rfc822;.  This removes the prefix and just returns the final
+	 * recipient as an address.
+	 * @param recip  The final recipient
+	 * @return Normalized version of the final recipient that only contains the email address.
+	 */
+	public static String normalizeFinalRecip(String recip)
+	{
+		String normalizedString = recip;
+		
+		final int index = recip.indexOf(";");
+		if (index > -1)
+		{
+			normalizedString = recip.substring(index + 1).trim();
+		}
+			
+		return normalizedString;
+	}
 }

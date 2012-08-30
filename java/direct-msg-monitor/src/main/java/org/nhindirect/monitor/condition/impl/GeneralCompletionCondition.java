@@ -62,7 +62,7 @@ public class GeneralCompletionCondition extends AbstractCompletionCondition
 		// add the original recipient list to a map of recipients to status
 		final Map<String, RecipientResponseStatus> recipStatuses = new HashMap<String, RecipientResponseStatus>();
 		for (String recip : originalRecipDetail.getDetailValue().split(","))
-			recipStatuses.put(recip, new RecipientResponseStatus(recip));
+			recipStatuses.put(recip, new RecipientResponseStatus(recip.trim()));
 		
 		for (Tx tx : txs)
 		{
@@ -75,7 +75,7 @@ public class GeneralCompletionCondition extends AbstractCompletionCondition
 				   {
 					   // an MDN is sent per original message recipient, so we should only be able
 					   // to extract one original recipient from this message
-					   final RecipientResponseStatus recipStatus = recipStatuses.get(finalRecipDetail.getDetailValue());
+					   final RecipientResponseStatus recipStatus = recipStatuses.get(normalizeFinalRecip(finalRecipDetail.getDetailValue()));
 					   if (recipStatus != null)
 						   recipStatus.addReceivedStatus(RecipientResponseStatus.MDNReceived);
 
@@ -87,7 +87,7 @@ public class GeneralCompletionCondition extends AbstractCompletionCondition
 					   // need to split the recipients out
 					   for (String finalRecip : finalRecipDetail.getDetailValue().split(","))
 					   {
-						   final RecipientResponseStatus recipStatus = recipStatuses.get(finalRecip);
+						   final RecipientResponseStatus recipStatus = recipStatuses.get(normalizeFinalRecip(finalRecip));
 						   if (recipStatus != null)
 							   recipStatus.addReceivedStatus(RecipientResponseStatus.DSNReceived);
 					   }
