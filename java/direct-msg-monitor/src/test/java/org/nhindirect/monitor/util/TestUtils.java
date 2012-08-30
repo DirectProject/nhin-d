@@ -97,7 +97,7 @@ public class TestUtils
 			details.put(TxDetailType.DISPOSITION.getType(), new TxDetail(TxDetailType.DISPOSITION, disposition));
 		
 		if(dispostionOption != null && !dispostionOption.isEmpty())
-			details.put(TxDetailType.DISPOSITION_OPTIONS.getType(), new TxDetail(TxDetailType.DISPOSITION_OPTIONS, disposition));
+			details.put(TxDetailType.DISPOSITION_OPTIONS.getType(), new TxDetail(TxDetailType.DISPOSITION_OPTIONS, dispostionOption));
 		
 		return new Tx(type, details);
 	}
