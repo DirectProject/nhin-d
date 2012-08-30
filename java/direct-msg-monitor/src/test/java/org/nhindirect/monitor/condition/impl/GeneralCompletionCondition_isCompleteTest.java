@@ -119,6 +119,26 @@ public class GeneralCompletionCondition_isCompleteTest
 	}
 	
 	@Test
+	public void testIsComplete_MDNMessageReceived_plusNotationOnMDNRecip_rfc822NotactionOnFinalRecip_assertTrue()
+	{
+		GeneralCompletionCondition condition = new GeneralCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// MDN to original message
+		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552+readreciept@cerner.com", "rfc822; gm2552@direct.securehealthemail.com");
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	
+	@Test
 	public void testIsComplete_DSNMessageReceived_assertTrue()
 	{
 		GeneralCompletionCondition condition = new GeneralCompletionCondition();
@@ -131,6 +151,25 @@ public class GeneralCompletionCondition_isCompleteTest
 		// MDN to original message
 		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.DSN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
 				"gm2552@cerner.com", "gm2552@direct.securehealthemail.com");
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	@Test
+	public void testIsComplete_DSNMessageReceived_plusNotationOnDSNRecip_rfc822NotactionOnFinalRecip_assertTrue()
+	{
+		GeneralCompletionCondition condition = new GeneralCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// MDN to original message
+		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.DSN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552+readreciept@cerner.com", "rfc822; gm2552@direct.securehealthemail.com");
 		
 		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
 		

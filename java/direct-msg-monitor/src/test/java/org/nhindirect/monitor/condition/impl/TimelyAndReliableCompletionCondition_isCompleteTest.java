@@ -1,6 +1,7 @@
 package org.nhindirect.monitor.condition.impl;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -192,5 +193,89 @@ public class TimelyAndReliableCompletionCondition_isCompleteTest
 		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
 		
 		assertFalse(condition.isComplete(txs));
+	}
+	
+	@Test
+	public void testIsComplete_failedDSNAction_assertTrue()
+	{
+		TimelyAndReliableCompletionCondition condition = new TimelyAndReliableCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// DSN to original message, no reliable headers
+		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.DSN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552@cerner.com", "gm2552@direct.securehealthemail.com", DSNStandard.DSNAction.FAILED.toString(), "");
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	@Test
+	public void testIsComplete_failedDSNAction_plusNotationOnDSNRecip_rfc822NotactionOnFinalRecip_assertTrue()
+	{
+		TimelyAndReliableCompletionCondition condition = new TimelyAndReliableCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// DSN to original message, no reliable headers
+		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.DSN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552+readrecipt@cerner.com", "rfc822; gm2552@direct.securehealthemail.com", DSNStandard.DSNAction.FAILED.toString(), "");
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	@Test
+	public void testIsComplete_completedMDNs_assertTrue()
+	{
+		TimelyAndReliableCompletionCondition condition = new TimelyAndReliableCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// MDN to original message, no reliable headers
+		Tx mdnProcessedMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "", MDNStandard.Disposition_Processed, "");
+		
+		// MDN to original message, no reliable headers
+		Tx mdnDispatchedMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "", MDNStandard.Disposition_Dispatched, MDNStandard.DispositionOption_TimelyAndReliable);
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnProcessedMessage, mdnDispatchedMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	@Test
+	public void testIsComplete_completedMDNs_plusNotationOnDSNRecip_rfc822NotactionOnFinalRecip_assertTrue()
+	{
+		TimelyAndReliableCompletionCondition condition = new TimelyAndReliableCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// MDN to original message, no reliable headers
+		Tx mdnProcessedMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552+readrecipt@cerner.com", "rfc822; gm2552@direct.securehealthemail.com", "", MDNStandard.Disposition_Processed, "");
+		
+		// MDN to original message, no reliable headers
+		Tx mdnDispatchedMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552+readrecipt@cerner.com", "rfc822; gm2552@direct.securehealthemail.com", "", MDNStandard.Disposition_Dispatched, MDNStandard.DispositionOption_TimelyAndReliable);
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnProcessedMessage, mdnDispatchedMessage);
+		
+		assertTrue(condition.isComplete(txs));
 	}
 }
