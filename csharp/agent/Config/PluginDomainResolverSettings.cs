@@ -31,7 +31,7 @@ namespace Health.Direct.Agent.Config
     /// If your resolver ALSO implements IPlugin, then you will be called to initialize yourself
     /// with settings (see below)
     /// 
-    /// Also see Health.Direct.Agent.Tests.MachineResolverProxy for sample code
+    /// Also see Health.Direct.Agent.Tests.CustomDomainResolverProxy for sample code
     /// </summary>
     /*
      * Format:
@@ -48,21 +48,17 @@ namespace Health.Direct.Agent.Config
                 </Definition>
             </PluginResolver>
      *  Example:
-       <Anchors>
+       <Domains>
             <PluginResolver>
                 <Definition>
-                    <TypeName>Health.Direct.Agent.Tests.MachineAnchorResolverProxy, Health.Direct.Agent.Tests</TypeName>
+                    <TypeName>Health.Direct.Agent.Tests.CustomDomainResolverProxy, Health.Direct.Agent.Tests</TypeName>
                     <Settings>
-                        <Incoming>
-                            <Name>NHINDAnchors</Name>
-                        </Incoming>
-                        <Outgoing>
-                            <Name>NHINDAnchors</Name>
-                        </Outgoing>
+                        <Domain>redmond.hsgincubator.com</Domain>
+                        <Domain>nhind.hsgincubator.com</Domain>
                     </Settings>
                 </Definition>
             </PluginResolver>
-       </Anchors>
+       </Domains>
      */
     public class PluginDomainResolverSettings : DomainResolverSettings
     {

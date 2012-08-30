@@ -11,7 +11,7 @@
       <AgentName>Agent1</AgentName>
       <ClientSettings>
         <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
-      </ClientSettings>
+      </ClientSettings>      
     </ServiceResolver>
   </Domains>
 
