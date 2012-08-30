@@ -1,0 +1,53 @@
+h1. Deployment Considerations
+
+The default deployment makes some bold assumptions about the deployment model.  It assumes a single instance of the monitoring service running a local derby database.  For a scalable and highly available service, configuration and custom code is most likely necessary.  The following sections outline some considerations for moving to scalable and highly available deployment model.
+
+h2. Aggregator State
+
+By nature, aggregators are stateful.  The default Camel aggregator uses an in memory model to hold state which means it is not readily scalable across multiple instances of the service.  It may be necessary to write a custom aggregator state module that persists and obtains state from a centralized database.  Camel provides interfaces to enable this type state persistence, but still requires custom code to be written the properly support distributed state.
+
+As of direct-msg-monitor-1.1, a distributable and stateful implementation of the aggregator repository is available.  This implementation 
+(org.nhindirect.monitor.aggregator.repository.ConcurrentJPAAggregationRepository) is aware of concurrency and consistency issues related to updating
+aggregation exchanges across multiple threads, JVMs, and even nodes across an cluster.  In the event of a concurrency issue, the default applicationContext.xml configuration 
+uses the onException camel construct to reload the aggregation exchange from its latest state and attempt the aggregation and completion condition logic again.  For 
+failed exchange recovery, the repository implements a time based lock that ensures only one service instance attempts to recover the failed exchange.  The default
+lock time is two minutes, but can be tweaked using the 'recoveryLockInterval' property on the AggregationDAOImpl bean.
+
+h3. DAO schema creation
+
+The default AggregationDAOImpl and NotificationDuplicationDAOImpl classes use Java's JPA implementation to automatically create the repository schema in the database, 
+however there are some instances (depending on your database vendor) where the table creation may fail.  A work around is to manually create the tables using SQL statements.  
+The following example creates the tables in Oracle.
+
+{code}
+create table msgmonaggregation (
+    id varchar(255) not null, 
+    exchangeBlob blob, 
+    version integer, 
+    primary key (id)
+);
+
+create table msgmonaggregationcomp (
+    id varchar(255) not null, 
+    exchangeBlob blob, 
+    recoveryLockedUntilDtTm timestamp,
+    version integer, 
+    primary key (id)
+);
+
+create table receivednotification (
+    id number(19, 0) not null, 
+    address varchar(255) not null, 
+    messageid varchar(255) not null, 
+    receivedtime timestamp, 
+    primary key (id)
+);
+{code}
+
+h2. Duplication State Store
+
+The default deployment uses the Derby embedded database.  This database is file based and only allows a single process to access the database at any time.  A true RDBMS such as MySQL, Oracle, or postgress is necessary for running multiple instances.  Fortunately, this may only require the properties file to be modified with the proper driver class and JDBC URL.
+
+h2. Retry Dead Letter URL
+
+The default deployment writes out string representation of the aggregated message is the DSN message cannot be sent to the gateway URL.  A system that requires reporting or more sophisticated reply may need to change the representation of the messages or the URL of the dead letter queue.

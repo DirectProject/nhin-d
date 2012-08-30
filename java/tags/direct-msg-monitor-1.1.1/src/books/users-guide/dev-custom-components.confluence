@@ -1,0 +1,5 @@
+h1. Extending and Writing Custom Components
+
+The default monitoring service is comprised of components that will most likely handle the majority of your needs.  However, there are always cases where specific HISP requirements will need some tweaking to the default configuration.  This is one of the reasons Camel was selected as the framework for monitoring.  Spring combined with Camel and it DSL provides a highly configurable and declarative method for not only customizing the components that make up the service, but for customizing and extending the processing routes.
+
+A custom configuration may only need to change a single rule or may need to do something drastic and change every component and route.  Writing custom components is just as easy as writing and Java bean, declaring it in the Spring XML file, and adding it to the route.  A primer in Camel is suggested, and a good reference is Camel In [Action|http://www.amazon.com/gp/product/1935182366/] by Claus Ibsen and Jonathan Anstey.
