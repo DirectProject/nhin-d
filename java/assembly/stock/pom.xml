@@ -64,7 +64,7 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>direct-msg-monitor-web</artifactId>
 	      <type>war</type>
-	      <version>1.0</version>
+	      <version>1.1</version>
 	   </dependency>      
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -123,7 +123,7 @@
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>xdmail</artifactId>
-	      <version>1.1.1</version>
+	      <version>1.1.2</version>
        </dependency>    
 	   <dependency>
 			<groupId>org.apache.james</groupId>
