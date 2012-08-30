@@ -133,7 +133,7 @@ namespace Health.Direct.Config.Console.Command
         public void DomainAgentSet(string[] args)
         {
             string name = args.GetRequiredValue(0);
-            string agentName = args.GetRequiredValue(1);
+            string agentName = args.GetOptionalValue(1, String.Empty);
 
             Domain domain = this.DomainGet(name);
             domain.AgentName = agentName;
@@ -144,7 +144,7 @@ namespace Health.Direct.Config.Console.Command
             = "Change a domain's agent name"
               + Constants.CRLF + "    domain agentName"
               + Constants.CRLF + "\t domainName: Set agent name for this domain"
-              + Constants.CRLF + "\t agentName: " + "Domain grouping identifier";
+              + Constants.CRLF + "\t agentName: " + "Optional domain grouping identifier";
 
         /// <summary>
         /// Set the status for all addresses in a domain

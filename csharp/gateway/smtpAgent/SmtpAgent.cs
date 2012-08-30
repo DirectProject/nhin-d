@@ -177,7 +177,10 @@ namespace Health.Direct.SmtpAgent
         {
             if (m_settings.Domains == null)
             {
-                Logger.Info("Static Domains not configured.  See Domains.ServiceResolver for dynamic domain configuration.");
+                if (m_settings.DomainTenants == null)
+                {
+                    Logger.Info("Domains not configured.");
+                }
                 return;
             }
             if (!m_settings.HasDomainManagerService)

@@ -37,9 +37,9 @@ namespace Health.Direct.Agent
         {
             m_tenancy = tenancy;
 
-            if (!tenancy.Validate(tenancy.Domains.ToArray()))
+            if (tenancy is StaticDomainResolver && !tenancy.Validate(tenancy.Domains.ToArray()))
             {
-                throw new ArgumentException("Missing domains");
+                throw new ArgumentException("Missing domains.");
             }
         }
         
