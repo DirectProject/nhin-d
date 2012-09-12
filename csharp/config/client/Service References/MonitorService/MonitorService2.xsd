@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:simpleType name="EntityStatus">
+  <xs:simpleType name="MdnStatus">
     <xs:annotation>
       <xs:appinfo>
         <ActualType Name="unsignedByte" Namespace="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
@@ -8,11 +8,13 @@
     </xs:annotation>
     <xs:restriction base="xs:string">
       <xs:enumeration value="New" />
-      <xs:enumeration value="Enabled" />
-      <xs:enumeration value="Disabled" />
+      <xs:enumeration value="Processed" />
+      <xs:enumeration value="Dispatched" />
+      <xs:enumeration value="ProcessedTimeout" />
+      <xs:enumeration value="DispatchedTimeout" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:element name="EntityStatus" nillable="true" type="tns:EntityStatus" />
+  <xs:element name="MdnStatus" nillable="true" type="tns:MdnStatus" />
   <xs:simpleType name="ConfigStoreError">
     <xs:restriction base="xs:string">
       <xs:enumeration value="None" />
@@ -54,6 +56,8 @@
       <xs:enumeration value="InvalidBlob" />
       <xs:enumeration value="AgentNameLength" />
       <xs:enumeration value="InvalidAgentName" />
+      <xs:enumeration value="InvalidMdnIdentifier" />
+      <xs:enumeration value="InvalidMdn" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />

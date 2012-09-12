@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Joe Shook       jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -13,9 +14,8 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System.Linq;
 using System.Diagnostics;
-
+using System.Linq;
 using Health.Direct.Agent;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
@@ -29,8 +29,8 @@ namespace Health.Direct.SmtpAgent
     /// </summary>
     internal class ConfigService
     {
-        SmtpAgentSettings m_settings;
-                
+        private readonly SmtpAgentSettings m_settings;
+
         internal ConfigService(SmtpAgentSettings settings)
         {
             m_settings = settings;
@@ -40,22 +40,22 @@ namespace Health.Direct.SmtpAgent
         {
             Debug.Assert(m_settings.HasDomainManagerService);
 
-            using(DomainManagerClient client = m_settings.DomainManagerService.CreateDomainManagerClient())
+            using (DomainManagerClient client = m_settings.DomainManagerService.CreateDomainManagerClient())
             {
                 return client.GetDomains(domainNames, EntityStatus.Enabled);
             }
         }
-        
+
         internal Address GetAddress(DirectAddress address)
         {
             Debug.Assert(m_settings.HasAddressManager);
-            
-            using(AddressManagerClient client = this.CreateAddressManagerClient())
+
+            using (AddressManagerClient client = CreateAddressManagerClient())
             {
                 return client.GetAddress(address, EntityStatus.Enabled);
-            }                
+            }
         }
-        
+
         internal Address[] GetAddresses(DirectAddressCollection addresses)
         {
             Debug.Assert(m_settings.HasAddressManager);
@@ -65,7 +65,7 @@ namespace Health.Direct.SmtpAgent
                                           select address.Address
                                       ).ToArray();
 
-            using(AddressManagerClient client = this.CreateAddressManagerClient())
+            using (AddressManagerClient client = CreateAddressManagerClient())
             {
                 return client.GetAddresses(emailAddresses, EntityStatus.Enabled);
             }
@@ -75,13 +75,13 @@ namespace Health.Direct.SmtpAgent
         {
             Debug.Assert(m_settings.HasAddressManager);
 
-            using(AddressManagerClient client = this.CreateAddressManagerClient())
+            using (AddressManagerClient client = CreateAddressManagerClient())
             {
                 return client.GetAddressesByID(addressIDs, EntityStatus.Enabled);
             }
         }
-        
-        AddressManagerClient CreateAddressManagerClient()
+
+        private AddressManagerClient CreateAddressManagerClient()
         {
             return m_settings.AddressManager.CreateAddressManagerClient();
         }

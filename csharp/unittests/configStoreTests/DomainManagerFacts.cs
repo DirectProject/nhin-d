@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class DomainManagerFacts : ConfigStoreTestBase
+    public class DomainManagerFacts : ConfigStoreTestBase
     {
         private static DomainManager CreateManager()
         {

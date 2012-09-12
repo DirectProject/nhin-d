@@ -38,7 +38,16 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Services">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Services.Client">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Drawing" />
@@ -48,6 +57,9 @@
     </Reference>
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions">
@@ -64,6 +76,7 @@
     <Content Include="AuthManagerService.svc" />
     <Content Include="DomainManagerService.svc" />
     <Content Include="CertificateService.svc" />
+    <Content Include="MonitorService.svc" />
     <Content Include="SettingsManager.svc" />
     <Content Include="TestService.aspx" />
     <Content Include="Web.config" />
@@ -88,7 +101,11 @@
     </Compile>
     <Compile Include="IAddressManager.cs" />
     <Compile Include="IDomainManager.cs" />
+    <Compile Include="IMdnMonitor.cs" />
     <Compile Include="IPropertyManager.cs" />
+    <Compile Include="MonitorService.svc.cs">
+      <DependentUpon>MonitorService.svc</DependentUpon>
+    </Compile>
     <Compile Include="Service.cs" />
     <Compile Include="IAnchorStore.cs" />
     <Compile Include="ICertificateStore.cs" />

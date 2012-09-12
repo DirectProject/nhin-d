@@ -71,7 +71,7 @@
     </Route>
   </IncomingRoutes>
   <InternalMessage>
-    <CopyFolder>C:\inetpub\mailroot\Pickup</CopyFolder>
+    <PickupFolder>C:\inetpub\mailroot\pickup</PickupFolder>
     <EnableRelay>false</EnableRelay>
   </InternalMessage>
   <RawMessage>

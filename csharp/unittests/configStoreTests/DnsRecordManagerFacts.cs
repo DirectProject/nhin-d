@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class DnsRecordManagerFacts : ConfigStoreTestBase
+    public class DnsRecordManagerFacts : ConfigStoreTestBase
     {
         private static DnsRecordManager CreateManager()
         {

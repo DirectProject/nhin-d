@@ -23,7 +23,7 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class CertificateManagerFacts : ConfigStoreTestBase
+    public class CertificateManagerFacts : ConfigStoreTestBase
     {
         private static CertificateManager CreateManager()
         {

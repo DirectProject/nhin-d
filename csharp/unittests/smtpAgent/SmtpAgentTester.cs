@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -14,39 +15,51 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Mime;
 
 using Health.Direct.Agent;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail;
-
+using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.Common.Mime;
+using Health.Direct.Config.Store;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
     public class SmtpAgentTester
     {
-        public const string TestMessage =
+        private const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+
+
+        public static string TestMessage =
+            string.Format(
             @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
 Subject: Simple Text Message
+Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Yo. Wassup?";
+Yo. Wassup?", Guid.NewGuid());
 
-        public const string CrossDomainMessage =
+        public static string CrossDomainMessage =
+            string.Format(
             @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>, <gm2552@securehealthemail.com>
 Subject: Simple Text Message
+Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Yo. Wassup?";
+Yo. Wassup?", Guid.NewGuid());
 
+        
         public const string BadMessage =
             @"From: <toby@redmond.hsgincubator.com>
 To: <xyz@untrusted.com>
@@ -76,8 +89,58 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 Yo. Wassup?";
+        public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
 
-        
+        public SmtpAgentTester(){
+            
+            Directory.CreateDirectory(TestPickupFolder);
+        }
+
+        public void CleanMessages(SmtpAgentSettings settings)
+        {
+            CleanMessages(TestPickupFolder);
+            CleanMessages(settings.Incoming);
+            CleanMessages(settings.Outgoing);
+            CleanMessages(settings.RawMessage);
+            settings.IncomingRoutes.ToList().ForEach(
+                route => {
+                            if(route as MessageRoute != null)
+                            {   
+                                CleanMessages(((MessageRoute)route).CopyFolders);
+                            }
+                });
+        }
+
+        private void CleanMessages(string path)
+        {
+            var files = Directory.GetFiles(path);
+            foreach(var file in files)
+            {
+                File.Delete(file);
+            }
+        }
+        private void CleanMessages(string[] path)
+        {
+            foreach (var s in path)
+            {
+                CleanMessages(s);
+            }
+        }
+        private void CleanMessages(MessageProcessingSettings settings)
+        {
+            if (settings == null) return;
+            CleanMessages(settings.CopyFolder);
+        }
+
+        public IEnumerable<string> PickupMessages()
+        {
+            foreach (var file in Directory.GetFiles(TestPickupFolder))
+            {
+                yield return file;
+                File.Delete(file);
+            } 
+        }
+
         internal string MakeFilePath(string subPath)
         {
             return Path.Combine(Directory.GetCurrentDirectory(), subPath);
@@ -107,6 +170,12 @@ Yo. Wassup?";
             Assert.False(SMIMEStandard.IsContentEncrypted(contentType));            
         }
 
+        internal void VerifyMdnIncomingMessage(CDO.Message message)
+        {
+            var envelope = new CDOSmtpMessage(message).GetEnvelope();
+            Assert.True(envelope.Message.IsMDN());
+        }
+
         internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
             outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
@@ -118,6 +187,11 @@ Yo. Wassup?";
             string relativePath = Path.Combine("SmtpAgentTestFiles", fileName);
             relativePath = MakeFilePath(relativePath);
             return relativePath;
+        }
+
+        protected static ConfigStore CreateConfigStore()
+        {
+            return new ConfigStore(ConnectionString);
         }
     }
 

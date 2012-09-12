@@ -22,7 +22,7 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class CertificateFacts : ConfigStoreTestBase
+    public class CertificateFacts : ConfigStoreTestBase
     {
 
         /// <summary>

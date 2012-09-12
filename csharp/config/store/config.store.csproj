@@ -70,6 +70,10 @@
     <Compile Include="ConfigStore.cs" />
     <Compile Include="ConfigDatabase.cs" />
     <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="Mdn.cs" />
+    <Compile Include="MdnQueries.cs" />
+    <Compile Include="MdnStatus.cs" />
+    <Compile Include="MdnManager.cs" />
     <Compile Include="PropertyManager.cs" />
     <Compile Include="DateTimeHelper.cs" />
     <Compile Include="DnsRecord.cs" />

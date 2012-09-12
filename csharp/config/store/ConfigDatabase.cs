@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Joe Shook       jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -18,6 +19,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using Health.Direct.Common.Mail.Notifications;
 
 namespace Health.Direct.Config.Store
 {
@@ -34,6 +36,7 @@ namespace Health.Direct.Config.Store
         Table<DnsRecord> m_dnsRecords;
         Table<Property> m_properties;
         Table<NamedBlob> m_blobs;
+        Table<Mdn> m_mdns;
         
         DbTransaction m_transaction;
                           
@@ -144,7 +147,20 @@ namespace Health.Direct.Config.Store
                 return m_blobs;
             }
         }
-        
+
+        public Table<Mdn> Mdns
+        {
+            get
+            {
+                if (m_mdns == null)
+                {
+                    m_mdns = this.GetTable<Mdn>();
+                }
+
+                return m_mdns;
+            }
+        }
+
         public void BeginTransaction()
         {
             if (this.Connection == null || this.Connection.State == ConnectionState.Closed)

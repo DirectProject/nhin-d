@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Joe Shook	    jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -19,9 +20,11 @@ using System.Net.Mail;
 using System.Text;
 using Health.Direct.Agent;
 using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Mime;
 using CDO;
 using ADODB;
+using Health.Direct.Config.Store;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -338,5 +341,6 @@ namespace Health.Direct.SmtpAgent
                 fields.Update();
             }
         }
+
     }
 }

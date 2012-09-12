@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -14,9 +15,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using System.IO;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
-
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.Common.Mime;
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.MonitorService;
+using Health.Direct.Config.Store;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
@@ -24,7 +32,8 @@ namespace Health.Direct.SmtpAgent.Tests
     public class TestSmtpAgent : SmtpAgentTester
     {
         SmtpAgent m_agent;
-        
+        readonly NotificationProducer m_producer;
+
         static TestSmtpAgent()
         {
             AgentTester.EnsureStandardMachineStores();        
@@ -35,6 +44,8 @@ namespace Health.Direct.SmtpAgent.Tests
             //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
             //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigServiceProd.xml"));
             m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfig.xml"));
+
+            m_producer = new NotificationProducer(m_agent.Settings.Notifications);
         }
         
         [Fact]
@@ -47,6 +58,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestEndToEnd()
         {
+            CleanMessages(m_agent.Settings);
             m_agent.Settings.InternalMessage.EnableRelay = true;
             Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
                         
@@ -62,6 +74,89 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
+
+        //
+        // Ensure Mdns start process and dispatch
+        //
+        [Fact]
+        public void TestEndToEndStartMdnMonitor()
+        {
+            CleanMessages(m_agent.Settings);
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            m_agent.Settings.Notifications.AutoResponse = true;
+            m_agent.Settings.Notifications.AlwaysAck = true;
+            m_agent.Settings.MdnMonitor = new ClientSettings();
+            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            
+            //
+            // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
+            // Go ahead and pick them up and Process them as if they where being handled
+            // by the SmtpAgent by way of (IIS)SMTP hand off.
+            //
+            var sendingMessage = LoadMessage(TestMessage);
+            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            
+            //
+            // grab the clear text mdns and delete others.
+            //
+            foreach (var pickupMessage in PickupMessages())
+            {
+                string messageText = File.ReadAllText(pickupMessage);
+                if (messageText.Contains("disposition-notification"))
+                {
+                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(this.LoadMessage(messageText)));
+                }
+            }
+
+            //
+            // Now the messages are encrypted and can be handled
+            // Processed Mdn's will be recorded by the MdnMonitorService
+            //
+            foreach (var pickupMessage in PickupMessages())
+            {
+                string messageText = File.ReadAllText(pickupMessage);
+                CDO.Message message = LoadMessage(messageText);
+                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+
+                //
+                // This is what we are realy testing...
+                //
+                TestMdnsInProcessedMode(message);
+            }
+
+            //
+            // Prepare a Dispatched MDN
+            // sendingMessage is outgoing and incoming as it is a loopback message in this test...
+            //
+            var incoming = new IncomingMessage(TestMessage);
+           
+            foreach (var notification in m_producer.Produce(incoming))
+            {
+                var dispatchText = MimeSerializer.Default.Serialize(notification);
+                Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(dispatchText)));
+            }   
+
+
+
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+        }
+
+        private static void TestMdnsInProcessedMode(CDO.Message message)
+        {
+            var messageEnvelope = new CDOSmtpMessage(message).GetEnvelope();
+            var notification = MDNParser.Parse(messageEnvelope.Message);
+            var originalMessageId = notification.OriginalMessageID;
+            string originalSender = messageEnvelope.Recipients[0].Address;
+            string originalRecipient = messageEnvelope.Sender.Address;
+            var queryMdn = new Mdn(originalMessageId, originalRecipient, originalSender);
+
+            var mdnManager = CreateConfigStore().Mdns;
+            var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+            Assert.NotNull(mdn);
+            Assert.Equal("processed", mdn.Status, StringComparer.OrdinalIgnoreCase);
+            Assert.NotNull(mdn.MdnProcessedDate);
+        }
+
 
         [Fact(Skip="Need Config Service to run this")]
         //[Fact]
@@ -95,6 +190,21 @@ namespace Health.Direct.SmtpAgent.Tests
                 base.VerifyOutgoingMessage(message);
             }
         }
+
+        void RunMdnOutBoundProcessingTest(CDO.Message message)
+        {
+            VerifyMdnIncomingMessage(message);      //Plain Text
+            m_agent.ProcessMessage(message);        //Encrypts
+            base.VerifyOutgoingMessage(message);    //Mdn looped back
+        }
+
+        void RunMdnInBoundProcessingTest(CDO.Message message)
+        {
+            VerifyOutgoingMessage(message);         //Encryted Message
+            m_agent.ProcessMessage(message);        //Decrypts Message
+            base.VerifyMdnIncomingMessage(message);    //Mdn looped back
+        }
+
 
         [Fact]
         public void TestUntrusted()

@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook       jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -33,6 +34,7 @@ namespace Health.Direct.Config.Store
         AdministratorManager m_administrators;
         PropertyManager m_properties;
         NamedBlobManager m_blobs;
+        private MdnManager m_Mdns;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -60,6 +62,7 @@ namespace Health.Direct.Config.Store
             m_administrators = new AdministratorManager(this);
             m_properties = new PropertyManager(this);
             m_blobs = new NamedBlobManager(this);
+            m_Mdns = new MdnManager(this);
         }
 
         public TimeSpan Timeout
@@ -148,6 +151,14 @@ namespace Health.Direct.Config.Store
             get
             {
                 return m_blobs;
+            }
+        }
+
+        public MdnManager Mdns 
+        {
+            get
+            {
+                return m_Mdns;
             }
         }
         

@@ -80,6 +80,7 @@
     <Compile Include="MessageRoute.cs" />
     <Compile Include="InternalMessageSettings.cs" />
     <Compile Include="ISmtpMessage.cs" />
+    <Compile Include="MonitorService.cs" />
     <Compile Include="NotificationProducer.cs" />
     <Compile Include="NotificationSettings.cs" />
     <Compile Include="MessageRouter.cs" />

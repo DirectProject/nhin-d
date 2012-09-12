@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Joe Shook	    jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -17,6 +18,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
@@ -51,6 +53,7 @@ namespace Health.Direct.SmtpAgent
         AgentDiagnostics m_diagnostics;
         MessageRouter m_router;
         ConfigService m_configService;
+        MonitorService m_monitorService;
         NotificationProducer m_notifications;
                 
         internal SmtpAgent(SmtpAgentSettings settings)
@@ -135,6 +138,7 @@ namespace Health.Direct.SmtpAgent
 
             m_diagnostics = new AgentDiagnostics(this);
             m_configService = new ConfigService(m_settings);
+            m_monitorService = new MonitorService(m_settings);
 
             using (new MethodTracer(Logger))
             {
@@ -246,6 +250,7 @@ namespace Health.Direct.SmtpAgent
             using (new MethodTracer(Logger))
             {
                 m_agent.PreProcessOutgoing += this.OnPreProcessOutgoing;
+                m_agent.PostProcessIncoming += this.OnPostProcessIncoming;
                 m_agent.PreProcessIncoming += this.OnPreProcessIncoming;
                 m_agent.Error += m_diagnostics.OnGeneralError;
                 m_agent.ErrorIncoming += m_diagnostics.OnIncomingError;
@@ -258,6 +263,9 @@ namespace Health.Direct.SmtpAgent
                 m_agent.TrustModel.CertChainValidator.Untrusted += m_diagnostics.OnUntrustedCertificate;
             }
         }
+
+        
+
         
         void SubscribeToResolverEvents(ICertificateResolver resolver)
         {
@@ -299,7 +307,8 @@ namespace Health.Direct.SmtpAgent
         public void ProcessMessage(ISmtpMessage message)
         {
             bool? isIncoming = null;
-            
+            bool? isMdn = null;
+
             try
             {
                 this.VerifyInitialized();
@@ -311,6 +320,8 @@ namespace Health.Direct.SmtpAgent
                 // Let the agent do its thing
                 //   
                 MessageEnvelope envelope = message.GetEnvelope();
+                isMdn = envelope.Message.IsMDN();
+
                 envelope = this.ProcessEnvelope(message, envelope);
                 if (envelope == null)
                 {
@@ -418,22 +429,36 @@ namespace Health.Direct.SmtpAgent
 
         void OnPreProcessOutgoing(OutgoingMessage message)
         {
-            if (!m_settings.HasAddressManager)
+            if (m_settings.HasAddressManager)
             {
-                return;
+                VerifySenderAddress(message);
             }
-            //
-            // Verify that the sender is allowed to send
-            //
+        }
+
+        //
+        // Verify that the sender is allowed to send
+        //
+        private void VerifySenderAddress(OutgoingMessage message)
+        {
             Address address = m_configService.GetAddress(message.Sender);
             if (address == null)
             {
                 throw new AgentException(AgentError.UntrustedSender);
             }
-            
+
             message.Sender.Tag = address;
         }
+
+        void MonitorMdn(OutgoingMessage outgoingMessage)
+        {
+            bool mdnSet = outgoingMessage.Mdn.GetValueOrDefault(false);
+            if (m_settings.HasMdnManager && !mdnSet)
+            {
+                m_monitorService.StartMdn(outgoingMessage);
+            }
+        }
         
+
         public MessageEnvelope ProcessOutgoing(ISmtpMessage message)
         {
             if (message == null)
@@ -449,6 +474,7 @@ namespace Health.Direct.SmtpAgent
             OutgoingMessage outgoing = new OutgoingMessage(envelope);
             if (envelope.Message.IsMDN())
             {
+                outgoing.Mdn = true;
                 outgoing.UseIncomingTrustAnchors = this.Settings.Notifications.UseIncomingTrustAnchorsToSend;
             }
             
@@ -459,7 +485,8 @@ namespace Health.Direct.SmtpAgent
 
         void PostProcessOutgoing(ISmtpMessage message, OutgoingMessage envelope)
         {
-            this.RelayInternal(message, envelope);
+            MonitorMdn(envelope);
+            this.RelayInternal(message, envelope); //Removes recipients in local domains
             
             if (envelope.HasRecipients)
             {            
@@ -568,7 +595,26 @@ namespace Health.Direct.SmtpAgent
                 }
             }
         }
-        
+
+        private void OnPostProcessIncoming(IncomingMessage message)
+        {
+            if (m_settings.HasMdnManager && message.Message.IsMDN())
+            {
+                //
+                // It is normal for a mdn to arrive and fail to update
+                // if it is older than the expiration time period.
+                //
+                try
+                {
+                    m_monitorService.UpdateMdn(message);
+                }
+                catch(Exception ex)
+                {
+                    Logger.Debug("While updating mdn monitor {0}", ex.ToString());
+                }
+            }
+        }
+
         public MessageEnvelope ProcessIncoming(ISmtpMessage message)
         {
             if (message == null)

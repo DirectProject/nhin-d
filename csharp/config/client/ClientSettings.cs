@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook       jshook@kryptiq.com
+ * 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -18,6 +19,7 @@ using System.Xml.Serialization;
 using System.ServiceModel;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Client.RecordRetrieval;
 using Health.Direct.Config.Client.SettingsManager;
 
@@ -218,6 +220,11 @@ namespace Health.Direct.Config.Client
         public BlobManagerClient CreateBlobManagerClient()
         {
             return new BlobManagerClient(this.Binding, this.Endpoint);
+        }
+
+        public MdnMonitorClient CreateMdnMonitorClient()
+        {
+            return new MdnMonitorClient(this.Binding, this.Endpoint);
         }
     }
 }

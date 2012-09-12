@@ -79,6 +79,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="Service References\MonitorService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="Service References\RecordRetrieval\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -110,6 +115,7 @@
     <WCFMetadataStorage Include="Service References\AuthManager\" />
     <WCFMetadataStorage Include="Service References\CertificateService\" />
     <WCFMetadataStorage Include="Service References\DomainManager\" />
+    <WCFMetadataStorage Include="Service References\MonitorService\" />
     <WCFMetadataStorage Include="Service References\RecordRetrieval\" />
     <WCFMetadataStorage Include="Service References\SettingsManager\" />
   </ItemGroup>
@@ -223,7 +229,27 @@
   <ItemGroup>
     <None Include="Properties\DataSources\Health.Direct.Config.Store.NamedBlob.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Property.datasource" />
+    <None Include="Service References\MonitorService\MonitorService.wsdl" />
+    <None Include="Service References\MonitorService\MonitorService.xsd" />
+    <None Include="Service References\MonitorService\MonitorService1.xsd" />
     <None Include="Service References\SettingsManager\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MonitorService\MonitorService.disco" />
+    <None Include="Service References\MonitorService\MonitorService1.wsdl" />
+    <None Include="Service References\MonitorService\MonitorService2.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MonitorService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MonitorService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MonitorService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>

@@ -188,8 +188,8 @@
   </xs:element>
   <xs:complexType name="Domain">
     <xs:sequence>
+      <xs:element minOccurs="0" name="AgentName" nillable="true" type="xs:string" />
       <xs:element name="CreateDate" type="xs:dateTime" />
-      <xs:element minOccurs="0" name="GroupName" nillable="true" type="xs:string" />
       <xs:element name="ID" type="xs:long" />
       <xs:element name="Name" nillable="true" type="xs:string" />
       <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q9:EntityStatus" />

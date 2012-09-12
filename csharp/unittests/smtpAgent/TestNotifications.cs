@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -20,7 +21,7 @@ using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.Notifications;
-
+using Health.Direct.Config.Client;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
@@ -125,6 +126,30 @@ namespace Health.Direct.SmtpAgent.Tests
         int CountNotificationsToBeSent(IncomingMessage incoming)
         {
             return m_producer.Produce(incoming).Count();
+        }
+
+        [Fact]
+        public void TestStartMdnMonitor()
+        {
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            m_agent.Settings.Notifications.AutoResponse = true;
+            m_agent.Settings.Notifications.AlwaysAck = true;
+            m_agent.Settings.MdnMonitor = new ClientSettings();
+            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+
+            Message msg = Message.Load(TestMessage);
+            OutgoingMessage outgoing = null;
+            IncomingMessage incoming = null;
+
+            base.ProcessEndToEnd(m_agent, msg, out outgoing, out incoming);
+            
+            Assert.True(CountNotificationsToBeSent(incoming) > 0);
+
+            //Now send an MDN from receipients.
+            foreach (var recipient in incoming.Recipients)
+            {
+                
+            }
         }
     }
 }

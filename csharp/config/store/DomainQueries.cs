@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Joe Shook       jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -25,7 +26,7 @@ namespace Health.Direct.Config.Store
     public static class DomainQueries
     {
         const string Sql_DeleteDomain = "DELETE from Domains where DomainName = {0}";
-        const string Sql_DeleteAllDomain = "Begin tran delete from Addresses Delete from MXs delete from [Domains] DBCC CHECKIDENT([Domains],RESEED,0) DBCC CHECKIDENT(MXs,RESEED,0) DBCC CHECKIDENT(Addresses,RESEED,0) commit tran ";
+        const string Sql_DeleteAllDomain = "Begin tran delete from Addresses delete from [Domains] DBCC CHECKIDENT([Domains],RESEED,0) DBCC CHECKIDENT(Addresses,RESEED,0) commit tran ";
 
         static readonly Func<ConfigDatabase, string, IQueryable<Domain>> Domain = CompiledQuery.Compile(
             (ConfigDatabase db, string owner) =>

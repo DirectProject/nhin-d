@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -76,6 +77,7 @@ namespace Health.Direct.Common.Mail.Notifications
         {
             /// <summary>
             /// Indicates message has been received but not displayed to user.
+            /// Adde per Applicability Statement for Secure Health Transport v1.1
             /// </summary>
             Processed,
             /// <summary>
@@ -85,7 +87,12 @@ namespace Health.Direct.Common.Mail.Notifications
             /// <summary>
             /// Indicates message was deleted.
             /// </summary>
-            Deleted
+            Deleted,
+            /// <summary>
+            /// Indicates message was dispatched.
+            /// Added per Implementation Guide for Delivery Notification in Direct
+            /// </summary>
+            Dispatched
         }
         
         /// <summary>
@@ -222,6 +229,7 @@ namespace Health.Direct.Common.Mail.Notifications
         internal const string Send_Manual = "MDN-sent-manually";
         internal const string Send_Automatic = "MDN-sent-automatically";
         internal const string Disposition_Displayed = "displayed";
+        internal const string Disposition_Dispatched = "dispatched";
         internal const string Disposition_Processed = "processed";
         internal const string Disposition_Deleted = "deleted";
         internal const string Modifier_Error = "error";

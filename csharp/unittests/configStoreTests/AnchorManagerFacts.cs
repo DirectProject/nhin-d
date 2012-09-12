@@ -21,7 +21,7 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class AnchorManagerFacts : ConfigStoreTestBase 
+    public class AnchorManagerFacts : ConfigStoreTestBase 
     {
         private static AnchorManager CreateManager()
         {

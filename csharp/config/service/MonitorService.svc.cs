@@ -2,9 +2,9 @@
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
- Authors:
-    Joe Shook     jshook@kryptiq.com
-  
+ Authors:    
+    Joe Shook       jshook@kryptiq.com
+ 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -14,37 +14,48 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using Health.Direct.Config.Store;
 
-using System.Collections.Generic;
 
-namespace Health.Direct.Common.Domains
+namespace Health.Direct.Config.Service
 {
-    /// <summary>
-    /// Supports resolution of domain tenancy.
-    /// If no domains exist and empty string array is returned.
-    /// Throw exceptions if there was an error during retrieval, such as network issues
-    /// Implementations may use implementation specific caching policies.
-    /// </summary>
-    public interface IDomainResolver
+   public class MonitorService : ConfigServiceBase, IMdnMonitor
     {
-        /// <summary>
-        /// List of domains
-        /// </summary>
-        IEnumerable<string> Domains { get; }
+       public void Start(Mdn[] mdns)
+       {
+           try
+           {
+               Store.Mdns.Start(mdns);
+           }
+           catch (Exception ex)
+           {
+               throw CreateFault("Start", ex);
+           }
+       }
 
-        /// <summary>
-        /// Tests if an address is managed.
-        /// </summary>
-        /// <param name="domain">The domain in <c>string</c> form to test</param>
-        /// <returns><c>true</c> if the address's domain is managed by the agent,
-        /// <c>false</c> otherwise.</returns>
-        bool IsManaged(string domain);
+       public void Update(Mdn mdn)
+       {
+           try
+           {
+               Store.Mdns.Update(mdn);
+           }
+           catch (Exception ex)
+           {
+               throw CreateFault("Update", ex);
+           }
+       }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="domains"></param>
-        /// <returns></returns>
-        bool Validate(string[] domains);
-    };
+       public void SweepTimouts()
+       {
+           try
+           {
+               Store.Mdns.RemoveTimedOut();
+           }
+           catch (Exception ex)
+           {
+               throw CreateFault("SweepTimouts", ex);
+           }
+       }
+    }
 }
