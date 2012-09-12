@@ -1,0 +1,107 @@
+# Ignore file for Visual Studio 2008, C#, Java
+
+# use glob syntax
+syntax: glob
+
+# ignore for Mercurial
+*.orig
+
+# ignore for Mac OX
+.DS_Store
+
+# ignore for MonoDevelop
+*.pidb
+*.userprefs
+test-results/
+
+# Ignore for Java
+*.class
+tmp/
+target/
+NHINKeyStore
+*xdm.zip
+java/gateway/IncomingMsgFolder/
+java/gateway/OutgoingMsgFolder/
+java/gateway/RawMsgFolder/
+java/xd-common/war
+java/gateway/war
+java/install/build
+java/config/config-service/src/main/webapp/WEB-INF/beans.xml
+
+nhindconfig/service.properties
+config-service-client/war/config-service.war
+java/install/direct
+
+# Ignore Eclipse files
+.classpath
+.project
+.settings/
+
+# Ignore derby files
+db.lck
+log.ctrl
+log1.dat
+logmirror.ctrl
+seg0/*
+
+# Ignore Visual Studio 2008 files
+*.obj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.cache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.scc
+[Bb]in
+[Dd]ebug*/
+obj/
+[Rr]elease*/
+[Tt]est[Rr]esult*
+[Bb]uild[Ll]og.*
+*.[Pp]ublish.xml
+csharp/unittests/*.bat
+smtpEventHandler_i.h
+
+# Ignore Sandcastle API generated documentation
+[Hh]elp
+csharp/*.chm
+csharp/gateway/prodinstall/HVAgentConfig.xml
+csharp/gateway/prodinstall/NHINDAgentConfig.xml
+csharp/gateway/prodinstall/RedmondAgentConfig.xml
+csharp/gateway/prodinstall/install.bat
+csharp/gateway/prodinstall/installhv.bat
+csharp/gateway/prodinstall/prop.bat
+csharp/gateway/prodinstall/readme.txt
+csharp/config/service.sln
+csharp/config/service/ve-4D36.tmp
+csharp/config/store/configStore.sln
+csharp/external/xunit/xunit.console.sln
+glob:csharp/agent/Config/AgentSettings.xsd
+glob:csharp/config/install/umeshma3.config
+glob:csharp/config/install/umeshma4.config
+glob:csharp/config/service/ve-5E8C.tmp
+glob:csharp/config/service/ve-7A85.tmp
+glob:csharp/config/service/ve-8472.tmp
+glob:DirectGateway-*-NET35-Source.zip
+glob:*_ReSharper*
+glob:csharp/installer/configui/*.*
+glob:csharp/installer/configui/Config
+glob:csharp/installer/configui/Content/
+glob:csharp/installer/configui/**
+
+
+# Ignore JetBrains Files
+*.dotCover
