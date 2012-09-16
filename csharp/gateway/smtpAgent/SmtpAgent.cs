@@ -307,8 +307,7 @@ namespace Health.Direct.SmtpAgent
         public void ProcessMessage(ISmtpMessage message)
         {
             bool? isIncoming = null;
-            bool? isMdn = null;
-
+            
             try
             {
                 this.VerifyInitialized();
@@ -320,8 +319,6 @@ namespace Health.Direct.SmtpAgent
                 // Let the agent do its thing
                 //   
                 MessageEnvelope envelope = message.GetEnvelope();
-                isMdn = envelope.Message.IsMDN();
-
                 envelope = this.ProcessEnvelope(message, envelope);
                 if (envelope == null)
                 {
@@ -451,8 +448,8 @@ namespace Health.Direct.SmtpAgent
 
         void MonitorMdn(OutgoingMessage outgoingMessage)
         {
-            bool mdnSet = outgoingMessage.Mdn.GetValueOrDefault(false);
-            if (m_settings.HasMdnManager && !mdnSet)
+            bool isMdnSet = outgoingMessage.IsMdn.GetValueOrDefault(false);
+            if (m_settings.HasMdnManager && !isMdnSet)
             {
                 m_monitorService.StartMdn(outgoingMessage);
             }
@@ -472,12 +469,18 @@ namespace Health.Direct.SmtpAgent
         protected virtual MessageEnvelope ProcessOutgoing(ISmtpMessage message, MessageEnvelope envelope)
         {
             OutgoingMessage outgoing = new OutgoingMessage(envelope);
+            
             if (envelope.Message.IsMDN())
             {
-                outgoing.Mdn = true;
+                outgoing.IsMdn = true;
                 outgoing.UseIncomingTrustAnchors = this.Settings.Notifications.UseIncomingTrustAnchorsToSend;
             }
             
+            if (envelope.Message.IsTimelyAndReliable())
+            {
+                outgoing.IsTimelyAndReliable = true;
+            }
+
             envelope = this.SecurityAgent.ProcessOutgoing(outgoing);
             Logger.Debug("ProcessedOutgoing");
             return envelope;
@@ -680,7 +683,15 @@ namespace Health.Direct.SmtpAgent
             //
             try
             {
-                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, senders);
+                if(envelope.Message.IsMDN())
+                {
+                    return;
+                }
+                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, senders, MDNStandard.NotificationType.Processed);
+                if(m_settings.Notifications.GatewayIsDestination)
+                {
+                    m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, senders, MDNStandard.NotificationType.Dispatched);
+                }
             }
             catch (Exception ex)
             {

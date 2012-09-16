@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.ComponentModel;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
@@ -30,12 +29,22 @@ namespace Health.Direct.Config.Store
         string m_sender;
         string m_messageId;
 
+        public Mdn(string messageId, string recipient, string sender, bool notifyDispatched)
+            : this()
+        {
+            MessageId = messageId;
+            Recipient = recipient;
+            Sender = sender;
+            NotifyDispatched = notifyDispatched;
+        }
+
         public Mdn(string messageId, string recipient, string sender)
             : this()
         {
             MessageId = messageId;
             Recipient = recipient;
             Sender = sender;
+            NotifyDispatched = false;
         }
         public Mdn()
         {
@@ -53,6 +62,10 @@ namespace Health.Direct.Config.Store
         {
             get
             {
+                if (MessageId == null || Recipient == null)
+                {
+                    return null;
+                } 
                 var fieldsSb = new StringBuilder();
                 fieldsSb.Append(MessageId.ToLower()).Append(Recipient.ToLower());
 
@@ -154,12 +167,21 @@ namespace Health.Direct.Config.Store
             set;
         }
 
+        [Column(Name = "NotifyDispatched", DbType = "bit", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
+        public bool NotifyDispatched
+        {
+            get;
+            set;
+        }
+
         internal void CopyFixed(Mdn source)
         {
             Id = source.Id;
             MessageId = source.MessageId;
             Recipient = source.Recipient;
             Sender = source.Sender;
+            NotifyDispatched = source.NotifyDispatched;
             CreateDate = source.CreateDate;
             UpdateDate = source.UpdateDate;
         }
@@ -172,20 +194,20 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("source");
             }
-            Status = source.Status;
+            if (string.Compare(original.Status, MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) != 0) //dispatched cannot be undone.
+            {
+                Status = source.Status == null ? null : source.Status.ToLower();
+            }
             Timedout = source.Timedout;
             MdnProcessedDate = source.MdnProcessedDate;
             UpdateDate = DateTimeHelper.Now;
 
             //Workflow from monitor started to dispostition-type is processed
-            if(string.Compare(Status, MdnStatus.Processed, StringComparison.OrdinalIgnoreCase) == 0 
-                && string.Compare(Status, original.Status, StringComparison.OrdinalIgnoreCase) != 0)
+            if (string.Compare(source.Status, MdnStatus.Processed, StringComparison.OrdinalIgnoreCase) == 0
+                && original.Status != MdnStatus.Processed)
             {
                 MdnProcessedDate = DateTimeHelper.Now;
             }
-
         }
-
-        
     }
 }

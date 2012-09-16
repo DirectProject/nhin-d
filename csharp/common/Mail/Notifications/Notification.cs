@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -259,21 +260,22 @@ namespace Health.Direct.Common.Mail.Notifications
             yield return m_explanation;
             yield return m_notification;
         }
-        
+
         /// <summary>
         /// Create an ACK MDN notification
         /// </summary>
         /// <param name="source">The MTA or MUA that is generating this ack</param>
         /// <param name="textExplanation">(optional) Text message to accompany the Ack</param>
+        /// <param name="notificationType">processed, dispatched or failed</param>
         /// <returns>Notification object</returns>
-        public static Notification CreateAck(ReportingUserAgent source, string textExplanation)
+        public static Notification CreateAck(ReportingUserAgent source, string textExplanation, MDNStandard.NotificationType notificationType)
         {
             if (source == null)
             {
                 throw new ArgumentNullException("source");
             }
-            
-            Notification notification = new Notification(MDNStandard.NotificationType.Processed);
+
+            Notification notification = new Notification(notificationType);
             notification.ReportingAgent = source;
             if (!string.IsNullOrEmpty(textExplanation))
             {

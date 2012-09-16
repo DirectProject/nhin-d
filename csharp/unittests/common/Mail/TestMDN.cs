@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -54,28 +55,50 @@ namespace Health.Direct.Common.Tests.Mail
         const string NotificationExplanation = "Synchronicity";
         
         [Fact]
-        public void TestNotification()
+        public void TestNotification_AssertProcessed()
         {
-            Notification notification = new Notification(MDNStandard.NotificationType.Processed);            
-            Assert.True(notification.ContentType.IsMediaType(MDNStandard.MediaType.ReportMessage));
-            Assert.True(notification.ContentType.HasParameter("report-type", "disposition-notification"));
-                        
-            notification = this.CreateProcessedNotification();
-            
-            MimeEntity[] mdnEntities = notification.ToArray();            
+            Notification notificationExpected = new Notification(MDNStandard.NotificationType.Processed);
+            Assert.True(notificationExpected.ContentType.IsMediaType(MDNStandard.MediaType.ReportMessage));
+            Assert.True(notificationExpected.ContentType.HasParameter("report-type", "disposition-notification"));
+
+            Notification notificationActual = this.CreateProcessedNotification();
+
+
+            MimeEntity[] mdnEntities = notificationActual.ToArray();            
             this.Verify(mdnEntities);
             
             Assert.True(mdnEntities[0].Body.Text == NotificationExplanation);
-            
-            this.VerifyProcessedNotification(mdnEntities[1], notification);
-            
-            Assert.DoesNotThrow(() => notification.ToEntity());
-            
-            Assert.DoesNotThrow(() => MimeSerializer.Default.Serialize(notification.ToEntity()));            
+
+            this.VerifyDispositionTypeNotification(mdnEntities[1], notificationExpected);
+
+            Assert.DoesNotThrow(() => notificationActual.ToEntity());
+
+            Assert.DoesNotThrow(() => MimeSerializer.Default.Serialize(notificationActual.ToEntity()));            
         }
-        
+
         [Fact]
-        public void TestNotificationMessage()
+        public void TestNotification_AssertDispatched()
+        {
+            Notification notificationExpected = new Notification(MDNStandard.NotificationType.Dispatched);
+            Assert.True(notificationExpected.ContentType.IsMediaType(MDNStandard.MediaType.ReportMessage));
+            Assert.True(notificationExpected.ContentType.HasParameter("report-type", "disposition-notification"));
+
+            Notification notificationActual = this.CreateDispatchedNotification();
+
+            MimeEntity[] mdnEntities = notificationActual.ToArray();
+            this.Verify(mdnEntities);
+
+            Assert.True(mdnEntities[0].Body.Text == NotificationExplanation);
+
+            this.VerifyDispositionTypeNotification(mdnEntities[1], notificationExpected);
+
+            Assert.DoesNotThrow(() => notificationActual.ToEntity());
+
+            Assert.DoesNotThrow(() => MimeSerializer.Default.Serialize(notificationActual.ToEntity()));  
+        }
+
+        [Fact]
+        public void TestProcessedNotificationMessage()
         {
             Message source = this.CreateSourceMessage();
             
@@ -96,14 +119,43 @@ namespace Health.Direct.Common.Tests.Mail
             MimeEntity[] mdnEntities = notificationMessage.GetParts().ToArray();
             this.Verify(mdnEntities);
             
-            this.VerifyProcessedNotification(mdnEntities[1], notification);
+            this.VerifyDispositionTypeNotification(mdnEntities[1], notification);
             
             HeaderCollection fields = this.GetNotificationFields(mdnEntities[1]);
             Assert.NotNull(fields[MDNStandard.Fields.FinalRecipient]);
         }
-            
+
         [Fact]
-        public void TestNotificationOnNotication()
+        public void TestDispatchedNotificationMessage()
+        {
+            Message source = this.CreateSourceMessage();
+
+            Notification notification = this.CreateDispatchedNotification();
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
+
+            Assert.True(notificationMessage.IsMDN());
+            Assert.False(notificationMessage.ShouldIssueNotification());
+
+            Assert.True(notificationMessage.IsMultiPart);
+            Assert.True(notificationMessage.ToValue == source.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo));
+
+            Assert.True(!string.IsNullOrEmpty(notificationMessage.SubjectValue));
+
+            Assert.True(notificationMessage.HasHeader(MimeStandard.VersionHeader));
+            Assert.True(notificationMessage.HasHeader(MailStandard.Headers.Date));
+
+            MimeEntity[] mdnEntities = notificationMessage.GetParts().ToArray();
+            this.Verify(mdnEntities);
+
+            this.VerifyDispositionTypeNotification(mdnEntities[1], notification);
+
+            HeaderCollection fields = this.GetNotificationFields(mdnEntities[1]);
+            Assert.NotNull(fields[MDNStandard.Fields.FinalRecipient]);
+        }
+            
+
+        [Fact]
+        public void TestNotificationOnNotication_Processed()
         {
             Message source = this.CreateSourceMessage();
             Notification notification = this.CreateProcessedNotification();
@@ -117,8 +169,24 @@ namespace Health.Direct.Common.Tests.Mail
         }
 
         [Fact]
-        public void TestSerialization()
+        public void TestNotificationOnNotication_Dispatched()
         {
+            Message source = this.CreateSourceMessage();
+            Notification notification = this.CreateProcessedNotification();
+            MailAddress from = new MailAddress(source.FromValue);
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(from, notification);
+            //
+            // Shouldn never be able to issue a notification for a notification
+            //
+            Assert.Throws<MDNException>(() => notificationMessage.RequestNotification());
+            Assert.Null(notificationMessage.CreateNotificationMessage(from, notification));
+        }
+
+        [Fact]
+        public void TestSerialization_Processed()
+        {
+            Disposition expectedDisposition = new Disposition(MDNStandard.NotificationType.Processed);
+
             Message source = this.CreateSourceMessage();            
             Notification notification = this.CreateProcessedNotification();
             NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
@@ -134,6 +202,37 @@ namespace Health.Direct.Common.Tests.Mail
                 Assert.True(loadedMessage.HasHeader(MimeStandard.VersionHeader));
                 Assert.True(loadedMessage.HasHeader(MailStandard.Headers.Date));
                 Assert.True(loadedMessage.Headers.Count(x => (MimeStandard.Equals(x.Name, MimeStandard.VersionHeader))) == 1);
+                var mdn = MDNParser.Parse(loadedMessage);
+                VerifyEqual(expectedDisposition, mdn.Disposition);
+            }
+            finally
+            {
+                File.Delete(path);
+            }
+        }
+
+        [Fact]
+        public void TestSerialization_Dispatched()
+        {
+            Disposition expectedDisposition = new Disposition(MDNStandard.NotificationType.Dispatched);
+
+            Message source = this.CreateSourceMessage();
+            Notification notification = this.CreateDispatchedNotification();
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
+
+            var path = Path.GetTempFileName();
+            try
+            {
+                notificationMessage.Save(path);
+                Message loadedMessage = Message.Load(File.ReadAllText(path));
+                Assert.True(loadedMessage.IsMDN());
+                Assert.Equal(notificationMessage.ParsedContentType.MediaType, loadedMessage.ParsedContentType.MediaType);
+                Assert.Equal(notificationMessage.SubjectValue, loadedMessage.SubjectValue);
+                Assert.True(loadedMessage.HasHeader(MimeStandard.VersionHeader));
+                Assert.True(loadedMessage.HasHeader(MailStandard.Headers.Date));
+                Assert.True(loadedMessage.Headers.Count(x => (MimeStandard.Equals(x.Name, MimeStandard.VersionHeader))) == 1);
+                var mdn = MDNParser.Parse(loadedMessage);
+                VerifyEqual(expectedDisposition, mdn.Disposition);
             }
             finally
             {
@@ -142,7 +241,7 @@ namespace Health.Direct.Common.Tests.Mail
         }
                 
         [Fact]
-        public void TestParser()
+        public void TestParser_Processed()
         {
             Notification notification = this.CreateProcessedNotification();
             notification.Error = "Whoops!";            
@@ -150,28 +249,52 @@ namespace Health.Direct.Common.Tests.Mail
         }
 
         [Fact]
-        public void TestParserWithExplanation()
+        public void TestParser_Dispatched()
+        {
+            Notification notification = this.CreateDispatchedNotification();
+            notification.Error = "Whoops!";
+            this.SendAndParse(notification);
+        }
+
+
+        [Fact]
+        public void TestParserWithExplanation_Processed()
         {
             Notification notification = this.CreateProcessedNotification(true);
             notification.Error = "0x323d235";
             notification.Explanation = "Tut, tut. We messed up.";
             this.SendAndParse(notification);
         }
-        
+
         [Fact]
-        public void TestAck()
+        public void TestParserWithExplanation_Dispatched()
+        {
+            Notification notification = this.CreateDispatchedNotification(true);
+            notification.Error = "0x323d235";
+            notification.Explanation = "Tut, tut. We messed up.";
+            this.SendAndParse(notification);
+        }
+
+        /// <summary>
+        /// Note there is no TextAck_Dispatched.
+        /// At this point dispatched will be handled outside the direct gateway.
+        /// An example of a dispatched notification will be in the MdnMonitor Windows Service.
+        /// </summary>
+        [Fact]
+        public void TestAck_Processed()
         {
             Message message = this.CreateSourceMessage();
             
             Notification ack = null;
             Assert.DoesNotThrow(() => ack = Notification.CreateAck(new ReportingUserAgent("Unit Tester", "The Direct Project"), 
-                                                                   "Cheers"));
+                                                                   "Cheers", MDNStandard.NotificationType.Processed));
             Assert.True(ack.Disposition.Notification == MDNStandard.NotificationType.Processed);
             Assert.NotNull(ack.ReportingAgent);            
             Assert.Equal(ack.Explanation, "Cheers");
             
             SendAndParse(ack);
         }
+
         
         void SendAndParse(Notification source)
         {
@@ -253,16 +376,37 @@ namespace Health.Direct.Common.Tests.Mail
             
             return notification;
         }
-        
+
+        Notification CreateDispatchedNotification()
+        {
+            return CreateDispatchedNotification(false);
+        }
+
+        Notification CreateDispatchedNotification(bool isError)
+        {
+            Notification notification = new Notification(MDNStandard.NotificationType.Dispatched, isError);
+            notification.OriginalMessageID = "Message In a Bottle";
+            notification.Gateway = new MdnGateway("gateway.example.com", "smtp");
+            if (isError)
+            {
+                notification.Error = ErrorMessage;
+            }
+            notification.Explanation = NotificationExplanation;
+
+            return notification;
+        }
+
+
         /// <summary>
-        /// Verify a "Processed message" MDN notification 
+        /// Verify Disposition-Type MDN notification 
         /// </summary>
-        void VerifyProcessedNotification(MimeEntity notificationEntity, Notification notification)
+        void VerifyDispositionTypeNotification(MimeEntity notificationEntity, Notification notification)
         {
             HeaderCollection fields = this.GetNotificationFields(notificationEntity);
             Assert.NotEmpty(fields);
 
-            Assert.True(fields.HasHeader(MDNStandard.Fields.Disposition, notification.Disposition.ToString()));
+            Assert.True(fields.HasHeader(MDNStandard.Fields.Disposition, notification.Disposition.ToString()), 
+                string.Format("Expected a contained Disposition-Type of {0}", notification.Disposition));
             Assert.True(fields.HasHeader(MDNStandard.Fields.Gateway, "smtp;gateway.example.com"));
             Assert.True(fields.HasHeader(MDNStandard.Fields.OriginalMessageID, OriginalID));
             if (fields[MDNStandard.Fields.Error] != null)

@@ -51,7 +51,8 @@ namespace Health.Direct.SmtpAgent
             return message.Recipients.Select(
                 recipient => new Mdn(message.Message.IDValue
                     , new MailAddress(recipient.Address).Address
-                    , new MailAddress(message.Message.FromValue).Address)
+                    , new MailAddress(message.Message.FromValue).Address
+                    , message.IsTimelyAndReliable.GetValueOrDefault(false))
                 ).ToList();
         }
 

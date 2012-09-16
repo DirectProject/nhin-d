@@ -21,9 +21,11 @@
       <xs:element name="MdnIdentifier" nillable="true" type="xs:string" />
       <xs:element name="MdnProcessedDate" nillable="true" type="xs:dateTime" />
       <xs:element name="MessageId" nillable="true" type="xs:string" />
+      <xs:element name="NotifyDispatched" type="xs:boolean" />
       <xs:element name="Recipient" nillable="true" type="xs:string" />
       <xs:element name="Sender" nillable="true" type="xs:string" />
-      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q1:MdnStatus" />
+      <xs:element name="Status" nillable="true" type="xs:string" />
+      <xs:element name="Timedout" type="xs:boolean" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
   </xs:complexType>
@@ -35,7 +37,7 @@
   </xs:element>
   <xs:complexType name="ConfigStoreFault">
     <xs:sequence>
-      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q1:ConfigStoreError" />
       <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
     </xs:sequence>
   </xs:complexType>

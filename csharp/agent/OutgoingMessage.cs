@@ -92,11 +92,23 @@ namespace Health.Direct.Agent
 
 
         /// <summary>
-        /// Track when it is known a message is an Mdn.
-        /// This is set when the message type is discoverable in the decrypted form.
-        /// Set it before a message is encrypted or after it is decrypted.
-        /// Otherwise it is not known.
+        /// Is messag a Message Disposition Notificaton
         /// </summary>
-        public bool? Mdn = null;
+        /// <remarks>
+        /// /// Track Mdn message type.
+        /// This is set when the message type is discoverable in the decrypted form.
+        /// </remarks>
+        public bool? IsMdn = null;
+
+        /// <summary>
+        /// Is Message requesting timely and reliable delivery.
+        /// </summary>
+        /// <remarks>
+        /// Track the existance of X-DIRECT-FINAL-DESTINATION-DELIVERY=optional,true
+        /// in the Disposition-Notification-Options header, RFC 3798 2.2 and
+        /// Implementation Guide for Delivery Notification in Direct v1.0, 1.3
+        /// This is set when the message type is discoverable in the decrypted form.
+        /// </remarks>
+        public bool? IsTimelyAndReliable;
     }
 }

@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -29,13 +30,14 @@ namespace Health.Direct.SmtpAgent
         bool m_alwaysAck = true;
         bool m_useIncomingAnchorsToSend = false;
         string m_productName = DefaultText;
-        
+        bool m_atewayIsDestination;
+
         public NotificationSettings()
         {
         }
 
         /// <summary>
-        /// Automatically send ACKs when messages have been successfully processed (security, trust etc)
+        /// Automatically send processed notifications when messages have been successfully processed (security, trust etc)
         /// </summary>
         [XmlElement]
         public bool AutoResponse
@@ -51,7 +53,7 @@ namespace Health.Direct.SmtpAgent
         }
         
         /// <summary>
-        /// Always issue an Ack, even if the caller did not request one
+        /// Always issue an processed notificatoin, even if the caller did not request one
         /// </summary>
         [XmlElement]
         public bool AlwaysAck
@@ -65,7 +67,20 @@ namespace Health.Direct.SmtpAgent
                 m_alwaysAck = value;
             }
         }
-        
+
+        /// <summary>
+        /// Auto issue a dispatched notification
+        /// It is more typical to not set this and allow the destination network or client 
+        /// send a dispatched notification.  But if the incoming folder or routes are 
+        /// considered the utlimate destination setting this is appropriate. 
+        /// </summary>
+        [XmlElement]
+        public bool GatewayIsDestination
+        {
+            get { return m_atewayIsDestination; }
+            set { m_atewayIsDestination = value; }
+        }
+
         /// <summary>
         /// Optional explanation text to include when sending MDN Acks. 
         /// </summary>

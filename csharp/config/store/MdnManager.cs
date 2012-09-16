@@ -99,7 +99,8 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        static void Update(ConfigDatabase db, Mdn mdn)
+        
+        void Update(ConfigDatabase db, Mdn mdn)
         {
             if (db == null)
             {
@@ -110,11 +111,13 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
             }
-            
+
+            Mdn original = Get(db, mdn.MdnIdentifier);
+
             var update = new Mdn();
             update.CopyFixed(mdn);
             db.Mdns.Attach(update);
-            Mdn original = db.Mdns.GetOriginalEntityState(update);
+            
             if(original.Timedout)
             {
                 return;  //Message is timed out...
@@ -152,7 +155,6 @@ namespace Health.Direct.Config.Store
 
             return db.Mdns.Get(mdnIdentifier);
         }
-
         
         public Mdn[] GetTimedOut()
         {
@@ -161,9 +163,7 @@ namespace Health.Direct.Config.Store
                 return db.Mdns.GetTimedOut().ToArray();
             }
         }
-              
         
-
         public Mdn[] GetExpiredProcessed(TimeSpan expiredLimit, int maxResults)
         {
             using (ConfigDatabase db = Store.CreateReadContext())
