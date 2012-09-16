@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -41,7 +42,7 @@ namespace Health.Direct.SmtpAgent
         /// To simplify outbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
         /// You don't need to use SmtpClient or some other SMTP client
         /// </summary>
-        public void Send(IncomingMessage envelope, string pickupFolder, DirectAddressCollection senders)
+        public void Send(IncomingMessage envelope, string pickupFolder, DirectAddressCollection senders, MDNStandard.NotificationType notificationType)
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
@@ -53,7 +54,7 @@ namespace Health.Direct.SmtpAgent
                 return;
             }
             
-            foreach (NotificationMessage notification in this.Produce(envelope, senders.AsMailAddresses()))
+            foreach (NotificationMessage notification in this.Produce(envelope, senders.AsMailAddresses(), notificationType))
             {
                 string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
                 notification.Save(filePath);
@@ -64,28 +65,28 @@ namespace Health.Direct.SmtpAgent
         /// Generate notification messages (if any) for this source message
         /// </summary>
         /// <param name="envelope"></param>
-        /// <param name="senders">sending acks on behalf of these message recipients</param>
         /// <returns>An enumeration of notification messages</returns>
         public IEnumerable<NotificationMessage> Produce(IncomingMessage envelope)
         {
-            return this.Produce(envelope, envelope.HasDomainRecipients ? envelope.DomainRecipients.AsMailAddresses() : null);
+            return this.Produce(envelope, envelope.HasDomainRecipients ? envelope.DomainRecipients.AsMailAddresses() : null, MDNStandard.NotificationType.Processed);
         }
-                
+
         /// <summary>
         /// Generate notification messages (if any) for this source message
         /// </summary>
         /// <param name="envelope"></param>
         /// <param name="senders">sending acks on behalf of these message recipients</param>
+        /// <param name="notificationType">processed, dispatched or failed</param>
         /// <returns>An enumeration of messages</returns>
-        public IEnumerable<NotificationMessage> Produce(IncomingMessage envelope, IEnumerable<MailAddress> senders)
+        public IEnumerable<NotificationMessage> Produce(IncomingMessage envelope, IEnumerable<MailAddress> senders, MDNStandard.NotificationType notificationType)
         {
             if (envelope == null)
             {
                 throw new ArgumentNullException("envelope");
             }              
             if (senders != null && m_settings.AutoResponse)
-            {            
-                IEnumerable<NotificationMessage> notifications = envelope.CreateAcks(senders, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck);
+            {
+                IEnumerable<NotificationMessage> notifications = envelope.CreateAcks(senders, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck, notificationType);
                 if (notifications != null)
                 {
                     foreach (NotificationMessage notification in notifications)

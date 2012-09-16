@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -149,12 +150,13 @@ namespace Health.Direct.Agent
         /// </summary>
         /// <param name="reportingAgentName">The name of the MTA or MUA that is generating this ack</param>
         /// <param name="textMessage">Optional text message to accompany the Ack</param>
+        /// <param name="notificationType">processed, dispatched or failed</param>
         /// <returns>An enumeration of NotificationMessage</returns>
-        public IEnumerable<NotificationMessage> CreateAcks(string reportingAgentName, string textMessage)
+        public IEnumerable<NotificationMessage> CreateAcks(string reportingAgentName, string textMessage, MDNStandard.NotificationType notificationType)
         {
-            return CreateAcks(reportingAgentName, textMessage, true);
+            return CreateAcks(reportingAgentName, textMessage, true, notificationType);
         }
-                
+
         /// <summary>
         /// Create ACK MDN notifications for this message - IF MDNs should be generated. 
         /// Since the message could have multiple recipients, an independant MDN is generated FROM each recipient. 
@@ -165,15 +167,16 @@ namespace Health.Direct.Agent
         /// <param name="reportingAgentName">The name of the MTA or MUA that is generating this ack</param>
         /// <param name="textMessage">Optional text message to accompany the Ack</param>
         /// <param name="alwaysAck">Generate acks even when none were requested</param>
+        /// <param name="notificationType">processed, dispatched or failed</param>
         /// <returns>An enumeration of NotificationMessage</returns>
-        public IEnumerable<NotificationMessage> CreateAcks(string reportingAgentName, string textMessage, bool alwaysAck)
+        public IEnumerable<NotificationMessage> CreateAcks(string reportingAgentName, string textMessage, bool alwaysAck, MDNStandard.NotificationType notificationType)
         {
             if (!this.HasDomainRecipients)
             {
                 return null;
             }
             
-            return CreateAcks(this.DomainRecipients.AsMailAddresses(), reportingAgentName, textMessage, alwaysAck);
+            return CreateAcks(this.DomainRecipients.AsMailAddresses(), reportingAgentName, textMessage, alwaysAck, notificationType);
         }
 
         /// <summary>
@@ -187,8 +190,9 @@ namespace Health.Direct.Agent
         /// <param name="reportingAgentName">The name of the MTA or MUA that is generating this ack</param>
         /// <param name="textMessage">Optional text message to accompany the Ack</param>
         /// <param name="alwaysAck">Generate acks even when none were requested</param>
+        /// <param name="notificationType">processed, dispatched or failed</param>
         /// <returns>An enumeration of NotificationMessage</returns>
-        public IEnumerable<NotificationMessage> CreateAcks(IEnumerable<MailAddress> senders, string reportingAgentName, string textMessage, bool alwaysAck)
+        public IEnumerable<NotificationMessage> CreateAcks(IEnumerable<MailAddress> senders, string reportingAgentName, string textMessage, bool alwaysAck, MDNStandard.NotificationType notificationType)
         {
             if (senders == null)
             {
@@ -221,10 +225,12 @@ namespace Health.Direct.Agent
             }
 
             return this.Message.CreateNotificationMessages(senders,
-                                                           sender => Notification.CreateAck(new ReportingUserAgent(sender.Host, reportingAgentName), textMessage)
+                                                           sender => Notification.CreateAck(new ReportingUserAgent(sender.Host, reportingAgentName), textMessage, notificationType)
                                                            );
 
         }
+
+
 
         internal byte[] GetEncryptedBytes(SMIMECryptographer cryptographer)
         {

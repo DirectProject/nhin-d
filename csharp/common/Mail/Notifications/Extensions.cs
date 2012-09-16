@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook	    jshook@kryptiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -37,6 +38,28 @@ namespace Health.Direct.Common.Mail.Notifications
         }
         
         /// <summary>
+        /// Tests if this message has requested MDN notification.
+        /// </summary>
+        /// <remarks>The received message may be tested to see if it has a message disposition notification
+        /// request, based on the <c>Disposition-Notification-To</c> header</remarks>
+        /// <param name="message">The message to test.</param>
+        /// <returns><c>true</c> if this message has requested disposition notification, <c>false</c> if not</returns>
+        public static bool HasDeliveryNotificationRequest(this Message message)
+        {
+            var optionsHeader = message.Headers.GetValue(MDNStandard.Headers.DispositionNotificationOptions);
+            if(string.IsNullOrEmpty(optionsHeader))
+            {
+                return false;
+            }
+            if (optionsHeader.Contains(MDNStandard.DispositionOption_TimelyAndReliable))
+            {
+                return true;
+            }
+            return false;
+        }
+        
+
+        /// <summary>
         /// Tests if this message IS an MDN
         /// </summary>
         /// <param name="message"></param>
@@ -45,7 +68,24 @@ namespace Health.Direct.Common.Mail.Notifications
         {
             return MDNStandard.IsReport(message);
         }
-        
+
+        /// <summary>
+        /// Returns true if the user agent should issue a notification of positive delivery for this message.
+        /// </summary>
+        /// <remarks>Tests the message to see if it has a message disposition notification
+        /// request, based on the <c>Disposition-Notification-Options</c> header and the
+        /// parameter <c>X-DIRECT-FINAL-DESTINATION-DELIVERY</c> with an importance of <c>optional</c>
+        /// and a value of <c>true</c> as per Implementation Guid for Delivery Notification in Direct, 1.3
+        /// Additionally, verifies that the message is NOT itself an MDN. As per RFC 3798, agents should never
+        /// issue an MDN in response to an MDN
+        /// </remarks>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static bool IsTimelyAndReliable(this Message message)
+        {
+            return (!message.IsMDN() && message.HasDeliveryNotificationRequest());
+        }
+
         /// <summary>
         /// Returns true if the user agent should issue a notification for this message.
         /// </summary>
@@ -182,6 +222,8 @@ namespace Health.Direct.Common.Mail.Notifications
                 }
             }
         }
+
+
 
         /// <summary>
         /// Provides the appropriate <c>Disposition</c> header value for the <paramref name="type"/>

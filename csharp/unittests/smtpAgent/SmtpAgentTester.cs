@@ -47,6 +47,18 @@ Content-Type: text/plain
 
 Yo. Wassup?", Guid.NewGuid());
 
+        public static string TestMessageTimelyAndReliable =
+            @"From: <toby@redmond.hsgincubator.com>
+To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
+Subject: Simple Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Disposition-Notification-Options: X-DIRECT-FINAL-DESTINATION-DELIVERY=optional,true
+Content-Type: text/plain
+
+Yo. Wassup?";
+
         public static string CrossDomainMessage =
             string.Format(
             @"From: <toby@redmond.hsgincubator.com>
@@ -187,6 +199,16 @@ Yo. Wassup?";
             string relativePath = Path.Combine("SmtpAgentTestFiles", fileName);
             relativePath = MakeFilePath(relativePath);
             return relativePath;
+        }
+
+        protected static Mdn BuildQueryMdn(CDO.Message message)
+        {
+            var messageEnvelope = new CDOSmtpMessage(message).GetEnvelope();
+            var notification = MDNParser.Parse(messageEnvelope.Message);
+            var originalMessageId = notification.OriginalMessageID;
+            string originalSender = messageEnvelope.Recipients[0].Address;
+            string originalRecipient = messageEnvelope.Sender.Address;
+            return new Mdn(originalMessageId, originalRecipient, originalSender);
         }
 
         protected static ConfigStore CreateConfigStore()
