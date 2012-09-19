@@ -79,16 +79,5 @@ namespace Health.Direct.SmtpAgent
                     });
             }
         }
-
-        
-        internal void SweepMdnTimouts(IncomingMessage message)
-        {
-            Debug.Assert(m_settings.HasMdnManager);
-
-            using (MdnMonitorClient client = m_settings.MdnMonitor.CreateMdnMonitorClient())
-            {
-                client.SweepTimouts();
-            }
-        }
     }
 }

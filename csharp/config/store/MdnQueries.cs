@@ -31,7 +31,17 @@ namespace Health.Direct.Config.Store
 
         private const string Sql_DeleteTimedOutMdns =
             "BEGIN TRAN DELETE From Mdns Where Timedout = 1 COMMIT TRAN ";
-       
+
+        private const string Sql_DeleteCompletedMdns =
+            @"  BEGIN TRAN 
+                    DELETE From Mdns 
+                    Where 
+                        Status = 'processed' AND NotifyDispatched = 0
+                    OR
+                        Status = 'dispatched'
+                COMMIT TRAN 
+            ";
+            
         private static readonly Func<ConfigDatabase, string, IQueryable<Mdn>> Mdn = CompiledQuery.Compile(
             (ConfigDatabase db, string mdnIdentifier) =>
             from mdn in db.Mdns
@@ -55,6 +65,7 @@ namespace Health.Direct.Config.Store
             (from mdn in db.Mdns
              where mdn.MdnProcessedDate < expiredLimit
              && mdn.Status == MdnStatus.Processed
+             && mdn.NotifyDispatched       //timely and reliable must have been requestd (X-DIRECT-FINAL-DESTINATION-DELIVERY)
              && mdn.Timedout == false
              orderby mdn.CreateDate descending 
              select mdn).Take(maxResults)
@@ -109,6 +120,11 @@ namespace Health.Direct.Config.Store
         public static void ExecDeleteTimedOut(this Table<Mdn> table)
         {
             table.Context.ExecuteCommand(Sql_DeleteTimedOutMdns);
+        }
+
+        public static void ExecDeleteDispositions(this Table<Mdn> table)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCompletedMdns);
         }
 
         public static void ExecDeleteAll(this Table<Mdn> table)

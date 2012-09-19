@@ -23,6 +23,16 @@ namespace Health.Direct.Config.Client.MonitorService {
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IMdnMonitor/UpdateConfigStoreFaultFault", Name="ConfigStoreFault")]
         void Update(Health.Direct.Config.Store.Mdn mdn);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessed", ReplyAction="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessedResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessedConfigStoreF" +
+            "aultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.Mdn[] GetExpiredProcessed(System.TimeSpan expiredLimit, int maxResults);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatched", ReplyAction="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatchedResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatchedConfigStore" +
+            "FaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.Mdn[] GetExpiredDispatched(System.TimeSpan expiredLimit, int maxResults);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimouts", ReplyAction="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsConfigStoreFaultFau" +
             "lt", Name="ConfigStoreFault")]
@@ -62,6 +72,14 @@ namespace Health.Direct.Config.Client.MonitorService {
         
         public void Update(Health.Direct.Config.Store.Mdn mdn) {
             base.Channel.Update(mdn);
+        }
+        
+        public Health.Direct.Config.Store.Mdn[] GetExpiredProcessed(System.TimeSpan expiredLimit, int maxResults) {
+            return base.Channel.GetExpiredProcessed(expiredLimit, maxResults);
+        }
+        
+        public Health.Direct.Config.Store.Mdn[] GetExpiredDispatched(System.TimeSpan expiredLimit, int maxResults) {
+            return base.Channel.GetExpiredDispatched(expiredLimit, maxResults);
         }
         
         public void SweepTimouts() {

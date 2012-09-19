@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="http://localhost:6692/MonitorService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+  <xs:import schemaLocation="http://localhost:6692/MonitorService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:element name="Start">
     <xs:complexType>
       <xs:sequence>
@@ -52,6 +53,36 @@
   <xs:element name="UpdateResponse">
     <xs:complexType>
       <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExpiredProcessed">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="expiredLimit" type="q2:duration" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExpiredProcessedResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetExpiredProcessedResult" nillable="true" type="tns:ArrayOfMdn" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExpiredDispatched">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="expiredLimit" type="q3:duration" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetExpiredDispatchedResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetExpiredDispatchedResult" nillable="true" type="tns:ArrayOfMdn" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="SweepTimouts">

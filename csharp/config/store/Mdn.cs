@@ -126,6 +126,10 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        [Column(Name = "Subject", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = false)]
+        public string SubjectValue { get; set; }
+
         [Column(Name = "Status", DbType = "varchar(9)", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Status
@@ -174,6 +178,8 @@ namespace Health.Direct.Config.Store
             get;
             set;
         }
+
+        
 
         internal void CopyFixed(Mdn source)
         {

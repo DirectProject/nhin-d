@@ -249,6 +249,7 @@
     <None Include="Service References\MonitorService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Mdn.datasource" />
     <None Include="Service References\MonitorService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
