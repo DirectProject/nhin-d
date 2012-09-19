@@ -363,45 +363,79 @@ namespace Health.Direct.Config.Store.Tests
                 string messageId = "945cc145-431c-4119-a8c6-7f557e52fd7d";
 
                 yield return
-                    BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null);
+                    BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, null);
 
-                // Processed
+                // Processed expired dispatch not requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
                     yield return
                         BuildMdn(Guid.NewGuid().ToString()
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
                         , "ProcessExpired@domain1.test.com"
-                        , null, null, DateTimeHelper.Now.AddMinutes(-10));
+                        , "To dispatch or not dispatch"
+                        , null
+                        , false
+                        , null
+                        , DateTimeHelper.Now.AddMinutes(-10));
                 }
 
-                // Dispatched
+                // Processed expired dispatch requested
+                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                {
+                    yield return
+                        BuildMdn(Guid.NewGuid().ToString()
+                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , "ProcessExpired@domain1.test.com"
+                        , "To dispatch or not dispatch"
+                        , null
+                        , true
+                        , null
+                        , DateTimeHelper.Now.AddMinutes(-10));
+                }
+
+                // Processed but no dispatch requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
                         yield return
                         BuildMdn(Guid.NewGuid().ToString()
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
                         , "ProcessExpired@domain2.test.com"
+                        , "To dispatch or not dispatch"
                         , MdnStatus.Processed
+                        , false
                         , DateTimeHelper.Now.AddMinutes(-10)    //Processed 10 minutes ago
                         , DateTimeHelper.Now.AddMinutes(-20));  //Original message 20 minute ago
                 }
 
+                // Processed and dispatch requested, 
+                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                {
+                    yield return
+                    BuildMdn(Guid.NewGuid().ToString()
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "ProcessExpired@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.Processed
+                    , true
+                    , DateTimeHelper.Now.AddMinutes(-10)    //Processed 10 minutes ago
+                    , DateTimeHelper.Now.AddMinutes(-20));  //Original message 20 minute ago
+                }
             }
         }
 
-        protected static Mdn BuildMdn(string messageId, string sender, string receiver, string status)
+        protected static Mdn BuildMdn(string messageId, string sender, string receiver, string subject, string status)
         {
             return new Mdn()
                        {
                            MessageId = messageId,
                            Recipient = receiver,
                            Sender = sender,
+                           SubjectValue = subject,
                            Status = status
                        };
         }
 
-        protected static Mdn BuildMdn(string messageId, string sender, string receiver, string status, DateTime? processedDate, DateTime createdDate)
+        protected static Mdn BuildMdn(string messageId, string sender, string receiver, string subject, string status, bool notifyDispatched, DateTime? processedDate, DateTime createdDate)
         {
             return new Mdn()
                        {
@@ -409,6 +443,8 @@ namespace Health.Direct.Config.Store.Tests
                            Recipient = receiver,
                            Sender = sender,
                            Status = status,
+                           SubjectValue = subject,
+                           NotifyDispatched = notifyDispatched,
                            MdnProcessedDate = processedDate,
                            CreateDate = createdDate
             };

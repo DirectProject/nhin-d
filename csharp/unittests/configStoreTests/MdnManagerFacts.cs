@@ -51,10 +51,12 @@ namespace Health.Direct.Config.Store.Tests
             target.RemoveAll();
             Assert.Equal(0, target.Count());
             string messageId = Guid.NewGuid().ToString();
-            Mdn mdn = BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null);
+            var mdn = BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", null);
 
             target.Start(new Mdn[]{mdn});
-            Assert.NotNull(target.Get(mdn.MdnIdentifier));
+            mdn = target.Get(mdn.MdnIdentifier);
+            Assert.NotNull(mdn);
+            Assert.Equal("To dispatch or not dispatch", mdn.SubjectValue);
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Health.Direct.Config.Store.Tests
             MdnManager target = CreateManager();
             InitMdnRecords();
             string messageId = Guid.NewGuid().ToString();
-            Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null);
+            Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", null);
             Assert.Contains("Cannot insert duplicate key"
                 , Assert.Throws<SqlException>(() => target.Start(new Mdn[] { mdn })).Message);
         }
@@ -79,7 +81,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             MdnManager target = CreateManager();
             InitMdnRecords();
-            Assert.Equal(21, target.Count());
+            Assert.Equal(41, target.Count());
             Assert.NotNull(target.Get("5F2C321259195D4A04E494FEAA15B4BD"));
         }
 
@@ -171,11 +173,11 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(5, mdns.Count());
 
             //timespan and max records set
-            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
-            Assert.Equal(10, mdns.Count());
+            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(20, mdns.Count());
 
             //timespan and max records set
-            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(11), 20);
+            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(11), 40);
             Assert.Equal(0, mdns.Count());
 
 
@@ -210,7 +212,7 @@ namespace Health.Direct.Config.Store.Tests
             target.Update(mdns);
 
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
-            Assert.Equal(8, mdns.Count());
+            Assert.Equal(18, mdns.Count());
 
             foreach (var mdn in mdns)
             {
@@ -354,6 +356,41 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(0, mdns.Count());
         }
 
-        
+        /// <summary>
+        ///A test for expired Mdn Dispatched Timer
+        ///</summary>
+        [Fact]
+        public void CleanProcessedAndDispatched()
+        {
+            MdnManager target = CreateManager();
+            InitMdnRecords();
+
+            //
+            // Ensure all test data is procesed or dispatched 
+            //
+            {
+                var mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(1), 100);
+                foreach (var mdn in mdns)
+                {
+                    mdn.Status = MdnStatus.Processed;
+                    target.Update(mdn);
+                }
+
+                mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100);
+                foreach (var mdn in mdns)
+                {
+                    mdn.Status = MdnStatus.Dispatched;
+                    target.Update(mdn);
+                }
+
+                Mdn mdnx = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
+                mdnx.Status = MdnStatus.Processed;
+                target.Update(mdnx);
+            }
+            Assert.Equal(41,target.Count());
+            target.RemoveDispositions();
+            Assert.Equal(0, target.Count());
+        }
+
     }
 }

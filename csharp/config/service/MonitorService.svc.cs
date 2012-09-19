@@ -46,6 +46,30 @@ namespace Health.Direct.Config.Service
            }
        }
 
+       public Mdn[] GetExpiredProcessed(TimeSpan expiredLimit, int maxResults)
+       {
+           try
+           {
+               return Store.Mdns.GetExpiredProcessed(expiredLimit, maxResults);
+           }
+           catch (Exception ex)
+           {
+               throw CreateFault("GetExpiredProcessed", ex);
+           }
+       }
+
+       public Mdn[] GetExpiredDispatched(TimeSpan expiredLimit, int maxResults)
+       {
+           try
+           {
+               return Store.Mdns.GetExpiredDispatched(expiredLimit, maxResults);
+           }
+           catch (Exception ex)
+           {
+               throw CreateFault("GetExpiredProcessed", ex);
+           }
+       }
+
        public void SweepTimouts()
        {
            try

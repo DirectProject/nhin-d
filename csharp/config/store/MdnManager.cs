@@ -86,6 +86,8 @@ namespace Health.Direct.Config.Store
                 db.SubmitChanges();
             }
         }
+               
+        
 
         public void Update(Mdn[] mdns)
         {
@@ -100,7 +102,7 @@ namespace Health.Direct.Config.Store
         }
 
         
-        void Update(ConfigDatabase db, Mdn mdn)
+        public void Update(ConfigDatabase db, Mdn mdn)
         {
             if (db == null)
             {
@@ -265,6 +267,24 @@ namespace Health.Direct.Config.Store
             db.Mdns.ExecDeleteTimedOut();
         }
 
+        public void RemoveDispositions()
+        {
+            using (ConfigDatabase db = Store.CreateContext())
+            {
+                RemoveDispositions(db);
+            }
+        }
+
+        public void RemoveDispositions(ConfigDatabase db)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            db.Mdns.ExecDeleteDispositions();
+        }
+
         public void RemoveAll(ConfigDatabase db)
         {
             db.Mdns.ExecDeleteAll();
@@ -295,6 +315,7 @@ namespace Health.Direct.Config.Store
         {
             return GetEnumerator();
         }
+
 
         
     }

@@ -25,6 +25,24 @@
   <wsdl:message name="IMdnMonitor_Update_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredProcessed_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredProcessed" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredProcessed_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredProcessedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredProcessed_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredDispatched_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredDispatched" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredDispatched_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredDispatchedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredDispatched_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IMdnMonitor_SweepTimouts_InputMessage">
     <wsdl:part name="parameters" element="tns:SweepTimouts" />
   </wsdl:message>
@@ -44,6 +62,16 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/Update" message="tns:IMdnMonitor_Update_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/UpdateResponse" message="tns:IMdnMonitor_Update_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/UpdateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_Update_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetExpiredProcessed">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessed" message="tns:IMdnMonitor_GetExpiredProcessed_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessedResponse" message="tns:IMdnMonitor_GetExpiredProcessed_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessedConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_GetExpiredProcessed_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetExpiredDispatched">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatched" message="tns:IMdnMonitor_GetExpiredDispatched_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatchedResponse" message="tns:IMdnMonitor_GetExpiredDispatched_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatchedConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_GetExpiredDispatched_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="SweepTimouts">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimouts" message="tns:IMdnMonitor_SweepTimouts_InputMessage" />
