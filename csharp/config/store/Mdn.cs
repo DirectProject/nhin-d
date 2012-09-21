@@ -65,7 +65,7 @@ namespace Health.Direct.Config.Store
                 if (MessageId == null || Recipient == null)
                 {
                     return null;
-                } 
+                }
                 var fieldsSb = new StringBuilder();
                 fieldsSb.Append(MessageId.ToLower()).Append(Recipient.ToLower());
 
@@ -179,7 +179,32 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        
+
+        internal void CopyTimeoutFixed(Mdn source)
+        {
+            Id = source.Id;
+            MessageId = source.MessageId;
+            Recipient = source.Recipient;
+            Sender = source.Sender;
+            NotifyDispatched = source.NotifyDispatched;
+            Status = source.Status;
+            MdnProcessedDate = source.MdnProcessedDate;
+            CreateDate = source.CreateDate;
+            UpdateDate = source.UpdateDate;
+        }
+        /// <summary>
+        /// Only copy those fields that are allowed to change in updates
+        /// </summary>
+        internal void ApplyTimeoutChanges(Mdn source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            Timedout = true;
+            Status = MdnStatus.Failed;
+        }
+
 
         internal void CopyFixed(Mdn source)
         {
@@ -191,6 +216,7 @@ namespace Health.Direct.Config.Store
             CreateDate = source.CreateDate;
             UpdateDate = source.UpdateDate;
         }
+
         /// <summary>
         /// Only copy those fields that are allowed to change in updates
         /// </summary>
@@ -200,11 +226,13 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("source");
             }
+
+
             if (string.Compare(original.Status, MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) != 0) //dispatched cannot be undone.
             {
                 Status = source.Status == null ? null : source.Status.ToLower();
             }
-            Timedout = source.Timedout;
+
             MdnProcessedDate = source.MdnProcessedDate;
             UpdateDate = DateTimeHelper.Now;
 

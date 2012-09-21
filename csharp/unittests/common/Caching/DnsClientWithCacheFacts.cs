@@ -27,7 +27,7 @@ namespace Health.Direct.Common.Tests.Caching
     public class DnsClientWithCacheFacts : TestingBase, IDisposable
     {
         // set this to true if dump statements are needed for debugging purposes
-        private const bool DumpIsEnabled = false;
+        private const bool DumpIsEnabled = true;
         DnsResponseCache m_cache;
         private readonly DnsClientWithCache m_client;
         private readonly DnsClient m_clientNoCache;
@@ -171,7 +171,7 @@ namespace Health.Direct.Common.Tests.Caching
         [Theory]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
-        [InlineData("www.google.com")]
+        //[InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         public void ResolveTXTEnsureInCache(string domain)
         {
@@ -194,7 +194,7 @@ namespace Health.Direct.Common.Tests.Caching
         [Theory]
         [InlineData("www.microsoft.com")]
         [InlineData("www.yahoo.com")]
-        [InlineData("www.google.com")]
+        //[InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         public void ResolvePTREnsureInCache(string domain)
         {

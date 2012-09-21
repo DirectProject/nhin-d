@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-
+using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 
 using Xunit;
@@ -835,6 +835,14 @@ namespace Health.Direct.Config.Store.Tests
                 //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
             return cert;
+        }
+
+
+
+        protected static DisposableX509Certificate2 GetDisposableTestCertFromPfx(long domainID, int subId)
+        {
+            var cert = GetCertificateFromTestCertPfx(domainID, subId);
+            return new DisposableX509Certificate2(cert.Data);
         }
 
         /// <summary>

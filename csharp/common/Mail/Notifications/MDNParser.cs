@@ -198,6 +198,7 @@ namespace Health.Direct.Common.Mail.Notifications
         
         /// <summary>
         /// Parse RFC 3798, Disposition types, 3.2.6.2, includes type (processed) mentioned in document but
+        /// (failed) added per Implementation Guide for Delivery Notification in Direct
         /// </summary>
         /// <param name="value">input text</param>
         /// <returns><see cref="MDNStandard.NotificationType"/> value</returns>
@@ -226,6 +227,11 @@ namespace Health.Direct.Common.Mail.Notifications
             if (MDNStandard.Equals(value, MDNStandard.Disposition_Deleted))
             {
                 return MDNStandard.NotificationType.Deleted;
+            }
+
+            if (MDNStandard.Equals(value, MDNStandard.Disposition_Failed))
+            {
+                return MDNStandard.NotificationType.Failed;
             }
 
             throw new MDNException(MDNError.InvalidNotificationType);

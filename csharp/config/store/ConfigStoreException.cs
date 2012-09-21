@@ -66,7 +66,13 @@ namespace Health.Direct.Config.Store
         AgentNameLength,
         InvalidAgentName,
         InvalidMdnIdentifier,
-        InvalidMdn
+        InvalidMdn,
+        DuplicateProcessedMdn,
+        DuplicateDispatchedMdn,
+        DuplicateFailedMdn,
+        MdnPreviouslyProcessed,
+        MdnUncorrelated,
+        MdnPreviouslyFailed
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>
