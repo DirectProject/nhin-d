@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.ServiceModel;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
@@ -342,12 +343,38 @@ namespace Health.Direct.SmtpAgent
                 //
                 this.PostProcessMessage(message, envelope);
             }
+            catch (FaultException<ConfigStoreFault> ex)
+            {
+                //
+                // Absorb Mdn type errors
+                //
+                if(IsMdnFault(ex))
+                {
+                    Logger.Info("Ignored MDN: {0}", ex.ToString());
+                }
+                else
+                {
+                    this.RejectMessage(message, isIncoming);
+                    Logger.Error("While processing message {0}", ex.ToString());
+                    throw;
+                }
+            }
             catch (Exception ex)
             {
                 this.RejectMessage(message, isIncoming);
                 Logger.Error("While processing message {0}", ex.ToString());
                 throw;
             }
+        }
+
+        private static bool IsMdnFault(FaultException<ConfigStoreFault> fe)
+        {
+            return fe.Detail.Error == ConfigStoreError.MdnPreviouslyProcessed 
+                   || fe.Detail.Error == ConfigStoreError.MdnPreviouslyFailed
+                   || fe.Detail.Error == ConfigStoreError.MdnUncorrelated 
+                   || fe.Detail.Error == ConfigStoreError.DuplicateDispatchedMdn
+                   || fe.Detail.Error == ConfigStoreError.DuplicateProcessedMdn
+                   || fe.Detail.Error == ConfigStoreError.DuplicateFailedMdn;
         }
 
         protected virtual void PreProcessMessage(ISmtpMessage message)
@@ -603,18 +630,7 @@ namespace Health.Direct.SmtpAgent
         {
             if (m_settings.HasMdnManager && message.Message.IsMDN())
             {
-                //
-                // It is normal for a mdn to arrive and fail to update
-                // if it is older than the expiration time period.
-                //
-                try
-                {
-                    m_monitorService.UpdateMdn(message);
-                }
-                catch(Exception ex)
-                {
-                    Logger.Debug("While updating mdn monitor {0}", ex.ToString());
-                }
+                m_monitorService.UpdateMdn(message);
             }
         }
 

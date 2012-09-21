@@ -78,6 +78,46 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        public void TimeOut(Mdn mdn)
+        {
+            using (ConfigDatabase db = Store.CreateContext())
+            {
+                TimeOut(db, mdn);
+                db.SubmitChanges();
+            }
+        }
+
+        public void TimeOut(Mdn[] mdns)
+        {
+            using (ConfigDatabase db = Store.CreateContext())
+            {
+                foreach (var mdn in mdns)
+                {
+                    TimeOut(db, mdn);
+                }
+                db.SubmitChanges();
+            }
+        }
+
+        public void TimeOut(ConfigDatabase db, Mdn mdn)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            if (mdn == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
+            }
+
+            
+            var update = new Mdn();
+            update.CopyTimeoutFixed(mdn);
+            db.Mdns.Attach(update);
+            update.ApplyTimeoutChanges(mdn);
+        }
+
         public void Update(Mdn mdn)
         {
             using (ConfigDatabase db = Store.CreateContext())
@@ -87,8 +127,6 @@ namespace Health.Direct.Config.Store
             }
         }
                
-        
-
         public void Update(Mdn[] mdns)
         {
             using (ConfigDatabase db = Store.CreateContext())
@@ -100,7 +138,6 @@ namespace Health.Direct.Config.Store
                 db.SubmitChanges();
             }
         }
-
         
         public void Update(ConfigDatabase db, Mdn mdn)
         {
@@ -115,18 +152,78 @@ namespace Health.Direct.Config.Store
             }
 
             Mdn original = Get(db, mdn.MdnIdentifier);
+            
+            ValidateUpdate(mdn, original);
 
             var update = new Mdn();
             update.CopyFixed(mdn);
             db.Mdns.Attach(update);
             
-            if(original.Timedout)
-            {
-                return;  //Message is timed out...
-            }
             update.ApplyChanges(mdn, original);
         }
-        
+
+        private static void ValidateUpdate(Mdn mdn, Mdn original)
+        {
+            if (original == null)
+            {
+                //
+                // It is normal to not find the original.
+                // Delayed processed, dispatched or faild mdns that have completed via timeouts
+                // and cleaned up will not be correlated.  Nonetheless the pattern is to throw a ConfigStoreException
+                //
+                throw new ConfigStoreException(ConfigStoreError.MdnUncorrelated);
+            }
+
+            if (original.Timedout)
+            {
+                //
+                // Message failed MDN previously sent
+                //
+                throw new ConfigStoreException(ConfigStoreError.MdnPreviouslyFailed);
+            }
+
+            if(original.Status == null)
+            {
+                return;
+            }
+
+            if(original.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase) && mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
+            {
+                //
+                // Duplicate processed MDN
+                //
+                throw new ConfigStoreException(ConfigStoreError.DuplicateProcessedMdn);
+            }
+
+            if (original.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase) && mdn.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase))
+            {
+                //
+                // Duplicate failed MDN
+                //
+                throw new ConfigStoreException(ConfigStoreError.DuplicateFailedMdn);
+            }
+
+            if (original.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) && mdn.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase))
+            {
+                //
+                // Duplicate Dispatched MDN
+                //
+                throw new ConfigStoreException(ConfigStoreError.DuplicateDispatchedMdn);
+            }
+
+            if (original.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) 
+                && mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase)
+                && mdn.MdnProcessedDate != null)  //Processed can arrive late and update its time stamp unless we are timed out..
+            {
+                //
+                // Dispatched MDN already sent
+                //
+                throw new ConfigStoreException(ConfigStoreError.MdnPreviouslyProcessed);
+            }
+
+            
+        }
+
 
         public int Count()
         {

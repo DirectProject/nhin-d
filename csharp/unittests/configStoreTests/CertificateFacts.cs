@@ -4,7 +4,8 @@
 
  Authors:
     Chris Lomonico  chris.lomonico@surescripts.com
-  
+    Joe Shook       jshook@krytiq.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -234,12 +235,13 @@ namespace Health.Direct.Config.Store.Tests
             {
                 for (int t = 1; t <= MAXCERTPEROWNER; t++)
                 {
-                    expected.Add(GetTestCertFromPfx(i + 1,t));
+                    expected.Add(GetDisposableTestCertFromPfx(i + 1, t));
                     certs.Add(GetCertificateFromTestCertPfx(i + 1, t));
                 }
             }
 
             X509Certificate2Collection actual = Certificate.ToX509Collection(certs.ToArray());
+
             Assert.Equal(expected, actual);
             
             Assert.DoesNotThrow(() => actual.Close(true));
@@ -252,7 +254,7 @@ namespace Health.Direct.Config.Store.Tests
         [PropertyData("TestCertificates")]
         public void ToX509CertificateTest(Certificate target)
         {
-            X509Certificate2 expected = new X509Certificate2(target.ToX509Certificate().GetRawCertData());
+            X509Certificate2 expected = new DisposableX509Certificate2(target.ToX509Certificate().GetRawCertData());
             X509Certificate2 actual = target.ToX509Certificate();
             Assert.Equal(expected, actual);
             
@@ -273,7 +275,8 @@ namespace Health.Direct.Config.Store.Tests
         [PropertyData("TestCertificates")]
         public void ToPublicX509CertificateTest(Certificate target)
         {
-            X509Certificate2 cert = target.ToX509CertificateNoKeys();
+            target.ExcludePrivateKey();
+            X509Certificate2 cert = target.ToX509Certificate();
             Assert.False(cert.HasPrivateKey);            
         }
 

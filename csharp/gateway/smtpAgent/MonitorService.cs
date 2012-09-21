@@ -45,7 +45,7 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        
+        // extract into MdnMonitorParser
         private static List<Mdn> CreateMdnStarts(OutgoingMessage message)
         {
             return message.Recipients.Select(
@@ -70,7 +70,7 @@ namespace Health.Direct.SmtpAgent
                 var originalRecipient = message.Sender.Address;
 
                 client.Update(
-                    new Mdn
+                    new Mdn // extract into MdnMonitorParser
                         {
                             MessageId = originalMessageId,
                             Recipient = originalRecipient,

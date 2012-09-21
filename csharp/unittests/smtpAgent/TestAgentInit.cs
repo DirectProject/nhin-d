@@ -13,8 +13,10 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Xunit;
 using Xunit.Extensions;
 using Health.Direct.Common.Container;
@@ -36,6 +38,7 @@ namespace Health.Direct.SmtpAgent.Tests
             m_handler = new MessageArrivalEventHandler();
         }
 
+        
         public static IEnumerable<object[]> ConfigFileNames
         {
             get
@@ -59,17 +62,15 @@ namespace Health.Direct.SmtpAgent.Tests
             m_handler.InitFromConfigFile(Fullpath(fileName));
         }
 
-        
-
         [Fact]
         public void TestContainer()
         {
             SmtpAgentSettings settings = null;
-
             Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath("TestPlugin.xml")));
             Assert.NotNull(settings.Container);
             Assert.True(settings.Container.HasComponents);
 
+            ResetSmtpAgentFactory();
             SmtpAgent agent = SmtpAgentFactory.Create(Fullpath("TestPlugin.xml"));
 
             ILogFactory logFactory = null;
@@ -79,7 +80,19 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.DoesNotThrow(() => auditor = IoC.Resolve<IAuditor>());
             Assert.True(auditor is DummyAuditor);
         }
-        
+
+        //
+        // Use reflection to uninitialize the factory.
+        // Do not publicly expose this reset feature as SmtpAgentFactory is correct as designed.
+        // But our tests need to reload the singleton in process.
+        //
+        private void ResetSmtpAgentFactory()
+        {
+            var initialized = typeof(SmtpAgentFactory).GetField("m_initialized", BindingFlags.NonPublic | BindingFlags.Static);
+            initialized.SetValue(null, false);
+        }
+
+
         [Theory]
         [PropertyData("ConfigFiles")]
         public void TestLoadConfig(string fileName)

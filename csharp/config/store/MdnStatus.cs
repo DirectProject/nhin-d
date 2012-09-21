@@ -24,5 +24,6 @@ namespace Health.Direct.Config.Store
         public const string Dispatched = "dispatched";
         public const string Deleted = "deleted";
         public const string Displayed = "displayed";
+        public const string Failed = "failed";
     }
 }
