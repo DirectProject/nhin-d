@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
@@ -67,6 +68,9 @@ public class Notification
     private String originalMsgId;
     private String finalRecipient;
     private String error;
+    private String warning;  
+    private String failure;        
+    private Collection<String> extensions;     
     
     private MimeMultipartReport report;
     
@@ -113,7 +117,10 @@ public class Notification
     						this.finalRecipient != null ? finalRecipient : "", 
     						this.originalMsgId != null ? this.originalMsgId : "", 
     						this.error != null ? this.error : "", 
-    						gateway, disposition);
+    						gateway, disposition, 
+    						this.warning != null ? this.warning : "",
+    						this.failure != null ? this.failure : "",
+    						this.extensions != null	? extensions : new ArrayList<String>());
     		
         	report.getBodyPart(1).setHeader(MailStandard.Headers.ContentType, MDNStandard.MediaType.DispositionNotification);        	
     	}
@@ -263,6 +270,69 @@ public class Notification
 	   this.error = error;
 	   updateReport();
 	}
+	
+	/**
+	 * Sets the value of the warning header.
+	 * @param warning The value of the warning header.
+	 */
+	public void setWarning(String warning)
+	{
+		this.warning = warning;
+		updateReport();
+	}
+	
+	/**
+	 * Gets the value of the warning header.
+	 * @return The value of the warning header.
+	 */
+	public String getWarning()
+	{
+		return this.warning;
+	}
+	
+	/**
+	 * Sets the value of the failure header.
+	 * @param failure The value of the failure header.
+	 */
+	public void setFailure(String failure)
+	{
+		this.failure = failure;
+		updateReport();
+	}
+	
+	/**
+	 * Gets the value of the failure header.
+	 * @return The value of the failure header.
+	 */
+	public String getFailure()
+	{
+		return this.failure;
+	}
+	
+	
+	/**
+	 * Sets the list of extension fields.  Extension fields can either just be an extension name or a name with a 
+	 * value where the name and value are separated by a ":" character.
+	 * @param failure List of exentension values.
+	 */
+	public void setExtensions(Collection<String> extensions)
+	{
+		this.extensions = new ArrayList<String>(extensions);
+		updateReport();
+	}
+	
+	/**
+	 * Gets the list of extension values
+	 * @return The list of extension values
+	 */
+	public Collection<String> getExtensions()
+	{
+		if (extensions == null)
+			return Collections.emptyList();
+		
+		return Collections.unmodifiableCollection(extensions);
+	}
+	
 	
 	/**
 	 * Returns a collection of body parts of the multipart report for this notification.

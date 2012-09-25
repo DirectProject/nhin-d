@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{2.0.2}
+
+    Changes included with release 2.0.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=191}191}}: Fixed issue where extension field could not be set on an MDN report.
+
 {2.0.1}
 
     Changes included with release 2.0.1

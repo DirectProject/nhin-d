@@ -166,8 +166,6 @@ public class DirectXdMailet extends AbstractNotificationAwareMailet
 	        					{
 	        						try
 	        						{
-	        							message.setHeader(MDNStandard.Headers.DispositionNotificationOptions, RELIABLE_DELIVERY_OPTION);
-	        							message.saveChanges();
 	        							getMailetContext().sendMail(message);
 	        						}
 	        						catch (Throwable t)

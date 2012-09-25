@@ -2,6 +2,7 @@ package org.nhindirect.stagent.mail.notifications;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.mail.BodyPart;
 import javax.mail.internet.InternetHeaders;
@@ -329,4 +330,96 @@ public class NotificationTest extends TestCase
 		
 				
 	}
+	
+	public void testWarning_AssertWarning() throws Exception
+	{
+		Notification noti = new Notification(NotificationType.Processed);
+		
+		MimeMultipart mm = noti.getAsMultipart();
+		
+		assertNotNull(mm);
+		assertEquals(2, mm.getCount());
+		
+		BodyPart part = mm.getBodyPart(1);
+		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+		InternetHeaders headers = noti.getNotificationFieldsAsHeaders();
+		assertNull(headers.getHeader(MDNStandard.Headers.FinalRecipient));
+		
+		// set a new gateway
+
+		noti.setWarning("junit warning");
+		mm = noti.getAsMultipart();
+		
+		assertNotNull(mm);
+		assertEquals(2, mm.getCount());
+		
+		part = mm.getBodyPart(1);
+		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+		headers = noti.getNotificationFieldsAsHeaders();
+		assertNotNull(headers.getHeader(MDNStandard.Headers.Warning));
+		assertEquals("junit warning", headers.getHeader(MDNStandard.Headers.Warning, ","));
+		
+	}		
+	
+	public void testFailure_AssertFailure() throws Exception
+	{
+		Notification noti = new Notification(NotificationType.Processed);
+		
+		MimeMultipart mm = noti.getAsMultipart();
+		
+		assertNotNull(mm);
+		assertEquals(2, mm.getCount());
+		
+		BodyPart part = mm.getBodyPart(1);
+		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+		InternetHeaders headers = noti.getNotificationFieldsAsHeaders();
+		assertNull(headers.getHeader(MDNStandard.Headers.FinalRecipient));
+		
+		// set a new gateway
+
+		noti.setFailure("junit failure");
+		mm = noti.getAsMultipart();
+		
+		assertNotNull(mm);
+		assertEquals(2, mm.getCount());
+		
+		part = mm.getBodyPart(1);
+		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+		headers = noti.getNotificationFieldsAsHeaders();
+		assertNotNull(headers.getHeader(MDNStandard.Headers.Failure));
+		assertEquals("junit failure", headers.getHeader(MDNStandard.Headers.Failure, ","));
+		
+	}		
+	
+	public void testExtensions_AssertExtensions() throws Exception
+	{
+		Notification noti = new Notification(NotificationType.Processed);
+		
+		MimeMultipart mm = noti.getAsMultipart();
+		
+		assertNotNull(mm);
+		assertEquals(2, mm.getCount());
+		
+		BodyPart part = mm.getBodyPart(1);
+		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+		InternetHeaders headers = noti.getNotificationFieldsAsHeaders();
+		assertNull(headers.getHeader(MDNStandard.Headers.FinalRecipient));
+		
+		// set a new gateway
+
+		noti.setExtensions(Arrays.asList("X-TEST1", "X-TEST2:value"));
+		mm = noti.getAsMultipart();
+		
+		assertNotNull(mm);
+		assertEquals(2, mm.getCount());
+		
+		part = mm.getBodyPart(1);
+		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+		headers = noti.getNotificationFieldsAsHeaders();
+		assertNotNull(headers.getHeader("X-TEST1"));
+		assertEquals("", headers.getHeader("X-TEST1", ","));
+	
+		assertNotNull(headers.getHeader("X-TEST2"));
+		assertEquals("value", headers.getHeader("X-TEST2", ","));		
+	}	
 }

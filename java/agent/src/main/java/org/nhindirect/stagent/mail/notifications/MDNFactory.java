@@ -23,6 +23,7 @@ package org.nhindirect.stagent.mail.notifications;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collection;
 
 import javax.activation.DataHandler;
 import javax.mail.MessagingException;
@@ -60,6 +61,9 @@ public class MDNFactory
      * @param final_recipient
      * @param original_message_id
      * @param disposition
+     * @param warning
+     * @param failure
+     * @param extensions
      * @return MimeMultipartReport
      * @throws MessagingException
      */
@@ -71,9 +75,13 @@ public class MDNFactory
             String original_message_id,
             String error,
             MdnGateway gateway, 
-            Disposition disposition) throws MessagingException
+            Disposition disposition,
+            String warning,
+            String failure,
+            Collection<String> extensions) throws MessagingException
     {
-        
+    	
+    	
     	if (disposition == null)
     		throw new IllegalArgumentException("Disposition can not be null.");
     	
@@ -136,7 +144,36 @@ public class MDNFactory
         	mdnReport.append("Error: ");
         	mdnReport.append(error);
         	mdnReport.append("\r\n");
+        }  
+        
+        // 7) warning-field
+        if (warning != null && !warning.isEmpty())
+        {        
+        	mdnReport.append("Warning: ");
+        	mdnReport.append(warning);
+        	mdnReport.append("\r\n");
+        }  
+       
+        // 8) failure-field
+        if (failure != null && !failure.isEmpty())
+        {        
+        	mdnReport.append("Failure: ");
+        	mdnReport.append(failure);
+        	mdnReport.append("\r\n");
         }          
+        
+        // 8) extension-fields
+        if (extensions != null && !extensions.isEmpty())
+        {        
+        	for (String extension: extensions)
+        	{
+        		if (!extension.isEmpty())
+        		{
+		        	mdnReport.append(extension + (extension.contains(":") ? "" : ": "));
+		        	mdnReport.append("\r\n");
+        		}
+        	}
+        }    
         
         mdnReport.append(disposition.toString());
         mdnReport.append("\r\n");
@@ -157,6 +194,35 @@ public class MDNFactory
         // includes only the RFC 822 headers of the failed message. This is
         // described in RFC 1892. It would be a useful addition!        
         return multiPart;
+    }
+    
+    /**
+     * Answers a MimeMultipartReport containing a
+     * Message Delivery Notification as specified by RFC 2298.
+     * 
+     * @param humanText
+     * @param reporting_UA_name
+     * @param reporting_UA_product
+     * @param original_recipient
+     * @param final_recipient
+     * @param original_message_id
+     * @param disposition
+     * @return MimeMultipartReport
+     * @throws MessagingException
+     */
+    static public MimeMultipartReport create(String humanText,
+            String reporting_UA_name,
+            String reporting_UA_product,
+            String original_recipient,
+            String final_recipient,
+            String original_message_id,
+            String error,
+            MdnGateway gateway, 
+            Disposition disposition) throws MessagingException
+    {
+        return create(humanText, reporting_UA_name, reporting_UA_name, original_recipient, final_recipient,
+    			original_message_id, error, gateway, disposition, null, null, null);
+
     }
 
 }

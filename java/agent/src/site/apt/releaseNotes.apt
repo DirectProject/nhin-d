@@ -6,6 +6,21 @@
         Greg Meyer
         ---
 
+{1.5.1}
+
+    Changes included with release 1.5.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=191}191}}: Fixed issue where extension field could not be set on an MDN report.
+
+
 {1.5}
 
     Changes included with release 1.5

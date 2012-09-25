@@ -238,6 +238,22 @@ public class DefaultTxDetailParser implements TxDetailParser
 					if (!origMsgId.isEmpty())
 						retVal.put(TxDetailType.PARENT_MSG_ID.getType(), new TxDetail(TxDetailType.PARENT_MSG_ID.getType(), origMsgId));
 					
+					// check for X-DIRECT-FINAL-DESTINATION-DELIVER extension
+					try
+					{
+						final InternetHeaders mdnHeaders = MDNStandard.getNotificationFieldsAsHeaders(msg);
+						if (mdnHeaders.getHeader(MDNStandard.DispositionOption_TimelyAndReliable, ",") != null)
+						{
+							retVal.put(TxDetailType.DISPOSITION_OPTIONS.getType(), 
+									new TxDetail(TxDetailType.DISPOSITION_OPTIONS.getType(), MDNStandard.DispositionOption_TimelyAndReliable));	
+						}
+					}
+					// CLOVER:OFF
+					catch (Exception e)
+					{
+						LOGGER.warn("Failed to retrieve MDN headers from message.  Message may not be an MDN message.", e);
+					}
+					// CLOVER:ON
 					break;
 				}
 				case DSN:
