@@ -51,13 +51,13 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>direct-msg-monitor</artifactId>
-			<version>1.1.2-SNAPSHOT</version>
+			<version>1.1.2</version>
 	        <scope>compile</scope>			
 		</dependency> 		  
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>direct-common</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.1.1</version>
 	        <scope>compile</scope>			
 		</dependency>      
 		<dependency>
