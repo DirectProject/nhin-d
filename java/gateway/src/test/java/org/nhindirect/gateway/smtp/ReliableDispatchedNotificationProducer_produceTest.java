@@ -5,18 +5,21 @@ import java.util.Collection;
 import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.mailet.Mail;
+import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.gateway.smtp.james.mailet.AbstractNotificationAwareMailet;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.Message;
+import org.nhindirect.stagent.mail.notifications.Notification;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 
 public class ReliableDispatchedNotificationProducer_produceTest extends TestCase
@@ -65,6 +68,15 @@ public class ReliableDispatchedNotificationProducer_produceTest extends TestCase
 				prod.produce(new Message(msg), recipients.toInternetAddressCollection());
 		
 		assertNotNull(notifications);
+		
+		for (NotificationMessage noteMsg : notifications)
+		{
+			// assert that we removed the notification option from the headers as part of the fix of 
+			// version 1.5.1
+			assertNull(noteMsg.getHeader(MDNStandard.Headers.DispositionNotificationOptions, ","));
+			final InternetHeaders headers = Notification.getNotificationFieldsAsHeaders(noteMsg);
+			assertEquals("", headers.getHeader(MDNStandard.DispositionOption_TimelyAndReliable, ","));
+		}
 		
 	}	
 	

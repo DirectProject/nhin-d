@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Matchers.any;
 
+import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
@@ -127,10 +128,11 @@ public class TimelyAndReliableLocalDelivery_serviceTest extends TestCase
 				MimeMessage msg = context.getSentMessages().iterator().next().getMessage();
 				
 				assertEquals(TxMessageType.MDN, TxUtil.getMessageType(msg));
-				assertTrue(MailStandard.getHeader(msg, MDNStandard.Headers.DispositionNotificationOptions).
-						contains(MDNStandard.DispositionOption_TimelyAndReliable));	
 				
 				assertTrue(MDNStandard.getMDNField(msg, MDNStandard.Headers.Disposition).contains(MDNStandard.Disposition_Dispatched));
+				
+				final InternetHeaders headers = MDNStandard.getNotificationFieldsAsHeaders(msg);
+				assertEquals("", headers.getHeader(MDNStandard.DispositionOption_TimelyAndReliable, ","));
 				
 			}			
 		}.perform();

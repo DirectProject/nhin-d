@@ -21,8 +21,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+import java.util.Arrays;
+
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.mail.notifications.Notification;
 import org.nhindirect.stagent.mail.notifications.NotificationType;
@@ -55,7 +58,8 @@ public class ReliableDispatchedNotificationProducer extends NotificationProducer
             notification.setExplanation(settings.getText());
         }
                 
-        notification.setReportingAgent(new ReportingUserAgent(NHINDAddress.getHost(address), settings.getProductName()));            
+        notification.setReportingAgent(new ReportingUserAgent(NHINDAddress.getHost(address), settings.getProductName()));        
+        notification.setExtensions(Arrays.asList(MDNStandard.DispositionOption_TimelyAndReliable));
         return notification;
     }
 }

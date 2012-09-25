@@ -187,6 +187,7 @@ public class MDNStandard
     
     /**
      * Direct specific dispostion options for requesting timely and reliable messaging.
+     * Also used as the MDN report extension field for indicating an MDN in response to a timely and reliable request.
      */
     public static final String DispositionOption_TimelyAndReliable = "X-DIRECT-FINAL-DESTINATION-DELIVERY";
     

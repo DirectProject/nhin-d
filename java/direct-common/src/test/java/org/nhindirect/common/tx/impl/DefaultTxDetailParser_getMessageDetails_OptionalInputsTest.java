@@ -2,6 +2,7 @@ package org.nhindirect.common.tx.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 import java.io.InputStream;
 import java.util.Locale;
@@ -98,4 +99,44 @@ public class DefaultTxDetailParser_getMessageDetails_OptionalInputsTest
 			IOUtils.closeQuietly(inStream);
 		}
 	}
+	
+	@Test
+	public void testGetMessageDetails_getReportExtension_dispostionOption() throws Exception
+	{	
+		final MimeMessage msg = TestUtils.readMimeMessageFromFile("MDNDispatchedTimeAndReliable.txt");
+		
+		final DefaultTxDetailParser parser = new DefaultTxDetailParser();
+		
+		final Map<String, TxDetail> details = parser.getMessageDetails(msg);
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.MessageID),
+				details.get(TxDetailType.MSG_ID.getType()).getDetailValue());
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
+				details.get(TxDetailType.FROM.getType()).getDetailValue());
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.To).toLowerCase(Locale.getDefault()),
+				details.get(TxDetailType.RECIPIENTS.getType()).getDetailValue());
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.Subject),
+				details.get(TxDetailType.SUBJECT.getType()).getDetailValue());
+		
+		assertEquals("X-DIRECT-FINAL-DESTINATION-DELIVERY",
+				details.get(TxDetailType.DISPOSITION_OPTIONS.getType()).getDetailValue());
+
+	}	
+	
+	@Test
+	public void testGetMessageDetails_getReportExtension_noDispostionOption() throws Exception
+	{	
+		final MimeMessage msg = TestUtils.readMimeMessageFromFile("MDNMessage.txt");
+		
+		final DefaultTxDetailParser parser = new DefaultTxDetailParser();
+		
+		final Map<String, TxDetail> details = parser.getMessageDetails(msg);
+		
+		
+		assertNull("X-DIRECT-FINAL-DESTINATION-DELIVERY", details.get(TxDetailType.DISPOSITION_OPTIONS.getType()));
+
+	}	
 }

@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.Mailet;
 import org.apache.mailet.MailetConfig;
-import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxMessageType;
@@ -61,8 +60,6 @@ import com.google.inject.Provider;
 public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMailet
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(TimelyAndReliableLocalDelivery.class);	
-	
-	protected static final String RELIABLE_DELIVERY_OPTION = MDNStandard.DispositionOption_TimelyAndReliable + "=optional,true";
 
 	/*
 	 * Annotated resources are used for James 3 LocalDelivery mailet support
@@ -217,7 +214,6 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 					{
 						try
 						{
-							message.setHeader(MDNStandard.Headers.DispositionNotificationOptions, RELIABLE_DELIVERY_OPTION);
 							message.saveChanges();
 							getMailetContext().sendMail(message);
 						}

@@ -36,4 +36,7 @@ public class NotificationMessage_createNotificationForTest extends TestCase
 		
 		assertTrue(notiMsg.getHeader(MailStandard.Headers.Subject, ",").startsWith("Dispatched"));
 	}
+	
+	
+	
 }
