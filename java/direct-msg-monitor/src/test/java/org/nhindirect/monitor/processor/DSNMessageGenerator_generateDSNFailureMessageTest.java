@@ -5,11 +5,15 @@ import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,7 +23,11 @@ import javax.mail.internet.MimeMessage;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultExchange;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.type.TypeFactory;
 import org.junit.Test;
 import org.nhindirect.common.mail.MailStandard;
 import org.nhindirect.common.mail.dsn.DSNFailureTextBodyPartGenerator;
@@ -208,5 +216,34 @@ public class DSNMessageGenerator_generateDSNFailureMessageTest
 	    MimeMessage dsnMessage = (MimeMessage)exchange.getIn().getBody();
 	    assertNull(dsnMessage);
 		   
+	}
+	
+	@Test
+	public void testGenerateDSNFailureMessage_fromJson_incomingAndCompleteRecips() throws Exception
+	{
+		Exchange exchange = new DefaultExchange(mock(CamelContext.class));
+		
+		final String json = FileUtils.readFileToString(new File("./src/test/resources/json/multiRecipEmailSingleDNSAndMDN.json"));
+		
+        final ObjectMapper jsonMapper = new ObjectMapper();
+        jsonMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+		
+    	List<Tx> txs = jsonMapper.readValue(json,
+                TypeFactory.collectionType(ArrayList.class, Tx.class));
+        
+		DSNMessageGenerator generator = createGenerator();
+	    generator.generateDSNFailureMessage(txs, exchange);
+	    
+	    MimeMessage dsnMessage = (MimeMessage)exchange.getIn().getBody();
+	    assertNotNull(dsnMessage);
+		   
+	    
+	    ByteArrayOutputStream oStr = new ByteArrayOutputStream();
+	    dsnMessage.writeTo(oStr);
+	    
+	    final String dsnStr = new String(oStr.toByteArray());
+	    
+	    assertTrue(dsnStr.contains("gm2552@direct.securehealthemail.com"));
+	    assertFalse(dsnStr.contains("test@aol.com"));
 	}
 }

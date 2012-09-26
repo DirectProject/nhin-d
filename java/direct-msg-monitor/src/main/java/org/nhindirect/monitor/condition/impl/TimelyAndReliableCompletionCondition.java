@@ -75,7 +75,7 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 		// add the original recipient list to a map of recipients to status
 		final Map<String, RecipientResponseStatus> recipStatuses = new HashMap<String, RecipientResponseStatus>();
 		for (String recip : originalRecipDetail.getDetailValue().split(","))
-			recipStatuses.put(recip, new RecipientResponseStatus(recip));
+			recipStatuses.put(recip.trim(), new RecipientResponseStatus(recip.trim()));
 		
 		
 		for (Tx tx : txs)
@@ -91,7 +91,7 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 				   {
 					   // an MDN is sent per original message recipient, so we should only be able
 					   // to extract one original recipient from this message
-					   final RecipientResponseStatus recipStatus = recipStatuses.get(normalizeFinalRecip(finalRecipDetail.getDetailValue()));
+					   final RecipientResponseStatus recipStatus = recipStatuses.get(normalizeFinalRecip(finalRecipDetail.getDetailValue().trim()));
 					   final TxDetail dispDetail = tx.getDetail(TxDetailType.DISPOSITION);
 					   if (dispDetail != null && recipStatus != null)
 					   {	
@@ -126,7 +126,7 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 							   // there can be multiple final recipients in a DNS message
 							   for (String finalRecip : finalRecipDetail.getDetailValue().split(","))
 							   {
-								   final RecipientResponseStatus recipStatus = recipStatuses.get(normalizeFinalRecip(finalRecip));
+								   final RecipientResponseStatus recipStatus = recipStatuses.get(normalizeFinalRecip(finalRecip.trim()));
 								   if (recipStatus != null)
 									   recipStatus.addReceivedStatus(RecipientResponseStatus.DSNFailedReceived);
 							   }
