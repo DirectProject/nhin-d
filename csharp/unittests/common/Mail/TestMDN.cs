@@ -133,6 +133,7 @@ namespace Health.Direct.Common.Tests.Mail
             Notification notification = this.CreateDispatchedNotification();
             NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
 
+            Console.WriteLine(notificationMessage);
             Assert.True(notificationMessage.IsMDN());
             Assert.False(notificationMessage.ShouldIssueNotification());
 

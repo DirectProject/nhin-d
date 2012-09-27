@@ -94,10 +94,18 @@ namespace Health.Direct.Common.Mail.Notifications
             /// </summary>
             Dispatched,
             /// <summary>
-            /// Indicates message has failed.
-            /// Added per Implementation Guide for Delivery Notification in Direct
+            /// Indicates message was denied.
+            /// </summary>
+            Denied,
+            /// <summary>
+            /// Indicates message was errored.
+            /// </summary>
+            Error,
+            /// <summary>
+            /// Indicates message was failed.
             /// </summary>
             Failed
+            
         }
         
         /// <summary>
@@ -235,6 +243,8 @@ namespace Health.Direct.Common.Mail.Notifications
         internal const string Send_Automatic = "MDN-sent-automatically";
         internal const string Disposition_Displayed = "displayed";
         internal const string Disposition_Dispatched = "dispatched";
+        internal const string Disposition_Denied = "denied";
+        internal const string Disposition_Error = "error";
         internal const string Disposition_Failed = "failed";
         internal const string Disposition_Processed = "processed";
         internal const string Disposition_Deleted = "deleted";
@@ -367,6 +377,7 @@ namespace Health.Direct.Common.Mail.Notifications
                 case NotificationType.Failed:
                     return Disposition_Failed;
 
+                
             }
         }
     }

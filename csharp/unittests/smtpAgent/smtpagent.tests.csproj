@@ -68,7 +68,8 @@
     <Compile Include="TestNotifications.cs" />
     <Compile Include="TestRouter.cs" />
     <Compile Include="TestSmtpAgent.cs" />
-    <Compile Include="TestSmtpAgentMdns.cs" />
+    <Compile Include="TestSmtpAgentDSNs.cs" />
+    <Compile Include="TestSmtpAgentMDNs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SmtpAgentTestFiles\TestDomainTenancyConfig.xml">

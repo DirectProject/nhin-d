@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using Health.Direct.Common.Mail.DSN;
 
 namespace Health.Direct.Common.Mail.Notifications
 {
@@ -132,6 +133,10 @@ namespace Health.Direct.Common.Mail.Notifications
             if (message.IsMDN())
             {
                 throw new MDNException(MDNError.CannotSendMDNForMDN);
+            }
+            if (message.IsDSN())
+            {
+                throw new DSNException(DSNError.CannotSendDSNForMDN);
             }
 
             string notificationTo = message.Headers.GetValue(MailStandard.Headers.Sender);

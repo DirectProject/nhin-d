@@ -13,6 +13,7 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System.IO;
 using System.Net.Mime;
 using System.Collections.Generic;
 
@@ -92,5 +93,21 @@ namespace Health.Direct.Common.Mime
             return StringSegment.Split(source, separator);
         }
 
+        public static string TrimEmptyLines(this Body body)
+        {
+            string outputString;
+            using (StringReader reader = new StringReader(body.Text))
+            using (StringWriter writer = new StringWriter())
+            {
+                string line;
+                while((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length > 0)
+                        writer.WriteLine(line);
+                }
+                outputString = writer.ToString();
+            }
+            return outputString;
+        }
     }
 }

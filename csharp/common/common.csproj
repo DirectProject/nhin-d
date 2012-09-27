@@ -137,6 +137,17 @@
     <Compile Include="Domains\IDomainResolver.cs" />
     <Compile Include="Domains\StaticDomainResolver.cs" />
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Mail\DSN\DSN.cs" />
+    <Compile Include="Mail\DSN\DSNMessageHeaders.cs" />
+    <Compile Include="Mail\DSN\DSNParser.cs" />
+    <Compile Include="Mail\DSN\DSNRecipientHeaders.cs" />
+    <Compile Include="Mail\DSN\DSNStandard.cs" />
+    <Compile Include="Mail\DSN\Extensions.cs" />
+    <Compile Include="Mail\DSN\DSNMessage.cs" />
+    <Compile Include="Mail\DSN\DSNPerMessage.cs" />
+    <Compile Include="Mail\DSN\DSNPerRecipient.cs" />
+    <Compile Include="Mail\DSN\DSNException.cs" />
+    <Compile Include="Mail\DSN\DSNError.cs" />
     <Compile Include="Mail\Notifications\Disposition.cs" />
     <Compile Include="Mail\Notifications\Extensions.cs" />
     <Compile Include="Mail\Notifications\MDNError.cs" />

@@ -23,6 +23,7 @@ using System.Net.Mime;
 using Health.Direct.Agent;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Mime;
 using Health.Direct.Config.Store;
@@ -82,15 +83,41 @@ Content-Type: text/plain
 
 Bad message?";
 
-        public const string UnknownUsersMessage =
+        public static string ContainsUntrustedRecipientMessage =
+            string.Format(
             @"From: <toby@redmond.hsgincubator.com>
-To: <frank@nhind.hsgincubator.com>, <joe@nhind.hsgincubator.com>
-Subject: Unknown Users Text Message
+To: <xyz@untrusted.com>, biff@nhind.hsgincubator.com
+Subject: Bad Text Message
+Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Yo. Wassup?";
+Bad message?", Guid.NewGuid());
+
+        public static string UntrustedRecipientMessage =
+            string.Format(
+            @"From: <toby@redmond.hsgincubator.com>
+To: <xyz@untrusted.com>
+Subject: Bad Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Bad message?", Guid.NewGuid());
+
+        public static string UnknownUsersMessage =
+            string.Format(
+            @"From: <toby@redmond.hsgincubator.com>
+To: <frank@nhind.hsgincubator.com>, <joe@nhind.hsgincubator.com>
+Subject: Unknown Users Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?", Guid.NewGuid());
 
         public const string MultiToMessage =
             @"From: <toby@redmond.hsgincubator.com>
@@ -102,6 +129,7 @@ Content-Type: text/plain
 
 Yo. Wassup?";
         public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
+        public const string TestIncomingFolder = @"c:\inetpub\mailroot\incoming";
 
         public SmtpAgentTester(){
             
@@ -153,6 +181,15 @@ Yo. Wassup?";
             } 
         }
 
+        public IEnumerable<string> IncomingMessages()
+        {
+            foreach (var file in Directory.GetFiles(TestIncomingFolder))
+            {
+                yield return file;
+                File.Delete(file);
+            }
+        }
+
         internal string MakeFilePath(string subPath)
         {
             return Path.Combine(Directory.GetCurrentDirectory(), subPath);
@@ -188,6 +225,13 @@ Yo. Wassup?";
             Assert.True(envelope.Message.IsMDN());
         }
 
+        internal void VerifyDSNIncomingMessage(CDO.Message message)
+        {
+            var envelope = new CDOSmtpMessage(message).GetEnvelope();
+            Assert.True(envelope.Message.IsDSN());
+        }
+
+        
         internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
             outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));

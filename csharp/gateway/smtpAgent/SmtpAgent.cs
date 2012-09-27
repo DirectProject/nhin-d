@@ -27,6 +27,7 @@ using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
@@ -56,6 +57,7 @@ namespace Health.Direct.SmtpAgent
         ConfigService m_configService;
         MonitorService m_monitorService;
         NotificationProducer m_notifications;
+        
                 
         internal SmtpAgent(SmtpAgentSettings settings)
         {
@@ -481,8 +483,8 @@ namespace Health.Direct.SmtpAgent
                 m_monitorService.StartMdn(outgoingMessage);
             }
         }
-        
 
+        
         public MessageEnvelope ProcessOutgoing(ISmtpMessage message)
         {
             if (message == null)
@@ -509,13 +511,16 @@ namespace Health.Direct.SmtpAgent
             }
 
             envelope = this.SecurityAgent.ProcessOutgoing(outgoing);
-            Logger.Debug("ProcessedOutgoing");
+            Logger.Debug("ProcessedOutgoing"); 
             return envelope;
         }
 
         void PostProcessOutgoing(ISmtpMessage message, OutgoingMessage envelope)
         {
             MonitorMdn(envelope);
+
+            SendDeliveryStatus(envelope);
+
             this.RelayInternal(message, envelope); //Removes recipients in local domains
             
             if (envelope.HasRecipients)
@@ -531,6 +536,34 @@ namespace Health.Direct.SmtpAgent
             else
             {
                 message.Abort();
+            }
+        }
+
+
+        void SendDeliveryStatus(OutgoingMessage envelope)
+        {
+            if (!m_settings.InternalMessage.HasPickupFolder)
+            {
+                return;
+            }
+            //
+            // Its ok if we fail on sending notifications - that should never cause us to not
+            // deliver the message
+            //
+            try
+            {
+                bool isMdnSet = envelope.IsMdn.GetValueOrDefault(false);
+                if (isMdnSet || !envelope.HasRejectedRecipients)
+                {
+                    return;
+                }
+
+                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, envelope.RejectedRecipients
+                    , DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent, DSNStandard.DSNStatus.UNDEFINED_STATUS);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("While sending DSN {0}", ex.ToString());
             }
         }
 

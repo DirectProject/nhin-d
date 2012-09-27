@@ -82,6 +82,7 @@
     <Compile Include="DnsResolver\TestSerialization.cs" />
     <Compile Include="Mail\MailParserFacts.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
+    <Compile Include="Mail\TestDSN.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Metadata\AuthorFacts.cs" />
     <Compile Include="Metadata\DocumentMetadataFacts.cs" />
@@ -123,6 +124,17 @@
     <None Include="DnsResolver\DnsTestCerts\umesh.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DsnTestMessages\DSNMessage.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DsnTestMessages\DSNMessageNoActionOrStatus.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DsnTestMessages\DSNMessageOrigInReplyTo.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

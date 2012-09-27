@@ -42,9 +42,9 @@ namespace Health.Direct.SmtpAgent.Tests
 
         public TestSmtpAgent()
         {
-            //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
+            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
             //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigServiceProd.xml"));
-            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfig.xml"));
+            //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfig.xml"));
         }
 
         [Fact]
@@ -75,11 +75,13 @@ namespace Health.Direct.SmtpAgent.Tests
         }
 
         
-        [Fact(Skip="Need Config Service to run this")]
+        [Fact]//(Skip="Need Config Service to run this")]
         //[Fact]
         public void TestEndToEndBad()
         {
+            m_agent.Settings.InternalMessage.EnableRelay = true;
             Assert.Throws<AgentException>(() => RunEndToEndTest(this.LoadMessage(UnknownUsersMessage)));
+            m_agent.Settings.InternalMessage.EnableRelay = false;
         }
         
         [Fact]
@@ -161,8 +163,8 @@ Yo. Wassup?";
         }
         
         public const string InternalRelayMessage =
-        @"To: toby@nhind.hsgincubator.com
-From: toby@nhind.hsgincubator.com
+        @"To: toby@redmond.hsgincubator.com
+From: toby@redmond.hsgincubator.com
 MIME-Version: 1.0
 Subject: Simple Text Message
 Date: Mon, 10 May 2010 14:53:27 -0700

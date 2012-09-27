@@ -69,6 +69,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "monitor.winsrv", "..\window
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdnMonitor", "..\mdnMonitor\mdnMonitor.csproj", "{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdnMonitor.tests", "..\unittests\mdnMonitor.tests\mdnMonitor.tests.csproj", "{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -645,6 +647,24 @@ Global
 		{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}.Release|Win32.ActiveCfg = Release|Any CPU
 		{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}.Release|x64.ActiveCfg = Release|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Development|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Development|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Development|Win32.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Development|x64.ActiveCfg = Debug|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|Win32.ActiveCfg = Release|Any CPU
+		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
