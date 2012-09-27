@@ -34,13 +34,13 @@ namespace Health.Direct.SmtpAgent
             m_settings = settings;
         }
         
-        internal void StartMdn(OutgoingMessage address)
+        internal void StartMdn(OutgoingMessage message)
         {
             Debug.Assert(m_settings.HasMdnManager);
 
             using (MdnMonitorClient client = m_settings.MdnMonitor.CreateMdnMonitorClient())
             {
-                List<Mdn> mdns = CreateMdnStarts(address);
+                List<Mdn> mdns = CreateMdnStarts(message);
                 client.Start(mdns.ToArray());
             }
         }

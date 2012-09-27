@@ -229,6 +229,16 @@ namespace Health.Direct.Common.Mail.Notifications
                 return MDNStandard.NotificationType.Deleted;
             }
 
+            if (MDNStandard.Equals(value, MDNStandard.Disposition_Denied))
+            {
+                return MDNStandard.NotificationType.Denied;
+            }
+
+            if (MDNStandard.Equals(value, MDNStandard.Disposition_Error))
+            {
+                return MDNStandard.NotificationType.Error;
+            }
+
             if (MDNStandard.Equals(value, MDNStandard.Disposition_Failed))
             {
                 return MDNStandard.NotificationType.Failed;

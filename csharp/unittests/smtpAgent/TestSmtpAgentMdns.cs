@@ -30,16 +30,16 @@ using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
-    public class TestSmtpAgentMdns : SmtpAgentTester
+    public class TestSmtpAgentMDNs : SmtpAgentTester
     {
         SmtpAgent m_agent;
 
-        static TestSmtpAgentMdns()
+        static TestSmtpAgentMDNs()
         {
             AgentTester.EnsureStandardMachineStores();        
         }
 
-        public TestSmtpAgentMdns()
+        public TestSmtpAgentMDNs()
         {
             //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
             //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigServiceProd.xml"));
@@ -327,9 +327,10 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.True(notificationMessages.Count == 2);
             RunMdnProcessing(notificationMessages);
 
-            notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Failed);
-            Assert.True(notificationMessages.Count == 2);
-            RunMdnProcessing(notificationMessages);
+            Assert.False(true, "Come back to this");
+            //notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Failed);
+            //Assert.True(notificationMessages.Count == 2);
+            //RunMdnProcessing(notificationMessages);
 
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Displayed); //No currently using.
             Assert.True(notificationMessages.Count == 2);
@@ -347,26 +348,7 @@ namespace Health.Direct.SmtpAgent.Tests
         //Test duplicate failed (timeout should change status to failed)
         //
         
-        /// <summary>
-        /// Generation of DSN bounce messages for rejected outgoing message for security and trust reasons
-        /// </summary>
-        [Fact]
-        public void TestFailedDSN_SecurityAndTrustOutGoingOnly()
-        {
-            Assert.False(true,  "Not implemented");
-        }
-
-        /// <summary>
-        /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute.
-        /// </summary>
-        [Fact]
-        public void TestFailedDsnSecurityAndTrustOutGoingOnly()
-        {
-            Assert.False(true, "Not implemented");
-        }
-
-
-
+        
         private void RunMdnProcessing(IEnumerable<NotificationMessage> notificationMessages)
         {
             foreach (var notification in notificationMessages)
