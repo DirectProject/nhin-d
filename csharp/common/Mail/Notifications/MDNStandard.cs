@@ -254,7 +254,12 @@ namespace Health.Direct.Common.Mail.Notifications
         
         internal const string ReportType = "report-type";
         internal const string ReportTypeValueNotification = "disposition-notification";
-        internal const string DispositionOption_TimelyAndReliable = "X-DIRECT-FINAL-DESTINATION-DELIVERY";
+
+        /// <summary>
+        /// Direct specific dispostion options for requesting timely and reliable messaging.
+        /// Also used as the MDN report extension (special) field for indicating an MDN in response to a timely and reliable request.
+        /// </summary>
+        public const string DispositionOption_TimelyAndReliable = "X-DIRECT-FINAL-DESTINATION-DELIVERY";
         
         /// <summary>
         /// Tests the <paramref name="entity"/> to see if it contains an MDN request.

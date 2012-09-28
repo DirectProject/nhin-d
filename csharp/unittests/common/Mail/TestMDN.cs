@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.IO;
@@ -133,7 +134,6 @@ namespace Health.Direct.Common.Tests.Mail
             Notification notification = this.CreateDispatchedNotification();
             NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
 
-            Console.WriteLine(notificationMessage);
             Assert.True(notificationMessage.IsMDN());
             Assert.False(notificationMessage.ShouldIssueNotification());
 
@@ -245,6 +245,7 @@ namespace Health.Direct.Common.Tests.Mail
         public void TestParser_Processed()
         {
             Notification notification = this.CreateProcessedNotification();
+            notification.OriginalRecipient = new MailAddress("original@nhind.hsgincubator.com");
             notification.Error = "Whoops!";            
             this.SendAndParse(notification);
         }
@@ -296,7 +297,115 @@ namespace Health.Direct.Common.Tests.Mail
             SendAndParse(ack);
         }
 
-        
+        /// <summary>
+        /// Not relying on SendAndParse method...  
+        /// </summary>
+        [Fact]
+        public void TestWarning_AssertWarning_Explicit()
+        {
+            Notification notification = CreateProcessedNotification();
+            notification.Warning = "Xunit warning";
+            MimeEntity[] mimeEntities = notification.ToArray();
+            
+            Assert.NotNull(mimeEntities);
+            Assert.Equal(2, mimeEntities.Count());
+            
+            MimeEntity bodyEntity = mimeEntities[1];
+            Assert.True(bodyEntity.ContentType.StartsWith("message/disposition-notification"));
+            HeaderCollection fields = this.GetNotificationFields(bodyEntity);
+            Assert.Null(fields[MDNStandard.Fields.FinalRecipient]);
+            Assert.NotNull(fields[MDNStandard.Fields.Warning]);
+            Assert.Equal("Xunit warning", fields.GetValue(MDNStandard.Fields.Warning));
+
+        }
+
+        [Fact]
+        public void TestWarning_AssertWarning()
+        {
+            Notification notification = this.CreateProcessedNotification();
+            notification.Warning = "Xunit warning";
+            this.SendAndParse(notification);
+        }
+
+        [Fact]
+        public void TestFailure_AssertFailure()
+        {
+            Notification notification = this.CreateProcessedNotification();
+            notification.Failure = "Xunit failure";
+            this.SendAndParse(notification);
+        }
+
+        [Fact]
+        public void TestExtensions_AssertExtensions()
+        {
+            Notification notification = this.CreateProcessedNotification();
+
+            notification.SpecialFields = new HeaderCollection()
+                                             {
+                                                 //Header value of empty fails JoinHeader in DefaultSerializer.  Research this...
+                                                 //Constructor with StringSegment does not fail.  
+                                                 new Header(new StringSegment("X-Test1:")),
+                                                 new Header(new StringSegment("X-Test2:MyValue"))
+                                             };
+            this.SendAndParse(notification);
+        }
+
+        [Fact]
+        public void TestExtensions_ExtensionsSerialization()
+        {
+            Disposition expectedDisposition = new Disposition(MDNStandard.NotificationType.Processed);
+
+            Message source = this.CreateSourceMessage();
+            Notification notification = this.CreateProcessedNotification();
+            notification.SpecialFields = new HeaderCollection()
+                                             {
+                                                 //Header value of empty fails JoinHeader in DefaultSerializer.  Research this...
+                                                 //Constructor with StringSegment does not fail.  
+                                                 new Header(new StringSegment("X-Test1:")),
+                                                 new Header(new StringSegment("X-Test2:MyValue"))
+                                             };
+            notification.OriginalRecipient = new MailAddress("original@nhind.hsgincubator.com");
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
+
+            var path = Path.GetTempFileName();
+            try
+            {
+                notificationMessage.Save(path);
+                Message loadedMessage = Message.Load(File.ReadAllText(path));
+                Assert.True(loadedMessage.IsMDN());
+                Assert.Equal(notificationMessage.ParsedContentType.MediaType, loadedMessage.ParsedContentType.MediaType);
+                Assert.Equal(notificationMessage.SubjectValue, loadedMessage.SubjectValue);
+                Assert.True(loadedMessage.HasHeader(MimeStandard.VersionHeader));
+                Assert.True(loadedMessage.HasHeader(MailStandard.Headers.Date));
+                Assert.True(loadedMessage.Headers.Count(x => (MimeStandard.Equals(x.Name, MimeStandard.VersionHeader))) == 1);
+               
+                var mdn = MDNParser.Parse(loadedMessage);
+                VerifyEqual(expectedDisposition, mdn.Disposition);
+                Assert.NotNull(mdn.SpecialFields["X-Test1"]);
+                Assert.Equal("", mdn.SpecialFields["X-Test1"].ValueRaw);
+                Assert.Equal("MyValue", mdn.SpecialFields["X-Test2"].Value);
+                Assert.Equal(notification.OriginalRecipient, mdn.OriginalRecipient);
+            }
+            finally
+            {
+                File.Delete(path);
+            }
+        }
+
+
+        [Fact]
+        public void TestDispatchTimelyAndReliableExtension_AssertExtension()
+        {
+            Message source = this.CreateSourceMessage();
+            Notification notification = this.CreateDispatchedNotification();
+            NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
+
+            var mdn = MDNParser.Parse(notificationMessage);
+            Assert.NotNull(mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable]);
+        }
+
+
+
         void SendAndParse(Notification source)
         {
             Message message = this.CreateSourceMessage();
@@ -329,13 +438,40 @@ namespace Health.Direct.Common.Tests.Mail
             {
                 Assert.Equal(x.FinalRecipient.ToString(), y.FinalRecipient.ToString());
             }
+            if (x.OriginalRecipient != null)
+            {
+                Assert.Equal(x.OriginalRecipient.ToString(), y.OriginalRecipient.ToString());
+            }
             if (x.Error != null)
             {
                 Assert.Equal(x.Error, y.Error);
             }
+            if (x.Warning != null)
+            {
+                Assert.Equal(x.Warning, y.Warning);
+            }
+            if (x.Failure != null)
+            {
+                Assert.Equal(x.Failure, y.Failure);
+            }
+            if (x.SpecialFields != null)
+            {
+                VerifyEqual(x.SpecialFields, y.SpecialFields);
+            }
             VerifyEqual(x.Disposition, y.Disposition);
         }
-        
+
+        void VerifyEqual(IList<Header> x, IList<Header> y)
+        {
+            Assert.True(x.Count() > 0);
+            Assert.True(y.Count() > 0);
+            Assert.Equal(x.Count(), y.Count());
+            for (int i = 0; i < x.Count(); i++)
+            {
+                Assert.Equal(x[i].Name, y[i].Name);
+                Assert.Equal(x[i].ValueRaw, y[i].ValueRaw );
+            }
+        }
         void VerifyEqual(Disposition x, Disposition y)
         {
             Assert.Equal(x.TriggerType, y.TriggerType);
