@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="aefe165d-0a46-47e6-990b-1056fcaab1b1" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:6693/RecordRetrievalService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="RecordRetrievalService.wsdl" MetadataType="Wsdl" ID="2b855a5d-2589-497c-bd06-ba6829aebaae" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?wsdl" />
+    <MetadataFile FileName="RecordRetrievalService.xsd" MetadataType="Schema" ID="fd512cda-3afa-4144-bf56-fbd0c74109fd" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd0" />
+    <MetadataFile FileName="RecordRetrievalService1.xsd" MetadataType="Schema" ID="1dac8365-9040-438b-9c7d-969fe2e16a39" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd1" />
+    <MetadataFile FileName="RecordRetrievalService2.xsd" MetadataType="Schema" ID="c6d88fe9-0155-4f8c-b5a3-a8aa67bc232b" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd2" />
+    <MetadataFile FileName="RecordRetrievalService3.xsd" MetadataType="Schema" ID="28574140-b9ba-4af2-a68b-b5c399ad0d7a" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd3" />
+    <MetadataFile FileName="RecordRetrievalService.disco" MetadataType="Disco" ID="fdd486b7-a3be-4d3c-a3b4-3fbdf18d6aec" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?disco" />
+    <MetadataFile FileName="RecordRetrievalService1.wsdl" MetadataType="Wsdl" ID="ee819101-1074-4677-974d-c07626382e39" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?wsdl=wsdl0" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

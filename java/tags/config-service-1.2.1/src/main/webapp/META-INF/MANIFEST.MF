@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Class-Path: aopalliance-1.0.jar asm-2.2.3.jar cglib-nodep-2.2.jar comm
+ ons-lang-2.4.jar commons-logging-1.1.1.jar cxf-api-2.2.9.jar cxf-comm
+ on-schemas-2.2.9.jar cxf-common-utilities-2.2.9.jar cxf-rt-bindings-s
+ oap-2.2.9.jar cxf-rt-bindings-xml-2.2.9.jar cxf-rt-core-2.2.9.jar cxf
+ -rt-databinding-jaxb-2.2.9.jar cxf-rt-frontend-jaxws-2.2.9.jar cxf-rt
+ -frontend-simple-2.2.9.jar cxf-rt-transports-http-2.2.9.jar cxf-rt-ws
+ -addr-2.2.9.jar cxf-tools-common-2.2.9.jar derby-10.4.1.3.jar geronim
+ o-annotation_1.0_spec-1.1.1.jar geronimo-javamail_1.4_spec-1.6.jar ge
+ ronimo-jaxws_2.1_spec-1.0.jar geronimo-stax-api_1.0_spec-1.0.1.jar ge
+ ronimo-ws-metadata_2.0_spec-1.1.2.jar jaxb-api-2.1.jar jaxb-impl-2.1.
+ 13.jar jaxws-api-2.1.jar log4j-1.2.16.jar neethi-2.0.4.jar saaj-api-1
+ .3.jar saaj-impl-1.3.2.jar slf4j-api-1.6.1.jar slf4j-simple-1.6.1.jar
+  spring-aop-3.0.4.RELEASE.jar spring-asm-3.0.4.RELEASE.jar spring-bea
+ ns-3.0.4.RELEASE.jar spring-context-3.0.4.RELEASE.jar spring-core-3.0
+ .4.RELEASE.jar spring-expression-3.0.4.RELEASE.jar spring-web-2.5.6.j
+ ar stax-api-1.0-2.jar wsdl4j-1.6.2.jar wstx-asl-3.2.9.jar xml-resolve
+ r-1.2.jar XmlSchema-1.4.5.jar
+
