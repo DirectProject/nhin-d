@@ -62,6 +62,10 @@ namespace Health.Direct.Common.Mime
         /// </summary>
         public const string HeaderPrefix = "Content-";
         /// <summary>
+        /// The prefix string for MIME extension headers
+        /// </summary>
+        public const string SpecialHeaderPrefix = "X-";
+        /// <summary>
         /// The standard MIME version header.
         /// </summary>
         public const string VersionHeader = "MIME-Version";

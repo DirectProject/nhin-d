@@ -74,6 +74,12 @@ namespace Health.Direct.Common.Mail.Notifications
             m_fields = new HeaderCollection();
             
             this.Disposition = disposition;
+            if(disposition.Notification == MDNStandard.NotificationType.Dispatched)
+            {
+                var segment = new StringSegment(MDNStandard.DispositionOption_TimelyAndReliable + ":");
+                var trHeader = new Header(segment);
+                m_fields.Add(trHeader);
+            }
         }
           
         internal Notification(MimeEntity explanation, HeaderCollection fields)
@@ -100,6 +106,7 @@ namespace Health.Direct.Common.Mail.Notifications
             {
                 m_finalRecipient = MDNParser.ParseFinalRecipient(field);
             }
+
         }
                
         /// <summary>
@@ -175,10 +182,12 @@ namespace Health.Direct.Common.Mail.Notifications
                 m_fields.SetValue(MDNStandard.Fields.OriginalMessageID, value);
             }
         }
+
         
         /// <summary>
-        /// The message's final recipient
+        /// The message's final-recipient
         /// </summary>
+        /// <remarks>RFC 3798 3.2.4</remarks>
         public MailAddress FinalRecipient
         {
             get
@@ -196,6 +205,29 @@ namespace Health.Direct.Common.Mail.Notifications
                 m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("{0};{1}", MDNStandard.RecipientType_Mail, m_finalRecipient.Address));
             }
         }
+
+        /// <summary>
+        /// The message's original-recipient
+        /// </summary>
+        /// <remarks>RFC 3798 3.3</remarks>
+        public MailAddress OriginalRecipient
+        {
+            get
+            {
+                return m_finalRecipient;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
+                m_finalRecipient = value;
+                m_fields.SetValue(MDNStandard.Fields.FinalRecipient, string.Format("{0};{1}", MDNStandard.RecipientType_Mail, m_finalRecipient.Address));
+            }
+        }
+
         
         /// <summary>
         /// Gets and sets the <see cref="Disposition"/> for this instance.
@@ -231,7 +263,57 @@ namespace Health.Direct.Common.Mail.Notifications
                 m_fields.SetValue(MDNStandard.Fields.Error, value);
             }
         }
-        
+
+        /// <summary>
+        /// Gets and sets the value of the warning header.
+        /// </summary>
+        public string Warning
+        {
+            get
+            {
+                return m_fields.GetValue(MDNStandard.Fields.Warning);
+            }
+            set
+            {
+                m_fields.SetValue(MDNStandard.Fields.Warning, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets the value of the failure header.
+        /// </summary>
+        public string Failure
+        {
+            get
+            {
+                return m_fields.GetValue(MDNStandard.Fields.Failure);
+            }
+            set
+            {
+                m_fields.SetValue(MDNStandard.Fields.Failure, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets the value of the special x. headers. 
+        /// </summary>
+        /// <remarks>See RFC 4288 3.4 for more detail.</remarks>
+        public HeaderCollection SpecialFields
+        {
+            get
+            {
+                var fields = m_fields.SelectSpecialMimeHeaders();
+                return fields.Count == 0 ? null : fields;
+            }
+            set
+            {
+                foreach (var header in value)
+                {
+                    m_fields.AddUpdate(header.Name, header.ValueRaw);
+                }
+            }
+        }
+
         internal bool HasFinalRecipient
         {
             get

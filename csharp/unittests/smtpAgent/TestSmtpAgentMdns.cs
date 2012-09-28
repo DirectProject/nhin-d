@@ -150,6 +150,7 @@ namespace Health.Direct.SmtpAgent.Tests
 
 
             var sendingMessage = LoadMessage(textMessage);
+
             Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
 
             //
@@ -162,7 +163,8 @@ namespace Health.Direct.SmtpAgent.Tests
                 if (messageText.Contains("disposition-notification"))
                 {
                     foundMdns = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    var cdoMessage = LoadMessage(messageText);
+                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(cdoMessage));
                 }
             }
             Assert.True(foundMdns);
@@ -183,11 +185,12 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.True(foundFiles);
 
             //
-            // Prepare a Dispatched MDN and mark 
+            // Prepare a Dispatched MDN manually as if this was a edge client
             //
 
             //
-            // RequestNotification needed to use the CreateNotificationMessages
+            // Original message needed to create RequestNotification which is 
+            // needed to use the CreateNotificationMessages
             //
             var mailMessage = MailParser.ParseMessage(textMessage);
             mailMessage.RequestNotification();
@@ -196,15 +199,18 @@ namespace Health.Direct.SmtpAgent.Tests
             var incoming = new IncomingMessage(textMessage);
 
             List<NotificationMessage> notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Dispatched);
-
-            Assert.True(notificationMessages.Count > 0);
+            Assert.True(notificationMessages.Count == 2);
+            
             //
             // Simulating a destination client sending a dispatched MDN
             //
             foreach (var notification in notificationMessages)
             {
+                TestDispatchedMdnIncludesExtensionField(notification);
+
                 var dispatchText = MimeSerializer.Default.Serialize(notification);
                 CDO.Message message = LoadMessage(dispatchText);
+                
                 RunEndToEndTest(message);
 
                 var duplicateMessage = LoadMessage(dispatchText);
@@ -438,7 +444,10 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Equal(timelyAndReliable, mdn.NotifyDispatched);
         }
 
-        
-
+        static void TestDispatchedMdnIncludesExtensionField(NotificationMessage message)
+        {
+            var mdn = MDNParser.Parse(message);
+            Assert.NotNull(mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable]);
+        }
     }
 }

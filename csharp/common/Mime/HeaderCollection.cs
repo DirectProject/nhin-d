@@ -139,6 +139,21 @@ namespace Health.Direct.Common.Mime
         }
         
         /// <summary>
+        /// Returns the Special x. Tree MIME headers
+        /// </summary>
+        /// <remarks>See documentation for <see cref="HeaderCollection.MimeHeaders"/> and RFC 4288 3.4 for more detail.</remarks>
+        public IEnumerable<Header> SpecialMimeHeaders
+        {
+            get
+            {
+                return from header in this
+                       where (MimeStandard.StartsWith(header.Name, MimeStandard.SpecialHeaderPrefix))
+                       select header;
+            }
+        }
+        
+
+        /// <summary>
         /// Returns the index to a header name. See <see cref="HeaderCollection"/> for more details.
         /// </summary>
         /// <remarks>
@@ -408,6 +423,16 @@ namespace Health.Direct.Common.Mime
         public HeaderCollection SelectNonMimeHeaders()
         {
             return new HeaderCollection(NonMimeHeaders);
+        }
+
+        /// <summary>
+        /// Selects the collection of special headers out of this collection
+        /// </summary>
+        /// <remarks>See <see cref="HeaderCollection.SpecialMimeHeaders"/></remarks>
+        /// <returns>A collection the special headers</returns>
+        public HeaderCollection SelectSpecialMimeHeaders()
+        {
+            return new HeaderCollection(SpecialMimeHeaders);
         }
         
         /// <summary>
