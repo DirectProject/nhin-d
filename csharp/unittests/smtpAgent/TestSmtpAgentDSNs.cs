@@ -20,7 +20,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Health.Direct.Agent.Tests;
+using Health.Direct.Common.Mail.DSN;
+using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Config.Client;
+using Health.Direct.Config.Store;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
@@ -50,6 +53,8 @@ namespace Health.Direct.SmtpAgent.Tests
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly()
         {
             CleanMessages(m_agent.Settings);
+            CleanMonitor();
+
             m_agent.Settings.InternalMessage.EnableRelay = true;
             m_agent.Settings.Notifications.AutoResponse = true;
             m_agent.Settings.Notifications.AlwaysAck = true;
@@ -66,6 +71,7 @@ namespace Health.Direct.SmtpAgent.Tests
 
             //
             // grab the clear text dsn and delete others.
+            // Process them as outgoing messages
             //
             bool foundDsn = false;
             foreach (var pickupMessage in PickupMessages())
@@ -75,12 +81,22 @@ namespace Health.Direct.SmtpAgent.Tests
                 {
                     foundDsn = true;
                     Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+
+                    //
+                    // assert not in the monitor store.
+                    // DSN messages are not monitored.
+                    //
+                    var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
+                    var mdnManager = CreateConfigStore().Mdns;
+                    var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+                    Assert.Null(mdn);
+
                 }
             }
             Assert.True(foundDsn);
 
             //
-            // Now the messages are encrypted and can be handled
+            // Now the messages are encrypted and can be handled as inbound messages.
             //
             foundDsn = false;
             foreach (var pickupMessage in PickupMessages())
@@ -89,13 +105,20 @@ namespace Health.Direct.SmtpAgent.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
                 Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                var dsnMessage = new CDOSmtpMessage(message).GetEnvelope();
+                Assert.True(dsnMessage.Message.IsDSN());
+                Assert.False(dsnMessage.Message.IsMDN());
             }
             Assert.True(foundDsn);
+
+            
+
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
         /// <summary>
         /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute.
+        /// Needs more research to figure out this scenario.
         /// </summary>
         [Fact]
         public void TestFailedDsnOutGoingOnly()

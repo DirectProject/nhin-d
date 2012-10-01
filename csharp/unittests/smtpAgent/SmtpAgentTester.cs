@@ -151,6 +151,12 @@ Yo. Wassup?";
                 });
         }
 
+        public void CleanMonitor()
+        {
+            var mdnManager = CreateConfigStore().Mdns;
+            mdnManager.RemoveAll();
+        }
+
         private void CleanMessages(string path)
         {
             var files = Directory.GetFiles(path);
@@ -245,14 +251,27 @@ Yo. Wassup?";
             return relativePath;
         }
 
-        protected static Mdn BuildQueryMdn(CDO.Message message)
+        protected static Mdn BuildMdnQueryFromMdn(CDO.Message message)
         {
             var messageEnvelope = new CDOSmtpMessage(message).GetEnvelope();
+            Assert.True(messageEnvelope.Message.IsMDN());
             var notification = MDNParser.Parse(messageEnvelope.Message);
             var originalMessageId = notification.OriginalMessageID;
             string originalSender = messageEnvelope.Recipients[0].Address;
             string originalRecipient = messageEnvelope.Sender.Address;
             return new Mdn(originalMessageId, originalRecipient, originalSender);
+        }
+
+        
+        protected static Mdn BuildQueryFromDSN(CDO.Message message)
+        {
+            var messageEnvelope = new CDOSmtpMessage(message).GetEnvelope();
+            Assert.True(messageEnvelope.Message.IsDSN());
+            var mimeMessage = messageEnvelope.Message;
+            var messageId = mimeMessage.IDValue;
+            string sender = messageEnvelope.Sender.Address;
+            string recipient = messageEnvelope.Recipients[0].Address;
+            return new Mdn(messageId, recipient, sender);
         }
 
         protected static ConfigStore CreateConfigStore()

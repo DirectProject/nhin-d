@@ -146,10 +146,20 @@ namespace Health.Direct.Agent
         /// Is message a Message Disposition Notificaton
         /// </summary>
         /// <remarks>
-        /// /// Track Mdn message type.
+        /// Track MDN message type.
         /// This is set when the message type is discoverable in the decrypted form.
         /// </remarks>
-        public bool? IsMdn = null;
+        public bool? IsMDN = null;
+
+
+        /// <summary>
+        /// Is message a Deliery Status Notificaton
+        /// </summary>
+        /// <remarks>
+        /// Track DSN message type.
+        /// This is set when the message type is discoverable in the decrypted form.
+        /// </remarks>
+        public bool? IsDSN = null;
 
         /// <summary>
         /// Is Message requesting timely and reliable delivery.
