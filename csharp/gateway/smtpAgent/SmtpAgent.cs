@@ -477,8 +477,9 @@ namespace Health.Direct.SmtpAgent
 
         void MonitorMdn(OutgoingMessage outgoingMessage)
         {
-            bool isMdnSet = outgoingMessage.IsMdn.GetValueOrDefault(false);
-            if (m_settings.HasMdnManager && !isMdnSet)
+            bool isMdnSet = outgoingMessage.IsMDN.GetValueOrDefault(false);
+            bool isDsnSet = outgoingMessage.IsDSN.GetValueOrDefault(false);
+            if (m_settings.HasMdnManager && !isMdnSet && !isDsnSet)
             {
                 m_monitorService.StartMdn(outgoingMessage);
             }
@@ -501,7 +502,13 @@ namespace Health.Direct.SmtpAgent
             
             if (envelope.Message.IsMDN())
             {
-                outgoing.IsMdn = true;
+                outgoing.IsMDN = true;
+                outgoing.UseIncomingTrustAnchors = this.Settings.Notifications.UseIncomingTrustAnchorsToSend;
+            }
+
+            if (envelope.Message.IsDSN())
+            {
+                outgoing.IsDSN = true;
                 outgoing.UseIncomingTrustAnchors = this.Settings.Notifications.UseIncomingTrustAnchorsToSend;
             }
             
@@ -552,7 +559,7 @@ namespace Health.Direct.SmtpAgent
             //
             try
             {
-                bool isMdnSet = envelope.IsMdn.GetValueOrDefault(false);
+                bool isMdnSet = envelope.IsMDN.GetValueOrDefault(false);
                 if (isMdnSet || !envelope.HasRejectedRecipients)
                 {
                     return;

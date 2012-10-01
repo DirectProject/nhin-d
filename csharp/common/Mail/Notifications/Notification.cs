@@ -309,7 +309,8 @@ namespace Health.Direct.Common.Mail.Notifications
             {
                 foreach (var header in value)
                 {
-                    m_fields.AddUpdate(header.Name, header.ValueRaw);
+                    Header specialHeader = new Header(new StringSegment(header.ToString()));
+                    m_fields.Add(specialHeader);
                 }
             }
         }
