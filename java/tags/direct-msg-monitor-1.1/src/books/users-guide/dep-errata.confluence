@@ -20,16 +20,17 @@ however there are some instances (depending on your database vendor) where the t
 The following example creates the tables in Oracle.
 
 {code}
-createtable msgmonaggregation (
+create table msgmonaggregation (
     id varchar(255) not null, 
     exchangeBlob blob, 
     version integer, 
     primary key (id)
 );
 
-createtable msgmonaggregationcomp (
+create table msgmonaggregationcomp (
     id varchar(255) not null, 
     exchangeBlob blob, 
+    recoveryLockedUntilDtTm timestamp,
     version integer, 
     primary key (id)
 );
