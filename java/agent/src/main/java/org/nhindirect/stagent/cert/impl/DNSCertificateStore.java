@@ -22,8 +22,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.cert.impl;
 
+import java.io.ByteArrayInputStream;
 import java.net.UnknownHostException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.jcs.JCS;
@@ -61,7 +64,6 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.ResolverConfig;
 import org.xbill.DNS.Type;
-import org.xbill.DNS.security.CERTConverter;
 
 import com.google.inject.Inject;
 import com.google.inject.internal.Nullable;
@@ -398,9 +400,25 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				{
 					if (rec instanceof CERTRecord) 
 					{
-						Certificate certToAdd = CERTConverter.parseRecord((CERTRecord)rec);
-						if (certToAdd instanceof X509Certificate) // may not be an X509Cert
-							retVal.add((X509Certificate)certToAdd);
+						CERTRecord certRec = (CERTRecord)rec;
+						switch(certRec.getCertType())
+						{
+							case CERTRecord.PKIX:
+							{
+								Certificate certToAdd = convertPXIXRecordToCert(certRec);//CERTConverter.parseRecord((CERTRecord)rec);
+								if (certToAdd != null && certToAdd instanceof X509Certificate) // may not be an X509Cert
+									retVal.add((X509Certificate)certToAdd);
+								break;
+							}
+							case CERTRecord.URI:
+							{
+								//TODO: Implement
+							}
+							default:
+							{
+								LOGGER.warn("Unknown CERT type " + certRec.getCertType() + " encountered for lookup name" + lookupName);
+							}
+						}
 					}
 				}			
 			}
@@ -589,6 +607,31 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			retVal.setTCP(useTCP);
 		}
 		catch (UnknownHostException e) {/* no-op */}
+		return retVal;
+	}
+	
+	protected Certificate convertPXIXRecordToCert(CERTRecord certRec)
+	{
+		Certificate retVal = null;
+		ByteArrayInputStream inputStream = null;
+		final byte[] certData = certRec.getCert();
+
+
+		try
+		{
+			final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			inputStream = new ByteArrayInputStream(certData);
+			retVal = (X509Certificate)cf.generateCertificate(inputStream);
+		}
+		catch (Exception e)
+		{
+			LOGGER.warn("Failed to convert certificate from DNS byte data.", e);
+		}
+		finally
+		{
+			IOUtils.closeQuietly(inputStream);
+		}
+		
 		return retVal;
 	}
 }

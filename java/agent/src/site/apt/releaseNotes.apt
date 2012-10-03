@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{1.5.2}
+
+    Changes included with release 1.5.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed compatibility issue with dnsjava versions 2.1 and higher.
+
 {1.5.1}
 
     Changes included with release 1.5.1
