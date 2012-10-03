@@ -362,7 +362,6 @@
          </execution>
        </executions>
      </plugin>
-         <!--  for releases only
 	     <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -399,7 +398,6 @@
               </execution>
             </executions>
         </plugin>	    
-         -->     
         <plugin>
           <groupId>org.apache.camel</groupId>
           <artifactId>camel-maven-plugin</artifactId>
