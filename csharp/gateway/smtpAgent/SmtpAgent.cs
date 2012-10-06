@@ -310,7 +310,7 @@ namespace Health.Direct.SmtpAgent
         public void ProcessMessage(ISmtpMessage message)
         {
             bool? isIncoming = null;
-            
+            MessageEnvelope envelope = null;
             try
             {
                 this.VerifyInitialized();
@@ -321,7 +321,7 @@ namespace Health.Direct.SmtpAgent
                 //
                 // Let the agent do its thing
                 //   
-                MessageEnvelope envelope = message.GetEnvelope();
+                envelope = message.GetEnvelope();
                 envelope = this.ProcessEnvelope(message, envelope);
                 if (envelope == null)
                 {
@@ -363,9 +363,23 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
+                HandleMessageRejection(message, envelope, isIncoming, ex);
+
+                throw;
+            }
+        }
+
+        private void HandleMessageRejection(ISmtpMessage message, MessageEnvelope envelope, bool? isIncoming, Exception ex)
+        {
+            if (envelope != null && ex is OutgoingAgentException 
+                && ((OutgoingAgentException)ex).Error == AgentError.NoTrustedRecipients)
+            {
+                this.RejectMessage(message, envelope, isIncoming);
+            }
+            else
+            {
                 this.RejectMessage(message, isIncoming);
                 Logger.Error("While processing message {0}", ex.ToString());
-                throw;
             }
         }
 
@@ -517,6 +531,8 @@ namespace Health.Direct.SmtpAgent
                 outgoing.IsTimelyAndReliable = true;
             }
 
+            outgoing.UsingDeliveryStatus = outgoing.ShouldDeliverFailedStatus(Settings.Notifications);
+
             envelope = this.SecurityAgent.ProcessOutgoing(outgoing);
             Logger.Debug("ProcessedOutgoing"); 
             return envelope;
@@ -553,6 +569,7 @@ namespace Health.Direct.SmtpAgent
             {
                 return;
             }
+
             //
             // Its ok if we fail on sending notifications - that should never cause us to not
             // deliver the message
@@ -570,7 +587,8 @@ namespace Health.Direct.SmtpAgent
             }
             catch (Exception ex)
             {
-                Logger.Error("While sending DSN {0}", ex.ToString());
+                Logger.Error("While sending DSN {0}", ex.Message);
+                Logger.Error(ex);
             }
         }
 
@@ -739,7 +757,7 @@ namespace Health.Direct.SmtpAgent
             //
             try
             {
-                if(envelope.Message.IsMDN())
+                if(envelope.Message.IsMDN() || envelope.Message.IsDSN())
                 {
                     return;
                 }
@@ -801,13 +819,51 @@ namespace Health.Direct.SmtpAgent
                 m_auditor.Log(AuditNames.Message.GetRejectedMessage(isIncoming), this.BuildAuditLogString(message));
                 
                 Logger.Debug("Rejected Message");
+                
                 this.CopyMessage(message, m_settings.BadMessage);
             }
             catch
             {
             }
         }
+
+        protected virtual void RejectMessage(ISmtpMessage message, MessageEnvelope envelope, bool? isIncoming)
+        {
+            try
+            {
+                message.Reject();
+
+                m_auditor.Log(AuditNames.Message.GetRejectedMessage(isIncoming), this.BuildAuditLogString(message));
                 
+                Logger.Debug("Rejected Message");
+                
+
+                if (!isIncoming.GetValueOrDefault(false) && envelope.ShouldDeliverFailedStatus(m_settings.Notifications))
+                {
+                    var outgoingMessage = BuildFailedOutgoingMessage(envelope);
+                    SendDeliveryStatus(outgoingMessage);
+                }
+                else
+                {
+                    this.CopyMessage(message, m_settings.BadMessage);
+                }
+
+            }
+            catch
+            {
+            }
+        }
+
+        private OutgoingMessage BuildFailedOutgoingMessage(MessageEnvelope envelope)
+        {
+            return new OutgoingMessage(
+                envelope.Message, 
+                envelope.Recipients, //not used but required for validation
+                envelope.Recipients, //All are rejected.
+                envelope.Sender,
+                envelope.ShouldDeliverFailedStatus(m_settings.Notifications));
+        }
+
         protected virtual void CopyMessage(ISmtpMessage message, MessageProcessingSettings settings)
         {
             if (settings.HasCopyFolder)

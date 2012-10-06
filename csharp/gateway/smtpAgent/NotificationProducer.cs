@@ -151,9 +151,10 @@ namespace Health.Direct.SmtpAgent
             {
                 throw new ArgumentNullException("envelope");
             }
-            if (recipients != null && m_settings.AutoResponse)
+
+            if (recipients != null && envelope.UsingDeliveryStatus)
             {
-                DSNMessage dsnMessage = envelope.CreateAcks(recipients, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck, action, classSubCode, subjectSubCode);
+                DSNMessage dsnMessage = envelope.CreateDeliveryStatus(recipients, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck, action, classSubCode, subjectSubCode);
                 return dsnMessage;
             }
             return null;

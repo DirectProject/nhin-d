@@ -42,4 +42,31 @@ namespace Health.Direct.Agent
         }
         
     }
+
+
+    /// <summary>
+    /// Represents agent exceptions for outgoing message.
+    /// </summary>
+    public class OutgoingAgentException : AgentException
+    {
+        /// <summary>
+        /// Creates an exception with an associated agent error status.
+        /// </summary>
+        /// <param name="error">The <see cref="AgentError"/> status</param>
+        public OutgoingAgentException(AgentError error)
+            : base(error)
+        {
+        }
+
+        /// <summary>
+        /// Creates an exception with an associated agent error status and custom message
+        /// </summary>
+        /// <param name="error">The <see cref="AgentError"/> status</param>
+        /// <param name="message">The custom message for this error</param>
+        public OutgoingAgentException(AgentError error, string message)
+            : base(error, message)
+        {
+        }
+
+    }
 }

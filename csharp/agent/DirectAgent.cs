@@ -785,18 +785,18 @@ namespace Health.Direct.Agent
             
             if (message.Sender == null)
             {
-                throw new AgentException(AgentError.NoSender);
+                throw new OutgoingAgentException(AgentError.NoSender);
             }            
             if (!message.HasRecipients)
             {
-                throw new AgentException(AgentError.NoRecipients);
+                throw new OutgoingAgentException(AgentError.NoRecipients);
             }
             //
             // Ensure we support this sender's domain
             //
             if (!m_managedDomains.IsManaged(message.Sender))
             {
-                throw new AgentException(AgentError.UntrustedSender);
+                throw new OutgoingAgentException(AgentError.UntrustedSender);
             }
             //
             // Categorize recipients as local/external
@@ -808,7 +808,7 @@ namespace Health.Direct.Agent
             this.BindAddresses(message);
             if (!message.HasRecipients)
             {
-                throw new AgentException(AgentError.MissingTo);
+                throw new OutgoingAgentException(AgentError.MissingTo);
             }            
             //
             // Enforce the trust model.
@@ -820,7 +820,7 @@ namespace Health.Direct.Agent
             message.CategorizeRecipientsByTrust(m_minTrustRequirement);
             if (!message.HasRecipients)
             {
-                throw new AgentException(AgentError.NoTrustedRecipients);
+                throw new OutgoingAgentException(AgentError.NoTrustedRecipients);
             }
             //
             // And update routing headers to remove any recipients we had yanked

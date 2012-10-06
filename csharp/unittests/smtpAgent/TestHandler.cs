@@ -53,7 +53,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public void Test()
         {
             Assert.DoesNotThrow(() => m_handler.ProcessCDOMessage(this.LoadMessage(SmtpAgentTester.TestMessage)));
-            Assert.Throws<AgentException>(() => m_handler.ProcessCDOMessage(this.LoadMessage(SmtpAgentTester.BadMessage)));
+            Assert.Throws<OutgoingAgentException>(() => m_handler.ProcessCDOMessage(this.LoadMessage(SmtpAgentTester.BadMessage)));
         }
         
         [Theory]

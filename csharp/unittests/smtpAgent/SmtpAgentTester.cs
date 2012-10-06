@@ -83,7 +83,7 @@ Content-Type: text/plain
 
 Bad message?";
 
-        public static string ContainsUntrustedRecipientMessage =
+        public static string ContainsUntrustedRecipientMessageNoTandR =
             string.Format(
             @"From: <toby@redmond.hsgincubator.com>
 To: <xyz@untrusted.com>, biff@nhind.hsgincubator.com
@@ -91,6 +91,19 @@ Subject: Bad Text Message
 Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
 MIME-Version: 1.0
+Content-Type: text/plain
+
+Bad message?", Guid.NewGuid());
+
+        public static string ContainsUntrustedRecipientMessageRequestTandR =
+            string.Format(
+            @"From: <toby@redmond.hsgincubator.com>
+To: <xyz@untrusted.com>, biff@nhind.hsgincubator.com
+Subject: Bad Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Disposition-Notification-Options: X-DIRECT-FINAL-DESTINATION-DELIVERY
 Content-Type: text/plain
 
 Bad message?", Guid.NewGuid());

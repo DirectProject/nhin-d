@@ -7,7 +7,13 @@
 <SmtpAgentConfig>
   <Domain>redmond.hsgincubator.com</Domain>
   <Domain>nhind.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>  
+  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Notifications>
+    <AutoResponse>true</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>testSmtpAgent</NamePrefix>

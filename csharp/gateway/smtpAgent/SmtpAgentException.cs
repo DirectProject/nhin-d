@@ -56,7 +56,11 @@ namespace Health.Direct.SmtpAgent
         /// <summary>
         /// An Encrypted Message came from WITHIN the domain... and internal relay was disabled
         /// </summary>
-        InternalRelayDisabled
+        InternalRelayDisabled,
+        /// <summary>
+        /// AutoDsnOption is unknown.
+        /// </summary>
+        UnkownAutoDsnOption
     }
 
     public class SmtpAgentException : DirectException<SmtpAgentError>

@@ -83,6 +83,21 @@ namespace Health.Direct.Agent
         }
 
         /// <summary>
+        /// Creates an instance from a <see cref="Message"/> and explicitly assigned sender receivers, and rejected recipients, which take precendence over what may be
+        /// in the message headers.
+        /// </summary>
+        /// <param name="message">The <see cref="Message"/> this envelopes</param>
+        /// <param name="recipients">The <see cref="DirectAddressCollection"/> of reciepients; takes precedence over the <c>To:</c> header</param>
+        /// <param name="sender">The <see cref="DirectAddress"/> of the sender - typically the MAIL FROM in SMTP; takes precendence over the <c>From:</c> header.</param>
+        public MessageEnvelope(Message message, DirectAddressCollection recipients, DirectAddressCollection rejecteRecipients, DirectAddress sender)
+        {
+            this.Message = message;
+            this.Recipients = recipients;
+            m_rejectedRecipients = rejecteRecipients;
+            this.Sender = sender;
+        }
+
+        /// <summary>
         /// Creates an instance from an RFC 5322 message string  and explicitly assigned sender and receivers, which take precendence over what may be
         /// in the message headers. 
         /// </summary>

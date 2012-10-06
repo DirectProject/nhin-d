@@ -51,7 +51,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public void Test()
         {
             Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(TestMessage)));
-            Assert.Throws<AgentException>(() => m_agent.ProcessMessage(this.LoadMessage(BadMessage)));
+            Assert.Throws<OutgoingAgentException>(() => m_agent.ProcessMessage(this.LoadMessage(BadMessage)));
         }
         
         [Fact]
@@ -133,7 +133,7 @@ namespace Health.Direct.SmtpAgent.Tests
             //
             // This SHOULD throw an exception
             //
-            Assert.Throws<AgentException>(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));
+            Assert.Throws<OutgoingAgentException>(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));
         }
 
         public const string MaxRecipientsTestMessage =

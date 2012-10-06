@@ -50,6 +50,22 @@ namespace Health.Direct.Agent
         {
         }
 
+
+        /// <summary>
+        /// Creates an instance from a <see cref="Message"/> instance, specifying recipients and sender.
+        /// </summary>
+        /// <param name="message"><see cref="Message"/> instance representing the message to be prepped for send.</param>
+        /// <param name="recipients">An <see cref="DirectAddressCollection"/> of recipients, takes precedence over recipients in the message</param>
+        /// <param name="rejectedRecipients">An <see cref="DirectAddressCollection"/> of rejected recipients</param>
+        /// <param name="sender">Sender <see cref="DirectAddress"/>, takes precendence over the <c>To</c> field in the message.</param>
+        /// <param name="usingDeliveryStatus">Indicate if message requests DeliveryStatus</param>
+        public OutgoingMessage(Message message, DirectAddressCollection recipients, DirectAddressCollection rejectedRecipients, 
+            DirectAddress sender, bool usingDeliveryStatus)
+            : base(message, recipients, rejectedRecipients, sender)
+        {
+            this.UsingDeliveryStatus = usingDeliveryStatus;
+        }
+
         /// <summary>
         /// Creates an instance from an RFC 5322 string, specifying recipients and sender.
         /// </summary>
@@ -61,11 +77,13 @@ namespace Health.Direct.Agent
         {
         }
 
+        
+
         internal OutgoingMessage(Message message, string messageText)
             : base(message)
         {
         }
-
+        
         internal OutgoingMessage(Message message, string messageText, DirectAddressCollection recipients, DirectAddress sender)
             : base(message, recipients, sender)
         {
@@ -96,7 +114,7 @@ namespace Health.Direct.Agent
         public bool UseIncomingTrustAnchors = false;
 
         /// <summary>
-        /// Create ACK Deliery Status Notification (DSN) for this message - IF DSNs should be generated. 
+        /// Create Deliery Status Notification (DSN) for this message - IF DSNs should be generated. 
         /// Since the message could have multiple recipients, an independant MDN is generated FROM each recipient. 
         /// If no DSN should be generated, returns NULL. 
         ///   - If there are no recipients
@@ -110,7 +128,7 @@ namespace Health.Direct.Agent
         /// <param name="classSubCode">Status code class</param>
         /// <param name="subjectSubCode">Status code subject</param>
         /// <returns>An DSNMessage</returns>
-        public DSNMessage CreateAcks(IEnumerable<MailAddress> recipients, string reportingAgentName, string textMessage
+        public DSNMessage CreateDeliveryStatus(IEnumerable<MailAddress> recipients, string reportingAgentName, string textMessage
             , bool alwaysAck, DSNStandard.DSNAction action, int classSubCode, string subjectSubCode)
         {
             if (recipients == null)
@@ -171,5 +189,13 @@ namespace Health.Direct.Agent
         /// This is set when the message type is discoverable in the decrypted form.
         /// </remarks>
         public bool? IsTimelyAndReliable;
+
+
+        /// <summary>
+        /// Is system configured for reliable delivery.  And if required is message rquesting timely and reliable delivery.
+        /// </summary>
+        public bool UsingDeliveryStatus = false;
+
+        
     }
 }

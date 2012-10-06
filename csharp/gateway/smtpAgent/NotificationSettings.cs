@@ -34,7 +34,7 @@ namespace Health.Direct.SmtpAgent
         bool m_useIncomingAnchorsToSend = false;
         string m_productName = DefaultText;
         bool m_gatewayIsDestination;
-        string m_autoDSNFailueCreation;
+        string m_autoDSNOption;
         bool? m_autoDSNForTimelyAndReliable;
         bool? m_autoDSNForGeneral;
 
@@ -58,7 +58,7 @@ namespace Health.Direct.SmtpAgent
                 m_autoResponse = value;
             }
         }
-        
+
         /// <summary>
         /// Always issue an processed notificatoin, even if the caller did not request one
         /// </summary>
@@ -88,55 +88,45 @@ namespace Health.Direct.SmtpAgent
             set { m_gatewayIsDestination = value; }
         }
 
+        /// <summary>
+        /// Behavior options for generating a DSN failure messages for outbound messages that do not succeed security and trust processing.  
+        /// Two options: one controlling the generation of DSN messages for messages requesting reliable and timely delivery and
+        /// one for messages not requesting reliable and timely delivery.  Parameter is a comma delimited string of options to be enabled.
+        /// 1. <b>Always:</b> Always generate a DSN message for failed security and trust.
+        /// 2. <b>ReliableAndTimely:</b> Only generate a DSN message for failed security and trust of messages requesting reliable and timely delivery.
+        /// The ReliableAndTimely option is set by default if this parameter does not exist.
+        /// </summary>
         [XmlElement]
-        public string AutoDsnFailueCreation
-        {
-            get { return m_autoDSNFailueCreation; }
-            set { m_autoDSNFailueCreation = value; }
-        }
-
-        public bool AutoDSNForTimelyAndReliable
+        public string AutoDsnFailureCreation
         {
             get
             {
-                if (m_autoDSNForTimelyAndReliable.HasValue)
-                {
-                    return m_autoDSNForTimelyAndReliable.GetValueOrDefault(false);
-                }
-                foreach(var option in AutoDsnFailueCreation.Split(','))
-                {
-                    if (string.Equals(option, RELIABLE_DSN_OPTION, StringComparison.OrdinalIgnoreCase))
-                    {
-                        m_autoDSNForTimelyAndReliable = true;
-                        return true;
-                    }
-                }
-                m_autoDSNForTimelyAndReliable = false;
-                return false;
+                return m_autoDSNOption;
+            }
+            set
+            {
+                m_autoDSNOption = value;
             }
         }
 
-        public bool AutoDSNForGeneral
+        [XmlIgnore]
+        public AutoDsnOption AutoDsnFailureOption
         {
             get
             {
-                if (m_autoDSNForGeneral.HasValue)
+                if(AutoDsnFailureCreation == null)
                 {
-                    return m_autoDSNForGeneral.GetValueOrDefault(false);
+                    return AutoDsnOption.TimelyAndReliable;
                 }
-                foreach (var option in AutoDsnFailueCreation.Split(','))
-                {
-                    if (string.Equals(option, GENERAL_DSN_OPTION, StringComparison.OrdinalIgnoreCase))
-                    {
-                        m_autoDSNForGeneral = true;
-                        return true;
-                    }
-                }
-                m_autoDSNForGeneral = false;
-                return false;
-            }
+                return (AutoDsnOption)Enum.Parse(typeof (AutoDsnOption), m_autoDSNOption, true);
+            } 
         }
 
+        public enum AutoDsnOption
+        {
+            Always,
+            TimelyAndReliable
+        }
 
         /// <summary>
         /// Optional explanation text to include when sending MDN Acks. 
@@ -147,7 +137,7 @@ namespace Health.Direct.SmtpAgent
             get;
             set;
         }
-        
+
         [XmlIgnore]
         public bool HasText
         {
@@ -156,7 +146,7 @@ namespace Health.Direct.SmtpAgent
                 return (!string.IsNullOrEmpty(this.Text));
             }
         }
-        
+
         /// <summary>
         /// Optional name of the sending entity. Default is 'Direct Security Agent'
         /// </summary>
@@ -172,7 +162,7 @@ namespace Health.Direct.SmtpAgent
                 m_productName = string.IsNullOrEmpty(value) ? DefaultText : value;
             }
         }
-        
+
         [XmlElement]
         public bool UseIncomingTrustAnchorsToSend
         {
@@ -185,11 +175,21 @@ namespace Health.Direct.SmtpAgent
                 m_useIncomingAnchorsToSend = value;
             }
         }
-               
-        
+
 
         public void Validate()
         {
+            if (AutoDsnFailureCreation != null)
+            {
+                try
+                {
+                    Enum.Parse(typeof(AutoDsnOption), AutoDsnFailureCreation, true);
+                }
+                catch(ArgumentException ae)
+                {
+                    throw new SmtpAgentException(SmtpAgentError.UnkownAutoDsnOption);
+                }
+            }
         }
     }
 }

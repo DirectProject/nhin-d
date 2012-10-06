@@ -23,6 +23,11 @@ address_add toby@redmond.hsgincubator.com
 address_add bob@nhind.hsgincubator.com
 address_add biff@nhind.hsgincubator.com
 
+//Post Masters for AutoDSN
+address_add PostMaster@redmond.hsgincubator.com
+address_add PostMaster@nhind.hsgincubator.com
+
+
 echo ******************************
 //
 // Install Certificates and anchors

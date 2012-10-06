@@ -87,7 +87,7 @@ namespace Health.Direct.Agent.Tests
             //
             // All recipients are untrusted. The agent should reject the message completely
             //
-            Assert.Throws<AgentException>(() => m_tester.ProcessOutgoingFileToString(fileName));
+            Assert.Throws<OutgoingAgentException>(() => m_tester.ProcessOutgoingFileToString(fileName));
         }
 
 

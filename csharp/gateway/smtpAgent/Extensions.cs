@@ -54,7 +54,30 @@ namespace Health.Direct.SmtpAgent
             ADODB._Stream stream = message.GetStream();
             stream.SaveToFile(filePath, SaveOptionsEnum.adSaveCreateOverWrite);
         }
-        
+
+        /// <summary>
+        /// TimelyAndReliable option set and message is not requesting timely and reliable then false.
+        /// Always option will return true.
+        /// Not other options exist.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Remember TimelyAndReliable option is the default if not configured.  This means a edge 
+        /// client must request timely and reliable delivery.
+        /// </remarks>
+        public static bool ShouldDeliverFailedStatus(this MessageEnvelope message, NotificationSettings settings)
+        {
+            if (settings.AutoDsnFailureOption == NotificationSettings.AutoDsnOption.TimelyAndReliable
+                   && !message.Message.IsTimelyAndReliable())
+            {
+                return false;
+            }
+            return true;
+        }
+
+
         /// <summary>
         /// Send this outgoing message to a remote smtp server
         /// </summary>
