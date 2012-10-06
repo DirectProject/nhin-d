@@ -85,8 +85,8 @@ public class AggregationDAOImpl implements AggregationDAO
 	}
 
 	/**
-	 * Sets the interval that recovered aggregations will be locked.
-	 * @param recoveredEntityLockInterval The interval that recovered aggregations will be locked.
+	 * Sets the interval (in seconds) that recovered aggregations will be locked.
+	 * @param recoveredEntityLockInterval The interval (in seconds) that recovered aggregations will be locked.
 	 */
 	public void setRecoveryLockInterval(int recoveredEntityLockInterval)
 	{
