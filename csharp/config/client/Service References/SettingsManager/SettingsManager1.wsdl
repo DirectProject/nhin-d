@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="urn:directproject:config/store/082010" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="urn:directproject:config/store/082010/Imports">
+      <xsd:import schemaLocation="http://localhost:6692/SettingsManager.svc?xsd=xsd0" namespace="urn:directproject:config/store/082010" />
+      <xsd:import schemaLocation="http://localhost:6692/SettingsManager.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:6692/SettingsManager.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+      <xsd:import schemaLocation="http://localhost:6692/SettingsManager.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IPropertyManager_AddProperty_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddProperty" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_AddProperty_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPropertyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_AddProperty_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_AddProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddProperties" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_AddProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPropertiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_AddProperties_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_SetProperty_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetProperty" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_SetProperty_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetPropertyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_SetProperty_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_SetProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetProperties" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_SetProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetPropertiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_SetProperties_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_GetProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetProperties" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_GetProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_GetProperties_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_GetPropertiesByPrefix_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertiesByPrefix" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_GetPropertiesByPrefix_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPropertiesByPrefixResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_GetPropertiesByPrefix_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_RemoveProperty_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveProperty" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_RemoveProperty_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePropertyResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_RemoveProperty_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_RemoveProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveProperties" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_RemoveProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePropertiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IPropertyManager_RemoveProperties_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_AddBlob_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddBlob" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_AddBlob_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddBlobResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_AddBlob_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_UpdateBlob_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateBlob" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_UpdateBlob_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateBlobResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_UpdateBlob_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_GetBlob_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBlob" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_GetBlob_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBlobResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_GetBlob_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_GetBlobsByPrefix_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBlobsByPrefix" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_GetBlobsByPrefix_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBlobsByPrefixResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_GetBlobsByPrefix_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_RemoveBlob_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveBlob" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_RemoveBlob_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveBlobResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBlobManager_RemoveBlob_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:portType name="IPropertyManager">
+    <wsdl:operation name="AddProperty">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/AddProperty" message="tns:IPropertyManager_AddProperty_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/AddPropertyResponse" message="tns:IPropertyManager_AddProperty_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/AddPropertyConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_AddProperty_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddProperties">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/AddProperties" message="tns:IPropertyManager_AddProperties_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/AddPropertiesResponse" message="tns:IPropertyManager_AddProperties_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/AddPropertiesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_AddProperties_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetProperty">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/SetProperty" message="tns:IPropertyManager_SetProperty_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/SetPropertyResponse" message="tns:IPropertyManager_SetProperty_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/SetPropertyConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_SetProperty_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetProperties">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/SetProperties" message="tns:IPropertyManager_SetProperties_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/SetPropertiesResponse" message="tns:IPropertyManager_SetProperties_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/SetPropertiesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_SetProperties_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetProperties">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/GetProperties" message="tns:IPropertyManager_GetProperties_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/GetPropertiesResponse" message="tns:IPropertyManager_GetProperties_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/GetPropertiesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_GetProperties_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPropertiesByPrefix">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/GetPropertiesByPrefix" message="tns:IPropertyManager_GetPropertiesByPrefix_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/GetPropertiesByPrefixResponse" message="tns:IPropertyManager_GetPropertiesByPrefix_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/GetPropertiesByPrefixConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_GetPropertiesByPrefix_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveProperty">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/RemoveProperty" message="tns:IPropertyManager_RemoveProperty_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/RemovePropertyResponse" message="tns:IPropertyManager_RemoveProperty_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/RemovePropertyConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_RemoveProperty_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveProperties">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/RemoveProperties" message="tns:IPropertyManager_RemoveProperties_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/RemovePropertiesResponse" message="tns:IPropertyManager_RemoveProperties_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IPropertyManager/RemovePropertiesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IPropertyManager_RemoveProperties_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IBlobManager">
+    <wsdl:operation name="AddBlob">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBlobManager/AddBlob" message="tns:IBlobManager_AddBlob_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBlobManager/AddBlobResponse" message="tns:IBlobManager_AddBlob_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBlobManager/AddBlobConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBlobManager_AddBlob_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateBlob">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBlobManager/UpdateBlob" message="tns:IBlobManager_UpdateBlob_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBlobManager/UpdateBlobResponse" message="tns:IBlobManager_UpdateBlob_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBlobManager/UpdateBlobConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBlobManager_UpdateBlob_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBlob">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBlobManager/GetBlob" message="tns:IBlobManager_GetBlob_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBlobManager/GetBlobResponse" message="tns:IBlobManager_GetBlob_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBlobManager/GetBlobConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBlobManager_GetBlob_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBlobsByPrefix">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBlobManager/GetBlobsByPrefix" message="tns:IBlobManager_GetBlobsByPrefix_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBlobManager/GetBlobsByPrefixResponse" message="tns:IBlobManager_GetBlobsByPrefix_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBlobManager/GetBlobsByPrefixConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBlobManager_GetBlobsByPrefix_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveBlob">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBlobManager/RemoveBlob" message="tns:IBlobManager_RemoveBlob_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBlobManager/RemoveBlobResponse" message="tns:IBlobManager_RemoveBlob_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBlobManager/RemoveBlobConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBlobManager_RemoveBlob_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
