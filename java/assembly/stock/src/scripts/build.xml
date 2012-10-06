@@ -37,6 +37,9 @@
 	<property name="apache.james.binary.url" value="http://www.gtlib.gatech.edu/pub/apache/james/server/apache-james-2.3.2.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 
+	<property name="apache.james3.binary.url" value="http://apache.claz.org//james/apache-james/3.0beta4/apache-james-3.0-beta4-app.tar.gz"></property>
+	<property name="apache.james3.binary.tar.gz" value="${build.download.dir}/apache-james-3.0-beta4-app.tar.gz"></property>	
+	
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
 	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james"></property>
 	<property name="james.stage.config" value="${james.stage.apps.dir}/SAR-INF/config.xml"></property>
@@ -45,6 +48,12 @@
 	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib"></property>
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 
+	<property name="james3.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-james-3.0-beta4"></property>
+	<property name="james3.stage.conf.dir" value="${james3.stage.dir}/conf"></property>
+	<property name="james3.stage.domainlist" value="${james3.stage.conf.dir}/domainlist.conf"></property>
+	<property name="james3.stage.mailetcontainer" value="${james3.stage.conf.dir}/mailetcontainer.conf"></property>
+	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
+	
 	<!-- tomcat properties -->
 	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.29/bin/apache-tomcat-7.0.29.tar.gz"></property>
 	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.29.tar.gz"></property>
@@ -123,7 +132,7 @@
 	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.1.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.2.jar"></property>
 	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.0.2.jar"></property>
 	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1.1.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.3.jar"></property>
@@ -193,6 +202,10 @@
 		<available file="${apache.james.binary.zip}" property="apache.james.download.exists"></available>
 		<antcall target="get-james"></antcall>
 
+		<!-- get the apache james binary install package -->
+		<available file="${apache.james3.binary.tar.gz}" property="apache.james3.download.exists"></available>
+		<antcall target="get-james3"></antcall>		
+		
 		
 		<!-- get the tomcat binary install package -->
 		<available file="${tomcat.binary.zip}" property="tomcat.download.exists"></available>
@@ -200,10 +213,12 @@
 		
 		<!-- unpack -->
 		<delete dir="${james.stage.dir}"></delete>
+		<delete dir="${james.stage3.dir}"></delete>		
 		<delete dir="${tomcat.stage.dir}"></delete>
 		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
 		<untar compression="gzip" dest="${env.DIRECT_INSTALL_DIR}" src="${tomcat.binary.zip}"></untar>
-		
+		<untar compression="gzip" dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james3.binary.tar.gz}"></untar>
+				
 		<!-- configure james -->
 		<antcall target="configure"></antcall>
 		<antcall target="make-shell-files-executable"></antcall>
@@ -212,7 +227,7 @@
 
 	<!-- get apache-james -->
 	<target name="get-james" depends="get-james-get" unless="apache.james.download.exists"></target>
-
+	
 	
 	<!-- get james get -->
 	<target name="get-james-get" unless="apache.james.download.exists">
@@ -221,6 +236,17 @@
         <get src="${apache.james.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
 	</target>
 
+	<!-- get apache-james3 -->
+	<target name="get-james3" depends="get-james3-get" unless="apache.james3.download.exists"></target>
+	
+	
+	<!-- get james3 get -->
+	<target name="get-james3-get" unless="apache.james3.download.exists">
+        <echo>downloading ${apache.james3.binary.url}</echo>
+        <mkdir dir="${build.download.dir}"/>
+        <get src="${apache.james3.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
+	</target>	
+	
 	<!-- get tomcat -->
 	<target name="get-tomcat" depends="get-tomcat-get" unless="tomcat.download.exists"></target>
 	
@@ -232,7 +258,7 @@
 
 	</target>
 
-	<target name="configure" depends="configure-james,configure-tomcat"></target>
+	<target name="configure" depends="configure-james,configure-james3,configure-tomcat"></target>
 
 	<target name="configure-james">
 		<!-- expand the sar file in apps -->
@@ -292,6 +318,50 @@
 		
 	</target>
 
+	<target name="configure-james3">
+		
+		<!-- delete the template files that aren't needed -->
+		<delete file="${james3.stage.conf.dir}/domainlist-template.conf"></delete>
+		<delete file="${james3.stage.conf.dir}/mailetcontainer-template.conf"></delete>
+		
+		<!-- populate new libraries -->
+		<copy file="${lib.activation}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.bcmail-jdk15}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.bcprov-jdk15}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.guice}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.dsn}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.agent}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.gateway}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.direct-common}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.xdmail}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.xd-common}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.jcs}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.concurrent}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.wsdl4j}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.saaj-api}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.jaxrpc-api}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.commons-discovery}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.axis}" todir="${james3.stage.lib.dir}"></copy>
+	    <copy file="${lib.config.proxy}" todir="${james3.stage.lib.dir}"></copy>
+	    <copy file="${lib.httpclient}" todir="${james3.stage.lib.dir}"></copy>			
+	    <copy file="${lib.httpcore}" todir="${james3.stage.lib.dir}"></copy>		
+	    <copy file="${lib.jackson-core-asl}" todir="${james3.stage.lib.dir}"></copy>	
+	    <copy file="${lib.jackson-jaxrs}" todir="${james3.stage.lib.dir}"></copy>			
+	    <copy file="${lib.jackson-mapper-asl}" todir="${james3.stage.lib.dir}"></copy>		
+	    <copy file="${lib.jdom}" todir="${james3.stage.lib.dir}"></copy>	
+		
+		<!-- copy the new config files -->
+		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/mailetcontainer.conf" tofile="${james3.stage.mailetcontainer}" overwrite="true"></copy>
+
+		<copy file="${src}/scripts/james3/setdomain.sh" todir="${james3.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/set-domain.xml" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/james3/set-domain-domainlist.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/james3/set-domain-mailetcontainer.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
+
+		
+	</target>	
+	
 	<target name="configure-tomcat">
 		<property name="config.service.orig.war" value="config-service-1.2.1.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
@@ -324,6 +394,12 @@
 		<exec executable="sh">
 			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"></arg>
 		</exec>
+		<exec executable="sh">
+			<arg line="-c 'cd ${james3.stage.dir}/bin; chmod a+x *.sh'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${james3.stage.dir}/bin; chmod a+x wrapper*'"></arg>
+		</exec>				
 		<exec executable="sh">
 			<arg line="-c 'cd ${tomcat.stage.dir}/bin; chmod a+x *.sh'"></arg>
 		</exec>		
