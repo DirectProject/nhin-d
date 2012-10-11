@@ -35,8 +35,7 @@ namespace Health.Direct.SmtpAgent
         string m_productName = DefaultText;
         bool m_gatewayIsDestination;
         string m_autoDSNOption;
-        bool? m_autoDSNForTimelyAndReliable;
-        bool? m_autoDSNForGeneral;
+        
 
 
         public NotificationSettings()
@@ -185,7 +184,7 @@ namespace Health.Direct.SmtpAgent
                 {
                     Enum.Parse(typeof(AutoDsnOption), AutoDsnFailureCreation, true);
                 }
-                catch(ArgumentException ae)
+                catch(ArgumentException)
                 {
                     throw new SmtpAgentException(SmtpAgentError.UnkownAutoDsnOption);
                 }

@@ -43,9 +43,11 @@
     <Reference Include="System.Data.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -75,6 +77,9 @@
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mdnMonitorSchema.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

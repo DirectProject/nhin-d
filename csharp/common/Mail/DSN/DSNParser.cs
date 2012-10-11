@@ -25,6 +25,9 @@ using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail.DSN
 {
+    /// <summary>
+    /// A set of lightweight DSN Parsing methods
+    /// </summary>
     public class DSNParser
     {
 
@@ -125,18 +128,33 @@ namespace Health.Direct.Common.Mail.DSN
             }
         }
 
+        /// <summary>
+        /// Parses the given Final-Recipient value string following the conventions for RFC 3464
+        /// </summary>
+        /// <param name="value">input string</param>
+        /// <returns><see cref="MailAddress"/>object</returns>
         public static MailAddress ParseFinalRecipient(string value)
         {
             string[] parts = SplitField(value, MDNError.InvalidDisposition);
             return new MailAddress(parts[1]);
         }
 
+        /// <summary>
+        /// Parses the given Reporting-MTA value string following the conventions for RFC 3464
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string ParseReportingMTA(string value)
         {
             string[] parts = SplitField(value, MDNError.InvalidDisposition);
             return parts[1];
         }
 
+        /// <summary>
+        /// Parses the given group of per-recipient-fields as a <see cref="HeaderCollection"/> following the conventions for RFC 3464
+        /// </summary> 
+        /// <param name="fields"></param>
+        /// <returns></returns>
         public static IEnumerable<HeaderCollection> ParsePerRecipients(HeaderCollection fields)
         {
             foreach (var field in fields)

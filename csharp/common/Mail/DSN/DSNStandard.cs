@@ -25,7 +25,14 @@ using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail.DSN
 {
-
+    /// <summary>
+    /// Provides constants and utility functions for working with DSN
+    /// </summary>
+    /// <remarks>
+    /// Delivery Status Notificatione
+    /// RFC 3464
+    /// http://tools.ietf.org/html/rfc3464
+    /// </remarks>
     public class DSNStandard
     {
         /// <summary>
@@ -259,10 +266,8 @@ namespace Health.Direct.Common.Mail.DSN
             /// <summary>
             /// Build Status Code Structure
             /// </summary>
-            /// <param name="type"></param>
-            /// <param name="detail"></param>
-            /// <returns></returns>
             /// <remarks>
+            /// 
             /// This document defines a new set of status codes to report mail system
             /// conditions.  These status codes are used for media and language
             /// independent status reporting.  They are not intended for system
@@ -273,11 +278,14 @@ namespace Health.Direct.Common.Mail.DSN
             /// status-code = class "." subject "." detail
             ///
             /// class = "2"/"4"/"5"
-
             /// subject = 1*3digit
             ///
             /// detail = 1*3digit
+            /// 
             /// </remarks>
+            /// /// <param name="type"></param>
+            /// <param name="detail"></param>
+            /// <returns></returns>
             public static String GetStatus(int type, String detail)
             {
                 return type + "." + detail;
@@ -301,7 +309,6 @@ namespace Health.Direct.Common.Mail.DSN
             /// status-code = class "." subject "." detail
             ///
             /// class = "2"/"4"/"5"
-
             /// subject = 1*3digit
             ///
             /// detail = 1*3digit

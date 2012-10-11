@@ -58,7 +58,7 @@ namespace Health.Direct.Common.Mail.DSN
         /// </summary>
         /// <param name="message">The message to send notification about.</param>
         /// <param name="from">MailAddress this notification is from</param>
-        /// <param name="notification">The notification to create.</param>
+        /// <param name="dsn">The dsn to create.</param>
         /// <returns>The DSN.</returns>
         public static DSNMessage CreateNotificationFor(Message message, MailAddress from, DSN dsn)
         {

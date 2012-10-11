@@ -63,8 +63,8 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.Notifications.AlwaysAck = false; //don't care.  This is MDN specific
             m_agent.Settings.Notifications.AutoDsnFailureCreation = 
                 NotificationSettings.AutoDsnOption.Always.ToString(); 
-            m_agent.Settings.AddressManager = new ClientSettings();
-            m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
+            //m_agent.Settings.AddressManager = new ClientSettings();
+            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
@@ -133,7 +133,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// in the bad messages folder.
         /// </summary>
         [Theory]
-        [PropertyData("UntrustedRecipientMessage")]
+        [PropertyData("UntrustedRecipientMessages")]
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly_AlwaysGenerate_AllRecipientsRejected(string untrustedRecipientMessage)
         {
             CleanMessages(m_agent.Settings);
@@ -144,8 +144,8 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.Notifications.AlwaysAck = false; //don't care.  This is MDN specific
             m_agent.Settings.Notifications.AutoDsnFailureCreation =
                 NotificationSettings.AutoDsnOption.Always.ToString();
-            m_agent.Settings.AddressManager = new ClientSettings();
-            m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
+            //m_agent.Settings.AddressManager = new ClientSettings();
+            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
@@ -230,8 +230,8 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.Notifications.AutoDsnFailureCreation =
                 NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
-            m_agent.Settings.AddressManager = new ClientSettings();
-            m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
+            //m_agent.Settings.AddressManager = new ClientSettings();
+            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
@@ -291,8 +291,8 @@ namespace Health.Direct.SmtpAgent.Tests
             //
             //m_agent.Settings.Notifications.AutoDsnFailureCreation =
             //    NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
-            m_agent.Settings.AddressManager = new ClientSettings();
-            m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
+            //m_agent.Settings.AddressManager = new ClientSettings();
+            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
@@ -396,8 +396,10 @@ namespace Health.Direct.SmtpAgent.Tests
             return message;
         }
 
-
-        public static IEnumerable<object[]> UntrustedRecipientMessage
+        /// <summary>
+        /// List of mime messages with untrusted recipients.
+        /// </summary>
+        public static IEnumerable<object[]> UntrustedRecipientMessages
         {
             get
             {

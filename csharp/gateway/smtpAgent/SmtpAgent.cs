@@ -588,7 +588,6 @@ namespace Health.Direct.SmtpAgent
             catch (Exception ex)
             {
                 Logger.Error("While sending DSN {0}", ex.Message);
-                Logger.Error(ex);
             }
         }
 

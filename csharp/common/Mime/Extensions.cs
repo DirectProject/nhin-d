@@ -93,6 +93,11 @@ namespace Health.Direct.Common.Mime
             return StringSegment.Split(source, separator);
         }
 
+        /// <summary>
+        /// Remove empty lines.
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
         public static string TrimEmptyLines(this Body body)
         {
             string outputString;

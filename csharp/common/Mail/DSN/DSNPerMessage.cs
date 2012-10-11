@@ -31,7 +31,7 @@ namespace Health.Direct.Common.Mail.DSN
         ///<summary>
         /// Initialize the per-message-fields for DSN
         ///</summary>
-        ///<param name="mtaNameType">DSN reporting-mta</param>
+        ///<param name="reportingMtaName">DSN reporting-mta</param>
         ///<param name="originalMessageId">DSN extension field, <see cref="DSNStandard.Fields.OriginalMessageID"/></param>
         public DSNPerMessage(string reportingMtaName, string originalMessageId)
         {

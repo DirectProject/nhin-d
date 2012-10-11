@@ -79,11 +79,15 @@ namespace Health.Direct.SmtpAgent
                 return;
             }
 
-            DSNMessage notification = this.Produce(envelope, recipients.AsMailAddresses(), dsnAction, classSubCode,
+            if (recipients != null && envelope.UsingDeliveryStatus)
+            {
+                DSNMessage notification = this.Produce(envelope, recipients.AsMailAddresses(), dsnAction, classSubCode,
                                                    subjectSubCode);
+
+                string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
+                notification.Save(filePath);
+            }
             
-            string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
-            notification.Save(filePath);
 
             //Or maybe
             //
@@ -152,12 +156,9 @@ namespace Health.Direct.SmtpAgent
                 throw new ArgumentNullException("envelope");
             }
 
-            if (recipients != null && envelope.UsingDeliveryStatus)
-            {
-                DSNMessage dsnMessage = envelope.CreateDeliveryStatus(recipients, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck, action, classSubCode, subjectSubCode);
-                return dsnMessage;
-            }
-            return null;
+            DSNMessage dsnMessage = envelope.CreateDeliveryStatus(recipients, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck, action, classSubCode, subjectSubCode);
+            return dsnMessage;
+            
         }
     }
 }
