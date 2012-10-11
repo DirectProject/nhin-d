@@ -165,7 +165,7 @@ namespace Health.Direct.Common.Mime
         
         /// <summary>
         /// Splits a header string <paramref name="headerText"/> into header name and value.
-        ///// </summary>
+        /// </summary>
         /// <param name="headerText">The header line</param>
         /// <returns>A pair where the key is the header name, and the value the header value.</returns>
         public override KeyValuePair<string, string> SplitHeader(string headerText)

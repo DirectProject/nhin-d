@@ -23,16 +23,23 @@ using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail.DSN
 {
+    /// <summary>
+    /// Represents DSN (Delivery Status Notification)
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="DSNMessage"/> represents the actually sendable DSN</remarks>
     public class DSN : MultipartEntity
     {
         MimeEntity m_explanation;
         MimeEntity m_notification;
         DSNPerMessage m_perMessage;
         IList<DSNPerRecipient> m_perRecipients;
-        
 
-        
 
+
+        /// <summary>
+        /// Initializes a new instance of the supplied DSN parts.
+        /// </summary>
         public DSN(DSNPerMessage perMessage, IEnumerable<DSNPerRecipient> perRecipient)
             : base(DSNStandard.MediaType.DSNReport)
         {
