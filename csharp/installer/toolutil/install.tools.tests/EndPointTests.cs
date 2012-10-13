@@ -128,5 +128,18 @@ namespace install.tools.tests
 
         }
 
+
+        [Fact]
+        public void TestEmpty()
+        {
+            EndPoint endPoint = new EndPoint();
+            Assert.False(endPoint.TestWcfSoapConnection(String.Empty));
+
+            endPoint = new EndPoint();
+            Assert.False(endPoint.TestWcfSoapConnection("  "));
+
+        }
+
+
     }
 }

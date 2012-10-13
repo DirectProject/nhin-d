@@ -5,11 +5,18 @@ using Quartz;
 
 namespace Health.Direct.MdnMonitor
 {
-    public abstract class CleanupBase
+    /// <summary>
+    /// An object with execution code to clean up expired data.
+    /// </summary>
+    public abstract class Cleanup
     {
         private ConfigStore m_store;
         private ILogger m_logger;
 
+        /// <summary>
+        /// Config Store 
+        /// Configured in <c>Load</c>
+        /// </summary>
         public ConfigStore Store
         {
             get
@@ -18,13 +25,18 @@ namespace Health.Direct.MdnMonitor
             }
         }
 
+        /// <summary>
+        /// Logger
+        /// Configured in <c>Load</c>.
+        /// </summary>
         public ILogger Logger
         {
             get { return m_logger; }
         }
 
-        public abstract void Execute(JobExecutionContext context);
-
+        /// <summary>
+        /// Load applicatioin settings.
+        /// </summary>
         protected void Load()
         {
             try

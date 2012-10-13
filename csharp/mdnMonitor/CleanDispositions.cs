@@ -1,14 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Quartz;
 
 namespace Health.Direct.MdnMonitor
 {
-    public class CleanDispositions : CleanupBase, IJob
+    /// <summary>
+    /// Clean up completed MDNs
+    /// Completed definition:
+    ///     Processed but delivery confirmation not requested
+    ///     Dispatched
+    /// </summary>
+    public class CleanDispositions : Cleanup, IJob
     {
-        public override void Execute(JobExecutionContext context)
+        /// <summary>
+        /// Entry point called when trigger fires.
+        /// </summary>
+        /// <param name="context"></param>
+        public void Execute(JobExecutionContext context)
         {
             Load();
 

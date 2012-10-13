@@ -4,9 +4,16 @@ using Quartz;
 
 namespace Health.Direct.MdnMonitor
 {
-    public class CleanTimeOut : CleanupBase, IJob
+    /// <summary>
+    /// Clean up incomplete MDNs
+    /// </summary>
+    public class CleanTimeOut : Cleanup, IJob
     {
-        public override void Execute(JobExecutionContext context)
+        /// <summary>
+        /// Entry point called when trigger fires.
+        /// </summary>
+        /// <param name="context"></param>
+        public void Execute(JobExecutionContext context)
         {
             Load();
 
