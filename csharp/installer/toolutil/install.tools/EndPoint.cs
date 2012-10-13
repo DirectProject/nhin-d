@@ -39,6 +39,11 @@ namespace Health.Direct.Install.Tools
     {
         public bool TestWcfSoapConnection(string endpoint)
         {
+            if(endpoint.Trim().Length == 0)
+            {
+                return false;
+            }
+
             string svcEndPoint = GetServiceAddress(endpoint);
             string wsdlUrl = svcEndPoint + "?wsdl";
             HttpWebRequest request = WebRequest.Create(wsdlUrl) as HttpWebRequest;

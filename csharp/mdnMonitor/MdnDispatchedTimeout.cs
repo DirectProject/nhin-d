@@ -4,15 +4,23 @@ using System.IO;
 using System.Linq;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Config.Store;
 using Quartz;
 
 namespace Health.Direct.MdnMonitor
 {
-    public class MdnDispatchedTimeout : TimeoutBase, IStatefulJob //Will limit to one job at a time.
+    /// <summary>
+    /// Find expired dispatched MDNs, mark expired and send a failed DSNs
+    /// </summary>
+    public class MdnDispatchedTimeout : Timeout, IStatefulJob //Will limit to one job at a time.
     {
-        public override void Execute(JobExecutionContext context)
+        /// <summary>
+        /// Entry point called when trigger fires.
+        /// </summary>
+        /// <param name="context"></param>
+        public void Execute(JobExecutionContext context)
         {
             var settings = Load(context);
 
@@ -48,6 +56,13 @@ namespace Health.Direct.MdnMonitor
             }
         }
 
+        /// <summary>
+        /// Retrieve expired records.
+        ///     Records without dispatched notification and older than the <c>ExpiredMinutes</c>
+        ///     Load a limited amount of record set by <c>BulkCount</c>
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         protected override IList<Mdn> ExpiredMdns(TimeoutSettings settings)
         {
             IList<Mdn> mdns;
@@ -61,28 +76,23 @@ namespace Health.Direct.MdnMonitor
             }
             return mdns;
         }
-              
-        static NotificationMessage CreateNotificationMessage(Mdn mdn, TimeoutSettings settings)
+
+        static DSNMessage CreateNotificationMessage(Mdn mdn, TimeoutSettings settings)
         {
-            var notification = new Notification(MDNStandard.NotificationType.Processed, true);
-            notification.OriginalMessageID = mdn.MessageId;
-            notification.Gateway = new MdnGateway(MailParser.ParseMailAddress(mdn.Sender).Host, "smtp");
-            notification.Error = settings.ErrorCode;
-            notification.Explanation = "dispatched message timed out.";
-            notification.FinalRecipient = MailParser.ParseMailAddress(mdn.Recipient);
+            var perMessage = new DSNPerMessage(settings.ProductName, mdn.MessageId);
+            var perRecipient = new DSNPerRecipient(DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
+                                                   , DSNStandard.DSNStatus.UNDEFINED_STATUS,
+                                                   MailParser.ParseMailAddress(mdn.Recipient));
+            //
+            // The nature of Mdn storage in config store does not result in a list of perRecipients
+            // If you would rather send one DSN with muliple recipients then one could write their own Job.
+            //
+            var notification = new DSN(perMessage, new List<DSNPerRecipient> { perRecipient });
 
-
-            var notificationMessage = new NotificationMessage(mdn.Recipient, mdn.Sender, notification);
+            var notificationMessage = new DSNMessage(mdn.Recipient, mdn.Sender, notification);
             notificationMessage.IDValue = StringExtensions.UniqueString();
-
-            string originalSubject = mdn.SubjectValue;
-            if (!string.IsNullOrEmpty(originalSubject))
-            {
-                notificationMessage.SubjectValue = string.Format("{0}:{1}", notification.Disposition.Notification.AsString(), originalSubject);
-            }
-
+            notificationMessage.SubjectValue = string.Format("{0}:{1}", "Rejected", mdn.SubjectValue);
             notificationMessage.Timestamp();
-            
             return notificationMessage;
         }
     }

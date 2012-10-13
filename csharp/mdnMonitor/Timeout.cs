@@ -7,11 +7,19 @@ using Quartz;
 
 namespace Health.Direct.MdnMonitor
 {
-    public abstract class TimeoutBase
+    
+    ///<summary>
+    /// An object holding timout conditions and execution code to act on those conditions.
+    ///</summary>
+    public abstract class Timeout
     {
         private ConfigStore m_store;
         private ILogger m_logger;
 
+        /// <summary>
+        /// Config Store 
+        /// Configured in <c>Load</c>
+        /// </summary>
         protected ConfigStore Store
         {
             get
@@ -19,19 +27,39 @@ namespace Health.Direct.MdnMonitor
                 return m_store;
             }
         }
+
+        /// <summary>
+        /// Logger
+        /// Configured in <c>Load</c>.
+        /// </summary>
         protected ILogger Logger
         {
             get { return m_logger; }
         }
 
-        public abstract void Execute(JobExecutionContext context);
+        
+
+        /// <summary>
+        /// Get queued mdns that are considered expired based on type of <c>TimeoutBase</c>
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         protected abstract IList<Mdn> ExpiredMdns(TimeoutSettings settings);
 
+        /// <summary>
+        /// Generate unique mime file name.
+        /// </summary>
+        /// <returns></returns>
         protected string UniqueFileName()
         {
             return StringExtensions.UniqueString() + ".eml";
         }
 
+        /// <summary>
+        /// Load applicatioin settings and job settings
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         protected TimeoutSettings Load(JobExecutionContext context)
         {
             try

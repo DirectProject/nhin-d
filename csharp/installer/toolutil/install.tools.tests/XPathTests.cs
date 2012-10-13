@@ -84,10 +84,42 @@ namespace Health.Direct.Install.Tools.tests
             expected = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10";
 
             Assert.Equal(expected, actual);
+
+
+            actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@Unknown");
+            expected = null;
+
+            Assert.Equal(expected, actual);
         }
 
 
+        [Fact]
+        public void AddingNodes_Test()
+        {
 
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            XPath editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            //
+            // Ensure I am using it right
+            //
+            var actual = editor.SelectSingleAttribute("/SmtpAgentConfig/DomainManager/Url");
+            var expected = "http://localhost/ConfigService/DomainManagerService.svc/Domains";
+            Assert.Equal(expected, actual);
+
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url");
+            expected = null;
+            Assert.Equal(expected, actual);
+
+            editor.CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
+
+            editor.SetSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url", @"http://localhost/ConfigService/MonitorService.svc/Dispositions");
+
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url");
+            expected = @"http://localhost/ConfigService/MonitorService.svc/Dispositions";
+            Assert.Equal(expected, actual);
+        }
 
         [Fact]
         public void GetDomain_Test()

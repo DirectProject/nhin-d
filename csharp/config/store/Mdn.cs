@@ -211,6 +211,7 @@ namespace Health.Direct.Config.Store
             Id = source.Id;
             MessageId = source.MessageId;
             Recipient = source.Recipient;
+            SubjectValue = source.SubjectValue;
             Sender = source.Sender;
             NotifyDispatched = source.NotifyDispatched;
             CreateDate = source.CreateDate;

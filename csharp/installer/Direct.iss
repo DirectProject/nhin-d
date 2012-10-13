@@ -30,7 +30,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.0.0.15
+AppVerName=Direct Project .NET Gateway 2.0.0.0
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -39,10 +39,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.0.0.15-NET35
+OutputBaseFilename=Direct-2.0.0.0-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.0.0.15
+VersionInfoVersion=2.0.0.0
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -59,6 +59,7 @@ Name: dnswebservice; Description: DNS Web service; Types: config;
 Name: configwebservice; Description: Config Web services; Types: config;
 Name: configui; Description: UI Web Admin; Types: config;
 Name: directgateway; Description: Gateway to SMTP; Types: gateway;
+Name: monitorserver; Description: Monitor Server; types: monitor
 Name: developergateway; Description: Developer gateway configuration to SMTP; Types: development; 
 Name: database; Description: DirectConfig database; Types: database;
 
@@ -66,7 +67,8 @@ Name: database; Description: DirectConfig database; Types: database;
 [Types]
 Name: gateway; Description: Gateway               
 Name: dns; Description: DNS Responder; 
-Name: config; Description: Config services             
+Name: config; Description: Config services
+Name: monitor; Description: Monitor Server
 Name: database; Description: Database
 Name: custom; Description: Custom Install; Flags: iscustom;
 Name: development; Description: Developer Install (Single machine and development gateway version)
@@ -75,13 +77,14 @@ Name: development; Description: Developer Install (Single machine and developmen
 Name: "{app}\Log"
 
 [Files]
-Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
+Source: "..\bin\debug\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\debug\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\debug\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway;                            
-Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
-Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
+Source: "..\bin\debug\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+Source: "..\bin\debug\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\debug\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
 Source: "..\bin\debug\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion;
+Source: "..\bin\debug\jobs.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: monitorserver;
 
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
@@ -100,6 +103,7 @@ Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Comp
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway developergateway;
 Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: ignoreversion; Components: directgateway developergateway;
 
+
 Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}"; DestName: "DevAgentConfig.xml"; Flags: ignoreversion; Components: developergateway;            
 Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: developergateway;
 Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion; Components: developergateway;
@@ -109,10 +113,14 @@ Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libra
 
 Source: "createadmin.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createdatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
+Source: "updatedatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createeventlogsource.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "InstallDnsResponder.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: dnsresponder;
+Source: "InstallMonitorServer.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: monitorserver;
 Source: "installgateway.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: directgateway;
 Source: "UninstallDnsResponder.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: dnsresponder;
+Source: "UninstallMonitorServer.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: monitorserver
+
 Source: "uninstallGateway.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: directgateway;
 
 Source: "install-dev.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: developergateway;
@@ -122,6 +130,7 @@ Source: "uninstall.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: d
 Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
+Source: "..\mdnMonitor\mdnMonitorSchema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: monitorserver;
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
                         
 Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
@@ -132,6 +141,7 @@ Type: files; Name: "{app}\direct.ini"
 Type: files; Name: "{app}\Health.Direct.SmtpAgent.tlb"
 Type: files; Name: "{app}\Log\InstallationLogFile.log"
 Type: files; Name: "{app}\Log\installdnsresponder.log"
+Type: files; Name: "{app}\Log\InstallMonitorServer.log"
 Type: files; Name: "{app}\Log\installgateway.log"
 Type: files; Name: "{app}\Log\createeventlogsource.log"
 Type: files; Name: "{app}\InstallTools\Health.Direct.Install.Tools.tlb"
@@ -150,8 +160,10 @@ Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
+Filename: {app}\updatedatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\mdnMonitorSchema.sql"""; Description: Install Database; Flags: runascurrentuser; Components: monitorserver;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
+Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver and not developergateway;
 Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
 Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\Log\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway;
@@ -162,9 +174,10 @@ Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeve
 [UninstallRun]
 Filename: {app}\uninstall.bat; Flags: runascurrentuser; RunOnceId: 'RemoveDeveloperGateway';   Components: developergateway;
 Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder and not developergateway;
+Filename: {app}\UninstallMonitorServer.bat; RunOnceId: 'RemoveMonitorServer';  Components: monitorserver and not developergateway;
 Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway and not developergateway;
-Filename: {dotnet2064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
-Filename: {dotnet2032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: dnsresponder and not developergateway;
+Filename: {dotnet2064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
+Filename: {dotnet2032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
 
 
 [INI]
@@ -185,7 +198,9 @@ var
   
   //Global dns variable
   StartDnsServicePostProcessing : Boolean;
+  StartDirectMonitorWinSrv : Boolean;
   strDnsServiceNameToCheck : String;
+  strDirectMonitorWinSrv : String;
 
    
 
@@ -230,12 +245,29 @@ begin
 end;
 
 
+procedure MonitorServiceStop();
+  var
+    status: Boolean;
+begin
+  strDirectMonitorWinSrv := 'DirectMonitorWinSrv';
+
+  if IsServiceRunning(strDirectMonitorWinSrv) then begin
+    status := StopService(strDirectMonitorWinSrv);
+    StartDirectMonitorWinSrv := true;
+    Sleep(2000);
+    if not status then
+      MsgBox('Stop the Direct Monitor Service manually to continue the installation', mbError, mb_Ok);
+  end;
+end;
+
+
 
 
 
 function InitializeSetup(): Boolean; 
 begin
-  DnsServiceStop();       
+  DnsServiceStop();
+  MonitorServiceStop();
   Result := true;      
 end;
 
@@ -245,6 +277,12 @@ begin
     if StartDnsServicePostProcessing then begin
       if not IsServiceRunning(strDnsServiceNameToCheck) then begin
         StartService(strDnsServiceNameToCheck);
+      end;
+    end;
+    
+    if StartDirectMonitorWinSrv then begin
+      if not IsServiceRunning(strDirectMonitorWinSrv) then begin
+        StartService(strDirectMonitorWinSrv);
       end;
     end;
 
@@ -423,8 +461,6 @@ end;
 
 
 
-
-
 procedure SetDatabaseConnSting(page: TWizardPage; connStr: String);
 var
   tools : Variant;
@@ -448,7 +484,11 @@ begin
       tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
     end;
 
-
+    if (page.Name = 'MdnMonitorService') then
+    begin
+      tools.XmlFilePath := ExpandConstant('{app}') + '\DirectMonitorWinSrv.exe.config';
+      tools.SetSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString', connStr);
+    end;
 
 end;
        
@@ -482,7 +522,8 @@ var
   xpathTools: Variant;     
   textBox: TCustomEdit; 
   labelText: TNewStaticText;
-  value : String; 
+  value : String;
+  existingValue : String;
 begin
   try                              
     xpathTools := CreateOleObject('Direct.Installer.XPathTools');
@@ -493,15 +534,25 @@ begin
     labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
     if not (textBox = nil) then
     begin
-      value := textBox.text;
+      value := Trim(textBox.text);
     end
     else
     begin
       value := labelText.Caption;
     end;
-       
+
+    if ( Length(value) = 0) then Exit;
+
     xpathTools.XmlFilePath := configFile;
-    xpathTools.SetSingleAttribute(xpath, value);  
+    
+    existingValue := xpathTools.SelectSingleAttribute(xpath);
+    
+    if (existingValue = nil) then
+    begin
+      xpathTools.CreateFragment(xpath);
+    end;
+    
+    xpathTools.SetSingleAttribute(xpath, value);
     
 end;
 
@@ -539,6 +590,7 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText');
 
   Result := True;
 end;
@@ -575,7 +627,7 @@ begin
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/DnsRecordManager/Url', 'DnsRecordManagerText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/PropertyManager/Url', 'PropertyText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/BlobManager/Url', 'BlobText');
-
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/MdnMonitor/Url', 'MdnMonitorText');
 
   Result := True;
 
@@ -615,6 +667,7 @@ begin
     RunTestConnect(GatewayAdminPage, 'AddressManagerLabel', 'AddressManagerText');
     RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
+    RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
   except         
     RaiseException(GetExceptionMessage);
   finally
@@ -642,6 +695,7 @@ begin
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
     RunTestConnect(GatewayAdminPage, 'PropertyLabel', 'PropertyText');
     RunTestConnect(GatewayAdminPage, 'BlobLabel', 'BlobText');
+    RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
   except
     RaiseException(GetExceptionMessage);
   finally
@@ -737,6 +791,11 @@ begin
       xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config';
     end;
 
+    if (page.Name = 'MdnMonitorService') then
+    begin
+      xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DirectMonitorWinSrv.exe.config';
+    end;
+    
     dbConnStr := xpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
     Result := dbConnStr;
 end;
@@ -802,9 +861,11 @@ end;
 
 
 
+
 procedure GatewayAdminPageOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewEdit;
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText: TNewEdit;
+  MdnMonitorLabel:  TNewStaticText;
   DomainText: TNewEdit;
   configFile : String;
 begin
@@ -828,7 +889,8 @@ begin
   DnsResolverIpText := TNewEdit(Sender.FindComponent('DnsResolverIpText'));
   DnsResolverIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
   
-
+  MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
+  MdnMonitorText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/MdnMonitor/Url');
 
 end; 
 
@@ -862,7 +924,8 @@ end;
 
 procedure ConfigConsolePageOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText: TNewEdit;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText: TNewEdit;
+  MdnMonitorLabel:  TNewStaticText;
   configFile : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
@@ -887,6 +950,9 @@ begin
 
   BlobText := TNewEdit(Sender.FindComponent('BlobText'));
   BlobText.Text := GetConfigSetting(configFile, '/ConsoleSettings/BlobManager/Url');
+
+  MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
+  MdnMonitorText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/MdnMonitor/Url');
 
 end;
 
@@ -914,7 +980,16 @@ begin
     Result := (pos( 'dnswebservice', WizardSelectedComponents( false)) = 0)
                 or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
   end;
+  
+  if(Page.Name = 'MdnMonitorService') then
+  begin
+    Result := (pos( 'monitorserver', WizardSelectedComponents( false)) = 0)
+                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+  end;
 end;
+
+
+
 
 
 
@@ -1125,7 +1200,6 @@ begin
   HelpButton.Parent := DnsResponderPage.Surface;  
 
   Button := TNewButton.Create(DnsResponderPage);
-  Button.Top := HelpButton.Top + HelpButton.Height + ScaleY(20);
   Button.Height :=  WizardForm.NextButton.Height;
   Button.Width := DnsResponderPage.SurfaceWidth div 4;
   Button.Caption := 'Test: ';
@@ -1175,14 +1249,13 @@ end;
 
 
 
-
 function CreateGatewayWizardPage(pageBefore: TWizardPage): TWizardPage;
 var
   GatewayAdminPage: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel: TNewStaticText;
+  DomainLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel, MdnMonitorLabel: TNewStaticText;
   DomainText : TNewEdit;
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText: TNewEdit;
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText: TNewEdit;
   
 begin
     GatewayAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
@@ -1276,10 +1349,32 @@ begin
     AnchorsText.Width := DomainManagerText.Width;
     AnchorsText.Parent := GatewayAdminPage.Surface;
 
+
+
+
+
+    //Set MdnMonitor Manager
+    MdnMonitorLabel := TNewStaticText.Create(GatewayAdminPage);
+    MdnMonitorLabel.Name := 'MdnMonitorLabel';
+    MdnMonitorLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(11);
+    MdnMonitorLabel.Caption := 'MDN Monitor: ';
+    MdnMonitorLabel.Parent := GatewayAdminPage.Surface;
+
+    MdnMonitorText := TNewEdit.Create(GatewayAdminPage);
+    MdnMonitorText.Name := 'MdnMonitorText';
+    MdnMonitorText.Top := MdnMonitorLabel.Top;
+    MdnMonitorText.Left := DomainManagerText.Left;
+    MdnMonitorText.Width := DomainManagerText.Width;
+    MdnMonitorText.Parent := GatewayAdminPage.Surface;
+    
+    
+    
+    
+
     //Set DnsResolverIp
     DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPage);
     DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
-    DnsResolverIpLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(11);
+    DnsResolverIpLabel.Top :=  MdnMonitorLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
     DnsResolverIpLabel.Caption := 'Dns Resolver IP: ';
     DnsResolverIpLabel.Parent := GatewayAdminPage.Surface;
                               
@@ -1290,6 +1385,10 @@ begin
     DnsResolverIpText.Width := DomainManagerText.Width;
     DnsResolverIpText.Parent := GatewayAdminPage.Surface;
     
+
+
+
+
     GatewayAdminPage.OnActivate := @GatewayAdminPageOnActivate;
     GatewayAdminPage.OnNextButtonClick := @SetGatewayConfigOnClick;
     GatewayAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
@@ -1417,8 +1516,8 @@ function CreateConfigConsolePage(pageBefore: TWizardPage): TWizardPage;
 var
   ConfigConsolePage: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, PropertyLabel, BlobLabel: TNewStaticText;
-  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText: TNewEdit;
+  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, PropertyLabel, BlobLabel, MdnMonitorLabel: TNewStaticText;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText: TNewEdit;
 
 begin
     ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway Console', '');
@@ -1433,7 +1532,6 @@ begin
 
     //Test button
     EndPointsButton := TNewButton.Create(ConfigConsolePage);
-    EndPointsButton.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(11);
     EndPointsButton.Caption := 'Test End Points:';
     EndPointsButton.Width :=  ConfigConsolePage.SurfaceWidth div 4;
     EndPointsButton.OnClick := @ConfigConsoleOnClick;
@@ -1513,7 +1611,7 @@ begin
     DnsRecordManagerText.Left := DomainManagerText.Left;
     DnsRecordManagerText.Width := DomainManagerText.Width;
     DnsRecordManagerText.Parent := ConfigConsolePage.Surface;
-    
+
     
     //Set Property Service endpoint
     PropertyLabel := TNewStaticText.Create(ConfigConsolePage);
@@ -1544,6 +1642,26 @@ begin
     BlobText.Parent := ConfigConsolePage.Surface;
     
     
+
+
+    //Set MdnMonitor Record Manager
+    MdnMonitorLabel := TNewStaticText.Create(ConfigConsolePage);
+    MdnMonitorLabel.Name := 'MdnMonitorLabel';
+    MdnMonitorLabel.Top :=  BlobLabel.Top + BlobLabel.Height + ScaleY(11);
+    MdnMonitorLabel.Caption := 'MDN Monitor: ';
+    MdnMonitorLabel.Parent := ConfigConsolePage.Surface;
+
+    MdnMonitorText := TNewEdit.Create(ConfigConsolePage);
+    MdnMonitorText.Name := 'MdnMonitorText';
+    MdnMonitorText.Top := MdnMonitorLabel.Top;
+    MdnMonitorText.Left := DomainManagerText.Left;
+    MdnMonitorText.Width := DomainManagerText.Width;
+    MdnMonitorText.Parent := ConfigConsolePage.Surface;
+
+
+
+
+
     ConfigConsolePage.OnActivate := @ConfigConsolePageOnActivate;
     ConfigConsolePage.OnNextButtonClick := @SetConfigConsoleEndpointsOnClick;
     ConfigConsolePage.OnShouldSkipPage := @ConfigConsolePage_ShouldSkip;
@@ -1572,7 +1690,6 @@ begin
   HelpButton.Parent := ConfigAdminPage.Surface;  
     
   EndPointsButton := TNewButton.Create(ConfigAdminPage);
-  EndPointsButton.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
   EndPointsButton.Width :=  (ConfigAdminPage.Surface.Width div 4)
   EndPointsButton.Caption := 'Test End Points:';
   EndPointsButton.OnClick := @ConfigAdminHostNameOnClick;
@@ -1785,7 +1902,12 @@ begin
                                               //but in the future we may want to migrate the config console into its own install.
                                               //If you wanted to install the configConsole onto a workstation then pass skipsmtpcheck as a command line parameter to the installer.
                                               //It will ignore the port 25 check and still install.
-  Page := CreateDnsResponderWizardPage(Page); 
+  Page := CreateDnsResponderWizardPage(Page);
+
+  Page := CreateDatabaseConnWizardPage(Page);
+  Page.Name := 'MdnMonitorService';
+  Page.Description := 'DirectMonitorWinSrv.exe.config';
+  
   Page := CreateUIConfigWizardPage(Page);
 
   CreateAboutButtonAndURLLabel(WizardForm, WizardForm.CancelButton);

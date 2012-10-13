@@ -15,6 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml;
 
@@ -27,6 +30,7 @@ namespace Health.Direct.Install.Tools
         string XmlFilePath { get; set; }
         string SelectSingleAttribute(string xpath);
         void SetSingleAttribute(string xpath, string value);
+        void CreateFragment(string xpath);
     }
 
     [ComVisible(true), GuidAttribute("142E02A1-CEF8-4305-AB70-9A26F1ED0F41")]
@@ -74,6 +78,39 @@ namespace Health.Direct.Install.Tools
                     break;
             }
 
+            _document.Save(XmlFilePath);
+        }
+
+        /// <summary>
+        /// Create a document node hierarchy.
+        /// </summary>
+        /// <remarks>
+        /// Xpath should not contain attributes.
+        /// </remarks>
+        /// <param name="xpath"></param>
+        public void CreateFragment(string xpath)
+        {
+            List<string> nodes = xpath.Split('/').ToList();
+            nodes = nodes.FindAll(n => n.Trim().Length > 0);
+            
+            XmlNode element = _document.DocumentElement;
+            if(element == null)
+            {
+                throw new Exception("Cannot find XML document!");
+            }
+            string buildPath = string.Empty;
+            foreach (string node in nodes)
+            {
+                buildPath = buildPath + "/" + node;
+                XmlNode xmlNode = _document.SelectSingleNode(buildPath);
+                if(xmlNode != null)
+                {
+                    continue;
+                }
+                xmlNode = _document.CreateElement(node);
+                element = element.AppendChild(xmlNode);
+            }
+            
             _document.Save(XmlFilePath);
         }
     }

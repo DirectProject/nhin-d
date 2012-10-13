@@ -9,7 +9,7 @@
     <job-detail>
       <name>MdnProcessedTimeout</name>
       <group>MdnProcessedGroup</group>
-      <description>Create failed mdn's for timed out process mdn's.</description>
+      <description>Create failed DSN's for timed out process MDN's.</description>
       <job-type>Health.Direct.MdnMonitor.MdnProcessedTimeout, Health.Direct.MdnMonitor</job-type>
       <volatile>false</volatile>
       <durable>true</durable>
@@ -43,7 +43,6 @@
         <repeat-interval>3000</repeat-interval><!-- Milliseconds -->
       </simple>
     </trigger>
-
   </job>
 
   <job>
@@ -85,14 +84,13 @@
         <!-- Milliseconds -->
       </simple>
     </trigger>
-
   </job>
   
   <job>
     <job-detail>
       <name>CleanTimeOut</name>
       <group>CleanTimeOutGroup</group>
-      <description>Create failed mdn's for timed out process and dispatched mdn's.</description>
+      <description>Clean up incomplete MDNs</description>
       <job-type>Health.Direct.MdnMonitor.CleanTimeOut, Health.Direct.MdnMonitor</job-type>
       <volatile>false</volatile>
       <durable>true</durable>
@@ -116,7 +114,6 @@
         <!-- Milliseconds 10 minutes-->
       </simple>
     </trigger>
-
   </job>
 
 
@@ -126,7 +123,7 @@
     <job-detail>
       <name>CleanDispositions</name>
       <group>CleanDispositionsGroup</group>
-      <description>Clean up processed mdns</description>
+      <description>Clean up completed MDNs</description>
       <job-type>Health.Direct.MdnMonitor.CleanDispositions, Health.Direct.MdnMonitor</job-type>
       <volatile>false</volatile>
       <durable>true</durable>
@@ -150,7 +147,6 @@
         <!-- Milliseconds 10 minutes-->
       </simple>
     </trigger>
-
   </job>
   
 </quartz>
