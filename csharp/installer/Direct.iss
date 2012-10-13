@@ -131,6 +131,7 @@ Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
 Source: "..\mdnMonitor\mdnMonitorSchema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: monitorserver;
+Source: "SqlPatches\2.0.0.0\Domains_Add_AgentName.sql"; DestDir: "{app}\SQL\SqlPatches\2.0.0.0"; Flags: ignoreversion; Components: database developergateway;
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
                         
 Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
@@ -160,6 +161,7 @@ Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
+Filename: {app}\updatedatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\SqlPatches\2.0.0.0\Domains_Add_AgentName.sql"""; Description: Install Database; Flags: runascurrentuser; Components: monitorserver;
 Filename: {app}\updatedatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\mdnMonitorSchema.sql"""; Description: Install Database; Flags: runascurrentuser; Components: monitorserver;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
