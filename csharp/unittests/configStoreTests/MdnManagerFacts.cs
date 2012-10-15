@@ -23,10 +23,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class MdnManagerFacts : ConfigStoreTestBase
     {
-        private static MdnManager CreateManager()
-        {
-            return new MdnManager(CreateConfigStore());
-        }
+        
 
         /// <summary>
         ///A test for Store
@@ -315,7 +312,7 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetTimedOut();
             Assert.Equal(2, mdns.Count());
 
-            target.RemoveTimedOut();
+            target.RemoveTimedOut(TimeSpan.FromSeconds(1));
             mdns = target.GetTimedOut();
             Assert.Equal(0, mdns.Count());
 
@@ -346,7 +343,7 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetTimedOut();
             Assert.Equal(4, mdns.Count());
 
-            target.RemoveTimedOut();
+            target.RemoveTimedOut(TimeSpan.FromSeconds(1));
             mdns = target.GetTimedOut();
             Assert.Equal(0, mdns.Count());
         }
@@ -383,7 +380,7 @@ namespace Health.Direct.Config.Store.Tests
                 target.Update(mdnx);
             }
             Assert.Equal(41,target.Count());
-            target.RemoveDispositions();
+            target.RemoveDispositions(TimeSpan.FromSeconds(1));
             Assert.Equal(0, target.Count());
         }
 
@@ -415,12 +412,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn
                 , Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
 
-
-            //Throw duplicate processed again
-            mdn.Status = MdnStatus.Processed;
-            Assert.Equal(ConfigStoreError.MdnPreviouslyProcessed
-                , Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
-
+            
 
             mdn = BuildMdn(Guid.NewGuid().ToString(), "Name1@nhind.hsgincubator.com", "FailedTest@domain1.test.com", "To dispatch or not dispatch", "fAiled");
             target.Start(new Mdn[] { mdn });

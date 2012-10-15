@@ -17,17 +17,16 @@ namespace Health.Direct.MdnMonitor
         /// <param name="context"></param>
         public void Execute(JobExecutionContext context)
         {
-            Load();
+            var settings = Load(context);
 
             try
             {
-                Console.WriteLine("---{0} executing.[{1}]", context.JobDetail.FullName, DateTime.Now.ToString("r"));
-
-                Store.Mdns.RemoveDispositions();
+                Store.Mdns.RemoveDispositions(TimeSpan.FromDays(settings.Days));
             }
             catch (Exception e)
             {
-                Logger.Error("--- Error in job!", e);
+                Logger.Error("Error in job!");
+                Logger.Error(e.Message);
                 var je = new JobExecutionException(e);
                 throw je;
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Transactions;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.DSN;
@@ -26,30 +27,22 @@ namespace Health.Direct.MdnMonitor
             
             try
             {
-                Console.WriteLine("---{0} executing.[{1}]", context.JobDetail.FullName, DateTime.Now.ToString("r"));
-
                 foreach (var mdn in ExpiredMdns(settings))
                 {
-                    Console.WriteLine("\t process: " + mdn.Id);
-                    
-                    var message = CreateNotificationMessage(mdn, settings);
-                    mdn.Timedout = true;
-
-                    using(var db = Store.CreateContext())
+                    using (TransactionScope scope = new TransactionScope())
                     {
-                        db.BeginTransaction();
-                        Store.Mdns.Update(db, mdn);
-                        db.SubmitChanges();
+                        var message = CreateNotificationMessage(mdn, settings);
                         string filePath = Path.Combine(settings.PickupFolder, UniqueFileName());
+                        MDNManager.TimeOut(mdn);
                         message.Save(filePath);
-                        
-                        db.Commit();
+                        scope.Complete();
                     }
                 }
             }
             catch (Exception e)
             {
-                Logger.Error("--- Error in job!", e);
+                Logger.Error("Error in job!");
+                Logger.Error(e.Message);
                 var je = new JobExecutionException(e);
                 throw je;
             }
@@ -65,14 +58,13 @@ namespace Health.Direct.MdnMonitor
         protected override IList<Mdn> ExpiredMdns(TimeoutSettings settings)
         {
             IList<Mdn> mdns;
-            using (var db = Store.CreateReadContext())
+
+            mdns = MDNManager.GetExpiredProcessed(settings.ExpiredMinutes, settings.BulkCount).ToList();
+            if (mdns.Count() > 0)
             {
-                mdns = db.Mdns.GetExpiredProcessed(settings.ExpiredMinutes, settings.BulkCount).ToList();
-                if (mdns.Count() > 0)
-                {
-                    Logger.Debug("Processing {0} expired processed mdns", mdns.Count());
-                }
+                Logger.Debug("Processing {0} expired processed mdns", mdns.Count());
             }
+            
             return mdns;
         }
 

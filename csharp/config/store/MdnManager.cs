@@ -29,7 +29,9 @@ namespace Health.Direct.Config.Store
 
         readonly ConfigStore m_store;
 
-        internal MdnManager(ConfigStore store)
+        
+
+        public MdnManager(ConfigStore store)
         {
             m_store = store;
         }
@@ -345,41 +347,41 @@ namespace Health.Direct.Config.Store
             db.Mdns.ExecDelete(mdn);
         }
 
-        public void RemoveTimedOut()
+        public void RemoveTimedOut(TimeSpan limitTime)
         {
             using (ConfigDatabase db = Store.CreateContext())
             {
-                RemoveTimedOut(db);
+                RemoveTimedOut(db, limitTime);
             }
 
         }
 
-        public void RemoveTimedOut(ConfigDatabase db)
+        public void RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
 
-            db.Mdns.ExecDeleteTimedOut();
+            db.Mdns.ExecDeleteTimedOut(limitTime);
         }
 
-        public void RemoveDispositions()
+        public void RemoveDispositions(TimeSpan limitTime)
         {
             using (ConfigDatabase db = Store.CreateContext())
             {
-                RemoveDispositions(db);
+                RemoveDispositions(db, limitTime);
             }
         }
 
-        public void RemoveDispositions(ConfigDatabase db)
+        public void RemoveDispositions(ConfigDatabase db, TimeSpan limitTime)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
 
-            db.Mdns.ExecDeleteDispositions();
+            db.Mdns.ExecDeleteDispositions(limitTime);
         }
 
         public void RemoveAll(ConfigDatabase db)

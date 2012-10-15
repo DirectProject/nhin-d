@@ -40,7 +40,7 @@
         <job-name>MdnProcessedTimeout</job-name>
         <job-group>MdnProcessedGroup</job-group>
         <repeat-count>RepeatIndefinitely</repeat-count>       
-        <repeat-interval>3000</repeat-interval><!-- Milliseconds -->
+        <repeat-interval>10000</repeat-interval><!-- 10 seconds-->
       </simple>
     </trigger>
   </job>
@@ -80,8 +80,7 @@
         <job-name>MdnDispatchedTimeout</job-name>
         <job-group>MdnDispatchedGroup</job-group>
         <repeat-count>RepeatIndefinitely</repeat-count>
-        <repeat-interval>9000</repeat-interval>
-        <!-- Milliseconds -->
+        <repeat-interval>10000</repeat-interval><!-- 10 seconds-->
       </simple>
     </trigger>
   </job>
@@ -96,7 +95,10 @@
       <durable>true</durable>
       <recover>false</recover>
       <job-data-map>
-               
+        <entry>
+          <key>Days</key>
+          <value>1</value>
+        </entry>
       </job-data-map>
     </job-detail>
 
@@ -110,8 +112,7 @@
         <job-name>CleanTimeOut</job-name>
         <job-group>CleanTimeOutGroup</job-group>
         <repeat-count>RepeatIndefinitely</repeat-count>
-        <repeat-interval>600000</repeat-interval>
-        <!-- Milliseconds 10 minutes-->
+        <repeat-interval>60000</repeat-interval><!-- 1 minute-->
       </simple>
     </trigger>
   </job>
@@ -129,7 +130,10 @@
       <durable>true</durable>
       <recover>false</recover>
       <job-data-map>
-
+        <entry>
+          <key>Days</key>
+          <value>1</value>
+        </entry>
       </job-data-map>
     </job-detail>
 
@@ -143,8 +147,7 @@
         <job-name>CleanDispositions</job-name>
         <job-group>CleanDispositionsGroup</job-group>
         <repeat-count>RepeatIndefinitely</repeat-count>
-        <repeat-interval>600000</repeat-interval>
-        <!-- Milliseconds 10 minutes-->
+        <repeat-interval>60000</repeat-interval><!-- 1 minute-->
       </simple>
     </trigger>
   </job>

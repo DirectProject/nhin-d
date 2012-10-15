@@ -4,7 +4,7 @@ using Quartz;
 namespace Health.Direct.MdnMonitor
 {
     /// <summary>
-    /// <c>TimeoutSettings</c> represents the quartznet job-data-map name value store in the jobs.xml config file.
+    /// <c>TimeoutSettings</c> represent the quartznet job-data-map name value store in the jobs.xml config file.
     /// </summary>
     public class TimeoutSettings : MdnSettings
     {
