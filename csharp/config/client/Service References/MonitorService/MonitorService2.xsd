@@ -43,6 +43,12 @@
       <xs:enumeration value="InvalidAgentName" />
       <xs:enumeration value="InvalidMdnIdentifier" />
       <xs:enumeration value="InvalidMdn" />
+      <xs:enumeration value="DuplicateProcessedMdn" />
+      <xs:enumeration value="DuplicateDispatchedMdn" />
+      <xs:enumeration value="DuplicateFailedMdn" />
+      <xs:enumeration value="MdnPreviouslyProcessed" />
+      <xs:enumeration value="MdnUncorrelated" />
+      <xs:enumeration value="MdnPreviouslyFailed" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />

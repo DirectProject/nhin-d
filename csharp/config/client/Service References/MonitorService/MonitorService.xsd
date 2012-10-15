@@ -26,6 +26,7 @@
       <xs:element name="Recipient" nillable="true" type="xs:string" />
       <xs:element name="Sender" nillable="true" type="xs:string" />
       <xs:element name="Status" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="SubjectValue" nillable="true" type="xs:string" />
       <xs:element name="Timedout" type="xs:boolean" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
@@ -87,7 +88,9 @@
   </xs:element>
   <xs:element name="SweepTimouts">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="expiredLimit" type="q4:duration" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="SweepTimoutsResponse">

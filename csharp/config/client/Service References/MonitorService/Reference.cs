@@ -36,7 +36,7 @@ namespace Health.Direct.Config.Client.MonitorService {
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimouts", ReplyAction="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsConfigStoreFaultFau" +
             "lt", Name="ConfigStoreFault")]
-        void SweepTimouts();
+        void SweepTimouts(System.TimeSpan expiredLimit);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
@@ -82,8 +82,8 @@ namespace Health.Direct.Config.Client.MonitorService {
             return base.Channel.GetExpiredDispatched(expiredLimit, maxResults);
         }
         
-        public void SweepTimouts() {
-            base.Channel.SweepTimouts();
+        public void SweepTimouts(System.TimeSpan expiredLimit) {
+            base.Channel.SweepTimouts(expiredLimit);
         }
     }
 }

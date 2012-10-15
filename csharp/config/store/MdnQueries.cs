@@ -30,15 +30,25 @@ namespace Health.Direct.Config.Store
             "BEGIN TRAN DELETE From Mdns DBCC CHECKIDENT([Mdns],RESEED,0) COMMIT TRAN ";
 
         private const string Sql_DeleteTimedOutMdns =
-            "BEGIN TRAN DELETE From Mdns Where Timedout = 1 COMMIT TRAN ";
+            @"  BEGIN TRAN 
+                    DELETE From Mdns 
+                    Where 
+                        Timedout = 1 
+                    AND     
+                        CreateDate < {0}
+                COMMIT TRAN ";
 
         private const string Sql_DeleteCompletedMdns =
             @"  BEGIN TRAN 
                     DELETE From Mdns 
-                    Where 
+                    Where
+                    ( 
                         Status = 'processed' AND NotifyDispatched = 0
                     OR
                         Status = 'dispatched'
+                    )
+                    AND
+                        CreateDate < {0}
                 COMMIT TRAN 
             ";
             
@@ -117,14 +127,16 @@ namespace Health.Direct.Config.Store
             table.Context.ExecuteCommand(Sql_DeleteMdn, mdn);
         }
 
-        public static void ExecDeleteTimedOut(this Table<Mdn> table)
+        public static void ExecDeleteTimedOut(this Table<Mdn> table, TimeSpan limitTime)
         {
-            table.Context.ExecuteCommand(Sql_DeleteTimedOutMdns);
+            DateTime lookBackTime = DateTimeHelper.Now.Subtract(limitTime);
+            table.Context.ExecuteCommand(Sql_DeleteTimedOutMdns, lookBackTime.ToString());
         }
 
-        public static void ExecDeleteDispositions(this Table<Mdn> table)
+        public static void ExecDeleteDispositions(this Table<Mdn> table, TimeSpan limitTime)
         {
-            table.Context.ExecuteCommand(Sql_DeleteCompletedMdns);
+            DateTime lookBackTime = DateTimeHelper.Now.Subtract(limitTime);
+            table.Context.ExecuteCommand(Sql_DeleteCompletedMdns, lookBackTime.ToString());
         }
 
         public static void ExecDeleteAll(this Table<Mdn> table)
@@ -132,6 +144,4 @@ namespace Health.Direct.Config.Store
             table.Context.ExecuteCommand(Sql_DeleteAllMdn);
         }
     }
-       
-    
 }

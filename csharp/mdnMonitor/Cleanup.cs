@@ -37,13 +37,15 @@ namespace Health.Direct.MdnMonitor
         /// <summary>
         /// Load applicatioin settings.
         /// </summary>
-        protected void Load()
+        protected CleanupSettings Load(JobExecutionContext context)
         {
             try
             {
-                var settings = new MdnSettings();
+                var settings = new CleanupSettings(context);
                 m_store = new ConfigStore(settings.ConnectionString, settings.QueryTimeout);
                 m_logger = Log.For(this);
+
+                return settings;
             }
             catch (Exception e)
             {

@@ -15,39 +15,170 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
-using System.Text;
+using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Tests;
+using Quartz;
+using Quartz.Job;
+using Quartz.Spi;
 using Xunit;
 
-namespace mdnMonitor.tests
+namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
 {
-    public class TestTimeOut
+    public class TestTimeOut : ConfigStoreTestBase
     {
+        const string PickupFolder = @"c:\inetpub\mailroot\testPickup";
+
         [Fact]
-        public void TestTimeOutToDSNFail()
+        public void TestProcessedTimeOutToDSNFail()
         {
-            //Start 
+            //
+            // Sample data
+            //
+            MdnManager target = CreateManager();
+            InitMdnRecords();
+            CleanMessages(PickupFolder);
+            
+            //timespan and max records set
+            var mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(20, mdns.Count());
 
-            //send message
 
-            //get message as a timeout (processed)
+            MdnProcessedTimeout processedTimeout = new MdnProcessedTimeout();
 
-            //generate DSN Error/Fail
-                //Need a first class Generater or DSNS...
-                // new generator (MDN).Execute
-                // use postmaster email
+            //Execute unprocessed records over 11 minutes old.
+            JobExecutionContext context = CreateProcessedJobExecutionContext(11, 10);
+            processedTimeout.Execute(context); 
 
-            /*
-             *      DSNRecipientHeaders dsnRecipHeaders = 
-                            new DSNRecipientHeaders(DSNAction.FAILED, 
-                            DSNStatus.getStatus(DSNStatus.PERMANENT, DSNStatus.UNDEFINED_STATUS), failedRecipAddress);
-	    	    	
-                    recipientDSNHeaders.add(dsnRecipHeaders);
-                    failedRecipAddresses.add(failedRecipAddress);
-             */
+            //Nothing was processed 
+            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(20, mdns.Count());
 
-            //Send Message.
+            //Execute unprocessed records over 10 minutes old.
+            context = CreateProcessedJobExecutionContext(10, 10);
+            processedTimeout.Execute(context); 
+
+            //10 records left
+            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(10, mdns.Count());
+
+            var files = Directory.GetFiles(PickupFolder);
+            Assert.Equal(10, files.Count());
+
+            //Do it again
+            processedTimeout.Execute(context);
+            mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(0, mdns.Count());
+
+            files = Directory.GetFiles(PickupFolder);
+            Assert.Equal(20, files.Count());
+
+        }
+
+
+        [Fact]
+        public void TestDispatchedTimeOutToDSNFail()
+        {
+            //
+            // Sample data
+            //
+            MdnManager target = CreateManager();
+            InitMdnRecords();
+            CleanMessages(PickupFolder);
+
+            //timespan and max records set
+            var mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(10, mdns.Count());
+
+            MdnDispatchedTimeout dispatchedTimeout = new MdnDispatchedTimeout();
+
+            //Execute unprocessed records over 11 minutes old.
+            JobExecutionContext context = CreateDispatchedJobExecutionContext(11, 5);
+            dispatchedTimeout.Execute(context);
+
+            //Nothing was processed 
+            mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(10, mdns.Count());
+
+            var files = Directory.GetFiles(PickupFolder);
+            Assert.Equal(0, files.Count());
+
+            //Execute unprocessed records over 10 minutes old.
+            context = CreateDispatchedJobExecutionContext(10, 5);
+            dispatchedTimeout.Execute(context);
+            
+            //10 records left
+            mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(5, mdns.Count());
+
+            files = Directory.GetFiles(PickupFolder);
+            Assert.Equal(5, files.Count());
+
+            //Do it again
+            dispatchedTimeout.Execute(context);
+            mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 40);
+            Assert.Equal(0, mdns.Count());
+
+            files = Directory.GetFiles(PickupFolder);
+            Assert.Equal(10, files.Count());
+        }
+
+
+        protected virtual JobExecutionContext CreateProcessedJobExecutionContext(int minutes, int count)
+        {
+            SimpleTrigger trigger = new SimpleTrigger();
+            
+            JobExecutionContext ctx = new JobExecutionContext(
+                null,
+                CreateFiredBundleWithTypedJobDetail(typeof(MdnProcessedTimeout), trigger),
+                null);
+            ctx.JobDetail.JobDataMap.Put("BulkCount", count);
+            ctx.JobDetail.JobDataMap.Put("ExpiredMinutes", minutes);
+            ctx.JobDetail.JobDataMap.Put("PickupFolder", PickupFolder);
+            return ctx;
+        }
+
+
+        protected virtual JobExecutionContext CreateDispatchedJobExecutionContext(int minutes, int count)
+        {
+            SimpleTrigger trigger = new SimpleTrigger();
+            
+            JobExecutionContext ctx = new JobExecutionContext(
+                null,
+                CreateFiredBundleWithTypedJobDetail(typeof(MdnDispatchedTimeout), trigger),
+                null);
+            ctx.JobDetail.JobDataMap.Put("BulkCount", count);
+            ctx.JobDetail.JobDataMap.Put("ExpiredMinutes", minutes);
+            ctx.JobDetail.JobDataMap.Put("PickupFolder", PickupFolder);
+            return ctx;
+        }
+
+        
+
+        /// <summary>
+        /// Creates a simple fired bundle
+        /// </summary>
+        /// <param name="jobType">Type of job.</param>
+        /// <param name="trigger">Trigger instance</param>
+        /// <returns>Simple TriggerFiredBundle</returns>
+        public static TriggerFiredBundle CreateFiredBundleWithTypedJobDetail(Type jobType, Trigger trigger)
+        {
+            JobDetail jobDetail = new JobDetail("jobName", "jobGroup", jobType);
+            TriggerFiredBundle bundle = new TriggerFiredBundle(
+                jobDetail, trigger, null, false, null, null, null, null);
+            return bundle;
+        }
+
+
+        private void CleanMessages(string path)
+        {
+            var files = Directory.GetFiles(path);
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
         }
     }
 }

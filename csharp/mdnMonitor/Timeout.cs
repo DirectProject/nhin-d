@@ -16,6 +16,9 @@ namespace Health.Direct.MdnMonitor
         private ConfigStore m_store;
         private ILogger m_logger;
 
+        protected MdnManager MDNManager { get; set; }
+
+        
         /// <summary>
         /// Config Store 
         /// Configured in <c>Load</c>
@@ -68,6 +71,8 @@ namespace Health.Direct.MdnMonitor
                 m_store = new ConfigStore(settings.ConnectionString, settings.QueryTimeout);
                 m_logger = Log.For(this);
                 
+                MDNManager = new MdnManager(new ConfigStore(settings.ConnectionString));
+
                 return settings;
             }
             catch (Exception e)
