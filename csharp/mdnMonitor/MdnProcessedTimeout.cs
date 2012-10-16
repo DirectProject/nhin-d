@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Transactions;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
@@ -79,8 +80,8 @@ namespace Health.Direct.MdnMonitor
             // If you would rather send one DSN with muliple recipients then one could write their own Job.
             //
             var notification = new DSN(perMessage, new List<DSNPerRecipient> { perRecipient });
-            
-            var notificationMessage = new DSNMessage(mdn.Recipient, mdn.Sender, notification);
+            var sender = new MailAddress(mdn.Sender);
+            var notificationMessage = new DSNMessage(sender.Address, new MailAddress("Postmaster@" + sender.Host).Address, notification);
             notificationMessage.IDValue = StringExtensions.UniqueString();
             notificationMessage.SubjectValue = string.Format("{0}:{1}", "Rejected", mdn.SubjectValue);
             notificationMessage.Timestamp();
