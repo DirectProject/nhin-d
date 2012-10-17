@@ -73,7 +73,7 @@ namespace Health.Direct.MdnMonitor
         {
             var perMessage = new DSNPerMessage(settings.ProductName, mdn.MessageId);
             var perRecipient = new DSNPerRecipient(DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
-                                                   , DSNStandard.DSNStatus.UNDEFINED_STATUS,
+                                                   , DSNStandard.DSNStatus.NETWORK_EXPIRED_DISPATCHED,
                                                    MailParser.ParseMailAddress(mdn.Recipient));
             //
             // The nature of Mdn storage in config store does not result in a list of perRecipients

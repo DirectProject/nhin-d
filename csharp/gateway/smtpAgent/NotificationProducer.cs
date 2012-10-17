@@ -67,7 +67,8 @@ namespace Health.Direct.SmtpAgent
         /// To simplify inbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
         /// You don't need to use SmtpClient or some other SMTP client
         /// </summary>
-        public void Send(OutgoingMessage envelope, string pickupFolder, DirectAddressCollection recipients, DSNStandard.DSNAction dsnAction, int classSubCode, string subjectSubCode)
+        public void Send(OutgoingMessage envelope, string pickupFolder, DirectAddressCollection recipients, 
+            DSNStandard.DSNAction dsnAction, int classSubCode, string subjectSubCode)
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
