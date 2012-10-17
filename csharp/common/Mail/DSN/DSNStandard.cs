@@ -264,6 +264,23 @@ namespace Health.Direct.Common.Mail.DSN
             public static string UNDEFINED_STATUS = "0.0";
 
             /// <summary>
+            /// Delivery time expired
+            /// </summary>
+	        public static string NETWORK_EXPIRED = "4.7";
+
+            /// <summary>
+            /// Delivery time expired for processed MDN
+            /// </summary>
+            public static string NETWORK_EXPIRED_PROCESSED = "4.71";
+
+
+            /// <summary>
+            /// Delivery time expired for dispatched MDN
+            /// </summary>
+            public static string NETWORK_EXPIRED_DISPATCHED = "4.72";
+
+
+            /// <summary>
             /// Build Status Code Structure
             /// </summary>
             /// <remarks>

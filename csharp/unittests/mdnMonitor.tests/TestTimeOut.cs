@@ -18,6 +18,8 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Store.Tests;
 using Quartz;
@@ -75,6 +77,18 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
             files = Directory.GetFiles(PickupFolder);
             Assert.Equal(20, files.Count());
 
+            foreach (var file in files)
+            {
+                Message loadedMessage = Message.Load(File.ReadAllText(file));
+                Assert.True(loadedMessage.IsDSN());
+                Assert.Equal("multipart/report", loadedMessage.ParsedContentType.MediaType);
+                Assert.Equal("Rejected:To dispatch or not dispatch", loadedMessage.SubjectValue);
+                var dsnActual = DSNParser.Parse(loadedMessage);
+                Assert.Equal(DSNStandard.DSNAction.Failed, dsnActual.PerRecipient.First().Action);
+                Assert.Equal("5.4.71", dsnActual.PerRecipient.First().Status);
+            }
+            
+
         }
 
 
@@ -123,6 +137,17 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
 
             files = Directory.GetFiles(PickupFolder);
             Assert.Equal(10, files.Count());
+
+            foreach (var file in files)
+            {
+                Message loadedMessage = Message.Load(File.ReadAllText(file));
+                Assert.True(loadedMessage.IsDSN());
+                Assert.Equal("multipart/report", loadedMessage.ParsedContentType.MediaType);
+                Assert.Equal("Rejected:To dispatch or not dispatch", loadedMessage.SubjectValue);
+                var dsnActual = DSNParser.Parse(loadedMessage);
+                Assert.Equal(DSNStandard.DSNAction.Failed, dsnActual.PerRecipient.First().Action);
+                Assert.Equal("5.4.72", dsnActual.PerRecipient.First().Status);
+            }
         }
 
 
