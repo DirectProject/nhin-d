@@ -16,6 +16,9 @@ namespace Health.Direct.MdnMonitor
         private ConfigStore m_store;
         private ILogger m_logger;
 
+        /// <summary>
+        /// Reference MDNManager for access to data store.
+        /// </summary>
         protected MdnManager MDNManager { get; set; }
 
         
