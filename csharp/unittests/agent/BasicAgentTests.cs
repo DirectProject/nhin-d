@@ -309,6 +309,9 @@ namespace Health.Direct.Agent.Tests
             get
             {
                 yield return new[] { "envelopeSignature.eml" };
+                yield return new[] { "envelopeSignatureContentType1.eml" };
+                yield return new[] { "envelopeSignatureContentType2.eml" };
+
             }
         }
 
