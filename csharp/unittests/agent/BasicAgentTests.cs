@@ -112,7 +112,9 @@ namespace Health.Direct.Agent.Tests
             
             var outgoing = new OutgoingMessage(message);                        
             outgoing = m_tester.AgentA.ProcessOutgoing(outgoing);
-            
+                       
+            Assert.True(outgoing.Message.HasHeader(MailStandard.Headers.Date));
+
             Assert.True(SMIMEStandard.IsEncrypted(outgoing.Message));
             VerifyTrusted(outgoing.Recipients, m_tester.AgentA.MinTrustRequirement);
             Assert.True(outgoing.RejectedRecipients.Count == 0);

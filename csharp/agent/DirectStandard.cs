@@ -36,7 +36,8 @@ namespace Health.Direct.Agent
                       Headers.OrigDate,
                       Headers.MessageID,
                       Headers.InReplyTo,
-                      Headers.References
+                      Headers.References,
+                      Headers.Date
                   };
     }
 }
