@@ -12,8 +12,10 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
+import org.apache.commons.io.FileUtils;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
+import org.nhindirect.stagent.utils.TestUtils;
 
 public class KeyStoreCreate 
 {
@@ -77,7 +79,8 @@ public class KeyStoreCreate
 			importCert("AlAndersonPublicCert", "AlAnderson@hospitalA.direct.visionshareinc.com.der", null);
 			importCert("testemailPubOrgCert", "test.email.com.der", "test.email.comKey.der");
 			importCert("expiredTest", "expired.der", "expiredKey.der");
-			importCert("altnameonly", "altNameOnly.der", "altNameOnlyKey.der");
+			importCert("altnameonly", "altNameOnly.der", "altNameOnlyKey.der");		
+			
 		}
 		catch (Exception e)
 		{
@@ -98,23 +101,33 @@ public class KeyStoreCreate
 				
 			if (service.getByAlias(alias) == null)
 			{
-				InputStream inStream = new FileInputStream(certsBasePath + certFile);
-				CertificateFactory cf = CertificateFactory.getInstance("X.509");
-				X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
-				inStream.close();
-				    
-				PrivateKey ff = null;
-				if (pkFile != null && pkFile.length() > 0)
+
+				if (certFile.endsWith("p12"))
 				{
-		            InputStream btInstream = fullStream (certsBasePath + pkFile);
-		            byte[] key = new byte[btInstream.available()];
-		            KeyFactory kf = KeyFactory.getInstance("RSA");
-		            btInstream.read ( key, 0, btInstream.available() );
-		            btInstream.close();
-		            PKCS8EncodedKeySpec keysp = new PKCS8EncodedKeySpec ( key );
-		            ff = kf.generatePrivate (keysp);			
-				}	            
-	            service.add(ff != null ? X509CertificateEx.fromX509Certificate(cert, ff) : cert, alias);
+					
+					X509Certificate cert = TestUtils.certFromData(FileUtils.readFileToByteArray(new File(certsBasePath + certFile)));
+					service.add(cert, alias);
+				}
+				else
+				{
+					InputStream inStream = new FileInputStream(certsBasePath + certFile);
+					CertificateFactory cf = CertificateFactory.getInstance("X.509");
+					X509Certificate cert = (X509Certificate)cf.generateCertificate(inStream);
+					inStream.close();
+					    
+					PrivateKey ff = null;
+					if (pkFile != null && pkFile.length() > 0)
+					{
+			            InputStream btInstream = fullStream (certsBasePath + pkFile);
+			            byte[] key = new byte[btInstream.available()];
+			            KeyFactory kf = KeyFactory.getInstance("RSA");
+			            btInstream.read ( key, 0, btInstream.available() );
+			            btInstream.close();
+			            PKCS8EncodedKeySpec keysp = new PKCS8EncodedKeySpec ( key );
+			            ff = kf.generatePrivate (keysp);			
+					}	            
+		            service.add(ff != null ? X509CertificateEx.fromX509Certificate(cert, ff) : cert, alias);
+				}
 				System.out.println("Alias added:\r\n\tCert DN: " + service.getByAlias(alias).getSubjectDN().getName() + "\r\n");
 				
 			}

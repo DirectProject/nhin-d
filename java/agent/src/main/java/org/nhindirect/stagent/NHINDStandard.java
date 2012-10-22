@@ -41,6 +41,7 @@ public class NHINDStandard
     	MailStandard.Headers.CC,
     	MailStandard.Headers.BCC,
     	MailStandard.Headers.OrigDate,
+    	MailStandard.Headers.Date,    	
     	MailStandard.Headers.MessageID,
     	MailStandard.Headers.InReplyTo,
         MailStandard.Headers.References

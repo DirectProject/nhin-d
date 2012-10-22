@@ -175,7 +175,7 @@ public class DefaultMessageEnvelope implements MessageEnvelope
 	 * Sets the mime message wrapped in the envelope.
 	 * @param message The mime message wrapped in the envelope.
 	 */
-	protected void setMessage(Message message)
+	public void setMessage(Message message)
 	{
         if (message == null)
             throw new AgentException(AgentError.MissingMessage);

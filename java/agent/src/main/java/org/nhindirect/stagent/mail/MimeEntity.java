@@ -29,6 +29,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.ParseException;
 
 import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.parser.EntitySerializer;
@@ -98,19 +99,15 @@ public class MimeEntity extends MimeBodyPart
      */
     public void verifyContentType(String expectedType) throws MimeException
     {
-    	String parsedType;
     	try
     	{
-    		parsedType = this.getContentType();
-    		if (parsedType == null || !MimeStandard.equals(parsedType, expectedType))
-    		{
-    			throw new MimeException(MimeError.ContentTypeMismatch);
-    		}
+    		verifyContentType(new ContentType(expectedType));
     	}
-    	catch (MessagingException e)
+    	catch (ParseException e)
     	{
-    		throw new MimeException(MimeError.ContentTypeMismatch);
+    		throw new MimeException(MimeError.InvalidMimeEntity, e);
     	}
+    	
     }
 
     /**
@@ -120,11 +117,9 @@ public class MimeEntity extends MimeBodyPart
      */    
     public void verifyContentType(ContentType expectedType) throws MimeException
     {
-    	String parsedType;
     	try
     	{
-    		parsedType = this.getContentType();
-    		if (parsedType == null || !MimeStandard.equals(parsedType, expectedType.toString()))
+    		if (!expectedType.match(this.getContentType()))
     		{
     			throw new MimeException(MimeError.ContentTypeMismatch);
     		}

@@ -6,11 +6,31 @@
         Greg Meyer
         ---
 
+{1.5.3}
+
+    Changes included with release 1.5.3
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Date is promoted to external headers in message wrapping to be compliant with required headers in the applicability statement.
+    
+    * Content type validation is agnostic to content parameter order and use of quotes in parameter values.
+
 {1.5.2}
 
     Changes included with release 1.5.2
     
     []
+    
+    Enhancements
     
  	* NA
     
@@ -25,6 +45,8 @@
     Changes included with release 1.5.1
     
     []
+    
+    Enhancements
     
  	* NA
     
@@ -41,6 +63,8 @@
     
     []
     
+    Bug Fixes    
+    
  	* NA
     
     [] 
@@ -54,6 +78,8 @@
     Changes included with release 1.4.2
     
     []
+    
+    Enhancements
     
  	* NA
     
@@ -69,6 +95,8 @@
     Changes included with release 1.4.1
     
     []
+    
+    Enhancements
     
  	* NA
     
@@ -110,6 +138,8 @@
     
     []
     
+    Enhancements
+    
  	* NA
     
     [] 
@@ -143,6 +173,8 @@
     Changes included with release 1.2.3
     
     []
+    
+    Enhancements
     
  	* NA
     

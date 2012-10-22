@@ -208,7 +208,7 @@ public class TestUtils
 		return retVal;
 	}	
 	
-    private static X509Certificate certFromData(byte[] data)
+    public static X509Certificate certFromData(byte[] data)
     {
     	X509Certificate retVal = null;
         try 
