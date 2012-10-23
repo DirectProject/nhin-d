@@ -23,7 +23,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class DomainManagerFacts : ConfigStoreTestBase
     {
-        private static DomainManager CreateManager()
+        private static new DomainManager CreateManager()
         {
             return new DomainManager(CreateConfigStore());
         }

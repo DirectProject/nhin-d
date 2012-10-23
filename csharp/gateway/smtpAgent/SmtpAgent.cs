@@ -562,16 +562,14 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-
         void SendDeliveryStatus(OutgoingMessage envelope)
         {
             if (!m_settings.InternalMessage.HasPickupFolder)
             {
                 return;
             }
-
             //
-            // Its ok if we fail on sending notifications - that should never cause us to not
+            // Its ok if we fail on sending un-secured notifications - that should never cause us to not
             // deliver the message
             //
             try
@@ -581,15 +579,16 @@ namespace Health.Direct.SmtpAgent
                 {
                     return;
                 }
-
-                m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, envelope.RejectedRecipients
-                    , DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent, DSNStandard.DSNStatus.UNDEFINED_STATUS);
+                m_notifications.SendFailure(envelope, m_settings.InternalMessage.PickupFolder, envelope.RejectedRecipients);
             }
             catch (Exception ex)
             {
-                Logger.Error("While sending DSN {0}", ex.Message);
-            }
+                Logger.Error("While sending un-secured DSN {0}", ex.Message);
+            }     
+
         }
+
+
 
         // If the message contains trusted internal recipients, drop a copy in the pickup folder, so the message can sent back
         // through the incoming pipeline

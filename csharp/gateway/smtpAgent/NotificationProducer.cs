@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Mail;
 using Health.Direct.Agent;
 using Health.Direct.Common.Mail.DSN;
@@ -67,8 +68,7 @@ namespace Health.Direct.SmtpAgent
         /// To simplify inbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
         /// You don't need to use SmtpClient or some other SMTP client
         /// </summary>
-        public void Send(OutgoingMessage envelope, string pickupFolder, DirectAddressCollection recipients, 
-            DSNStandard.DSNAction dsnAction, int classSubCode, string subjectSubCode)
+        public void SendFailure(OutgoingMessage envelope, string pickupFolder, DirectAddressCollection recipients) 
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
@@ -82,8 +82,8 @@ namespace Health.Direct.SmtpAgent
 
             if (recipients != null && envelope.UsingDeliveryStatus)
             {
-                DSNMessage notification = this.Produce(envelope, recipients.AsMailAddresses(), dsnAction, classSubCode,
-                                                   subjectSubCode);
+                DSNMessage notification = this.ProduceFailure(envelope, recipients);
+                           
 
                 string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
                 notification.Save(filePath);
@@ -150,16 +150,38 @@ namespace Health.Direct.SmtpAgent
         /// <param name="classSubCode">Status code class</param>
         /// <param name="subjectSubCode">Status code subject</param>
         /// <returns>An DSNmessages</returns>
-        public DSNMessage Produce(OutgoingMessage envelope, IEnumerable<MailAddress> recipients, DSNStandard.DSNAction action, int classSubCode, string subjectSubCode)
+        public DSNMessage ProduceFailure(OutgoingMessage envelope, DirectAddressCollection recipients)
         {
             if (envelope == null)
             {
                 throw new ArgumentNullException("envelope");
             }
 
-            DSNMessage dsnMessage = envelope.CreateDeliveryStatus(recipients, m_settings.ProductName, m_settings.Text, m_settings.AlwaysAck, action, classSubCode, subjectSubCode);
-            return dsnMessage;
-            
+            if (string.IsNullOrEmpty(m_settings.ProductName))
+            {
+                throw new ArgumentException("reportingAgentName:AgentSettings:ProductName");
+            }
+
+            DSNPerMessage perMessage = new DSNPerMessage(envelope.Sender.Host, envelope.Message.IDValue);
+
+            //
+            // Un-Secured recipients
+            //
+            List<DSNPerRecipient> dsnPerRecipients = envelope.CreatePerRecipientStatus(recipients.UnResolvedCertificates().AsMailAddresses()
+                , m_settings.Text, m_settings.AlwaysAck, DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
+                , DSNStandard.DSNStatus.UNSECURED_STATUS).ToList();
+            //
+            // Un-Trusted recipients
+            //
+            dsnPerRecipients.AddRange(envelope.CreatePerRecipientStatus(recipients.ResolvedCertificates().AsMailAddresses()
+                , m_settings.Text, m_settings.AlwaysAck, DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
+                , DSNStandard.DSNStatus.UNTRUSTED_STATUS).ToList());
+
+            DSN dsn = new DSN(perMessage, dsnPerRecipients);
+
+            //Configure and/or dynamic plus refactor
+            return envelope.Message.CreateStatusMessage(new MailAddress("Postmaster@" + envelope.Sender.Host), dsn);
+
         }
     }
 }

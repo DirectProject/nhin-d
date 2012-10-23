@@ -23,7 +23,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class AddressManagerFacts : ConfigStoreTestBase
     {
-        private static AddressManager CreateManager()
+        private static new AddressManager CreateManager()
         {
             return new AddressManager(CreateConfigStore());
         }
