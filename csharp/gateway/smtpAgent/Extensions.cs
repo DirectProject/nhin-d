@@ -15,8 +15,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Mail;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Health.Direct.Agent;
 using Health.Direct.Common.Mail;
@@ -363,6 +365,43 @@ namespace Health.Direct.SmtpAgent
                 field.Value = value;
                 fields.Update();
             }
+        }
+
+        
+        /// <summary>
+        /// Find <c>DirectAddress</c>s without Certificates
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        public static DirectAddressCollection ResolvedCertificates(this DirectAddressCollection addresses)
+        {
+            DirectAddressCollection untrusted = new DirectAddressCollection();
+            foreach (DirectAddress addr in addresses)
+            {
+                if (addr.ResolvedCertificates)
+                {
+                    untrusted.Add(addr);
+                }
+            }
+            return untrusted;
+        }
+
+        /// <summary>
+        /// Find <c>DirectAddress</c>s without Certificates
+        /// </summary>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        public static DirectAddressCollection UnResolvedCertificates(this DirectAddressCollection addresses)
+        {
+            DirectAddressCollection unsecured = new DirectAddressCollection();
+            foreach (DirectAddress addr in addresses)
+            {
+                if ( ! addr.ResolvedCertificates)
+                {
+                    unsecured.Add(addr);
+                }
+            }
+            return unsecured;
         }
 
     }

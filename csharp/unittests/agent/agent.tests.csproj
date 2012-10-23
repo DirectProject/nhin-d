@@ -134,6 +134,12 @@
     <None Include="Certificates\nhind\Public\umesh.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\noAnchor\Private\Direct.NoAnchor.Hobo.lab.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\noAnchor\Public\Direct.NoAnchor.Hobo.lab.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\redmond\IncomingAnchors\um-amalga1-vm1.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

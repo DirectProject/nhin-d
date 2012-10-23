@@ -853,7 +853,12 @@ namespace Health.Direct.Agent
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
-                recipient.Certificates = this.ResolvePublicCerts(recipient, false);
+                X509Certificate2Collection certificates = this.ResolvePublicCerts(recipient, false);
+                recipient.Certificates = certificates;
+                if(certificates != null)
+                {
+                    recipient.ResolvedCertificates = true;
+                }
             }
         }
         
