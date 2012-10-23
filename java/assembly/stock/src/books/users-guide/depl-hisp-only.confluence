@@ -128,7 +128,7 @@ Install Sun Java 6 JDK. By default it is not included in the shipped repository,
 
 *Note:* It is okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
 
-_Ubuntu 12.04 and 12.10_
+_Ubuntu 12.04_
 
 The Sun JDK 6 has been moved to a Personal Package Archive (PPA) starting with Ubuntu 12.04.  You will need to add Flexiondotorg repository to install the Sun JDK.
 
@@ -144,6 +144,23 @@ Similar to previous versions of Ubuntu, you need to update java-alternatives to 
  sudo update-java-alternatives -s java-6-sun
  export JAVA_HOME=/usr/lib/jvm/java-6-sun
  echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc
+{code}
+
+_Ubuntu 12.10_
+
+As of this writing, the Flexiondotorg does yet have a distribution for the 12.10 Quantal Quetzal release.  Until then, an alternate [method|http://www.techytalk.info/latest-oracle-sun-java-jdk-and-jre-6-on-ubuntu-operating-systems] exists using a BASH script and other work from Martin Wimpress and Janusz Dziemidowicz available on GitHub.
+
+Again, you need to update java-alternatives to use the newly installed Java version instead of default shipped version.
+
+{code}
+ cd ~/
+ wget https://raw.github.com/flexiondotorg/oab-java6/master/oab-java.sh -O oab-java6.sh
+ chmod +x oab-java6.sh
+ sudo ./oab-java6.sh
+ sudo apt-get install sun-java6-jdk
+ sudo update-java-alternatives -s java-6-sun
+ export JAVA_HOME=/usr/lib/jvm/java-6-sun
+ echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc 
 {code}
 
 _CentOS/RHEL_
@@ -456,7 +473,13 @@ h2. Distributing Certificates
 
 The prefered distribution mechanism for distributing your HISP's org certificate is DNS CERT records.  Instructions for setting up the Direct DNS server are found in the DNS server deploymenet [guide|http://api.nhindirect.org/java/site/dns/1.2.1/users-guide/deploy.html].
 
-Another alternative still in the formalization stage is LDAP.  The default settings in the security and trust agent will attempt to use the Direct LDAP specication if SRV records can be found.  The LDAP standards can be found on the S&I framework's Certificate Discovery for Direct Project workgroup [page|http://wiki.siframework.org/Certificate+Discovery+for+Direct+Project].
+*NOTE* Some OS distributions such as Ubuntu may already be running their own DNS server process.  If the OS is already running a DNS server bound to the DNS ports (TCP and UDP ports 53), then you will need to stop these services before running the Direct DNS server.  For example, to determine if Ubuntu already has a DNS running, run the following command and check for a process listening on port.
+
+{code}
+ netstat -anp | grep 53
+{code}
+
+Another alternative is LDAP.  The default settings in the security and trust agent will attempt to use the Direct LDAP specication if SRV records can be found.  The LDAP standards can be found on the S&I framework's Certificate Discovery for Direct Project workgroup [page|https://docs.google.com/document/d/1igDpIizm7CTfV-fUw_1EnrCUGIljFEgLPRHpgK5iaec/edit].
 
 A fall back alternative is manually distributing your org certificate to the HISPs that you will communicate.  This is an out of band process that will require you to determine how to get your certificate to the HISP.  Likewise another HISP may need to manually give you their certificate(s) if they do not support DNS or LDAP discovery.  To add another HISPs certificate (not anchor) to you HISP, import the certificate file into the Certificates section of the configuration ui tool.
 
