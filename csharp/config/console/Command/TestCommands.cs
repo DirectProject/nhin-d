@@ -82,6 +82,7 @@ namespace Health.Direct.Config.Console.Command
             string basePath = path;
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
+            string noAnchorCertsPath = MakeCertificatesPath(basePath, "noAnchor");
 
             SystemX509Store store;
             WriteLine("Installing Private Certs");
@@ -96,6 +97,7 @@ namespace Health.Direct.Config.Console.Command
             {
                 InstallCerts(store, LoadCerts(redmondCertsPath, "Public"));
                 InstallCerts(store, LoadCerts(nhindCertsPath, "Public"));
+                InstallCerts(store, LoadCerts(noAnchorCertsPath, "Public"));
             }
 
             WriteLine("Installing Anchors Certs");
