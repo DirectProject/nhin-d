@@ -25,7 +25,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class CertificateManagerFacts : ConfigStoreTestBase
     {
-        private static CertificateManager CreateManager()
+        private static new CertificateManager CreateManager()
         {
             return new CertificateManager(CreateConfigStore());
         }

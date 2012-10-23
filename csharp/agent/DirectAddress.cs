@@ -28,7 +28,8 @@ namespace Health.Direct.Agent
         X509Certificate2Collection m_certificates;
         TrustEnforcementStatus m_trustStatus;
         X509Certificate2Collection m_trustAnchors;
-        
+        bool m_resolvedCertificates;
+
         /// <summary>
         /// Creates a Direct address without associated certificates. (The associated certificates
         /// and trust anchors must be later set from, e.g., an external store or source).
@@ -75,7 +76,23 @@ namespace Health.Direct.Agent
                 this.m_certificates = value;
             }
         }
-        
+
+        /// <summary>
+        /// Gets and sets the flag indicating public certs can be resovled.
+        /// </summary>
+        /// <value>Flag indicating the Security portion of "Security And Trust"</value>
+        public bool ResolvedCertificates
+        {
+            get
+            {
+                return this.m_resolvedCertificates;
+            }
+            set
+            {
+                this.m_resolvedCertificates = value;
+            }
+        }
+
         /// <summary>
         /// Gets if this address has associated certificates
         /// </summary>

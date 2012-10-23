@@ -20,7 +20,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class DnsRecordManagerFacts : ConfigStoreTestBase
     {
-        private static DnsRecordManager CreateManager()
+        private static new DnsRecordManager CreateManager()
         {
             return new DnsRecordManager(CreateConfigStore());
         }

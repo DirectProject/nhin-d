@@ -114,49 +114,40 @@ namespace Health.Direct.Agent
         public bool UseIncomingTrustAnchors = false;
 
         /// <summary>
-        /// Create Deliery Status Notification (DSN) for this message - IF DSNs should be generated. 
-        /// Since the message could have multiple recipients, an independant MDN is generated FROM each recipient. 
+        /// Create PerRecipient Status part of (DSN) for this message - IF DSNs should be generated. 
         /// If no DSN should be generated, returns NULL. 
         ///   - If there are no recipients
         ///   - If the message is itself an MDN or DSN
         /// </summary>
         /// <param name="recipients">Final-Recipients to report on delivery status</param>
-        /// <param name="reportingAgentName">The name of the MTA or MUA that is generating this ack</param>
         /// <param name="textMessage">Optional text message to accompany the Ack</param>
         /// <param name="alwaysAck">Generate acks even when none were requested</param>
         /// <param name="action">DSN action</param>
         /// <param name="classSubCode">Status code class</param>
         /// <param name="subjectSubCode">Status code subject</param>
         /// <returns>An DSNMessage</returns>
-        public DSNMessage CreateDeliveryStatus(IEnumerable<MailAddress> recipients, string reportingAgentName, string textMessage
+        public IEnumerable<DSNPerRecipient> CreatePerRecipientStatus(IEnumerable<MailAddress> recipients, string textMessage
             , bool alwaysAck, DSNStandard.DSNAction action, int classSubCode, string subjectSubCode)
         {
             if (recipients == null)
             {
                 throw new ArgumentException("senders");
-            }
-
-            if (string.IsNullOrEmpty(reportingAgentName))
-            {
-                throw new ArgumentException("reportingAgentName");
-            }
-
+            }        
+            
             if (this.Message.IsMDN())
             {
                 return null;
             }
 
-            var perMessage = new DSNPerMessage(Sender.Host, this.Message.IDValue);
+            
             var perRecipients = recipients.Select(
                     recipient => 
                     new DSNPerRecipient(action, classSubCode, subjectSubCode, recipient)
                 ).ToList();
 
+            return perRecipients;
 
-            var dsn = new DSN(perMessage, perRecipients);
-                                                                //Configure and/or dynamic plus refactor
-            return this.Message.CreateStatusMessage(new MailAddress("Postmaster@" + Sender.Host), dsn);
-            
+
         }
 
 

@@ -23,7 +23,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class AnchorManagerFacts : ConfigStoreTestBase 
     {
-        private static AnchorManager CreateManager()
+        private static new AnchorManager CreateManager()
         {
             return new AnchorManager(CreateConfigStore());
         }

@@ -264,6 +264,19 @@ namespace Health.Direct.Common.Mail.DSN
             public static string UNDEFINED_STATUS = "0.0";
 
             /// <summary>
+            /// Recipient cannot be secured
+            ///     Public Certificate cannot be found
+            /// </summary>
+            public static string UNSECURED_STATUS = "7.31";
+                       
+
+            /// <summary>
+            /// Recipient cannot be trusted
+            ///     Anchor cert cannot be found.
+            /// </summary>
+            public static string UNTRUSTED_STATUS = "7.11";
+
+            /// <summary>
             /// Delivery time expired
             /// </summary>
 	        public static string NETWORK_EXPIRED = "4.7";

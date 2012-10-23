@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Health.Direct.Agent;
@@ -134,7 +135,9 @@ namespace Health.Direct.SmtpAgent.Tests
         /// </summary>
         [Theory]
         [PropertyData("UntrustedRecipientMessages")]
-        public void TestFailedDSN_SecurityAndTrustOutGoingOnly_AlwaysGenerate_AllRecipientsRejected(string untrustedRecipientMessage)
+        public void TestFailedDSN_SecurityAndTrustOutGoingOnly_AlwaysGenerate_AllRecipientsRejected(
+            string untrustedRecipientMessage
+            , List<DSNPerRecipient> perRecipientExpected)
         {
             CleanMessages(m_agent.Settings);
             CleanMonitor();
@@ -204,6 +207,18 @@ namespace Health.Direct.SmtpAgent.Tests
                 var dsnMessage = new CDOSmtpMessage(message).GetEnvelope();
                 Assert.True(dsnMessage.Message.IsDSN());
                 Assert.False(dsnMessage.Message.IsMDN());
+
+                var dsn = DSNParser.Parse(dsnMessage.Message);
+                foreach (var perRecipient in dsn.PerRecipient)
+                {
+                    string finalRecipient = perRecipient.FinalRecipient.Address;
+                    var expectedPerRecipient = perRecipientExpected.Find(d => d.FinalRecipient.Address == finalRecipient);
+                    Assert.Equal(expectedPerRecipient.Action, perRecipient.Action);
+                    Assert.Equal(expectedPerRecipient.Status, perRecipient.Status);
+                }
+                
+                
+
             }
             Assert.True(foundDsn);
 
@@ -403,10 +418,10 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             get
             {
-                yield return new[]
+                yield return new object[]
                                  {
                                      string.Format(@"From: <toby@redmond.hsgincubator.com>
-To: <xyz@untrusted.com>
+To: <drbob@dontknowyou.com>
 Subject: Bad Text Message
 Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -414,12 +429,16 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 Bad message?", Guid.NewGuid())
+             , new List<DSNPerRecipient>
+             {
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.UNSECURED_STATUS, new MailAddress("drbob@dontknowyou.com"))
+             }
                     };
 
-                yield return new[]
+                yield return new object[]
                                  {
                                      string.Format(@"From: <toby@redmond.hsgincubator.com>
-To: <xyz@untrusted.com>, drbob@dontknowyou.com
+To: <xyz@Direct.NoAnchor.Hobo.lab>
 Subject: Bad Text Message
 Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -427,6 +446,28 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 Bad message?", Guid.NewGuid())
+             , new List<DSNPerRecipient>
+             {
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.UNTRUSTED_STATUS, new MailAddress("xyz@Direct.NoAnchor.Hobo.lab"))
+             }
+                                 };
+
+                yield return new object[]
+                                 {
+                                     string.Format(@"From: <toby@redmond.hsgincubator.com>
+To: <xyz@Direct.NoAnchor.Hobo.lab>, drbob@dontknowyou.com
+Subject: Bad Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Bad message?", Guid.NewGuid())
+             , new List<DSNPerRecipient>
+             {
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.UNTRUSTED_STATUS, new MailAddress("xyz@Direct.NoAnchor.Hobo.lab")),
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.UNSECURED_STATUS, new MailAddress("drbob@dontknowyou.com"))
+             }
                     };
             }
         }
