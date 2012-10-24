@@ -217,13 +217,23 @@
                   <mkdir dir="${project.build.directory}/direct/tools" />
                   <mkdir dir="${project.build.directory}/direct/tools/lib" />
                   <copy todir="${project.build.directory}/direct/tools/lib">
-                    <fileset dir="${project.build.directory}/lib"/>
+                    <fileset dir="${project.build.directory}/lib">
+                        <include name="activiation*" />
+                        <include name="agent*" />
+                        <include name="bcmail*" />
+                        <include name="bcprov*" />     
+                        <include name="commons-codec*" />    
+                        <include name="commons-io*" />   
+                        <include name="commons-logging*" />  
+                        <include name="concurrent*" />                           
+                        <include name="dnsjava*" />
+                        <include name="dsn*" />    
+                        <include name="guice*" />  
+                        <include name="jcs*" />    
+                        <include name="mail*" />                                  
+                    </fileset>
                   </copy>  
-                  <!--  
-                  <copy todir="${project.build.directory}/direct/tools">
-                    <fileset dir="${project.build.directory}/src/tools"/>
-                  </copy>  
-                   -->                              
+                          
                 </tasks>
               </configuration>
               <goals>
