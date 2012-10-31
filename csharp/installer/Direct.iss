@@ -30,7 +30,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 2.0.0.0
+AppVerName=Direct Project .NET Gateway 1.1.0.0
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -39,10 +39,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-2.0.0.0-NET35
+OutputBaseFilename=Direct-1.1.0.0-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=2.0.0.0
+VersionInfoVersion=1.1.0.0
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -131,7 +131,7 @@ Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
 Source: "..\mdnMonitor\mdnMonitorSchema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: monitorserver;
-Source: "SqlPatches\2.0.0.0\Domains_Add_AgentName.sql"; DestDir: "{app}\SQL\SqlPatches\2.0.0.0"; Flags: ignoreversion; Components: database developergateway;
+Source: "SqlPatches\1.1.0.0\Domains_Add_AgentName.sql"; DestDir: "{app}\SQL\SqlPatches\1.1.0.0"; Flags: ignoreversion; Components: database developergateway;
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
                         
 Source: "toolutil\install.tools\bin\debug\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
@@ -161,7 +161,7 @@ Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
-Filename: {app}\updatedatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\SqlPatches\2.0.0.0\Domains_Add_AgentName.sql"""; Description: Install Database; Flags: runascurrentuser; Components: monitorserver;
+Filename: {app}\updatedatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\SqlPatches\1.1.0.0\Domains_Add_AgentName.sql"""; Description: Install Database; Flags: runascurrentuser; Components: monitorserver;
 Filename: {app}\updatedatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\mdnMonitorSchema.sql"""; Description: Install Database; Flags: runascurrentuser; Components: monitorserver;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;

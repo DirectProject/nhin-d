@@ -49,14 +49,14 @@ namespace Health.Direct.Common.Mail.DSN
             /// MIME type with qualifier for a disposition report
             /// </summary>
             public const string DSNReport = ReportMessage + "; report-type=delivery-status";
-         
+
             /// <summary>
             /// The DSN part content type
             /// </summary>
             public static string DSNDeliveryStatus = "message/delivery-status";
 
             /// <summary>
-	        ///  Report parameter value indication a DSN message.
+            ///  Report parameter value indication a DSN message.
             /// </summary>
             public static string ReportTypeValueDelivery = "delivery-status";
 
@@ -66,15 +66,15 @@ namespace Health.Direct.Common.Mail.DSN
             public static string ReportType = "report-type";
 
         }
+
         /// <summary>
-        /// DSN standard headers
+        /// DSN standard fields from RFC 3464
         /// </summary>
         public static class Fields
         {
             /// <summary>
             /// Final recipient
             /// </summary>
-
             public static string FinalRecipient = "Final-Recipient";
 
             /// <summary>
@@ -92,11 +92,169 @@ namespace Health.Direct.Common.Mail.DSN
             /// </summary>
             public static string ReportingMTA = "Reporting-MTA";
 
+
+            /// <summary>
+            ///           
+            ///  The value associated with the Remote-MTA DSN field is a printable
+            ///  ASCII representation of the name of the "remote" MTA that reported
+            ///  delivery status to the "reporting" MTA.
+            ///
+            ///     remote-mta-field = "Remote-MTA" ":" mta-name-type ";" mta-name
+            ///
+            ///  NOTE: The Remote-MTA field preserves the "while talking to"
+            ///  information that was provided in some pre-existing nondelivery
+            ///  reports.
+            ///
+            ///  This field is optional.  It MUST NOT be included if no remote MTA was
+            ///  involved in the attempted delivery of the message to that recipient.
+            ///
+            /// </summary>
+            public static string RemoteMTA = "Remote-MTA";
+
+
             /// <summary>
             /// Not part of the DSN standard, but a custom header for the original message id
             /// </summary>
             public static string OriginalMessageID = "X-Original-Message-ID";
+
+            /// <summary>
+            /// The Original-Recipient field indicates the original recipient address
+            /// as specified by the sender of the message for which the DSN is being
+            /// issued.
+            /// </summary>
+            public static string OriginalRecipient = "Original-Recipient";
+
+            /// <summary>
+            /// For a "failed" or "delayed" recipient, the Diagnostic-Code DSN field
+            ///  contains the actual diagnostic code issued by the mail transport.
+            ///  Since such codes vary from one mail transport to another, the
+            ///  diagnostic-type sub-field is needed to specify which type of
+            ///  diagnostic code is represented.
+            ///
+            ///   diagnostic-code-field =
+            ///         "Diagnostic-Code" ":" diagnostic-type ";" *text
+            ///
+            ///  NOTE: The information in the Diagnostic-Code field may be somewhat
+            ///  redundant with that from the Status field.  The Status field is
+            ///  needed so that any DSN, regardless of origin, may be understood by
+            ///  any user agent or gateway that parses DSNs.  Since the Status code
+            ///  will sometimes be less precise than the actual transport diagnostic
+            ///  code, the Diagnostic-Code field is provided to retain the latter
+            ///  information.  Such information may be useful in a trouble ticket sent
+            ///  to the administrator of the Reporting MTA, or when tunneling foreign
+            ///  non-delivery reports through DSNs.
+            ///
+            ///  If the Diagnostic Code was obtained from a Remote MTA during an
+            ///  attempt to relay the message to that MTA, the Remote-MTA field should
+            ///  be present.  When interpreting a DSN, the presence of a Remote-MTA
+            ///  field indicates that the Diagnostic Code was issued by the Remote
+            ///  MTA.  The absence of a Remote-MTA indicates that the Diagnostic Code
+            ///  was issued by the Reporting MTA.
+            ///
+            ///  In addition to the Diagnostic-Code itself, additional textual
+            ///  description of the diagnostic, MAY appear in a comment enclosed in
+            ///  parentheses.
+            ///  
+            ///  This field is optional, because some mail systems supply no
+            ///  additional information beyond that which is returned in the 'action'
+            ///  and 'status' fields.  However, this field SHOULD be included if
+            ///  transport-specific diagnostic information is available.
+            /// </summary>
+            public static string DiagnosticCode = "Diagnostic-Code";
+
+            /// <summary>
+            ///           The Last-Attempt-Date field gives the date and time of the last
+            ///  attempt to relay, gateway, or deliver the message (whether successful
+            ///  or unsuccessful) by the Reporting MTA.  This is not necessarily the
+            ///  same as the value of the Date field from the header of the message
+            ///  used to transmit this delivery status notification: In cases where
+            ///  the DSN was generated by a gateway, the Date field in the message
+            ///  header contains the time the DSN was sent by the gateway and the DSN
+            ///  Last-Attempt-Date field contains the time the last delivery attempt
+            ///  occurred.
+            ///
+            ///     last-attempt-date-field = "Last-Attempt-Date" ":" date-time
+            ///
+            ///  This field is optional.  It MUST NOT be included if the actual date
+            ///  and time of the last delivery attempt are not available (which might
+            ///  be the case if the DSN were being issued by a gateway).
+            ///
+            ///  The date and time are expressed in RFC 822 'date-time' format, as
+            ///  modified by [HOSTREQ].  Numeric timezones ([+/-]HHMM format) MUST be
+            ///  used.
+            ///
+            /// </summary>
+            public static string LastAttemptDate = "Last-Attempt-Date";
+
+            /// <summary>
+            /// The "final-log-id" field gives the final-log-id of the message that
+            /// was used by the final-mta.  This can be useful as an index to the
+            /// final-mta's log entry for that delivery attempt.
+            ///
+            ///    final-log-id-field = "Final-Log-ID" ":" *text
+            ///
+            /// This field is optional.
+            ///
+            /// </summary>
+            public static string FinalLogId = "Final-Log-ID";
+
+            /// <summary>
+            /// For DSNs of type "delayed", the Will-Retry-Until field gives the date
+            /// after which the Reporting MTA expects to abandon all attempts to
+            /// deliver the message to that recipient.  The Will-Retry-Until field is
+            /// optional for "delay" DSNs, and MUST NOT appear in other DSNs.
+            ///
+            /// will-retry-until-field = "Will-Retry-Until" ":" date-time 
+            /// 
+            /// The date and time are expressed in RFC 822 'date-time' format, as
+            /// modified by [HOSTREQ].  Numeric timezones ([+/-]HHMM format) MUST be
+            /// used.
+            /// </summary>
+            public static string WillRetryUntil = "Will-Retry-Until";
+
         }
+
+        /// <summary>
+        /// The Per-Recipiebnt DSN fields
+        /// </summary>
+        public static readonly string[] PerRecipientFields
+            = new[]
+                  {
+                      Fields.FinalRecipient,
+                      Fields.Action,
+                      Fields.Status,
+                      Fields.OriginalRecipient,
+                      Fields.RemoteMTA,
+                      Fields.DiagnosticCode,
+                      Fields.LastAttemptDate,
+                      Fields.FinalLogId,
+                      Fields.WillRetryUntil
+                  };
+
+        /// <summary>
+        /// The Per-Recipiebnt DSN required fields
+        /// </summary>
+        public static readonly string[] PerRecipientRequiredFields
+            = new[]
+                  {
+                      Fields.FinalRecipient,
+                      Fields.Action,
+                      Fields.Status
+                  };
+
+        /// <summary>
+        /// The Per-Recipiebnt DSN optional fields
+        /// </summary>
+        public static readonly string[] PerRecipientOptionalFields
+            = new[]
+                  {
+                      Fields.OriginalRecipient,
+                      Fields.RemoteMTA,
+                      Fields.DiagnosticCode,
+                      Fields.LastAttemptDate,
+                      Fields.FinalLogId,
+                      Fields.WillRetryUntil
+                  };
 
         internal const string AddressType_Mail = "rfc822";
         internal const string DsnAction_Failed = "failed";
@@ -268,7 +426,7 @@ namespace Health.Direct.Common.Mail.DSN
             ///     Public Certificate cannot be found
             /// </summary>
             public static string UNSECURED_STATUS = "7.31";
-                       
+
 
             /// <summary>
             /// Recipient cannot be trusted
@@ -279,7 +437,7 @@ namespace Health.Direct.Common.Mail.DSN
             /// <summary>
             /// Delivery time expired
             /// </summary>
-	        public static string NETWORK_EXPIRED = "4.7";
+            public static string NETWORK_EXPIRED = "4.7";
 
             /// <summary>
             /// Delivery time expired for processed MDN

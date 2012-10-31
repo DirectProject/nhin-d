@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using System.Net.Mime;
 using Health.Direct.Common.Extensions;
@@ -30,6 +31,10 @@ namespace Health.Direct.Common.Mail.DSN
     /// </summary>
     public class DSNParser
     {
+        ///<summary>
+        /// In memory padding header for collecting per-recipient headers into collections
+        ///</summary>
+        public const string SeperatorHeader = "Per-Recipient-Pad";
 
         /// <summary>
         /// Extract DSN from a message
@@ -78,12 +83,16 @@ namespace Health.Direct.Common.Mail.DSN
             //
             // Extract notification fields from the MDN Body
             //
-            HeaderCollection mdnFields = ParseDSNFields(deliveryStatus);
+            HeaderCollection dsnFields = ParseDSNFields(deliveryStatus);
+            //
+            // Aggregate the per-recipient headers for easier access
+            //
+            List<HeaderCollection> perRecipientCollection = ParsePerRecientFields(deliveryStatus);
             //
             // Transform the raw fields into a structured object
             //
-            
-            return new DSN(explanation, mdnFields);
+
+            return new DSN(explanation, dsnFields, perRecipientCollection);
         }
 
         /// <summary>
@@ -150,19 +159,7 @@ namespace Health.Direct.Common.Mail.DSN
             return parts[1];
         }
 
-        /// <summary>
-        /// Parses the given group of per-recipient-fields as a <see cref="HeaderCollection"/> following the conventions for RFC 3464
-        /// </summary> 
-        /// <param name="fields"></param>
-        /// <returns></returns>
-        public static IEnumerable<HeaderCollection> ParsePerRecipients(HeaderCollection fields)
-        {
-            foreach (var field in fields)
-            {
-                
-            }
-            yield return fields;
-        }
+        
 
 
         /// <summary>
@@ -199,6 +196,73 @@ namespace Health.Direct.Common.Mail.DSN
 
             return DSNFields;
         }
+
+
+        /// <summary>
+        /// Extract per-recipient dsn headers as a collection
+        /// Fields are formatted just like MIME headers, but embedded within the Body of MimeEntity instead
+        /// </summary>
+        /// <param name="fieldEntity">Source entity</param>
+        /// <returns>Collection of <see cref="HeaderCollection"/></returns>
+        public static List<HeaderCollection> ParsePerRecientFields(MimeEntity fieldEntity)
+        {
+            if (fieldEntity == null)
+            {
+                throw new ArgumentNullException("fieldEntity");
+            }
+            Body dsnBody = fieldEntity.Body;
+            if (dsnBody == null)
+            {
+                throw new DSNException(DSNError.InvalidDSNBody);
+            }
+            HeaderCollection dsnFields = new HeaderCollection();
+            try
+            {
+                dsnFields.Add(new HeaderCollection(MimeSerializer.Default.DeserializeHeaders(dsnBody.PerRecipientSeperator()))
+                    , PerRecipientFieldList());
+            }
+            catch (Exception ex)
+            {
+                throw new DSNException(DSNError.InvalidDSNFields, ex);
+            }
+
+            if (dsnFields.IsNullOrEmpty())
+            {
+                throw new DSNException(DSNError.InvalidDSNFields);
+            }
+
+            return PerRecipientList(dsnFields);
+        }
+
+        private static string[] PerRecipientFieldList()
+        {
+            List<string> selectFields = DSNStandard.PerRecipientFields.ToList();
+            selectFields.Add(SeperatorHeader);
+            return selectFields.ToArray();
+        }
+
+        private static List<HeaderCollection> PerRecipientList(IEnumerable<Header> fields)
+        {
+            List<HeaderCollection> perRecipientList = new List<HeaderCollection>();
+            HeaderCollection headers = new HeaderCollection();
+            foreach (var dsnField in fields)
+            {
+                if(dsnField.IsNamed(SeperatorHeader) && ! headers.IsNullOrEmpty()) 
+                {
+                    perRecipientList.Add(headers);
+                    headers = new HeaderCollection();
+                    continue;
+                }              
+                headers.Add(dsnField);
+            }
+            if (! headers.IsNullOrEmpty())
+            {
+                perRecipientList.Add(headers);
+            }
+            return perRecipientList;
+        }
+
+
 
         static char[] s_fieldSeparator = new char[] { ';' };
 

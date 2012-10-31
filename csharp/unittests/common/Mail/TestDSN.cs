@@ -81,6 +81,64 @@ namespace Health.Direct.Common.Tests.Mail
         }
 
         [Fact]
+        public void TestDSNDeserialization()
+        {
+            string dsnMessage =
+                @"MIME-Version:1.0
+To:toby@redmond.hsgincubator.com
+From:postmaster@redmond.hsgincubator.com
+Content-Type:multipart/report; boundary=8bacf4b73bef45f2a4f481c20c00e664; report-type=delivery-status
+Message-ID:d6bff591-598c-4b20-ac6a-25da27f4918c
+Subject:Rejected:Sound Grenade
+Date:31 Oct 2012 14:00:52 -07:00
+
+
+--8bacf4b73bef45f2a4f481c20c00e664
+Content-Type:text/plain
+
+Delivery Status Notification
+--8bacf4b73bef45f2a4f481c20c00e664
+Content-Type:message/delivery-status
+
+Reporting-MTA: dns;reporting_mta_name
+X-Original-Message-ID: Message In a Bottle
+
+Final-Recipient: rfc822;User1@kryptiq.com
+Action: failed
+Status: 5.0.0
+
+Original-Recipient: rfc822;arathib@vnet.ibm.com
+Final-Recipient: rfc822;arathib@vnet.ibm.com
+Action: failed
+Status: 5.0.0 (permanent failure)
+Diagnostic-Code: smtp;  550 'arathib@vnet.IBM.COM' is not a 
+ registered gateway user
+Remote-MTA: dns; vnet.ibm.com
+
+Final-Recipient: rfc822;User3@kryptiq.com
+Action: failed
+Status: 5.0.0
+
+--8bacf4b73bef45f2a4f481c20c00e664--
+
+";
+            Message loadedMessage = Message.Load(dsnMessage);
+            Console.WriteLine(loadedMessage);
+
+            Assert.True(loadedMessage.IsDSN());
+            Assert.Equal(loadedMessage.ParsedContentType.MediaType, loadedMessage.ParsedContentType.MediaType);
+            Assert.Equal(loadedMessage.SubjectValue, loadedMessage.SubjectValue);
+            Assert.True(loadedMessage.HasHeader(MimeStandard.VersionHeader));
+            Assert.True(loadedMessage.HasHeader(MailStandard.Headers.Date));
+            Assert.True(loadedMessage.Headers.Count(x => (MimeStandard.Equals(x.Name, MimeStandard.VersionHeader))) == 1);
+            var dsnActual = DSNParser.Parse(loadedMessage);
+            var recipients = dsnActual.PerRecipient.ToList();
+            Assert.Equal("smtp;  550 'arathib@vnet.IBM.COM' is not a registered gateway user",
+                         recipients[1].OtherFields.GetValue(DSNStandard.Fields.DiagnosticCode));
+
+        }
+
+        [Fact]
         public void TestFailedDeliveryStatusSerialization()
         {
             Message source = this.CreateSourceMessage();
@@ -113,6 +171,8 @@ namespace Health.Direct.Common.Tests.Mail
         {
             Assert.Equal(dsnExpected.PerMessage.ReportingMtaName, dsnActual.PerMessage.ReportingMtaName);
             Assert.Equal(dsnExpected.PerMessage.OriginalMessageId, dsnActual.PerMessage.OriginalMessageId);
+
+            Assert.Equal(dsnExpected.PerRecipient.Count(), dsnActual.PerRecipient.Count());
 
             Assert.Equal(dsnExpected.PerRecipient.First().FinalRecipient, dsnActual.PerRecipient.First().FinalRecipient);
             Assert.Equal(dsnExpected.PerRecipient.First().Action, dsnActual.PerRecipient.First().Action);
@@ -159,6 +219,7 @@ namespace Health.Direct.Common.Tests.Mail
                 perRecipients.Add(new DSNPerRecipient(DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
                                                       , DSNStandard.DSNStatus.UNDEFINED_STATUS,
                                                       new MailAddress(String.Format("User{0}@kryptiq.com", i))));
+                
             }
             
             var dsn = new DSN(perMessage, perRecipients);

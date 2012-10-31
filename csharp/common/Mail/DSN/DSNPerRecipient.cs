@@ -46,9 +46,19 @@ namespace Health.Direct.Common.Mail.DSN
 
         internal DSNPerRecipient(HeaderCollection fields)
         {
+            //
+            // Required Fields
+            //
             Action = (DSNStandard.DSNAction)Enum.Parse(typeof(DSNStandard.DSNAction), fields.GetValue(DSNStandard.Fields.Action),true);
             Status = fields.GetValue((DSNStandard.Fields.Status));
             FinalRecipient = DSNParser.ParseFinalRecipient(fields.GetValue((DSNStandard.Fields.FinalRecipient)));
+
+            //
+            // Optional Fields
+            //
+            HeaderCollection otherFields = new HeaderCollection();
+            otherFields.Add(fields, DSNStandard.PerRecipientOptionalFields);
+            OtherFields = otherFields;
         }
 
         
@@ -67,6 +77,11 @@ namespace Health.Direct.Common.Mail.DSN
         /// Final-Recipient 
         ///</summary>
         public MailAddress FinalRecipient { get; internal set; }
+
+        /// <summary>
+        /// All the known optional headers.
+        /// </summary>
+        public HeaderCollection OtherFields { get; internal set; }
 
         /// <summary>
         /// Constructs the appropriate headers suitable for inclusion in an DSN report
@@ -96,6 +111,8 @@ namespace Health.Direct.Common.Mail.DSN
             perRecipientPart.Append(": ");
             perRecipientPart.Append(Status);
             
+
+
             return perRecipientPart.ToString();
         }
     }

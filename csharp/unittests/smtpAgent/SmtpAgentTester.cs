@@ -37,7 +37,6 @@ namespace Health.Direct.SmtpAgent.Tests
 
 
         public static string TestMessage =
-            string.Format(
             @"From: <toby@redmond.hsgincubator.com>
 To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
 Subject: Simple Text Message
@@ -46,7 +45,7 @@ Date: Mon, 10 May 2010 14:53:27 -0700
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Yo. Wassup?", Guid.NewGuid());
+Yo. Wassup?";
 
         public static string TestMessageTimelyAndReliable =
             @"From: <toby@redmond.hsgincubator.com>

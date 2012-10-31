@@ -320,6 +320,8 @@ namespace Health.Direct.Common.Mime
                 }
             }
         }
+
+
         
         /// <summary>
         /// Sets or updates the <c>header</c> value in this collection

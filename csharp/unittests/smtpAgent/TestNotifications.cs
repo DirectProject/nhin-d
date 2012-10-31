@@ -14,6 +14,7 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+using System;
 using System.Linq;
 using System.IO;
 
@@ -47,8 +48,8 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             m_agent.Settings.InternalMessage.EnableRelay = true;
             m_agent.Settings.Notifications.AutoResponse = true;
-            
-            Message msg = Message.Load(TestMessage);
+
+            Message msg = Message.Load(string.Format(TestMessage, Guid.NewGuid()));
             msg.RequestNotification();
             
             OutgoingMessage outgoing = null;
@@ -73,8 +74,8 @@ namespace Health.Direct.SmtpAgent.Tests
             // Here, the sender does NOT explicitly request an MDN, but we send it anyway
             //
             m_agent.Settings.Notifications.AutoResponse = true;
-            
-            Message msg = Message.Load(TestMessage);
+
+            Message msg = Message.Load(string.Format(TestMessage, Guid.NewGuid()));
             OutgoingMessage outgoing = null;
             IncomingMessage incoming = null;
 
@@ -94,7 +95,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]        
         public void TestNoMDNSent()
         {
-            Message msg = MailParser.ParseMessage(TestMessage);
+            Message msg = MailParser.ParseMessage(string.Format(TestMessage, Guid.NewGuid()));
             msg.RequestNotification();
 
             OutgoingMessage outgoing = null;
@@ -137,7 +138,7 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
-            Message msg = Message.Load(TestMessage);
+            Message msg = Message.Load(string.Format(TestMessage, Guid.NewGuid()));
             OutgoingMessage outgoing = null;
             IncomingMessage incoming = null;
 

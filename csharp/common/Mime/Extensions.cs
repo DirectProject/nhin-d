@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.IO;
 using System.Net.Mime;
 using System.Collections.Generic;
+using Health.Direct.Common.Mail.DSN;
 
 namespace Health.Direct.Common.Mime
 {
@@ -114,5 +115,34 @@ namespace Health.Direct.Common.Mime
             }
             return outputString;
         }
+
+        /// <summary>
+        /// Per-Recipient seperator.
+        /// </summary>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public static string PerRecipientSeperator(this Body body)
+        {
+            string outputString;
+            using (StringReader reader = new StringReader(body.Text))
+            using (StringWriter writer = new StringWriter())
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.Trim().Length > 0)
+                    {
+                        writer.WriteLine(line);
+                    }
+                    else
+                    {
+                        writer.WriteLine(DSNParser.SeperatorHeader + MimeStandard.NameValueSeparator);
+                    }
+                }
+                outputString = writer.ToString();
+            }
+            return outputString;
+        }
+
     }
 }
