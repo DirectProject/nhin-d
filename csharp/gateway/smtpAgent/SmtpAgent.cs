@@ -760,7 +760,7 @@ namespace Health.Direct.SmtpAgent
                     return;
                 }
                 m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, senders, MDNStandard.NotificationType.Processed);
-                if(m_settings.Notifications.GatewayIsDestination)
+                if(m_settings.Notifications.GatewayIsDestination && envelope.Message.IsTimelyAndReliable())
                 {
                     m_notifications.Send(envelope, m_settings.InternalMessage.PickupFolder, senders, MDNStandard.NotificationType.Dispatched);
                 }

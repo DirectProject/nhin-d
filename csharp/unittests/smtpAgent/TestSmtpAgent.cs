@@ -42,15 +42,15 @@ namespace Health.Direct.SmtpAgent.Tests
 
         public TestSmtpAgent()
         {
-            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
+            //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigService.xml"));
             //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfigServiceProd.xml"));
-            //m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfig.xml"));
+            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentConfig.xml"));
         }
 
         [Fact]
         public void Test()
         {
-            Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(TestMessage)));
+            Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
             Assert.Throws<OutgoingAgentException>(() => m_agent.ProcessMessage(this.LoadMessage(BadMessage)));
         }
         
@@ -59,24 +59,23 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             CleanMessages(m_agent.Settings);
             m_agent.Settings.InternalMessage.EnableRelay = true;
-            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
                         
             m_agent.Settings.InternalMessage.EnableRelay = false;
-            Assert.Throws<SmtpAgentException>(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+            Assert.Throws<SmtpAgentException>(() => RunEndToEndTest(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
         }
 
         [Fact]
         public void TestEndToEndInternalMessage()
         {
             m_agent.Settings.InternalMessage.EnableRelay = true;
-            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(TestMessage)));
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
             Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
         
-        [Fact]//(Skip="Need Config Service to run this")]
-        //[Fact]
+        [Fact (Skip="Need Config Service to run this")]
         public void TestEndToEndBad()
         {
             m_agent.Settings.InternalMessage.EnableRelay = true;
@@ -124,9 +123,9 @@ namespace Health.Direct.SmtpAgent.Tests
                                                            new DirectAddress("toby@redmond.hsgincubator.com")
                 );
            
-            Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));  
+            Assert.DoesNotThrow(() => m_agent.SecurityAgent.ProcessOutgoing(envelope));
 
-            envelope = new MessageEnvelope(TestMessage,
+            envelope = new MessageEnvelope(string.Format(TestMessage, Guid.NewGuid()),
                                            DirectAddressCollection.ParseSmtpServerEnvelope("xyz@untrusted.com"),
                                            new DirectAddress("toby@redmond.hsgincubator.com"));
 

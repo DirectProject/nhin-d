@@ -27,7 +27,7 @@ namespace Health.Direct.Common.Mail.DSN
     /// </remarks>
     public class DSNPerMessage
     {
-
+        
         ///<summary>
         /// Initialize the per-message-fields for DSN
         ///</summary>

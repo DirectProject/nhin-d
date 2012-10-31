@@ -75,7 +75,7 @@ namespace Health.Direct.SmtpAgent
         }
 
         /// <summary>
-        /// Auto issue a dispatched notification
+        /// Auto issue a dispatched notification requesting delivery notification (TimelyAndReliable).
         /// It is more typical to not set this and allow the destination network or client 
         /// send a dispatched notification.  But if the incoming folder or routes are 
         /// considered the utlimate destination setting this is appropriate. 

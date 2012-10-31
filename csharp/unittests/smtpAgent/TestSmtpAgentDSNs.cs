@@ -211,6 +211,7 @@ namespace Health.Direct.SmtpAgent.Tests
                 var dsn = DSNParser.Parse(dsnMessage.Message);
                 foreach (var perRecipient in dsn.PerRecipient)
                 {
+                    Assert.Equal(perRecipientExpected.Count, dsn.PerRecipient.Count());
                     string finalRecipient = perRecipient.FinalRecipient.Address;
                     var expectedPerRecipient = perRecipientExpected.Find(d => d.FinalRecipient.Address == finalRecipient);
                     Assert.Equal(expectedPerRecipient.Action, perRecipient.Action);

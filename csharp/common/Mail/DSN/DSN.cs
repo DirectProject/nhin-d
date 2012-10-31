@@ -53,14 +53,14 @@ namespace Health.Direct.Common.Mail.DSN
             PerMessage = perMessage;
         }
 
-        internal DSN(MimeEntity explanation, HeaderCollection fields)
+        internal DSN(MimeEntity explanation, HeaderCollection fields, IEnumerable<HeaderCollection> perRecipientCollection)
         {
             m_explanation = explanation;
 
             m_perMessage = new DSNPerMessage(fields);
 
             m_perRecipients = new List<DSNPerRecipient>();
-            foreach (HeaderCollection perRecipientFields in DSNParser.ParsePerRecipients(fields))
+            foreach (HeaderCollection perRecipientFields in perRecipientCollection)
             {
                 m_perRecipients.Add(new DSNPerRecipient(perRecipientFields));
             }
