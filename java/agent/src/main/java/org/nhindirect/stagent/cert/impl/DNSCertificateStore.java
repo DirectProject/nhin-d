@@ -23,6 +23,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.cert.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
@@ -94,6 +99,9 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	
 	protected static final int DEFAULT_DNS_MAX_CAHCE_ITEMS = 1000;
 	protected static final int DEFAULT_DNS_TTL = 3600; // 1 hour
+
+	protected static final int DEFAULT_URL_CONNECTION_TIMEOUT = 10000; // 10 seconds	
+	protected static final int DEFAULT_URL_READ_TIMEOUT = 10000; // 10 hour seconds	
 	
 	protected CertificateStore localStoreDelegate;
 	protected List<String> servers = new ArrayList<String>();
@@ -325,7 +333,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
     	return (localStoreDelegate == null) ? null : localStoreDelegate.getAllCertificates(); 
     }    
     
-	private Collection<X509Certificate> lookupDNS(String name)
+	protected Collection<X509Certificate> lookupDNS(String name)
 	{
 		String domain;
 		String lookupName = name.replace('@', '.');
@@ -405,14 +413,17 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 						{
 							case CERTRecord.PKIX:
 							{
-								Certificate certToAdd = convertPXIXRecordToCert(certRec);//CERTConverter.parseRecord((CERTRecord)rec);
+								Certificate certToAdd = convertPKIXRecordToCert(certRec);
 								if (certToAdd != null && certToAdd instanceof X509Certificate) // may not be an X509Cert
 									retVal.add((X509Certificate)certToAdd);
 								break;
 							}
 							case CERTRecord.URI:
 							{
-								//TODO: Implement
+								Certificate certToAdd = convertIPKIXRecordToCert(certRec);
+								if (certToAdd != null && certToAdd instanceof X509Certificate) // may not be an X509Cert
+									retVal.add((X509Certificate)certToAdd);
+								break;
 							}
 							default:
 							{
@@ -610,7 +621,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		return retVal;
 	}
 	
-	protected Certificate convertPXIXRecordToCert(CERTRecord certRec)
+	protected Certificate convertPKIXRecordToCert(CERTRecord certRec)
 	{
 		Certificate retVal = null;
 		ByteArrayInputStream inputStream = null;
@@ -633,5 +644,48 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 		}
 		
 		return retVal;
+	}
+	
+	protected Certificate convertIPKIXRecordToCert(CERTRecord certRec)
+	{
+		Certificate retVal = null;
+		InputStream inputStream = null;
+
+		try
+		{
+			// in this case the cert is a binary representation
+			// of the CERT URL... transform to a string
+			final URL certURL = getCertURL(certRec);
+			
+			final URLConnection connection = certURL.openConnection();
+			
+			// the connection is not actually made until the input stream
+			// is open, so set the timeouts before getting the stream
+			connection.setConnectTimeout(DEFAULT_URL_CONNECTION_TIMEOUT);
+			connection.setReadTimeout(DEFAULT_URL_READ_TIMEOUT);
+			
+			// open the URL as in input stream
+			inputStream = connection.getInputStream();
+			
+			final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+			retVal = (X509Certificate)cf.generateCertificate(inputStream);
+		}
+		catch (Exception e)
+		{
+			LOGGER.warn("Failed to get cert recrod from IPKIX location.", e);
+		}
+		finally
+		{
+			IOUtils.closeQuietly(inputStream);
+		}
+		
+		return retVal;
+	}
+	
+	protected URL getCertURL(CERTRecord certRec) throws MalformedURLException, UnsupportedEncodingException  
+	{
+		final URL certURL = new URL(new String(certRec.getCert(), "ASCII"));
+		
+		return certURL;
 	}
 }
