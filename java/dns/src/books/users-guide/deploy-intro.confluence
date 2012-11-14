@@ -1,0 +1,27 @@
+h1. About this Chapter
+
+This chapters describes the different deployment and configuration options for the DNS services.
+
+h2. Purpose and Overview
+
+The Direct Project Simple Health [Transport|http://wiki.directproject.org/Simple+Health+Transport] specification outlines requirements for using DNS to resolve public certificates for the purpose of message encryption. Although the requirements are not enforced with the MUST verbiage, the underlying goal is to define a universal and ubiquitous method to distribute and resolve public certificates.
+
+Several open source and commercial DNS services are already widely available, however they differ in both their support of the full DNS specification and the tooling available to configure and manage the DNS solution. The challenge is finding a solution the meets the needs of the domain both in terms of functional support and ease of use (good tooling). So why does the Direct Project provides its own DNS solution when are there already so many viable options. The simple answer is the use of the CERT record type. Investigation has shown that many popular, commercially available DNS services (both organizational and third party hosting, ex: GoDaddy) do not support CERT records. Conversely many of the open source services support a broader range of the DNS spec, however tooling and configuration support is limited. In some solutions, tooling is limited to editing a raw configuration file with a plain text editor. Text editor support is not a viable solution for large deployments where thousands of entries may exist.
+
+The Direct Project DNS services are not intended to be a one stop shop for all DNS needs, but to compliment existing DNS service and fill the functional gaps not provided by existing solutions. In practice, the functional abilities of the Direct DNS services are limited to meet a small number of use cases. Specifically they provide a simple solution to respond to public cert requests (and a few other request types) and tooling to manage certificate storage and DNS record entries. In addition the services not intended to host primary DNS zones; instead they are deployed in a sub zone that is generally intended only for Direct Project implementations.
+
+h2. Service Deployment
+
+DNS deployment consists of installing the services using operating system specific service installation methods and configuring the location of the DNS record store.
+
+* [DNS Service Deployment|./dns-serv-depl.html]
+
+h2. Service Configuration
+
+Configuration is broken into two logical part: configuring the DNS specific protocol parameters and configuring/managing DNS records. The latter configuration may be dependent on the DNS hosting solution of the primary domain name.
+
+* [DNS Protocol Configuration|./dns-proto-config.html]
+
+* [DNS Record Configuration|./dns-record-config.html]
+
+* [GoDaddy Domain Hosting|./dns-godad-config.html]
