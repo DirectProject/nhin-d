@@ -23,6 +23,7 @@ public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Ce
 	
 	protected static final String CERT_NAME_COL = "Subject Name/URL";
 	protected static final String RECORD_TYPE_COL = "Record Type";	
+	protected static final String PRIVATE_IND_COL = "Private Key";		
 	protected static final String TP_NAME_COL = "Thumbprint";
 	protected static final String EXPIRES_COL = "Expires";
 	
@@ -34,6 +35,7 @@ public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Ce
 		
 		REPORT_COLS.add(new ReportColumn(CERT_NAME_COL, 55, "getCertificate"));
 		REPORT_COLS.add(new ReportColumn(RECORD_TYPE_COL, 11, "getCertificate"));
+		REPORT_COLS.add(new ReportColumn(PRIVATE_IND_COL, 12, "getCertificate"));		
 		REPORT_COLS.add(new ReportColumn(TP_NAME_COL, 55, "getCertificate"));	
 		REPORT_COLS.add(new ReportColumn(EXPIRES_COL, 15, "getCertificate"));	
 
@@ -92,7 +94,9 @@ public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Ce
 			else if (column.header.equals(TP_NAME_COL))
 				return isURL ? tpOrURL : Thumbprint.toThumbprint(cert).toString();			
 			else if (column.header.equals(EXPIRES_COL))
-				return isURL ? "" : dateFormatter.format(cert.getNotAfter());				
+				return isURL ? "" : dateFormatter.format(cert.getNotAfter());	
+			else if (column.header.equals(PRIVATE_IND_COL))
+				return retCert.isPrivateKey() ? "Y" : "N";
 			else
 				return super.getColumnValue(column, retCert);
 		}
