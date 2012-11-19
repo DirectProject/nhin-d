@@ -28,6 +28,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -237,6 +238,9 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		
 		StringBuilder builder = new StringBuilder();
 				
+		// sort the records based on priority
+		Arrays.sort(retRecords, new SRVRecordComparitor());
+		
 		for (Record rec : retRecords){
 			SRVRecord srvRec = (SRVRecord)rec;
 			
@@ -343,5 +347,20 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 			}
 		}
 
+	}
+	
+	protected static class SRVRecordComparitor implements Comparator<Record>
+	{
+
+		@Override
+		public int compare(Record rec1, Record rec2) 
+		{
+			if (((SRVRecord)rec1).getPriority() == ((SRVRecord)rec2).getPriority())
+				return 0;
+			
+			return (((SRVRecord)rec1).getPriority() < ((SRVRecord)rec2).getPriority()) ? -1 : 1;
+					
+		}
+		
 	}
 }
