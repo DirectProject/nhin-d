@@ -14,6 +14,7 @@ import org.apache.mina.util.AvailablePortFinder;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
+import org.nhind.config.EntityStatus;
 import org.nhindirect.dns.util.BaseTestPlan;
 import org.nhindirect.dns.util.ConfigServiceRunner;
 import org.nhindirect.dns.util.DNSRecordUtil;
@@ -420,6 +421,89 @@ public class DNSServer_Function_Test extends TestCase
 		}.perform();
 	}
 
+	public void testQueryIPKIXCERTRecords_AssertRecordsRetrieved() throws Exception
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				// add some CERT records
+				ArrayList<Certificate> recs = new ArrayList<Certificate>();
+
+				X509Certificate cert = DNSRecordUtil.loadCertificate("ryan.der");
+				Certificate addCert = xCertToCert(cert);
+				recs.add(addCert);
+
+				cert = DNSRecordUtil.loadCertificate("gm2552.der");
+				addCert = xCertToCert(cert);
+				recs.add(addCert);
+
+				Certificate ipkixCert = new Certificate();
+				ipkixCert.setOwner("somewhere.com");
+				ipkixCert.setData("http://localhost/somewhere.der".getBytes());
+				ipkixCert.setPrivateKey(false);
+				ipkixCert.setStatus(EntityStatus.ENABLED);
+				recs.add(ipkixCert);
+				
+				proxy.addCertificates(recs.toArray(new Certificate[recs.size()]));
+
+
+				ArrayList<DnsRecord> soaRecs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createSOARecord("securehealthemail.com", "nsserver.securehealthemail.com","master.securehealthemail.com");
+				soaRecs.add(rec);
+
+				rec = DNSRecordUtil.createSOARecord("somewhere.com", "nsserver.somewhere.com","master.somewhere.com");
+				soaRecs.add(rec);
+				
+				proxy.addDNS(soaRecs.toArray(new DnsRecord[soaRecs.size()]));
+
+			}
+
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("somewhere.com", Type.CERT));
+				queries.add(new Query("ryan.securehealthemail.com", Type.ANY));
+				queries.add(new Query("bob.somewhere.com", Type.A));
+				
+				return queries;
+
+			}
+
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(2, records.size());
+
+				boolean foundSomewhere = false;
+				boolean foundRyan = false;
+				for (Record record : records)
+				{
+					assertTrue(record instanceof CERTRecord);
+
+					CERTRecord certRect = (CERTRecord)record;
+					
+					if (certRect.getCertType() == CERTRecord.URI)
+					{
+					
+						assertEquals("http://localhost/somewhere.der", new String(certRect.getCert()));
+						foundSomewhere = true;
+					}
+					else
+					{
+						X509Certificate cert = (X509Certificate)CERTConverter.parseRecord((CERTRecord)record);
+						assertNotNull(cert);
+						assertTrue(DNSRecordUtil.getCertOwner(cert).equals("ryan@securehealthemail.com"));
+						foundRyan = true;
+					}
+				}
+
+				assertTrue(foundSomewhere);
+				assertTrue(foundRyan);
+			}
+		}.perform();
+	}
+	
 	public void testQueryMXRecord_AssertRecordsRetrieved() throws Exception
 	{
 		new TestPlan()

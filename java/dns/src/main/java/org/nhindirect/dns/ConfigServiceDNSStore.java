@@ -290,6 +290,7 @@ public class ConfigServiceDNSStore implements DNSStore
 	 * @return Returns a set of record responses to the request.
 	 * @throws DNSException
 	 */
+	@SuppressWarnings("unused")
 	protected RRset processCERTRecordRequest(String name) throws DNSException
 	{
 		if (name.endsWith("."))
@@ -350,22 +351,51 @@ public class ConfigServiceDNSStore implements DNSStore
 		{
 			for (Certificate cert : certs)
 			{
-	
-				X509Certificate xCert = dataToCert(cert.getData());
-								
+				int certRecordType = CERTRecord.PKIX;
+				byte[] retData = null;
+				
+				X509Certificate xCert = null;
+				try
+				{
+					xCert = dataToCert(cert.getData());
+					retData = xCert.getEncoded();
+				}
+				catch (DNSException e)
+				{
+					// probably not a Certificate... might be a URL
+				}
+				
+
+				if (xCert == null)
+				{
+					// see if it's a URL
+					try
+					{
+						retData = cert.getData();
+						URL url = new URL(new String(retData));
+						certRecordType = CERTRecord.URI;
+					}
+					catch (Exception e)
+					{
+						throw new DNSException(DNSError.newError(Rcode.SERVFAIL), "Failure while parsing CERT record data: " + e.getMessage(), e);
+					}					
+				}
+				
 				int keyTag = 0;
-				if (xCert.getPublicKey() instanceof RSAKey)
+				int alg = 0;
+				if (xCert != null && xCert.getPublicKey() instanceof RSAKey)
 				{
 					RSAKey key = (RSAKey)xCert.getPublicKey();
 					byte[] modulus = key.getModulus().toByteArray();
 					
 					keyTag = (modulus[modulus.length - 2] << 8) & 0xFF00;
 					
-					keyTag |= modulus[modulus.length - 1] & 0xFF;				
+					keyTag |= modulus[modulus.length - 1] & 0xFF;	
+					alg = 5;
 				}
 				
-				CERTRecord rec = new CERTRecord(Name.fromString(name), DClass.IN, 86400L, CERTRecord.PKIX, keyTag, 
-						5 /*public key alg, RFC 4034*/, xCert.getEncoded());
+				CERTRecord rec = new CERTRecord(Name.fromString(name), DClass.IN, 86400L, certRecordType, keyTag, 
+						alg /*public key alg, RFC 4034*/, retData);
 				
 				retVal.addRR(rec);
 			}

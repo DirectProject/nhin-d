@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.config.store;
 
 import java.io.ByteArrayInputStream;
+import java.net.URL;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -322,15 +323,38 @@ public class Certificate
 
     private void loadCertFromData() throws CertificateException {
         X509Certificate cert = null;
+        CertContainer container = null;
         try {
             validate();
-            CertContainer container = toCredential();
-            cert = container.getCert();
-            setThumbprint(Thumbprint.toThumbprint(cert).toString());
-            setPrivateKey(container.getKey() != null);
+
+            try
+            {
+                container = toCredential();
+            	cert = container.getCert();
+            }
+            catch (CertificateException e)
+            {
+            	/*no-op*/
+            }
+            
+            if (cert == null)
+            {
+            	// might be a URL for IPKIX
+            	@SuppressWarnings("unused")
+				final URL url = new URL(new String(data, "ASCII"));
+            	
+            	setThumbprint("");
+            }
+            else
+            {
+            	setThumbprint(Thumbprint.toThumbprint(cert).toString());
+            	setPrivateKey(container != null && container.getKey() != null);
+            }
+            
+            
         } catch (Exception e) {
             setData(NULL_CERT);
-            throw new CertificateException("Data cannot be converted to a valid X.509 Certificate", e);
+            throw new CertificateException("Data cannot be converted to a valid X.509 Certificate or IPKIX URL", e);
         }
     }
     

@@ -62,7 +62,7 @@ public class CertificateDaoImpl implements CertificateDao
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#load(java.lang.String, java.lang.String)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Transactional(readOnly = true)
     public Certificate load(String owner, String thumbprint) 
     {
@@ -110,7 +110,7 @@ public class CertificateDaoImpl implements CertificateDao
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#list(java.util.List)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Transactional(readOnly = true)
     public List<Certificate> list(List<Long> idList) 
     {
@@ -136,7 +136,8 @@ public class CertificateDaoImpl implements CertificateDao
         String query = "SELECT c from Certificate c WHERE c.id IN " + ids.toString();
  
         select = entityManager.createQuery(query);
-        List rs = select.getResultList();
+
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Certificate)) 
         {
             result = (List<Certificate>) rs;
@@ -154,7 +155,7 @@ public class CertificateDaoImpl implements CertificateDao
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#list(java.lang.String)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Transactional(readOnly = true)
     public List<Certificate> list(String owner) 
     {
@@ -215,17 +216,25 @@ public class CertificateDaoImpl implements CertificateDao
         	
 	        	try
 	        	{
-	        		CertContainer container = cert.toCredential();
-	        		X509Certificate xcert = container.getCert();
+	        		CertContainer container = null;
+	        		X509Certificate xcert = null;
+	        		try
+	        		{
+	        			container = cert.toCredential();
+	        			xcert = container.getCert();
+	        		}
+	        		catch (CertificateException e)
+	        		{
+	        			// probably not a certificate but an IPKIX URL
+	        		}
 	        		
-	        		
-	        		if (cert.getValidStartDate() == null)
+	        		if (cert.getValidStartDate() == null && xcert != null)
 	        		{
 	        			Calendar startDate = Calendar.getInstance();
 	        			startDate.setTime(xcert.getNotBefore());
 	        			cert.setValidStartDate(startDate);
 	        		}
-	        		if (cert.getValidEndDate() == null)
+	        		if (cert.getValidEndDate() == null && xcert != null)
 	        		{
 	        			Calendar endDate = Calendar.getInstance();
 	        			endDate.setTime(xcert.getNotAfter());
@@ -235,7 +244,7 @@ public class CertificateDaoImpl implements CertificateDao
 	        		if (cert.getStatus() == null)
 	        			cert.setStatus(EntityStatus.NEW);
 	        		
-	        		cert.setPrivateKey(container.getKey() != null);
+	        		cert.setPrivateKey(container != null && container.getKey() != null);
 	        	}
 	        	catch (CertificateException e)
 	        	{
@@ -346,8 +355,8 @@ public class CertificateDaoImpl implements CertificateDao
             log.debug("Exit");
 
     }
-
-    /*
+    
+	/*
      * (non-Javadoc)
      * 
      * @see org.nhindirect.config.store.dao.CertificateDao#delete(java.lang.String)
@@ -373,4 +382,6 @@ public class CertificateDaoImpl implements CertificateDao
             log.debug("Exit: " + count + " certificate records deleted");
     }
 
+    
+    
 }
