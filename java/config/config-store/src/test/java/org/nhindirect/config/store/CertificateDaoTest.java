@@ -35,8 +35,6 @@ public class CertificateDaoTest
 	
 	private static final String certBasePath = "src/test/resources/certs/"; 
 	
-	private static final String TEST_DOMAIN = "TestDomain1";
-	
 	static
 	{
 		try
@@ -134,6 +132,27 @@ public class CertificateDaoTest
 				
 		Collection<Certificate> certificates = certificateDao.list((String)null);
 		assertEquals(1, certificates.size());
+	}
+	
+	@Test 
+	public void testAddPKIXURL() throws Exception
+	{
+		testCleanDatabase();
+		
+		Certificate cert = new Certificate();
+		cert.setData("http://localhost/test.der".getBytes());
+		cert.setOwner("gm2552@cerner.com");
+		
+		certificateDao.save(cert);
+				
+		Collection<Certificate> certificates = certificateDao.list((String)null);
+		assertEquals(1, certificates.size());
+		
+		Certificate addedCert = certificates.iterator().next();
+		
+		assertEquals("", addedCert.getThumbprint());
+		assertEquals("http://localhost/test.der", new String(addedCert.getData()));
+		
 	}
 	
 	@Test 

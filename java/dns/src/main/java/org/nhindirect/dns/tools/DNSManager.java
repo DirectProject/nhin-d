@@ -116,6 +116,7 @@ public class DNSManager
 		
 		commands = new Commands("DNS Management Console");
 		commands.register(new DNSRecordCommands(proxy));
+		commands.register(new CertCommands(proxy));
 		
 		System.out.println("Configuration service URL: " + configURL.toExternalForm());
 		
