@@ -47,7 +47,7 @@ public class CertCommands
     
 	protected ConfigurationServiceProxy proxy;
     
-	protected final RecordPrinter<org.nhind.config.Certificate> certPrinter;
+	protected RecordPrinter<org.nhind.config.Certificate> certPrinter;
     
 	public CertCommands(ConfigurationServiceProxy proxy)
 	{
@@ -99,15 +99,14 @@ public class CertCommands
 	}	
 	
 	@Command(name = "AddPublicCert", usage = IMPORT_PUBLIC_CERT_USAGE)
-    public void importPulicCert(String[] args)
+    public void importPublicCert(String[] args)
 	{
 		final String fileLoc = StringArrayUtil.getRequiredValue(args, 0);
 		try
 		{
 			final X509Certificate cert = CertUtils.certFromFile(fileLoc);
 			
-			if (cert != null)
-			{
+
 				final org.nhind.config.Certificate addCert = new org.nhind.config.Certificate();
 				addCert.setData(cert.getEncoded());
 				addCert.setOwner(CryptoExtensions.getSubjectAddress(cert));
@@ -116,7 +115,6 @@ public class CertCommands
 
 				proxy.addCertificates(new org.nhind.config.Certificate[] {addCert});
 				System.out.println("Successfully imported public certificate.");
-			}
 			
 		}
 		catch (IOException e)
@@ -124,10 +122,12 @@ public class CertCommands
 			System.out.println("Error reading file " + fileLoc + " : " + e.getMessage());
 			return;
 		}
+		///CLOVER:OFF
 		catch (Exception e)
 		{
 			System.out.println("Error importing certificate " + fileLoc + " : " + e.getMessage());
 		}
+		///CLOVER:ON
 		
 	}	
 	
@@ -146,17 +146,14 @@ public class CertCommands
 			
 			final X509Certificate cert = CertUtils.toX509Certificate(insertBytes);
 			
-			if (cert != null)
-			{
-				org.nhind.config.Certificate addCert = new org.nhind.config.Certificate();
-				addCert.setData(certBytes);
-				addCert.setOwner(CryptoExtensions.getSubjectAddress(cert));
-				addCert.setPrivateKey(cert instanceof X509CertificateEx);
-				addCert.setStatus(EntityStatus.ENABLED);
+			org.nhind.config.Certificate addCert = new org.nhind.config.Certificate();
+			addCert.setData(certBytes);
+			addCert.setOwner(CryptoExtensions.getSubjectAddress(cert));
+			addCert.setPrivateKey(cert instanceof X509CertificateEx);
+			addCert.setStatus(EntityStatus.ENABLED);
 
-				proxy.addCertificates(new org.nhind.config.Certificate[] {addCert});
-				System.out.println("Successfully imported private certificate.");
-			}
+			proxy.addCertificates(new org.nhind.config.Certificate[] {addCert});
+			System.out.println("Successfully imported private certificate.");
 			
 		}
 		catch (IOException e)
@@ -211,4 +208,14 @@ public class CertCommands
 			System.out.println("Error removing certificate for owner " + owner + " : " + e.getMessage());
 		}	
 	}
+	
+	public void setRecordPrinter(RecordPrinter<org.nhind.config.Certificate> printer)
+	{
+		this.certPrinter = printer; 
+	}	
+	
+	public void setConfigurationProxy(ConfigurationServiceProxy proxy)
+	{
+		this.proxy = proxy; 
+	}	
 }

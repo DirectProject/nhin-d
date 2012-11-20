@@ -11,10 +11,7 @@ import java.util.Locale;
 
 import org.nhindirect.dns.DNSException;
 import org.nhindirect.dns.utils.CertUtils;
-import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.Thumbprint;
-
-
 
 public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Certificate>
 {
