@@ -25,11 +25,20 @@ import junit.framework.TestCase;
 
 public class DNSCertificateStore_lookupDNSTest extends TestCase
 {
+	protected String filePrefix;
+	
 	@Override
 	public void setUp()
 	{
 		// flush the caches
 		CertCacheFactory.getInstance().flushAll();
+		
+		// check for Windows... it doens't like file://<drive>... turns it into FTP
+		File file = new File("./src/test/resources/certs/certCheckA.der");
+		if (file.getAbsolutePath().contains(":/"))
+			filePrefix = "file:///";
+		else
+			filePrefix = "file:///";
 	}
 	
 	protected Answer<Message> getPKIXAnswer(final byte[] certData)
@@ -145,7 +154,7 @@ public class DNSCertificateStore_lookupDNSTest extends TestCase
 	{
 		final Certificate cert = TestUtils.loadCertificate("gm2552.der");
 		final File certFile = new File("./src/test/resources/certs/gm2552.der");
-		final String url = "file://" + certFile.getAbsolutePath();
+		final String url = filePrefix + certFile.getAbsolutePath();
 		
 		final ExtendedResolver resolver = mock(ExtendedResolver.class);
 		when(resolver.send((Message )any())).thenAnswer(getIPKIXAnswer(url));
