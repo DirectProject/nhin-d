@@ -13,18 +13,28 @@ import junit.framework.TestCase;
 
 public class DNSCertificateStore_convertIPKIXRecordToCertTest extends TestCase
 {
+	protected String filePrefix;
+	
 	@Override
 	public void setUp()
 	{
 		// flush the caches
 		CertCacheFactory.getInstance().flushAll();
+		
+		// check for Windows... it doens't like file://<drive>... turns it into FTP
+		File file = new File("./src/test/resources/certs/certCheckA.der");
+		if (file.getAbsolutePath().contains(":/"))
+			filePrefix = "file:///";
+		else
+			filePrefix = "file:///";
+		
 	}
 	
 	public void testConvertIPKIXRecordToCert_validCERTData_assertCertificate() throws Exception
 	{
 		File file = new File("./src/test/resources/certs/certCheckA.der");
 		
-		final String url = "file://" + file.getAbsolutePath();
+		final String url = filePrefix + file.getAbsolutePath();
 		
 		final CERTRecord rec = mock(CERTRecord.class);
 		when(rec.getCert()).thenReturn(url.getBytes());
@@ -39,7 +49,9 @@ public class DNSCertificateStore_convertIPKIXRecordToCertTest extends TestCase
 	{
 		File file = new File("./src/test/resources/log4j.properties");
 		
-		final String url = "file://" + file.getAbsolutePath();
+
+		
+		final String url = filePrefix + file.getAbsolutePath();
 		
 		final CERTRecord rec = mock(CERTRecord.class);
 		when(rec.getCert()).thenReturn(url.getBytes());
