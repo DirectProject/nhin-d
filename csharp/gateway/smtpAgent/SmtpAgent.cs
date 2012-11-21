@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -718,6 +719,8 @@ namespace Health.Direct.SmtpAgent
                 m_router.Route(message, envelope, routedRecipients); 
                 
                 this.SendNotifications(envelope, routedRecipients);
+
+                SendDeliveryStatus(m_router, envelope, routedRecipients);
             }
             //
             // Any recipients that were handled by routes are no longer in the DomainRecipients collection (removed)
@@ -739,6 +742,39 @@ namespace Health.Direct.SmtpAgent
                 // SMTP Server need not proceed with delivery because we already routed the message to all domain recipients
                 //
                 message.Abort();
+            }
+        }
+
+        void SendDeliveryStatus(IEnumerable<Route> router, IncomingMessage envelope, DirectAddressCollection routedRecipients)
+        {
+            if (envelope.Message.IsMDN() || envelope.Message.IsDSN())
+            {
+                return;
+            }
+            
+            DirectAddressCollection undeliveredRecipients = new DirectAddressCollection();
+            
+            foreach (var route in router)
+            {
+               if (route.FailedDelivery)
+               {
+                   foreach (var routedRecipient in routedRecipients)
+                   {
+                       if(route.AddressType == routedRecipient.Tag as string)
+                       {
+                           undeliveredRecipients.Add(routedRecipient);
+                       }
+                   }
+               }
+            }
+
+            try
+            {
+                m_notifications.SendFailure(envelope, m_settings.InternalMessage.PickupFolder, undeliveredRecipients);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("While sending un-secured DSN {0}", ex.Message);
             }
         }
 
