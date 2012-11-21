@@ -422,6 +422,12 @@ namespace Health.Direct.Common.Mail.DSN
             public static string UNDEFINED_STATUS = "0.0";
 
             /// <summary>
+            /// Other or undefined protocol status
+            /// </summary>
+            public static string DELIVERY_OTHER = "5.0";
+
+
+            /// <summary>
             /// Recipient cannot be secured
             ///     Public Certificate cannot be found
             /// </summary>

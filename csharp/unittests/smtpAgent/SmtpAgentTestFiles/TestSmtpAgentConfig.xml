@@ -74,6 +74,10 @@
       <CopyFolder>C:\inetpub\mailroot\routed\special2</CopyFolder>
       <CopyFolder>C:\inetpub\mailroot\routed\special3</CopyFolder>
     </Route>
+    <Route>
+      <AddressType>Throw</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop</CopyFolder>      
+    </Route>
   </IncomingRoutes>
   <InternalMessage>
     <PickupFolder>C:\inetpub\mailroot\TestPickup</PickupFolder>
