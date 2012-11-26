@@ -54,224 +54,334 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="certs\domain1.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain1.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain1.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain10.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain10.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain10.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain2.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain2.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain2.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain3.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain3.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain3.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain4.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain4.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain4.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain5.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain5.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain5.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain6.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain6.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain6.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain7.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain7.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain7.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain8.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain8.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain8.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain9.test.com.1.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain9.test.com.2.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="certs\domain9.test.com.3.pfx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\aname.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\cert.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\mx.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DnsRecords\soa.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\aname.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\cert.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\mx.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.apple.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.bing.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.cerner.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.epic.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.google.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.hvnhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.ibm.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.microsoft.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.nhind.hsgincubator.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.nhindirect.org.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="dnsresponses\soa.yahoo.com.bin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -283,7 +393,8 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(TargetDir)\certs\*.pfx" "$(SolutionDir)..\bin\$(ConfigurationName)\metadata\certs"
+XCOPY /I /Q /R /S /Y "$(TargetDir)\DnsRecords\*.bin" "$(SolutionDir)..\bin\$(ConfigurationName)\metadata\DnsRecords"
+XCOPY /I /Q /R /S /Y "$(TargetDir)\dnsresponses\*.bin" "$(SolutionDir)..\bin\$(ConfigurationName)\metadata\dnsresponses"</PostBuildEvent>
   </PropertyGroup>
 </Project>

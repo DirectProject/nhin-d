@@ -140,6 +140,9 @@ MIME-Version: 1.0
 Content-Type: text/plain
 
 Yo. Wassup?";
+
+        
+
         public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
         public const string TestIncomingFolder = @"c:\inetpub\mailroot\incoming";
 

@@ -104,6 +104,46 @@ namespace Health.Direct.SmtpAgent
             
         }
 
+        /// <summary>
+        /// To simplify outbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
+        /// You don't need to use SmtpClient or some other SMTP client
+        /// </summary>
+        public void SendFailure(IncomingMessage envelope, string pickupFolder, DirectAddressCollection recipients)
+        {
+            if (string.IsNullOrEmpty(pickupFolder))
+            {
+                throw new ArgumentException("value null or empty", "pickupFolder");
+            }
+
+            if (recipients.IsNullOrEmpty())
+            {
+                return;
+            }
+
+            if (recipients != null)
+            {
+                DSNMessage notification = this.ProduceFailure(envelope, recipients);
+
+                string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
+                notification.Save(filePath);
+            }
+
+
+            //Or maybe
+            //
+            // m_router.Route(message, envelope, routedRecipients);  
+            // 
+            // This would avoid loopback encrypt/decrypt...
+            //
+            // ISmtpMessage message
+            // MessageEnvelope envelope 
+            // DirectAddressCollection routedRecipients, but would use DSN in-reply-to:
+            //
+
+
+        }
+
+
 
         /// <summary>
         /// Generate notification messages (if any) for this source message
@@ -145,11 +185,8 @@ namespace Health.Direct.SmtpAgent
         /// Generate internal notification messages (if any) for this outgoing message
         /// </summary>
         /// <param name="envelope"></param>
-        /// <param name="recipients">sending acks to these message recipients</param>
-        /// <param name="action">DSN action</param>
-        /// <param name="classSubCode">Status code class</param>
-        /// <param name="subjectSubCode">Status code subject</param>
-        /// <returns>An DSNmessages</returns>
+        /// <param name="recipients">sending failure status for these message recipients</param>
+        /// <returns>An DSNmessage</returns>
         public DSNMessage ProduceFailure(OutgoingMessage envelope, DirectAddressCollection recipients)
         {
             if (envelope == null)
@@ -176,6 +213,43 @@ namespace Health.Direct.SmtpAgent
             dsnPerRecipients.AddRange(envelope.CreatePerRecipientStatus(recipients.ResolvedCertificates().AsMailAddresses()
                 , m_settings.Text, m_settings.AlwaysAck, DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
                 , DSNStandard.DSNStatus.UNTRUSTED_STATUS).ToList());
+
+            DSN dsn = new DSN(perMessage, dsnPerRecipients);
+
+            //Configure and/or dynamic plus refactor
+            return envelope.Message.CreateStatusMessage(new MailAddress("Postmaster@" + envelope.Sender.Host), dsn);
+
+        }
+
+
+
+        /// <summary>
+        /// Generate external notification messages for failed final destination delivery
+        /// </summary>
+        /// <param name="envelope"></param>
+        /// <param name="recipients">sending failure status for these message recipients</param>
+        /// <returns>An DSNmessage</returns>
+        public DSNMessage ProduceFailure(IncomingMessage envelope, DirectAddressCollection recipients)
+        {
+            if (envelope == null)
+            {
+                throw new ArgumentNullException("envelope");
+            }
+
+            if (string.IsNullOrEmpty(m_settings.ProductName))
+            {
+                throw new ArgumentException("reportingAgentName:AgentSettings:ProductName");  
+            }
+
+            DSNPerMessage perMessage = new DSNPerMessage(envelope.Sender.Host, envelope.Message.IDValue);
+
+            //
+            // Un-Deliverable recipients
+            //
+            List<DSNPerRecipient> dsnPerRecipients = envelope.CreatePerRecipientStatus(recipients.AsMailAddresses()
+                , m_settings.Text, m_settings.AlwaysAck, DSNStandard.DSNAction.Failed, DSNStandard.DSNStatus.Permanent
+                , DSNStandard.DSNStatus.DELIVERY_OTHER).ToList();
+            
 
             DSN dsn = new DSN(perMessage, dsnPerRecipients);
 

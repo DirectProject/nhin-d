@@ -80,5 +80,7 @@ namespace Health.Direct.SmtpAgent
                 }
             }
         }
+
+        public bool FailedDelivery { get; set; }
     }
 }
