@@ -217,9 +217,6 @@ namespace Health.Direct.SmtpAgent.Tests
                     Assert.Equal(expectedPerRecipient.Action, perRecipient.Action);
                     Assert.Equal(expectedPerRecipient.Status, perRecipient.Status);
                 }
-                
-                
-
             }
             Assert.True(foundDsn);
 
@@ -372,10 +369,73 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute.
         /// Need more research to figure out this scenario.
         /// </summary>
-        [Fact]
-        public void TestFailedDsnOutGoingOnly()
+        [Theory]
+        [PropertyData("UnDeliverableRecipientMessages")]
+        public void TestFinalDestinationDelivery(string unDeliverableRecipientMessage
+            , List<DSNPerRecipient> perRecipientExpected)
         {
-            Assert.False(true, "Not implemented");
+            CleanMessages(m_agent.Settings);
+            CleanMonitor();
+
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            m_agent.Settings.Notifications.AutoResponse = true;
+            m_agent.Settings.Notifications.AlwaysAck = true;
+            //
+            // Do not need to set AutoDsnOption to TimelyAndReliable as it is the default setting.
+            //
+            //m_agent.Settings.Notifications.AutoDsnFailureCreation =
+            //    NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
+            m_agent.Settings.AddressManager = new ClientSettings();
+            m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
+            m_agent.Settings.MdnMonitor = new ClientSettings();
+            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+
+            foreach (MessageRoute route in m_agent.Settings.IncomingRoutes.Where(route => route.AddressType == "Throw"))
+            {
+                route.CopyMessageHandler = ThrowCopy;
+            }
+ 
+            //
+            // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
+            // Go ahead and pick them up and Process them as if they where being handled
+            // by the SmtpAgent by way of (IIS)SMTP hand off.
+            //
+            var sendingMessage = LoadMessage(unDeliverableRecipientMessage);
+            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+
+            var foundDsn = false;
+            foreach (var pickupMessage in PickupMessages())
+            {
+                string messageText = File.ReadAllText(pickupMessage);
+                CDO.Message cdoMessage = LoadMessage(messageText);
+                var message = new CDOSmtpMessage(cdoMessage).GetEnvelope();
+                if(message.Message.IsDSN())
+                {
+                    foundDsn = true;
+
+                    var dsn = DSNParser.Parse(message.Message);
+                    foreach (var perRecipient in dsn.PerRecipient)
+                    {
+                        Assert.Equal(perRecipientExpected.Count, dsn.PerRecipient.Count());
+                        string finalRecipient = perRecipient.FinalRecipient.Address;
+                        var expectedPerRecipient =
+                            perRecipientExpected.Find(d => d.FinalRecipient.Address == finalRecipient);
+                        Assert.Equal(expectedPerRecipient.Action, perRecipient.Action);
+                        Assert.Equal(expectedPerRecipient.Status, perRecipient.Status);
+                    }
+                }
+
+            }
+            Assert.True(foundDsn);
+
+
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+        }
+
+
+        static bool ThrowCopy(ISmtpMessage message, string destinationFolder)
+        {
+            throw new DirectoryNotFoundException(destinationFolder);
         }
 
         void RunMdnOutBoundProcessingTest(CDO.Message message)
@@ -473,5 +533,68 @@ Bad message?", Guid.NewGuid())
             }
         }
 
+
+        /// <summary>
+        /// List of mime messages with untrusted recipients.
+        /// </summary>
+        public static IEnumerable<object[]> UnDeliverableRecipientMessages
+        {
+            get
+            {
+                yield return new object[]
+                                 {
+            string.Format(@"From: <toby@redmond.hsgincubator.com>
+To: throw@nhind.hsgincubator.com
+Subject: Bad Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Disposition-Notification-Options: X-DIRECT-FINAL-DESTINATION-DELIVERY=optional,true
+Content-Type: text/plain
+
+Bad message?", Guid.NewGuid())
+             , new List<DSNPerRecipient>
+             {
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.DELIVERY_OTHER, new MailAddress("throw@nhind.hsgincubator.com"))
+             }
+                    };
+
+                yield return new object[]
+                                 {
+                                     string.Format(@"From: <toby@redmond.hsgincubator.com>
+To: throw@nhind.hsgincubator.com, <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
+Subject: Bad Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Bad message?", Guid.NewGuid())
+             , new List<DSNPerRecipient>
+             {
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.DELIVERY_OTHER, new MailAddress("throw@nhind.hsgincubator.com"))
+             }
+                                 };
+
+                yield return new object[]
+                                 {
+                                     string.Format(@"From: <toby@redmond.hsgincubator.com>
+To: throw@nhind.hsgincubator.com, <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>, throw@redmond.hsgincubator.com
+Subject: Bad Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Bad message?", Guid.NewGuid())
+             , new List<DSNPerRecipient>
+             {
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.DELIVERY_OTHER, new MailAddress("throw@nhind.hsgincubator.com")),
+                new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.DELIVERY_OTHER, new MailAddress("throw@redmond.hsgincubator.com"))
+             }
+                    };
+            
+            }
+        }
     }
 }

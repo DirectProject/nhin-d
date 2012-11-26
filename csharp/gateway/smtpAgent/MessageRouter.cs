@@ -156,11 +156,12 @@ namespace Health.Direct.SmtpAgent
                     Route route = this[address.Type];
                     if (route != null)
                     {
-                        matchedRoutes[address.Type] = route;                        
+                        matchedRoutes[address.Type] = route;
                         recipients.RemoveAt(i);
                         if (routedRecipients != null)
                         {
-                            routedRecipients.Add(recipient);  // Add the routed recipient to the list
+                            recipient.Tag = route.AddressType;  // Reference for failed delivery
+                            routedRecipients.Add(recipient);    // Add the routed recipient to the list
                         }
                         continue;
                     }
@@ -190,6 +191,7 @@ namespace Health.Direct.SmtpAgent
             {
                 if (!route.Process(message))
                 {
+                    route.FailedDelivery = true;
                     m_diagnostics.Logger.Error("Routing Error {0}", route.AddressType);
                 }
             }

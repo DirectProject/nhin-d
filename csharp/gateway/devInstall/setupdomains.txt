@@ -22,6 +22,8 @@ echo ******************************
 address_add toby@redmond.hsgincubator.com
 address_add bob@nhind.hsgincubator.com
 address_add biff@nhind.hsgincubator.com
+address_add throw@nhind.hsgincubator.com Throw
+address_add throw@redmond.hsgincubator.com Throw
 
 //Post Masters for AutoDSN
 address_add PostMaster@redmond.hsgincubator.com
