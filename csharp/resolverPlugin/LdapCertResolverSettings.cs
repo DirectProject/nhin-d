@@ -48,6 +48,16 @@ namespace Health.Direct.ResolverPlugins
             set;
         }
 
+        /// <summary>
+        /// The Backup IP address (in <c>string</c> form) used by the resolver.
+        /// </summary>
+        [XmlElement]
+        public string BackupServerIP
+        {
+            get;
+            set;
+        }
+
         
         /// <summary>
         /// The timeout interval used by the resolver.
@@ -93,13 +103,23 @@ namespace Health.Direct.ResolverPlugins
         {
             Validate();
 
-            if (string.IsNullOrEmpty(ServerIP))
+            if (string.IsNullOrEmpty(ServerIP) && string.IsNullOrEmpty(BackupServerIP))
             {
                 return new LdapCertResolver(null,
                                         TimeSpan.FromMilliseconds(TimeoutMilliseconds)
                                         , m_cache);
             }
-            return CreateResolver(ServerIP);
+
+            if (string.IsNullOrEmpty(BackupServerIP))
+            {
+                return CreateResolver(ServerIP);
+            }
+
+            CertificateResolverCollection resolvers = new CertificateResolverCollection();
+            resolvers.TryNextWhen = CertificateResolverCollection.TryNextCriteria.Exception;
+            resolvers.Add(this.CreateResolver(this.ServerIP));
+            resolvers.Add(this.CreateResolver(this.BackupServerIP));
+            return resolvers;
             
         }
 
