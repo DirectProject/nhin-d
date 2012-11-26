@@ -82,6 +82,57 @@ namespace Health.Direct.ResolverPlugins.Tests
             ";
 
 
+        public const string TestXmlBackupServerIP = @"
+            <AgentSettings>
+                <Domain>exampledomain.com</Domain>   
+                <PrivateCerts>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.Agent.Tests.MachineResolverProxy, Health.Direct.Agent.Tests</TypeName>
+                            <Settings>
+                                <Name>NHINDPrivate</Name>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                </PrivateCerts>             
+                <PublicCerts>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.ResolverPlugins.Tests.Fakes.DnsFakeResolver, Health.Direct.ResolverPlugins.Tests</TypeName>
+                            <Settings> 
+                               <ServerIP>0.0.0.0</ServerIP>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
+                            <Settings> 
+                                <ServerIP>0.0.0.0</ServerIP> <!-- Windows Dns Server -->
+                                <BackupServerIP>8.8.8.8</BackupServerIP>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                </PublicCerts> 
+                <Anchors>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.Agent.Tests.MachineAnchorResolverProxy, Health.Direct.Agent.Tests</TypeName>
+                            <Settings>
+                                <Incoming>
+                                    <Name>NHINDAnchors</Name>
+                                </Incoming>
+                                <Outgoing>
+                                    <Name>NHINDAnchors</Name>
+                                </Outgoing>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                </Anchors>        
+            </AgentSettings>
+            ";
+
+
         #endregion
 
 
@@ -116,8 +167,22 @@ namespace Health.Direct.ResolverPlugins.Tests
             Assert.True(certs.Count > 0);
         }
 
-       
 
+        [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
+        [InlineData("gm2552@direct.securehealthemail.com")]
+        public void TestDnsFallbackToLdapCertResolverBackupIPPlugin(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestXmlBackupServerIP);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver pluginResolver = agent.PublicCertResolver;
+            Assert.NotNull(pluginResolver);
+
+
+            X509Certificate2Collection certs = pluginResolver.GetCertificates(new MailAddress(subject));
+            Assert.NotNull(certs);
+            Assert.True(certs.Count > 0);
+        }
 
         ICertificateResolver LocateChild<T>(ICertificateResolver resolver)
         {
