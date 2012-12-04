@@ -46,8 +46,8 @@ namespace Health.Direct.Common.Tests.Caching
         {
             get
             {
-                yield return new[] { "direct.healthvault-stage.com" };
-                yield return new[] { "nhind.hsgincubator.com" };
+                yield return new[] { "direct.healthvault-ppe.com" };
+                //yield return new[] { "nhind.hsgincubator.com" };
                 //yield return new[] { "gm2552.securehealthemail.com.hsgincubator.com" };
                 //yield return new[] { "ses.testaccount.yahoo.com.hsgincubator.com" };
                 // these two throw a DnsProtocolException
@@ -148,7 +148,7 @@ namespace Health.Direct.Common.Tests.Caching
         /// <param name="domain">domain name to be resolved</param>
         [Theory]
         //[InlineData("nhind.hsgincubator.com")]
-        [InlineData("direct.healthvault-stage.com")]
+        [InlineData("direct.healthvault-ppe.com")]
         [InlineData("www.microsoft.com")]
         public void ResolveMXEnsureInCache(string domain)
         {

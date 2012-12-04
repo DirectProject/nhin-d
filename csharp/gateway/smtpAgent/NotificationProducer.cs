@@ -254,7 +254,8 @@ namespace Health.Direct.SmtpAgent
             DSN dsn = new DSN(perMessage, dsnPerRecipients);
 
             //Configure and/or dynamic plus refactor
-            return envelope.Message.CreateStatusMessage(new MailAddress("Postmaster@" + envelope.Sender.Host), dsn);
+            //TODO: Split messages by domain.  See envelope.Recipients[0] below.
+            return envelope.Message.CreateStatusMessage(new MailAddress("Postmaster@" + envelope.Recipients[0].Host), dsn);
 
         }
     }
