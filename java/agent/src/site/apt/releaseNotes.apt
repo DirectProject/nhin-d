@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{1.5.4}
+
+    Changes included with release 1.5.4
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=194}194}}: Fixed issue with DNS SRV priority not being respected for LDAP queries.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=188}188}}: Fixed issue with DNS certificate resolver not supporting IPKIX records according the applicability statement.
+
 {1.5.3}
 
     Changes included with release 1.5.3

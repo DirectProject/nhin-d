@@ -71,7 +71,7 @@ public class SecurityAndTrustMailetOptions
      * Mailet configuration option determining if MDN processed messages should be consumed by the mailet and not forwarded
      * on to the edge protocol.  Valid options are "true" or "false".  This options defaults to false if not present.
      * <p>
-     * This option is configured using the <b>MessageMonitoringServiceURL</b> element of the NHINDSecurityAndTrustMailet configuration.
+     * This option is configured using the <b>MessageMonitoringServiceURL</b> element of the NotificationSuppressor configuration.
  	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ConsumeMDNProcessed
      */
     public static final String CONSUME_MND_PROCESSED_PARAM = "ConsumeMDNProcessed";
