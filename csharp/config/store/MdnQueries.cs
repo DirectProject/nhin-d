@@ -27,7 +27,9 @@ namespace Health.Direct.Config.Store
         private const string Sql_DeleteMdn = "DELETE From Mdns where MessageId = {0} and Receiver = {1}";
 
         private const string Sql_DeleteAllMdn =
-            "BEGIN TRAN DELETE From Mdns DBCC CHECKIDENT([Mdns],RESEED,0) COMMIT TRAN ";
+            @"BEGIN TRAN 
+                DELETE From Mdns DBCC CHECKIDENT([Mdns],RESEED,0) 
+              COMMIT TRAN ";
 
         private const string Sql_DeleteTimedOutMdns =
             @"  BEGIN TRAN 
@@ -141,6 +143,7 @@ namespace Health.Direct.Config.Store
 
         public static void ExecDeleteAll(this Table<Mdn> table)
         {
+
             table.Context.ExecuteCommand(Sql_DeleteAllMdn);
         }
     }
