@@ -365,10 +365,8 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                string messageId = "945cc145-431c-4119-a8c6-7f557e52fd7d";
-
                 yield return
-                    BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, null);
+                    BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, null);
 
                 // Processed expired dispatch not requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)

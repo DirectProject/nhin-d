@@ -379,10 +379,13 @@ namespace Health.Direct.Config.Store.Tests
                 mdnx.Status = MdnStatus.Processed;
                 target.Update(mdnx);
             }
-            Assert.Equal(41,target.Count());
-            target.RemoveDispositions(TimeSpan.FromSeconds(1));
+            target = CreateManager();
+            Assert.Equal(41, target.Count());
+            System.Threading.Thread.Sleep(1000);
+            target.RemoveDispositions(TimeSpan.FromSeconds(.001));
             Assert.Equal(0, target.Count());
         }
+
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
