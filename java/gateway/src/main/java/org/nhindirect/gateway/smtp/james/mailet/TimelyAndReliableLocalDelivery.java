@@ -24,6 +24,8 @@ package org.nhindirect.gateway.smtp.james.mailet;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.mail.MessagingException;
@@ -37,6 +39,7 @@ import org.apache.mailet.MailetConfig;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxMessageType;
+import org.nhindirect.gateway.GatewayConfiguration;
 import org.nhindirect.gateway.smtp.NotificationProducer;
 import org.nhindirect.gateway.smtp.NotificationSettings;
 import org.nhindirect.gateway.smtp.ReliableDispatchedNotificationProducer;
@@ -46,6 +49,7 @@ import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
+import org.nhindirect.stagent.options.OptionsManager;
 
 
 import com.google.inject.Provider;
@@ -61,6 +65,8 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 {
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(TimelyAndReliableLocalDelivery.class);	
 
+	protected static final String DISPATCHED_MDN_DELAY = "DispatchedMDNDelay";
+	
 	/*
 	 * Annotated resources are used for James 3 LocalDelivery mailet support
 	 * This is completely experimental
@@ -82,6 +88,24 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 	
 	protected NotificationProducer notificationProducer;
 	
+	protected int dispatchedMDNDelay;
+	
+	static
+	{		
+		initJVMParams();
+	}
+	
+	private synchronized static void initJVMParams()
+	{
+		/*
+		 * Mailet configuration parameters
+		 */
+		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
+		JVM_PARAMS.put(DISPATCHED_MDN_DELAY, "org.nhindirect.gateway.smtp.james.mailet.DispatchedMDNDelay");
+		
+		OptionsManager.addInitParameters(JVM_PARAMS);
+	}	
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -89,8 +113,23 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 	{
 		super.init();
 		
+
+		
 		try
 		{
+			final String sDispatchedDelay =  GatewayConfiguration.getConfigurationParam(DISPATCHED_MDN_DELAY,
+					this, "0"); 
+			
+			try
+			{
+				dispatchedMDNDelay = Integer.valueOf(sDispatchedDelay).intValue();
+			}
+			catch (NumberFormatException e)
+			{
+				// in case of parsing exceptions
+				dispatchedMDNDelay = 0;
+			}
+		
 			// create an instance of the local delivery if we can
 			localDeliveryMailet = createLocalDeliveryClass();
 			
@@ -215,6 +254,10 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 						try
 						{
 							message.saveChanges();
+							
+							///if (dispatchedMDNDelay > 0)
+								Thread.sleep(60000);
+							
 							getMailetContext().sendMail(message);
 						}
 						///CLOVER:OFF
