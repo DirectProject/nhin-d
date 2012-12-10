@@ -125,7 +125,7 @@ namespace Health.Direct.Common.Mail.Notifications
             MDNStandard.SendType sendType= ParseSendType(dispositionMode[1]);
             
             string[] dispositionType = SplitSubField(parts[1], 1, MDNError.InvalidDisposition);
-            MDNStandard.NotificationType notification = ParseNotificationType(dispositionType[0]);
+            MDNStandard.NotificationType notification = ParseNotificationType(dispositionType[0].Trim());
 
             Disposition disposition = new Disposition(trigger, sendType, notification);
             if (dispositionType.Length > 1)
@@ -133,7 +133,7 @@ namespace Health.Direct.Common.Mail.Notifications
                 //
                 // Modifiers that also need parsing
                 //
-                string[] modifiers = SplitModifier(dispositionType[1], MDNError.InvalidDisposition);
+                string[] modifiers = SplitModifier(dispositionType[1].Trim(), MDNError.InvalidDisposition);
                 for (int i = 0; i < modifiers.Length; ++i)
                 {
                     if (MailStandard.Equals(modifiers[i], MDNStandard.Modifier_Error))

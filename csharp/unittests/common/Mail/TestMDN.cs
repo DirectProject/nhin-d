@@ -190,7 +190,7 @@ namespace Health.Direct.Common.Tests.Mail
             Disposition expectedDisposition = new Disposition(MDNStandard.NotificationType.Processed);
 
             Message source = this.CreateSourceMessage();            
-            Notification notification = this.CreateProcessedNotification();
+            Notification notification = this.CreateProcessedNotification(true);
             NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
             
             var path = Path.GetTempFileName();
@@ -211,6 +211,62 @@ namespace Health.Direct.Common.Tests.Mail
             {
                 File.Delete(path);
             }
+        }
+
+        [Fact]
+        public void TestDispostionTypeDeserializationNoTrim()
+        {
+            //Notice the leading space at processed
+            var message =
+                @"MIME-Version:1.0
+To:toby@redmond.hsgincubator.com
+From:toby@redmond.hsgincubator.com
+Content-Type:multipart/report; boundary=d027c90b736247f6908bb9558cbc5926; report-type=disposition-notification
+Subject:processed
+Message-ID:0c0918d7-5bfa-48e4-91c0-6bffc7660967
+Date:7 Dec 2012 12:50:26 -08:00
+
+
+--d027c90b736247f6908bb9558cbc5926
+Content-Type:text/plain
+
+Synchronicity
+--d027c90b736247f6908bb9558cbc5926
+Content-Type:message/disposition-notification
+
+Disposition:automatic-action/MDN-sent-automatically; processed
+Original-Message-ID:Message In a Bottle
+MDN-Gateway:smtp;gateway.example.com
+Final-Recipient:rfc822;toby@redmond.hsgincubator.com
+
+--d027c90b736247f6908bb9558cbc5926--";
+            Message loadedMessage = Message.Load(message);
+            var mdn = MDNParser.Parse(loadedMessage);
+
+            Assert.Equal("processed", mdn.Disposition.Notification.ToString(), StringComparer.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public void TestDispositionTypeFormats()
+        {
+            //
+            // Only testing ability to read untrimmed disposition types.
+            //
+
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; processed /error "));
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; failed /error "));
+
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; processed / error "));
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; failed / error "));
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; processed / anything "));
+
+            //normal
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; processed/modifier1,modifier2 "));
+            //forgiving...
+            Assert.DoesNotThrow(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; processed / modifier1 , modifier2 "));
+
+            Assert.Throws <MDNException>(() => MDNParser.ParseDisposition("automatic-action/MDN-sent-automatically; fallen / error "));
+            
         }
 
         [Fact]
