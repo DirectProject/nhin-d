@@ -79,6 +79,7 @@ public class DefaultDuplicateNotificationStateManager implements DuplicateNotifi
 	{
 		this.dao = dao;
 	}
+
 	
 	/**
 	 * {@inheritDoc}
