@@ -29,7 +29,7 @@ import org.nhindirect.common.tx.model.Tx;
  * @since 1.0
  */
 public interface DuplicateNotificationStateManager 
-{
+{	
 	/**
 	 * Adds a notification message to the duplication checking store.
 	 * @param notificationMessage The notification message.

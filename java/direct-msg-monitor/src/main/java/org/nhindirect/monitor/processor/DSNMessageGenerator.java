@@ -44,6 +44,7 @@ import org.nhindirect.common.mail.dsn.DSNRecipientHeaders;
 import org.nhindirect.common.mail.dsn.DSNStandard.DSNAction;
 import org.nhindirect.common.mail.dsn.DSNStandard.DSNStatus;
 import org.nhindirect.common.mail.dsn.DSNStandard.MtaNameType;
+import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
@@ -154,6 +155,9 @@ public class DSNMessageGenerator
 	    	    final MimeMessage dnsMessage = generator.createDSNMessage(originalSender, originalSubject, postmaster, recipientDSNHeaders, messageDSNHeaders, textBodyPart);
 
 	    	    ex.getIn().setBody(dnsMessage);
+	    	    
+	    	    if (TxUtil.isReliableAndTimelyRequested(messageToTrack))
+	    	    	ex.setProperty("ORIG_IS_TIMELY", Boolean.TRUE);
     		}
     	}
     }

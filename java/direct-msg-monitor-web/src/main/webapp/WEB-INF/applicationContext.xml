@@ -47,7 +47,7 @@
 
   <bean id="notificationDuplicationDAO" class="org.nhindirect.monitor.dao.impl.NotificationDuplicationDAOImpl" />
 
-  <bean id="duplicationStateManager" class="org.nhindirect.monitor.processor.impl.DefaultDuplicateNotificationStateManager" >
+  <bean id="duplicationStateManager" class="org.nhindirect.monitor.processor.impl.TimeoutDupStateManager" >
         <property name="messageRetention" value="${monitor.dupStateDAO.retensionTime}" />
 		<property name="dao" ref="notificationDuplicationDAO" />
   </bean>
@@ -161,6 +161,7 @@
            </when>
            <otherwise>
               <bean ref="dsnMessageProcessor"/>
+              <bean ref="duplicationStateManager" method ="addNotificationForMonitorGeneratedDSN"/>      
               <bean ref="dsnSender"/>  
            </otherwise>
         </choice>      
