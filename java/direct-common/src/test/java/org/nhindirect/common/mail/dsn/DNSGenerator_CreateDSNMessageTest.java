@@ -59,5 +59,7 @@ public class DNSGenerator_CreateDSNMessageTest
 		assertEquals("postmaster@test.com", MailStandard.getHeader(dsnMessage, MailStandard.Headers.From));
 		assertEquals("gm2552@test.com", MailStandard.getHeader(dsnMessage, MailStandard.Headers.To));
 		assertTrue( MailStandard.getHeader(dsnMessage, MailStandard.Headers.Subject).startsWith("Not Delivered:"));
+		assertTrue(!MailStandard.getHeader(dsnMessage, MailStandard.Headers.Date).isEmpty());
+		
 	}
 }
