@@ -2,14 +2,12 @@ package org.nhindirect.common.audit.impl;
 
 import static junit.framework.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.Test;
 import org.nhindirect.common.audit.AuditContext;
 import org.nhindirect.common.audit.AuditEvent;
-import org.nhindirect.common.audit.Auditor;
 import org.nhindirect.common.audit.DefaultAuditContext;
 import org.nhindirect.common.audit.impl.LoggingAuditor;
 

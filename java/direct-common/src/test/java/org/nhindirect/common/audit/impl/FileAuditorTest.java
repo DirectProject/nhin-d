@@ -15,7 +15,6 @@ import java.util.UUID;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.nhindirect.common.audit.AuditContext;
 import org.nhindirect.common.audit.AuditEvent;
@@ -45,7 +44,7 @@ public class FileAuditorTest
 		boolean exceptionOccured = false;
 		try
 		{
-			FileAuditor auditor = new FileAuditor(null);
+			new FileAuditor(null);
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -61,7 +60,7 @@ public class FileAuditorTest
 		boolean exceptionOccured = false;
 		try
 		{
-			FileAuditor auditor = new FileAuditor(new File(".."));
+			new FileAuditor(new File(".."));
 		}
 		catch (IllegalArgumentException e)
 		{
@@ -77,7 +76,7 @@ public class FileAuditorTest
 		boolean exceptionOccured = false;
 		try
 		{
-			FileAuditor auditor = new FileAuditor(new File("!-@$*?\n\r/\0"));
+			new FileAuditor(new File("!-@$*?\n\r/\0"));
 		}
 		catch (IllegalArgumentException e)
 		{
