@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.common.mail.dsn;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -98,6 +99,7 @@ public class DSNGenerator
 	    final Session session = Session.getInstance(properties);
 	      
 	    final MimeMessage destinationMessage = new MimeMessage(session);
+	    destinationMessage.setSentDate(Calendar.getInstance().getTime());
 	    destinationMessage.setContent(multipartReport);
 	    destinationMessage.setFrom(postmaster);
         destinationMessage.addRecipient(RecipientType.TO, originalSender);
@@ -105,6 +107,7 @@ public class DSNGenerator
 	    destinationMessage.setHeader(MailStandard.Headers.InReplyTo, messageDSNHeaders.getOriginalMessageId());
         destinationMessage.saveChanges();
 
+        
         return destinationMessage;
 	}
 	
