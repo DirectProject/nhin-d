@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{2.0.1}
+
+    Changes included with release 2.0.1
+    
+    []
+    
+    Enhancements/Bug Fixes
+    
+    * Tomcat updated to Version 7.0.34
+    
+    * Various fixes for MU2 compliance
+    
+    * Agent Version 1.5.4  See agent {{{http://api.nhindirect.org/java/site/agent/1.5.3/releaseNotes.html}release notes}}:
+    
+    * Message Monitoring Service 1.1.4  See msg-monitor {{{http://api.nhindirect.org/java/site/direct-msg-monitor/1.1.4/releaseNotes.html}release notes}}:
+    
 {2.0}
 
     Changes included with release 2.0
