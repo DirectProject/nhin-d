@@ -2,17 +2,14 @@ package org.nhindirect.config.service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.UUID;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit3.JUnit3Mockery;
 import org.jmock.integration.junit3.MockObjectTestCase;
 import org.nhindirect.config.service.impl.DNSServiceImpl;
-import org.nhindirect.config.service.impl.SettingServiceImpl;
 import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.dao.DNSDao;
-import org.nhindirect.config.store.dao.SettingDao;
 import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.xbill.DNS.Type;
 

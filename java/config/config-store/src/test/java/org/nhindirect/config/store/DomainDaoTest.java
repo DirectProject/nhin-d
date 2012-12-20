@@ -13,7 +13,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nhindirect.config.store.dao.AddressDao;
 import org.nhindirect.config.store.dao.DomainDao;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,9 +50,6 @@ public class DomainDaoTest  {
 	
 	@Autowired
 	private DomainDao domainDao;
-	
-	@Autowired
-	private AddressDao addressDao;
 	
 	/*
 	 * MOD: Greg Meyer

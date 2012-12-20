@@ -143,7 +143,8 @@ public class DNSDaoImpl implements DNSDao
         else
         	select = entityManager.createQuery("SELECT d from DNSRecord d");
         
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof DNSRecord)) 
         {
             result = (List<DNSRecord>) rs;
@@ -202,7 +203,8 @@ public class DNSDaoImpl implements DNSDao
 	        String query = "SELECT d from DNSRecord d WHERE d.id IN " + idList.toString();
 	 
 	        select = entityManager.createQuery(query);
-	        List rs = select.getResultList();
+	        @SuppressWarnings("rawtypes")
+			List rs = select.getResultList();
 	        if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof DNSRecord)) 
 	        {
 	            result = (List<DNSRecord>) rs;
@@ -241,7 +243,8 @@ public class DNSDaoImpl implements DNSDao
             select.setParameter(2, type);
         }
         
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof DNSRecord)) 
         {
             result = (List<DNSRecord>) rs;

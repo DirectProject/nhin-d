@@ -95,7 +95,8 @@ public class AnchorDaoImpl implements AnchorDao {
         select = entityManager.createQuery("SELECT a from Anchor a");
 
 
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Anchor)) 
         {
             result = (List<Anchor>) rs;
@@ -137,7 +138,8 @@ public class AnchorDaoImpl implements AnchorDao {
         String query = "SELECT a from Anchor a WHERE UPPER(a.owner) IN " + nameList.toString();
  
         select = entityManager.createQuery(query);
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Anchor)) 
         {
             result = (List<Anchor>) rs;
@@ -267,7 +269,8 @@ public class AnchorDaoImpl implements AnchorDao {
         String query = "SELECT a from Anchor a WHERE a.id IN " + ids.toString();
  
         select = entityManager.createQuery(query);
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Anchor)) 
         {
             result = (List<Anchor>) rs;

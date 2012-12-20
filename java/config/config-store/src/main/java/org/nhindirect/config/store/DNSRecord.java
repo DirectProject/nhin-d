@@ -31,9 +31,6 @@ import javax.persistence.TemporalType;
 
 import org.bouncycastle.util.Arrays;
 import org.nhindirect.config.store.util.DNSRecordUtils;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Section;
 
 @Entity
 @Table(name = "dnsrecord")

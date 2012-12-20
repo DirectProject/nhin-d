@@ -43,9 +43,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 @Entity
 @Table(name = "certificate")
 /**
@@ -90,8 +87,6 @@ public class Certificate
 		else
 			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, name);
 	}	
-	
-    private static final Log log = LogFactory.getLog(Certificate.class);
 
     public static final byte[] NULL_CERT = new byte[] {};
 

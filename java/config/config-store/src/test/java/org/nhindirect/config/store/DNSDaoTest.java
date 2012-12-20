@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.net.InetAddress;
 import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -23,11 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.xbill.DNS.ARecord;
-import org.xbill.DNS.CERTRecord;
-import org.xbill.DNS.DClass;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.Type;
 
 @RunWith(SpringJUnit4ClassRunner.class)
