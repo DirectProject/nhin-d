@@ -124,7 +124,8 @@ public class SettingDaoImpl implements SettingDao
         select = entityManager.createQuery("SELECT s from Setting s");
 
 
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Setting)) 
         {
             result = (List<Setting>) rs;
@@ -164,7 +165,8 @@ public class SettingDaoImpl implements SettingDao
         String query = "SELECT s from Setting s WHERE UPPER(s.name) IN " + nameList.toString();
  
         select = entityManager.createQuery(query);
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if (rs != null && (rs.size() != 0) && (rs.get(0) instanceof Setting)) 
         {
             result = (List<Setting>) rs;

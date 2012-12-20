@@ -95,6 +95,13 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.nhind</groupId>
+			<artifactId>agent</artifactId>
+			<version>1.5.4</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>		
+		<dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
@@ -112,6 +119,49 @@
 			<artifactId>jmock-junit3</artifactId>
 			<version>2.5.1</version>
 		</dependency>
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-all</artifactId>
+          <version>1.8.5</version>
+          <scope>test</scope>
+        </dependency>	
+	      <dependency>
+	        <groupId>org.apache.camel</groupId>
+	        <artifactId>camel-core</artifactId>
+	        <version>2.9.2</version>
+	      </dependency>
+	      <dependency>
+	        <groupId>org.apache.camel</groupId>
+	        <artifactId>camel-spring</artifactId>
+	        <version>2.9.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-tx</artifactId>
+				</exclusion>			
+			</exclusions>		        
+	      </dependency>
+	      <dependency>
+	        <groupId>org.apache.camel</groupId>
+	        <artifactId>camel-mina</artifactId>
+	        <version>2.9.2</version>
+	      </dependency>   
+	      <dependency>
+			<groupId>commons-net</groupId>
+			<artifactId>commons-net</artifactId>
+			<version>2.0</version>
+		  </dependency>	 
+	      <dependency>
+	        <groupId>org.apache.camel</groupId>
+	        <artifactId>camel-test</artifactId>
+	        <version>2.9.2</version>
+            <scope>test</scope>	        
+	     </dependency>	 
+		 <dependency>
+		    <groupId>bouncycastle</groupId>
+		    <artifactId>bcprov-jdk15</artifactId>
+		    <version>140</version>    
+		 </dependency>		            		
 	</dependencies>
 	<build>
 		<pluginManagement>

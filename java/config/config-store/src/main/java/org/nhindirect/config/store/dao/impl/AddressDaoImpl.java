@@ -187,7 +187,8 @@ public class AddressDaoImpl implements AddressDao {
      * 
      * @see org.nhindirect.config.store.dao.AddressDao#listAddresses(java.util.List, org.nhindirect.config.store.EntityStatus)
      */
-    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
     public List<Address> listAddresses(List<String> names, EntityStatus status) {
         if (log.isDebugEnabled())
             log.debug("Enter");
@@ -239,7 +240,8 @@ public class AddressDaoImpl implements AddressDao {
      * 
      * @see org.nhindirect.config.store.dao.AddressDao#getByDomain(org.nhindirect.config.store.Domain, org.nhindirect.config.store.EntityStatus)
      */
-    @Transactional(readOnly = true)
+    @SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
     public List<Address> getByDomain(Domain domain, EntityStatus status) {
         if (log.isDebugEnabled())
             log.debug("Enter");

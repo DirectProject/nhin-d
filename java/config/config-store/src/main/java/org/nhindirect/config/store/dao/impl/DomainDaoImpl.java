@@ -327,7 +327,8 @@ public class DomainDaoImpl implements DomainDao {
 
         }
         
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if ((rs.size() != 0) && (rs.get(0) instanceof Domain)) {
             result = (List<Domain>) rs;
         } else {
@@ -366,7 +367,8 @@ public class DomainDaoImpl implements DomainDao {
             select.setMaxResults(count);
         }
 
-        List rs = select.getResultList();
+        @SuppressWarnings("rawtypes")
+		List rs = select.getResultList();
         if ((rs.size() != 0) && (rs.get(0) instanceof Domain)) {
             result = (List<Domain>) rs;
         }
@@ -469,10 +471,6 @@ public class DomainDaoImpl implements DomainDao {
      */
     public void setAddressDao(AddressDao aDao) {
         addressDao = aDao;
-    }
-
-    private AddressDao getAddressDao() {
-        return addressDao;
     }
 
 }
