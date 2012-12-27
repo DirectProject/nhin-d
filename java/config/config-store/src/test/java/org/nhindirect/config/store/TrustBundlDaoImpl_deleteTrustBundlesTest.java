@@ -24,6 +24,7 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -46,6 +47,7 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -53,6 +55,7 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 		bundle.setBundleName("Test Bundle2");
 		bundle.setBundleURL("http://testBundle/bundle2.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("67890");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -75,6 +78,7 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -82,6 +86,7 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 		bundle.setBundleName("Test Bundle2");
 		bundle.setBundleURL("http://testBundle/bundle2.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("67890");
 		
 		tbDao.addTrustBundle(bundle);
 		

@@ -24,6 +24,7 @@ public class TrustBundleDaoImpl_addTrustBundleTest extends TrustBundleDaoBaseTes
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -34,7 +35,8 @@ public class TrustBundleDaoImpl_addTrustBundleTest extends TrustBundleDaoBaseTes
 		TrustBundle addedBundle = bundles.iterator().next();
 		
 		assertEquals("Test Bundle", addedBundle.getBundleName());
-		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
+		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
@@ -53,6 +55,7 @@ public class TrustBundleDaoImpl_addTrustBundleTest extends TrustBundleDaoBaseTes
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		TrustBundleAnchor anchor = new TrustBundleAnchor();
 		anchor.setData(loadCertificateData("secureHealthEmailCACert.der"));
@@ -69,7 +72,8 @@ public class TrustBundleDaoImpl_addTrustBundleTest extends TrustBundleDaoBaseTes
 		TrustBundle addedBundle = bundles.iterator().next();
 		
 		assertEquals("Test Bundle", addedBundle.getBundleName());
-		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
+		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
@@ -98,6 +102,7 @@ public class TrustBundleDaoImpl_addTrustBundleTest extends TrustBundleDaoBaseTes
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		

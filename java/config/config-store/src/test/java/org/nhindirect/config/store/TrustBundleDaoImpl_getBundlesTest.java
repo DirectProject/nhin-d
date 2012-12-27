@@ -41,6 +41,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -52,6 +53,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		
 		assertEquals("Test Bundle", addedBundle.getBundleName());
 		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
@@ -71,6 +73,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
 		bundle.setSigningCertificateData(loadCertificateData("secureHealthEmailCACert.der"));
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -81,7 +84,9 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		TrustBundle addedBundle = bundles.iterator().next();
 		
 		assertEquals("Test Bundle", addedBundle.getBundleName());
-		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
+		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());
+		assertEquals("12345", addedBundle.getCheckSum());
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
@@ -102,6 +107,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		bundle.setBundleName("Test Bundle1");
 		bundle.setBundleURL("http://testBundle/bundle1.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -110,6 +116,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		bundle.setBundleName("Test Bundle2");
 		bundle.setBundleURL("http://testBundle/bundle2.p7b");
 		bundle.setRefreshInterval(6);
+		bundle.setCheckSum("67890");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -124,6 +131,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		
 		assertEquals("Test Bundle1", addedBundle.getBundleName());
 		assertEquals("http://testBundle/bundle1.p7b", addedBundle.getBundleURL());	
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
@@ -137,6 +145,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		
 		assertEquals("Test Bundle2", addedBundle.getBundleName());
 		assertEquals("http://testBundle/bundle2.p7b", addedBundle.getBundleURL());	
+		assertEquals("67890", addedBundle.getCheckSum());
 		assertEquals(6, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
@@ -155,6 +164,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		TrustBundleAnchor anchor = new TrustBundleAnchor();
 		anchor.setData(loadCertificateData("secureHealthEmailCACert.der"));
@@ -172,6 +182,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		
 		assertEquals("Test Bundle", addedBundle.getBundleName());
 		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());

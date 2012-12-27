@@ -619,6 +619,114 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="getTrustBundles">
+      <soap:operation soapAction="urn:GetTrustBundles"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getTrustBundleByName">
+      <soap:operation soapAction="urn:GetTrustBundleByName"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getTrustBundleById">
+      <soap:operation soapAction="urn:GetTrustBundleById"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addTrustBundle">
+      <soap:operation soapAction="urn:AddTrustBundle"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="refreshTrustBundle">
+      <soap:operation soapAction="urn:RefreshTrustBundle"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updateTrustBundleAnchors">
+      <soap:operation soapAction="urn:UpdateTrustBundleAnchors"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updateLastUpdateError">
+      <soap:operation soapAction="urn:UpdateLastUpdateError"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="deleteTrustBundles">
+      <soap:operation soapAction="urn:DeleteTrustBundles"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updateTrustBundleSigningCertificate">
+      <soap:operation soapAction="urn:UpdateTrustBundleSigningCertificate"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
   </binding>
   <service name="ConfigurationServiceImplService">
     <port name="ConfigurationServiceImplPort" binding="tns:ConfigurationServiceImplPortBinding">

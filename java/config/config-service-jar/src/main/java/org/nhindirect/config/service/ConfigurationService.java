@@ -32,7 +32,8 @@ public interface ConfigurationService extends AddressService,
 		                                      CertificateService,  
 		                                      AnchorService,
 		                                      SettingService,
-		                                      DNSService
+		                                      DNSService,
+		                                      TrustBundleService
 		                                      {
 
 }

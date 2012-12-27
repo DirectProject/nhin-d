@@ -321,6 +321,60 @@
   <message name="updateDNSResponse">
     <part name="parameters" element="tns:updateDNSResponse"/>
   </message>
+  <message name="getTrustBundles">
+    <part name="parameters" element="tns:getTrustBundles"/>
+  </message>
+  <message name="getTrustBundlesResponse">
+    <part name="parameters" element="tns:getTrustBundlesResponse"/>
+  </message>
+  <message name="getTrustBundleByName">
+    <part name="parameters" element="tns:getTrustBundleByName"/>
+  </message>
+  <message name="getTrustBundleByNameResponse">
+    <part name="parameters" element="tns:getTrustBundleByNameResponse"/>
+  </message>
+  <message name="getTrustBundleById">
+    <part name="parameters" element="tns:getTrustBundleById"/>
+  </message>
+  <message name="getTrustBundleByIdResponse">
+    <part name="parameters" element="tns:getTrustBundleByIdResponse"/>
+  </message>
+  <message name="addTrustBundle">
+    <part name="parameters" element="tns:addTrustBundle"/>
+  </message>
+  <message name="addTrustBundleResponse">
+    <part name="parameters" element="tns:addTrustBundleResponse"/>
+  </message>
+  <message name="refreshTrustBundle">
+    <part name="parameters" element="tns:refreshTrustBundle"/>
+  </message>
+  <message name="refreshTrustBundleResponse">
+    <part name="parameters" element="tns:refreshTrustBundleResponse"/>
+  </message>
+  <message name="updateTrustBundleAnchors">
+    <part name="parameters" element="tns:updateTrustBundleAnchors"/>
+  </message>
+  <message name="updateTrustBundleAnchorsResponse">
+    <part name="parameters" element="tns:updateTrustBundleAnchorsResponse"/>
+  </message>
+  <message name="updateLastUpdateError">
+    <part name="parameters" element="tns:updateLastUpdateError"/>
+  </message>
+  <message name="updateLastUpdateErrorResponse">
+    <part name="parameters" element="tns:updateLastUpdateErrorResponse"/>
+  </message>
+  <message name="deleteTrustBundles">
+    <part name="parameters" element="tns:deleteTrustBundles"/>
+  </message>
+  <message name="deleteTrustBundlesResponse">
+    <part name="parameters" element="tns:deleteTrustBundlesResponse"/>
+  </message>
+  <message name="updateTrustBundleSigningCertificate">
+    <part name="parameters" element="tns:updateTrustBundleSigningCertificate"/>
+  </message>
+  <message name="updateTrustBundleSigningCertificateResponse">
+    <part name="parameters" element="tns:updateTrustBundleSigningCertificateResponse"/>
+  </message>
   <portType name="ConfigurationService">
     <operation name="getAddresss">
       <input message="tns:getAddresss"/>
@@ -577,6 +631,51 @@
     <operation name="updateDNS">
       <input message="tns:updateDNS"/>
       <output message="tns:updateDNSResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getTrustBundles">
+      <input message="tns:getTrustBundles"/>
+      <output message="tns:getTrustBundlesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getTrustBundleByName">
+      <input message="tns:getTrustBundleByName"/>
+      <output message="tns:getTrustBundleByNameResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getTrustBundleById">
+      <input message="tns:getTrustBundleById"/>
+      <output message="tns:getTrustBundleByIdResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="addTrustBundle">
+      <input message="tns:addTrustBundle"/>
+      <output message="tns:addTrustBundleResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="refreshTrustBundle">
+      <input message="tns:refreshTrustBundle"/>
+      <output message="tns:refreshTrustBundleResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateTrustBundleAnchors">
+      <input message="tns:updateTrustBundleAnchors"/>
+      <output message="tns:updateTrustBundleAnchorsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateLastUpdateError">
+      <input message="tns:updateLastUpdateError"/>
+      <output message="tns:updateLastUpdateErrorResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="deleteTrustBundles">
+      <input message="tns:deleteTrustBundles"/>
+      <output message="tns:deleteTrustBundlesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateTrustBundleSigningCertificate">
+      <input message="tns:updateTrustBundleSigningCertificate"/>
+      <output message="tns:updateTrustBundleSigningCertificateResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
   </portType>
