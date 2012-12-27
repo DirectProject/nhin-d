@@ -7,7 +7,8 @@
 	http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd 
     http://www.springframework.org/schema/tx       http://www.springframework.org/schema/tx/spring-tx.xsd
-	http://cxf.apache.org/jaxws                    http://cxf.apache.org/schemas/jaxws.xsd"	
+	http://cxf.apache.org/jaxws                    http://cxf.apache.org/schemas/jaxws.xsd
+    http://camel.apache.org/schema/spring          http://camel.apache.org/schema/spring/camel-spring.xsd"
 	default-autowire="byName">
 
 	<import resource="classpath:META-INF/cxf/cxf.xml" />
@@ -29,6 +30,7 @@
 				  <property name="certSvc" ref="certSvc"/>
 				  <property name="settingSvc" ref="settingSvc"/>
                   <property name="DNSSvc" ref="dnsSvc"/>
+                  <property name="trustBundleSvc" ref="trustBundleSvc"/>                        
 			</bean>
 			
 		</jaxws:implementor>
@@ -56,7 +58,10 @@
 	<bean id="dnsSvc" class="org.nhindirect.config.service.impl.DNSServiceImpl">
 	   <property name="dao" ref="dnsDao"/>
 	</bean>	
-
+	<bean id="trustBundleSvc" class="org.nhindirect.config.service.impl.TrustBundleServiceImpl">
+	   <property name="dao" ref="trustBundleDao"/>
+	</bean>	
+	
     <!--  DAO's -->
     <bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl"/>
     <bean id="addressDao" class="org.nhindirect.config.store.dao.impl.AddressDaoImpl"/>
@@ -64,7 +69,8 @@
     <bean id="certificateDao" class="org.nhindirect.config.store.dao.impl.CertificateDaoImpl"/>
     <bean id="settingDao" class="org.nhindirect.config.store.dao.impl.SettingDaoImpl"/> 
     <bean id="dnsDao" class="org.nhindirect.config.store.dao.impl.DNSDaoImpl"/> 
-    
+    <bean id="trustBundleDao" class="org.nhindirect.config.store.dao.impl.TrustBundleDaoImpl"/> 
+        
 	<!-- Exception translation bean post processor -->
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
@@ -178,5 +184,30 @@
 	   
 	     
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
+
+<!--  Camel Context for cache update and trust bundle processors -->
+  <bean id="bundleRefreshProcessor" class="org.nhindirect.config.processor.impl.DefaultBundleRefreshProcessorImpl">
+    <property name="dao" ref="trustBundleDao"/> 
+  </bean>
+
+  <bean id="bundleCacheUpdateProcessor" class="org.nhindirect.config.processor.impl.DefaultBundleCacheUpdateProcessorImpl">
+    <property name="dao" ref="trustBundleDao"/>
+    <property name="refreshProcessor" ref="bundleRefreshProcessor"/>   
+  </bean>
+
+  <camelContext id="web-camel-context" xmlns="http://camel.apache.org/schema/spring">  
+    <template id="bundleRefresh" defaultEndpoint="direct:refresh-start"/>
+       
+    <route id="refreshBundle">
+      <from uri="direct:refresh-start"/>
+      <bean ref="bundleRefreshProcessor"/>
+    </route>
+ 
+    <route id="cache-refresher">
+      <from uri="timer://cache-refresh?period=1h"/>
+      <bean ref="bundleCacheUpdateProcessor"/>
+    </route>  
+ 
+  </camelContext>
 
 </beans>
