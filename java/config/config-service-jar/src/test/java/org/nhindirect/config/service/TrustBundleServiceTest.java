@@ -1,8 +1,12 @@
 package org.nhindirect.config.service;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -15,6 +19,8 @@ import junit.framework.TestCase;
 import org.apache.camel.ProducerTemplate;
 import org.nhindirect.config.service.impl.TrustBundleServiceImpl;
 import org.nhindirect.config.store.BundleRefreshError;
+import org.nhindirect.config.store.Certificate;
+import org.nhindirect.config.store.Certificate.CertContainer;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.config.store.dao.TrustBundleDao;
@@ -70,6 +76,20 @@ public class TrustBundleServiceTest extends TestCase
 		verify(dao, times(1)).addTrustBundle(bundle);
 	}
 	
+	public void testRefresTrustBundle() throws Exception
+	{
+		final TrustBundle bundle = new TrustBundle();
+		impl.refreshTrustBundle(bundle.getId());
+		
+		verify(dao, times(1)).getTrustBundleById(bundle.getId());
+		verify(template, never()).sendBody(bundle);
+		
+		when(dao.getTrustBundleById(bundle.getId())).thenReturn(bundle);
+		impl.refreshTrustBundle(bundle.getId());
+		verify(dao, times(2)).getTrustBundleById(bundle.getId());
+		verify(template, times(1)).sendBody(bundle);
+	}
+	
 	public void testUpdateTrustBundleAnchors() throws Exception
 	{
 		final Calendar now = Calendar.getInstance(Locale.getDefault());
@@ -98,9 +118,16 @@ public class TrustBundleServiceTest extends TestCase
 	
 	public void testUpdateTrustBundleSigningCertificate() throws Exception
 	{	
-		X509Certificate cert = mock(X509Certificate.class);
-		impl.updateTrustBundleSigningCertificate(1234, cert);
+		X509Certificate cert = mock(X509Certificate.class); 
 		
-		verify(dao, times(1)).updateTrustBundleSigningCertificate(1234, cert);
+		CertContainer container = mock(CertContainer.class);
+		when(container.getCert()).thenReturn(cert);
+		
+		Certificate confCert = mock(Certificate.class);
+		when(confCert.toCredential()).thenReturn(container);
+		
+		impl.updateTrustBundleSigningCertificate(1234, confCert);
+		
+		verify(dao, times(1)).updateTrustBundleSigningCertificate(eq((long)1234), (X509Certificate)any());
 	}		
 }

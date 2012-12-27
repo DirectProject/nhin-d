@@ -21,6 +21,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.service.impl;
 
+import java.util.Calendar;
 import java.util.Collection;
 
 import javax.jws.WebService;
@@ -37,14 +38,18 @@ import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.DNSService;
 import org.nhindirect.config.service.DomainService;
 import org.nhindirect.config.service.SettingService;
+import org.nhindirect.config.service.TrustBundleService;
 
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Anchor;
+import org.nhindirect.config.store.BundleRefreshError;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
+import org.nhindirect.config.store.TrustBundle;
+import org.nhindirect.config.store.TrustBundleAnchor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -68,6 +73,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private SettingService settingSvc;
     
     private DNSService dnsSvc;
+    
+    private TrustBundleService trustBundleSvc;
     
     /**
      * Initialization method.
@@ -479,6 +486,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         this.dnsSvc = dnsSvc;
     }       
     
+    /**
+     * Get the TrustBundleService object.
+     * 
+     * @return the TrustBundleService object.
+     */
+    public TrustBundleService getTrustBundleSvc() {
+        return trustBundleSvc;
+    }
+
+    /**
+     * Set the TrustBundleService object.
+     * 
+     * @param trustBundleSvc
+     *            The TrustBundleService object.
+     */
+    @Autowired
+    public void setTrustBundleSvc(TrustBundleService trustBundleSvc) {
+        this.trustBundleSvc = trustBundleSvc;
+    }   
+    
     /*
      * (non-Javadoc)
      * 
@@ -776,6 +803,111 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 			throws ConfigurationServiceException 
 	{
 		dnsSvc.updateDNS(recordId, record);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<TrustBundle> getTrustBundles(boolean fetchAnchors)
+			throws ConfigurationServiceException 
+	{
+		return trustBundleSvc.getTrustBundles(fetchAnchors);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public TrustBundle getTrustBundleByName(String bundleName)
+			throws ConfigurationServiceException 
+	{
+		return trustBundleSvc.getTrustBundleByName(bundleName);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public TrustBundle getTrustBundleById(long id)
+			throws ConfigurationServiceException 
+	{
+		return trustBundleSvc.getTrustBundleById(id);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void addTrustBundle(TrustBundle bundle)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.addTrustBundle(bundle);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void refreshTrustBundle(long id)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.refreshTrustBundle(id);	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateTrustBundleAnchors(long trustBundleId,
+			Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.updateTrustBundleAnchors(trustBundleId, attemptTime, newAnchorSet);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateLastUpdateError(long trustBundleId, Calendar attemptTime,
+			BundleRefreshError error) throws ConfigurationServiceException 
+	{
+		trustBundleSvc.updateLastUpdateError(trustBundleId, attemptTime, error);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void deleteTrustBundles(long[] trustBundleIds)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.deleteTrustBundles(trustBundleIds);
+		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateTrustBundleSigningCertificate(long trustBundleId,
+			Certificate signingCert) throws ConfigurationServiceException 
+	{
+		trustBundleSvc.updateTrustBundleSigningCertificate(trustBundleId, signingCert);
+		
 	}   
 	
 	

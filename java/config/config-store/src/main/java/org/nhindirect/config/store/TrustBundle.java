@@ -33,7 +33,8 @@ public class TrustBundle
     private Calendar lastRefreshAttempt;
     private BundleRefreshError lastRefreshError;
     private Calendar lastSuccessfulRefresh;    
-    private Calendar createTime;    
+    private Calendar createTime;  
+    private String checkSum;
     
     public TrustBundle()
     {
@@ -177,10 +178,21 @@ public class TrustBundle
         }
         return trustBundleAnchors;
     }
-
+    
     public void setTrustBundleAnchors(Collection<TrustBundleAnchor> trustBundleAnchors) 
     {
         this.trustBundleAnchors = trustBundleAnchors;
+    }
+    
+    @Column(name = "getCheckSum", nullable = false)
+    public String getCheckSum()
+    {
+    	return checkSum;
+    }
+    
+    public void setCheckSum(String checkSum)
+    {
+    	this.checkSum = checkSum;
     }
     
     public X509Certificate toSigningCertificate() throws CertificateException 

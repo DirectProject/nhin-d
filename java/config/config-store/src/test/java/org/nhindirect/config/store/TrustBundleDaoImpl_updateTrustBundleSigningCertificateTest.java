@@ -22,6 +22,7 @@ public class TrustBundleDaoImpl_updateTrustBundleSigningCertificateTest extends 
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		

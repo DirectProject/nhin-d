@@ -26,6 +26,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -50,6 +51,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		TrustBundleAnchor anchor = new TrustBundleAnchor();
 		anchor.setData(loadCertificateData("secureHealthEmailCACert.der"));
@@ -85,6 +87,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		TrustBundleAnchor anchor = new TrustBundleAnchor();
 		anchor.setData(loadCertificateData("secureHealthEmailCACert.der"));

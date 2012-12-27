@@ -1,6 +1,5 @@
 package org.nhindirect.config.service;
 
-import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Collection;
 
@@ -8,6 +7,7 @@ import javax.jws.WebMethod;
 import javax.jws.WebParam;
 
 import org.nhindirect.config.store.BundleRefreshError;
+import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
 
@@ -24,6 +24,9 @@ public interface TrustBundleService
     
     @WebMethod(operationName = "addTrustBundle", action = "urn:AddTrustBundle")
     public void addTrustBundle(@WebParam(name = "bundle") TrustBundle bundle) throws ConfigurationServiceException;   
+
+    @WebMethod(operationName = "refreshTrustBundle", action = "urn:RefreshTrustBundle")
+    public void refreshTrustBundle(@WebParam(name = "id") long id) throws ConfigurationServiceException;       
     
     @WebMethod(operationName = "updateTrustBundleAnchors", action = "urn:UpdateTrustBundleAnchors")
     public void updateTrustBundleAnchors(@WebParam(name = "trustBundleId") long trustBundleId, 
@@ -39,5 +42,5 @@ public interface TrustBundleService
     
     @WebMethod(operationName = "updateTrustBundleSigningCertificate", action = "urn:UpdateTrustBundleSigningCertificate")
     public void updateTrustBundleSigningCertificate(@WebParam(name = "trustBundleIds") long trustBundleId, 
-    		@WebParam(name = "signingCert") X509Certificate signingCert) throws ConfigurationServiceException;      
+    		@WebParam(name = "signingCert") Certificate signingCert) throws ConfigurationServiceException;      
 }

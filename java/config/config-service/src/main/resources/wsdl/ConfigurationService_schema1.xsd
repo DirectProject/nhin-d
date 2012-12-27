@@ -27,6 +27,10 @@
 
   <xs:element name="addSettingResponse" type="tns:addSettingResponse"/>
 
+  <xs:element name="addTrustBundle" type="tns:addTrustBundle"/>
+
+  <xs:element name="addTrustBundleResponse" type="tns:addTrustBundleResponse"/>
+
   <xs:element name="contains" type="tns:contains"/>
 
   <xs:element name="containsResponse" type="tns:containsResponse"/>
@@ -34,6 +38,10 @@
   <xs:element name="deleteSetting" type="tns:deleteSetting"/>
 
   <xs:element name="deleteSettingResponse" type="tns:deleteSettingResponse"/>
+
+  <xs:element name="deleteTrustBundles" type="tns:deleteTrustBundles"/>
+
+  <xs:element name="deleteTrustBundlesResponse" type="tns:deleteTrustBundlesResponse"/>
 
   <xs:element name="domain" type="tns:domain"/>
 
@@ -125,6 +133,18 @@
 
   <xs:element name="getSettingsByNamesResponse" type="tns:getSettingsByNamesResponse"/>
 
+  <xs:element name="getTrustBundleById" type="tns:getTrustBundleById"/>
+
+  <xs:element name="getTrustBundleByIdResponse" type="tns:getTrustBundleByIdResponse"/>
+
+  <xs:element name="getTrustBundleByName" type="tns:getTrustBundleByName"/>
+
+  <xs:element name="getTrustBundleByNameResponse" type="tns:getTrustBundleByNameResponse"/>
+
+  <xs:element name="getTrustBundles" type="tns:getTrustBundles"/>
+
+  <xs:element name="getTrustBundlesResponse" type="tns:getTrustBundlesResponse"/>
+
   <xs:element name="listAddresss" type="tns:listAddresss"/>
 
   <xs:element name="listAddresssResponse" type="tns:listAddresssResponse"/>
@@ -140,6 +160,10 @@
   <xs:element name="listDomains" type="tns:listDomains"/>
 
   <xs:element name="listDomainsResponse" type="tns:listDomainsResponse"/>
+
+  <xs:element name="refreshTrustBundle" type="tns:refreshTrustBundle"/>
+
+  <xs:element name="refreshTrustBundleResponse" type="tns:refreshTrustBundleResponse"/>
 
   <xs:element name="removeAddress" type="tns:removeAddress"/>
 
@@ -209,9 +233,21 @@
 
   <xs:element name="updateDomainResponse" type="tns:updateDomainResponse"/>
 
+  <xs:element name="updateLastUpdateError" type="tns:updateLastUpdateError"/>
+
+  <xs:element name="updateLastUpdateErrorResponse" type="tns:updateLastUpdateErrorResponse"/>
+
   <xs:element name="updateSetting" type="tns:updateSetting"/>
 
   <xs:element name="updateSettingResponse" type="tns:updateSettingResponse"/>
+
+  <xs:element name="updateTrustBundleAnchors" type="tns:updateTrustBundleAnchors"/>
+
+  <xs:element name="updateTrustBundleAnchorsResponse" type="tns:updateTrustBundleAnchorsResponse"/>
+
+  <xs:element name="updateTrustBundleSigningCertificate" type="tns:updateTrustBundleSigningCertificate"/>
+
+  <xs:element name="updateTrustBundleSigningCertificateResponse" type="tns:updateTrustBundleSigningCertificateResponse"/>
 
   <xs:complexType name="getDNSByRecordId">
     <xs:sequence>
@@ -306,6 +342,17 @@
       <xs:element name="validEndDate" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="validStartDate" type="xs:dateTime" minOccurs="0"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateTrustBundleSigningCertificate">
+    <xs:sequence>
+      <xs:element name="trustBundleIds" type="xs:long"/>
+      <xs:element name="signingCert" type="tns:certificate" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateTrustBundleSigningCertificateResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="removeDNSByRecordIds">
@@ -490,6 +537,18 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="updateLastUpdateError">
+    <xs:sequence>
+      <xs:element name="trustBundleId" type="xs:long"/>
+      <xs:element name="attemptTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="error" type="tns:bundleRefreshError" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateLastUpdateErrorResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="getCertificatesForOwner">
     <xs:sequence>
       <xs:element name="owner" type="xs:string" minOccurs="0"/>
@@ -514,6 +573,16 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="deleteTrustBundles">
+    <xs:sequence>
+      <xs:element name="trustBundleIds" type="xs:long" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deleteTrustBundlesResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="listDomains">
     <xs:sequence>
       <xs:element name="names" type="xs:string" minOccurs="0"/>
@@ -524,6 +593,45 @@
   <xs:complexType name="listDomainsResponse">
     <xs:sequence>
       <xs:element name="return" type="tns:domain" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundleById">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundleByIdResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:trustBundle" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="trustBundle">
+    <xs:sequence>
+      <xs:element name="bundleName" type="xs:string" minOccurs="0"/>
+      <xs:element name="bundleURL" type="xs:string" minOccurs="0"/>
+      <xs:element name="checkSum" type="xs:string" minOccurs="0"/>
+      <xs:element name="createTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="lastRefreshAttempt" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="lastRefreshError" type="tns:bundleRefreshError" minOccurs="0"/>
+      <xs:element name="lastSuccessfulRefresh" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="refreshInterval" type="xs:int"/>
+      <xs:element name="signingCertificateData" type="xs:base64Binary" minOccurs="0"/>
+      <xs:element name="trustBundleAnchors" type="tns:trustBundleAnchor" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="trustBundleAnchor">
+    <xs:sequence>
+      <xs:element name="data" type="xs:base64Binary" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="thumbprint" type="xs:string" minOccurs="0"/>
+      <xs:element name="trustBundle" type="tns:trustBundle" minOccurs="0"/>
+      <xs:element name="validEndDate" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="validStartDate" type="xs:dateTime" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -590,6 +698,18 @@
 
   <xs:complexType name="updateAddressResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundleByName">
+    <xs:sequence>
+      <xs:element name="bundleName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundleByNameResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:trustBundle" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="setAnchorStatusForOwner">
@@ -763,6 +883,30 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="getTrustBundles">
+    <xs:sequence>
+      <xs:element name="fetchAnchors" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundlesResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:trustBundle" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateTrustBundleAnchors">
+    <xs:sequence>
+      <xs:element name="trustBundleId" type="xs:long"/>
+      <xs:element name="attemptTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="newAnchorSet" type="tns:trustBundleAnchor" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateTrustBundleAnchorsResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="getAnchors">
     <xs:sequence>
       <xs:element name="anchorId" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
@@ -846,6 +990,16 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="refreshTrustBundle">
+    <xs:sequence>
+      <xs:element name="id" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="refreshTrustBundleResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="getDomainCount">
     <xs:sequence/>
   </xs:complexType>
@@ -854,6 +1008,16 @@
     <xs:sequence>
       <xs:element name="return" type="xs:int"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addTrustBundle">
+    <xs:sequence>
+      <xs:element name="bundle" type="tns:trustBundle" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addTrustBundleResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="updateSetting">
@@ -904,6 +1068,17 @@
       <xs:enumeration value="NEW"/>
       <xs:enumeration value="ENABLED"/>
       <xs:enumeration value="DISABLED"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="bundleRefreshError">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SUCCESS"/>
+      <xs:enumeration value="NOT_FOUND"/>
+      <xs:enumeration value="DOWNLOAD_TIMEOUT"/>
+      <xs:enumeration value="INVALID_BUNDLE_FORMAT"/>
+      <xs:enumeration value="INVALID_SIGNING_CERT"/>
+      <xs:enumeration value="UNMATCHED_SIGNATURE"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

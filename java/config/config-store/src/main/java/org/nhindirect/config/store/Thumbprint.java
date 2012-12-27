@@ -51,27 +51,26 @@ public class Thumbprint
      * @throws CertificateException
      */
 	public static Thumbprint toThumbprint(X509Certificate cert) throws CertificateException
-	{
-		Thumbprint retVal = null;
-		
+	{	
 		if (cert == null)
 			throw new IllegalArgumentException();
 		
 		try
 		{
-			retVal =  new Thumbprint(cert);
+			final Thumbprint retVal = new Thumbprint(cert);
+			return retVal;
 		}
 		catch (Throwable e)
 		{
 			throw new CertificateException(e);
 		}
 		
-		return retVal;
+
 	}
 	
 	private Thumbprint (X509Certificate cert) throws NoSuchAlgorithmException, CertificateEncodingException
 	{
-		MessageDigest md = MessageDigest.getInstance("SHA-1");
+		final MessageDigest md = MessageDigest.getInstance("SHA-1");
 		byte[] der = cert.getEncoded();
 
 		md.update(der);
@@ -95,7 +94,7 @@ public class Thumbprint
 	    final char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', 
             '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};		
 		
-        StringBuffer buf = new StringBuffer(digest.length * 2);
+        final StringBuffer buf = new StringBuffer(digest.length * 2);
 
         for (byte bt : digest) 
         {
@@ -124,7 +123,7 @@ public class Thumbprint
 		if (!(obj instanceof Thumbprint))
 			return false;
 		
-		Thumbprint compareTo = (Thumbprint)obj;
+		final Thumbprint compareTo = (Thumbprint)obj;
 		
 		// deep compare
 		return Arrays.equals(compareTo.digest, digest);

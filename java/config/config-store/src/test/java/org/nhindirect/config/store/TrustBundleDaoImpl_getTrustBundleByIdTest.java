@@ -30,6 +30,7 @@ public class TrustBundleDaoImpl_getTrustBundleByIdTest extends TrustBundleDaoBas
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
 		bundle.setRefreshInterval(5);
+		bundle.setCheckSum("12345");
 		
 		tbDao.addTrustBundle(bundle);
 		
@@ -45,6 +46,7 @@ public class TrustBundleDaoImpl_getTrustBundleByIdTest extends TrustBundleDaoBas
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Test Bundle");
 		bundle.setBundleURL("http://testBundle/bundle.p7b");
+		bundle.setCheckSum("12345");
 		bundle.setRefreshInterval(5);
 		
 		tbDao.addTrustBundle(bundle);
@@ -53,6 +55,7 @@ public class TrustBundleDaoImpl_getTrustBundleByIdTest extends TrustBundleDaoBas
 		
 		assertEquals("Test Bundle", addedBundle.getBundleName());
 		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
+		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
 		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());

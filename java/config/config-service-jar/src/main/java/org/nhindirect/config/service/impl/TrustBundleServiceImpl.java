@@ -1,10 +1,10 @@
 package org.nhindirect.config.service.impl;
 
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 
+import javax.jws.WebParam;
 import javax.jws.WebService;
 
 import org.apache.camel.ProducerTemplate;
@@ -13,6 +13,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.service.TrustBundleService;
 import org.nhindirect.config.store.BundleRefreshError;
+import org.nhindirect.config.store.Certificate;
+import org.nhindirect.config.store.CertificateException;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.config.store.dao.TrustBundleDao;
@@ -32,11 +34,13 @@ public class TrustBundleServiceImpl implements TrustBundleService
     /**
 	 * Initialization method.
 	 */
+    ///CLOVER:OFF
     public void init() 
     {
         log.info("TrustBundleServiceImpl initialized");
     }
-
+    ///CLOVER:ON
+    
 	@Override
 	public Collection<TrustBundle> getTrustBundles(boolean fetchAnchors)
 			throws ConfigurationServiceException 
@@ -75,6 +79,15 @@ public class TrustBundleServiceImpl implements TrustBundleService
 	}
 
 	@Override
+    public void refreshTrustBundle(@WebParam(name = "id") long id) throws ConfigurationServiceException
+    {
+		final TrustBundle bundle = dao.getTrustBundleById(id);
+		
+		if (bundle != null)
+			template.sendBody(bundle);
+    }
+	
+	@Override
 	public void updateTrustBundleAnchors(long trustBundleId,
 			Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet)
 			throws ConfigurationServiceException 
@@ -98,9 +111,16 @@ public class TrustBundleServiceImpl implements TrustBundleService
 
 	@Override
 	public void updateTrustBundleSigningCertificate(long trustBundleId,
-			X509Certificate signingCert) throws ConfigurationServiceException 
+			Certificate signingCert) throws ConfigurationServiceException 
 	{
-		dao.updateTrustBundleSigningCertificate(trustBundleId, signingCert);	
+		try
+		{
+			dao.updateTrustBundleSigningCertificate(trustBundleId, signingCert.toCredential().getCert());	
+		}
+		catch (CertificateException e)
+		{
+			throw new ConfigurationServiceException(e);
+		}
 	}
 
     /**
@@ -120,10 +140,12 @@ public class TrustBundleServiceImpl implements TrustBundleService
      * 
      * @return the value of the DNSDao object.
      */
+    ///CLOVER:OFF
     public TrustBundleDao getDao() 
     {
         return dao;
     }
+    ///CLOVER:ON
     
     @Autowired
     @Qualifier("bundleRefresh")
