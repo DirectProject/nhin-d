@@ -206,6 +206,11 @@ namespace Health.Direct.Config.Client
             return new AnchorStoreClient(this.Binding, this.Endpoint);
         }
 
+        public BundleStoreClient CreateBundleStoreClient()
+        {
+            return new BundleStoreClient(this.Binding, this.Endpoint);
+        }
+
         public RecordRetrievalServiceClient CreateRecordRetrievalClient()
         {
             return new RecordRetrievalServiceClient(this.Binding

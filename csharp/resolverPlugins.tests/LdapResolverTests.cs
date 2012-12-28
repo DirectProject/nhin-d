@@ -172,12 +172,13 @@ namespace Health.Direct.ResolverPlugins.Tests
         [InlineData("gm2552@direct.securehealthemail.com")]
         public void TestDnsFallbackToLdapCertResolverBackupIPPlugin(string subject)
         {
+            // System.Diagnostics.Debugger.Break();
+
             AgentSettings settings = AgentSettings.Load(TestXmlBackupServerIP);
             DirectAgent agent = settings.CreateAgent();
 
             ICertificateResolver pluginResolver = agent.PublicCertResolver;
             Assert.NotNull(pluginResolver);
-
 
             X509Certificate2Collection certs = pluginResolver.GetCertificates(new MailAddress(subject));
             Assert.NotNull(certs);

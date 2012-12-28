@@ -34,6 +34,7 @@ namespace Health.Direct.Config.Store
         AdministratorManager m_administrators;
         PropertyManager m_properties;
         NamedBlobManager m_blobs;
+        BundleManager m_bundles;
         private MdnManager m_Mdns;
         
         public ConfigStore(string connectString)
@@ -63,6 +64,7 @@ namespace Health.Direct.Config.Store
             m_properties = new PropertyManager(this);
             m_blobs = new NamedBlobManager(this);
             m_Mdns = new MdnManager(this);
+            m_bundles = new BundleManager(this);
         }
 
         public TimeSpan Timeout
@@ -161,7 +163,15 @@ namespace Health.Direct.Config.Store
                 return m_Mdns;
             }
         }
-        
+
+        public BundleManager Bundles
+        {
+            get
+            {
+                return m_bundles;
+            }
+        }
+
         public ConfigDatabase CreateContext()
         {
             return new ConfigDatabase(m_connectString) {CommandTimeout = this.TimeoutSeconds};

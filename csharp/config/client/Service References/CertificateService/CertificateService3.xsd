@@ -363,4 +363,185 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="AddBundle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bundle" nillable="true" type="tns:Bundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Bundle">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="ForIncoming" type="xs:boolean" />
+      <xs:element name="ForOutgoing" type="xs:boolean" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q15:EntityStatus" />
+      <xs:element name="Url" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Bundle" nillable="true" type="tns:Bundle" />
+  <xs:element name="AddBundleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddBundleResult" nillable="true" type="tns:Bundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bundles" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfBundle">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Bundle" nillable="true" type="tns:Bundle" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfBundle" nillable="true" type="tns:ArrayOfBundle" />
+  <xs:element name="AddBundlesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bundleId" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBundleResult" nillable="true" type="tns:Bundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="bundleIDs" nillable="true" type="q16:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundlesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundlesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBundlesForOwnerResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIncomingBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q17:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIncomingBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetIncomingBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q18:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetOutgoingBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="bundleIDs" nillable="true" type="q19:ArrayOflong" />
+        <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q20:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatusResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatusForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q21:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatusForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastBundleID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q22="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="bundleIDs" nillable="true" type="q22:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundlesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundlesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundlesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

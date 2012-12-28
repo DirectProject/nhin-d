@@ -56,6 +56,7 @@
     <Compile Include="Command\AddressCommands.cs" />
     <Compile Include="Command\AnchorCommands.cs" />
     <Compile Include="Command\BlobCommands.cs" />
+    <Compile Include="Command\BundleCommands.cs" />
     <Compile Include="Command\CertificateCommands.cs" />
     <Compile Include="Command\CertificateFileInfo.cs" />
     <Compile Include="Command\CommandsBase.cs" />

@@ -36,6 +36,7 @@ namespace Health.Direct.Config.Console
         private DnsRecordManagerClient m_dnsRecordClient;
         private PropertyManagerClient m_propertyClient;
         private BlobManagerClient m_blobClient;
+        private BundleStoreClient m_bundleClient;
         
         internal ConfigConsole(ConsoleSettings settings)
         {
@@ -55,6 +56,7 @@ namespace Health.Direct.Config.Console
             m_commands.Register(new BlobCommands(this, () => m_blobClient));
             m_commands.Register(new SettingsCommands(this));
             m_commands.Register(new TestCommands(this));
+            m_commands.Register(new BundleCommands(this, () => m_bundleClient));
 
             m_settings.HostAndPortChanged += HostAndPortChanged;
         }
@@ -76,6 +78,8 @@ namespace Health.Direct.Config.Console
             m_certificateClient = m_settings.CertificateManager.CreateCertificateStoreClient();
             m_dnsRecordClient = m_settings.DnsRecordManager.CreateDnsRecordManagerClient();
             m_anchorClient = m_settings.AnchorManager.CreateAnchorStoreClient();
+            m_bundleClient = m_settings.BundleManager.CreateBundleStoreClient();
+
             if (m_settings.PropertyManager != null)
             {
                 m_propertyClient = m_settings.PropertyManager.CreatePropertyManagerClient();
