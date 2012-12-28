@@ -20,6 +20,9 @@
   <BlobManager>
     <Url>http://localhost/ConfigService/SettingsManager.svc/Blobs</Url>
   </BlobManager>
+  <BundleManager>
+    <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+  </BundleManager>
 <!--
   <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>

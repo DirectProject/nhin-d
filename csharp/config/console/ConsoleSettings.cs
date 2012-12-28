@@ -81,12 +81,20 @@ namespace Health.Direct.Config.Console
             set;
         }
 
+        [XmlElement]
+        public ClientSettings BundleManager
+        {
+            get;
+            set;
+        }
+
         public void SetHost(string host, int port)
         {
             this.DomainManager.SetHost(host, port);
             this.AddressManager.SetHost(host, port);
             this.CertificateManager.SetHost(host, port);
             this.AnchorManager.SetHost(host, port);
+            this.BundleManager.SetHost(host, port);
             if (this.PropertyManager != null)
             {
                 this.PropertyManager.SetHost(host, port);
@@ -104,6 +112,7 @@ namespace Health.Direct.Config.Console
             Validate(this.DomainManager, "DomainManager", true);
             Validate(this.AddressManager, "AddressManager", true);
             Validate(this.AnchorManager, "AnchorManager", true);
+            Validate(this.BundleManager, "BundleManager", true);
             Validate(this.CertificateManager, "CertificateManager", true);
             Validate(this.PropertyManager, "PropertyManager", false);
             Validate(this.BlobManager, "BlobManager", false);
