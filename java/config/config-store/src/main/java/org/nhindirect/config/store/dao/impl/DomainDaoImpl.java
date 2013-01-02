@@ -60,7 +60,7 @@ public class DomainDaoImpl implements DomainDao {
 
     @Autowired
     private AddressDao addressDao;
-
+    
     private static final Log log = LogFactory.getLog(DomainDaoImpl.class);
 
     /*
@@ -225,6 +225,8 @@ public class DomainDaoImpl implements DomainDao {
         
         if (domain != null)
         {      
+        	disassociateTrustBundlesFromDomain(domain.getId());
+        	
 	        entityManager.remove(domain);
         }
         else 
@@ -473,4 +475,12 @@ public class DomainDaoImpl implements DomainDao {
         addressDao = aDao;
     }
 
+	protected void disassociateTrustBundlesFromDomain(long domainId) throws ConfigurationStoreException
+	{
+		final TrustBundleDaoImpl dao = new TrustBundleDaoImpl();
+		dao.setEntityManager(this.entityManager);
+		dao.setDomainDao(this);
+		dao.disassociateTrustBundlesFromDomain(domainId);
+	}
+    
 }

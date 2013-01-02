@@ -375,6 +375,36 @@
   <message name="updateTrustBundleSigningCertificateResponse">
     <part name="parameters" element="tns:updateTrustBundleSigningCertificateResponse"/>
   </message>
+  <message name="associateTrustBundleToDomain">
+    <part name="parameters" element="tns:associateTrustBundleToDomain"/>
+  </message>
+  <message name="associateTrustBundleToDomainResponse">
+    <part name="parameters" element="tns:associateTrustBundleToDomainResponse"/>
+  </message>
+  <message name="disassociateTrustBundleFromDomain">
+    <part name="parameters" element="tns:disassociateTrustBundleFromDomain"/>
+  </message>
+  <message name="disassociateTrustBundleFromDomainResponse">
+    <part name="parameters" element="tns:disassociateTrustBundleFromDomainResponse"/>
+  </message>
+  <message name="disassociateTrustBundlesFromDomain">
+    <part name="parameters" element="tns:disassociateTrustBundlesFromDomain"/>
+  </message>
+  <message name="disassociateTrustBundlesFromDomainResponse">
+    <part name="parameters" element="tns:disassociateTrustBundlesFromDomainResponse"/>
+  </message>
+  <message name="disassociateTrustBundleFromDomains">
+    <part name="parameters" element="tns:disassociateTrustBundleFromDomains"/>
+  </message>
+  <message name="disassociateTrustBundleFromDomainsResponse">
+    <part name="parameters" element="tns:disassociateTrustBundleFromDomainsResponse"/>
+  </message>
+  <message name="getTrustBundlesByDomain">
+    <part name="parameters" element="tns:getTrustBundlesByDomain"/>
+  </message>
+  <message name="getTrustBundlesByDomainResponse">
+    <part name="parameters" element="tns:getTrustBundlesByDomainResponse"/>
+  </message>
   <portType name="ConfigurationService">
     <operation name="getAddresss">
       <input message="tns:getAddresss"/>
@@ -676,6 +706,31 @@
     <operation name="updateTrustBundleSigningCertificate">
       <input message="tns:updateTrustBundleSigningCertificate"/>
       <output message="tns:updateTrustBundleSigningCertificateResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="associateTrustBundleToDomain">
+      <input message="tns:associateTrustBundleToDomain"/>
+      <output message="tns:associateTrustBundleToDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="disassociateTrustBundleFromDomain">
+      <input message="tns:disassociateTrustBundleFromDomain"/>
+      <output message="tns:disassociateTrustBundleFromDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="disassociateTrustBundlesFromDomain">
+      <input message="tns:disassociateTrustBundlesFromDomain"/>
+      <output message="tns:disassociateTrustBundlesFromDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="disassociateTrustBundleFromDomains">
+      <input message="tns:disassociateTrustBundleFromDomains"/>
+      <output message="tns:disassociateTrustBundleFromDomainsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getTrustBundlesByDomain">
+      <input message="tns:getTrustBundlesByDomain"/>
+      <output message="tns:getTrustBundlesByDomainResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
   </portType>

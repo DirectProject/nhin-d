@@ -727,6 +727,66 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="associateTrustBundleToDomain">
+      <soap:operation soapAction="urn:AssociateTrustBundleToDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="disassociateTrustBundleFromDomain">
+      <soap:operation soapAction="urn:DisassociateTrustBundleFromDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="disassociateTrustBundlesFromDomain">
+      <soap:operation soapAction="urn:DisassociateTrustBundlesFromDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="disassociateTrustBundleFromDomains">
+      <soap:operation soapAction="urn:DisassociateTrustBundleFromDomains"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getTrustBundlesByDomain">
+      <soap:operation soapAction="urn:GetTrustBundlesByDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
   </binding>
   <service name="ConfigurationServiceImplService">
     <port name="ConfigurationServiceImplPort" binding="tns:ConfigurationServiceImplPortBinding">

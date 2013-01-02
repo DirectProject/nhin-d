@@ -129,5 +129,44 @@ public class TrustBundleServiceTest extends TestCase
 		impl.updateTrustBundleSigningCertificate(1234, confCert);
 		
 		verify(dao, times(1)).updateTrustBundleSigningCertificate(eq((long)1234), (X509Certificate)any());
-	}		
+	}	
+	
+	public void testAssociateTrustBundleToDomain() throws Exception
+	{
+		impl.associateTrustBundleToDomain(1234, 5678);
+		
+		verify(dao, times(1)).associateTrustBundleToDomain(1234, 5678);
+	}
+	
+	public void testDisassociateTrustBundleFromDomain() throws Exception
+	{
+		impl.disassociateTrustBundleFromDomain(1234, 5678);
+		
+		verify(dao, times(1)).disassociateTrustBundleFromDomain(1234, 5678);
+	}	
+	
+	public void testDisassociateTrustBundlesFromDomain() throws Exception
+	{
+		impl.disassociateTrustBundlesFromDomain(1234);
+		
+		verify(dao, times(1)).disassociateTrustBundlesFromDomain(1234);
+	}
+	
+	public void testDisassociateTrustBundleFromDomains() throws Exception
+	{
+		impl.disassociateTrustBundlesFromDomain(1234);
+		
+		verify(dao, times(1)).disassociateTrustBundlesFromDomain(1234);
+	}
+	
+	public void testGetTrustBundlesByDomain() throws Exception
+	{
+		impl.getTrustBundlesByDomain(1234, false);
+		
+		verify(dao, times(1)).getTrustBundlesByDomain(1234);
+		
+		impl.getTrustBundlesByDomain(1234, true);
+		
+		verify(dao, times(2)).getTrustBundlesByDomain(1234);		
+	}	
 }

@@ -31,6 +31,10 @@
 
   <xs:element name="addTrustBundleResponse" type="tns:addTrustBundleResponse"/>
 
+  <xs:element name="associateTrustBundleToDomain" type="tns:associateTrustBundleToDomain"/>
+
+  <xs:element name="associateTrustBundleToDomainResponse" type="tns:associateTrustBundleToDomainResponse"/>
+
   <xs:element name="contains" type="tns:contains"/>
 
   <xs:element name="containsResponse" type="tns:containsResponse"/>
@@ -42,6 +46,18 @@
   <xs:element name="deleteTrustBundles" type="tns:deleteTrustBundles"/>
 
   <xs:element name="deleteTrustBundlesResponse" type="tns:deleteTrustBundlesResponse"/>
+
+  <xs:element name="disassociateTrustBundleFromDomain" type="tns:disassociateTrustBundleFromDomain"/>
+
+  <xs:element name="disassociateTrustBundleFromDomainResponse" type="tns:disassociateTrustBundleFromDomainResponse"/>
+
+  <xs:element name="disassociateTrustBundleFromDomains" type="tns:disassociateTrustBundleFromDomains"/>
+
+  <xs:element name="disassociateTrustBundleFromDomainsResponse" type="tns:disassociateTrustBundleFromDomainsResponse"/>
+
+  <xs:element name="disassociateTrustBundlesFromDomain" type="tns:disassociateTrustBundlesFromDomain"/>
+
+  <xs:element name="disassociateTrustBundlesFromDomainResponse" type="tns:disassociateTrustBundlesFromDomainResponse"/>
 
   <xs:element name="domain" type="tns:domain"/>
 
@@ -142,6 +158,10 @@
   <xs:element name="getTrustBundleByNameResponse" type="tns:getTrustBundleByNameResponse"/>
 
   <xs:element name="getTrustBundles" type="tns:getTrustBundles"/>
+
+  <xs:element name="getTrustBundlesByDomain" type="tns:getTrustBundlesByDomain"/>
+
+  <xs:element name="getTrustBundlesByDomainResponse" type="tns:getTrustBundlesByDomainResponse"/>
 
   <xs:element name="getTrustBundlesResponse" type="tns:getTrustBundlesResponse"/>
 
@@ -700,6 +720,17 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="disassociateTrustBundleFromDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+      <xs:element name="trustBundleId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociateTrustBundleFromDomainResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="getTrustBundleByName">
     <xs:sequence>
       <xs:element name="bundleName" type="xs:string" minOccurs="0"/>
@@ -720,6 +751,17 @@
   </xs:complexType>
 
   <xs:complexType name="setAnchorStatusForOwnerResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="associateTrustBundleToDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+      <xs:element name="trustBundleId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="associateTrustBundleToDomainResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -873,6 +915,16 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="disassociateTrustBundlesFromDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociateTrustBundlesFromDomainResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="removeDNSByRecordId">
     <xs:sequence>
       <xs:element name="recordId" type="xs:long"/>
@@ -905,6 +957,19 @@
 
   <xs:complexType name="updateTrustBundleAnchorsResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundlesByDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+      <xs:element name="fetchAnchors" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getTrustBundlesByDomainResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:trustBundle" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="getAnchors">
@@ -1041,6 +1106,16 @@
     <xs:sequence>
       <xs:element name="return" type="xs:boolean"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociateTrustBundleFromDomains">
+    <xs:sequence>
+      <xs:element name="trustBundleId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociateTrustBundleFromDomainsResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="addAnchor">
