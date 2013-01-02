@@ -123,7 +123,53 @@ public class TrustBundleServiceImpl implements TrustBundleService
 		}
 	}
 
-    /**
+	
+	
+    @Override
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId)
+			throws ConfigurationServiceException 
+	{
+    	dao.associateTrustBundleToDomain(domainId, trustBundleId);
+	}
+
+	@Override
+	public void disassociateTrustBundleFromDomain(long domainId,
+			long trustBundleId) throws ConfigurationServiceException 
+	{
+		dao.disassociateTrustBundleFromDomain(domainId, trustBundleId);
+	}
+
+	@Override
+	public void disassociateTrustBundlesFromDomain(long domainId)
+			throws ConfigurationServiceException 
+	{
+		dao.disassociateTrustBundlesFromDomain(domainId);
+	}
+
+	@Override
+	public void disassociateTrustBundleFromDomains(long trustBundleId)
+			throws ConfigurationServiceException 
+	{
+		dao.disassociateTrustBundleFromDomains(trustBundleId);
+	}
+
+	@Override
+	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId, boolean fetchAnchors)
+			throws ConfigurationServiceException 
+	{
+		final Collection<TrustBundle> bundles = dao.getTrustBundlesByDomain(domainId);
+		
+		if (!fetchAnchors)
+		{
+			for (TrustBundle bundle : bundles)
+				bundle.setTrustBundleAnchors(new ArrayList<TrustBundleAnchor>());
+		}
+		
+		return bundles;
+		
+	}
+
+	/**
      * Set the value of the DNSDao object.
      * 
      * @param dao

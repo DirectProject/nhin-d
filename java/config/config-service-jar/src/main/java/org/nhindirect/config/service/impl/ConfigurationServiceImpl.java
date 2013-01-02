@@ -846,8 +846,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	public void addTrustBundle(TrustBundle bundle)
 			throws ConfigurationServiceException 
 	{
-		trustBundleSvc.addTrustBundle(bundle);
-		
+		trustBundleSvc.addTrustBundle(bundle);	
 	}
 
     /**
@@ -871,7 +870,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 			throws ConfigurationServiceException 
 	{
 		trustBundleSvc.updateTrustBundleAnchors(trustBundleId, attemptTime, newAnchorSet);
-		
 	}
 
     /**
@@ -883,7 +881,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 			BundleRefreshError error) throws ConfigurationServiceException 
 	{
 		trustBundleSvc.updateLastUpdateError(trustBundleId, attemptTime, error);
-		
 	}
 
     /**
@@ -895,7 +892,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 			throws ConfigurationServiceException 
 	{
 		trustBundleSvc.deleteTrustBundles(trustBundleIds);
-		
 	}
 
     /**
@@ -907,7 +903,61 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 			Certificate signingCert) throws ConfigurationServiceException 
 	{
 		trustBundleSvc.updateTrustBundleSigningCertificate(trustBundleId, signingCert);
-		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.associateTrustBundleToDomain(domainId, trustBundleId);
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void disassociateTrustBundleFromDomain(long domainId,
+			long trustBundleId) throws ConfigurationServiceException 
+	{
+		trustBundleSvc.disassociateTrustBundleFromDomain(domainId, trustBundleId);	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void disassociateTrustBundlesFromDomain(long domainId)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.disassociateTrustBundlesFromDomain(domainId);	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void disassociateTrustBundleFromDomains(long trustBundleId)
+			throws ConfigurationServiceException 
+	{
+		trustBundleSvc.disassociateTrustBundleFromDomains(trustBundleId);	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId,
+			boolean fetchAnchors) throws ConfigurationServiceException 
+	{
+		return trustBundleSvc.getTrustBundlesByDomain(domainId, fetchAnchors);
 	}   
 	
 	
