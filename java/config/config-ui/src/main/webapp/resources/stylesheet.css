@@ -1,0 +1,102 @@
+h3 {
+	font-size:15px;
+	padding:5px 0;
+		margin:0;
+}
+
+div#bundle-table-col {
+    width:100%;
+    margin-right:260px;
+	float:left;
+}
+div#add-new-bundle-form {
+
+	width:260px;
+	float:right;
+	background:#ddd;
+	padding:10px;
+	border:1px solid white;
+	height:400px;
+}
+
+div#add-new-bundle-form div {
+	margin-bottom:5px;
+}
+
+div.form-submit-area {
+	padding:5px 0;
+	
+}
+
+
+
+
+input, textarea {  
+    padding: 4px;  
+    border: solid 1px #E5E5E5;  
+    outline: 0;  
+    font: normal 13px/100% Verdana, Tahoma, sans-serif;  
+    width: 247px;  
+    background: #FFFFFF;  
+    }  
+textarea {  
+    width: 400px;  
+    max-width: 400px;  
+    height: 150px;  
+    line-height: 150%;  
+    }  
+input:hover, textarea:hover,  
+input:focus, textarea:focus {  
+    border-color: #C9C9C9;  
+    }  
+.form label {  
+    margin-left: 10px;  
+    color: #999999;  
+    }  
+.submit input {  
+    width: auto;  
+    padding: 4px 5px;  
+    background: #617798;  
+    border: 0;  
+    font-size: 14px;  
+    color: #FFFFFF;  
+    } 
+    
+   input[type='checkbox'] { width:auto; }
+    
+   input, textarea {  
+    box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    -moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    -webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));  
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);  
+    
+    } 
+    
+        input, textarea {  
+        background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));  
+        background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);  
+        }  
+    
+    input:hover, textarea:hover,  
+input:focus, textarea:focus {  
+    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;  
+    } 
+    
+        button#submitType {  
+        
+        width: auto;  
+    padding: 4px 5px;  
+    background:  rgb(0, 133, 195);  
+    border: 0;  
+    font-size: 12px;  
+    color: #fff;
+    -webkit-border-radius: 5px;  
+        -moz-border-radius: 5px;    
+        
+        } 
+    
+    
+    
+         
+    

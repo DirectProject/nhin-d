@@ -1,0 +1,51 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd"       
+       default-autowire="byName">
+
+  <import resource="classpath*:distributedAggregatorRoutes/routeComponents.xml"/>
+
+  <bean id="errorGenAggregationDAO" class="org.nhindirect.monitor.dao.impl.RemovedExceptionAggregationDAOImpl" />
+
+  <bean id="monitoringRepo" class="org.nhindirect.monitor.aggregator.repository.ConcurrentJPAAggregationRepository">
+      <!-- store the repo in the hawtdb.dat file -->
+      <property name="aggreationDAO" ref="errorGenAggregationDAO"/>
+      <!-- and use directMonitoring as the repository name -->   
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">  
+    
+    <route id="direct-reliable">
+      <from uri="direct:start"/>
+      <onException>
+           <exception>org.nhindirect.monitor.dao.AggregationVersionException</exception>
+           <redeliveryPolicy maximumRedeliveries="-1" redeliveryDelay="200" collisionAvoidanceFactor="0.15"/>
+      </onException>      
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
+           aggregationRepositoryRef="monitoringRepo">
+        <correlationExpression>
+            <ref>msgIdCorrelator</ref>
+        </correlationExpression>
+        <completionPredicate>
+          <method bean="aggregationStrategy" method="isAggregationComplete"/>
+        </completionPredicate>     
+        <completionTimeout>
+          <method bean="aggregationStrategy" method="getAggregationTime"/>
+        </completionTimeout>           
+        <to uri="mock:result"/>
+      </aggregate>
+    </route>
+ 
+  </camelContext>
+
+</beans>

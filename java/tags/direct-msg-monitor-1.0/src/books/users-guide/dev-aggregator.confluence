@@ -1,0 +1,7 @@
+h1. Aggregator Component
+
+The aggregator component groups correlated messages together into a single data structure.  The default monitoring deployment uses BasicTxAggregator class to group messages into a collection of message monitoring structures.  
+
+All messages flowing into the monitoring service are represented by the Tx data type.  When the first message of a correlation is received, the aggregator creates a new collection of Tx objects and places the Tx instance into the collection  When subsequent messages are correlated, they Tx object is simply added to the collection.
+
+As you will see in the next section, a BasicTxAggregator instance can be configured as the container for the completion and timeout conditions.

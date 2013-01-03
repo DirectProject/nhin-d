@@ -1,0 +1,69 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd"       
+       default-autowire="byName">
+
+  <import resource="classpath*:distributedAggregatorRoutes/routeComponents.xml"/>
+
+    <bean id="generalLongTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="3600000"/>
+    </bean>
+
+    <bean id="reliableLongTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="3600000"/>
+    </bean>
+
+    <bean id="varaiableLongTimeoutCondition" class="org.nhindirect.monitor.condition.impl.VariableTimeoutCondition">
+		<constructor-arg ref="generalLongTimeoutCondition" />
+		<constructor-arg ref="reliableLongTimeoutCondition" />
+    </bean>
+
+    <bean id="aggregationLongStrategy" class="org.nhindirect.monitor.aggregator.BasicTxAggregator">
+		<constructor-arg ref="variableCompletionCondition" />  
+		<constructor-arg ref="varaiableLongTimeoutCondition" />  		
+    </bean>
+
+  <bean id="errorGenAggregationDAO" class="org.nhindirect.monitor.dao.impl.AddUpdateExceptionAggregationDAOImpl" />
+
+  <bean id="monitoringRepo" class="org.nhindirect.monitor.aggregator.repository.ConcurrentJPAAggregationRepository">
+      <!-- store the repo in the hawtdb.dat file -->
+      <property name="aggreationDAO" ref="errorGenAggregationDAO"/>
+      <!-- and use directMonitoring as the repository name -->   
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">  
+    
+    <route id="direct-reliable">
+      <from uri="seda:start?concurrentConsumers=10"/>
+      <onException>
+           <exception>org.nhindirect.monitor.dao.AggregationVersionException</exception>
+           <redeliveryPolicy maximumRedeliveries="-1" redeliveryDelay="200" collisionAvoidanceFactor="0.15"/>
+      </onException>      
+      <aggregate strategyRef="aggregationLongStrategy" ignoreInvalidCorrelationKeys="true"
+           aggregationRepositoryRef="monitoringRepo">
+        <correlationExpression>
+            <ref>msgIdCorrelator</ref>
+        </correlationExpression>
+        <completionPredicate>
+          <method bean="aggregationLongStrategy" method="isAggregationComplete"/>
+        </completionPredicate>     
+        <completionTimeout>
+          <method bean="aggregationLongStrategy" method="getAggregationTime"/>
+        </completionTimeout>           
+        <to uri="mock:result"/>
+      </aggregate>
+    </route>
+ 
+  </camelContext>
+
+</beans>
