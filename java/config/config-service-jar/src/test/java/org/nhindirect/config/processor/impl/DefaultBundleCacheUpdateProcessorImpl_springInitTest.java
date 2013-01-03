@@ -31,5 +31,7 @@ public class DefaultBundleCacheUpdateProcessorImpl_springInitTest extends TestCa
 		assertNotNull(ctx.getBean("bundleRefresh"));	
 		assertNotNull(ctx.getBean("bundleRefreshProcessor"));	
 		assertNotNull(ctx.getBean("bundleCacheUpdateProcessor"));	
+		assertNotNull(ctx.getBean("trustBundleDao"));	
+		assertNotNull(ctx.getBean("domainDao"));			
 	}
 }

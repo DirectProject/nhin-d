@@ -26,4 +26,14 @@ public interface TrustBundleDao
 	public void deleteTrustBundles(long[] trustBundleIds) throws ConfigurationStoreException;
 	
 	public void updateTrustBundleSigningCertificate(long trustBundleId, X509Certificate signingCert) throws ConfigurationStoreException;
+	
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId) throws ConfigurationStoreException;
+	
+	public void disassociateTrustBundleFromDomain(long domainId, long trustBundleId) throws ConfigurationStoreException;	
+	
+	public void disassociateTrustBundlesFromDomain(long domainId) throws ConfigurationStoreException;	
+	
+	public void disassociateTrustBundleFromDomains(long trustBundleId) throws ConfigurationStoreException;		
+	
+	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId) throws ConfigurationStoreException;		
 }
