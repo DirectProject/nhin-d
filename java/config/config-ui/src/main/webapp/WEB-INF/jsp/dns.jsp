@@ -21,9 +21,12 @@ $(document).ready(function()
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
-<h3>DNS Resolver Configuration</h3>
+<h2>DNS Resolver Configuration</h2>
 
-<br><br>
+
+
+
+
 
 <c:if test="${param.serviceError == 1}">
 	<div class="error">
@@ -32,7 +35,11 @@ $(document).ready(function()
 	${param.errorDetails}</p>
 	</div>
 </c:if>
-<fieldset><legend>&quot;A&quot; Records</legend>
+
+
+
+
+<fieldset><legend><h3>&quot;A&quot; Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addADNSRecord" var="formUrladdARecord" /> <form:form
 	id="aEntryForm" modelAttribute="AdnsForm"
@@ -108,7 +115,7 @@ $(document).ready(function()
 	</fieldset>
 </c:if></fieldset>
 
-<fieldset><legend>&quot;AAAA&quot (IPv6) Records</legend>
+<fieldset><legend><h3>&quot;AAAA&quot (IPv6) Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addA4DNSRecord" var="formUrladdARecord" /> <form:form
 	id="a4EntryForm" modelAttribute="AAdnsForm"
@@ -185,7 +192,7 @@ $(document).ready(function()
 	</div>
 </c:if></fieldset>
 
-<fieldset><legend>&quot;CNAME&quot; (Alias) Records</legend>
+<fieldset><legend><h3>&quot;CNAME&quot; (Alias) Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addCNAMEDNSRecord" var="formUrladdCnameRecord" /> <form:form
 	id="cnameEntryForm" modelAttribute="CdnsForm"
@@ -262,8 +269,7 @@ $(document).ready(function()
 	</div>
 </c:if></fieldset>
 
-<fieldset><legend>&quot;MX&quot; (Mail Exchange)
-Records</legend>
+<fieldset><legend><h3>&quot;MX&quot; (Mail Exchange) Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addMXDNSRecord" var="formUrladdMXRecord" /> <form:form
 	id="mxEntryForm" modelAttribute="MXdnsForm"

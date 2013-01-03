@@ -63,7 +63,7 @@
 		                    <table class="data" id="domain-table">
 		                        <thead>
 		                            <tr>
-		                                <th></th>
+		                                <th width=40></th>
 										<th>Name</th>
 		                                <th>Postmaster</th>
 		                                <th>Status</th>

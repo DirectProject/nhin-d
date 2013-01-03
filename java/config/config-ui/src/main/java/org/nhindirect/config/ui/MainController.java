@@ -50,6 +50,7 @@ import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
+import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.nhindirect.config.ui.DNSController.CertContainer;
 import org.nhindirect.config.ui.flash.FlashMap.Message;
@@ -64,6 +65,7 @@ import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SimpleForm;
+import org.nhindirect.config.ui.form.BundleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -205,7 +207,7 @@ public class MainController {
 			model.addAttribute("addressForm",addrform);
 			// TODO: once certificates and anchors are available change code accordingly
 			CertificateForm cform = new CertificateForm();
-			cform.setId(0L);
+			//cform.setId(0L);
 			AnchorForm aform = new AnchorForm();
 			aform.setId(0L);
 			
@@ -271,6 +273,47 @@ public class MainController {
             
             model.addAttribute("simpleForm",new SimpleForm());            
 		}
+	else if (actionPath.equalsIgnoreCase("gotobundles") || actionPath.equalsIgnoreCase("Trust Bundles"))
+		{
+		    if (log.isDebugEnabled())  {
+		    	log.debug("trying to go to the Trust Bundles page");
+		    }
+            
+                String action = "Update";
+			model.addAttribute("action", action);
+			
+			mav.setViewName("bundles");
+			mav.addObject("actionPath", "gotobundles");
+			BundleForm form = (BundleForm) session.getAttribute("bundleForm");
+			if (form == null) {
+				form = new BundleForm();
+			}
+			model.addAttribute("bundleForm", form);
+			
+			// retrieve list of settings for settingsResults
+			List<Certificate> results = null;
+			if (configSvc != null) {
+				// Process data for Trust Bundle View
+            try {
+                    
+                // Get Trust Bundles
+                Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
+                
+                model.addAttribute("trustBundles", trustBundles);
+                
+                
+
+            } catch (ConfigurationServiceException e1) {
+                    e1.printStackTrace();
+            }
+				
+				
+			}
+			model.addAttribute("simpleForm",new SimpleForm());
+			//model.addAttribute("bundlesResults", results);
+            
+                        
+		}	
 	else
 		{
     		

@@ -127,39 +127,6 @@
 			<version>2.0.8</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.nhind</groupId>
-			<artifactId>config-store</artifactId>
-			<version>1.2-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>ejb3-persistence</artifactId>
-					<groupId>org.hibernate</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>hibernate-entitymanager</artifactId>
-					<groupId>org.hibernate</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>cglib</artifactId>
-					<groupId>cglib</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>asm</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.nhind</groupId>
-			<artifactId>config-service-jar</artifactId>
-			<version>1.2.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-
 		<!-- Logging -->
 
 		<!-- Validation support -->
@@ -337,6 +304,21 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>config-store</artifactId>
+	  <version>1.2-SNAPSHOT</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>config-store</artifactId>
+	  <version>1.2-SNAPSHOT</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>config-service-jar</artifactId>
+	  <version>${project.version}</version>
+	 </dependency>
 	</dependencies>
 
 

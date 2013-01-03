@@ -14,6 +14,7 @@
 <link href="<c:url value="/resources/jqueryui/1.8/themes/sunny/jquery-ui-1.8.4.custom.css" />" rel="stylesheet"  type="text/css" />
 <link href="<c:url value="/resources/messages/messages.css" />" rel="stylesheet"  type="text/css" />
 <link href="<c:url value="/resources/form.css" />" rel="stylesheet"  type="text/css" />
+<link href="<c:url value="/resources/stylesheet.css" />" rel="stylesheet" type="text/css"/>
 
 <script type="text/javascript" src="<c:url value="/resources/jquery/1.4.2/jquery.js"/>" ></script>
 <script type="text/javascript" src="<c:url value="/resources/jqueryts/jquery.tablesorter.js"/>" ></script>

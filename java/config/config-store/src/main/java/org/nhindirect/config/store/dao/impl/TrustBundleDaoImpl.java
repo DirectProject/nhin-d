@@ -146,6 +146,8 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 			
 			bundle.setCreateTime(Calendar.getInstance(Locale.getDefault()));
 			
+                        bundle.setCheckSum("TEST");
+                        
 			entityManager.persist(bundle);
 			entityManager.flush();
     	}
@@ -155,7 +157,7 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	}
     	///CLOVER:OFF
     	catch (Exception e)
-    	{
+    	{            
     		throw new ConfigurationStoreException("Failed to add trust bundle " + bundle.getBundleName(), e);
     	}
     	///CLOVER:ON

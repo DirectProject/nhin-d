@@ -16,6 +16,7 @@
 						<li><a href="<c:url value="/config/main/search?domainName=&submitType=gotosettings"/>">Agent Settings</a></li>
 						<li><a href="<c:url value="/config/main/search?domainName=&submitType=gotocertificates"/>">Certificates</a></li>
 						<li><a href="<c:url value="/config/main/search?domainName=&submitType=gotodns"/>">DNS Entries</a></li>
+						<li><a href="<c:url value="/config/main/search?domainName=&submitType=gotobundles"/>">Trust Bundles</a></li>
 					</ul>
 
                     
