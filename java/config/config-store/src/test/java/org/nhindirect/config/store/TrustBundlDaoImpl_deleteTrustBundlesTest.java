@@ -2,9 +2,12 @@ package org.nhindirect.config.store;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -115,10 +118,10 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 	}	
 	
 	@Test
-	public void testDeleteTrustBundlesTest_exceptionInQuery_assertException()
+	public void testDeleteTrustBundlesTest_exceptionInQuery_assertNoException()
 	{
 		final EntityManager manager = mock(EntityManager.class);
-		doThrow(new RuntimeException("Just Passing Through")).when(manager).createQuery((String)any());
+		doThrow(new RuntimeException("Just Passing Through")).when(manager).remove((TrustBundle)any());
 		
 		final TrustBundleDaoImpl dao = new TrustBundleDaoImpl();
 		dao.setEntityManager(manager);
@@ -134,8 +137,9 @@ public class TrustBundlDaoImpl_deleteTrustBundlesTest extends TrustBundleDaoBase
 			exceptionOccured = true;
 		}
 		
-		assertTrue(exceptionOccured);
-		
+		assertFalse(exceptionOccured);
+		verify(manager, never()).remove((TrustBundle)any());
+		verify(manager, never()).flush();
 	}
 	
 	@Test

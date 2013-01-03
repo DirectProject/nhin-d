@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,6 +40,7 @@ public class TrustBundle
     public TrustBundle()
     {
     	refreshInterval = 0;
+    	checkSum = "";
     }
     
     /**
@@ -169,7 +171,7 @@ public class TrustBundle
     	this.lastRefreshError = lastRefreshError;
     } 
     
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "trustBundle")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY, mappedBy = "trustBundle")
     public Collection<TrustBundleAnchor> getTrustBundleAnchors() 
     {
         if (trustBundleAnchors == null) 

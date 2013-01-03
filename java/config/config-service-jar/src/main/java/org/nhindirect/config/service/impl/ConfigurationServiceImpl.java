@@ -49,7 +49,6 @@ import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.TrustBundle;
-import org.nhindirect.config.store.TrustBundleAnchor;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -860,17 +859,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 		trustBundleSvc.refreshTrustBundle(id);	
 	}
 
-    /**
-     * {@inheritDoc}
-     */
-	@Override
-	@FaultAction(className = ConfigurationFault.class)
-	public void updateTrustBundleAnchors(long trustBundleId,
-			Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet)
-			throws ConfigurationServiceException 
-	{
-		trustBundleSvc.updateTrustBundleAnchors(trustBundleId, attemptTime, newAnchorSet);
-	}
 
     /**
      * {@inheritDoc}

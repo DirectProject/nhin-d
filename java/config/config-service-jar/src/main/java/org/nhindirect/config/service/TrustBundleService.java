@@ -9,7 +9,6 @@ import javax.jws.WebParam;
 import org.nhindirect.config.store.BundleRefreshError;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.TrustBundle;
-import org.nhindirect.config.store.TrustBundleAnchor;
 
 public interface TrustBundleService 
 {
@@ -26,12 +25,7 @@ public interface TrustBundleService
     public void addTrustBundle(@WebParam(name = "bundle") TrustBundle bundle) throws ConfigurationServiceException;   
 
     @WebMethod(operationName = "refreshTrustBundle", action = "urn:RefreshTrustBundle")
-    public void refreshTrustBundle(@WebParam(name = "id") long id) throws ConfigurationServiceException;       
-    
-    @WebMethod(operationName = "updateTrustBundleAnchors", action = "urn:UpdateTrustBundleAnchors")
-    public void updateTrustBundleAnchors(@WebParam(name = "trustBundleId") long trustBundleId, 
-    		@WebParam(name = "attemptTime") Calendar attemptTime, @WebParam(name = "newAnchorSet") Collection<TrustBundleAnchor> newAnchorSet) 
-    				throws ConfigurationServiceException;        
+    public void refreshTrustBundle(@WebParam(name = "id") long id) throws ConfigurationServiceException;          
     
     @WebMethod(operationName = "updateLastUpdateError", action = "urn:UpdateLastUpdateError")
     public void updateLastUpdateError(@WebParam(name = "trustBundleId") long trustBundleId, 

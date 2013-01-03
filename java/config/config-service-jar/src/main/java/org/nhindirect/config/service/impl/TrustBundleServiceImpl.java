@@ -86,14 +86,6 @@ public class TrustBundleServiceImpl implements TrustBundleService
 		if (bundle != null)
 			template.sendBody(bundle);
     }
-	
-	@Override
-	public void updateTrustBundleAnchors(long trustBundleId,
-			Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet)
-			throws ConfigurationServiceException 
-	{
-		dao.updateTrustBundleAnchors(trustBundleId, attemptTime, newAnchorSet);		
-	}
 
 	@Override
 	public void updateLastUpdateError(long trustBundleId, Calendar attemptTime,

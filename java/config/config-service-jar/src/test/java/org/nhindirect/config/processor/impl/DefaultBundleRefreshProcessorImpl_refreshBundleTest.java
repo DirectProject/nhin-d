@@ -43,7 +43,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 	
 		processor.refreshBundle(bundle);
 	
-		verify(dao, times(1)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		verify(dao, times(1)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 	}	
 	
 	@SuppressWarnings("unchecked")
@@ -60,7 +60,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 	
 		processor.refreshBundle(bundle);
 	
-		verify(dao, times(1)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		verify(dao, times(1)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 	}		
 	
 	
@@ -82,7 +82,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		
 		processor.refreshBundle(bundle);
 	
-		verify(dao, times(0)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		verify(dao, times(0)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 	}	
 	
 	@SuppressWarnings("unchecked")
@@ -98,7 +98,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 	
 		processor.refreshBundle(bundle);
 	
-		verify(dao, times(0)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		verify(dao, times(0)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 	}		
 	
 	@SuppressWarnings("unchecked")
@@ -114,7 +114,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 	
 		processor.refreshBundle(bundle);
 	
-		verify(dao, times(0)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		verify(dao, times(0)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 	}	
 	
 	@SuppressWarnings("unchecked")
@@ -129,12 +129,13 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		File fl = new File("src/test/resources/bundles/signedbundle.p7b");
 		bundle.setBundleURL("file://" + fl.getAbsolutePath());
 	
-		doThrow(new ConfigurationStoreException("Just Passing Through")).when(dao).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		doThrow(new ConfigurationStoreException("Just Passing Through")).when(dao).updateTrustBundleAnchors(eq(bundle.getId()), 
+				(Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 		
 		
 		processor.refreshBundle(bundle);
 	
-		verify(dao, times(1)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any());
+		verify(dao, times(1)).updateTrustBundleAnchors(eq(bundle.getId()), (Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
 	}
 	
 	/*
