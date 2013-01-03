@@ -42,5 +42,23 @@ public interface TrustBundleService
     
     @WebMethod(operationName = "updateTrustBundleSigningCertificate", action = "urn:UpdateTrustBundleSigningCertificate")
     public void updateTrustBundleSigningCertificate(@WebParam(name = "trustBundleIds") long trustBundleId, 
-    		@WebParam(name = "signingCert") Certificate signingCert) throws ConfigurationServiceException;      
+    		@WebParam(name = "signingCert") Certificate signingCert) throws ConfigurationServiceException;  
+    
+    @WebMethod(operationName = "associateTrustBundleToDomain", action = "urn:AssociateTrustBundleToDomain")
+    public void associateTrustBundleToDomain(@WebParam(name = "domainId") long domainId,
+    		@WebParam(name = "trustBundleId") long trustBundleId) throws ConfigurationServiceException;   
+    
+    @WebMethod(operationName = "disassociateTrustBundleFromDomain", action = "urn:DisassociateTrustBundleFromDomain")
+    public void disassociateTrustBundleFromDomain(@WebParam(name = "domainId") long domainId,
+    		@WebParam(name = "trustBundleId") long trustBundleId) throws ConfigurationServiceException;   
+    
+    @WebMethod(operationName = "disassociateTrustBundlesFromDomain", action = "urn:DisassociateTrustBundlesFromDomain")
+    public void disassociateTrustBundlesFromDomain(@WebParam(name = "domainId") long domainId) throws ConfigurationServiceException;   
+    
+    @WebMethod(operationName = "disassociateTrustBundleFromDomains", action = "urn:DisassociateTrustBundleFromDomains")
+    public void disassociateTrustBundleFromDomains(@WebParam(name = "trustBundleId") long trustBundleId) throws ConfigurationServiceException;     
+    
+    @WebMethod(operationName = "getTrustBundlesByDomain", action = "urn:GetTrustBundlesByDomain")
+    public Collection<TrustBundle>  getTrustBundlesByDomain(@WebParam(name = "domainId") long domainId, 
+    		@WebParam(name = "fetchAnchors") boolean fetchAnchors) throws ConfigurationServiceException;      
 }
