@@ -4,18 +4,16 @@ h3 {
 		margin:0;
 }
 
-div#bundle-table-col {
-    width:100%;
-    margin-right:260px;
-	float:left;
+div#bundle-table-col {    
+	
 }
 div#add-new-bundle-form {
-
+margin-left:20px;
 	width:260px;
 	float:right;
-	background:#ddd;
+	margin-top:-5px;
 	padding:10px;
-	border:1px solid white;
+	padding-top:0px;
 	height:400px;
 }
 
@@ -29,6 +27,36 @@ div.form-submit-area {
 }
 
 
+table.fancyTable {
+    padding:2px;
+	border-top:1px solid #bbb;
+	border-bottom:1px solid #bbb;
+
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#ccc));
+	background: -moz-linear-gradient(top,  #bbb,  #ccc);
+}
+
+table.fancyTable th {
+    padding:7px 10px;
+	border-top:1px solid #fafafa;
+	border-bottom:1px solid #bbb;
+
+	background: #ededed;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+
+table.fancyTable td {
+	padding:5px;
+	border-top: 1px solid #ffffff;
+	border-bottom:1px solid #bbb;
+	border-left: 1px solid #bbb;
+
+	background: #fafafa;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
+	background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
+}
 
 
 input, textarea {  

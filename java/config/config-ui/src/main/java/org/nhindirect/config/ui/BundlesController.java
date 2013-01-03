@@ -54,19 +54,21 @@ import org.springframework.web.servlet.ModelAndView;
 import org.nhindirect.config.store.TrustBundle;
 import java.security.cert.CertificateException;
 import org.nhindirect.config.service.TrustBundleService;
-
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 @Controller
 @RequestMapping("/bundles")
 public class BundlesController {
-	private final Log log = LogFactory.getLog(getClass());
-	
-	private ConfigurationService configSvc;
-	
-	@Inject
-	public void setConfigurationService(ConfigurationService certService)
+    private final Log log = LogFactory.getLog(getClass());
+
+    private ConfigurationService configSvc;
+
+    @Inject
+    public void setConfigurationService(ConfigurationService certService)
     {
-        this.configSvc = certService;
+        this.configSvc = certService;        
     }
 
     public BundlesController() {
@@ -115,14 +117,13 @@ public class BundlesController {
                 return mav;
         }
 
+        
 
         if(actionPath.equalsIgnoreCase("newbundle") || actionPath.equalsIgnoreCase("add bundle"))
         {
 
             strid = ""+bundleForm.getId();
-
-            // insert the new address into the Domain list of Addresses
-            //EntityStatus estatus = certificateForm.getStatus();
+            boolean formValidated = true;
 
             if (log.isDebugEnabled()) 
             {
@@ -132,13 +133,13 @@ public class BundlesController {
 
 
             model.addAttribute("signingCertError", false);
+            model.addAttribute("URLError", false);
 
             TrustBundle trustBundle = new TrustBundle();
 
             trustBundle.setBundleName(bundleForm.getBundleName());
             trustBundle.setRefreshInterval(bundleForm.getRefreshInterval()*3600);	// Convert Hours to Seconds for backend
 
-            System.out.println("GOT HERE");
             
             // Check if signing certificate is uploaded
             if (!bundleForm.getFileData().isEmpty()) 
@@ -152,7 +153,8 @@ public class BundlesController {
                     !fileType.matches("application/x-x509-user-cert") &&
                     !fileType.matches("application/pkix-cert"))
                 {		
-                    model.addAttribute("certerror", true);		
+                    model.addAttribute("signingCertError", true);	
+                    formValidated = false;
                 } else {                        
                     try {
                         trustBundle.setSigningCertificateData(bytes);
@@ -164,23 +166,46 @@ public class BundlesController {
                 if (log.isDebugEnabled()) log.debug("DO NOT store the bundle into database BECAUSE THERE IS NO FILE");
             }
 
-            trustBundle.setBundleURL(bundleForm.getTrustURL());
-            try {
-                
-                trustBundle.setCheckSum("");
-                
-                configSvc.addTrustBundle(trustBundle);                
+            // Check for valid URL
+            URL u = null;
+            String trustURL = bundleForm.getTrustURL();
+                        
+            try {                
+                u = new URL(trustURL);
+            } catch (MalformedURLException mu) {
+                model.addAttribute("URLError", true);
+                formValidated = false;
+            }                        
+            
+            if(formValidated) 
+            {
+            
+            
+                trustBundle.setBundleURL(trustURL);
 
-                if (log.isDebugEnabled())
-                {
-                    log.debug("Add Trust Bundle to Database");
+                try {
+
+                    trustBundle.setCheckSum("");
+
+                    configSvc.addTrustBundle(trustBundle);                
+
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Add Trust Bundle to Database");
+                    }
+
+                } catch (Exception e) {
+                        if (log.isDebugEnabled()) log.error(e);
+                        e.printStackTrace();
                 }
 
-            } catch (Exception e) {
-                    if (log.isDebugEnabled()) log.error(e);
-                    e.printStackTrace();
-            }
+                
 
+                BundleForm bform = new BundleForm();
+
+                model.addAttribute("bundleForm",bform);
+            }
+            
             // Process data for Trust Bundle View
             try {
                     /*Collection<Certificate> certs = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
@@ -191,27 +216,19 @@ public class BundlesController {
                     model.addAttribute("certificateForm",cform);*/
                 // Get Trust Bundles
                 Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
-                
-                model.addAttribute("trustBundles", trustBundles);
-                
-                
+
+                if(trustBundles != null) {
+                    model.addAttribute("trustBundles", trustBundles);
+                }
+
 
             } catch (ConfigurationServiceException e1) {
                     e1.printStackTrace();
-            }
+            }    
             
-            model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-            
-            SimpleForm simple = new SimpleForm();
-            simple.setId(Long.parseLong(strid));
-            model.addAttribute("simpleForm",simple);
+            model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));            
 
-            mav.setViewName("bundles"); 
-            // the Form's default button action
-            String action = "Update";
-
-            model.addAttribute("action", action);
-            model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+            mav.setViewName("bundles");                         
 
             mav.addObject("statusList", EntityStatus.getEntityStatusList());
         }

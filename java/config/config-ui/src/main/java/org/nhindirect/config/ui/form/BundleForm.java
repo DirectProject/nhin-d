@@ -14,6 +14,11 @@ public class BundleForm {
 	
 	private CommonsMultipartFile fileData;	// Signing Certificate Data
 	
+        public BundleForm() {
+            
+            
+            
+        }
 	
 	public void setId(long id) {
 		this.id = id;
@@ -31,10 +36,10 @@ public class BundleForm {
 	}
 	
 	public void setTrustURL(String trustURL) {
-		this.trustURL = trustURL;
+            this.trustURL = trustURL;
 	}
 	public String getTrustURL() {
-		return trustURL;
+            return trustURL;
 	}
 	
 	public void setSigningCertificate(String signingCertificate) {
