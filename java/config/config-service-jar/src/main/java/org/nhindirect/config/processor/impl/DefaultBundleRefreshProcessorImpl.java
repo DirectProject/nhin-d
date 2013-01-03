@@ -143,6 +143,7 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		// check to see if there is a difference in the anchor sets
 		// use a checksum 
 		boolean update = false;
+		String checkSum = "";
 		if (bundle.getCheckSum() == null)
 			// never got a check sum... 
 			update = true;
@@ -150,6 +151,7 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		{
 			try
 			{
+				checkSum = BundleThumbprint.toThumbprint(rawBundle).toString();
 				update = !bundle.getCheckSum().equals(BundleThumbprint.toThumbprint(rawBundle).toString());
 			}
 			///CLOVER:OFF
@@ -180,6 +182,8 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 				{
 					final TrustBundleAnchor anchorToAdd = new TrustBundleAnchor();
 					anchorToAdd.setData(downloadedAnchor.getEncoded());
+					anchorToAdd.setTrustBundle(bundle);
+					
 					newAnchors.add(anchorToAdd);
 				}
 				///CLOVER:OFF
@@ -191,7 +195,7 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 			}
 
 			bundle.setTrustBundleAnchors(newAnchors);
-			dao.updateTrustBundleAnchors(bundle.getId(), processAttempStart, newAnchors);
+			dao.updateTrustBundleAnchors(bundle.getId(), processAttempStart, newAnchors, checkSum);
 		}
 		catch (ConfigurationStoreException e) 
 		{ 

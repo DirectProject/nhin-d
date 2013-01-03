@@ -196,10 +196,10 @@
   </bean>
 
   <camelContext id="web-camel-context" xmlns="http://camel.apache.org/schema/spring">  
-    <template id="bundleRefresh" defaultEndpoint="direct:refresh-start"/>
+    <template id="bundleRefresh" defaultEndpoint="seda:refresh-start"/>
        
     <route id="refreshBundle">
-      <from uri="direct:refresh-start"/>
+      <from uri="seda:refresh-start"/>
       <bean ref="bundleRefreshProcessor"/>
     </route>
  

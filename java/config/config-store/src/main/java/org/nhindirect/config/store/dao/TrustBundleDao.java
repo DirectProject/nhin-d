@@ -19,7 +19,8 @@ public interface TrustBundleDao
 	
 	public void addTrustBundle(TrustBundle bundle) throws ConfigurationStoreException;
 	
-	public void updateTrustBundleAnchors(long trustBundleId, Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet) throws ConfigurationStoreException;
+	public void updateTrustBundleAnchors(long trustBundleId, Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet,
+			String bundleCheckSum) throws ConfigurationStoreException;
 	
 	public void updateLastUpdateError(long trustBundleId, Calendar attemptTime, BundleRefreshError error) throws ConfigurationStoreException;
 	

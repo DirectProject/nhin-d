@@ -94,6 +94,14 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     		throw new ConfigurationStoreException("Failed to execute trust bundle DAO query.", e);
     	}
         
+        // make sure the anchors are loaded
+        for (TrustBundle bundle : rs)
+        {
+            if (!bundle.getTrustBundleAnchors().isEmpty())
+            	for (TrustBundleAnchor anchor : bundle.getTrustBundleAnchors())
+            		anchor.getData();
+        }
+        
 		return rs;
 	}
 
@@ -110,6 +118,11 @@ public class TrustBundleDaoImpl implements TrustBundleDao
             
             TrustBundle rs = (TrustBundle)select.getSingleResult();
 
+            // make sure the anchors are loaded
+            if (!rs.getTrustBundleAnchors().isEmpty())
+            	for (TrustBundleAnchor anchor : rs.getTrustBundleAnchors())
+            		anchor.getData();
+            
 	        return rs;
         }
         catch (NoResultException e)
@@ -135,6 +148,11 @@ public class TrustBundleDaoImpl implements TrustBundleDao
             
             TrustBundle rs = (TrustBundle)select.getSingleResult();
 
+            // make sure the anchors are loaded
+            if (!rs.getTrustBundleAnchors().isEmpty())
+            	for (TrustBundleAnchor anchor : rs.getTrustBundleAnchors())
+            		anchor.getData();
+            
 	        return rs;
         }
         catch (NoResultException e)
@@ -162,8 +180,6 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 			
 			bundle.setCreateTime(Calendar.getInstance(Locale.getDefault()));
 			
-                        bundle.setCheckSum("TEST");
-                        
 			entityManager.persist(bundle);
 			entityManager.flush();
     	}
@@ -173,7 +189,7 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	}
     	///CLOVER:OFF
     	catch (Exception e)
-    	{            
+    	{
     		throw new ConfigurationStoreException("Failed to add trust bundle " + bundle.getBundleName(), e);
     	}
     	///CLOVER:ON
@@ -182,7 +198,8 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 
 	@Override
     @Transactional(readOnly = false)
-	public void updateTrustBundleAnchors(long trustBundleId, Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet)
+	public void updateTrustBundleAnchors(long trustBundleId, Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet,
+			String bundleCheckSum)
 			throws ConfigurationStoreException 
 	{
     	validateState();
@@ -190,9 +207,11 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	try
     	{
 			final TrustBundle existingBundle = this.getTrustBundleById(trustBundleId);
+
 			if (existingBundle == null)
 				throw new ConfigurationStoreException("Trust bundle does not exist");
 			
+			existingBundle.setCheckSum(bundleCheckSum);
 			existingBundle.setTrustBundleAnchors(newAnchorSet);
 			existingBundle.setLastRefreshAttempt(attemptTime);
 			existingBundle.setLastSuccessfulRefresh(Calendar.getInstance(Locale.getDefault()));
@@ -251,44 +270,24 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 
         if (trustBundleIds == null || trustBundleIds.length == 0)
         	return;
-        
-        
-        //deleteAnchorCircleAssociations(thumbprints);
-        
-        Query delete = null;
-        final StringBuffer ids = new StringBuffer("(");
+
         for (long id : trustBundleIds) 
         {
         	try
         	{
+        		final TrustBundle bundle = this.getTrustBundleById(id);
+        		
         		this.disassociateTrustBundleFromDomains(id);
+        		
+        		entityManager.remove(bundle);
+    	        entityManager.flush();
         	}
         	catch (ConfigurationStoreException e)
         	{
         		log.warn(e.getMessage(), e);
         	}
         	
-            if (ids.length() > 1) 
-            {
-            	ids.append(", ");
-            }
-            ids.append(id);
         }
-        ids.append(")");
-        
-    	try
-    	{        
-	        final String deleteString = "DELETE from TrustBundle ta where ta.id IN " + ids.toString();
-	 
-	        delete = entityManager.createQuery(deleteString);
-
-	        delete.executeUpdate();	
-	        entityManager.flush();
-    	}
-    	catch (Exception e)
-    	{
-    		throw new ConfigurationStoreException("Failed to trust bundles from store.", e);
-    	}
 	}
 
 	@Override

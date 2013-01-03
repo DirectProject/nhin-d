@@ -35,7 +35,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		anchor.setTrustBundle(bundle);
 		
 		tbDao.updateTrustBundleAnchors(bundle.getId(), 
-				Calendar.getInstance(Locale.getDefault()), Arrays.asList(anchor));
+				Calendar.getInstance(Locale.getDefault()), Arrays.asList(anchor), "6789");
 		
 		final TrustBundle addedBundle = tbDao.getTrustBundleById(bundle.getId());
 		assertEquals(1, addedBundle.getTrustBundleAnchors().size());
@@ -66,9 +66,10 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		additionalAnchor.setTrustBundle(bundle);
 		
 		tbDao.updateTrustBundleAnchors(bundle.getId(), 
-				Calendar.getInstance(Locale.getDefault()), Arrays.asList(anchor, additionalAnchor));
+				Calendar.getInstance(Locale.getDefault()), Arrays.asList(anchor, additionalAnchor), "6789");
 		
 		final TrustBundle addedBundle = tbDao.getTrustBundleById(bundle.getId());
+		assertEquals("6789", addedBundle.getCheckSum());
 		assertEquals(2, addedBundle.getTrustBundleAnchors().size());
 		
 		Iterator<TrustBundleAnchor> iter = addedBundle.getTrustBundleAnchors().iterator();
@@ -102,7 +103,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		newAnchor.setTrustBundle(bundle);
 		
 		tbDao.updateTrustBundleAnchors(bundle.getId(), 
-				Calendar.getInstance(Locale.getDefault()), Arrays.asList(newAnchor));
+				Calendar.getInstance(Locale.getDefault()), Arrays.asList(newAnchor), "6789");
 		
 		final TrustBundle addedBundle = tbDao.getTrustBundleById(bundle.getId());
 		assertEquals(1, addedBundle.getTrustBundleAnchors().size());
@@ -120,7 +121,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		
 		try
 		{
-			tbDao.updateTrustBundleAnchors(1234, Calendar.getInstance(Locale.getDefault()), new ArrayList<TrustBundleAnchor>());
+			tbDao.updateTrustBundleAnchors(1234, Calendar.getInstance(Locale.getDefault()), new ArrayList<TrustBundleAnchor>(), "6789");
 		}
 		catch (ConfigurationStoreException ex)
 		{
@@ -144,7 +145,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		
 		try
 		{
-			dao.updateTrustBundleAnchors(1234, Calendar.getInstance(Locale.getDefault()), new ArrayList<TrustBundleAnchor>());
+			dao.updateTrustBundleAnchors(1234, Calendar.getInstance(Locale.getDefault()), new ArrayList<TrustBundleAnchor>(), "6789");
 		}
 		catch (ConfigurationStoreException ex)
 		{
@@ -165,7 +166,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		
 		try
 		{
-			dao.updateTrustBundleAnchors(1234, Calendar.getInstance(Locale.getDefault()), new ArrayList<TrustBundleAnchor>());
+			dao.updateTrustBundleAnchors(1234, Calendar.getInstance(Locale.getDefault()), new ArrayList<TrustBundleAnchor>(), "6789");
 		}
 		catch (IllegalStateException ex)
 		{

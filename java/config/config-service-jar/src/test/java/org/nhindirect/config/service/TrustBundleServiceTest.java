@@ -9,9 +9,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Locale;
 
 import junit.framework.TestCase;
@@ -22,7 +20,6 @@ import org.nhindirect.config.store.BundleRefreshError;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Certificate.CertContainer;
 import org.nhindirect.config.store.TrustBundle;
-import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.config.store.dao.TrustBundleDao;
 
 public class TrustBundleServiceTest extends TestCase
@@ -89,16 +86,6 @@ public class TrustBundleServiceTest extends TestCase
 		verify(dao, times(2)).getTrustBundleById(bundle.getId());
 		verify(template, times(1)).sendBody(bundle);
 	}
-	
-	public void testUpdateTrustBundleAnchors() throws Exception
-	{
-		final Calendar now = Calendar.getInstance(Locale.getDefault());
-		final Collection<TrustBundleAnchor> anchors = new ArrayList<TrustBundleAnchor>();
-		
-		impl.updateTrustBundleAnchors(1234, now, anchors);
-		
-		verify(dao, times(1)).updateTrustBundleAnchors(1234, now, anchors);
-	}	
 	
 	public void testUpdateLastUpdateError() throws Exception
 	{
