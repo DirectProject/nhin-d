@@ -13,70 +13,22 @@
     <h2>Manage Trust Bundles</h2>
 	
 	<div>
-		<div id="bundle-table-col">
-			<h3>Trusted Bundles</h3>
-	<c:choose>
-		<c:when test="${not empty trustBundles}">
-	
-                 <table  id="trustBundlesTable" class="data" style="font-size:10px; width:100%;">
-                    <thead>
-                        <tr>
-                            <th width="10"></th>
-                            <th width="200">Bundle Name</th>                            
-                            <th width="">Thumb</th>
-                            <th width="" nowrap>Created</th>
-                            <th width="" nowrap>Last Refresh</th>
-                            <th width="" nowrap>Refresh Interval</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                            <!--  Put the data from the searchResults attribute here -->
-                            <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
-                                <c:choose>
-                                    <c:when test="${rowCounter.count % 2 == 0}">
-                                        <tr class="evenRow">
-                                    </c:when>
-                                    <c:otherwise>
-                                        <tr class="oddRow">
-                                    </c:otherwise>
-                                </c:choose>
-                                    <td></td>
-                                    <td><c:out value="${trustBundle.bundleName}"/><br/>
-                                        <em><c:out value="${trustBundle.bundleURL}" /></em>
-                                    </td>
-                                    
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>                                
-                                </tr>
-                            </c:forEach>
-                    </tbody>
 
-            </table>
-	
-		</c:when>
-		<c:otherwise>
-			
-			<div>There are no trust bundles configured for your HISP yet.</div>
-			
-		</c:otherwise>
-	</c:choose>
-	
-			
-			
-		</div>
-		<div id="add-new-bundle-form">
+            <div id="add-new-bundle-form">
 			<h3>Add New Trust Bundle</h3>
 			
-			<spring:url	value="/config/bundles/addbundle" var="formURLaddBundle" />
+			<spring:url value="/config/bundles/addbundle" var="formURLaddBundle" />
 			<form:form modelAttribute="bundleForm" action="${fn:escapeXml(formURLaddBundle)}" cssClass="cleanform" method="POST" enctype="multipart/form-data">
 				
 				<form:hidden path="id" />
 				
-				<c:if test="${certerror == true}">
-                    <p style="color:red;">Please upload a valid X.509 certificate</p>
-                </c:if>
+				<c:if test="${signingCertError == true}">
+                                    <p style="color:red;">Please upload a valid X.509 certificate</p>
+                                </c:if>
+
+                                <c:if test="${URLError == true}">
+                                    <p style="color:red;">Please enter a valid URL</p>
+                                </c:if>
 			
 				<div>
 				<label>Name:</label><br/>
@@ -104,7 +56,64 @@
 			
 		</form:form>
 			
-		</div>	
+		</div>
+
+		<div id="bundle-table-col">
+			
+	<c:choose>
+		<c:when test="${not empty trustBundles}">
+	
+                 <table  id="trustBundlesTable" class="fancyTable" style="width:auto;">
+                    <thead>
+                        <tr>
+                            <th width="10"></th>
+                            <th>Bundle Name</th>
+                            <th width="">URL</th>
+                            <th width="">Checksum</th>
+                            <th width="" nowrap>Created</th>
+                            <th width="" nowrap>Last Refresh</th>
+                            <th width="10">Refresh Interval</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <!--  Put the data from the searchResults attribute here -->
+                            <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
+                                <c:choose>
+                                    <c:when test="${rowCounter.count % 2 == 0}">
+                                        <tr class="evenRow">
+                                    </c:when>
+                                    <c:otherwise>
+                                        <tr class="oddRow">
+                                    </c:otherwise>
+                                </c:choose>
+                                    <td><input type="checkbox"/></td>
+                                    <td><c:out value="${trustBundle.bundleName}"/><br/>
+                                        
+                                    </td>
+                                    <td><a href="<c:out value="${trustBundle.bundleURL}"/>" target="_blank"><c:out value="${trustBundle.bundleURL}"/></a></td>
+                                    <td><c:out value="${trustBundle.checkSum}"/></td>
+                                    <td><fmt:formatDate value="${trustBundle.lastRefreshAttempt.time}" pattern="MM/dd/yyyy hh:mm" /></td>
+                                    <td><fmt:formatDate value="${trustBundle.createTime.time}" pattern="MM/dd/yyyy hh:mm" /></td>
+                                    <td><fmt:formatNumber type="number" maxFractionDigits="0" value="${trustBundle.refreshInterval/3600}"/></td>                                
+                                </tr>
+                            </c:forEach>
+                    </tbody>
+
+            </table>
+            <input type="button" value="Delete Selected" style="width:160px;" onclick="javascript:alert('Not implemented yet');"/>
+	
+		</c:when>
+		<c:otherwise>
+			
+			<div>There are no trust bundles configured for your HISP yet.</div>
+			
+		</c:otherwise>
+	</c:choose>
+	
+			
+			
+		</div>
+			
 	</div>
 	
 	

@@ -116,7 +116,10 @@ public class MainController {
 	*/
 	
 	public MainController() {
-		if (log.isDebugEnabled()) log.debug("MainController initialized");
+		if (log.isDebugEnabled()) 
+                {
+                    log.debug("MainController initialized");
+                }
 	}
 	
 	/**
@@ -131,14 +134,18 @@ public class MainController {
 						        @RequestParam(value="submitType") String actionPath,
                                                         @RequestParam(value="domainName", required=false) String searchDomainName,
                                                         @RequestParam(value="status", required=false) EntityStatus searchStatus)  {
-		if (log.isDebugEnabled()) log.debug("Enter search");
-
+		if (log.isDebugEnabled()) {
+                                                                log.debug("Enter search");
+                                                            }                
+                
 		String message = "Search complete";
 		ModelAndView mav = new ModelAndView();
 		// check to see if new domain requested
 		if (actionPath.equalsIgnoreCase("gotosettings") || actionPath.equalsIgnoreCase("settings"))
 		{
-			if (log.isDebugEnabled()) log.debug("trying to go to the settings page");
+			if (log.isDebugEnabled()) {
+                        log.debug("trying to go to the settings page");
+                    }
 			String action = "add";
 			model.addAttribute("action", action);
 			
@@ -154,12 +161,13 @@ public class MainController {
 			if (configSvc != null) {
 				try {
 					Collection<Setting> settings = configSvc.getAllSettings();
-					if (settings != null)
-						results = new ArrayList<Setting>(settings);
-					else
-						results = new ArrayList<Setting>();
+					if (settings != null) {
+                                        results = new ArrayList<Setting>(settings);
+                                    }
+					else {
+                                        results = new ArrayList<Setting>();
+                                    }
 				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
 				}
 			}
 			model.addAttribute("simpleForm",new SimpleForm());
@@ -167,7 +175,9 @@ public class MainController {
 		}	
 		else if (actionPath.equalsIgnoreCase("gotocertificates") || actionPath.equalsIgnoreCase("certificates"))
 		{
-			if (log.isDebugEnabled()) log.debug("trying to go to the certificates page");
+			if (log.isDebugEnabled()) {
+                        log.debug("trying to go to the certificates page");
+                    }
 			String action = "Update";
 			model.addAttribute("action", action);
 			
@@ -183,12 +193,13 @@ public class MainController {
 			if (configSvc != null) {
 				try {
 					Collection<Certificate> certs = configSvc.listCertificates(1, 10000, CertificateGetOptions.DEFAULT);
-					if (certs != null)						
-						results = new ArrayList<Certificate>(certs);
-					else
-						results = new ArrayList<Certificate>();
+					if (certs != null) {
+                                        results = new ArrayList<Certificate>(certs);
+                                    }
+					else {
+                                        results = new ArrayList<Certificate>();
+                                    }
 				} catch (ConfigurationServiceException e) {
-					e.printStackTrace();
 				}
 			}
 			model.addAttribute("simpleForm",new SimpleForm());
@@ -196,7 +207,9 @@ public class MainController {
 		}
 		else if (actionPath.equalsIgnoreCase("newdomain") || actionPath.equalsIgnoreCase("new domain"))
 		{
-			if (log.isDebugEnabled()) log.debug("trying to go to the new domain page");
+			if (log.isDebugEnabled()) {
+                        log.debug("trying to go to the new domain page");
+                    }
 			HashMap<String, String> msgs = new HashMap<String, String>();
 			mav.addObject("msgs", msgs);
 			
@@ -273,49 +286,47 @@ public class MainController {
             
             model.addAttribute("simpleForm",new SimpleForm());            
 		}
-	else if (actionPath.equalsIgnoreCase("gotobundles") || actionPath.equalsIgnoreCase("Trust Bundles"))
-		{
-		    if (log.isDebugEnabled())  {
-		    	log.debug("trying to go to the Trust Bundles page");
-		    }
-            
-                String action = "Update";
-			model.addAttribute("action", action);
-			
-			mav.setViewName("bundles");
-			mav.addObject("actionPath", "gotobundles");
-			BundleForm form = (BundleForm) session.getAttribute("bundleForm");
-			if (form == null) {
-				form = new BundleForm();
-			}
-			model.addAttribute("bundleForm", form);
-			
-			// retrieve list of settings for settingsResults
-			List<Certificate> results = null;
-			if (configSvc != null) {
-				// Process data for Trust Bundle View
-            try {
-                    
-                // Get Trust Bundles
-                Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
-                
-                model.addAttribute("trustBundles", trustBundles);
-                
-                
-
-            } catch (ConfigurationServiceException e1) {
-                    e1.printStackTrace();
+	else if (actionPath.equalsIgnoreCase("ManageTrustBundles") || actionPath.equalsIgnoreCase("Trust Bundles"))
+	{
+            if (log.isDebugEnabled())  {
+                log.debug("trying to go to the Trust Bundles page");
             }
-				
-				
-			}
-			model.addAttribute("simpleForm",new SimpleForm());
-			//model.addAttribute("bundlesResults", results);
+                                        
+            
+            String action = "Update";
+            model.addAttribute("action", action);
+			
+            mav.setViewName("bundles");
+            mav.addObject("actionPath", "gotobundles");
+            
+            BundleForm form = (BundleForm) session.getAttribute("bundleForm");
+            if (form == null) {
+                form = new BundleForm();
+            }
+			
+            model.addAttribute("bundleForm", form);
+			
+            // retrieve list of settings for settingsResults
+            List<Certificate> results = null;
+            if (configSvc != null) {
+		// Process data for Trust Bundle View
+                try {
+
+                    // Get Trust Bundles
+                    Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);                
+                    model.addAttribute("trustBundles", trustBundles);                                
+
+                } catch (ConfigurationServiceException e1) {
+                        e1.printStackTrace();
+                }								
+            }
+            model.addAttribute("simpleForm",new SimpleForm());
+            //model.addAttribute("bundlesResults", results);
             
                         
-		}	
-	else
-		{
+		    
+        } else
+        {
     		
                 
 
