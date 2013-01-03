@@ -679,18 +679,6 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
-    <operation name="updateTrustBundleAnchors">
-      <soap:operation soapAction="urn:UpdateTrustBundleAnchors"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="ConfigurationServiceException">
-        <soap:fault name="ConfigurationServiceException" use="literal"/>
-      </fault>
-    </operation>
     <operation name="updateLastUpdateError">
       <soap:operation soapAction="urn:UpdateLastUpdateError"/>
       <input>

@@ -351,12 +351,6 @@
   <message name="refreshTrustBundleResponse">
     <part name="parameters" element="tns:refreshTrustBundleResponse"/>
   </message>
-  <message name="updateTrustBundleAnchors">
-    <part name="parameters" element="tns:updateTrustBundleAnchors"/>
-  </message>
-  <message name="updateTrustBundleAnchorsResponse">
-    <part name="parameters" element="tns:updateTrustBundleAnchorsResponse"/>
-  </message>
   <message name="updateLastUpdateError">
     <part name="parameters" element="tns:updateLastUpdateError"/>
   </message>
@@ -686,11 +680,6 @@
     <operation name="refreshTrustBundle">
       <input message="tns:refreshTrustBundle"/>
       <output message="tns:refreshTrustBundleResponse"/>
-      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
-    </operation>
-    <operation name="updateTrustBundleAnchors">
-      <input message="tns:updateTrustBundleAnchors"/>
-      <output message="tns:updateTrustBundleAnchorsResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
     <operation name="updateLastUpdateError">

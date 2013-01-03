@@ -261,10 +261,6 @@
 
   <xs:element name="updateSettingResponse" type="tns:updateSettingResponse"/>
 
-  <xs:element name="updateTrustBundleAnchors" type="tns:updateTrustBundleAnchors"/>
-
-  <xs:element name="updateTrustBundleAnchorsResponse" type="tns:updateTrustBundleAnchorsResponse"/>
-
   <xs:element name="updateTrustBundleSigningCertificate" type="tns:updateTrustBundleSigningCertificate"/>
 
   <xs:element name="updateTrustBundleSigningCertificateResponse" type="tns:updateTrustBundleSigningCertificateResponse"/>
@@ -945,18 +941,6 @@
     <xs:sequence>
       <xs:element name="return" type="tns:trustBundle" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="updateTrustBundleAnchors">
-    <xs:sequence>
-      <xs:element name="trustBundleId" type="xs:long"/>
-      <xs:element name="attemptTime" type="xs:dateTime" minOccurs="0"/>
-      <xs:element name="newAnchorSet" type="tns:trustBundleAnchor" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="updateTrustBundleAnchorsResponse">
-    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getTrustBundlesByDomain">
