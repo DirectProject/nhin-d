@@ -12,7 +12,7 @@ public class BundleForm {
 	private int refreshInterval; // In seconds
 	private String thumbprint;
 	private byte[] data;
-	private List<String> bundlesToRemove;
+	private List<String> bundlesSelected;
         
 	private CommonsMultipartFile fileData;	// Signing Certificate Data
 	
@@ -72,11 +72,11 @@ public class BundleForm {
 		return fileData;
 	}
         
-        public void setBundlesToRemove(List<String> bundlesToRemove) {
-		this.bundlesToRemove = bundlesToRemove;
+        public void setBundlesSelected(List<String> bundlesSelected) {
+		this.bundlesSelected = bundlesSelected;
 	}
-	public List<String> getBundlesToRemove() {
-		return bundlesToRemove;
+	public List<String> getBundlesSelected() {
+		return bundlesSelected;
 	}
 	
 
