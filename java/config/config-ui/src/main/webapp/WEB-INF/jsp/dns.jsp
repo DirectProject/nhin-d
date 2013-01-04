@@ -367,7 +367,7 @@ $(document).ready(function()
 
 </fieldset>
 
-<fieldset><legend>&quot;SRV&quot; (Service) Records</legend>
+<fieldset><legend><h3>&quot;SRV&quot; (Service) Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addSRVDNSRecord" var="formUrladdSrvRecord" /> <form:form
 	id="srvEntryForm" modelAttribute="SrvdnsForm"
@@ -500,7 +500,7 @@ $(document).ready(function()
 
 
 
-<fieldset><legend>&quot;SOA&quot; (Start of Authority) Records</legend>
+<fieldset><legend><h3>&quot;SOA&quot; (Start of Authority) Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addSOADNSRecord" var="formUrladdSoaRecord" /> <form:form
 	id="soaEntryForm" modelAttribute="SoadnsForm"
@@ -641,7 +641,7 @@ $(document).ready(function()
 </c:if>
 </fieldset>
 
-<fieldset><legend>&quot;NS&quot; Records</legend>
+<fieldset><legend><h3>&quot;NS&quot; Records</h3></legend>
 <fieldset style="width: 95%;"><spring:url
 	value="/config/dns/addNSDNSRecord" var="formUrladdNSRecord" /> <form:form
 	id="nsEntryForm" modelAttribute="NSdnsForm"
