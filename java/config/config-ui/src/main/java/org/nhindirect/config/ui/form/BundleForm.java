@@ -1,5 +1,6 @@
 package org.nhindirect.config.ui.form;
 
+import java.util.List;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class BundleForm {
@@ -11,7 +12,8 @@ public class BundleForm {
 	private int refreshInterval; // In seconds
 	private String thumbprint;
 	private byte[] data;
-	
+	private List<String> bundlesToRemove;
+        
 	private CommonsMultipartFile fileData;	// Signing Certificate Data
 	
         public BundleForm() {
@@ -68,6 +70,13 @@ public class BundleForm {
 	}
 	public CommonsMultipartFile getFileData() {
 		return fileData;
+	}
+        
+        public void setBundlesToRemove(List<String> bundlesToRemove) {
+		this.bundlesToRemove = bundlesToRemove;
+	}
+	public List<String> getBundlesToRemove() {
+		return bundlesToRemove;
 	}
 	
 

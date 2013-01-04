@@ -93,8 +93,7 @@ public class BundlesController {
     ) 
     { 		
 
-        ModelAndView mav = new ModelAndView(); 
-        String strid = "";
+        ModelAndView mav = new ModelAndView();        
 
         // Debug Statement
         if (log.isDebugEnabled()) log.debug("Enter Add Trust Bundle");
@@ -121,8 +120,7 @@ public class BundlesController {
 
         if(actionPath.equalsIgnoreCase("newbundle") || actionPath.equalsIgnoreCase("add bundle"))
         {
-
-            strid = ""+bundleForm.getId();
+            
             Boolean formValidated = true;
 
             if (log.isDebugEnabled()) 
@@ -236,12 +234,7 @@ public class BundlesController {
             
             // Process data for Trust Bundle View
             try {
-                    /*Collection<Certificate> certs = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
-                    model.addAttribute("certificatesResults", certs);
-
-                    CertificateForm cform = new CertificateForm();
-                    cform.setId(0L);
-                    model.addAttribute("certificateForm",cform);*/
+                    
                 // Get Trust Bundles
                 Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
 
@@ -251,98 +244,96 @@ public class BundlesController {
 
 
             } catch (ConfigurationServiceException e1) {
-                    e1.printStackTrace();
+                
             }    
             
+            model.addAttribute("bundlesToRemove");
             model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));            
-
             mav.setViewName("bundles");                         
-
-            mav.addObject("statusList", EntityStatus.getEntityStatusList());
         }
         
         return mav;
     }			
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN')") 
-	@RequestMapping(value="/removebundle", method = RequestMethod.POST)
-	public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
-						        HttpSession session,
-						        @ModelAttribute CertificateForm simpleForm,
-						        Model model,
-						        @RequestParam(value="submitType") String actionPath)  { 		
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/removebundle", method = RequestMethod.POST)
+    public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+                                                    HttpSession session,
+                                                    @ModelAttribute BundleForm simpleForm,
+                                                    Model model)  { 		
 
-		ModelAndView mav = new ModelAndView(); 
-	
-		if (log.isDebugEnabled()) log.debug("Enter domain/removecertificates");
-		if(simpleForm.getRemove() != null){
-			if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
-		}
-		
-		if (configSvc != null && simpleForm != null && actionPath != null && (actionPath.equalsIgnoreCase("deletebundle") || actionPath.equalsIgnoreCase("Remove Selected")) && simpleForm.getRemove() != null) {
-			int cnt = simpleForm.getRemove().size();
-			if (log.isDebugEnabled()) log.debug("removing certificates");
-			try{
-				// get list of certificates for this domain
-				Collection<Certificate> certs = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
-				ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
-				// now iterate over each one and remove the appropriate ones
-				for (int x = 0; x < cnt; x++) {
-					String removeid = simpleForm.getRemove().get(x);
-					for (Iterator iter = certs.iterator(); iter.hasNext();) {
-						   Certificate t = (Certificate) iter.next();
-						   //rest of the code block removed
-				    	if(t.getId() == Long.parseLong(removeid)){
-					    	if (log.isDebugEnabled()){
-					    		log.debug(" ");
-					    		log.debug("domain address id: " + t.getId());
-					    		log.debug(" ");
-					    	}
-					    	// create a collection of matching anchor ids
-					    	certtoberemovedlist.add(t.getId());
-					    	break;
-				    	}
-					}			
-				}
-				// with the collection of anchor ids now remove them from the anchorService
-				if (log.isDebugEnabled()) log.debug(" Trying to remove certificates from database");
-				configSvc.removeCertificates(certtoberemovedlist);
-	    		if (log.isDebugEnabled()) log.debug(" SUCCESS Trying to update certificates");
-			} catch (ConfigurationServiceException e) {
-				if (log.isDebugEnabled())
-					log.error(e);
-			}
-		}
-		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-		// BEGIN: temporary code for mocking purposes
-		CertificateForm cform = new CertificateForm();
-		cform.setId(0);
-		model.addAttribute("certificateForm",cform);
-		
-		mav.setViewName("certificates"); 
-		// the Form's default button action
-		String action = "Update";
-		model.addAttribute("action", action);
-		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-		mav.addObject("action", action);
+        ModelAndView mav = new ModelAndView(); 
 
-		Collection<Certificate> certlist = null;
-		try {
-			certlist = configSvc.listCertificates(1, 1000, CertificateGetOptions.DEFAULT);
-		} catch (ConfigurationServiceException e) {
-			e.printStackTrace();
-		}
-		
-		model.addAttribute("certificatesResults", certlist);
-		// END: temporary code for mocking purposes			
-		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Enter bundles/removebundle");
+        }
+        
+        if(simpleForm.getBundlesToRemove() != null)
+        {
+            if (log.isDebugEnabled()) 
+            {
+                log.debug("Bundles marked for removal: "+simpleForm.getBundlesToRemove().toString());
+            }
+        }
 
-		model.addAttribute("simpleForm",simpleForm);
-		String strid = ""+simpleForm.getId();
-		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
-		
-		return mav;
-	}		
+        if (configSvc != null 
+                && simpleForm != null 
+                && simpleForm.getBundlesToRemove() != null) 
+        {
+            
+            int bundleCount = simpleForm.getBundlesToRemove().size();
+            long[] bundlesToRemove = new long[bundleCount];
+
+            if (log.isDebugEnabled()) 
+            {
+                log.debug("Removing Bundles");
+            }
+            
+            for(int i=0; i<bundleCount; i++) 
+            {
+                String bundleId = simpleForm.getBundlesToRemove().get(i);
+                log.error(bundleId);
+                
+                bundlesToRemove[i] = Long.parseLong(bundleId);
+                
+            }
+            
+            // Delete Trust Bundle(s)
+            try 
+            {
+                configSvc.deleteTrustBundles(bundlesToRemove);
+            } catch (ConfigurationServiceException cse) 
+            {
+                log.error("Problem removing bundles");
+            }
+            
+        }
+        
+        model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+        
+        BundleForm bform = new BundleForm();
+        bform.setId(0);
+        model.addAttribute("bundleForm", bform);
+        mav.setViewName("bundles"); 
+        
+        // Process data for Trust Bundle View
+        try {
+
+            // Get Trust Bundles
+            Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
+
+            if(trustBundles != null) {
+                model.addAttribute("trustBundles", trustBundles);
+            }
+
+
+        } catch (ConfigurationServiceException e1) {
+
+        }                            
+
+        return mav;
+    }		
 
 		
 	
