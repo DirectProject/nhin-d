@@ -73,7 +73,7 @@ public class BundlesController {
 
     public BundlesController() {
 	if (log.isDebugEnabled()) {
-            log.debug("BundlesController initialized");
+            log.error("BundlesController initialized");
         }
     }
 	
@@ -247,7 +247,7 @@ public class BundlesController {
                 
             }    
             
-            model.addAttribute("bundlesToRemove");
+            model.addAttribute("bundlesSelected");
             model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));            
             mav.setViewName("bundles");                         
         }
@@ -269,21 +269,21 @@ public class BundlesController {
             log.debug("Enter bundles/removebundle");
         }
         
-        if(simpleForm.getBundlesToRemove() != null)
+        if(simpleForm.getBundlesSelected() != null)
         {
             if (log.isDebugEnabled()) 
             {
-                log.debug("Bundles marked for removal: "+simpleForm.getBundlesToRemove().toString());
+                log.debug("Bundles marked for removal: "+simpleForm.getBundlesSelected().toString());
             }
         }
 
         if (configSvc != null 
                 && simpleForm != null 
-                && simpleForm.getBundlesToRemove() != null) 
+                && simpleForm.getBundlesSelected() != null) 
         {
             
-            int bundleCount = simpleForm.getBundlesToRemove().size();
-            long[] bundlesToRemove = new long[bundleCount];
+            int bundleCount = simpleForm.getBundlesSelected().size();
+            long[] bundlesSelected = new long[bundleCount];
 
             if (log.isDebugEnabled()) 
             {
@@ -292,22 +292,99 @@ public class BundlesController {
             
             for(int i=0; i<bundleCount; i++) 
             {
-                String bundleId = simpleForm.getBundlesToRemove().get(i);
+                String bundleId = simpleForm.getBundlesSelected().get(i);
                 log.error(bundleId);
                 
-                bundlesToRemove[i] = Long.parseLong(bundleId);
+                bundlesSelected[i] = Long.parseLong(bundleId);
                 
             }
             
             // Delete Trust Bundle(s)
             try 
             {
-                configSvc.deleteTrustBundles(bundlesToRemove);
+                configSvc.deleteTrustBundles(bundlesSelected);
             } catch (ConfigurationServiceException cse) 
             {
                 log.error("Problem removing bundles");
             }
             
+        }
+        
+        model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+        
+        BundleForm bform = new BundleForm();
+        bform.setId(0);
+        model.addAttribute("bundleForm", bform);
+        mav.setViewName("bundles"); 
+        
+        // Process data for Trust Bundle View
+        try {
+
+            // Get Trust Bundles
+            Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
+
+            if(trustBundles != null) {
+                model.addAttribute("trustBundles", trustBundles);
+            }
+
+
+        } catch (ConfigurationServiceException e1) {
+
+        }                            
+
+        return mav;
+    }		
+
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/refreshBundles", method = RequestMethod.POST)
+    public ModelAndView refreshBundles (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+                                                    HttpSession session,
+                                                    @ModelAttribute BundleForm simpleForm,
+                                                    Model model)  { 		
+
+        ModelAndView mav = new ModelAndView(); 
+
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Enter bundles/refreshbundles");
+        }
+        
+        if(simpleForm.getBundlesSelected() != null)
+        {
+            if (log.isDebugEnabled()) 
+            {
+                log.debug("Bundles marked for refresh: "+simpleForm.getBundlesSelected().toString());
+            }
+        }
+
+        if (configSvc != null 
+                && simpleForm != null 
+                && simpleForm.getBundlesSelected() != null) 
+        {
+            
+            int bundleCount = simpleForm.getBundlesSelected().size();            
+
+            if (log.isDebugEnabled()) 
+            {
+                log.debug("Refreshing Bundles");
+            }
+            
+            for(int i=0; i<bundleCount; i++) 
+            {
+                String bundleId = simpleForm.getBundlesSelected().get(i);
+                log.debug("Refreshing Bundle #"+bundleId);
+                                
+                // Refresh Trust Bundle(s)
+                try 
+                {
+                    configSvc.refreshTrustBundle(Long.parseLong(bundleId));
+                } catch (ConfigurationServiceException cse) {
+                    log.error("Could not refresh bundle: #"+bundleId);
+                }
+                
+            }
+                                    
         }
         
         model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));

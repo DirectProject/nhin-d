@@ -71,8 +71,8 @@
 	<c:choose>
             <c:when test="${not empty trustBundles}">
 	
-                <spring:url
-		value="/config/bundles/removebundle" var="formURLRemoveBundles" />
+                <spring:url value="/config/bundles/removebundle" var="formURLRemoveBundles" />
+                <spring:url value="/config/bundles/refreshBundles" var="formURLRefreshBundles" />
                 <form:form modelAttribute="bundleForm" action="${fn:escapeXml(formURLRemoveBundles)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
                  <table  id="trustBundlesTable" class="fancyTable" style="width:auto;">
@@ -99,22 +99,23 @@
                                         <tr class="oddRow">
                                     </c:otherwise>
                                 </c:choose>
-                                    <td><form:checkbox path="bundlesToRemove" value="${trustBundle.id}" /></td>
+                                    <td><form:checkbox path="bundlesSelected" value="${trustBundle.id}" /></td>
                                     <td><c:out value="${trustBundle.bundleName}"/><br/>
                                         
                                     </td>
                                     <td><a href="<c:out value="${trustBundle.bundleURL}"/>" target="_blank"><c:out value="${trustBundle.bundleURL}"/></a></td>
                                     <td><c:out value="${trustBundle.checkSum}"/></td>
-                                    <td><fmt:formatDate value="${trustBundle.lastRefreshAttempt.time}" pattern="MM/dd/yyyy hh:mm" /></td>
-                                    <td><fmt:formatDate value="${trustBundle.lastSuccessfulRefresh.time}" pattern="MM/dd/yyyy hh:mm" /></td>
                                     <td><fmt:formatDate value="${trustBundle.createTime.time}" pattern="MM/dd/yyyy hh:mm" /></td>
+                                    <td><fmt:formatDate value="${trustBundle.lastSuccessfulRefresh.time}" pattern="MM/dd/yyyy hh:mm" /></td>
+                                    <td><fmt:formatDate value="${trustBundle.lastRefreshAttempt.time}" pattern="MM/dd/yyyy hh:mm" /></td>
                                     <td><fmt:formatNumber type="number" maxFractionDigits="0" value="${trustBundle.refreshInterval/3600}"/></td>                                
                                 </tr>
                             </c:forEach>
                     </tbody>
 
                 </table>
-                <input type="submit" value="Delete Selected" style="width:150px;" />
+                <button type="submit" id="submitType" value="delete">Delete</button>
+                <button id="submitType" value="refresh" onclick="$('#bundleForm').attr('action','${fn:escapeXml(formURLRefreshBundles)}');$('#bundleForm').submit();">Refresh Bundle</button>
                 
                 </form:form>
 
