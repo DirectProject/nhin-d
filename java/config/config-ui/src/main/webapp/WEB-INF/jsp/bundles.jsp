@@ -82,8 +82,9 @@
                             <th>Bundle Name</th>
                             <th width="">URL</th>
                             <th width="">Checksum</th>
-                            <th width="" nowrap>Created</th>
-                            <th width="" nowrap>Last Refresh</th>
+                            <th width="" >Created</th>
+                            <th width="" >Current As Of</th>
+                            <th width="" >Last Refresh</th>
                             <th width="10">Refresh Interval</th>
                         </tr>
                     </thead>
@@ -105,6 +106,7 @@
                                     <td><a href="<c:out value="${trustBundle.bundleURL}"/>" target="_blank"><c:out value="${trustBundle.bundleURL}"/></a></td>
                                     <td><c:out value="${trustBundle.checkSum}"/></td>
                                     <td><fmt:formatDate value="${trustBundle.lastRefreshAttempt.time}" pattern="MM/dd/yyyy hh:mm" /></td>
+                                    <td><fmt:formatDate value="${trustBundle.lastSuccessfulRefresh.time}" pattern="MM/dd/yyyy hh:mm" /></td>
                                     <td><fmt:formatDate value="${trustBundle.createTime.time}" pattern="MM/dd/yyyy hh:mm" /></td>
                                     <td><fmt:formatNumber type="number" maxFractionDigits="0" value="${trustBundle.refreshInterval/3600}"/></td>                                
                                 </tr>
@@ -112,7 +114,7 @@
                     </tbody>
 
                 </table>
-                <input type="submit" value="Delete Selected" style="width:160px;" />
+                <input type="submit" value="Delete Selected" style="width:150px;" />
                 
                 </form:form>
 

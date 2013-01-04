@@ -47,7 +47,7 @@
 	<spring:url value="/config/settings/removesettings" var="formUrlremove" />
 		<form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
-		<table id="settingsTable" class="data">
+		<table id="settingsTable" class="fancyTable" width="100%">
 			<thead>
 				<tr>
 					<th width=20></th>

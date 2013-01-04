@@ -72,7 +72,7 @@
 		method="POST">
 		<form:hidden path="id" />
 		<div id="tablelist" style="width:100%;overflow:auto;">
-			<table  id="certificatesTable" class="data" style="font-size:10px">
+			<table  id="certificatesTable" class="fancyTable">
 				<thead>
 					<tr>
 						<th width="10"></th>
