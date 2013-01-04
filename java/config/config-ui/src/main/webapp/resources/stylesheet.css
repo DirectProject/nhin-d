@@ -38,9 +38,10 @@ table.fancyTable {
 }
 
 table.fancyTable th {
-    padding:7px 10px;
+    padding:7px 5px;
 	border-top:1px solid #fafafa;
 	border-bottom:1px solid #bbb;
+        border-left: 1px solid #bbb;
 
 	background: #ededed;
 	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
