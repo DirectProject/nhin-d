@@ -22,13 +22,21 @@
 				
 				<form:hidden path="id" />
 				
+                                <c:if test="${EmptyBundleError == true}">
+                                    <p style="color:red;">Please enter a bundle name</p>
+                                </c:if>
+
+                                <c:if test="${DupeBundleError == true}">
+                                    <p style="color:red;">This bundle name has been taken</p>
+                                </c:if>
+
 				<c:if test="${signingCertError == true}">
                                     <p style="color:red;">Please upload a valid X.509 certificate</p>
                                 </c:if>
 
                                 <c:if test="${URLError == true}">
                                     <p style="color:red;">Please enter a valid URL</p>
-                                </c:if>
+                                </c:if>                                
 			
 				<div>
 				<label>Name:</label><br/>

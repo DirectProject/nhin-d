@@ -123,7 +123,7 @@ public class BundlesController {
         {
 
             strid = ""+bundleForm.getId();
-            boolean formValidated = true;
+            Boolean formValidated = true;
 
             if (log.isDebugEnabled()) 
             {
@@ -136,8 +136,10 @@ public class BundlesController {
             model.addAttribute("URLError", false);
 
             TrustBundle trustBundle = new TrustBundle();
+            
+            String bundleName = bundleForm.getBundleName();
 
-            trustBundle.setBundleName(bundleForm.getBundleName());
+            trustBundle.setBundleName(bundleName);
             trustBundle.setRefreshInterval(bundleForm.getRefreshInterval()*3600);	// Convert Hours to Seconds for backend
 
             
@@ -165,6 +167,30 @@ public class BundlesController {
             } else {
                 if (log.isDebugEnabled()) log.debug("DO NOT store the bundle into database BECAUSE THERE IS NO FILE");
             }
+            
+            // Check for empty bundle name
+            if(bundleName.isEmpty()) 
+            {
+                model.addAttribute("EmptyBundleError", true);
+                formValidated = false;
+            } else 
+            {
+                // Check if trust bundle name is already used
+                TrustBundle dupeBundle = null;
+                try 
+                {
+                    dupeBundle = configSvc.getTrustBundleByName(bundleName);
+                } catch (ConfigurationServiceException cse) 
+                {
+                    log.error("Could not get bundle information from config service");
+                }                        
+
+                if(dupeBundle != null) 
+                {
+                    model.addAttribute("DupeBundleError", true);
+                    formValidated = false;
+                }
+            }
 
             // Check for valid URL
             URL u = null;
@@ -177,9 +203,11 @@ public class BundlesController {
                 formValidated = false;
             }                        
             
-            if(formValidated) 
-            {
             
+            
+            
+            if(formValidated) 
+            {            
             
                 trustBundle.setBundleURL(trustURL);
 
