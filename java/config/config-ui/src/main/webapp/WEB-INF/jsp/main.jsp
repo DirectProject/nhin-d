@@ -84,7 +84,7 @@
 		            <div id="dynamic">
 		                <spring:url value="/config/domain/remove" var="formUrlremove"/>
 		                <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" method="POST" >
-		                    <table class="data" id="domain-table" style="width:auto;">
+		                    <table class="fancyTable" id="domain-table" style="width:auto;">
 		                        <thead>
 		                            <tr>
 		                                <th width=20></th>
