@@ -69,8 +69,12 @@
 		<div id="bundle-table-col">
 			
 	<c:choose>
-		<c:when test="${not empty trustBundles}">
+            <c:when test="${not empty trustBundles}">
 	
+                <spring:url
+		value="/config/bundles/removebundle" var="formURLRemoveBundles" />
+                <form:form modelAttribute="bundleForm" action="${fn:escapeXml(formURLRemoveBundles)}" cssClass="cleanform" method="POST">
+		<form:hidden path="id" />
                  <table  id="trustBundlesTable" class="fancyTable" style="width:auto;">
                     <thead>
                         <tr>
@@ -94,7 +98,7 @@
                                         <tr class="oddRow">
                                     </c:otherwise>
                                 </c:choose>
-                                    <td><input type="checkbox"/></td>
+                                    <td><form:checkbox path="bundlesToRemove" value="${trustBundle.id}" /></td>
                                     <td><c:out value="${trustBundle.bundleName}"/><br/>
                                         
                                     </td>
@@ -107,15 +111,17 @@
                             </c:forEach>
                     </tbody>
 
-            </table>
-            <input type="button" value="Delete Selected" style="width:160px;" onclick="javascript:alert('Not implemented yet');"/>
-	
-		</c:when>
-		<c:otherwise>
+                </table>
+                <input type="submit" value="Delete Selected" style="width:160px;" />
+                
+                </form:form>
+
+            </c:when>
+            <c:otherwise>
 			
-			<div>There are no trust bundles configured for your HISP yet.</div>
+                <div>There are no trust bundles configured for your HISP yet.</div>
 			
-		</c:otherwise>
+            </c:otherwise>
 	</c:choose>
 	
 			
