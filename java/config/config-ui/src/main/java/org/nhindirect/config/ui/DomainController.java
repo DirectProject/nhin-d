@@ -938,7 +938,46 @@ public class DomainController {
 		model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
 		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 
-		mav.setViewName("main");
+		// Get all domains managed by this HISP
+                String domain = "%";
+                
+
+                List<Domain> results = null;
+
+                if (configSvc != null) 
+                {
+                    
+                    Collection<Domain> enabledDomains = configSvc.searchDomain(domain,EntityStatus.ENABLED);
+                    Collection<Domain> disabledDomains = configSvc.searchDomain(domain,EntityStatus.DISABLED);
+                    
+                    Collection<Domain> domains = configSvc.searchDomain(domain,EntityStatus.NEW);
+                    
+                    if(enabledDomains != null) 
+                    {
+                        domains.addAll(enabledDomains);
+                    }
+                    
+                    if(disabledDomains != null)
+                    {
+                        domains.addAll(disabledDomains);
+                    }                    
+                    
+                    if (domains != null)
+                    {
+                        results = new ArrayList<Domain>(domains);
+                    }
+                    else 
+                    {
+                        results = new ArrayList<Domain>();
+                    }
+                }
+                
+                model.addAttribute("searchResults", results);
+
+                mav.setViewName("main");
+                mav.addObject("statusList", EntityStatus.getEntityStatusList());
+                mav.addObject("searchResults", results);
+                
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		
 		return mav;

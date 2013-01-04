@@ -7,17 +7,17 @@ h3 {
 div#bundle-table-col {    
 	
 }
-div#add-new-bundle-form {
+div#side-form {
 margin-left:20px;
-	width:260px;
-	float:right;
-	margin-top:-5px;
-	padding:10px;
-	padding-top:0px;
-	height:400px;
+width:260px;
+float:right;
+margin-top:-5px;
+padding:10px;
+padding-top:0px;
+height:400px;
 }
 
-div#add-new-bundle-form div {
+div#side-form div {
 	margin-bottom:5px;
 }
 
@@ -124,7 +124,18 @@ input:focus, textarea:focus {
         
         } 
     
-    
+input.regularButton {  
+        
+        width: auto;  
+    padding: 4px 5px;  
+    background:  #bbb;  
+    border: 0;  
+    font-size: 12px;  
+    color: #fff;
+    -webkit-border-radius: 5px;  
+        -moz-border-radius: 5px;    
+        
+        } 
     
          
     

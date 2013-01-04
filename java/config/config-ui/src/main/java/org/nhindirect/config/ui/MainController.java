@@ -94,9 +94,8 @@ import org.xbill.DNS.TextParseException;
 @RequestMapping("/main")
 public class MainController {
 	
-	private final Log log = LogFactory.getLog(getClass());
-
-	private ConfigurationService configSvc;
+    private final Log log = LogFactory.getLog(getClass());
+    private ConfigurationService configSvc;
 	
     @Inject
     public void setConfigurationService(ConfigurationService service)
@@ -116,10 +115,10 @@ public class MainController {
 	*/
 	
 	public MainController() {
-		if (log.isDebugEnabled()) 
-                {
-                    log.debug("MainController initialized");
-                }
+            if (log.isDebugEnabled()) 
+            {
+                log.debug("MainController initialized");
+            }
 	}
 	
 	/**
@@ -128,247 +127,292 @@ public class MainController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
-						        HttpSession session,
-						        @ModelAttribute SimpleForm simpleForm,
-						        Model model,
-						        @RequestParam(value="submitType") String actionPath,
-                                                        @RequestParam(value="domainName", required=false) String searchDomainName,
-                                                        @RequestParam(value="status", required=false) EntityStatus searchStatus)  {
-		if (log.isDebugEnabled()) {
-                                                                log.debug("Enter search");
-                                                            }                
-                
-		String message = "Search complete";
-		ModelAndView mav = new ModelAndView();
-		// check to see if new domain requested
-		if (actionPath.equalsIgnoreCase("gotosettings") || actionPath.equalsIgnoreCase("settings"))
-		{
-			if (log.isDebugEnabled()) {
-                        log.debug("trying to go to the settings page");
-                    }
-			String action = "add";
-			model.addAttribute("action", action);
-			
-			mav.setViewName("settings");
-			mav.addObject("actionPath", "gotosettings");
-			SettingsForm form = (SettingsForm) session.getAttribute("settingsForm");
-			if (form == null) {
-				form = new SettingsForm();
-			}
-			model.addAttribute("settingsForm", form);
-			// retrieve list of settings for settingsResults
-			List<Setting> results = null;
-			if (configSvc != null) {
-				try {
-					Collection<Setting> settings = configSvc.getAllSettings();
-					if (settings != null) {
-                                        results = new ArrayList<Setting>(settings);
-                                    }
-					else {
-                                        results = new ArrayList<Setting>();
-                                    }
-				} catch (ConfigurationServiceException e) {
-				}
-			}
-			model.addAttribute("simpleForm",new SimpleForm());
-			model.addAttribute("settingsResults", results);			
-		}	
-		else if (actionPath.equalsIgnoreCase("gotocertificates") || actionPath.equalsIgnoreCase("certificates"))
-		{
-			if (log.isDebugEnabled()) {
-                        log.debug("trying to go to the certificates page");
-                    }
-			String action = "Update";
-			model.addAttribute("action", action);
-			
-			mav.setViewName("certificates");
-			mav.addObject("actionPath", "gotocertificates");
-			CertificateForm form = (CertificateForm) session.getAttribute("certificateForm");
-			if (form == null) {
-				form = new CertificateForm();
-			}
-			model.addAttribute("certificateForm", form);
-			// retrieve list of settings for settingsResults
-			List<Certificate> results = null;
-			if (configSvc != null) {
-				try {
-					Collection<Certificate> certs = configSvc.listCertificates(1, 10000, CertificateGetOptions.DEFAULT);
-					if (certs != null) {
-                                        results = new ArrayList<Certificate>(certs);
-                                    }
-					else {
-                                        results = new ArrayList<Certificate>();
-                                    }
-				} catch (ConfigurationServiceException e) {
-				}
-			}
-			model.addAttribute("simpleForm",new SimpleForm());
-			model.addAttribute("certificatesResults", results);
-		}
-		else if (actionPath.equalsIgnoreCase("newdomain") || actionPath.equalsIgnoreCase("new domain"))
-		{
-			if (log.isDebugEnabled()) {
-                        log.debug("trying to go to the new domain page");
-                    }
-			HashMap<String, String> msgs = new HashMap<String, String>();
-			mav.addObject("msgs", msgs);
-			
-			model.addAttribute("simpleForm",new SimpleForm());
-
-			AddressForm addrform = new AddressForm();
-			addrform.setId(0L);
-			model.addAttribute("addressForm",addrform);
-			// TODO: once certificates and anchors are available change code accordingly
-			CertificateForm cform = new CertificateForm();
-			//cform.setId(0L);
-			AnchorForm aform = new AnchorForm();
-			aform.setId(0L);
-			
-			model.addAttribute("certificateForm",cform);
-			model.addAttribute("anchorForm",aform);
-			String action = "Add";
-			DomainForm form = (DomainForm) session.getAttribute("domainForm");
-			if (form == null) {
-				form = new DomainForm();
-			}
-			model.addAttribute("domainForm", form);
-			model.addAttribute("action", action);
-			
-			mav.setViewName("domain");
-			mav.addObject("actionPath", "newdomain");
-			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-		}		
-		else if (actionPath.equalsIgnoreCase("gotodns") || actionPath.equalsIgnoreCase("DNS Entries"))
-		{
-		    if (log.isDebugEnabled()) log.debug("trying to go to the DNS page");
-            HashMap<String, String> msgs = new HashMap<String, String>();
-            mav.addObject("msgs", msgs);
-            String action = "Update";
-            model.addAttribute("action", action);
-            // get all DNSType.A.getValue() records
-            // GET A RECORDS
-            Collection<DNSRecord> arecords = null;
-			arecords = getDnsRecords(DNSType.A.getValue());
-			model.addAttribute("dnsARecordResults",arecords);
-            // GET A4 RECORDS
-			Collection<DNSRecord> a4records = null;
-        	a4records = getDnsRecords(DNSType.AAAA.getValue());
-        	model.addAttribute("dnsA4RecordResults",a4records);
-            // GET C RECORDS
-			Collection<DNSRecord> crecords = null;
-			crecords = getDnsRecords(DNSType.CNAME.getValue());
-        	model.addAttribute("dnsCnameRecordResults",crecords);
-            // GET Cert RECORDS
-			Collection<DNSRecord> certrecords = null;
-			certrecords = getDnsRecords(DNSType.CERT.getValue());
-        	model.addAttribute("dnsCertRecordResults",certrecords);
-            // GET MX RECORDS
-			Collection<DNSRecord> mxrecords = null;
-			mxrecords = getDnsRecords(DNSType.MX.getValue());
-        	model.addAttribute("dnsMxRecordResults",mxrecords);
-            // GET SRV RECORDS
-			Collection<DNSRecord> srvrecords = null;
-			srvrecords = getDnsRecords(DNSType.SRV.getValue());
-        	model.addAttribute("dnsSrvRecordResults",srvrecords);
-        	
-            mav.setViewName("dns");
-            
-            mav.addObject("actionPath", "gotodns");
-
-			model.addAttribute("AdnsForm", new DNSEntryForm());
-            model.addAttribute("AAdnsForm", new DNSEntryForm());
-            model.addAttribute("CdnsForm", new DNSEntryForm());
-            model.addAttribute("CertdnsForm", new DNSEntryForm());
-            model.addAttribute("MXdnsForm", new DNSEntryForm());
-            model.addAttribute("SrvdnsForm", new DNSEntryForm());
-            
-            refreshModelFromService(model);
-            
-            model.addAttribute("simpleForm",new SimpleForm());            
-		}
-	else if (actionPath.equalsIgnoreCase("ManageTrustBundles") || actionPath.equalsIgnoreCase("Trust Bundles"))
-	{
-            if (log.isDebugEnabled())  {
-                log.debug("trying to go to the Trust Bundles page");
-            }
-                                        
-            
-            String action = "Update";
-            model.addAttribute("action", action);
-			
-            mav.setViewName("bundles");
-            mav.addObject("actionPath", "gotobundles");
-            
-            BundleForm form = (BundleForm) session.getAttribute("bundleForm");
-            if (form == null) {
-                form = new BundleForm();
-            }
-			
-            model.addAttribute("bundleForm", form);
-			
-            // retrieve list of settings for settingsResults
-            List<Certificate> results = null;
-            if (configSvc != null) {
-		// Process data for Trust Bundle View
-                try {
-
-                    // Get Trust Bundles
-                    Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);                
-                    model.addAttribute("trustBundles", trustBundles);                                
-
-                } catch (ConfigurationServiceException e1) {
-                        e1.printStackTrace();
-                }								
-            }
-            model.addAttribute("simpleForm",new SimpleForm());
-            //model.addAttribute("bundlesResults", results);
-            
-                        
-		    
-        } else
+                                        HttpSession session,
+                                        @ModelAttribute SimpleForm simpleForm,
+                                        Model model,
+                                        @RequestParam(value="submitType") String actionPath,
+                                        @RequestParam(value="domainName", required=false) String searchDomainName,
+                                        @RequestParam(value="status", required=false) EntityStatus searchStatus)  
         {
-    		
+            log.error("Hit Search Controller");
+            
+            if (log.isDebugEnabled()) {
+                log.debug("Enter search");
+            }                
+
+            String message = "Search complete";
+
+            ModelAndView mav = new ModelAndView();                            
                 
+            if (actionPath.equalsIgnoreCase("gotosettings") || actionPath.equalsIgnoreCase("settings"))
+            {
+                /*************************************
+                 * Settings
+                 * 
+                 *************************************/ 
+
+                if (log.isDebugEnabled()) 
+                {
+                    log.debug("trying to go to the settings page");
+                }
+
+                String action = "add";
+                model.addAttribute("action", action);
+
+
+                mav.setViewName("settings");    // Set view for this method
+
+                mav.addObject("actionPath", "gotosettings");
+
+                // Initialize default settings form 
+                SettingsForm form = (SettingsForm) session.getAttribute("settingsForm");
+                if (form == null) {
+                        form = new SettingsForm();
+                }
+                model.addAttribute("settingsForm", form);
+
+                // Retrieve list of settings for settingsResults
+                List<Setting> results = null;
+                if (configSvc != null) 
+                {
+                    try {
+                            Collection<Setting> settings = configSvc.getAllSettings();
+                            if (settings != null) {
+                            results = new ArrayList<Setting>(settings);
+                        }
+                            else {
+                            results = new ArrayList<Setting>();
+                        }
+                    } catch (ConfigurationServiceException e) {
+                    }
+                }
+                model.addAttribute("simpleForm",new SimpleForm());
+                model.addAttribute("settingsResults", results);			
+            }	
+            else if (actionPath.equalsIgnoreCase("gotocertificates") || actionPath.equalsIgnoreCase("certificates"))
+            {
+                /*************************************
+                 * Manage Certificates
+                 * 
+                 *************************************/                     
+
+                if (log.isDebugEnabled()) {
+                    log.debug("trying to go to the certificates page");
+                }
+                    String action = "Update";
+                    model.addAttribute("action", action);
+
+                    mav.setViewName("certificates");
+                    mav.addObject("actionPath", "gotocertificates");
+                    CertificateForm form = (CertificateForm) session.getAttribute("certificateForm");
+                    if (form == null) {
+                            form = new CertificateForm();
+                    }
+                    model.addAttribute("certificateForm", form);
+                    // retrieve list of settings for settingsResults
+                    List<Certificate> results = null;
+                    if (configSvc != null) {
+                            try {
+                                    Collection<Certificate> certs = configSvc.listCertificates(1, 10000, CertificateGetOptions.DEFAULT);
+                                    if (certs != null) {
+                                    results = new ArrayList<Certificate>(certs);
+                                }
+                                    else {
+                                    results = new ArrayList<Certificate>();
+                                }
+                            } catch (ConfigurationServiceException e) {
+                            }
+                    }
+                    model.addAttribute("simpleForm",new SimpleForm());
+                    model.addAttribute("certificatesResults", results);
+            }
+            else if (actionPath.equalsIgnoreCase("newdomain") || actionPath.equalsIgnoreCase("new domain"))
+            {
+                /*************************************
+                 * Create New Domain
+                 * 
+                 *************************************/ 
+
+                if (log.isDebugEnabled()) {
+                    log.debug("trying to go to the new domain page");
+                }
+                    HashMap<String, String> msgs = new HashMap<String, String>();
+                    mav.addObject("msgs", msgs);
+
+                    model.addAttribute("simpleForm",new SimpleForm());
+
+                    AddressForm addrform = new AddressForm();
+                    addrform.setId(0L);
+                    model.addAttribute("addressForm",addrform);
+                    // TODO: once certificates and anchors are available change code accordingly
+                    CertificateForm cform = new CertificateForm();
+                    //cform.setId(0L);
+                    AnchorForm aform = new AnchorForm();
+                    aform.setId(0L);
+
+                    model.addAttribute("certificateForm",cform);
+                    model.addAttribute("anchorForm",aform);
+                    String action = "Add";
+                    DomainForm form = (DomainForm) session.getAttribute("domainForm");
+                    if (form == null) {
+                            form = new DomainForm();
+                    }
+                    model.addAttribute("domainForm", form);
+                    model.addAttribute("action", action);
+
+                    mav.setViewName("domain");
+                    mav.addObject("actionPath", "newdomain");
+                    mav.addObject("statusList", EntityStatus.getEntityStatusList());
+            }		
+            else if (actionPath.equalsIgnoreCase("gotodns") || actionPath.equalsIgnoreCase("DNS Entries"))
+            {
+                /*************************************
+                 * Manage DNS 
+                 * 
+                 *************************************/ 
+
+                if (log.isDebugEnabled()) 
+                {
+                    log.debug("Entering DNS Management page");
+                }
+
+                HashMap<String, String> msgs = new HashMap<String, String>();
+                mav.addObject("msgs", msgs);
+                String action = "Update";
+                model.addAttribute("action", action);
+                // get all DNSType.A.getValue() records
+                // GET A RECORDS
+                Collection<DNSRecord> arecords = null;
+                            arecords = getDnsRecords(DNSType.A.getValue());
+                            model.addAttribute("dnsARecordResults",arecords);
+                // GET A4 RECORDS
+                            Collection<DNSRecord> a4records = null;
+                    a4records = getDnsRecords(DNSType.AAAA.getValue());
+                    model.addAttribute("dnsA4RecordResults",a4records);
+                // GET C RECORDS
+                            Collection<DNSRecord> crecords = null;
+                            crecords = getDnsRecords(DNSType.CNAME.getValue());
+                    model.addAttribute("dnsCnameRecordResults",crecords);
+                // GET Cert RECORDS
+                            Collection<DNSRecord> certrecords = null;
+                            certrecords = getDnsRecords(DNSType.CERT.getValue());
+                    model.addAttribute("dnsCertRecordResults",certrecords);
+                // GET MX RECORDS
+                            Collection<DNSRecord> mxrecords = null;
+                            mxrecords = getDnsRecords(DNSType.MX.getValue());
+                    model.addAttribute("dnsMxRecordResults",mxrecords);
+                // GET SRV RECORDS
+                            Collection<DNSRecord> srvrecords = null;
+                            srvrecords = getDnsRecords(DNSType.SRV.getValue());
+                    model.addAttribute("dnsSrvRecordResults",srvrecords);
+
+                mav.setViewName("dns");
+
+                mav.addObject("actionPath", "gotodns");
+
+                model.addAttribute("AdnsForm", new DNSEntryForm());
+                model.addAttribute("AAdnsForm", new DNSEntryForm());
+                model.addAttribute("CdnsForm", new DNSEntryForm());
+                model.addAttribute("CertdnsForm", new DNSEntryForm());
+                model.addAttribute("MXdnsForm", new DNSEntryForm());
+                model.addAttribute("SrvdnsForm", new DNSEntryForm());
+
+                refreshModelFromService(model);
+
+                model.addAttribute("simpleForm",new SimpleForm());            
+            }
+            else if (actionPath.equalsIgnoreCase("ManageTrustBundles") || actionPath.equalsIgnoreCase("Trust Bundles"))
+            {
+                if (log.isDebugEnabled())  {
+                    log.debug("trying to go to the Trust Bundles page");
+                }
+
+
+                String action = "Update";
+                model.addAttribute("action", action);
+
+                mav.setViewName("bundles");
+                mav.addObject("actionPath", "gotobundles");
+
+                BundleForm form = (BundleForm) session.getAttribute("bundleForm");
+                if (form == null) {
+                    form = new BundleForm();
+                }
+
+                model.addAttribute("bundleForm", form);
+
+                // retrieve list of settings for settingsResults
+                List<Certificate> results = null;
+                if (configSvc != null) {
+                    // Process data for Trust Bundle View
+                    try {
+
+                        // Get Trust Bundles
+                        Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);                
+                        model.addAttribute("trustBundles", trustBundles);                                
+
+                    } catch (ConfigurationServiceException e1) {
+                            e1.printStackTrace();
+                    }								
+                }
+                model.addAttribute("simpleForm",new SimpleForm());
+                //model.addAttribute("bundlesResults", results);
+
+
+
+            } else
+            {
 
                 SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
-    		if (form == null) { 
-    			form = new SearchDomainForm();
-    		}
-    		model.addAttribute(form);
-    		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-    		
-    		String domain = (!searchDomainName.isEmpty()) ? searchDomainName : "%";
-    		EntityStatus status = searchStatus;
-                
-    		List<Domain> results = null;
-    		if (configSvc != null) {
-    		    Collection<Domain> domains = configSvc.searchDomain(domain, status);
-    		    if (domains != null)
-    		    {
-    		        results = new ArrayList<Domain>(domains);
-    		    }
-    		    else 
-    		    {
-    		        results = new ArrayList<Domain>();
-    		    }
-    		}
-    		if (AjaxUtils.isAjaxRequest(requestedWith)) {
-    			// prepare model for rendering success message in this request
-    			model.addAttribute("message", new Message(MessageType.success, message));
-    			model.addAttribute("ajaxRequest", true);
-    			model.addAttribute("searchResults", results);
-    			return null;
-    		}
-    
-    		mav.setViewName("main");
-    		mav.addObject("statusList", EntityStatus.getEntityStatusList());
-    		mav.addObject("searchResults", results);
-		}
+                if (form == null) { 
+                        form = new SearchDomainForm();
+                }
+                model.addAttribute(form);
+                model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 
-		if (log.isDebugEnabled()) log.debug("Exit");
-		return mav;
-	}
+                String domain = (!searchDomainName.isEmpty()) ? searchDomainName : "%";
+                
+                mav.addObject("searchTerm", searchDomainName);
+                EntityStatus status = searchStatus;
+
+                List<Domain> results = null;
+
+                if (configSvc != null) 
+                {
+                    Collection<Domain> domains = configSvc.searchDomain(domain, status);
+                    
+                    if (domains != null)
+                    {
+                        results = new ArrayList<Domain>(domains);
+                    }
+                    else 
+                    {
+                        results = new ArrayList<Domain>();
+                    }
+                }
+                
+                if (AjaxUtils.isAjaxRequest(requestedWith)) {
+                        // prepare model for rendering success message in this request
+                        model.addAttribute("message", new Message(MessageType.success, message));
+                        model.addAttribute("ajaxRequest", true);
+                        model.addAttribute("searchResults", results);
+                        return null;
+                }
+
+                mav.setViewName("main");
+                mav.addObject("statusList", EntityStatus.getEntityStatusList());
+                mav.addObject("searchResults", results);
+            }
+
+            if (log.isDebugEnabled()) 
+            {
+                log.debug("Exit");
+            }
+            
+            return mav;
+        }
 	
+        
 	private Collection<DNSRecord> getDnsRecords(int type){
 		Collection<DNSRecord> arecords = null;
         try {
@@ -430,6 +474,7 @@ public class MainController {
 	@RequestMapping(method=RequestMethod.GET)
 	public ModelAndView display(@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
                                 HttpSession session, 
+                                @ModelAttribute SimpleForm simpleForm,
                                 Model model) { 		
 		if (log.isDebugEnabled()) log.debug("Enter");
 		
@@ -441,6 +486,60 @@ public class MainController {
 
 		mav.setViewName("main"); 
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
+                mav.addObject("searchTerm", "");
+                
+                // Get all domains managed by this HISP
+                String domain = "%";
+                
+
+                List<Domain> results = null;
+
+                if (configSvc != null) 
+                {
+                    
+                    Collection<Domain> enabledDomains = configSvc.searchDomain(domain,EntityStatus.ENABLED);
+                    Collection<Domain> disabledDomains = configSvc.searchDomain(domain,EntityStatus.DISABLED);
+                    
+                    Collection<Domain> domains = configSvc.searchDomain(domain,EntityStatus.NEW);
+                    
+                    
+                    
+                    if(enabledDomains != null && !enabledDomains.isEmpty()) 
+                    {
+                        log.error(enabledDomains);
+                        if(domains == null)
+                        {
+                            domains = enabledDomains;
+                        } else {
+                            domains.addAll(enabledDomains);
+                        }
+                    }
+                    
+                    if(disabledDomains != null && !disabledDomains.isEmpty())
+                    {
+                        if(domains == null)
+                        {
+                            domains = disabledDomains;
+                        } else {
+                            domains.addAll(disabledDomains);
+                        }
+                    }                    
+                    
+                    if (domains != null)
+                    {
+                        results = new ArrayList<Domain>(domains);
+                    }
+                    else 
+                    {
+                        results = new ArrayList<Domain>();
+                    }
+                }
+                
+                model.addAttribute("searchResults", results);
+
+                mav.setViewName("main");
+                mav.addObject("statusList", EntityStatus.getEntityStatusList());
+                mav.addObject("searchResults", results);
 		
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;

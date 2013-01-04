@@ -66,7 +66,7 @@
 				value="update">Update</button>
 		</c:otherwise>
 	</c:choose>
-	<button name="submitType" id="submitType" type="submit" value="cancel">Cancel</button>
+	&nbsp;<a href="/config-ui/config/main">Cancel</a>
 	</p>
 </form:form></div>
  <c:if test='${not empty action && action != "Add" }'>

@@ -14,7 +14,7 @@
 	
 	<div>
 
-            <div id="add-new-bundle-form">
+            <div id="side-form">
 			<h3>Add New Trust Bundle</h3>
 			
 			<spring:url value="/config/bundles/addbundle" var="formURLaddBundle" />

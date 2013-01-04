@@ -11,60 +11,84 @@
     <body>
 
         <%@ include file="/WEB-INF/jsp/header.jsp" %>
-        <h2>Manage Domains </h2>
-		
-<p style="padding:5px;border:1px solid #bbb;background-color:#fcfccf;"><strong>Tip:</strong> You can return all available domains by simply hitting the search button.</p>
+        <h2>Manage Domains <a href="/config-ui/config/main/search?domainName=&submitType=newdomain" style="font-size:12px;font-weight:normal;">Create New Domain</a></h2>
 	
-		
-		<h4>Find Existing Domains</h4>
+<div style="margin:5px 0;">
+        
+</div>			
+
+        <div>
+
+
 		
 			
 
-        <div id="form">
+        <div id="side-form">
+
+            <h3>Filter Domains</h3>
         
             <spring:url value="/config/main/search" var="formUrl"/>
             <form:form id="searchDomainForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform" commandName="searchDomainForm" method="GET">
 
-
-                <table style="margin:10px;">
-					<tr>
-						<td width=120>
-							<form:label path="domainName">Domain Name:
-			                    <form:errors path="domainName" cssClass="error" />
-			                </form:label>
-			</td><td><form:input path="domainName" cssClass="text-input" cssStyle="width:220px;" /></td>
-			</tr>
-					<tr>
-						<td><label>Status:</label></td>
-						<td>
-                    		<form:select path="status">
-							              <form:option value="" label="All"/>
-							              <form:options path="status" items="${statusList}"/>
-							          </form:select>
-
-
-			</td>
-		</tr>
-		<tr><td colspan=100% style="padding-top:5px"><button name="submitType" id="submitType" type="submit" value="search">Search</button> &nbsp; <a href="/config-ui/config/main/search?domainName=&submitType=newdomain">Create New Domain</a></td></tr>
-
-</table>
-                    	<!--<form:radiobuttons path="status" items="${statusList}"/>-->
+                <div>
+                <form:label path="domainName">Domain Name:
+                <form:errors path="domainName" cssClass="error" />
+		</form:label>
+                <br/>   
+                <form:input path="domainName"  />
                 </div>
+
+                <div>
+                <label>Status:</label>
+                <br/>   
+                <form:select path="status">
+                    <form:option value="" label="All"/>
+                    <form:options path="status" items="${statusList}"/>
+                </form:select>
+                </div>
+
+                <div>
+                <button name="submitType" id="submitType" type="submit" value="search">Search</button>
+                </div>
+                    	<!--<form:radiobuttons path="status" items="${statusList}"/>-->
+                
 
             </form:form>
 
+            </div>
+
+            
+
+            <div id="bundle-table-col">
+
+                <h3>Search Results</h3>
+
+                <c:if test="${empty searchResults}">
+                    <c:if test="${not empty searchTerm}">
+                    Your search for "${searchTerm}" turned up no results.
+                    </c:if> 
+                    
+                    <c:if test="${empty searchTerm}">
+                    This HISP has no configured domains.
+                    </c:if>
+                </c:if>
+
+                
+
 			 <c:if test="${not empty searchResults}">
 
-		            <h4>Domain Search Results</h4>
+                            
+
+
 
 		            <div id="dynamic">
 		                <spring:url value="/config/domain/remove" var="formUrlremove"/>
 		                <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" method="POST" >
-		                    <table class="data" id="domain-table">
+		                    <table class="data" id="domain-table" style="width:auto;">
 		                        <thead>
 		                            <tr>
-		                                <th width=40></th>
-										<th>Name</th>
+		                                <th width=20></th>
+						<th>Name</th>
 		                                <th>Postmaster</th>
 		                                <th>Status</th>
 		                                <th>Created</th>
@@ -91,10 +115,18 @@
 		                        
 		                    </table>
 		                    <button name="submitType" id="submitType" type="submit" value="delete">Delete</button>
+                                    
+                                    
 		                </form:form>
 		            </div>
 		        </c:if>
-        
+
+
+
+
+                </div>
+
+<br clear="both"/>
         </div>
        
         <%@ include file="/WEB-INF/jsp/footer.jsp"%>
