@@ -350,6 +350,8 @@ public class BundlesController {
             log.debug("Enter bundles/refreshbundles");
         }
         
+        
+        
         if(simpleForm.getBundlesSelected() != null)
         {
             if (log.isDebugEnabled()) 

@@ -13,6 +13,7 @@ public class BundleForm {
 	private String thumbprint;
 	private byte[] data;
 	private List<String> bundlesSelected;
+        private String allSelected;
         
 	private CommonsMultipartFile fileData;	// Signing Certificate Data
 	
@@ -78,6 +79,14 @@ public class BundleForm {
 	public List<String> getBundlesSelected() {
 		return bundlesSelected;
 	}
+        
+        public void setAllSelected(String allSelected) {
+            this.allSelected = allSelected;
+        }
+        public String getAllSelected() {
+            return allSelected;
+        }
+        
 	
 
 }

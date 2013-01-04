@@ -78,7 +78,7 @@
                  <table  id="trustBundlesTable" class="fancyTable" style="width:auto;">
                     <thead>
                         <tr>
-                            <th width="10"></th>
+                            <th><input type="checkbox" onclick="var checkBoxes = $(':checkbox[name=bundlesSelected]');checkBoxes.attr('checked', !checkBoxes.attr('checked'));"/></th>
                             <th>Bundle Name</th>
                             <th width="">URL</th>
                             <th width="">Checksum</th>
