@@ -164,7 +164,10 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		}
 		
 		if (!update)
+		{
+			dao.updateLastUpdateError(bundle.getId(), processAttempStart, BundleRefreshError.SUCCESS);
 			return;
+		}
 		
 		final Collection<X509Certificate> bundleCerts = convertRawBundleToAnchorCollection(rawBundle, bundle, processAttempStart);
 
