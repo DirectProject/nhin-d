@@ -414,6 +414,45 @@ public class BundlesController {
     }		
 
 		
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/assignBundlesForm", method = RequestMethod.GET)
+    public ModelAndView assignBundlesForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
+                                                    HttpSession session,
+                                                    @ModelAttribute BundleForm simpleForm,
+                                                    Model model)  { 		
+
+        ModelAndView mav = new ModelAndView(); 
+
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Enter bundles/assignBundles");
+        }    
+        
+        // Process data for Trust Bundle View
+        try {
+
+            // Get Trust Bundles
+            Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
+            
+            if(trustBundles != null) {
+                model.addAttribute("trustBundles", trustBundles);
+            }
+
+
+        } catch (ConfigurationServiceException e1) {
+
+        }                                        
+        
+        BundleForm bform = new BundleForm();
+        bform.setId(0);
+        model.addAttribute("bundleForm", bform);
+        mav.setViewName("assignBundlesForm");
+        
+        return mav;
+    }
+    
+    
+    
 	
 	/**
 	 * Handle exceptions as gracefully as possible

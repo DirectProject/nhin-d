@@ -139,4 +139,11 @@ input.regularButton {
         } 
     
          
-    
+        div.quickform {
+            font-size:12px;
+        }
+        div.quickform div {
+            
+            margin:5px 0;
+            
+        }

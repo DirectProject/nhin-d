@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.nhindirect.config.store.Address;
@@ -35,6 +36,8 @@ import javax.validation.constraints.Size;
 public class DomainForm {
 
 	private Domain domain;
+        private List<Long> bundlesTrusted;
+        private String selectedBundles;
 	
 	public Collection<Address> getAddresses() {
 		return domain.getAddresses();
@@ -117,4 +120,20 @@ public class DomainForm {
 		return domain.isValid();
 	}
 	
+        
+        
+        public List<Long> getBundlesTrusted() {
+            return this.bundlesTrusted;
+        }
+        public void setBundlesTrusted(List<Long> bundlesTrusted) {
+            this.bundlesTrusted = bundlesTrusted;
+        }
+        
+        public String getSelectedBundles() {
+            return this.selectedBundles;
+        }
+        public void setSelectedBundles(String selectedBundles) {
+            this.selectedBundles = selectedBundles;
+        }
+        
 }
