@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.nhindirect.config.store.TrustBundle;
+import org.nhindirect.config.store.TrustBundleAnchor;
 
 @Controller
 @RequestMapping("/domain")
@@ -994,112 +997,160 @@ public class DomainController {
     public void simpleForm(Model model) {
             model.addAttribute(new SimpleForm());
     }	
-	/**
-	 * Display a Domain
-	 */
-	@RequestMapping(method=RequestMethod.GET)
-	public ModelAndView viewDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
-							        @RequestParam(required=false) String id,
-									HttpSession session, 
-							        Model model) { 		
-		if (log.isDebugEnabled()) log.debug("Enter");		
-		ModelAndView mav = new ModelAndView(); 
-		
-		mav.setViewName("domain"); 
-		
-		// the Form's default button action
-		String action = "Add";
-		
-		DomainForm form = (DomainForm) session.getAttribute("domainForm");
-		if (form == null) {
-			form = new DomainForm();
-		}
-		model.addAttribute("domainForm", form);
-		model.addAttribute("action", action);
-		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-		
-		mav.addObject("action", action);
-		mav.addObject("statusList", EntityStatus.getEntityStatusList());
-		
-		if ((id != null) &&
-			(id.length() > 0)) {
-			if (log.isDebugEnabled()) log.debug("Need to search for Domain ID: " + id);		
-			
-			Domain results = null;
-			Long dId = Long.decode(id);
-			
-			AddressForm addrform = new AddressForm();
-			addrform.setId(dId);
-			model.addAttribute("addressForm",addrform);
+    
+    
+    
+    /**
+     * Display a Domain
+     */
+    @RequestMapping(method=RequestMethod.GET)
+    public ModelAndView viewDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+                                                            @RequestParam(required=false) String id,
+                                                            HttpSession session, 
+                                                            Model model) { 		
+            if (log.isDebugEnabled()) {
+                log.debug("Enter View Domain");
+            }		
+            
+            ModelAndView mav = new ModelAndView(); 
 
-			CertificateForm cform = new CertificateForm();
-			cform.setId(dId);
-			AnchorForm aform = new AnchorForm();
-			aform.setId(dId);
-			
-			model.addAttribute("certificateForm",cform);
-			model.addAttribute("anchorForm",aform);
-			if (configSvc != null) {
-				results = configSvc.getDomain(dId);
-				if (results != null) {
-					if (log.isDebugEnabled()) log.debug("Found a valid domain" + results.toString());		
-					form.populate(results);
-					action = "Update";
-					model.addAttribute("action", action);
-					// SETTING THE ADDRESSES OBJECT
-					model.addAttribute("addressesResults", results.getAddresses());
-					
-					// BEGIN: temporary code for mocking purposes
-					String owner = "";
-					owner = results.getDomainName();
-					model.addAttribute("addressesResults", results.getAddresses());
-					Collection<Certificate> certlist = null;
-					try {
-						certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
-					} catch (ConfigurationServiceException e) {
-						e.printStackTrace();
-					}
-					
-					Collection<Anchor> anchorlist = null;
-					try {
-						anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-					} catch (ConfigurationServiceException e) {
-						e.printStackTrace();
-					}
-					
-					model.addAttribute("certificatesResults", certlist);
-					
-					// convert Anchor to AnchorForm
-					Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
-					// now set anchorsResults
-					model.addAttribute("anchorsResults", convertedanchors);
-				
-					// END: temporary code for mocking purposes			
+            mav.setViewName("domain"); 
 
-					SimpleForm simple = new SimpleForm();
-					simple.setId(dId);
-					model.addAttribute("simpleForm",simple);
-					mav.addObject("action", action);
-				}
-				else {
-					log.warn("Service returned a null Domain for a known key: " + dId);		
-				}
-			}
-			else { 
-				log.error("Web Service bean is null.  Configuration error detected.");		
-			}
-			if (AjaxUtils.isAjaxRequest(requestedWith)) {
-				// prepare model for rendering success message in this request
-				model.addAttribute("message", "");
-				model.addAttribute("ajaxRequest", true);
-				model.addAttribute("action", action);
-				return null;
-			}
-		}
-		
-		if (log.isDebugEnabled()) log.debug("Exit");
-		return mav;
-	}
+            String action = "Add";
+
+            DomainForm form = (DomainForm) session.getAttribute("domainForm");
+            
+            if (form == null) {
+                    form = new DomainForm();
+            }
+            
+            model.addAttribute("domainForm", form);
+            model.addAttribute("action", action);
+            model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+
+            mav.addObject("action", action);
+            mav.addObject("statusList", EntityStatus.getEntityStatusList());
+
+            if ((id != null) && (id.length() > 0)) 
+            {
+                if (log.isDebugEnabled()) {
+                    log.debug("Need to search for Domain ID: " + id);
+                }		
+
+                Domain results = null;
+                Long dId = Long.decode(id);
+
+                AddressForm addrform = new AddressForm();
+                addrform.setId(dId);
+                model.addAttribute("addressForm",addrform);
+
+                CertificateForm cform = new CertificateForm();
+                cform.setId(dId);
+                AnchorForm aform = new AnchorForm();
+                aform.setId(dId);
+
+                model.addAttribute("certificateForm",cform);
+                model.addAttribute("anchorForm",aform);
+                
+                if (configSvc != null) {
+                        results = configSvc.getDomain(dId);
+                                                
+                        if (results != null) {
+                            
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Found a valid domain" + results.toString());
+                                }		
+                                
+                                Collection<TrustBundle> bundles = null;
+                                
+                                // Get Trust Bundles
+                                try {
+                                    bundles = configSvc.getTrustBundlesByDomain(dId, true);
+                                } catch (ConfigurationServiceException cse) {
+                                    
+                                }
+                                
+                                if(bundles != null) {
+                                
+                                    model.addAttribute("trustBundles", bundles);
+                                    
+                                    Map<String, Collection<TrustBundleAnchor>> anchorMap = null;
+                                    
+                                    Iterator bundleIterator = bundles.iterator();
+
+                                    while(bundleIterator.hasNext()) {
+                                        Object bundle = bundleIterator.next();
+                                        TrustBundle tb = (TrustBundle) bundle;
+                                        log.error("Bundle ID:"+tb.getBundleName());
+                                        
+                                        Collection<TrustBundleAnchor> tbAnchors = tb.getTrustBundleAnchors();                                                                                
+                                     
+                                        anchorMap.put(tb.getBundleName(), tbAnchors);
+                                        
+                                    }
+                                    
+                                    model.addAttribute("anchorMap", anchorMap);
+                                }
+                                
+                                form.populate(results);
+                                action = "Update";
+                                model.addAttribute("action", action);
+                                
+                                // SETTING THE ADDRESSES OBJECT
+                                model.addAttribute("addressesResults", results.getAddresses());
+
+                                // BEGIN: temporary code for mocking purposes
+                                String owner = "";
+                                owner = results.getDomainName();
+                                model.addAttribute("addressesResults", results.getAddresses());
+                                Collection<Certificate> certlist = null;
+                                try {
+                                        certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+                                } catch (ConfigurationServiceException e) {
+                                        e.printStackTrace();
+                                }
+
+                                Collection<Anchor> anchorlist = null;
+                                try {
+                                        anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+                                } catch (ConfigurationServiceException e) {
+                                        e.printStackTrace();
+                                }
+
+                                model.addAttribute("certificatesResults", certlist);
+
+                                // convert Anchor to AnchorForm
+                                Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);					
+                                // now set anchorsResults
+                                model.addAttribute("anchorsResults", convertedanchors);
+
+                                // END: temporary code for mocking purposes			
+
+                                SimpleForm simple = new SimpleForm();
+                                simple.setId(dId);
+                                model.addAttribute("simpleForm",simple);
+                                mav.addObject("action", action);
+                        }
+                        else {
+                                log.warn("Service returned a null Domain for a known key: " + dId);		
+                        }
+                }
+                else { 
+                        log.error("Web Service bean is null.  Configuration error detected.");		
+                }
+                
+                if (AjaxUtils.isAjaxRequest(requestedWith)) {
+                        // prepare model for rendering success message in this request
+                        model.addAttribute("message", "");
+                        model.addAttribute("ajaxRequest", true);
+                        model.addAttribute("action", action);
+                        return null;
+                }
+            }
+
+            if (log.isDebugEnabled()) log.debug("Exit");
+            return mav;
+    }
 	
 	/**
 	 * Execute the save and return the results
@@ -1107,117 +1158,136 @@ public class DomainController {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/saveupdate", method=RequestMethod.POST )
 	public ModelAndView saveDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 							   
-									HttpSession session, 
-									@RequestParam(value="submitType") String actionPath,
+								HttpSession session, 
+								@RequestParam(value="submitType") String actionPath,
 							        @ModelAttribute("domainForm") DomainForm form,
 							        Model model)  { 		
 		if (log.isDebugEnabled()) log.debug("Enter");
 		if (log.isDebugEnabled()) log.debug("Entered saveDomain");
 		if (log.isDebugEnabled()) log.debug("The value of actionPath: "+actionPath);
 		ModelAndView mav = new ModelAndView(); 
-		if (actionPath.equalsIgnoreCase("cancel")) {
-			if (log.isDebugEnabled()) log.debug("trying to cancel from saveupdate");
-			SearchDomainForm form2 = (SearchDomainForm) session
-					.getAttribute("searchDomainForm");
-			model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
-			model.addAttribute("ajaxRequest", AjaxUtils
-					.isAjaxRequest(requestedWith));
-
-			mav.setViewName("main");
-			mav.addObject("statusList", EntityStatus.getEntityStatusList());
-			return mav;
-		} else if ((actionPath.equalsIgnoreCase("update") || actionPath.equalsIgnoreCase("add"))){
-			HashMap<String, String> msgs = new HashMap<String, String>();
-			mav.addObject("msgs", msgs);
-			if (log.isDebugEnabled()) log.debug("Inside update else if: submitType: " + actionPath);
 		
-			mav.setViewName("domain");
-
-			if (log.isDebugEnabled()) log.debug("Form passed validation");
-			try {
-				if (actionPath.equalsIgnoreCase("add")) {
-					configSvc.addDomain(form.getDomainFromForm());
-					List<Domain> result = new ArrayList<Domain>(
-							configSvc.searchDomain(form.getDomainName(),
-									form.getStatus()));
-					if (result.size() > 0) {
-						form = new DomainForm();
-						form.populate(result.get(0));
-						msgs.put("msg", "domain.add.success");
-					}
-				} else if (actionPath.equalsIgnoreCase("update")) {
-					configSvc.updateDomain(form.getDomainFromForm());
-					List<Domain> result = new ArrayList<Domain>(
-							configSvc.searchDomain(form.getDomainName(),
-									form.getStatus()));
-					if (result.size() > 0) {
-						form = new DomainForm();
-						form.populate(result.get(0));
-					}
-					msgs.put("msg", "domain.update.success");
-				}
-
-				AddressForm addrform = new AddressForm();
-				addrform.setId(form.getDomainFromForm().getId());
-				model.addAttribute("domainForm",form);
-				model.addAttribute("addressForm",addrform);
-
-				CertificateForm cform = new CertificateForm();
-				cform.setId(form.getDomainFromForm().getId());
-				AnchorForm aform = new AnchorForm();
-				aform.setId(form.getDomainFromForm().getId());
-				
-				model.addAttribute("certificateForm",cform);
-				model.addAttribute("anchorForm",aform);
-				SimpleForm simple = new SimpleForm();
-				simple.setId(form.getDomainFromForm().getId());
-				model.addAttribute("simpleForm",simple);
-				
-				// once certificates and anchors are available change code accordingly
-				// begin: add these dummy records too
-				String owner = form.getDomainFromForm().getPostMasterEmail();
-
-				try {
-					if(owner != null && !owner.equalsIgnoreCase("")){
-						// BEGIN: temporary code for mocking purposes
-						Collection<Certificate> certlist = null;
-						try {
-							certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
-							model.addAttribute("certificatesResults", certlist);
-							
-						} catch (ConfigurationServiceException e) {
-							e.printStackTrace();
-						}
-						
-						Collection<Anchor> anchorlist = null;
-						anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-						// convert Anchor to AnchorForm
-						Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);
-						// now set anchorsResults
-						model.addAttribute("anchorsResults", convertedanchors);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				
+                if (actionPath.equalsIgnoreCase("cancel")) {
 			
-				// END: temporary code for mocking purposes			
+                    if (log.isDebugEnabled()) 
+                    {
+                        log.debug("trying to cancel from saveupdate");
+                    }			                    
+                    
+                    return new ModelAndView("redirect:/config/main");
+                    
+		} else if ((actionPath.equalsIgnoreCase("update") || actionPath.equalsIgnoreCase("add"))) {
+                    
+                    HashMap<String, String> msgs = new HashMap<String, String>();
+                    
+                    mav.addObject("msgs", msgs);
 
-					
-				//  end: add these dummy records too
-				model.addAttribute("addressesResults", form.getDomainFromForm().getAddresses());
+                    mav.setViewName("domain");
 
-				model.addAttribute("action", "update");
-				if (log.isDebugEnabled())
-					log.debug("Stored domain: "
-							+ form.getDomainFromForm().toString());
+                    try {
+                        
+                        if (actionPath.equalsIgnoreCase("add")) {
+                            
+                            // Add domain to configuration service
+                            configSvc.addDomain(form.getDomainFromForm());
+                            
+                            List<Domain> result = new ArrayList<Domain>(configSvc.searchDomain(form.getDomainName(), form.getStatus()));
+                            
+                            // Associate trust bundles if selected
+                            String[] bundles = form.getSelectedBundles().split(",");
+                            int bundleCount = bundles.length;
+                            
+                            log.debug("# of bundles associated: "+bundleCount);
+                                                     
+                            // Associate trust bundles to Domain
+                            for(int i=0; i<bundleCount; i++) {                                
+                                configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]));
+                                log.error("Added Bundle ID #"+bundles[i]);
+                            }                                                                                                                
+                            
+                            if (result.size() > 0) {
+                                    form = new DomainForm();
+                                    form.populate(result.get(0));
+                                    msgs.put("msg", "domain.add.success");
+                            }
+                            
+                        } else if (actionPath.equalsIgnoreCase("update")) {
+                            
+                            configSvc.updateDomain(form.getDomainFromForm());
+                            
+                            List<Domain> result = new ArrayList<Domain>(configSvc.searchDomain(form.getDomainName(), form.getStatus()));
+                            
+                            if (result.size() > 0) {
+                                    form = new DomainForm();
+                                    form.populate(result.get(0));
+                            }
+                            
+                            msgs.put("msg", "domain.update.success");
+                        }
 
-			} catch (ConfigurationServiceException e) {
-				log.error(e);
-				msgs.put("domainService", "domainService.add.error");
-			}catch(Exception ed){
-				log.error(ed);
-			}
+                        AddressForm addrform = new AddressForm();
+                        addrform.setId(form.getDomainFromForm().getId());
+                        model.addAttribute("domainForm",form);
+                        model.addAttribute("addressForm",addrform);
+
+                        CertificateForm cform = new CertificateForm();
+                        cform.setId(form.getDomainFromForm().getId());
+                        AnchorForm aform = new AnchorForm();
+                        aform.setId(form.getDomainFromForm().getId());
+
+                        model.addAttribute("certificateForm",cform);
+                        model.addAttribute("anchorForm",aform);
+                        
+                        SimpleForm simple = new SimpleForm();
+                        simple.setId(form.getDomainFromForm().getId());
+                        model.addAttribute("simpleForm",simple);
+
+                        // once certificates and anchors are available change code accordingly
+                        // begin: add these dummy records too
+                        String owner = form.getDomainFromForm().getPostMasterEmail();
+
+                        try {
+                            if(owner != null && !owner.equalsIgnoreCase("")){
+                                // BEGIN: temporary code for mocking purposes
+                                Collection<Certificate> certlist = null;
+                                try {
+                                        certlist = configSvc.getCertificatesForOwner(owner, CertificateGetOptions.DEFAULT);
+                                        model.addAttribute("certificatesResults", certlist);
+
+                                } catch (ConfigurationServiceException e) {
+                                        e.printStackTrace();
+                                }
+
+                                Collection<Anchor> anchorlist = null;
+                                anchorlist = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+                                // convert Anchor to AnchorForm
+                                Collection<AnchorForm> convertedanchors = convertAnchors(anchorlist);
+                                // now set anchorsResults
+                                model.addAttribute("anchorsResults", convertedanchors);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // END: temporary code for mocking purposes			
+
+
+                        //  end: add these dummy records too
+                        model.addAttribute("addressesResults", form.getDomainFromForm().getAddresses());
+
+                        model.addAttribute("action", "update");
+                        if (log.isDebugEnabled()) {
+                            log.debug("Stored domain: " + form.getDomainFromForm().toString());
+                        }
+                                
+
+                    } catch (ConfigurationServiceException e) {
+                            log.error(e);
+                            msgs.put("domainService", "domainService.add.error");
+                    }catch(Exception ed){
+                            log.error(ed);
+                    }
 		}
 		if (log.isDebugEnabled()) log.debug("Exit");
 		return mav;

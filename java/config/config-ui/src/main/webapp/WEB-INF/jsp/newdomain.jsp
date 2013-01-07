@@ -23,7 +23,14 @@
 	id="domainForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform"
 	commandName="domainForm" method="POST">
 	<div class=error"><form:errors path="*" cssClass="error" /></div>
-	<c:if test='${not empty msg && not empty msg["msg"]}'>
+
+	
+
+
+<c:if test='${not empty msg && not empty msg["msg"]}'>
+
+
+
 		<div class="error"><fmt:message key='${msg["msg"]}' /></div>
 	</c:if>
 	<form:hidden path="id" />
@@ -69,6 +76,7 @@
 	&nbsp;<a href="/config-ui/config/main">Cancel</a>
 	</p>
 </form:form></div>
+
  <c:if test='${not empty action && action != "Add" }'>
     <!-- Display tabs -->
     <div id="tabs" class="tabs">
@@ -187,6 +195,8 @@
 </div>
 <div id="tabs-2">
 <c:if test='${not empty action && action != "Add" }'>
+
+
 		<fieldset style="width: 95%;" title="anchor"><spring:url
 			value="/config/domain/addanchor" var="formUrladdanchor" /> <form:form
 			modelAttribute="anchorForm"
