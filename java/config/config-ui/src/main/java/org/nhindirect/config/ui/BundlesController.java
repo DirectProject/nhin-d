@@ -410,8 +410,7 @@ public class BundlesController {
         } catch (ConfigurationServiceException e1) {
 
         }                            
-
-        return mav;
+        return new ModelAndView("redirect:/config/main/search?domainName=&submitType=ManageTrustBundles");        
     }		
 
 		
