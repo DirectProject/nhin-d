@@ -50,6 +50,7 @@ import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
@@ -1061,7 +1062,7 @@ public class DomainController {
                                     log.debug("Found a valid domain" + results.toString());
                                 }		
                                 
-                                Collection<TrustBundle> bundles = null;
+                                Collection<TrustBundleDomainReltn> bundles = null;
                                 
                                 // Get Trust Bundles
                                 try {
@@ -1076,16 +1077,15 @@ public class DomainController {
                                     
                                     Map<String, Collection<TrustBundleAnchor>> anchorMap = null;
                                     
-                                    Iterator bundleIterator = bundles.iterator();
 
-                                    while(bundleIterator.hasNext()) {
-                                        Object bundle = bundleIterator.next();
-                                        TrustBundle tb = (TrustBundle) bundle;
-                                        log.error("Bundle ID:"+tb.getBundleName());
+                                    for(TrustBundleDomainReltn bundle : bundles) 
+                                    {
+
+                                        log.error("Bundle ID:"+ bundle.getTrustBundle().getId());
                                         
-                                        Collection<TrustBundleAnchor> tbAnchors = tb.getTrustBundleAnchors();                                                                                
+                                        Collection<TrustBundleAnchor> tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();                                                                                
                                      
-                                        anchorMap.put(tb.getBundleName(), tbAnchors);
+                                        anchorMap.put(bundle.getTrustBundle().getBundleName(), tbAnchors);
                                         
                                     }
                                     
@@ -1201,7 +1201,10 @@ public class DomainController {
                                                      
                             // Associate trust bundles to Domain
                             for(int i=0; i<bundleCount; i++) {                                
-                                configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]));
+                            	/*
+                            	 * TODO: Add  incoming and outgoing indicators
+                            	 */
+                                configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]), true, true);
                                 log.error("Added Bundle ID #"+bundles[i]);
                             }                                                                                                                
                             
