@@ -35,7 +35,7 @@ public class TrustBundleDaoImpl_disassociateTrustBundleFromDomainsTest extends T
 		
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
 		
-		Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
+		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundles.size());
 		
 		tbDao.disassociateTrustBundleFromDomains(bundle.getId());
@@ -59,7 +59,7 @@ public class TrustBundleDaoImpl_disassociateTrustBundleFromDomainsTest extends T
 		
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
 		
-		Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
+		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundles.size());
 		
 		boolean exceptionOccured = false;

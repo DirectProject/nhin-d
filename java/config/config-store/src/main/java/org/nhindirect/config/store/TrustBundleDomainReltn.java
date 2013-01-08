@@ -20,6 +20,10 @@ public class TrustBundleDomainReltn
 	
 	private TrustBundle trustBundle;
 	
+    private boolean incoming;
+    
+    private boolean outgoing;
+	
 	public TrustBundleDomainReltn()
 	{
 		
@@ -92,5 +96,47 @@ public class TrustBundleDomainReltn
    public void setDomain(Domain domain)
    {
 	   this.domain = domain;
-   }   
+   }  
+   
+   /**
+    * Get the value of incoming.
+    * 
+    * @return the value of incoming.
+    */
+   @Column(name = "forIncoming")
+   public boolean isIncoming() 
+   {
+       return incoming;
+   }
+
+   /**
+    * Set the value of incoming.
+    * 
+    * @param incoming
+    *            The value of incoming.
+    */
+   public void setIncoming(boolean incoming) 
+   {
+       this.incoming = incoming;
+   } 
+   
+   /**
+    * Get the value of outgoing.
+    * 
+    * @return the value of outgoing.
+    */
+   @Column(name = "forOutgoing")
+   public boolean isOutgoing() {
+       return outgoing;
+   }
+
+   /**
+    * Set the value of outgoing.
+    * 
+    * @param outgoing
+    *            The value of outgoing.
+    */
+   public void setOutgoing(boolean outgoing) {
+       this.outgoing = outgoing;
+   }
 }

@@ -39,8 +39,8 @@ public class TrustBundleDaoImpl_associateTrustBundleToDomainTest extends TrustBu
 		
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
 		
-		final Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
-		assertEquals(1, bundles.size());
+		final Collection<TrustBundleDomainReltn> bundleReltn = tbDao.getTrustBundlesByDomain(domain.getId());
+		assertEquals(1, bundleReltn.size());
 	}
 	
 	@Test

@@ -17,6 +17,7 @@ import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.CertificateException;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 import org.nhindirect.config.store.dao.TrustBundleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -146,15 +147,15 @@ public class TrustBundleServiceImpl implements TrustBundleService
 	}
 
 	@Override
-	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId, boolean fetchAnchors)
+	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(long domainId, boolean fetchAnchors)
 			throws ConfigurationServiceException 
 	{
-		final Collection<TrustBundle> bundles = dao.getTrustBundlesByDomain(domainId);
+		final Collection<TrustBundleDomainReltn> bundles = dao.getTrustBundlesByDomain(domainId);
 		
 		if (!fetchAnchors)
 		{
-			for (TrustBundle bundle : bundles)
-				bundle.setTrustBundleAnchors(new ArrayList<TrustBundleAnchor>());
+			for (TrustBundleDomainReltn bundle : bundles)
+				bundle.getTrustBundle().setTrustBundleAnchors(new ArrayList<TrustBundleAnchor>());
 		}
 		
 		return bundles;
