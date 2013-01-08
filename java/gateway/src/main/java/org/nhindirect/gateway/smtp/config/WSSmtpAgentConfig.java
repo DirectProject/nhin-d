@@ -23,6 +23,9 @@ import org.nhind.config.ConfigurationService;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 import org.nhind.config.Setting;
+import org.nhind.config.TrustBundle;
+import org.nhind.config.TrustBundleAnchor;
+import org.nhind.config.TrustBundleDomainReltn;
 import org.nhindirect.config.service.impl.ConfigurationServiceImplServiceSoapBindingStub;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.MessageProcessingSettings;
@@ -84,6 +87,7 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	protected static final String MESSAGE_SETTING_BAD = "Bad";
 	
 	protected Collection<String> domains;
+	protected Domain[] lookedupWSDomains;
 	protected Map<String, DomainPostmaster> domainPostmasters;
 
 
@@ -211,23 +215,22 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	{
 		domains = new ArrayList<String>();
 		domainPostmasters = new HashMap<String, DomainPostmaster>();
-		Domain[] lookedupDomains = null;
 		
 		// get the domain list first
 		try
 		{
 			int domainCount = cfService.getDomainCount();
 		
-			lookedupDomains = cfService.listDomains(null, domainCount);
+			lookedupWSDomains = cfService.listDomains(null, domainCount);
 		}
 		catch (Exception e)
 		{
 			throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat, "WebService error getting domains list: " + e.getMessage(), e);
 		}
 		
-		if (lookedupDomains != null)
+		if (lookedupWSDomains != null)
 		{
-			for (Domain dom : lookedupDomains)
+			for (Domain dom : lookedupWSDomains)
 			{
 				domains.add(dom.getDomainName());
 				try
@@ -285,28 +288,72 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		}
 		else
 		{
+			// trust bundles are shared objects across domains, so just pull the entire bundle list and associate
+			// the anchors in the bundles to the appropriate domains as we go... this will not always be the most efficient
+			// algorithm, but it most cases it will be when there are several domains configured (in which case this
+			// loading algorithm will be much more efficient)
+			final Map<String, TrustBundle> bundleMap = new HashMap<String, TrustBundle>();
+			try
+			{
+				final TrustBundle[] bundles = cfService.getTrustBundles(true);
+				// put the bundles in a Map by name
+				if (bundles != null)
+					for (TrustBundle bundle : bundles)
+						bundleMap.put(bundle.getBundleName(), bundle);
+			}
+			catch (Exception e)
+			{
+				throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat,  
+						"WebService error getting trust bundles: " + e.getMessage(), e);
+			}
 			// hit up the web service for each domains anchor
-			for (String domain : domains)
+			for (Domain domain : lookedupWSDomains)
 			{
 				try
 				{
-					Anchor[] anchors = cfService.getAnchorsForOwner(domain, null);
+
 				
-					if (anchors != null && anchors.length > 0)
+					final Collection<X509Certificate> incomingAnchorsToAdd = new ArrayList<X509Certificate>();
+					final Collection<X509Certificate> outgoingAnchorsToAdd = new ArrayList<X509Certificate>();
+					
+					// get the anchors for the domain
+					final Anchor[] anchors = cfService.getAnchorsForOwner(domain.getDomainName(), null);
+					if (anchors != null)
 					{
-						Collection<X509Certificate> incomingAnchorsToAdd = new ArrayList<X509Certificate>();
-						Collection<X509Certificate> outgoingAnchorsToAdd = new ArrayList<X509Certificate>();
 						for (Anchor anchor : anchors)
 						{
-							X509Certificate anchorToAdd = certFromData(anchor.getData());
+							final X509Certificate anchorToAdd = certFromData(anchor.getData());
 							if (anchor.isIncoming())
 								incomingAnchorsToAdd.add(anchorToAdd);
 							if (anchor.isOutgoing())
 								outgoingAnchorsToAdd.add(anchorToAdd);
 						}
-						incomingAnchors.put(domain, incomingAnchorsToAdd);
-						outgoingAnchors.put(domain, outgoingAnchorsToAdd);
+
 					}
+					
+					// check to see if there is a bundle associated to this domain
+					final TrustBundleDomainReltn[] domainAssocs = cfService.getTrustBundlesByDomain(domain.getId(), false);
+					if (domainAssocs != null)
+					{
+						for (TrustBundleDomainReltn domainAssoc : domainAssocs)
+						{
+							final TrustBundle bundle = bundleMap.get(domainAssoc.getTrustBundle().getBundleName());
+							if (bundle != null && bundle.getTrustBundleAnchors() != null)
+							{
+								for (TrustBundleAnchor anchor : bundle.getTrustBundleAnchors())
+								{
+									final X509Certificate anchorToAdd = certFromData(anchor.getData());
+									if (domainAssoc.isIncoming())
+										incomingAnchorsToAdd.add(anchorToAdd);
+									if (domainAssoc.isOutgoing())
+										outgoingAnchorsToAdd.add(anchorToAdd);
+								}
+							}
+						}
+					}
+					
+					incomingAnchors.put(domain.getDomainName(), incomingAnchorsToAdd);
+					outgoingAnchors.put(domain.getDomainName(), outgoingAnchorsToAdd);
 				}
 				catch (SmtpAgentException e)
 				{

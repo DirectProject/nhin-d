@@ -86,10 +86,22 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.addAnchor(anchor);
   }
   
+  public org.nhind.config.TrustBundle getTrustBundleByName(java.lang.String bundleName) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getTrustBundleByName(bundleName);
+  }
+  
   public void addSetting(java.lang.String name, java.lang.String value) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.addSetting(name, value);
+  }
+  
+  public org.nhind.config.TrustBundle getTrustBundleById(long id) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getTrustBundleById(id);
   }
   
   public org.nhind.config.DnsRecord[] getDNSByNameAndType(java.lang.String name, int type) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -116,10 +128,10 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.removeDomainById(id);
   }
   
-  public org.nhind.config.DnsRecord[] getDNSByName(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+  public org.nhind.config.TrustBundle[] getTrustBundles(boolean fetchAnchors) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
-    return configurationService.getDNSByName(name);
+    return configurationService.getTrustBundles(fetchAnchors);
   }
   
   public org.nhind.config.Anchor[] getOutgoingAnchors(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -132,6 +144,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.removeDNSByRecordIds(recordIds);
+  }
+  
+  public org.nhind.config.DnsRecord[] getDNSByName(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getDNSByName(name);
   }
   
   public void updateDomain(org.nhind.config.Domain domain) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -200,6 +218,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.addDNS(records);
   }
   
+  public void associateTrustBundleToDomain(long domainId, long trustBundleId, boolean incoming, boolean outgoing) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.associateTrustBundleToDomain(domainId, trustBundleId, incoming, outgoing);
+  }
+  
   public boolean contains(org.nhind.config.Certificate cert) throws java.rmi.RemoteException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
@@ -216,6 +240,18 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.listAddresss(lastEmailAddress, maxResults);
+  }
+  
+  public void refreshTrustBundle(long id) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.refreshTrustBundle(id);
+  }
+  
+  public org.nhind.config.TrustBundleDomainReltn[] getTrustBundlesByDomain(long domainId, boolean fetchAnchors) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getTrustBundlesByDomain(domainId, fetchAnchors);
   }
   
   public void addAddress(org.nhind.config.Address[] address) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -240,6 +276,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.getAddressCount();
+  }
+  
+  public void updateTrustBundleSigningCertificate(long trustBundleIds, org.nhind.config.Certificate signingCert) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.updateTrustBundleSigningCertificate(trustBundleIds, signingCert);
   }
   
   public org.nhind.config.Setting[] getSettingsByNames(java.lang.String[] names) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -290,16 +332,22 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     return configurationService.getIncomingAnchors(owner, options);
   }
   
+  public void removeDNSByRecordId(long recordId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.removeDNSByRecordId(recordId);
+  }
+  
   public org.nhind.config.Domain[] searchDomain(java.lang.String name, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.searchDomain(name, status);
   }
   
-  public void removeDNSByRecordId(long recordId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+  public void addTrustBundle(org.nhind.config.TrustBundle bundle) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
-    configurationService.removeDNSByRecordId(recordId);
+    configurationService.addTrustBundle(bundle);
   }
   
   public org.nhind.config.Certificate[] getCertificatesForOwner(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -312,6 +360,18 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.removeCertificates(certificateIds);
+  }
+  
+  public void disassociateTrustBundlesFromDomain(long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.disassociateTrustBundlesFromDomain(domainId);
+  }
+  
+  public void disassociateTrustBundleFromDomain(long domainId, long trustBundleId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.disassociateTrustBundleFromDomain(domainId, trustBundleId);
   }
   
   public void removeAnchorsForOwner(java.lang.String owner) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
@@ -338,6 +398,12 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     return configurationService.getDNSCount();
   }
   
+  public void disassociateTrustBundleFromDomains(long trustBundleId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.disassociateTrustBundleFromDomains(trustBundleId);
+  }
+  
   public void addCertificates(org.nhind.config.Certificate[] certs) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
@@ -354,6 +420,18 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     if (configurationService == null)
       _initConfigurationServiceProxy();
     return configurationService.getCertificate(owner, thumbprint, options);
+  }
+  
+  public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.deleteTrustBundles(trustBundleIds);
+  }
+  
+  public void updateLastUpdateError(long trustBundleId, java.util.Calendar attemptTime, org.nhind.config.BundleRefreshError error) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.updateLastUpdateError(trustBundleId, attemptTime, error);
   }
   
   
