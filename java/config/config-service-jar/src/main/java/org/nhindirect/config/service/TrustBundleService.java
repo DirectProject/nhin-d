@@ -9,6 +9,7 @@ import javax.jws.WebParam;
 import org.nhindirect.config.store.BundleRefreshError;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.TrustBundle;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 
 public interface TrustBundleService 
 {
@@ -53,6 +54,6 @@ public interface TrustBundleService
     public void disassociateTrustBundleFromDomains(@WebParam(name = "trustBundleId") long trustBundleId) throws ConfigurationServiceException;     
     
     @WebMethod(operationName = "getTrustBundlesByDomain", action = "urn:GetTrustBundlesByDomain")
-    public Collection<TrustBundle>  getTrustBundlesByDomain(@WebParam(name = "domainId") long domainId, 
+    public Collection<TrustBundleDomainReltn>  getTrustBundlesByDomain(@WebParam(name = "domainId") long domainId, 
     		@WebParam(name = "fetchAnchors") boolean fetchAnchors) throws ConfigurationServiceException;      
 }
