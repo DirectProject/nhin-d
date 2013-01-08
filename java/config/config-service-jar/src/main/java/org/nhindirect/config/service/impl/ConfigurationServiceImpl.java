@@ -899,10 +899,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      */
 	@Override
 	@FaultAction(className = ConfigurationFault.class)
-	public void associateTrustBundleToDomain(long domainId, long trustBundleId)
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId, boolean incoming,
+    		boolean outgoing)
 			throws ConfigurationServiceException 
 	{
-		trustBundleSvc.associateTrustBundleToDomain(domainId, trustBundleId);
+		trustBundleSvc.associateTrustBundleToDomain(domainId, trustBundleId, incoming, outgoing);
 	}
 
     /**

@@ -41,7 +41,8 @@ public interface TrustBundleService
     
     @WebMethod(operationName = "associateTrustBundleToDomain", action = "urn:AssociateTrustBundleToDomain")
     public void associateTrustBundleToDomain(@WebParam(name = "domainId") long domainId,
-    		@WebParam(name = "trustBundleId") long trustBundleId) throws ConfigurationServiceException;   
+    		@WebParam(name = "trustBundleId") long trustBundleId, @WebParam(name = "incoming") boolean incoming,
+    		@WebParam(name = "outgoing") boolean outgoing) throws ConfigurationServiceException;   
     
     @WebMethod(operationName = "disassociateTrustBundleFromDomain", action = "urn:DisassociateTrustBundleFromDomain")
     public void disassociateTrustBundleFromDomain(@WebParam(name = "domainId") long domainId,

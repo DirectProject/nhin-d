@@ -119,10 +119,11 @@ public class TrustBundleServiceImpl implements TrustBundleService
 	
 	
     @Override
-	public void associateTrustBundleToDomain(long domainId, long trustBundleId)
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId,  boolean incoming,
+    		boolean outgoing)
 			throws ConfigurationServiceException 
 	{
-    	dao.associateTrustBundleToDomain(domainId, trustBundleId);
+    	dao.associateTrustBundleToDomain(domainId, trustBundleId, incoming, outgoing);
 	}
 
 	@Override

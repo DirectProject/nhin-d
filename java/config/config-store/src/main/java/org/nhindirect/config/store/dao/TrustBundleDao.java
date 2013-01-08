@@ -4,6 +4,8 @@ import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Collection;
 
+import javax.jws.WebParam;
+
 import org.nhindirect.config.store.BundleRefreshError;
 import org.nhindirect.config.store.ConfigurationStoreException;
 import org.nhindirect.config.store.TrustBundle;
@@ -29,7 +31,8 @@ public interface TrustBundleDao
 	
 	public void updateTrustBundleSigningCertificate(long trustBundleId, X509Certificate signingCert) throws ConfigurationStoreException;
 	
-	public void associateTrustBundleToDomain(long domainId, long trustBundleId) throws ConfigurationStoreException;
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId, boolean incoming,
+    		boolean outgoing) throws ConfigurationStoreException;
 	
 	public void disassociateTrustBundleFromDomain(long domainId, long trustBundleId) throws ConfigurationStoreException;	
 	

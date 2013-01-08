@@ -34,7 +34,7 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		bundle.setCheckSum("1234");
 		tbDao.addTrustBundle(bundle);
 		
-		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
+		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId(), true, true);
 		
 		final Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundles.size());
@@ -59,8 +59,8 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		bundle2.setCheckSum("1234");
 		tbDao.addTrustBundle(bundle2);
 		
-		tbDao.associateTrustBundleToDomain(domain.getId(), bundle1.getId());
-		tbDao.associateTrustBundleToDomain(domain.getId(), bundle2.getId());
+		tbDao.associateTrustBundleToDomain(domain.getId(), bundle1.getId(), true, true);
+		tbDao.associateTrustBundleToDomain(domain.getId(), bundle2.getId(), true, true);
 		
 		final Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(2, bundles.size());
@@ -93,8 +93,8 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		bundle2.setCheckSum("1234");
 		tbDao.addTrustBundle(bundle2);
 		
-		tbDao.associateTrustBundleToDomain(domain1.getId(), bundle1.getId());
-		tbDao.associateTrustBundleToDomain(domain2.getId(), bundle2.getId());
+		tbDao.associateTrustBundleToDomain(domain1.getId(), bundle1.getId(), true, true);
+		tbDao.associateTrustBundleToDomain(domain2.getId(), bundle2.getId(), true, true);
 		
 		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
 		assertEquals(1, bundles.size());
@@ -128,8 +128,8 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		tbDao.addTrustBundle(bundle1);
 		
 		
-		tbDao.associateTrustBundleToDomain(domain1.getId(), bundle1.getId());
-		tbDao.associateTrustBundleToDomain(domain2.getId(), bundle1.getId());
+		tbDao.associateTrustBundleToDomain(domain1.getId(), bundle1.getId(), true, true);
+		tbDao.associateTrustBundleToDomain(domain2.getId(), bundle1.getId(), true, true);
 		
 		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
 		assertEquals(1, bundles.size());
