@@ -49,6 +49,7 @@ import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.TrustBundle;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -942,7 +943,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
      */
 	@Override
 	@FaultAction(className = ConfigurationFault.class)
-	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId,
+	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(long domainId,
 			boolean fetchAnchors) throws ConfigurationServiceException 
 	{
 		return trustBundleSvc.getTrustBundlesByDomain(domainId, fetchAnchors);

@@ -2,7 +2,6 @@ package org.nhindirect.config.store.dao.impl;
 
 import java.security.cert.X509Certificate;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -446,9 +445,10 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
     @Transactional(readOnly = true)	
-	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId) throws ConfigurationStoreException
+	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(long domainId) throws ConfigurationStoreException
 	{
 		validateState();
 		
@@ -457,20 +457,22 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		if (domain == null)
 			throw new ConfigurationStoreException("Domain with id " + domainId + " does not exist");
 		
-		Collection<TrustBundle> retVal;
+		Collection<TrustBundleDomainReltn> retVal = null;
         try
         {
 	        final Query select = entityManager.createQuery("SELECT tbd from TrustBundleDomainReltn tbd where tbd.domain = ?1");
 	        select.setParameter(1, domain);
 	        
-	        @SuppressWarnings("unchecked")
-			final Collection<TrustBundleDomainReltn> rs = select.getResultList();
-	        if (rs.size() == 0)
+	        retVal = (Collection<TrustBundleDomainReltn>)select.getResultList();
+	        if (retVal.size() == 0)
 	        	return Collections.emptyList();
 	        
-	        retVal = new ArrayList<TrustBundle>();
-	        for (TrustBundleDomainReltn reltn : rs)
-	        	retVal.add(reltn.getTrustBundle());
+	        for (TrustBundleDomainReltn reltn : retVal)
+	        {
+	                if (!reltn.getTrustBundle().getTrustBundleAnchors().isEmpty())
+	                	for (TrustBundleAnchor anchor : reltn.getTrustBundle().getTrustBundleAnchors())
+	                		anchor.getData();
+	        }
 	       
         }
       	catch (Exception e)

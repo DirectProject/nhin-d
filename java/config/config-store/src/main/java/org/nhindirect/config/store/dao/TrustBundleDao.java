@@ -8,6 +8,7 @@ import org.nhindirect.config.store.BundleRefreshError;
 import org.nhindirect.config.store.ConfigurationStoreException;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 
 public interface TrustBundleDao 
 {
@@ -36,5 +37,5 @@ public interface TrustBundleDao
 	
 	public void disassociateTrustBundleFromDomains(long trustBundleId) throws ConfigurationStoreException;		
 	
-	public Collection<TrustBundle> getTrustBundlesByDomain(long domainId) throws ConfigurationStoreException;		
+	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(long domainId) throws ConfigurationStoreException;		
 }

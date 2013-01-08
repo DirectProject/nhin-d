@@ -35,7 +35,7 @@ public class TrustBundleDaoImpl_disassociateTrustBundlesFromDomainTest extends T
 		
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
 		
-		Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
+		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundles.size());
 		
 		tbDao.disassociateTrustBundlesFromDomain(domain.getId());

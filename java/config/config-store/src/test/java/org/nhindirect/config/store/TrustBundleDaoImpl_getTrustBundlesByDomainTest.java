@@ -36,7 +36,7 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
 		
-		final Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
+		final Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundles.size());
 	}
 	
@@ -62,12 +62,12 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle1.getId());
 		tbDao.associateTrustBundleToDomain(domain.getId(), bundle2.getId());
 		
-		final Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
+		final Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(2, bundles.size());
 		
-		Iterator<TrustBundle> bundleIter = bundles.iterator();
-		assertEquals(bundle1.getBundleName(), bundleIter.next().getBundleName());
-		assertEquals(bundle2.getBundleName(), bundleIter.next().getBundleName());
+		Iterator<TrustBundleDomainReltn> bundleIter = bundles.iterator();
+		assertEquals(bundle1.getBundleName(), bundleIter.next().getTrustBundle().getBundleName());
+		assertEquals(bundle2.getBundleName(), bundleIter.next().getTrustBundle().getBundleName());
 	}	
 	
 	@Test
@@ -96,17 +96,17 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		tbDao.associateTrustBundleToDomain(domain1.getId(), bundle1.getId());
 		tbDao.associateTrustBundleToDomain(domain2.getId(), bundle2.getId());
 		
-		Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
+		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
 		assertEquals(1, bundles.size());
 		
-		Iterator<TrustBundle> bundleIter = bundles.iterator();
-		assertEquals(bundle1.getBundleName(), bundleIter.next().getBundleName());
+		Iterator<TrustBundleDomainReltn> bundleIter = bundles.iterator();
+		assertEquals(bundle1.getBundleName(), bundleIter.next().getTrustBundle().getBundleName());
 		
 		bundles = tbDao.getTrustBundlesByDomain(domain2.getId());
 		assertEquals(1, bundles.size());
 		
 		bundleIter = bundles.iterator();
-		assertEquals(bundle2.getBundleName(), bundleIter.next().getBundleName());
+		assertEquals(bundle2.getBundleName(), bundleIter.next().getTrustBundle().getBundleName());
 
 	}	
 	
@@ -131,17 +131,17 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		tbDao.associateTrustBundleToDomain(domain1.getId(), bundle1.getId());
 		tbDao.associateTrustBundleToDomain(domain2.getId(), bundle1.getId());
 		
-		Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
+		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
 		assertEquals(1, bundles.size());
 		
-		Iterator<TrustBundle> bundleIter = bundles.iterator();
-		assertEquals(bundle1.getBundleName(), bundleIter.next().getBundleName());
+		Iterator<TrustBundleDomainReltn> bundleIter = bundles.iterator();
+		assertEquals(bundle1.getBundleName(), bundleIter.next().getTrustBundle().getBundleName());
 		
 		bundles = tbDao.getTrustBundlesByDomain(domain2.getId());
 		assertEquals(1, bundles.size());
 		
 		bundleIter = bundles.iterator();
-		assertEquals(bundle1.getBundleName(), bundleIter.next().getBundleName());
+		assertEquals(bundle1.getBundleName(), bundleIter.next().getTrustBundle().getBundleName());
 
 	}
 	
@@ -152,7 +152,7 @@ public class TrustBundleDaoImpl_getTrustBundlesByDomainTest extends TrustBundleD
 		domain1.setDomainName("Test Domain 1");
 		dmDao.add(domain1);
 		
-		Collection<TrustBundle> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
+		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain1.getId());
 		assertEquals(0, bundles.size());
 	}	
 	
