@@ -754,6 +754,8 @@
     <xs:sequence>
       <xs:element name="domainId" type="xs:long"/>
       <xs:element name="trustBundleId" type="xs:long"/>
+      <xs:element name="incoming" type="xs:boolean"/>
+      <xs:element name="outgoing" type="xs:boolean"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -952,7 +954,17 @@
 
   <xs:complexType name="getTrustBundlesByDomainResponse">
     <xs:sequence>
-      <xs:element name="return" type="tns:trustBundle" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="return" type="tns:trustBundleDomainReltn" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="trustBundleDomainReltn">
+    <xs:sequence>
+      <xs:element name="domain" type="tns:domain" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="incoming" type="xs:boolean"/>
+      <xs:element name="outgoing" type="xs:boolean"/>
+      <xs:element name="trustBundle" type="tns:trustBundle" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 

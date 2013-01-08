@@ -13,6 +13,7 @@ import java.util.Collection;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -37,10 +38,13 @@ public class TrustBundleDaoImpl_associateTrustBundleToDomainTest extends TrustBu
 		bundle.setCheckSum("1234");
 		tbDao.addTrustBundle(bundle);
 		
-		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
+		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId(), true, false);
 		
 		final Collection<TrustBundleDomainReltn> bundleReltn = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundleReltn.size());
+		TrustBundleDomainReltn reltn = bundleReltn.iterator().next();
+		assertTrue(reltn.isIncoming());
+		assertFalse(reltn.isOutgoing());
 	}
 	
 	@Test
@@ -60,7 +64,7 @@ public class TrustBundleDaoImpl_associateTrustBundleToDomainTest extends TrustBu
 		
 		try
 		{
-			spyDao.associateTrustBundleToDomain(1234, 5678);
+			spyDao.associateTrustBundleToDomain(1234, 5678, true, true);
 		}
 		catch (ConfigurationStoreException e)
 		{
@@ -94,7 +98,7 @@ public class TrustBundleDaoImpl_associateTrustBundleToDomainTest extends TrustBu
 		
 		try
 		{
-			spyDao.associateTrustBundleToDomain(1234, 5678);
+			spyDao.associateTrustBundleToDomain(1234, 5678, true, true);
 		}
 		catch (ConfigurationStoreException e)
 		{
@@ -132,7 +136,7 @@ public class TrustBundleDaoImpl_associateTrustBundleToDomainTest extends TrustBu
 		
 		try
 		{
-			spyDao.associateTrustBundleToDomain(1234, 5678);
+			spyDao.associateTrustBundleToDomain(1234, 5678, true, true);
 		}
 		catch (ConfigurationStoreException e)
 		{
@@ -155,7 +159,7 @@ public class TrustBundleDaoImpl_associateTrustBundleToDomainTest extends TrustBu
 		
 		try
 		{
-			dao.associateTrustBundleToDomain(1234, 5678);
+			dao.associateTrustBundleToDomain(1234, 5678, true, true);
 		}
 		catch (IllegalStateException ex)
 		{

@@ -120,9 +120,9 @@ public class TrustBundleServiceTest extends TestCase
 	
 	public void testAssociateTrustBundleToDomain() throws Exception
 	{
-		impl.associateTrustBundleToDomain(1234, 5678);
+		impl.associateTrustBundleToDomain(1234, 5678, true, true);
 		
-		verify(dao, times(1)).associateTrustBundleToDomain(1234, 5678);
+		verify(dao, times(1)).associateTrustBundleToDomain(1234, 5678, true, true);
 	}
 	
 	public void testDisassociateTrustBundleFromDomain() throws Exception

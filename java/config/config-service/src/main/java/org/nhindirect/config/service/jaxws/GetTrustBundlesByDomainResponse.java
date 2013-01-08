@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.nhindirect.config.store.TrustBundle;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 
 @XmlRootElement(name = "getTrustBundlesByDomainResponse", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -15,14 +15,14 @@ import org.nhindirect.config.store.TrustBundle;
 public class GetTrustBundlesByDomainResponse {
 
     @XmlElement(name = "return", namespace = "")
-    private Collection<TrustBundle> _return;
+    private Collection<TrustBundleDomainReltn> _return;
 
     /**
      * 
      * @return
-     *     returns Collection<TrustBundle>
+     *     returns Collection<TrustBundleDomainReltn>
      */
-    public Collection<TrustBundle> getReturn() {
+    public Collection<TrustBundleDomainReltn> getReturn() {
         return this._return;
     }
 
@@ -31,7 +31,7 @@ public class GetTrustBundlesByDomainResponse {
      * @param _return
      *     the value for the _return property
      */
-    public void setReturn(Collection<TrustBundle> _return) {
+    public void setReturn(Collection<TrustBundleDomainReltn> _return) {
         this._return = _return;
     }
 

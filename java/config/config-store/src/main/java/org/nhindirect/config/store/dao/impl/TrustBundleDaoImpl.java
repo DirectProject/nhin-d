@@ -322,7 +322,8 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 
 	@Override
     @Transactional(readOnly = false)
-	public void associateTrustBundleToDomain(long domainId, long trustBundleId) throws ConfigurationStoreException
+	public void associateTrustBundleToDomain(long domainId, long trustBundleId, boolean incoming,
+    		boolean outgoing) throws ConfigurationStoreException
 	{
 		validateState();
 		
@@ -341,6 +342,8 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 			final TrustBundleDomainReltn domainTrustBundleAssoc = new TrustBundleDomainReltn();
 			domainTrustBundleAssoc.setDomain(domain);
 			domainTrustBundleAssoc.setTrustBundle(trustBundle);
+			domainTrustBundleAssoc.setIncoming(incoming);
+			domainTrustBundleAssoc.setOutgoing(outgoing);
 			
 			entityManager.persist(domainTrustBundleAssoc);
 			entityManager.flush();

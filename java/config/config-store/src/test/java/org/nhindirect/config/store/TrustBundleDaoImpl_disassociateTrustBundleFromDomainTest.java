@@ -36,7 +36,7 @@ public class TrustBundleDaoImpl_disassociateTrustBundleFromDomainTest extends Tr
 		bundle.setCheckSum("1234");
 		tbDao.addTrustBundle(bundle);
 		
-		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId());
+		tbDao.associateTrustBundleToDomain(domain.getId(), bundle.getId(), true, true);
 		
 		Collection<TrustBundleDomainReltn> bundles = tbDao.getTrustBundlesByDomain(domain.getId());
 		assertEquals(1, bundles.size());
