@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
 @Table(name = "trustbundleanchor")
@@ -83,6 +84,7 @@ public class TrustBundleAnchor
      */
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "trustBundleId")
+    @XmlTransient   
     public TrustBundle getTrustBundle() 
     {
         return trustBundle;

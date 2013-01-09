@@ -645,7 +645,6 @@
       <xs:element name="data" type="xs:base64Binary" minOccurs="0"/>
       <xs:element name="id" type="xs:long"/>
       <xs:element name="thumbprint" type="xs:string" minOccurs="0"/>
-      <xs:element name="trustBundle" type="tns:trustBundle" minOccurs="0"/>
       <xs:element name="validEndDate" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="validStartDate" type="xs:dateTime" minOccurs="0"/>
     </xs:sequence>
