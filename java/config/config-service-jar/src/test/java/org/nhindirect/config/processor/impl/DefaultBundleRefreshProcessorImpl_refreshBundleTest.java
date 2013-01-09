@@ -23,11 +23,19 @@ import junit.framework.TestCase;
 public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCase
 {
 	protected TrustBundleDao dao;
+	protected String filePrefix;
 	
 	@Override
 	public void setUp()
 	{
 		dao = mock(TrustBundleDao.class);
+		
+		// check for Windows... it doens't like file://<drive>... turns it into FTP
+		File file = new File("./src/test/resources/bundles/signedbundle.p7b");
+		if (file.getAbsolutePath().contains(":/"))
+			filePrefix = "file:///";
+		else
+			filePrefix = "file:///";
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -39,7 +47,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Junit Bundle");
 		File fl = new File("src/test/resources/bundles/signedbundle.p7b");
-		bundle.setBundleURL("file://" + fl.getAbsolutePath());
+		bundle.setBundleURL(filePrefix + fl.getAbsolutePath());
 	
 		processor.refreshBundle(bundle);
 	
@@ -55,7 +63,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Junit Bundle");
 		File fl = new File("src/test/resources/bundles/signedbundle.p7b");
-		bundle.setBundleURL("file://" + fl.getAbsolutePath());
+		bundle.setBundleURL(filePrefix + fl.getAbsolutePath());
 		bundle.setCheckSum("12345");
 	
 		processor.refreshBundle(bundle);
@@ -77,7 +85,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		byte[] rawBundleByte = FileUtils.readFileToByteArray(fl);
 		
 		bundle.setBundleName("Junit Bundle");
-		bundle.setBundleURL("file://" + fl.getAbsolutePath());
+		bundle.setBundleURL(filePrefix + fl.getAbsolutePath());
 		bundle.setCheckSum(BundleThumbprint.toThumbprint(rawBundleByte).toString());
 		
 		processor.refreshBundle(bundle);
@@ -94,7 +102,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Junit Bundle");
 		File fl = new File("src/test/resources/bundles/signedbundle.p7b2122");
-		bundle.setBundleURL("file://" + fl.getAbsolutePath());
+		bundle.setBundleURL(filePrefix + fl.getAbsolutePath());
 	
 		processor.refreshBundle(bundle);
 	
@@ -110,7 +118,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Junit Bundle");
 		File fl = new File("src/test/resources/bundles/invalidBundle.der");
-		bundle.setBundleURL("file://" + fl.getAbsolutePath());
+		bundle.setBundleURL(filePrefix + fl.getAbsolutePath());
 	
 		processor.refreshBundle(bundle);
 	
@@ -127,7 +135,7 @@ public class DefaultBundleRefreshProcessorImpl_refreshBundleTest extends TestCas
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Junit Bundle");
 		File fl = new File("src/test/resources/bundles/signedbundle.p7b");
-		bundle.setBundleURL("file://" + fl.getAbsolutePath());
+		bundle.setBundleURL(filePrefix + fl.getAbsolutePath());
 	
 		doThrow(new ConfigurationStoreException("Just Passing Through")).when(dao).updateTrustBundleAnchors(eq(bundle.getId()), 
 				(Calendar)any(), (Collection<TrustBundleAnchor>)any(), (String)any());
