@@ -43,6 +43,8 @@ import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
 import org.nhind.config.Setting;
+import org.nhind.config.TrustBundle;
+import org.nhind.config.TrustBundleAnchor;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
@@ -248,7 +250,18 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         	if (settings != null)
         		for (Setting setting : settings)
         			proxy.deleteSetting(new String[] {setting.getName()});
+        	
+        	// clean bundles
+    		TrustBundle[] bundles = proxy.getTrustBundles(false);
+    		
+    		if (bundles != null)
+    			for (TrustBundle bundle : bundles)
+    			proxy.deleteTrustBundles(new Long[] {bundle.getId()});
+    		
+    		bundles = proxy.getTrustBundles(true);
+    		assertNull(bundles);
         }
+
         
         protected void addConfiguration() throws Exception
         {
@@ -1143,6 +1156,82 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	vec.add(anchor);
             	
             	proxy.addAnchor(vec.toArray(new Anchor[vec.size()]));
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
+
+            	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// assert 0 incoming anchors
+            	Collection<X509Certificate> anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());
+            	
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(0, anchors.size());       
+            	
+            	
+            	
+            	trustResl = nAgent.getTrustAnchors().getOutgoingAnchors();
+            	assertTrue(trustResl instanceof TrustAnchorCertificateStore);
+            	
+            	// get the outgoing trust anchor for cerner.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@cerner.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());
+            	
+            	// get the outgoing trust anchor for securehealthemail.com
+            	anchors = trustResl.getCertificates(new InternetAddress("test@securehealthemail.com"));
+            	assertNotNull(anchors);
+            	assertEquals(1, anchors.size());    
+            	
+            }
+        }.perform();
+    }
+	
+	public void testOutboundOnlyAnchors_WSTrustBundleAnchors_SingleBundle() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	protected Domain[] domainsTested;
+        	protected TrustBundle[] bundlesTested;
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            @Override
+            protected void addTrustAnchors() throws Exception
+            {
+            	final File bundleFile = new File("src/test/resources/bundles/testBundle.p7b");
+            	
+            	final TrustBundle bundle = new TrustBundle();
+            	bundle.setBundleName("TestBundle");
+            	bundle.setBundleURL("file://" + bundleFile.getAbsolutePath());
+            	bundle.setRefreshInterval(0);
+            	
+            	
+            	proxy.addTrustBundle(bundle);
+            	
+            	// load the bundles
+            	Thread.sleep(2000);
+            	
+            	bundlesTested = proxy.getTrustBundles(true);
+            	
+    			int domainCount = proxy.getDomainCount();
+    			
+    			domainsTested = proxy.listDomains(null, domainCount);
+    			
+    			for (Domain domain : domainsTested)
+    				for (TrustBundle testBundle : bundlesTested)
+    					proxy.associateTrustBundleToDomain(domain.getId(), testBundle.getId(), false, true);
             }
             
             protected void doAssertions(SmtpAgent agent) throws Exception
