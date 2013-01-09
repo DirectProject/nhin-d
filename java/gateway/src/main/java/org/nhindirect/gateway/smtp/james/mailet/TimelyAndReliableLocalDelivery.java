@@ -255,8 +255,8 @@ public class TimelyAndReliableLocalDelivery extends AbstractNotificationAwareMai
 						{
 							message.saveChanges();
 							
-							///if (dispatchedMDNDelay > 0)
-								Thread.sleep(60000);
+							if (dispatchedMDNDelay > 0)
+								Thread.sleep(dispatchedMDNDelay);
 							
 							getMailetContext().sendMail(message);
 						}

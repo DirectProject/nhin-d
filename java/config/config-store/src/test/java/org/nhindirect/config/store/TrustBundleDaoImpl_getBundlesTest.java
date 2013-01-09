@@ -55,7 +55,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
 		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
-		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
+		assertTrue(now.getTimeInMillis() <= addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
 		assertNull(addedBundle.getLastSuccessfulRefresh());
 		assertNull(addedBundle.getLastRefreshError());
@@ -88,7 +88,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
-		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
+		assertTrue(now.getTimeInMillis() <= addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
 		assertNull(addedBundle.getLastSuccessfulRefresh());
 		assertNull(addedBundle.getLastRefreshError());
@@ -133,7 +133,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		assertEquals("http://testBundle/bundle1.p7b", addedBundle.getBundleURL());	
 		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
-		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
+		assertTrue(now.getTimeInMillis() <= addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
 		assertNull(addedBundle.getLastSuccessfulRefresh());
 		assertNull(addedBundle.getLastRefreshError());
@@ -147,7 +147,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		assertEquals("http://testBundle/bundle2.p7b", addedBundle.getBundleURL());	
 		assertEquals("67890", addedBundle.getCheckSum());
 		assertEquals(6, addedBundle.getRefreshInterval());
-		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
+		assertTrue(now.getTimeInMillis() <= addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
 		assertNull(addedBundle.getLastSuccessfulRefresh());
 		assertNull(addedBundle.getLastRefreshError());
@@ -184,7 +184,7 @@ public class TrustBundleDaoImpl_getBundlesTest extends TrustBundleDaoBaseTest
 		assertEquals("http://testBundle/bundle.p7b", addedBundle.getBundleURL());	
 		assertEquals("12345", addedBundle.getCheckSum());
 		assertEquals(5, addedBundle.getRefreshInterval());
-		assertTrue(now.getTimeInMillis() < addedBundle.getCreateTime().getTimeInMillis());
+		assertTrue(now.getTimeInMillis() <= addedBundle.getCreateTime().getTimeInMillis());
 		assertNull(addedBundle.getLastRefreshAttempt());
 		assertNull(addedBundle.getLastSuccessfulRefresh());
 		assertNull(addedBundle.getLastRefreshError());
