@@ -33,16 +33,23 @@ namespace Health.Direct.Tools.Agent
     public class DnsCommands
     {
         IPAddress m_dnsServer;
-        string m_fallbackDomain;
         DnsRecordPrinter m_recordPrinter;
         bool m_useCache;
         
         public DnsCommands()
         {
-            m_dnsServer = IPAddress.Parse("8.8.8.8");
-            m_fallbackDomain = "hsgincubator.com";
+            m_dnsServer = IPAddress.Parse("4.2.2.1");
             m_recordPrinter = new DnsRecordPrinter(Console.Out);
         }
+
+        [Command(Name = "Dns_GetServer", Usage = GetServerUsage)]
+        public void GetServer(string[] args)
+        {
+            Console.WriteLine(m_dnsServer);
+        }
+        const string GetServerUsage =
+            "Display the IP address of the dns server to use"
+        + Constants.CRLF + "    ipaddress";            
         
         [Command(Name = "Dns_SetServer", Usage=SetServerUsage)]
         public void SetServer(string[] args)
@@ -63,7 +70,7 @@ namespace Health.Direct.Tools.Agent
         {
             string domain = args.GetRequiredValue(0);
             string outputFile = args.GetOptionalValue(1, null);
-            DnsCertResolver resolver = new DnsCertResolver(m_dnsServer, TimeSpan.FromSeconds(5), m_fallbackDomain);
+            DnsCertResolver resolver = new DnsCertResolver(m_dnsServer, TimeSpan.FromSeconds(5));
 
             MailAddress address = null;
             try

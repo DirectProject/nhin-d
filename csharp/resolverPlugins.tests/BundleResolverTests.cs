@@ -171,23 +171,32 @@ namespace Health.Direct.ResolverPlugins.Tests
         public static Bundle BadBundleBidirectional = new Bundle(BundleBadSubject, BundleBadUrl, true, true);
 
         public static Bundle[] TestBundles = { GoodBundleIncoming, GoodBundleOutgoing, GoodBundleBidi, BadBundleBidirectional };
-
+    
         public const string BundleClientSettingsXml = @"
             <ClientSettings>
               <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+            <!--
+            <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+            -->
             </ClientSettings>
             ";
 
         public const string BundleResolverSettingsXml = @"
             <BundleResolver>
               <ClientSettings>
-                <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+              <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+                <!--
+                <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+                -->
               </ClientSettings>
               <CacheSettings>
                 <Cache>true</Cache>
                 <NegativeCache>true</NegativeCache>
                 <CacheTTLSeconds>60</CacheTTLSeconds>
               </CacheSettings>
+              <MaxRetries>1</MaxRetries>
+              <Timeout>30000</Timeout> <!-- In milliseconds -->
+              <VerifySSL>true</VerifySSL>
             </BundleResolver>
             ";
 
