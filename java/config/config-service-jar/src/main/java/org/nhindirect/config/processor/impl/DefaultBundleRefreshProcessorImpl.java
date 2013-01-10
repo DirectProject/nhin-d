@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.config.processor.impl;
 
 import java.io.ByteArrayInputStream;
@@ -44,9 +65,23 @@ import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.options.OptionsManager;
 import org.nhindirect.stagent.options.OptionsParameter;
 
+/**
+ * Camel based implementation of the {@linkplain BundleRefreshProcessor} interface.
+ * <p>
+ * The implementation allows for bundles to be downloaded from SSL protected sites that may not
+ * chain back to a trust CA.  This is useful in developement environments and is not recommended in
+ * a production invironment.  By default, this feature is disable, but can be enabled using the 
+ * {@link DefaultBundleRefreshProcessorImpl#BUNDLE_REFRESH_PROCESSOR_ALLOW_DOWNLOAD_FROM_UNTRUSTED} options parameter.
+ * @author Greg Meyer
+ * @since 1.3
+ */
 public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor 
 {
 	
+	/**
+	 * Boolean value that specifies if bundles can be downloaded from non verified or untrusted SSL URLs.  The default value is false.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.config.processor.impl.bundlerefresh.AllowNonVerifiedSSL
+	 */
     public final static String BUNDLE_REFRESH_PROCESSOR_ALLOW_DOWNLOAD_FROM_UNTRUSTED = "BUNDLE_REFRESH_PROCESSOR_ALLOW_DOWNLOAD_FROM_UNTRUSTED";   
 	
 	protected static final int DEFAULT_URL_CONNECTION_TIMEOUT = 10000; // 10 seconds	
@@ -63,6 +98,9 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		initJVMParams();
     }
 	
+    /**
+     * Initializes system preferences using the Direct {@link OptionsManager} pattern.
+     */
 	public synchronized static void initJVMParams()
 	{
 		
@@ -72,6 +110,9 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}    
     
+	/**
+	 * Default constructor.
+	 */
 	public DefaultBundleRefreshProcessorImpl()
 	{
 		OptionsParameter allowNonVerSSLParam = OptionsManager.getInstance().getParameter(BUNDLE_REFRESH_PROCESSOR_ALLOW_DOWNLOAD_FROM_UNTRUSTED);
@@ -123,11 +164,18 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		///CLOVER:ON
 	}
 	
+	/**
+	 * Sets the trust bundle DAO for updating the bundle storage medium.
+	 * @param dao The trust bundle DAOP
+	 */
 	public void setDao(TrustBundleDao dao)
 	{
 		this.dao = dao;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Handler
 	public void refreshBundle(TrustBundle bundle)
 	{
@@ -207,6 +255,14 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		}
     }
 	
+	/**
+	 * Converts a trust raw trust bundle byte array into a collection of {@link X509Certificate} objects.
+	 * @param rawBundle The raw representation of the bundle.  This generally the raw byte string downloaded from the bundle's URL.
+	 * @param existingBundle The configured bundle object in the DAO.  This object may contain the signing certificate
+	 * used for bundle authenticity checking.
+	 * @param processAttempStart The time that the update process started.
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	protected Collection<X509Certificate> convertRawBundleToAnchorCollection(byte[] rawBundle, final TrustBundle existingBundle,
 			final Calendar processAttempStart)
@@ -285,6 +341,12 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		return (Collection<X509Certificate>)bundleCerts;
 	}
 	
+	/**
+	 * Downloads a bundle from the bundle's URL and returns the result as a byte array.
+	 * @param bundle The bundle that will be downloaded.
+	 * @param processAttempStart The time that the update process started. 
+	 * @return A byte array representing the raw data of the bundle.
+	 */
 	protected byte[] downloadBundleToByteArray(TrustBundle bundle, Calendar processAttempStart)
 	{
 		InputStream inputStream = null;
