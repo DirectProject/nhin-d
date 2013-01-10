@@ -72,7 +72,10 @@ namespace Health.Direct.Config.Store
         DuplicateFailedMdn,
         MdnPreviouslyProcessed,
         MdnUncorrelated,
-        MdnPreviouslyFailed
+        MdnPreviouslyFailed,
+        InvalidUrl,
+        UrlLength,
+        InvalidBundle
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>

@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="AddressManagerExtensions.cs" />
     <Compile Include="AnchorExtensions.cs" />
+    <Compile Include="BundleManagerExtensions.cs" />
     <Compile Include="ClientSettings.cs" />
     <Compile Include="BindingFactory.cs" />
     <Compile Include="CertificateExtensions.cs" />
@@ -249,6 +250,7 @@
     <None Include="Service References\MonitorService\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Bundle.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Mdn.datasource" />
     <None Include="Service References\MonitorService\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>

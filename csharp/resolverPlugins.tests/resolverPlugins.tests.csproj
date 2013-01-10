@@ -35,6 +35,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -56,6 +59,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BundleResolverTests.cs" />
     <Compile Include="Fakes\DnsFakeResolver.cs" />
     <Compile Include="LdapResolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -68,6 +72,14 @@
     <ProjectReference Include="..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\config\client\config.client.csproj">
+      <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
+      <Name>config.client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\config\store\config.store.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>config.store</Name>
     </ProjectReference>
     <ProjectReference Include="..\ResolverPlugin\resolverPlugins.csproj">
       <Project>{3B166914-A175-4248-B281-EA16AFCFD550}</Project>

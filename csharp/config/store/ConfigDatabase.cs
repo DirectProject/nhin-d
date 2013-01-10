@@ -37,6 +37,7 @@ namespace Health.Direct.Config.Store
         Table<Property> m_properties;
         Table<NamedBlob> m_blobs;
         Table<Mdn> m_mdns;
+        Table<Bundle> m_bundles;
         
         DbTransaction m_transaction;
                           
@@ -145,6 +146,19 @@ namespace Health.Direct.Config.Store
                 }
 
                 return m_blobs;
+            }
+        }
+
+        public Table<Bundle> Bundles
+        {
+            get
+            {
+                if (m_bundles == null)
+                {
+                    m_bundles = this.GetTable<Bundle>();
+                }
+
+                return m_bundles;
             }
         }
 
