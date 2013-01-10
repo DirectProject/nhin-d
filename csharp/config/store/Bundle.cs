@@ -133,5 +133,18 @@ namespace Health.Direct.Config.Store
             get;
             set;
         }
+        
+        public Uri Uri
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this.Url))
+                {
+                    return null;
+                }
+                
+                return new Uri(this.Url);
+            }
+        }
     }
 }

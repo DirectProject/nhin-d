@@ -4,7 +4,8 @@
 
  Authors:
     Sean Nolan      sean.nolan@microsoft.com
-  
+    Umesh Madan     umeshma@microsoft.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -35,7 +36,6 @@ namespace Health.Direct.ResolverPlugins
         /// </summary>
         public BundleResolverSettings()
         {
-            // nut-n-honey
         }
 
         /// <summary>
@@ -67,6 +67,24 @@ namespace Health.Direct.ResolverPlugins
         /// </summary>
         [XmlElement]
         public bool OrgCertificatesOnly = false;
+        
+        /// <summary>
+        /// If false, will NOT try to verify SSL certs. Set to false when using Test servers
+        /// </summary>
+        [XmlElement]
+        public bool VerifySSL = true;
+
+        /// <summary>
+        /// The timeout interval used by the resolver. Default is 0, which uses WebClient's default timeout
+        /// </summary>
+        [XmlElement("Timeout")]
+        public int TimeoutMilliseconds = 0;
+
+        /// <summary>
+        /// In case of failure, number of times to retry
+        /// </summary>
+        [XmlElement]
+        public int MaxRetries = 1;
 
         /// <summary>
         /// Creates a BundleResolver using these settings
@@ -93,6 +111,10 @@ namespace Health.Direct.ResolverPlugins
             if (this.CacheSettings != null)
             {
                 this.CacheSettings.Validate();
+            }
+            if (this.MaxRetries < 0)
+            {
+                throw new ArgumentNullException("BundleResolverSettings: MaxRetries");
             }
         }
     }

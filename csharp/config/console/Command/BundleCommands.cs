@@ -4,6 +4,7 @@
 
  Authors:
     Sean Nolan      sean.nolan@microsoft.com
+    Umesh Madan     umeshma@microsoft.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,7 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
@@ -26,6 +29,45 @@ using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
 {
+    public static class BlueButton
+    {
+        public enum BundleType
+        {
+            Provider = 0,
+            Patient = 1,
+            ProviderTest = 2,
+            PatientTest = 3
+        }
+        
+        public const string ProviderBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=ba942b18-ad48-e211-8bc3-78e3b5114607";
+        public const string PatientBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=d7a59811-ad48-e211-8bc3-78e3b5114607";
+        public const string ProviderTestBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=cb300117-3a4a-e211-8bc3-78e3b5114607";
+        public const string PatientTestBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=4d9daaf9-384a-e211-8bc3-78e3b5114607";
+        
+        public static string UrlForBundleType(BundleType type)
+        {
+            switch(type)
+            {
+                default:
+                    break;
+               
+               case BundleType.Patient:
+                    return BlueButton.PatientBundle;
+                
+                case BundleType.PatientTest:
+                    return BlueButton.PatientTestBundle;
+                
+                case BundleType.Provider:
+                    return BlueButton.ProviderBundle;
+                
+                case BundleType.ProviderTest:
+                    return BlueButton.ProviderTestBundle;
+            }
+            
+            return null;
+        }
+    }
+        
     /// <summary>
     /// Commands to manage anchor bundle configurations
     /// </summary>
@@ -34,28 +76,39 @@ namespace Health.Direct.Config.Console.Command
         internal BundleCommands(ConfigConsole console, Func<BundleStoreClient> client) : base(console, client)
         {
         }
-
+        
+        Bundle ParseBundleDefinition(string[] args)
+        {
+            return new Bundle()
+            {
+                Owner = args.GetRequiredValue<string>(0),
+                Url = args.GetRequiredUri(1).AbsoluteUri,
+                ForIncoming = args.GetRequiredValue<bool>(2),
+                ForOutgoing = args.GetRequiredValue<bool>(3),
+                Status = args.GetOptionalEnum<EntityStatus>(4, EntityStatus.New)
+            };
+        } 
+        
         /// <summary>
         /// Add a new bundle
         /// </summary>
         [Command(Name = "Bundle_Add", Usage = BundleAddUsage)]
         public void BundleAdd(string[] args)
         {
-            Bundle bundle = new Bundle()
+            Bundle bundle = this.ParseBundleDefinition(args);
+            Bundle existingBundle = Client.GetExistingBundle(bundle.Owner, bundle.Url);
+            if (existingBundle != null)
             {
-                Owner = args.GetRequiredValue<string>(0),
-                Url = args.GetRequiredValue<string>(1),
-                ForIncoming = args.GetRequiredValue<bool>(2),
-                ForOutgoing = args.GetRequiredValue<bool>(3),
-                Status = args.GetOptionalEnum<EntityStatus>(4, EntityStatus.New),
-            };
-
+                WriteLine("Bundle exists");
+                return;
+            }
+            
             Client.AddBundle(bundle);
-            WriteLine("ok");
+            WriteLine("Added {0}, {1}", bundle.Owner, bundle.Url);
         }
 
         private const string BundleAddUsage =
-            "Add a new bundle definition too the config store.\n" +
+            "Add a new bundle definition into the config store - if it doesn't already exist.\n" +
             "\t owner url forIncoming forOutgoing [status]\n" +
             "\t\t owner: domain or address\n" +
             "\t\t url: url for bundle\n" +
@@ -117,16 +170,121 @@ namespace Health.Direct.Config.Console.Command
             "\t\t owner: domain or address\n" +
             "\n";
 
+        /// <summary>
+        /// List ALL anchors
+        /// </summary>
+        [Command(Name = "Bundles_List", Usage = BundlesListUsage)]
+        public void BundlesList(string[] args)
+        {
+            this.PrintBundleTableHeader();
+            foreach (Bundle bundle in Client.EnumerateBundles(10))
+            {
+                this.PrintBundleTabular(bundle);
+            }
+        }
+
+        private const string BundlesListUsage
+            = "List all configured bundles";
+        
+        [Command(Name = "Bundle_Add_BlueButton", Usage = BundleAddBlueButtonUsage)]
+        public void BundleAddBlueButton(string[] args)
+        {
+            BlueButton.BundleType bundleType = args.GetRequiredEnum<BlueButton.BundleType>(1);
+            string bundleUrl = BlueButton.UrlForBundleType(bundleType);
+            args[1] = bundleUrl;
+            
+            this.BundleAdd(args);
+        }
+
+        private const string BundleAddBlueButtonUsage =
+            "Ensure that blue button bundles are registered for the given owner.\n" +
+            "\t owner bundleType forIncoming forOutgoing [status]\n" +
+            "\t\t owner: domain or address\n" +
+            "\t\t bundleType: Provider | Patient | ProviderTest | PatientTest \n" +
+            "\t\t forIncoming: (true/false) Use bundle to verify trust of INCOMING messages\n" +
+            "\t\t forOutgoing: (true/false) use bundle to verify trust of OUTGOING messages\n" +
+            "\t\t status: (new/enabled/disabled, default new) status field\n" +
+            "\n";
+
+        
+        //----------------------------------------------
+        //
+        // Bundle Download & Verification support
+        //
+        //----------------------------------------------
+        /// <summary>
+        /// Download all configured bundles for a given owner into a Folder
+        /// </summary>
+        [Command(Name = "Bundles_Download", Usage = BundleDownloadUsage)]
+        public void BundlesDownload(string[] args)
+        {
+            string owner = args.GetRequiredValue<string>(0);
+            string folderpath = args.GetRequiredValue<string>(1);
+            if (!Directory.Exists(folderpath))
+            {
+                WriteLine("Folder not found");
+                return;
+            }
+
+            AnchorBundleDownloader bundleDownloader = new AnchorBundleDownloader();
+            bundleDownloader.TimeoutMS = 30 * 1000;
+            bundleDownloader.MaxRetries = 1;
+            bundleDownloader.VerifySSL = false;
+            
+            Bundle[] bundles = Client.GetBundlesForOwner(owner);
+            foreach(Bundle bundle in bundles)
+            {
+                string fileName = string.Format("Bundle_{0}.p7b", bundle.ID);
+                string filePath = Path.Combine(folderpath, fileName);
+                
+                WriteLine("Downloading ID={0}, {1}", bundle.ID, bundle.Url);
+                bundleDownloader.DownloadToFile(bundle.Uri, filePath);
+                WriteLine("ok");
+            }
+        }
+        
+        private const string BundleDownloadUsage =
+            "Download all configured bundles for an owner to a folder.\n" +
+            "\t owner [folderPath]\n" +
+            "\t\t owner: bundle owner\n" +
+            "\t\t folderPath: (optional) Where to save the downloaded bundles\n" +
+            "\n";
+
+
+        //----------------------------------------------
+        //
+        // Bundle Display
+        //
+        //----------------------------------------------
         private void PrintTable(Bundle[] bundles)
+        {
+            this.PrintBundleTableHeader();
+            foreach (Bundle bundle in bundles)
+            {
+                this.PrintBundleTabular(bundle);
+            }
+        }
+        
+        void PrintBundleTableHeader()
         {
             WriteLine("ID\tOwner\tIn\tOut\tStatus\tUrl");
             WriteLine("--\t-----\t--\t---\t------\t---");
-
-            foreach (Bundle bundle in bundles)
-            {
-                WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
-                    bundle.ID, bundle.Owner, bundle.ForIncoming, bundle.ForOutgoing, bundle.Status, bundle.Url);
-            }
+        }
+        
+        void PrintBundleTabular(Bundle bundle)
+        {
+            WriteLine("{0}\t{1}\t{2}\t{3}\t{4}\t{5}",
+                bundle.ID, bundle.Owner, bundle.ForIncoming, bundle.ForOutgoing, bundle.Status, bundle.Url);
+        }
+        
+        void PrintBundle(Bundle bundle)
+        {
+            WriteLine("{0}", bundle.ID);
+            WriteLine(bundle.Owner);
+            WriteLine(bundle.Url);
+            WriteLine("Incoming={0}", bundle.ForIncoming);
+            WriteLine("Outgoing={0}", bundle.ForOutgoing);
+            WriteLine("{0}", bundle.Status);
         }
     }
 }

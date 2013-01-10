@@ -69,6 +69,12 @@ namespace Health.Direct.Config.Tools.Command
             return (T) Enum.Parse(typeof(T), value, true);
         }
 
+        public static Uri GetRequiredUri(this string[] args, int index)
+        {
+            string value = args.GetRequiredValue(index);
+            return new Uri(value);
+        }
+
         public static string GetOptionalValue(this string[] args, int index, string defaultValue)
         {
             string value = args.GetValueOrNull(index);

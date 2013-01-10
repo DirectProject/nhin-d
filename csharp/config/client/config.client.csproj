@@ -57,6 +57,7 @@
     </Compile>
     <Compile Include="AddressManagerExtensions.cs" />
     <Compile Include="AnchorExtensions.cs" />
+    <Compile Include="BundleManagerExtensions.cs" />
     <Compile Include="ClientSettings.cs" />
     <Compile Include="BindingFactory.cs" />
     <Compile Include="CertificateExtensions.cs" />

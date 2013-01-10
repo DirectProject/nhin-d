@@ -195,7 +195,8 @@ namespace Health.Direct.Config.Store.Tests
             int pos = GetRndDomainID();
             //----------------------------------------------------------------------------------------------------
             //---grab the key at position pos-1 in the array, and use that as the "last" name to be passed in
-            string val = mxsAll.Keys.ToArray()[pos - 1];
+            string[] allKeys = mxsAll.Keys.ToArray();
+            string val = allKeys[pos - 1];
 
             Domain[] mxs = mgr.Get(val, MAXDOMAINCOUNT + 1);
 
@@ -205,12 +206,12 @@ namespace Health.Direct.Config.Store.Tests
 
             //----------------------------------------------------------------------------------------------------
             //---try one with a limited number less than pos
-            mxs = mgr.Get(val, pos - 1);
+            mxs = mgr.Get(allKeys[0], pos - 1);
             Assert.Equal(pos - 1, mxs.Length);
-
+            
             //----------------------------------------------------------------------------------------------------
             //---get the last item and see to ensure that no records are returned
-            val = mxsAll.Keys.ToArray().Last();
+            val = allKeys.Last();
             mxs = mgr.Get(val, MAXDOMAINCOUNT + 1);
             Assert.Equal(0, mxs.Length);
 
@@ -261,7 +262,8 @@ namespace Health.Direct.Config.Store.Tests
                 int pos = GetRndDomainID();
                 //----------------------------------------------------------------------------------------------------
                 //---grab the key at position pos-1 in the array, and use that as the "last" name to be passed in
-                string val = mxsAll.Keys.ToArray()[pos - 1];
+                string[] allKeys = mxsAll.Keys.ToArray();
+                string val = allKeys[pos - 1];
 
                 Domain[] mxs = mgr.Get(db,val, MAXDOMAINCOUNT + 1).ToArray();
 
@@ -271,18 +273,18 @@ namespace Health.Direct.Config.Store.Tests
 
                 //----------------------------------------------------------------------------------------------------
                 //---try one with a limited number less than pos
-                mxs = mgr.Get(db, val, pos - 1).ToArray();
+                mxs = mgr.Get(db, allKeys[0], pos - 1).ToArray();
                 Assert.Equal(pos - 1, mxs.Length);
 
                 //----------------------------------------------------------------------------------------------------
                 //---get the last item and see to ensure that no records are returned
-                val = mxsAll.Keys.ToArray().Last();
+                val = allKeys.Last();
                 mxs = mgr.Get(val, MAXDOMAINCOUNT + 1);
                 Assert.Equal(0, mxs.Length);
 
                 //----------------------------------------------------------------------------------------------------
                 //---get the first item and see to ensure that MAX - 1 records are returned
-                val = mxsAll.Keys.ToArray().First();
+                val = allKeys.First();
                 mxs = mgr.Get(db, val, MAXDOMAINCOUNT + 1).ToArray();
                 Assert.Equal(MAXDOMAINCOUNT - 1, mxs.Length);
             }

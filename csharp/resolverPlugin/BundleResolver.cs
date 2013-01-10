@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Pkcs;
-
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Client;
@@ -58,10 +57,10 @@ namespace Health.Direct.ResolverPlugins
                 new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.outgoing" };
 
             m_incomingResolver =
-                new CertificateResolver(new BundleAnchorIndex(m_settings.ClientSettings, true), incomingCacheSettings);
+                new CertificateResolver(new BundleAnchorIndex(m_settings, true), incomingCacheSettings);
 
             m_outgoingResolver =
-                new CertificateResolver(new BundleAnchorIndex(m_settings.ClientSettings, false), outgoingCacheSettings);
+                new CertificateResolver(new BundleAnchorIndex(m_settings, false), outgoingCacheSettings);
         }
 
         #region IPlugin
@@ -123,10 +122,14 @@ namespace Health.Direct.ResolverPlugins
         internal class BundleAnchorIndex : IX509CertificateIndex
         {
             
-            internal BundleAnchorIndex(ClientSettings clientSettings, bool incoming)
+            internal BundleAnchorIndex(BundleResolverSettings settings, bool incoming)
             {
-                m_clientSettings = clientSettings;
+                m_clientSettings = settings.ClientSettings;
                 m_incoming = incoming;
+                m_downloader = new AnchorBundleDownloader();
+                m_downloader.VerifySSL = settings.VerifySSL;
+                m_downloader.TimeoutMS = settings.TimeoutMilliseconds;
+                m_downloader.MaxRetries = settings.MaxRetries;
             }
 
             public X509Certificate2Collection this[string subjectName]
@@ -145,32 +148,17 @@ namespace Health.Direct.ResolverPlugins
 
             private void AddAnchorsForBundle(Bundle bundle, X509Certificate2Collection certs)
             {
-                WebClient web = null;
-
                 try
                 {
-                    // KILLME - this bypasses the bogus SSL cert at bluebuttontrust.org for now
-                    ServicePointManager.ServerCertificateValidationCallback = delegate { return (true); };
-                    // KILLME - this bypasses the bogus SSL cert at bluebuttontrust.org for now
-
-                    web = new WebClient();
-                    byte[] p7bBytes = web.DownloadData(bundle.Url.ToString());
-
-                    SignedCms envelope = new SignedCms();
-                    envelope.Decode(p7bBytes);
-                    certs.Add(envelope.Certificates);
+                    X509Certificate2Collection bundleCerts = m_downloader.DownloadCertificates(bundle.Uri);
+                    if (!bundleCerts.IsNullOrEmpty())
+                    {
+                        certs.Add(bundleCerts);
+                    }
                 }
                 catch (Exception e)
                 {
-                    // note we eat these ... don't want the whole system to go to crap
-                    // based on a URL that doesn't download...
-                    EventLogHelper.WriteWarning(null, "Failed pulling certs from bundle URL: " +
-                                                      bundle.Url.ToString() + " [" + e.Message + "]");
-                }
-                finally
-                {
-                    if (web != null)
-                        web.Dispose();
+                    this.NotifyError(bundle, e);
                 }
             }
 
@@ -194,8 +182,16 @@ namespace Health.Direct.ResolverPlugins
                 return (new BundleStoreClient(m_clientSettings.Binding, m_clientSettings.Endpoint));
             }
 
+            private void NotifyError(Bundle bundle, Exception e)
+            {
+                EventLogHelper.WriteWarning(null,
+                                           string.Format("BundleResolver: Failed pulling certs from bundle URL: {0}, [{1}]", bundle.Url, e)
+                                           );
+            }
+            
             private ClientSettings m_clientSettings;
             private bool m_incoming;
+            private AnchorBundleDownloader m_downloader;
         }
     }
 }

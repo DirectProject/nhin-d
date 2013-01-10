@@ -53,6 +53,8 @@
     <Compile Include="Caching\CacheSettings.cs" />
     <Compile Include="Caching\CachingBase.cs" />
     <Compile Include="Caching\DnsResponseCache.cs" />
+    <Compile Include="Certificates\AnchorBundleDownloader.cs">
+    </Compile>
     <Compile Include="Certificates\CertificateCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
@@ -204,6 +206,9 @@
     <Compile Include="Routing\FolderBalancer.cs" />
     <Compile Include="Routing\LoadBalancer.cs" />
     <Compile Include="Routing\IReceiver.cs" />
+    <Compile Include="Web\WebDownloader.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

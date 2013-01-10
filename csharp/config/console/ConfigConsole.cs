@@ -133,5 +133,13 @@ namespace Health.Direct.Config.Console
         {
             return m_commands.GetCommand<T>();
         }
+        
+        //
+        // Evaluate the given command line. Lets you run one command from another command
+        //
+        public void Eval(params string[] args)
+        {
+            m_commands.Eval(args);
+        }
     }
 }
