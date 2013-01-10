@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.config.store;
 
 import java.io.ByteArrayInputStream;
@@ -20,6 +41,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlTransient;
 
+/**
+ * JPA entity object for a trust bundle anchor
+ * @author Greg Meyer
+ * @since 1.2
+ */
 @Entity
 @Table(name = "trustbundleanchor")
 public class TrustBundleAnchor 
@@ -115,10 +141,10 @@ public class TrustBundleAnchor
     }
 
     /**
-     * Set the value of certificateData.
+     * Set the value of anchorData.
      * 
      * @param data
-     *            The value of certificateData.
+     *            The value of anchorData.
      * @throws CertificateException
      */
     public void setData(byte[] data) throws CertificateException 
@@ -204,6 +230,11 @@ public class TrustBundleAnchor
         return cert;
     }
 
+    /**
+     * Converts the anchor data to an X509 certificate
+     * @return The anchor data as an X509 certificate
+     * @throws CertificateException
+     */
     public X509Certificate toCertificate() throws CertificateException 
     {
         X509Certificate cert = null;

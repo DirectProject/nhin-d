@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.config.store.dao.impl;
 
 import java.security.cert.X509Certificate;
@@ -26,6 +47,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Implementation of the TrustBundleDao interface
+ * @author Greg Meyer
+ * @since 1.2
+ */
 @Repository
 public class TrustBundleDaoImpl implements TrustBundleDao
 {
@@ -47,13 +73,18 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 	{
 	}
 	
+	/**
+	 * Sets the DomainDao used for validating the exists of domains for 
+	 * domain to trust bundle association
+	 * @param domainDao The domain dao
+	 */
     @Autowired
 	public void setDomainDao(DomainDao domainDao)
 	{
 		this.domainDao = domainDao;
 	}
 	
-	/*
+	/**
 	 * Validate that we have a connection to the DAO
 	 */
 	protected void validateState() throws ConfigurationStoreException
@@ -72,6 +103,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 	}
 
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
     @Transactional(readOnly = true)
@@ -104,6 +138,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		return rs;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = true)
 	public TrustBundle getTrustBundleByName(String bundleName) throws ConfigurationStoreException
@@ -134,6 +171,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = true)
 	public TrustBundle getTrustBundleById(long id) throws ConfigurationStoreException
@@ -164,6 +204,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	}		
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void addTrustBundle(TrustBundle bundle) throws ConfigurationStoreException 
@@ -195,6 +238,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void updateTrustBundleAnchors(long trustBundleId, Calendar attemptTime, Collection<TrustBundleAnchor> newAnchorSet,
@@ -230,6 +276,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	///CLOVER:ON
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void updateLastUpdateError(long trustBundleId, Calendar attemptTime, BundleRefreshError error) 
@@ -261,6 +310,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	///CLOVER:ON
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
     @Transactional(readOnly = false)
 	@Override
 	public void deleteTrustBundles(long[] trustBundleIds) throws ConfigurationStoreException 
@@ -289,6 +341,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
         }
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void updateTrustBundleSigningCertificate(long trustBundleId, X509Certificate signingCert) 
@@ -320,6 +375,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void associateTrustBundleToDomain(long domainId, long trustBundleId, boolean incoming,
@@ -355,6 +413,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void disassociateTrustBundleFromDomain(long domainId, long trustBundleId) throws ConfigurationStoreException
@@ -396,6 +457,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
         
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)
 	public void disassociateTrustBundlesFromDomain(long domainId) throws ConfigurationStoreException
@@ -422,6 +486,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
     @Transactional(readOnly = false)	
 	public void disassociateTrustBundleFromDomains(long trustBundleId) throws ConfigurationStoreException
@@ -448,6 +515,9 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		}
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
     @Transactional(readOnly = true)	
