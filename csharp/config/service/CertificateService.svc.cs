@@ -23,7 +23,7 @@ using Health.Direct.Config.Store;
 namespace Health.Direct.Config.Service
 {
     //[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
-    public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore
+    public class CertificateService : ConfigServiceBase, ICertificateStore, IAnchorStore, IBundleStore
     {        
         #region ICertificateStore
         
@@ -305,7 +305,156 @@ namespace Health.Direct.Config.Service
         }
         
         #endregion
-        
+
+        #region IBundleStore
+
+        public Bundle AddBundle(Bundle bundle)
+        {
+            try
+            {
+                return Store.Bundles.Add(bundle);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddBundles", ex);
+            }
+        }
+
+        public void AddBundles(Bundle[] bundles)
+        {
+            try
+            {
+                Store.Bundles.Add(bundles);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddBundles", ex);
+            }
+        }
+
+        public Bundle GetBundle(long bundleID)
+        {
+            try
+            {
+                Bundle[] bundles = Store.Bundles.Get(new long[] { bundleID });
+                return (bundles[0]);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetBundle", ex);
+            }
+        }
+
+        public Bundle[] GetBundles(long[] bundleIDs)
+        {
+            try
+            {
+                return (Store.Bundles.Get(bundleIDs));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetBundles", ex);
+            }
+        }
+
+        public Bundle[] GetBundlesForOwner(string owner)
+        {
+            try
+            {
+                return (Store.Bundles.Get(owner));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetBundlesForOwner", ex);
+            }
+        }
+
+        public Bundle[] GetIncomingBundles(string owner, EntityStatus status)
+        {
+            try
+            {
+                return (Store.Bundles.GetIncoming(owner, status));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetIncomingBundles", ex);
+            }
+        }
+
+        public Bundle[] GetOutgoingBundles(string owner, EntityStatus status)
+        {
+            try
+            {
+                return (Store.Bundles.GetOutgoing(owner, status));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetOutgoingBundles", ex);
+            }
+        }
+
+        public void SetBundleStatus(long[] bundleIDs, EntityStatus status)
+        {
+            try
+            {
+                Store.Bundles.SetStatus(bundleIDs, status);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("SetBundleStatus", ex);
+            }
+        }
+
+        public void SetBundleStatusForOwner(string owner, EntityStatus status)
+        {
+            try
+            {
+                Store.Bundles.SetStatus(owner, status);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("SetBundleStatusForOwner", ex);
+            }
+        }
+
+        public Bundle[] EnumerateBundles(long lastBundleID, int maxResults)
+        {
+            try
+            {
+                return (Store.Bundles.Get(lastBundleID, maxResults));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateBundles", ex);
+            }
+        }
+
+        public void RemoveBundles(long[] bundleIDs)
+        {
+            try
+            {
+                Store.Bundles.Remove(bundleIDs);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemoveBundles", ex);
+            }
+        }
+
+        public void RemoveBundlesForOwner(string owner)
+        {
+            try
+            {
+                Store.Bundles.Remove(owner);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemoveBundlesForOwner", ex);
+            }
+        }
+
+        #endregion
+
         Certificate[] ApplyGetOptions(Certificate[] certs, CertificateGetOptions options)
         {
             if (certs == null)

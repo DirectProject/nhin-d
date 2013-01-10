@@ -62,6 +62,9 @@
     <Compile Include="AnchorManager.cs" />
     <Compile Include="AnchorQueries.cs" />
     <Compile Include="AnchorResolver.cs" />
+    <Compile Include="Bundle.cs" />
+    <Compile Include="BundleManager.cs" />
+    <Compile Include="BundleQueries.cs" />
     <Compile Include="CertificateManager.cs" />
     <Compile Include="Address.cs" />
     <Compile Include="Anchor.cs" />

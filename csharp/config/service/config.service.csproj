@@ -92,6 +92,7 @@
     <Compile Include="ConfigServiceBase.cs" />
     <Compile Include="IAuthManager.cs" />
     <Compile Include="IBlobManager.cs" />
+    <Compile Include="IBundleStore.cs" />
     <Compile Include="IDnsRecordManager.cs" />
     <Compile Include="DomainManagerService.svc.cs">
       <DependentUpon>DomainManagerService.svc</DependentUpon>
@@ -157,9 +158,6 @@
           <IISUrl>
           </IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>

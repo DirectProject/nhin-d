@@ -42,8 +42,29 @@
       <xs:enumeration value="InvalidMXSMTPName" />
       <xs:enumeration value="MXSMTPNameLength" />
       <xs:enumeration value="InvalidMX" />
-      <xs:enumeration value="InvaildDnsRecord" />
+      <xs:enumeration value="InvalidDnsRecord" />
       <xs:enumeration value="NotesLength" />
+      <xs:enumeration value="InvalidAdministrator" />
+      <xs:enumeration value="InvalidUsername" />
+      <xs:enumeration value="InvalidPassword" />
+      <xs:enumeration value="InvalidPropertyName" />
+      <xs:enumeration value="InvalidPropertyNameLength" />
+      <xs:enumeration value="InvalidTextBlobName" />
+      <xs:enumeration value="InvalidTextBlobNameLength" />
+      <xs:enumeration value="InvalidBlob" />
+      <xs:enumeration value="AgentNameLength" />
+      <xs:enumeration value="InvalidAgentName" />
+      <xs:enumeration value="InvalidMdnIdentifier" />
+      <xs:enumeration value="InvalidMdn" />
+      <xs:enumeration value="DuplicateProcessedMdn" />
+      <xs:enumeration value="DuplicateDispatchedMdn" />
+      <xs:enumeration value="DuplicateFailedMdn" />
+      <xs:enumeration value="MdnPreviouslyProcessed" />
+      <xs:enumeration value="MdnUncorrelated" />
+      <xs:enumeration value="MdnPreviouslyFailed" />
+      <xs:enumeration value="InvalidUrl" />
+      <xs:enumeration value="UrlLength" />
+      <xs:enumeration value="InvalidBundle" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
