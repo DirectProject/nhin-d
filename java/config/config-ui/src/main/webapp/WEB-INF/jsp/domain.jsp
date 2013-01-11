@@ -517,7 +517,7 @@
                     <tr>
                         <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
                         <th>Bundle Name</th>
-                        <th>Anchors</th>
+                        <th>Anchor Thumbprints</th>
                         <th width=20>In</th>
                         <th width=20>Out</th>
                     </tr>
@@ -539,7 +539,7 @@
                         </td>     
                         <td> 
                                 <c:forEach items="${anchorMap[trustBundle.trustBundle.bundleName]}" var="anchor">
-                                    ${anchor.data}<br/>
+                                    ${anchor.thumbprint}<br/>
                                 </c:forEach>
 
                         </td>
