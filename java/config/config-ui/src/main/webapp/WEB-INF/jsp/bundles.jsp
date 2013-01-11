@@ -6,67 +6,37 @@
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><fmt:message key="bundles.title" /></title>
+
+<script type="text/javascript" src="/config-ui/resources/jquery.leanModal.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#newBundle').load('/config-ui/config/bundles/newBundleForm');
+});
+
+$(function() {                
+    $('a[rel*=leanModal]').leanModal({ top : 200, closeButton: ".modal_close" });		
+});
+</script>
+
+
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
     <h2>Manage Trust Bundles</h2>
 	
+    <a rel="leanModal" name="newBundle" href="#newBundle">Add New Bundle</a>
+
+    <br/><br/>
+
+    <div id="newBundle" style="display:none;background:white;padding:10px;width:300px;height:auto;"></div>
+
 	<div>
 
-            <div id="side-form">
-			<h3>Add New Trust Bundle</h3>
-			
-			<spring:url value="/config/bundles/addbundle" var="formURLaddBundle" />
-			<form:form modelAttribute="bundleForm" action="${fn:escapeXml(formURLaddBundle)}" cssClass="cleanform" method="POST" enctype="multipart/form-data">
-				
-				<form:hidden path="id" />
-				
-                                <c:if test="${EmptyBundleError == true}">
-                                    <p style="color:red;">Please enter a bundle name</p>
-                                </c:if>
+            
 
-                                <c:if test="${DupeBundleError == true}">
-                                    <p style="color:red;">This bundle name has been taken</p>
-                                </c:if>
-
-				<c:if test="${signingCertError == true}">
-                                    <p style="color:red;">Please upload a valid X.509 certificate</p>
-                                </c:if>
-
-                                <c:if test="${URLError == true}">
-                                    <p style="color:red;">Please enter a valid URL</p>
-                                </c:if>                                
-			
-				<div>
-				<label>Name:</label><br/>
-				<form:input path="bundleName"/>
-				</div>
-			
-				<div>
-				<label>Trust Bundle URL:</label><br/>
-				<form:input path="trustURL"/>
-				</div>								
-				
-				<div>
-				<label>Signing Certificate:</label>
-				<form:input path="fileData" id="fileData" type="file"/>
-				</div>
-				
-				<div>
-				<label>Refresh Interval (hours):</label><br/>
-				<form:input path="refreshInterval" cssStyle="width:60px"/>
-				</div>
-				
-			<div class="form-submit-area">
-				<button name="submitType" class="submit" id="submitType" type="submit" value="newbundle">Add Trust Bundle</button>
-			</div>
-			
-		</form:form>
-			
-		</div>
-
-		<div id="bundle-table-col">
+		
 			
 	<c:choose>
             <c:when test="${not empty trustBundles}">
@@ -75,7 +45,7 @@
                 <spring:url value="/config/bundles/refreshBundles" var="formURLRefreshBundles" />
                 <form:form modelAttribute="bundleForm" action="${fn:escapeXml(formURLRemoveBundles)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
-                 <table  id="trustBundlesTable" class="fancyTable" style="width:auto;">
+                 <table  id="trustBundlesTable" class="fancyTable" style="width:100%;font-size:10px">
                     <thead>
                         <tr>
                             <th><input type="checkbox" onclick="var checkBoxes = $(':checkbox[name=bundlesSelected]');checkBoxes.attr('checked', !checkBoxes.attr('checked'));"/></th>
@@ -131,10 +101,7 @@
 			
 		</div>
 			
-	</div>
 	
-	
-	<br clear="both"/>
 	
 	
 	

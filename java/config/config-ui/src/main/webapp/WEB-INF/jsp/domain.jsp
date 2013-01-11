@@ -510,15 +510,19 @@
 
                 <h3>Trust Bundles</h3>
 
+                <c:choose>
+                
+                <c:when test="${not empty trustBundles}">
                 <table class="fancyTable" width=100% style="font-size:12px">
                     <tr>
-                        <th><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
-                        <th width="400">Bundle Name</th>
+                        <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
+                        <th>Bundle Name</th>
                         <th>Anchors</th>
                         <th width=20>In</th>
                         <th width=20>Out</th>
                     </tr>
 
+                
                 <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
                     <c:choose>
                         <c:when test="${rowCounter.count % 2 == 0}">
@@ -529,13 +533,13 @@
                         </c:otherwise>
                     </c:choose>
 
-                        <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.id}|${trustBundle.bundleName}"/></td>
-                        <td>${trustBundle.bundleName}<br/>
+                        <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.trustBundle.id}|${trustBundle.trustBundle.bundleName}"/></td>
+                        <td>${trustBundle.trustBundle.bundleName}<br/>
 
                         </td>     
-                        <td> ${anchorMap}
-                                <c:forEach items="${anchorMap}" var="anchors">
-                                    ${anchors.key}
+                        <td> 
+                                <c:forEach items="${anchorMap[trustBundle.trustBundle.bundleName]}" var="anchor">
+                                    ${anchor.data}<br/>
                                 </c:forEach>
 
                         </td>
@@ -545,7 +549,12 @@
                 </c:forEach>
                 </table>
                 <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
-                
+                </c:when>
+                <c:otherwise>
+                   There are no bundles associated with this domain.
+                </c:otherwise>
+                </c:choose>
+
 
             </div>
 
