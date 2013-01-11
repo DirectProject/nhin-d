@@ -1080,16 +1080,14 @@ public class DomainController {
                                     for(TrustBundleDomainReltn bundle : bundles) 
                                     {
                                         
-                                        tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();                                                                                
+                                        tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();                                                                                                                                                                
                                         
-                                        for (Iterator j = tbAnchors.iterator(); j.hasNext(); ) {
-                                            
-                                        }
+
                                         
 //                                        for(TrustBundleAnchor anchor : anchorStrings) {
 //                                            System.out.println("Anchor:"+anchor.data);
 //                                        }
-                                        
+                                        //System.out.println(tbAnchors.toString());
                                         
                                         anchorMap.put(bundle.getTrustBundle().getBundleName(), tbAnchors);
                                         
