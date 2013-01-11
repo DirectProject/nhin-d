@@ -4,6 +4,7 @@
 
  Authors:
     Sean Nolan      sean.nolan@microsoft.com
+    Umesh Madan     umeshma@microsoft.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -32,14 +33,13 @@ namespace Health.Direct.ResolverPlugins
     /// <summary>
     /// Implements a trust anchor resolver that downloads from configured bundle URLs
     /// </summary>
-    public class BundleResolver : ITrustAnchorResolver
+    public class BundleResolver : ITrustAnchorResolver, IPlugin
     {
         /// <summary>
         /// Constructor. Doesn't do anything.
         /// </summary>
         public BundleResolver()
         {
-            // nut-n-honey
         }
 
         /// <summary>
