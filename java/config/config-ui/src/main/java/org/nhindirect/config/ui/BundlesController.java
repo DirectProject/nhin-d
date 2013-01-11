@@ -451,7 +451,28 @@ public class BundlesController {
         return mav;
     }
     
-    
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/newBundleForm", method = RequestMethod.GET)
+    public ModelAndView newBundleForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
+                                                    HttpSession session,
+                                                    @ModelAttribute BundleForm simpleForm,
+                                                    Model model)  { 		
+
+        ModelAndView mav = new ModelAndView(); 
+
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Enter bundles/newBundles");
+        }    
+        
+        
+        BundleForm bform = new BundleForm();
+        bform.setId(0);
+        model.addAttribute("bundleForm", bform);
+        mav.setViewName("newBundleForm");
+        
+        return mav;
+    }
     
 	
 	/**

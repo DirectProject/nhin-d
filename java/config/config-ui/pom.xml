@@ -306,18 +306,13 @@
 		</dependency>
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
-	  <artifactId>config-store</artifactId>
-	  <version>1.2-SNAPSHOT</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>${project.groupId}</groupId>
-	  <artifactId>config-store</artifactId>
-	  <version>1.2-SNAPSHOT</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-jar</artifactId>
 	  <version>${project.version}</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>${project.groupId}</groupId>
+	  <artifactId>config-store</artifactId>
+	  <version>1.2-SNAPSHOT</version>
 	 </dependency>
 	</dependencies>
 

@@ -50,7 +50,7 @@ import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.store.TrustBundleDomainReltn;
+import org.nhindirect.config.store.*;
 import org.nhindirect.config.ui.form.AddressForm;
 import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
@@ -70,8 +70,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.nhindirect.config.store.TrustBundle;
-import org.nhindirect.config.store.TrustBundleAnchor;
+
 
 @Controller
 @RequestMapping("/domain")
@@ -1075,17 +1074,26 @@ public class DomainController {
                                 
                                     model.addAttribute("trustBundles", bundles);
                                     
-                                    Map<String, Collection<TrustBundleAnchor>> anchorMap = null;
-                                    
+                                    Map<String, Collection<TrustBundleAnchor>> anchorMap = new HashMap<String, Collection<TrustBundleAnchor>>(bundles.size());
+                                    Collection<TrustBundleAnchor> tbAnchors;
 
                                     for(TrustBundleDomainReltn bundle : bundles) 
                                     {
-
-                                        log.error("Bundle ID:"+ bundle.getTrustBundle().getId());
                                         
-                                        Collection<TrustBundleAnchor> tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();                                                                                
-                                     
+                                        tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();                                                                                
+                                        
+                                        for (Iterator j = tbAnchors.iterator(); j.hasNext(); ) {
+                                            
+                                        }
+                                        
+//                                        for(TrustBundleAnchor anchor : anchorStrings) {
+//                                            System.out.println("Anchor:"+anchor.data);
+//                                        }
+                                        
+                                        
                                         anchorMap.put(bundle.getTrustBundle().getBundleName(), tbAnchors);
+                                        
+                                        
                                         
                                     }
                                     
