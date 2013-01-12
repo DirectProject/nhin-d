@@ -1,0 +1,164 @@
+h3 {
+	font-size:15px;
+	padding:5px 0;
+		margin:0;
+}
+
+div#bundle-table-col {    
+	
+}
+div#side-form {
+margin-left:20px;
+width:260px;
+float:right;
+margin-top:-5px;
+padding:10px;
+padding-top:0px;
+height:400px;
+}
+
+#lean_overlay {
+    position: fixed;
+    z-index:100;
+    top: 0px;
+    left: 0px;
+    height:100%;
+    width:100%;
+    background: #000;
+    display: none;
+}
+
+div.baseForm div {
+	margin-bottom:5px;
+}
+
+div#side-form div {
+	margin-bottom:5px;
+}
+
+div.form-submit-area {
+	padding:5px 0;
+	
+}
+
+
+table.fancyTable {
+    padding:2px;
+	border-top:1px solid #bbb;
+	border-bottom:1px solid #bbb;
+
+	background: #fff;
+	background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#ccc));
+	background: -moz-linear-gradient(top,  #bbb,  #ccc);
+}
+
+table.fancyTable th {
+    padding:7px 5px;
+	border-top:1px solid #fafafa;
+	border-bottom:1px solid #bbb;
+        border-left: 1px solid #bbb;
+
+	background: #ededed;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#ebebeb));
+	background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+
+table.fancyTable td {
+	padding:5px;
+	border-top: 1px solid #ffffff;
+	border-bottom:1px solid #bbb;
+	border-left: 1px solid #bbb;
+
+	background: #fafafa;
+	background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
+	background: -moz-linear-gradient(top,  #fbfbfb,  #fafafa);
+}
+
+
+input, textarea {  
+    padding: 4px;  
+    border: solid 1px #E5E5E5;  
+    outline: 0;  
+    font: normal 13px/100% Verdana, Tahoma, sans-serif;  
+    width: 247px;  
+    background: #FFFFFF;  
+    }  
+textarea {  
+    width: 400px;  
+    max-width: 400px;  
+    height: 150px;  
+    line-height: 150%;  
+    }  
+input:hover, textarea:hover,  
+input:focus, textarea:focus {  
+    border-color: #C9C9C9;  
+    }  
+.form label {  
+    margin-left: 10px;  
+    color: #999999;  
+    }  
+.submit input {  
+    width: auto;  
+    padding: 4px 5px;  
+    background: #617798;  
+    border: 0;  
+    font-size: 14px;  
+    color: #FFFFFF;  
+    } 
+    
+   input[type='checkbox'] { width:auto; }
+    
+   input, textarea {  
+    box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    -moz-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    -webkit-box-shadow: rgba(0,0,0, 0.1) 0px 0px 8px;  
+    background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));  
+    background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);  
+    
+    } 
+    
+        input, textarea {  
+        background: -webkit-gradient(linear, left top, left 25, from(#FFFFFF), color-stop(4%, #EEEEEE), to(#FFFFFF));  
+        background: -moz-linear-gradient(top, #FFFFFF, #EEEEEE 1px, #FFFFFF 25px);  
+        }  
+    
+    input:hover, textarea:hover,  
+input:focus, textarea:focus {  
+    -webkit-box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 8px;  
+    } 
+    
+        button#submitType {  
+        
+        width: auto;  
+    padding: 4px 5px;  
+    background:  rgb(0, 133, 195);  
+    border: 0;  
+    font-size: 12px;  
+    color: #fff;
+    -webkit-border-radius: 5px;  
+        -moz-border-radius: 5px;    
+        
+        } 
+    
+input.regularButton {  
+        
+        width: auto;  
+    padding: 4px 5px;  
+    background:  #bbb;  
+    border: 0;  
+    font-size: 12px;  
+    color: #fff;
+    -webkit-border-radius: 5px;  
+        -moz-border-radius: 5px;    
+        
+        } 
+    
+         
+        div.quickform {
+            font-size:12px;
+        }
+        div.quickform div {
+            
+            margin:5px 0;
+            
+        }
