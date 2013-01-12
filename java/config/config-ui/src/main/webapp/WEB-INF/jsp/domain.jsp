@@ -143,6 +143,38 @@
                 
 		$('#assignBundles').load('/config-ui/config/bundles/assignBundlesForm');
 
+                // Attach listener to incoming/outgoing checkboxes
+                $('[name="incoming"]').change( function() {
+                    // Update incoming status for this bundle on the domain
+                    var checkboxId = $(this).attr('id').split('_');
+
+                    var direction = checkboxId[0];
+                    var bundle = checkboxId[1];
+                    var directionValue = ($(this).attr('checked') == true) ? 1 : 0;
+                    
+                    var data = { domainId: ${domainId}, bundle: bundle, direction: direction, directionValue: directionValue };
+
+                    $.post('/config-ui/config/domain/updateBundleDirection',data, function(data) {
+                                                
+                    });
+                });
+                
+                $('[name="outgoing"]').change( function() {
+                    // Update outgoing status for this bundle on the domain
+
+                    var checkboxId = $(this).attr('id').split('_');
+
+                    var direction = checkboxId[0];
+                    var bundle = checkboxId[1];
+                    var directionValue = ($(this).attr('checked') == true) ? 1 : 0;
+
+                    
+                    var data = { domainId: ${domainId}, bundle: bundle, direction: direction, directionValue: directionValue };
+
+                    $.post('/config-ui/config/domain/updateBundleDirection',data, function(data) {
+                                                
+                    });
+                });
 
                
 
@@ -513,42 +545,50 @@
                 <c:choose>
                 
                 <c:when test="${not empty trustBundles}">
-                <table class="fancyTable" width=100% style="font-size:12px">
-                    <tr>
-                        <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
-                        <th>Bundle Name</th>
-                        <th>Anchor Thumbprints</th>
-                        <th width=20>In</th>
-                        <th width=20>Out</th>
-                    </tr>
+                
+                    
+
+                    <table class="fancyTable" width=100% style="font-size:12px">
+                        <tr>
+                            <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
+                            <th>Bundle Name</th>
+                            <th>Anchor Thumbprints</th>
+                            <th width=20>In</th>
+                            <th width=20>Out</th>
+                        </tr>
+
+
+                    <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
+                        <c:choose>
+                            <c:when test="${rowCounter.count % 2 == 0}">
+                                <tr class="evenRow">
+                            </c:when>
+                            <c:otherwise>
+                                <tr class="oddRow">
+                            </c:otherwise>
+                        </c:choose>
+
+                            <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.trustBundle.id}|${trustBundle.trustBundle.bundleName}"/></td>
+                            <td>${trustBundle.trustBundle.bundleName}<br/>
+
+                            </td>     
+                            <td> 
+                                   <ul class="anchorList"> 
+                                    <c:forEach items="${bundleMap[trustBundle.trustBundle.bundleName]}" var="anchor">
+                                        <li>${anchor.value}</li>
+                                    </c:forEach>
+                                    </ul>
+                            </td>
+                            <td><input name="incoming" id="incoming_${trustBundle.id}" type="checkbox" checked="${trustBundle.incoming}"/></td>
+                            <td><input name="outgoing" id="outgoing_${trustBundle.id}" type="checkbox" checked="${trustBundle.outgoing}"/></td>
+                        </tr>
+                    </c:forEach>
+                    </table>
+                    
+                    <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
 
                 
-                <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
-                    <c:choose>
-                        <c:when test="${rowCounter.count % 2 == 0}">
-                            <tr class="evenRow">
-                        </c:when>
-                        <c:otherwise>
-                            <tr class="oddRow">
-                        </c:otherwise>
-                    </c:choose>
 
-                        <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.trustBundle.id}|${trustBundle.trustBundle.bundleName}"/></td>
-                        <td>${trustBundle.trustBundle.bundleName}<br/>
-
-                        </td>     
-                        <td> 
-                                <c:forEach items="${anchorMap[trustBundle.trustBundle.bundleName]}" var="anchor">
-                                    ${anchor.thumbprint}<br/>
-                                </c:forEach>
-
-                        </td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </c:forEach>
-                </table>
-                <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
                 </c:when>
                 <c:otherwise>
                    There are no bundles associated with this domain.
