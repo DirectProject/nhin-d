@@ -21,6 +21,7 @@ using Health.Direct.Common.Caching;
 using Health.Direct.Common.Domains;
 using Health.Direct.Config.Client;
 using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
@@ -29,10 +30,9 @@ namespace Health.Direct.SmtpAgent.Tests
         const string TestCacheName = "Domain.testcache";
         const string AgentName = "Agent1";
         const string MissingAgentName = "MissingAgent";
-        
-        
 
-        [Fact]
+
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void CachingDomainKnown()
         {
             DomainServiceResolver m_resolver = CreateResolver(AgentName, true, 60, false); // enable caching, ttl=60secs, dissable negative caching
@@ -50,7 +50,7 @@ namespace Health.Direct.SmtpAgent.Tests
             VerifyValidDomain(domains, cached);
         }
 
-        [Fact]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void CachingDomainNotKnown()
         {
             DomainServiceResolver m_resolver = CreateResolver(MissingAgentName, true, 60, false); // enable caching, ttl=60secs, dissable negative caching

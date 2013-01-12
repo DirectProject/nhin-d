@@ -56,7 +56,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Gateway not set up to be the final destination.
         ///      Settings.Notifications.GatewayIsDestination = false
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestEndToEndStartMdnMonitor()
         {
             CleanMessages(m_agent.Settings);
@@ -131,7 +131,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// the uptimate destination.
         ///      Settings.Notifications.GatewayIsDestination = false
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestEndToEndTimelyAndReliableStartMdnMonitor()
         {
             CleanMessages(m_agent.Settings);
@@ -236,7 +236,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Gateway is set up to be the final destination.  So Gatway is the final destination.
         ///      Settings.Notifications.GatewayIsDestination = true
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_Requestd()
         {
             CleanMessages(m_agent.Settings);
@@ -324,7 +324,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Gateway is set up to be the final destination.  So Gatway is the final destination.
         ///      Settings.Notifications.GatewayIsDestination = true
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_NOT_Requestd()
         {
             CleanMessages(m_agent.Settings);
@@ -405,7 +405,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Absorb uncorrelated (missing) MDN's of type processed, dispatched and failed
         /// and unkown types.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestMissingMdn()
         {
             CleanMessages(m_agent.Settings);

@@ -60,7 +60,7 @@ namespace Health.Direct.Common.Certificates
         /// resolver in the collection until one returns matches.</param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>        
-        public X509Certificate2Collection GetCertificates(MailAddress address)
+        public virtual X509Certificate2Collection GetCertificates(MailAddress address)
         {
             X509Certificate2Collection matches = null;
             foreach(ICertificateResolver resolver in this)
@@ -93,7 +93,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>
         /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
         /// </returns>
-        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+        public virtual X509Certificate2Collection GetCertificatesForDomain(string domain)
         {
             X509Certificate2Collection matches = null;
             foreach (ICertificateResolver resolver in this)
@@ -132,7 +132,12 @@ namespace Health.Direct.Common.Certificates
             return (ex != null && (this.TryNextWhen & TryNextCriteria.Exception) == 0);
         }
         
-        void NotifyException(ICertificateResolver resolver, Exception ex)
+        /// <summary>
+        /// Notify any subscribers of an error in this resolver
+        /// </summary>
+        /// <param name="resolver">Resolver with the error</param>
+        /// <param name="ex">The error</param>
+        protected void NotifyException(ICertificateResolver resolver, Exception ex)
         {
             var errorHandler = this.Error;
             if (errorHandler != null)

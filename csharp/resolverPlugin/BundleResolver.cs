@@ -82,13 +82,13 @@ namespace Health.Direct.ResolverPlugins
         /// Factory providing certificate resolver for outgoing messages. 
         /// </summary>
         public ICertificateResolver OutgoingAnchors
-        { get { return(m_incomingResolver); } }
+        { get { return(m_outgoingResolver); } }
 
         /// <summary>
         /// Factory providing certificate resolver for incoming messages. 
         /// </summary>
         public ICertificateResolver IncomingAnchors
-        { get { return(m_outgoingResolver); } }
+        { get { return(m_incomingResolver); } }
 
         #endregion
 
@@ -118,80 +118,5 @@ namespace Health.Direct.ResolverPlugins
         private BundleResolverSettings m_settings;
         private CertificateResolver m_incomingResolver;
         private CertificateResolver m_outgoingResolver;
-
-        internal class BundleAnchorIndex : IX509CertificateIndex
-        {
-            
-            internal BundleAnchorIndex(BundleResolverSettings settings, bool incoming)
-            {
-                m_clientSettings = settings.ClientSettings;
-                m_incoming = incoming;
-                m_downloader = new AnchorBundleDownloader();
-                m_downloader.VerifySSL = settings.VerifySSL;
-                m_downloader.TimeoutMS = settings.TimeoutMilliseconds;
-                m_downloader.MaxRetries = settings.MaxRetries;
-            }
-
-            public X509Certificate2Collection this[string subjectName]
-            {
-                get 
-                {
-                    X509Certificate2Collection certs = new X509Certificate2Collection();
-
-                    Bundle[] bundles = this.GetBundlesForSubject(subjectName);
-                    foreach (Bundle bundle in bundles)
-                        this.AddAnchorsForBundle(bundle, certs);
-
-                    return (certs);
-                }
-            }
-
-            private void AddAnchorsForBundle(Bundle bundle, X509Certificate2Collection certs)
-            {
-                try
-                {
-                    X509Certificate2Collection bundleCerts = m_downloader.DownloadCertificates(bundle.Uri);
-                    if (!bundleCerts.IsNullOrEmpty())
-                    {
-                        certs.Add(bundleCerts);
-                    }
-                }
-                catch (Exception e)
-                {
-                    this.NotifyError(bundle, e);
-                }
-            }
-
-            private Bundle[] GetBundlesForSubject(string subjectName)
-            {
-                Bundle[] bundles = null;
-
-                using (BundleStoreClient client = this.CreateClient())
-                {
-                    if (m_incoming)
-                        bundles = client.GetIncomingBundles(subjectName, EntityStatus.Enabled);
-                    else
-                        bundles = client.GetOutgoingBundles(subjectName, EntityStatus.Enabled);
-                }
-
-                return (bundles);
-            }
-
-            private BundleStoreClient CreateClient()
-            {
-                return (new BundleStoreClient(m_clientSettings.Binding, m_clientSettings.Endpoint));
-            }
-
-            private void NotifyError(Bundle bundle, Exception e)
-            {
-                EventLogHelper.WriteWarning(null,
-                                           string.Format("BundleResolver: Failed pulling certs from bundle URL: {0}, [{1}]", bundle.Url, e)
-                                           );
-            }
-            
-            private ClientSettings m_clientSettings;
-            private bool m_incoming;
-            private AnchorBundleDownloader m_downloader;
-        }
     }
 }
