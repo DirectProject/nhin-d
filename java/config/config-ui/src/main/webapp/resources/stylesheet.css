@@ -17,7 +17,23 @@ border: 2px solid #bbb;
 #nav_sub {
     height: 37px;
     border-bottom: 1px solid rgb(178, 178, 178);
-    background: -moz-linear-gradient(center top , rgb(232, 232, 232) 0px, rgb(212, 212, 212) 100%) repeat scroll 0% 0% transparent;
+    background:#e8e8e8;
+    background:-moz-linear-gradient(top,#e8e8e8 0,#d4d4d4 100%);
+    background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,#e8e8e8),color-stop(100%,#d4d4d4));
+    background:-webkit-linear-gradient(top,#e8e8e8 0,#d4d4d4 100%);
+    background:-o-linear-gradient(top,#e8e8e8 0,#d4d4d4 100%);
+    background:-ms-linear-gradient(top,#e8e8e8 0,#d4d4d4 100%);
+    background:linear-gradient(top,#e8e8e8 0,#d4d4d4 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#e8e8e8',endColorstr='#d4d4d4',GradientType=0);
+}
+
+.alert { 
+position:relative;border:1px solid;border-radius:3px;clear:both;margin-bottom:9px;margin-top:10px;padding:7px 15px;padding-left:30px;-webkit-box-shadow:inset 1px 1px 0 0 rgba(255,255,255,0.65);-moz-box-shadow:inset 1px 1px 0 0 rgba(255,255,255,0.65);box-shadow:inset 1px 1px 0 0 rgba(255,255,255,0.65)
+}
+
+.alert.info{
+    border-color:#446d99;
+    background:url('/config-ui/resources/images/bg-information.png') repeat-x #a5c8f4;
 }
 
 ul#nav_sub_links {
