@@ -53,7 +53,14 @@ ul#nav_sub_links li {
     border-bottom: 1px solid rgb(4, 23, 43);
     padding-top: 5px;
     padding-left:5px;
-    background: -moz-linear-gradient(center top , rgb(54, 111, 172) 0px, rgb(24, 75, 130) 100%) repeat scroll 0% 0% transparent;
+    background:#366fac;
+    background:-moz-linear-gradient(top,rgba(54,111,172,1) 0,rgba(24,75,130,1) 100%);
+    background:-webkit-gradient(linear,left top,left bottom,color-stop(0%,rgba(54,111,172,1)),color-stop(100%,rgba(24,75,130,1)));
+    background:-webkit-linear-gradient(top,rgba(54,111,172,1) 0,rgba(24,75,130,1) 100%);
+    background:-o-linear-gradient(top,rgba(54,111,172,1) 0,rgba(24,75,130,1) 100%);
+    background:-ms-linear-gradient(top,rgba(54,111,172,1) 0,rgba(24,75,130,1) 100%);
+    background:linear-gradient(top,rgba(54,111,172,1) 0,rgba(24,75,130,1) 100%);
+    filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#366fac',endColorstr='#184b82',GradientType=0);
 }
 
 h3 {
