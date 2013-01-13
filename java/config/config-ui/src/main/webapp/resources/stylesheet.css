@@ -2,6 +2,11 @@ body {
     background-color:white;
 }
 
+body, button, input, select, textarea {
+    font-family: 'PT Sans',sans-serif;
+    color: rgb(34, 34, 34);
+}
+
 div.roundedCorners {
     border-radius: 6px; 
 -moz-border-radius: 6px; 
