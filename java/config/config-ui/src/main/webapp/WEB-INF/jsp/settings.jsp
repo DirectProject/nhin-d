@@ -14,7 +14,8 @@
 
     <h2>Agent Settings</h2>
 
-    <p>Visit <a href="http://api.nhindirect.org/java/site/gateway/2.0.1/users-guide/smtp-depl-wsconfig.html" target="_blank">Deployment Guide</a> to find settings and valid values</p>
+    <div class="alert info">
+        <span class="icon"></span>Visit <a href="http://api.nhindirect.org/java/site/gateway/2.0.1/users-guide/smtp-depl-wsconfig.html" target="_blank">Deployment Guide</a> to find settings and valid values</div>
 
 <fieldset style="width: 97%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" />

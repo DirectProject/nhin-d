@@ -12,7 +12,10 @@
 
     <h2>Manage Certificates</h2>
 	
-		<div class="alert info"><strong>NOTE:</strong> Please select a DER encoded certificate. Private certificate files should be pkcs12 encoded files with no encryption on both the file and private key stored in the file.</div>
+		<div class="alert info">
+                    <span class="icon"></span>
+                    <strong>NOTE:</strong> Please select a DER encoded certificate. Private certificate files should be pkcs12 encoded files with no encryption on both the file and private key stored in the file.
+                </div>
 	
 <c:choose>
 	<c:when test='${empty action || action == "Add" }'>
