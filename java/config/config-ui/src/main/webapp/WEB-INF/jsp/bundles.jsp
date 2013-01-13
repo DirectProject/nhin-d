@@ -30,7 +30,7 @@ $(function() {
 
     <br/><br/>
 
-    <div id="newBundle" style="display:none;background:white;padding:10px;width:300px;height:auto;"></div>
+    <div id="newBundle" class="roundedCorners" style="display:none;background:white;padding:10px;width:300px;height:auto;"></div>
 
 	<div>
 
