@@ -1,16 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html style="background-repeat: no-repeat;
+    background-attachment: fixed;/* IE10 Consumer Preview */ 
+background-image: -ms-linear-gradient(bottom, #184B84 0%, #366FAC 100%);
+
+/* Mozilla Firefox */ 
+background-image: -moz-linear-gradient(bottom, #184B84 0%, #366FAC 100%);
+
+/* Opera */ 
+background-image: -o-linear-gradient(bottom, #184B84 0%, #366FAC 100%);
+
+/* Webkit (Safari/Chrome 10) */ 
+background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #184B84), color-stop(1, #366FAC));
+
+/* Webkit (Chrome 11+) */ 
+background-image: -webkit-linear-gradient(bottom, #184B84 0%, #366FAC 100%);
+
+/* W3C Markup, IE10 Release Preview */ 
+background-image: linear-gradient(to top, #184B84 0%, #366FAC 100%);">
     <head>
         <%@ include file="/WEB-INF/jsp/include.jsp"%>
         <META http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <title><fmt:message key="welcome.title" /></title>
     </head>
-    <body>
+    <body style="background:none;color:white;font-family: 'PT Sans',sans-serif;font-size: 16px;">
 
         <div style="text-align:center;width:325px;margin:0 auto;margin-top:50px;">
-            <img src="<c:url value="/resources/images/direct_logo.png" />" alt="Direct Project" border="0" />
+            <img src="<c:url value="/resources/images/direct-project-logo2.png" />" alt="Direct Project" border="0" />
             <br/>
 
 
@@ -37,11 +54,11 @@
 
                 <table border="0" align="center">
                     <tr>
-                        <td width=75>Username:</td>
+                        <td width=75>Username: </td>
                         <td><input type="text" name="j_username"/></td>
                     </tr>
                     <tr>
-                        <td width=75>Password:</td>
+                        <td width=75>Password: </td>
                         <td><input type="password" name="j_password"/></td>
                     </tr>
                     <tr>
