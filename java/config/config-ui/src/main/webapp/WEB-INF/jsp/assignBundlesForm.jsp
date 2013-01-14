@@ -5,18 +5,42 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"  %>
 
 <script type="text/javascript">
+
 function selectBundles() {
 
     var bundleHTML = "";
 
-    var bundleArray = $(':checkbox[name=bundlesSelected]:checked').map(function () { 
+    var selectedBundles = $(':checkbox[name=bundlesSelected]:checked').map(function () { 
             var bundle = this.value.split('|');  
             bundleHTML += bundle[1]+"<br/>";
             return bundle[0];
     }).get();
-    
-    $('#selectedBundles').val(bundleArray);
 
+
+    var directionFlags = $(':checkbox[name=incoming]:checked,:checkbox[name=outgoing]:checked').map(function() { return $(this).attr('id'); });
+    
+    var bundleArrayString = "";
+    
+    for(var i=0; i<selectedBundles.length; i++) {
+
+        var direction = '';
+
+        if( $('#incoming_'+selectedBundles[i]).attr('checked') && $('#outgoing_'+selectedBundles[i]).attr('checked') ) {
+            direction = 'both';
+        } else if ( $('#incoming_'+selectedBundles[i]).attr('checked') ) {
+            direction = 'in';
+        } else if ( $('#outgoing_'+selectedBundles[i]).attr('checked') ) {
+            direction = 'out';
+        } 
+
+        bundleArrayString += selectedBundles[i]+"_"+direction + ",";
+
+    }
+
+    // Set form input to the json array
+    $('#selectedBundles').val(bundleArrayString);
+
+    // Update display on page of which bundles are selected
     $('#bundlesList').html(bundleHTML);
 
     // Fade out overlay
@@ -41,7 +65,7 @@ function selectAll() {
 
 <div style="float:right"><a class="modal_close" href="#">Close</a></div>
 <br clear="both"/>
-<h3>Assign Trust Bundles</h3>
+<h3>Select Trust Bundles</h3>
 
 <div>
     <table style="width:100%" class="fancyTable">
@@ -50,6 +74,8 @@ function selectAll() {
             <tr>
                 <th><input type="checkbox" id="selectAllCheckbox" onclick="selectAll();"/></th>
                 <th>Bundle Name</th>
+                <th width=20>In</th>
+                <th width=20>Out</th>
             </tr>
         </thead>
     
@@ -64,9 +90,9 @@ function selectAll() {
             </c:choose>
 
                 <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.id}|${trustBundle.bundleName}"/></td>
-                <td>${trustBundle.bundleName}<br/>
-
-                </td>                                                     
+                <td>${trustBundle.bundleName}</td>                                                     
+                <td><input name="incoming" id="incoming_${trustBundle.id}" type="checkbox" checked=""/></td>
+                <td><input name="outgoing" id="outgoing_${trustBundle.id}" type="checkbox" checked=""/></td>
             </tr>
         </c:forEach>
                     
