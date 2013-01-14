@@ -13,9 +13,7 @@
         <%@ include file="/WEB-INF/jsp/header.jsp" %>
         <h2>Manage Domains <a href="/config-ui/config/main/search?domainName=&submitType=newdomain" style="font-size:12px;font-weight:normal;">Create New Domain</a></h2>
 	
-<div style="margin:5px 0;">
-        
-</div>			
+		
 
         <div>
 
@@ -61,7 +59,7 @@
 
             <div id="bundle-table-col">
 
-                <h3>Search Results</h3>
+                
 
                 <c:if test="${empty searchResults}">
                     <c:if test="${not empty searchTerm}">
@@ -76,49 +74,46 @@
                 
 
 			 <c:if test="${not empty searchResults}">
+                            <spring:url value="/config/domain/remove" var="formUrlremove"/>
+		            <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" method="POST" cssStyle="height:auto;">
+                            <div class="box" style="width:auto;margin-right:300px;margin-bottom:5px;">
+                                <div class="header">
+                                    <h3>Search Results</h3>
+                                </div>
+                                <div class="content no-padding" style="">
+                                    <table id="table-example" class="table" style="width:100%;margin-bottom:0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th rowspan="1" colspan="1" style="width: 20px;"></th>
+                                                            <th class="sorting" rowspan="1" colspan="1" >Name</th>
+                                                            <th class="sorting" rowspan="1" colspan="1" >Postmaster</th>
+                                                            <th class="sorting" rowspan="1" colspan="1" >Status</th>
+                                                            <th class="sorting" rowspan="1" colspan="1" >Created</th>
+                                                            <th class="sorting" rowspan="1" colspan="1" >Updated</th>    
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <c:forEach var="domain" items="${searchResults}" varStatus="rowCounter">
+                                                        <tr class="odd">
+                                                            <spring:url value="/config/domain?id=${domain.id}" var="formUrlclick"/>
+                                                            <td><form:checkbox path="remove" value="${domain.id}" /></td>
+                                                            <td><a href='${fn:escapeXml(formUrlclick)}'>${domain.domainName}</a></td>
+                                                            <td>${domain.postMasterEmail}</td>
+                                                            <td>${domain.status}</td>
+                                                            <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+                                                            <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
+                                                        </tr>
+                                                        </c:forEach>
+                                                    </tbody>
+                                                </table>
 
-                            
+                                </div>                                
+                                
+                            </div>
+                            <button name="submitType" id="submitType" type="submit" value="delete">Delete</button>
+                            </form:form>
 
 
-
-		            <div id="dynamic">
-		                <spring:url value="/config/domain/remove" var="formUrlremove"/>
-		                <form:form name="removeForm" modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" method="POST" >
-		                    <table class="fancyTable" id="domain-table" style="width:auto;font-size:10px;">
-		                        <thead>
-		                            <tr>
-		                                <th width=20></th>
-						<th>Name</th>
-		                                <th>Postmaster</th>
-		                                <th>Status</th>
-		                                <th>Created</th>
-		                                <th>Updated</th>
-		                                
-		                            </tr>
-		                        </thead>
-		                        <tbody>
-		                            <!--  Put the data from the searchResults attribute here -->
-		                            <c:forEach var="domain" items="${searchResults}" varStatus="rowCounter">
-		                                <tr>
-		                                    <spring:url value="/config/domain?id=${domain.id}" var="formUrlclick"/>
-											<td><form:checkbox path="remove" value="${domain.id}" /></td>
-		                                    
-		<td><a href='${fn:escapeXml(formUrlclick)}'>${domain.domainName}</a></td>
-		                                    <td>${domain.postMasterEmail}</td>
-		                                    <td>${domain.status}</td>
-		                                    <td><fmt:formatDate value="${domain.createTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
-		                                    <td><fmt:formatDate value="${domain.updateTime.time}" pattern="MM/dd/yyyy, hh:mm"/></td>
-		                                    
-		                                </tr>
-		                            </c:forEach>
-		                        </tbody>
-		                        
-		                    </table>
-		                    <button name="submitType" id="submitType" type="submit" value="delete">Delete</button>
-                                    
-                                    
-		                </form:form>
-		            </div>
 		        </c:if>
 
 

@@ -50,8 +50,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "trustbundleanchor")
 public class TrustBundleAnchor 
 {
-	private long id;
-	private TrustBundle trustBundle;
+    private long id;
+    private TrustBundle trustBundle;
     private byte[] anchorData;
     private String thumbprint;
     private Calendar validStartDate;
