@@ -143,7 +143,7 @@
                 
 		$('#assignBundles').load('/config-ui/config/bundles/assignBundlesForm');
 
-                <c:if test="${not empty domainId}">
+                <c:if test="f${not empty domainId}">
 
                 // Attach listener to incoming/outgoing checkboxes
                 $('[name="incoming"]').change( function() {
@@ -360,6 +360,13 @@
                             modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
                             cssClass="cleanform" method="POST">
                             <form:hidden path="id" />
+
+                            <div class="box">
+                                <div class="header">
+                                    <h3>TEST</h3>
+                                </div>
+                            </div>
+
                             <div id="tablelist"  style="width:100%;">
                                 <table cellpadding="1px" cellspacing="1px" id="addressTable"
                                        class="fancyTable" style="font-size:12px;width:100%;">

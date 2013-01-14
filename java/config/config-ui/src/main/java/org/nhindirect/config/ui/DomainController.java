@@ -895,50 +895,54 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("Enter domain/remove");
 		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		
-		if (configSvc != null) {
-			int cnt = simpleForm.getRemove().size();
-			for (int x = 0; x < cnt; x++) {
-				try {
-					String strid = simpleForm.getRemove().remove(x);
-                                        Long domainId = Long.parseLong(strid);
-                                        Domain dom = configSvc.getDomain(domainId);
-					String owner = dom.getDomainName();
-					//String domname = dom.getDomainName();
-					if (log.isDebugEnabled()) log.debug("removing domain with id: " + domainId);
+		if (configSvc != null) 
+                {
+                    int cnt = simpleForm.getRemove().size();
+                    for (int x = 0; x < cnt; x++) {
+                        try 
+                        {
+                            String strid = simpleForm.getRemove().remove(x);
+                            Long domainId = Long.parseLong(strid);
+                            Domain dom = configSvc.getDomain(domainId);
+                            String owner = dom.getDomainName();
+                            //String domname = dom.getDomainName();
+                            
+                            if (log.isDebugEnabled()) log.debug("removing domain with id: " + domainId);
 
-                    configSvc.removeDomainById(domainId);
-					// now delete anchors
-					try{
-						// get list of certificates for this domain
-						Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-						if (certs != null) {
-							ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
-							// now iterate over each one and remove the
-							// appropriate ones
-							for (Iterator iter = certs.iterator(); iter
-									.hasNext();) {
-								Anchor t = (Anchor) iter.next();
-								certtoberemovedlist.add(t.getId());
-							}
-							// with the collection of anchor ids now remove them
-							// from the configSvc
-							if (log.isDebugEnabled())
-								log
-										.debug(" Trying to remove anchors from database");
-							configSvc.removeAnchors(certtoberemovedlist);
-							if (log.isDebugEnabled())
-								log.debug(" SUCCESS Trying to remove anchors");
+                            configSvc.removeDomainById(domainId);
+					
+                            // now delete anchors
+                            try{
+                                    // get list of certificates for this domain
+                                    Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+                                    if (certs != null) {
+                                            ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+                                            // now iterate over each one and remove the
+                                            // appropriate ones
+                                            for (Iterator iter = certs.iterator(); iter
+                                                            .hasNext();) {
+                                                    Anchor t = (Anchor) iter.next();
+                                                    certtoberemovedlist.add(t.getId());
+                                            }
+                                            // with the collection of anchor ids now remove them
+                                            // from the configSvc
+                                            if (log.isDebugEnabled())
+                                                    log
+                                                                    .debug(" Trying to remove anchors from database");
+                                            configSvc.removeAnchors(certtoberemovedlist);
+                                            if (log.isDebugEnabled())
+                                                    log.debug(" SUCCESS Trying to remove anchors");
 
-						}
-					} catch (ConfigurationServiceException e) {
-						if (log.isDebugEnabled())
-							log.error(e);
-					}
-				} catch (ConfigurationServiceException e) {
-					if (log.isDebugEnabled())
-						log.error(e);
-				}
-			}
+                                    }
+                            } catch (ConfigurationServiceException e) {
+                                    if (log.isDebugEnabled())
+                                            log.error(e);
+                            }
+                        } catch (ConfigurationServiceException e) {
+                                if (log.isDebugEnabled())
+                                        log.error(e);
+                        }
+                    }
 		}
 		SearchDomainForm form2 = (SearchDomainForm) session.getAttribute("searchDomainForm");
 		model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
@@ -1234,11 +1238,13 @@ public class DomainController {
 								HttpSession session, 
 								@RequestParam(value="submitType") String actionPath,
 							        @ModelAttribute("domainForm") DomainForm form,
-							        Model model)  { 		
+							        Model model)  
+        { 		
 		if (log.isDebugEnabled()) log.debug("Enter");
 		if (log.isDebugEnabled()) log.debug("Entered saveDomain");
 		if (log.isDebugEnabled()) log.debug("The value of actionPath: "+actionPath);
-		ModelAndView mav = new ModelAndView(); 
+		
+                ModelAndView mav = new ModelAndView(); 
 		
                 if (actionPath.equalsIgnoreCase("cancel")) {
 			
@@ -1266,20 +1272,26 @@ public class DomainController {
                             
                             List<Domain> result = new ArrayList<Domain>(configSvc.searchDomain(form.getDomainName(), form.getStatus()));
                             
-                            // Associate trust bundles if selected
-                            String[] bundles = form.getSelectedBundles().split(",");
-                            int bundleCount = bundles.length;
+                            if(form.getSelectedBundles() != "") {
+                                
                             
-                            log.debug("# of bundles associated: "+bundleCount);
-                                                     
-                            // Associate trust bundles to Domain
-                            for(int i=0; i<bundleCount; i++) {                                
-                            	/*
-                            	 * TODO: Add  incoming and outgoing indicators
-                            	 */
-                                configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]), true, true);
-                                log.error("Added Bundle ID #"+bundles[i]);
-                            }                                                                                                                
+                            
+                                // Associate trust bundles if selected
+                                String[] bundles = form.getSelectedBundles().split(",");
+
+                                int bundleCount = bundles.length;
+
+                                log.debug("# of bundles associated: "+bundleCount);
+
+                                // Associate trust bundles to Domain
+                                for(int i=0; i<bundleCount; i++) {                                
+                                    /*
+                                     * TODO: Add  incoming and outgoing indicators
+                                     */
+                                    configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]), true, true);
+                                    log.error("Added Bundle ID #"+bundles[i]);
+                                }   
+                            }
                             
                             if (result.size() > 0) {
                                     form = new DomainForm();
