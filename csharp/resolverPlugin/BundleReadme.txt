@@ -34,11 +34,14 @@ Update WebConfig. Add the "Bundles" endpoint to your CertificateServiceBehavior,
             </service>
 
 ==Plugin Resolvers==
-The .NET RI now includes 2 new Plugin Resolvers:
+The .NET RI includes 2 new Plugin Anchor Resolvers:
 - BundleResolver
 - MultiSourceAnchorResolver
 
-Both are implemented in csharp\resolverPlugins and compiled into Health.Direct.ResolverPlugins.dll.
+Your Gateway resolves Anchor bundles using these plugin resolvers. 
+
+Both resolvers are implemented in csharp\resolverPlugin
+They are compiled into Health.Direct.ResolverPlugins.dll.
 
 Copy Health.Direct.ResolverPlugins.dll to your Gateway directory. 
 
