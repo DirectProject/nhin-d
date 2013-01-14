@@ -109,12 +109,12 @@ namespace Health.Direct.Config.Console.Command
 
         private const string BundleAddUsage =
             "Add a new bundle definition into the config store - if it doesn't already exist.\n" +
-            "\t owner url forIncoming forOutgoing [status]\n" +
-            "\t\t owner: domain or address\n" +
-            "\t\t url: url for bundle\n" +
-            "\t\t forIncoming: (true/false) Use bundle to verify trust of INCOMING messages\n" +
-            "\t\t forOutgoing: (true/false) use bundle to verify trust of OUTGOING messages\n" +
-            "\t\t status: (new/enabled/disabled, default new) status field\n" +
+            "owner url forIncoming forOutgoing [status]\n\n" +
+            "\t owner: domain or address\n" +
+            "\t url: url for bundle\n" +
+            "\t forIncoming: (true/false) Use bundle to verify trust of INCOMING messages\n" +
+            "\t forOutgoing: (true/false) use bundle to verify trust of OUTGOING messages\n" +
+            "\t status: (new/enabled/disabled, default new) status field\n" +
             "\n";
 
         /// <summary>
@@ -130,10 +130,10 @@ namespace Health.Direct.Config.Console.Command
         }
 
         private const string BundleSetStatusUsage =
-            "Set the status field on an existing bundle.\n" +
-            "\t id status\n" +
-            "\t\t id: bundle id\n" +
-            "\t\t status: (new/enabled/disabled) status field\n" +
+            "Set the status field on an existing bundle.\n\n" +
+            "id status\n" +
+            "\t id: bundle id\n" +
+            "\t status: (new/enabled/disabled) status field\n" +
             "\n";
 
         /// <summary>
@@ -149,8 +149,8 @@ namespace Health.Direct.Config.Console.Command
 
         private const string BundleRemoveUsage =
             "Remove an existing bundle from the store.\n" +
-            "\t id\n" +
-            "\t\t id: bundle id\n" +
+            "id\n" +
+            "\t id: bundle id\n" +
             "\n";
 
         /// <summary>
@@ -165,9 +165,9 @@ namespace Health.Direct.Config.Console.Command
         }
 
         private const string BundlesGetUsage =
-            "Return all bunders for owner (address or domain).\n" +
-            "\t owner\n" +
-            "\t\t owner: domain or address\n" +
+            "Return all bunders for owner (address or domain).\n\n" +
+            "owner\n" +
+            "\t owner: domain or address\n" +
             "\n";
 
         /// <summary>
@@ -197,13 +197,13 @@ namespace Health.Direct.Config.Console.Command
         }
 
         private const string BundleAddBlueButtonUsage =
-            "Ensure that blue button bundles are registered for the given owner.\n" +
-            "\t owner bundleType forIncoming forOutgoing [status]\n" +
-            "\t\t owner: domain or address\n" +
-            "\t\t bundleType: Provider | Patient | ProviderTest | PatientTest \n" +
-            "\t\t forIncoming: (true/false) Use bundle to verify trust of INCOMING messages\n" +
-            "\t\t forOutgoing: (true/false) use bundle to verify trust of OUTGOING messages\n" +
-            "\t\t status: (new/enabled/disabled, default new) status field\n" +
+            "Ensure that blue button bundles are registered for the given owner.\n\n" +
+            "owner bundleType forIncoming forOutgoing [status]\n" +
+            "\t owner: domain or address\n" +
+            "\t bundleType: Provider | Patient | ProviderTest | PatientTest \n" +
+            "\t forIncoming: (true/false) Use bundle to verify trust of INCOMING messages\n" +
+            "\t forOutgoing: (true/false) use bundle to verify trust of OUTGOING messages\n" +
+            "\t status: (new/enabled/disabled, default new) status field\n" +
             "\n";
 
         
@@ -236,18 +236,79 @@ namespace Health.Direct.Config.Console.Command
             {
                 string fileName = string.Format("Bundle_{0}.p7b", bundle.ID);
                 string filePath = Path.Combine(folderpath, fileName);
-                
-                WriteLine("Downloading ID={0}, {1}", bundle.ID, bundle.Url);
-                bundleDownloader.DownloadToFile(bundle.Uri, filePath);
-                WriteLine("ok");
+                try
+                {
+                    WriteLine("Downloading ID={0}, {1}", bundle.ID, bundle.Url);
+                    bundleDownloader.DownloadToFile(bundle.Uri, filePath);
+                    WriteLine("ok");
+                }
+                catch (Exception ex)
+                {
+                    WriteLine("Error downloading bundle {0} from {1}", bundle.ID, bundle.Url);
+                    WriteLine(ex.Message);
+                }
             }
         }
         
         private const string BundleDownloadUsage =
-            "Download all configured bundles for an owner to a folder.\n" +
-            "\t owner [folderPath]\n" +
-            "\t\t owner: bundle owner\n" +
-            "\t\t folderPath: (optional) Where to save the downloaded bundles\n" +
+            "Download all configured bundles for an owner to a folder.\n\n" +
+            "owner [folderPath] [extractCerts]\n" +
+            "\t owner: bundle owner\n" +
+            "\t folderPath: (optional) Where to save the downloaded bundles\n" +
+            "\n";
+
+        [Command(Name = "Bundles_Download_Certs", Usage = BundleDownloadCertsUsage)]
+        public void BundlesDownloadCerts(string[] args)
+        {
+            string owner = args.GetRequiredValue<string>(0);
+            string folderpath = args.GetRequiredValue<string>(1);
+            if (!Directory.Exists(folderpath))
+            {
+                WriteLine("Folder not found");
+                return;
+            }
+
+            AnchorBundleDownloader bundleDownloader = new AnchorBundleDownloader();
+            bundleDownloader.TimeoutMS = 30 * 1000;
+            bundleDownloader.MaxRetries = 1;
+            bundleDownloader.VerifySSL = false;
+
+            Bundle[] bundles = Client.GetBundlesForOwner(owner);
+            foreach (Bundle bundle in bundles)
+            {
+                try
+                {
+                    WriteLine("Downloading ID={0}, {1}", bundle.ID, bundle.Url);
+                    string bundleFolderPath = Path.Combine(folderpath, string.Format("Bundle_{0}", bundle.ID));
+                    if (Directory.Exists(bundleFolderPath))
+                    {
+                        Directory.Delete(bundleFolderPath);
+                    }
+                    Directory.CreateDirectory(bundleFolderPath);
+
+                    X509Certificate2Collection certs = bundleDownloader.DownloadCertificates(bundle.Uri);
+                    foreach (X509Certificate2 cert in certs)
+                    {
+                        string certName = cert.ExtractEmailNameOrName();
+                        WriteLine(certName);
+                        string fileName = certName.ToFileName() + ".cer";
+                        File.WriteAllBytes(Path.Combine(bundleFolderPath, fileName), cert.RawData);
+                    }
+                    WriteLine("ok");
+                }
+                catch (Exception ex)
+                {
+                    WriteLine("Error downloading bundle {0} from {1}", bundle.ID, bundle.Url);
+                    WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private const string BundleDownloadCertsUsage =
+            "Download all certs in configured bundles for an owner to a folder.\n\n" +
+            "owner [folderPath]\n" +
+            "\t owner: bundle owner\n" +
+            "\t folderPath: (optional) Where to save the downloaded certs\n" +
             "\n";
 
 

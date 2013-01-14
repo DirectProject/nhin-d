@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Health.Direct.Config.Tools.Command
 {
@@ -107,7 +108,38 @@ namespace Health.Direct.Config.Tools.Command
 
             return (T) Enum.Parse(typeof(T), value, true);
         }
-        
+
+        /// <summary>
+        /// Given a string, turn it into a file name by replacing disallowed characters with '_'
+        /// </summary>
+        /// <param name="fileName">input file name</param>
+        /// <returns>legalized file name</returns>
+        public static string ToFileName(this string fileName)
+        {
+            char[] illegals = Path.GetInvalidFileNameChars();
+            char[] legalName = null;
+            for (int s = 0; s < fileName.Length; ++s)
+            {
+                char ch = fileName[s];
+                for (int i = 0; i < illegals.Length; ++i)
+                {
+                    if (ch == illegals[i])
+                    {
+                        legalName = legalName ?? fileName.ToCharArray();
+                        legalName[s] = '_';
+                        break;
+                    }
+                }
+            }
+
+            if (legalName != null)
+            {
+                fileName = new string(legalName);
+            }
+
+            return fileName;
+        }
+
         static readonly char[] Whitespace = new[] { ' ', '\t', '\r', '\n' };
         static readonly char[] Quotes = new[] { '"' };
         
