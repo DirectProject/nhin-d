@@ -3,51 +3,17 @@ package org.nhindirect.config.processor.impl;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.Collection;
 
 import org.nhindirect.config.ConfigServiceRunner;
+import org.nhindirect.config.SpringBaseTest;
 import org.nhindirect.config.service.TrustBundleService;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.springframework.context.ApplicationContext;
 
-import junit.framework.TestCase;
-
-public class DefaultBundleCacheUpdateProcessorImpl_springInitTest extends TestCase
+public class DefaultBundleCacheUpdateProcessorImpl_springInitTest extends SpringBaseTest
 {
-	protected String filePrefix;
-	
-	@Override
-	public void setUp()
-	{
-		try
-		{
-			ConfigServiceRunner.startConfigService();
-			
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		// check for Windows... it doens't like file://<drive>... turns it into FTP
-		File file = new File("./src/test/resources/bundles/signedbundle.p7b");
-		if (file.getAbsolutePath().contains(":/"))
-			filePrefix = "file:///";
-		else
-			filePrefix = "file:///";
-	}
-	
-	protected void cleanBundles(TrustBundleService service) throws Exception
-	{
-		Collection<TrustBundle> bundles = service.getTrustBundles(true);
-		
-		for (TrustBundle bundle : bundles)
-			service.deleteTrustBundles(new long[] {bundle.getId()});
-		
-		bundles = service.getTrustBundles(true);
-		assertEquals(0, bundles.size());
-	}
+
 	
 	public void testLoadConfigService_validSpringConfig_assertComponentsLoaded() throws Exception
 	{
@@ -75,7 +41,6 @@ public class DefaultBundleCacheUpdateProcessorImpl_springInitTest extends TestCa
 		
 		TrustBundleService trustService = (TrustBundleService)ctx.getBean("trustBundleSvc");
 		
-		cleanBundles(trustService);
 		
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Test Bundle");
@@ -99,8 +64,6 @@ public class DefaultBundleCacheUpdateProcessorImpl_springInitTest extends TestCa
 		assertNotNull(ctx);
 		
 		TrustBundleService trustService = (TrustBundleService)ctx.getBean("trustBundleSvc");
-		
-		cleanBundles(trustService);
 		
 		final TrustBundle bundle = new TrustBundle();
 		bundle.setBundleName("Test Bundle");

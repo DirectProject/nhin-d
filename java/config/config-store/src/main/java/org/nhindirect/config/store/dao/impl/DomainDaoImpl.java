@@ -221,7 +221,7 @@ public class DomainDaoImpl implements DomainDao {
             log.debug("Enter");
 
         // delete addresses first if they exist
-        Domain domain = getDomainByName(name);
+        final Domain domain = getDomainByName(name);
         
         if (domain != null)
         {      
@@ -248,9 +248,11 @@ public class DomainDaoImpl implements DomainDao {
         if (log.isDebugEnabled())
             log.debug("Enter");
         
-        Domain domain = getDomain(anId);
+        final Domain domain = getDomain(anId);
         if (domain != null) 
         {
+        	disassociateTrustBundlesFromDomain(domain.getId());
+        	
         	entityManager.remove(domain);
         }
         else 

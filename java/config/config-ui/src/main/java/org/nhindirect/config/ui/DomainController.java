@@ -21,6 +21,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
@@ -34,6 +35,8 @@ import java.util.Iterator;
 import java.util.Dictionary;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.security.auth.x500.X500Principal;
@@ -892,50 +895,54 @@ public class DomainController {
 		if (log.isDebugEnabled()) log.debug("Enter domain/remove");
 		if (log.isDebugEnabled()) log.debug("the list of checkboxes checked or not is: "+simpleForm.getRemove().toString());
 		
-		if (configSvc != null) {
-			int cnt = simpleForm.getRemove().size();
-			for (int x = 0; x < cnt; x++) {
-				try {
-					String strid = simpleForm.getRemove().remove(x);
-                                        Long domainId = Long.parseLong(strid);
-                                        Domain dom = configSvc.getDomain(domainId);
-					String owner = dom.getDomainName();
-					//String domname = dom.getDomainName();
-					if (log.isDebugEnabled()) log.debug("removing domain with id: " + domainId);
+		if (configSvc != null) 
+                {
+                    int cnt = simpleForm.getRemove().size();
+                    for (int x = 0; x < cnt; x++) {
+                        try 
+                        {
+                            String strid = simpleForm.getRemove().remove(x);
+                            Long domainId = Long.parseLong(strid);
+                            Domain dom = configSvc.getDomain(domainId);
+                            String owner = dom.getDomainName();
+                            //String domname = dom.getDomainName();
+                            
+                            if (log.isDebugEnabled()) log.debug("removing domain with id: " + domainId);
 
-                    configSvc.removeDomainById(domainId);
-					// now delete anchors
-					try{
-						// get list of certificates for this domain
-						Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
-						if (certs != null) {
-							ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
-							// now iterate over each one and remove the
-							// appropriate ones
-							for (Iterator iter = certs.iterator(); iter
-									.hasNext();) {
-								Anchor t = (Anchor) iter.next();
-								certtoberemovedlist.add(t.getId());
-							}
-							// with the collection of anchor ids now remove them
-							// from the configSvc
-							if (log.isDebugEnabled())
-								log
-										.debug(" Trying to remove anchors from database");
-							configSvc.removeAnchors(certtoberemovedlist);
-							if (log.isDebugEnabled())
-								log.debug(" SUCCESS Trying to remove anchors");
+                            configSvc.removeDomainById(domainId);
+					
+                            // now delete anchors
+                            try{
+                                    // get list of certificates for this domain
+                                    Collection<Anchor> certs = configSvc.getAnchorsForOwner(owner, CertificateGetOptions.DEFAULT);
+                                    if (certs != null) {
+                                            ArrayList<Long> certtoberemovedlist = new ArrayList<Long>();
+                                            // now iterate over each one and remove the
+                                            // appropriate ones
+                                            for (Iterator iter = certs.iterator(); iter
+                                                            .hasNext();) {
+                                                    Anchor t = (Anchor) iter.next();
+                                                    certtoberemovedlist.add(t.getId());
+                                            }
+                                            // with the collection of anchor ids now remove them
+                                            // from the configSvc
+                                            if (log.isDebugEnabled())
+                                                    log
+                                                                    .debug(" Trying to remove anchors from database");
+                                            configSvc.removeAnchors(certtoberemovedlist);
+                                            if (log.isDebugEnabled())
+                                                    log.debug(" SUCCESS Trying to remove anchors");
 
-						}
-					} catch (ConfigurationServiceException e) {
-						if (log.isDebugEnabled())
-							log.error(e);
-					}
-				} catch (ConfigurationServiceException e) {
-					if (log.isDebugEnabled())
-						log.error(e);
-				}
-			}
+                                    }
+                            } catch (ConfigurationServiceException e) {
+                                    if (log.isDebugEnabled())
+                                            log.error(e);
+                            }
+                        } catch (ConfigurationServiceException e) {
+                                if (log.isDebugEnabled())
+                                        log.error(e);
+                        }
+                    }
 		}
 		SearchDomainForm form2 = (SearchDomainForm) session.getAttribute("searchDomainForm");
 		model.addAttribute(form2 != null ? form2 : new SearchDomainForm());
@@ -999,6 +1006,55 @@ public class DomainController {
     }	
     
     
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/updateBundleDirection", method = RequestMethod.POST)
+    public ModelAndView updateBundleDirection (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,         
+        @RequestParam(required=true) String domainId,
+        @RequestParam(required=true) String bundle,
+        @RequestParam(required=true) String direction,
+        @RequestParam(required=true) String directionValue,
+                                                    HttpSession session, Model model)  { 
+        
+        Long id = Long.parseLong(domainId);
+        
+        Collection<TrustBundleDomainReltn> bundles = null;
+        
+        try {
+            bundles = configSvc.getTrustBundlesByDomain(id, false);
+        } catch (ConfigurationServiceException ex) {
+            Logger.getLogger(DomainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for(TrustBundleDomainReltn bundleReltn : bundles) {
+            if(bundleReltn.getId() == Long.parseLong(bundle)) {
+                if(direction.toLowerCase().equals("incoming"))
+                {
+                    if(Integer.parseInt(directionValue) == 1) {
+                        bundleReltn.setIncoming(true); 
+                    } else {
+                        bundleReltn.setIncoming(false);                        
+                    }
+                } else {
+                    if(Integer.parseInt(directionValue) == 1) {
+                        bundleReltn.setOutgoing(true); 
+                    } else {
+                        bundleReltn.setOutgoing(false);
+                    }
+                }
+                
+            }
+        }
+        
+        
+        
+        ModelAndView mav = new ModelAndView(); 
+        
+        mav.setViewName("updateBundleDirection");
+        
+        return mav;
+    }
+    
+    
     
     /**
      * Display a Domain
@@ -1007,7 +1063,7 @@ public class DomainController {
     public ModelAndView viewDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
                                                             @RequestParam(required=false) String id,
                                                             HttpSession session, 
-                                                            Model model) { 		
+                                                            Model model) throws java.security.cert.CertificateException { 		
             if (log.isDebugEnabled()) {
                 log.debug("Enter View Domain");
             }		
@@ -1027,6 +1083,7 @@ public class DomainController {
             model.addAttribute("domainForm", form);
             model.addAttribute("action", action);
             model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+            
 
             mav.addObject("action", action);
             mav.addObject("statusList", EntityStatus.getEntityStatusList());
@@ -1039,6 +1096,7 @@ public class DomainController {
 
                 Domain results = null;
                 Long dId = Long.decode(id);
+                model.addAttribute("domainId", dId);
 
                 AddressForm addrform = new AddressForm();
                 addrform.setId(dId);
@@ -1072,30 +1130,43 @@ public class DomainController {
                                 
                                 if(bundles != null) {
                                 
-                                    model.addAttribute("trustBundles", bundles);
+                                    model.addAttribute("trustBundles", bundles);                                                                        
+
+                                    //Map<String, Object> bundleMap = new HashMap<String, Object>();  // Map for each bundle by bundle name
                                     
-                                    Map<String, Collection<TrustBundleAnchor>> anchorMap = new HashMap<String, Collection<TrustBundleAnchor>>(bundles.size());
-                                    Collection<TrustBundleAnchor> tbAnchors;
+                                    Map<String, Object> bundleMap = new HashMap<String, Object>(bundles.size());                                                                                                            
+                                    
+                                    Collection<TrustBundleAnchor> tbAnchors;    // Store anchors for each bundle   
+                                                                        
 
                                     for(TrustBundleDomainReltn bundle : bundles) 
-                                    {
+                                    {                                        
+                                        tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();    
+                                        Map<TrustBundleAnchor, String> anchorMap = new HashMap<TrustBundleAnchor, String>(tbAnchors.size());                                                                                
                                         
-                                        tbAnchors = bundle.getTrustBundle().getTrustBundleAnchors();                                                                                                                                                                
+                                        //String[] anchorDNs = new String[tbAnchors.size()];  // String array for storing anchor DNs
+                                        int curAnchor = 0;  // Counter as we iterate through anchor list
                                         
-
-                                        
-//                                        for(TrustBundleAnchor anchor : anchorStrings) {
-//                                            System.out.println("Anchor:"+anchor.data);
-//                                        }
-                                        //System.out.println(tbAnchors.toString());
-                                        
-                                        anchorMap.put(bundle.getTrustBundle().getBundleName(), tbAnchors);
-                                        
-                                        
-                                        
+                                        // Loop through anchors to collect some information about the certificates
+                                        for(TrustBundleAnchor anchor : tbAnchors) {
+                                             
+                                            try {
+                                                X509Certificate cert = anchor.toCertificate();                                            
+                                           
+                                                String subjectDN = cert.getSubjectDN().toString();
+                                                anchorMap.put(anchor, subjectDN);
+                                                                                                                                                        
+                                            } catch (CertificateException ex) {                                                
+                                            }
+                                            
+                                            curAnchor++;
+                                        }
+                                                                                                                                                               
+                                        bundleMap.put(bundle.getTrustBundle().getBundleName(), anchorMap);
+                                                                                
                                     }
                                     
-                                    model.addAttribute("anchorMap", anchorMap);
+                                    model.addAttribute("bundleMap", bundleMap);
                                 }
                                 
                                 form.populate(results);
@@ -1167,11 +1238,13 @@ public class DomainController {
 								HttpSession session, 
 								@RequestParam(value="submitType") String actionPath,
 							        @ModelAttribute("domainForm") DomainForm form,
-							        Model model)  { 		
+							        Model model)  
+        { 		
 		if (log.isDebugEnabled()) log.debug("Enter");
 		if (log.isDebugEnabled()) log.debug("Entered saveDomain");
 		if (log.isDebugEnabled()) log.debug("The value of actionPath: "+actionPath);
-		ModelAndView mav = new ModelAndView(); 
+		
+                ModelAndView mav = new ModelAndView(); 
 		
                 if (actionPath.equalsIgnoreCase("cancel")) {
 			
@@ -1199,20 +1272,26 @@ public class DomainController {
                             
                             List<Domain> result = new ArrayList<Domain>(configSvc.searchDomain(form.getDomainName(), form.getStatus()));
                             
-                            // Associate trust bundles if selected
-                            String[] bundles = form.getSelectedBundles().split(",");
-                            int bundleCount = bundles.length;
+                            if(form.getSelectedBundles() != "") {
+                                
                             
-                            log.debug("# of bundles associated: "+bundleCount);
-                                                     
-                            // Associate trust bundles to Domain
-                            for(int i=0; i<bundleCount; i++) {                                
-                            	/*
-                            	 * TODO: Add  incoming and outgoing indicators
-                            	 */
-                                configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]), true, true);
-                                log.error("Added Bundle ID #"+bundles[i]);
-                            }                                                                                                                
+                            
+                                // Associate trust bundles if selected
+                                String[] bundles = form.getSelectedBundles().split(",");
+
+                                int bundleCount = bundles.length;
+
+                                log.debug("# of bundles associated: "+bundleCount);
+
+                                // Associate trust bundles to Domain
+                                for(int i=0; i<bundleCount; i++) {                                
+                                    /*
+                                     * TODO: Add  incoming and outgoing indicators
+                                     */
+                                    configSvc.associateTrustBundleToDomain(result.get(0).getId(), Integer.parseInt(bundles[i]), true, true);
+                                    log.error("Added Bundle ID #"+bundles[i]);
+                                }   
+                            }
                             
                             if (result.size() > 0) {
                                     form = new DomainForm();

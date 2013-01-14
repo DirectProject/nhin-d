@@ -14,7 +14,8 @@
 
     <h2>Agent Settings</h2>
 
-    <p>Visit <a href="http://api.nhindirect.org/java/site/gateway/2.0.1/users-guide/smtp-depl-wsconfig.html" target="_blank">Deployment Guide</a> to find settings and valid values</p>
+    <div class="alert info">
+        <span class="icon"></span>Visit <a href="http://api.nhindirect.org/java/site/gateway/2.0.1/users-guide/smtp-depl-wsconfig.html" target="_blank">Deployment Guide</a> to find settings and valid values</div>
 
 <fieldset style="width: 97%;" title="Setting">
 	<spring:url	value="/config/settings/addsetting" var="formUrladdsetting" />
@@ -40,7 +41,7 @@
 </form:form></fieldset>
 
 
-<h4>Saved Settings</h4>
+
 
 <c:choose>
 	
@@ -49,17 +50,23 @@
 	<spring:url value="/config/settings/removesettings" var="formUrlremove" />
 		<form:form modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
-		<table id="settingsTable" class="fancyTable" width="100%">
-			<thead>
-				<tr>
-					<th width=20></th>
-					<th width="400">Name</th>
-					<th width="">Value</th>
-					
-				</tr>
-			</thead>
-			<tbody>
-				<!--  Put the data from the searchResults attribute here -->
+		
+
+                <div class="box" style="width:auto;margin-right:300px;margin-top:20px;margin-bottom:5px;">
+                                <div class="header">
+                                    <h3>Saved Settings</h3>
+                                </div>
+                                <div class="content no-padding" style="">
+                                    <table id="table-example" class="table" style="width:100%;margin-bottom:0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th width=20></th>
+                                                            <th width="400">Name</th>
+                                                            <th width="">Value</th>    
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <!--  Put the data from the searchResults attribute here -->
 				<c:forEach var="setting" items="${settingsResults}"
 					varStatus="rowCounter">
 					<c:choose>
@@ -77,13 +84,16 @@
 					
 					</tr>
 				</c:forEach>
-			</tbody>
-			
-		</table>
-		<!-- Wire this up to jQuery to add an input row to the table.
-					                 Don't submit it all until the final submit is done -->
-		<button name="submitType" id="submitType" type="submit" value="delete">Remove
+                                                    </tbody>
+                                                </table>
+                                                
+                                </div>  
+                              
+                                
+                            </div>
+<button name="submitType" id="submitType" type="submit" value="delete">Remove
 		Selected</button>
+
 	</form:form>
 
 </div>

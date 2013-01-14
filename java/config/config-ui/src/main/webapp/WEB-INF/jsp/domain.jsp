@@ -143,7 +143,42 @@
                 
 		$('#assignBundles').load('/config-ui/config/bundles/assignBundlesForm');
 
+                <c:if test="f${not empty domainId}">
 
+                // Attach listener to incoming/outgoing checkboxes
+                $('[name="incoming"]').change( function() {
+                    // Update incoming status for this bundle on the domain
+                    var checkboxId = $(this).attr('id').split('_');
+
+                    var direction = checkboxId[0];
+                    var bundle = checkboxId[1];
+                    var directionValue = ($(this).attr('checked') == true) ? 1 : 0;
+                    
+                    var data = { domainId: ${domainId}, bundle: bundle, direction: direction, directionValue: directionValue };
+
+                    $.post('/config-ui/config/domain/updateBundleDirection',data, function(data) {
+                                                
+                    });
+                });
+                
+                $('[name="outgoing"]').change( function() {
+                    // Update outgoing status for this bundle on the domain
+
+                    var checkboxId = $(this).attr('id').split('_');
+
+                    var direction = checkboxId[0];
+                    var bundle = checkboxId[1];
+                    var directionValue = ($(this).attr('checked') == true) ? 1 : 0;
+
+                    
+                    var data = { domainId: ${domainId}, bundle: bundle, direction: direction, directionValue: directionValue };
+
+                    $.post('/config-ui/config/domain/updateBundleDirection',data, function(data) {
+                                                
+                    });
+                });
+
+                </c:if>
                
 
             });
@@ -178,6 +213,7 @@
 
         
         <h3>Add New Domain to HISP</h3>
+        
         <spring:url value="/config/domain/saveupdate" var="formUrl" />
         <form:form
             id="domainForm" action="${fn:escapeXml(formUrl)}" cssClass="cleanform"
@@ -242,9 +278,12 @@
                 &nbsp;<a href="/config-ui/config/main">Cancel</a>
             </p>
     </form:form>
+
+
     <c:choose>
         <c:when test='${empty action || action == "Add" }'>
         </c:when>
+        
         <c:otherwise>
             <ul class="tabs" style="width:100%">
                 <li id="listtab1"><a href="#tab1" onclick="window.location.href='#tab1';">Addresses</a></li>
@@ -310,68 +349,77 @@
                             </div>
 
 
-                        </c:otherwise>
-                    </c:choose>
+            </c:otherwise>
+        </c:choose>
 
-                    <c:if test="${not empty addressesResults}">
-                    <div style="width:auto;max-width:730px;float:left;">
-                        <h3>Addresses</h3>
-                        <fieldset style="width: 95%;" title="Addresses"><spring:url
-                                value="/config/domain/removeaddresses" var="formUrlremove" /> <form:form
-                                modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
-                                cssClass="cleanform" method="POST">
-                                <form:hidden path="id" />
-                                <div id="tablelist"  style="width:100%;">
-                                    <table cellpadding="1px" cellspacing="1px" id="addressTable"
-                                           class="fancyTable" style="font-size:12px;width:100%;">
-                                        <thead>
-                                            <tr>
-                                                <th width="10"></th>
-                                                <th>Email Address</th>
-                                                <th>Display Name</th>
-                                                <th>Endpoint</th>
-                                                <th>Type</th>
-                                                <th>Status</th>
-                                                
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!--  Put the data from the searchResults attribute here -->
-                                            <c:forEach var="address" items="${addressesResults}"
-                                                       varStatus="rowCounter">
-                                                <c:choose>
-                                                    <c:when test="${rowCounter.count % 2 == 0}">
-                                                        <tr class="evenRow">
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                        <tr class="oddRow">
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                     <td><form:checkbox path="remove"
-                                                                   value="${address.id}" /></td>
-                                                    <td><a
-                                                            href='../address?id=<c:out value="${address.id}"/>'>${address.emailAddress}</a></td>
-                                                    <td><c:out value="${address.displayName}" /></td>
-                                                    <td><c:out value="${address.endpoint}" /></td>
-                                                    <td><c:out value="${address.type}" /></td>
-                                                    <td><c:out value="${address.status}" /></td>
-                                                   
-                                                </tr>
-                                            </c:forEach>
-                                        </tbody>
-                                        
-                                    </table>
+                <c:if test="${not empty addressesResults}">
+                <div style="width:auto;max-width:730px;float:left;">
+                    <h3>Addresses</h3>
+                    <fieldset style="width: 95%;" title="Addresses"><spring:url
+                            value="/config/domain/removeaddresses" var="formUrlremove" /> <form:form
+                            modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
+                            cssClass="cleanform" method="POST">
+                            <form:hidden path="id" />
+
+                            <div class="box">
+                                <div class="header">
+                                    <h3>TEST</h3>
                                 </div>
-                                <!-- Wire this up to jQuery to add an input row to the table.
-					                 Don't submit it all until the final submit is done -->
-                                <button name="submitType" id="submitType" type="submit" value="delete">Remove
-		Selected Addresses</button>
-                        </form:form></fieldset>
+                            </div>
+
+                            <div id="tablelist"  style="width:100%;">
+                                <table cellpadding="1px" cellspacing="1px" id="addressTable"
+                                       class="fancyTable" style="font-size:12px;width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th width="10"></th>
+                                            <th>Email Address</th>
+                                            <th>Display Name</th>
+                                            <th>Endpoint</th>
+                                            <th>Type</th>
+                                            <th>Status</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!--  Put the data from the searchResults attribute here -->
+                                        <c:forEach var="address" items="${addressesResults}"
+                                                   varStatus="rowCounter">
+                                            <c:choose>
+                                                <c:when test="${rowCounter.count % 2 == 0}">
+                                                    <tr class="evenRow">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                    <tr class="oddRow">
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                 <td><form:checkbox path="remove"
+                                                               value="${address.id}" /></td>
+                                                <td><a
+                                                        href='../address?id=<c:out value="${address.id}"/>'>${address.emailAddress}</a></td>
+                                                <td><c:out value="${address.displayName}" /></td>
+                                                <td><c:out value="${address.endpoint}" /></td>
+                                                <td><c:out value="${address.type}" /></td>
+                                                <td><c:out value="${address.status}" /></td>
+
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <!-- Wire this up to jQuery to add an input row to the table.
+                                                     Don't submit it all until the final submit is done -->
+                            <button name="submitType" id="submitType" type="submit" value="delete">Remove
+            Selected Addresses</button>
+                    </form:form></fieldset>
 </div>
 <br clear="both"/>
-                    </c:if>
+                </c:if>
                 </fieldset>
             </div>
+
+
             <div id="tab2" class="tab_content">
                 <c:choose>
                     <c:when test='${empty action || action == "Add" }'>
@@ -507,48 +555,64 @@
                 </c:if></fieldset>
             </div>
             <div id="tab3" class="tab_content">
+            
+            <c:choose>
+                    <c:when test='${empty action || action == "Add" }'>
+                    </c:when>
+                    <c:otherwise>
 
                 <h3>Trust Bundles</h3>
+
+                
+
 
                 <c:choose>
                 
                 <c:when test="${not empty trustBundles}">
-                <table class="fancyTable" width=100% style="font-size:12px">
-                    <tr>
-                        <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
-                        <th>Bundle Name</th>
-                        <th>Anchor Thumbprints</th>
-                        <th width=20>In</th>
-                        <th width=20>Out</th>
-                    </tr>
+                
+                    
+
+                    <table class="fancyTable" width=100% style="font-size:12px">
+                        <tr>
+                            <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
+                            <th>Bundle Name</th>
+                            <th>Anchor Thumbprints</th>
+                            <th width=20>In</th>
+                            <th width=20>Out</th>
+                        </tr>
+
+
+                    <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
+                        <c:choose>
+                            <c:when test="${rowCounter.count % 2 == 0}">
+                                <tr class="evenRow">
+                            </c:when>
+                            <c:otherwise>
+                                <tr class="oddRow">
+                            </c:otherwise>
+                        </c:choose>
+
+                            <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.trustBundle.id}|${trustBundle.trustBundle.bundleName}"/></td>
+                            <td>${trustBundle.trustBundle.bundleName}<br/>
+
+                            </td>     
+                            <td> 
+                                   <ul class="anchorList"> 
+                                    <c:forEach items="${bundleMap[trustBundle.trustBundle.bundleName]}" var="anchor">
+                                        <li>${anchor.value}</li>
+                                    </c:forEach>
+                                    </ul>
+                            </td>
+                            <td><input name="incoming" id="incoming_${trustBundle.id}" type="checkbox" checked="${trustBundle.incoming}"/></td>
+                            <td><input name="outgoing" id="outgoing_${trustBundle.id}" type="checkbox" checked="${trustBundle.outgoing}"/></td>
+                        </tr>
+                    </c:forEach>
+                    </table>
+                    
+                    <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
 
                 
-                <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
-                    <c:choose>
-                        <c:when test="${rowCounter.count % 2 == 0}">
-                            <tr class="evenRow">
-                        </c:when>
-                        <c:otherwise>
-                            <tr class="oddRow">
-                        </c:otherwise>
-                    </c:choose>
 
-                        <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.trustBundle.id}|${trustBundle.trustBundle.bundleName}"/></td>
-                        <td>${trustBundle.trustBundle.bundleName}<br/>
-
-                        </td>     
-                        <td> 
-                                <c:forEach items="${anchorMap[trustBundle.trustBundle.bundleName]}" var="anchor">
-                                    ${anchor.thumbprint}<br/>
-                                </c:forEach>
-
-                        </td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </c:forEach>
-                </table>
-                <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
                 </c:when>
                 <c:otherwise>
                    There are no bundles associated with this domain.
@@ -558,10 +622,6 @@
 
             </div>
 
-            <c:choose>
-                <c:when test='${empty action || action == "Add" }'>
-                </c:when>
-                <c:otherwise>
                 </div>
             </div>
         </c:otherwise>
