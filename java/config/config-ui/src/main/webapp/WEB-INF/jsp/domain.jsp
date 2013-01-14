@@ -263,7 +263,7 @@
             </table>
                    
             <form:hidden path="selectedBundles"/>
-            <div id="assignBundles" style="display:none;background:white;padding:10px;width:500px;height:auto;"></div>
+            <div id="assignBundles" class="roundedCorners" style="display:none;background:white;padding:10px;width:500px;height:auto;"></div>
 
 
             <p><c:choose>
@@ -576,7 +576,7 @@
                         <tr>
                             <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
                             <th>Bundle Name</th>
-                            <th>Anchor Thumbprints</th>
+                            <th width=150>Anchor Certificates</th>
                             <th width=20>In</th>
                             <th width=20>Out</th>
                         </tr>
@@ -597,14 +597,17 @@
 
                             </td>     
                             <td> 
-                                   <ul class="anchorList"> 
+                                 <a href="#">View anchors for this bundle</a>
+                                    <div id="anchors_${trustBundle.trustBundle.id}" style="display:none">
+                                    <ul class="anchorList"> 
                                     <c:forEach items="${bundleMap[trustBundle.trustBundle.bundleName]}" var="anchor">
                                         <li>${anchor.value}</li>
                                     </c:forEach>
                                     </ul>
+                                    </div>   
                             </td>
-                            <td><input name="incoming" id="incoming_${trustBundle.id}" type="checkbox" checked="${trustBundle.incoming}"/></td>
-                            <td><input name="outgoing" id="outgoing_${trustBundle.id}" type="checkbox" checked="${trustBundle.outgoing}"/></td>
+                            <td><input name="incoming" disabled="disabled" id="incoming_${trustBundle.id}" type="checkbox" <c:if test="${trustBundle.incoming}">checked="true"</c:if>/></td>
+                            <td><input name="outgoing" disabled="disabled" id="outgoing_${trustBundle.id}" type="checkbox" <c:if test="${trustBundle.outgoing}">checked="true"</c:if>/></td>
                         </tr>
                     </c:forEach>
                     </table>
