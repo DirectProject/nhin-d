@@ -39,22 +39,35 @@ $(document).ready(function()
 
 
 
-<fieldset><legend><h3>&quot;A&quot; Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+
+<spring:url
 	value="/config/dns/addADNSRecord" var="formUrladdARecord" /> <form:form
 	id="aEntryForm" modelAttribute="AdnsForm"
 	action="${fn:escapeXml(formUrladdARecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
-	<table cellpadding="1px" cellspacing="1px" id="dnsATable">
+
+        <div class="box" style="margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New A Record</h3>
+        </div>
+<div class="content">
+	<table>
+				<thead>
 		<tr>
-			<th><form:label path="name">Name
+			<th style="text-align:left;"><form:label path="name" cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">Name
 	                        <form:errors path="name" cssClass="error" />
 			</form:label></th>
-			<th><form:label path="dest">IP Address
+			<th style="text-align:left;"><form:label path="dest" cssStyle="color: rgb(102, 102, 102);
+font-size: 12px;
+font-weight: 700;
+text-shadow: 0px 1px 0px rgb(255, 255, 255);">IP Address
 	                          <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL
+			<th style="text-align:left;"><form:label title="In seconds" path="ttl" cssStyle="color: rgb(102, 102, 102);
+font-size: 12px;
+font-weight: 700;
+text-shadow: 0px 1px 0px rgb(255, 255, 255);">TTL
 	                         <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -63,27 +76,36 @@ $(document).ready(function()
 			<td><form:input id="dest" path="dest" /></td>
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
 		</tr>
-	</table>
-	<button name="submitType" id="submitType" type="submit"
-		value="newDNSRecord">Add Record</button>
-</form:form></fieldset>
-
+	</table><div style="margin:5px 0"><button name="submitType" id="submitType" type="submit"
+		value="newDNSRecord">Add Record</button></div>
+        </div>
+        </div>
+	
+</form:form>
+<br/>
 
 <c:if test="${not empty dnsARecordResults}">
-	<fieldset style="width: 95%;">
+	
 	<div id="aList" style="width: 100%; overflow: auto;"><spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveARecords" modelAttribute="AdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
-		<table cellpadding="1px" cellspacing="1px" id="dnsAList"
-			class="tablesorter">
-			<thead>
+		<div class="box" style="width:auto;margin-bottom:5px;">
+                                <div class="header">
+                                    <h3>A Records</h3>
+                                </div>
+                                <div class="content no-padding" style="">
+
+                               
+                                    <table id="table-arecords" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
+<thead>
 				<tr>
-					<th width="35%">Host</th>
+					<th width="10"></th>
+                                        <th width="35%">Host</th>
 					<th width="35%">Points To</th>
 					<th width="20%">TTL</th>
-					<th width="10%">Remove</th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -91,46 +113,44 @@ $(document).ready(function()
 				<c:forEach var="entry" items="${dnsARecordResults}"
 					varStatus="rowCounter">
 					<tr>
-						<td width="35%">${entry.name}</a></td>
+						<td width="10"><form:checkbox path="remove"
+							value="${entry.id}" /></td><td width="35%">${entry.name}</a></td>
 						<td width="35%"><c:out value="${entry.dest}" /></td>
 						<td width="25%">${entry.ttl}</td>
-						<td width="10%"><form:checkbox path="remove"
-							value="${entry.id}" /></td>
+						
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="35%"></th>
-					<th width="35%"></th>
-					<th width="20%"></th>
-					<th width="10%"></th>
-				</tr>
-			</tfoot>
-		</table>
+			
+		</table></div></div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteADnsEntries">Remove Selected As</button>
 	</form:form></div>
-	</fieldset>
-</c:if></fieldset>
+	
+</c:if>
 
-<fieldset><legend><h3>&quot;AAAA&quot (IPv6) Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+<br/>
+
+<spring:url
 	value="/config/dns/addA4DNSRecord" var="formUrladdARecord" /> <form:form
 	id="a4EntryForm" modelAttribute="AAdnsForm"
 	action="${fn:escapeXml(formUrladdARecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
-	<table cellpadding="1px" cellspacing="1px" id="dnsA4Table">
+	<div class="box" style="margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New AAAA Record</h3>
+        </div>
+<div class="content"><table cellpadding="1px" cellspacing="1px" id="dnsA4Table">
 		<tr>
-			<th><form:label path="name">Name
+			<th style="text-align:left"><form:label path="name" cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">Name
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
-			<th><form:label path="dest">IP Address
+			<th style="text-align:left"><form:label path="dest" cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">IP Address
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL
+			<th style="text-align:left"><form:label title="In seconds" path="ttl" cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -140,28 +160,35 @@ $(document).ready(function()
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
 		</tr>
 	</table>
-	<button name="submitType" id="submitType" type="submit"
-		value="newA4DNSRecord">Add Record</button>
-</form:form></fieldset>
+    <div style="margin:5px 0"><button name="submitType" id="submitType" type="submit"
+		value="newA4DNSRecord">Add Record</button></div>
+</div></div>
+	
+</form:form>
 
 <c:if test="${not empty dnsA4RecordResults}">
 
 	<div id="a4List" style="width: 100%; overflow: auto;">
-	<fieldset style="width: 95%;"><spring:url
+	<spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveA4Entries" modelAttribute="AAdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="type" value="AAAA" />
-		<table cellpadding="1px" cellspacing="1px" id="dnsA4List"
-			class="tablesorter">
+                
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>AAAA Records</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="dnsA4List2" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
 			<thead>
-				<tr>
+				
 					<th width="35%">Host</th>
 					<th width="35%">Points To</th>
 					<th width="20%">TTL</th>
 					<th width="10%">Remove</th>
-				</tr>
+				
 			</thead>
 			<tbody>
 				<!--  Put the data from the searchResults attribute here -->
@@ -176,39 +203,38 @@ $(document).ready(function()
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="35%"></th>
-					<th width="35%"></th>
-					<th width="20%"></th>
-					<th width="10%"></th>
-				</tr>
-			</tfoot>
-		</table>
+			
+		</table></div></div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteA4DnsEntries">Remove Selected A4s</button>
-	</form:form></fieldset>
+	</form:form>
 	</div>
-</c:if></fieldset>
+</c:if>
 
-<fieldset><legend><h3>&quot;CNAME&quot; (Alias) Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+
+<spring:url
 	value="/config/dns/addCNAMEDNSRecord" var="formUrladdCnameRecord" /> <form:form
 	id="cnameEntryForm" modelAttribute="CdnsForm"
 	action="${fn:escapeXml(formUrladdCnameRecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
 	<form:hidden path="type" value="CNAME" />
-	<table cellpadding="1px" cellspacing="1px" id="dnsCnameTable">
+	<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New CNAME (Alias) Record</h3>
+        </div>
+<div class="content">
+<table >
+        
 		<tr>
-			<th><form:label path="name">Name
+			<th style="text-align:left;"><form:label path="name"  cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">Name
                             <form:errors path="name" cssClass="error" />
 			</form:label></th>
-			<th><form:label path="dest">Alias for
+			<th style="text-align:left;"><form:label path="dest"  cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">Alias for
                               <form:errors path="dest" cssClass="error" />
 			</form:label></th>
-			<th><form:label title="In seconds" path="ttl">TTL
+			<th style="text-align:left;"><form:label title="In seconds" path="ttl" cssStyle="color: rgb(102, 102, 102);font-size: 12px;font-weight: 700;text-shadow: 0px 1px 0px rgb(255, 255, 255);">TTL
                              <form:errors path="ttl" cssClass="error" />
 			</form:label></th>
 		</tr>
@@ -217,21 +243,30 @@ $(document).ready(function()
 			<td><form:input id="dest" path="dest" /></td>
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
 		</tr>
-	</table>
-	<button name="submitType" id="submitType" type="submit"
-		value="newDNSRecord">Add Record</button>
-</form:form></fieldset>
+        
+	</table><div style="margin:5px 0"><button name="submitType" id="submitType" type="submit"
+		value="newDNSRecord">Add Record</button></div>
+        </div></div>
+	
+</form:form>
 <c:if test="${not empty dnsCnameRecordResults}">
 
 	<div id="cnameList" style="width: 100%; overflow: auto;">
-	<fieldset style="width: 95%;"><spring:url
+	<spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveCnameEntries" modelAttribute="CdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="type" value="CNAME" />
-		<table cellpadding="1px" cellspacing="1px" id="dnsCnameList"
-			class="tablesorter">
+		
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>CNAME Records</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="dnsCnameList2" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
+
+                
 			<thead>
 				<tr>
 					<th width="35%">Host</th>
@@ -253,30 +288,28 @@ $(document).ready(function()
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="35%"></th>
-					<th width="35%"></th>
-					<th width="20%"></th>
-					<th width="10%"></th>
-				</tr>
-			</tfoot>
-		</table>
+			
+		</table></div></div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteCNAMEDnsEntries">Remove Selected CNAMEs</button>
-	</form:form></fieldset>
+	</form:form>
 	</div>
-</c:if></fieldset>
+</c:if>
 
-<fieldset><legend><h3>&quot;MX&quot; (Mail Exchange) Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+<spring:url
 	value="/config/dns/addMXDNSRecord" var="formUrladdMXRecord" /> <form:form
 	id="mxEntryForm" modelAttribute="MXdnsForm"
 	action="${fn:escapeXml(formUrladdMXRecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
 	<form:hidden path="type" value="MX" />
+
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New MX (Mail Exchange) Record</h3>
+        </div>
+<div class="content">
 	<table cellpadding="1px" cellspacing="1px" id="dnsMXTable">
 		<tr>
 			<th><form:label title="Lower number is higher priority"
@@ -308,37 +341,50 @@ $(document).ready(function()
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
 		</tr>
 	</table>
-	<button name="submitType" id="submitType" type="submit"
-		value="newDNSRecord">Add Record</button>
-</form:form></fieldset>
+
+      <div style="margin:5px 0">  
+        <button name="submitType" id="submitType" type="submit"
+		value="newDNSRecord">Add Record</button></div>
+
+</div></div>
+
+	
+</form:form>
 
 
 <c:if test="${not empty dnsMxRecordResults}">
 
-	<fieldset style="width: 95%;"><spring:url
+	<spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveMxEntries" modelAttribute="MXdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="type" value="MX" />
-	<div id="mxList" style="width: 100%; overflow: auto;">
-		<table cellpadding="1px" cellspacing="1px" id="dnsMXList"
-			class="tablesorter">
+	
+            <div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>MX Records</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="dnsMXList2" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
+
+		
 			<thead>
 				<tr>
-					<th width="15%">Priority</th>
+					<th>Priority</th>
 					<th width="30%">Host</th>
 					<th width="30%">Alias For</th>
 					<th width="15%">TTL</th>
 					<th width="10%">Remove</th>
 				</tr>
 			</thead>
-			<tbody>
+                        <tbody>
+			
 				<!--  Put the data from the searchResults attribute here -->
 				<c:forEach var="entry" items="${dnsMxRecordResults}"
 					varStatus="rowCounter">
 					<tr>
-						<td width="15%">${entry.priority}</td>
+						<td width="40">${entry.priority}</td>
 						<td width="30%">${entry.name}</a></td>
 						<td width="30%">${entry.dest} </td>
 						<td width="15%">${entry.ttl}</td>
@@ -347,34 +393,29 @@ $(document).ready(function()
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="15%"></th>
-					<th width="30%"></th>
-					<th width="30%"></th>
-					<th width="15%"></th>
-					<th width="10%"></th>
-				</tr>
-			</tfoot>
+			
 		</table>
-		</div>
+		</div></div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteMXDnsEntries">Remove Selected MXs</button>
-	</form:form></fieldset>
+	</form:form>
 
 </c:if>
 
-</fieldset>
-
-<fieldset><legend><h3>&quot;SRV&quot; (Service) Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+<spring:url
 	value="/config/dns/addSRVDNSRecord" var="formUrladdSrvRecord" /> <form:form
 	id="srvEntryForm" modelAttribute="SrvdnsForm"
 	action="${fn:escapeXml(formUrladdSrvRecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
-	<table cellpadding="1px" cellspacing="1px" id="dnsSrvTable">
+	
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New SRV Record</h3>
+        </div>
+<div class="content">
+<table cellpadding="1px" cellspacing="1px" id="dnsSrvTable">
 		<tr>
 			<th><form:label path="service">Service
                             <form:errors path="service" cssClass="error" />
@@ -430,21 +471,30 @@ $(document).ready(function()
 			<td><form:input path="dest" /></td>
 		</tr>
 	</table>
+
+        <div style="margin:5px 0">
 	<button name="submitType" id="submitType" type="submit"
-		value="newDNSRecord">Add Record</button>
-</form:form></fieldset>
+		value="newDNSRecord">Add Record</button></div>
+
+                </div></div>
+</form:form>
 
 <c:if test="${not empty dnsSrvRecordResults}">
 
 	<div id="certList" style="width: 100%; overflow: auto;">
-	<fieldset style="width: 95%;"><spring:url
+	<spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveSrvEntries" modelAttribute="SrvdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="type" value="SRV" />
-		<table cellpadding="1px" cellspacing="1px" id="dnsSrvList"
-			class="tablesorter">
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>SRV Records</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="dnsSrvList2" class="table" style="width:100%;margin-bottom:0;font-size:12px;">		
+
 			<thead>
 				<tr>
 					<th width="15%">Service</th>
@@ -476,38 +526,31 @@ $(document).ready(function()
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="10%"></th>
-					<th width="7%"></th>
-					<th width="10%"></th>
-					<th width="7%"></th>
-					<th width="15%/"></th>
-					<th width="6%"></th>
-				</tr>
-			</tfoot>
-		</table>
+			
+		</table></div></div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteSRVDnsEntries">Remove Selected SRVs</button>
-	</form:form></fieldset>
+	</form:form>
 	</div>
 </c:if>
 </fieldset>
 
 
 
-<fieldset><legend><h3>&quot;SOA&quot; (Start of Authority) Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+<spring:url
 	value="/config/dns/addSOADNSRecord" var="formUrladdSoaRecord" /> <form:form
 	id="soaEntryForm" modelAttribute="SoadnsForm"
 	action="${fn:escapeXml(formUrladdSoaRecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
-	<table cellpadding="1px" cellspacing="1px" id="dnsSoaTable">
+	
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New SOA Record</h3>
+        </div>
+<div class="content">
+<table cellpadding="1px" cellspacing="1px" id="dnsSoaTable">
 		<tr>
 			<th><form:label path="name">Name
                             <form:errors path="name" cssClass="error" />
@@ -571,21 +614,33 @@ $(document).ready(function()
 			<td><form:input path="retry" /></td>
 		</tr>
 	</table>
+        
+        <div style="margin:5px 0">
 	<button name="submitType" id="submitType" type="submit"
 		value="newDNSRecord">Add Record</button>
-</form:form></fieldset>
+                </div>
+
+</div></div>
+</form:form>
 
 <c:if test="${not empty dnsSOARecordResults}">
 
 	<div id="certList" style="width: 100%; overflow: auto;">
-	<fieldset style="width: 95%;"><spring:url
+	<spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveSoaEntries" modelAttribute="SoadnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
 		<form:hidden path="type" value="SOA" />
-		<table cellpadding="1px" cellspacing="1px" id="dnsSoaList"
-			class="tablesorter">
+		
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>SOA Records</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="dnsSoaList2" class="table" style="width:100%;margin-bottom:0;font-size:12px;">		
+
+
 			<thead>
 				<tr>
 					<th width="15%">Name</th>
@@ -619,36 +674,29 @@ $(document).ready(function()
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="15%"></th>
-					<th width="10%"></th>
-					<th width="7%"></th>
-					<th width="10%"></th>
-					<th width="7%"></th>
-					<th width="15%/"></th>
-					<th width="6%"></th>
-				</tr>
-			</tfoot>
-		</table>
+		
+		</table> </div></div>
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteSOADnsEntries">Remove Selected SOAs</button>
 	</form:form></fieldset>
 	</div>
 </c:if>
-</fieldset>
 
-<fieldset><legend><h3>&quot;NS&quot; Records</h3></legend>
-<fieldset style="width: 95%;"><spring:url
+
+<spring:url
 	value="/config/dns/addNSDNSRecord" var="formUrladdNSRecord" /> <form:form
 	id="nsEntryForm" modelAttribute="NSdnsForm"
 	action="${fn:escapeXml(formUrladdNSRecord)}" cssClass="cleanform"
 	method="POST" enctype="multipart/form-data">
 	<form:hidden path="id" />
-	<table cellpadding="1px" cellspacing="1px" id="dnsNSTable">
+	
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>Add New NS Record</h3>
+        </div>
+<div class="content">	
+<table cellpadding="1px" cellspacing="1px" id="dnsNSTable">
 		<tr>
 			<th><form:label path="name">Name
 	                        <form:errors path="name" cssClass="error" />
@@ -666,20 +714,31 @@ $(document).ready(function()
 			<td><form:input maxlength="8" id="ttl" path="ttl" /></td>
 		</tr>
 	</table>
-	<button name="submitType" id="submitType" type="submit"
-		value="newDNSRecord">Add Record</button>
-</form:form></fieldset>
+	<div style="margin:5px 0"><button name="submitType" id="submitType" type="submit"
+		value="newDNSRecord">Add Record</button></div>
+
+</div></div>
+</form:form>
 
 
 <c:if test="${not empty dnsNSRecordResults}">
-	<fieldset style="width: 95%;">
+	
 	<div id="aList" style="width: 100%; overflow: auto;"><spring:url
 		value="/config/dns/removesettings" var="formUrlRemoveDns" /> <form:form
 		id="RemoveNSRecords" modelAttribute="NSdnsForm"
 		action="${fn:escapeXml(formUrlRemoveDns)}" cssClass="cleanform"
 		method="POST" enctype="multipart/form-data">
-		<table cellpadding="1px" cellspacing="1px" id="dnsNSList"
-			class="tablesorter">
+
+
+
+				
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>SOA Records</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="dnsNSList2" class="table" style="width:100%;margin-bottom:0;font-size:12px;">	
+			
 			<thead>
 				<tr>
 					<th width="35%">Name</th>
@@ -701,19 +760,14 @@ $(document).ready(function()
 					</tr>
 				</c:forEach>
 			</tbody>
-			<tfoot>
-				<tr>
-					<th width="35%"></th>
-					<th width="35%"></th>
-					<th width="20%"></th>
-					<th width="10%"></th>
-				</tr>
-			</tfoot>
-		</table>
+			
+		</table> </div></div>
+
+
 		<!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
 		<button name="submitType" id="submitType" type="submit"
 			value="deleteNSDnsEntries">Remove Selected NSs</button>
 	</form:form></div>
-	</fieldset>
-</c:if></fieldset>
+	
+</c:if>
 <%@ include file="/WEB-INF/jsp/footer.jsp"%>

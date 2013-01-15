@@ -17,7 +17,7 @@
     </ul>
 
     <div style="float:right;line-height: 38px;padding-right:10px;">
-    You are logged in. <button name="logoutBtn" id="logoutBtn" type="submit" onclick="document.location.href='<c:url value="/j_spring_security_logout"/>';">Log out</button>
+    You are logged in. <a href="<c:url value="/j_spring_security_logout"/>">Log out</a>
 </div>
     </sec:authorize>
 </div>

@@ -81,7 +81,7 @@
                                     <h3>Search Results</h3>
                                 </div>
                                 <div class="content no-padding" style="">
-                                    <table id="table-example" class="table" style="width:100%;margin-bottom:0">
+                                    <table id="table-domains" class="table" style="width:100%;margin-bottom:0">
                                                     <thead>
                                                         <tr>
                                                             <th rowspan="1" colspan="1" style="width: 20px;"></th>

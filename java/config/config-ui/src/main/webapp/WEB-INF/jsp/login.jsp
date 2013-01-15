@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
          pageEncoding="ISO-8859-1"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html style="background-repeat: no-repeat;
+<html style="background:#184B84;background-repeat: no-repeat;
     background-attachment: fixed;/* IE10 Consumer Preview */ 
 background-image: -ms-linear-gradient(bottom, #184B84 0%, #366FAC 100%);
 

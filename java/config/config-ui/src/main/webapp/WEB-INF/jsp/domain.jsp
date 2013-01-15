@@ -353,24 +353,21 @@
         </c:choose>
 
                 <c:if test="${not empty addressesResults}">
-                <div style="width:auto;max-width:730px;float:left;">
-                    <h3>Addresses</h3>
-                    <fieldset style="width: 95%;" title="Addresses"><spring:url
+                <div style="">
+                    
+                    <spring:url
                             value="/config/domain/removeaddresses" var="formUrlremove" /> <form:form
                             modelAttribute="simpleForm" action="${fn:escapeXml(formUrlremove)}"
                             cssClass="cleanform" method="POST">
                             <form:hidden path="id" />
 
-                            <div class="box">
+                            <div class="box" style="width:auto;margin-right:310px;">
                                 <div class="header">
-                                    <h3>TEST</h3>
+                                    <h3>Addresses</h3>
                                 </div>
-                            </div>
-
-                            <div id="tablelist"  style="width:100%;">
-                                <table cellpadding="1px" cellspacing="1px" id="addressTable"
-                                       class="fancyTable" style="font-size:12px;width:100%;">
-                                    <thead>
+                                <div class="content no-padding" style="">
+                                    <table id="table-domains" class="table" style="width:100%;font-size:12px;margin-bottom:0">
+                                        <thead>
                                         <tr>
                                             <th width="10"></th>
                                             <th>Email Address</th>
@@ -405,6 +402,14 @@
                                             </tr>
                                         </c:forEach>
                                     </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="tablelist"  style="width:100%">
+                                <table cellpadding="1px" cellspacing="1px" id="addressTable"
+                                       class="fancyTable" style="font-size:12px;">
+                                    
 
                                 </table>
                             </div>
@@ -412,7 +417,7 @@
                                                      Don't submit it all until the final submit is done -->
                             <button name="submitType" id="submitType" type="submit" value="delete">Remove
             Selected Addresses</button>
-                    </form:form></fieldset>
+                    </form:form>
 </div>
 <br clear="both"/>
                 </c:if>
@@ -426,12 +431,16 @@
                     </c:when>
                     <c:otherwise>
 
-                        <fieldset style="width: 99%;" title="anchorgroup"><legend><h3>Anchors</h3></legend>
+                        
                             <fieldset style="width: 95%;" title="anchor"><spring:url
-                                    value="/config/domain/addanchor" var="formUrladdanchor" /> <form:form
+                                    value="/config/domain/addanchor" var="formUrladdanchor" /> 
+                        <form:form
                                     modelAttribute="anchorForm" action="${fn:escapeXml(formUrladdanchor)}"
                                     cssClass="cleanform" method="POST" enctype="multipart/form-data">
                                     <form:hidden path="id" />
+                                    
+
+                                    
                                     <table cellpadding="1px" cellspacing="1px" id="anchorTable">
                                         <tr>
                                             <th>
@@ -485,21 +494,28 @@
                                 action="${fn:escapeXml(formUrlremoveanchor)}" cssClass="cleanform"
                                 method="POST" enctype="multipart/form-data">
                                 <form:hidden path="id" />
-                                <div id="tablelist" style="width:100%;overflow:auto;">
-                                    <table id="anchorsTable"
-                                           class="tablesorter">
+                                
+                                <div class="box" style="width:auto;margin-bottom:5px;">
+                                <div class="header">
+                                    <h3>Anchors</h3>
+                                </div>
+                                <div class="content no-padding" style="">
+
+                               
+                                    <table id="table-domains" class="table" style="margin-bottom:0;font-size:12px;">
                                         <thead>
                                             <tr>
-                                                <th width="13%">Trusted Domain or User</th>
-                                                <th width="12%">Owner</th>
-                                                <th width="15%">Thumb</th>
-                                                <th width="15%">Create</th>
-                                                <th width="15%">Start</th>
-                                                <th width="15%">End</th>
-                                                <th width="7%">Stat</th>
-                                                <th width="3%">In</th>
-                                                <th width="3%">Out</th>
-                                                <th width="3%">Sel</th>
+                                                <th></th>
+                                                <th>Trusted Domain or User</th>
+                                                <th>Owner</th>
+                                                <th>Thumb</th>
+                                                <th>Create</th>
+                                                <th>Start</th>
+                                                <th>End</th>
+                                                <th>Stat</th>
+                                                <th>In</th>
+                                                <th>Out</th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -514,45 +530,38 @@
                                                         <tr class="oddRow">
                                                         </c:otherwise>
                                                     </c:choose>
-                                                    <td width="13%"><c:out value="${anchors.trusteddomainoruser}" /></td>
-                                                    <td width="12%"><a
-                                                            href='../anchor?id=<c:out value="${anchors.id}"/>'>'${anchors.owner}'</a></td>
-                                                    <td width="15%"><c:out value="${anchors.thumbprint}" /></td>
-                                                    <td width="15%"><fmt:formatDate
-                                                        value="${anchors.createTime.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
-                                                    <td width="15%"><fmt:formatDate
-                                                        value="${anchors.validStartDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
-                                                    <td width="15%"><fmt:formatDate
-                                                        value="${anchors.validEndDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
-                                                    <td width="15%"><c:out value="${anchors.status}" /></td>
-                                                    <td width="7%"><c:out value="${anchors.incoming}" /></td>
-                                                    <td width="3%"><c:out value="${anchors.outgoing}" /></td>
-                                                    <td width="3%"><form:checkbox path="remove"
+                                                    <td><form:checkbox path="remove"
                                                                    value="${anchors.id}" /></td>
+                                                    <td><c:out value="${anchors.trusteddomainoruser}" /></td>
+                                                    <td><a
+                                                            href='../anchor?id=<c:out value="${anchors.id}"/>'>'${anchors.owner}'</a></td>
+                                                    <td><c:out value="${anchors.thumbprint}" /></td>
+                                                    <td><fmt:formatDate
+                                                        value="${anchors.createTime.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
+                                                    <td><fmt:formatDate
+                                                        value="${anchors.validStartDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
+                                                    <td><fmt:formatDate
+                                                        value="${anchors.validEndDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
+                                                    <td><c:out value="${anchors.status}" /></td>
+                                                    <td><c:out value="${anchors.incoming}" /></td>
+                                                    <td><c:out value="${anchors.outgoing}" /></td>
+                                                    
                                                 </tr>
                                             </c:forEach>
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <th width="13%"></th>
-                                                <th width="12%"></th>
-                                                <th width="15%"></th>
-                                                <th width="15%"></th>
-                                                <th width="15%"></th>
-                                                <th width="15%"></th>
-                                                <th width="7%"></th>
-                                                <th width="3%"></th>
-                                                <th width="3%"></th>
-                                                <th width="3%"></th>
-                                            </tr>
-                                        </tfoot>
+                                        
                                     </table>
                                 </div>
+
+                                </div>                                
                                 <!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
                                 <button name="submitType" id="submitType" type="submit"
                                         value="deleteanchors">Remove Selected Anchors</button>
-                        </form:form></fieldset>
-                </c:if></fieldset>
+                            
+
+                               
+                        </form:form>
+                </c:if>
             </div>
             <div id="tab3" class="tab_content">
             
@@ -572,16 +581,25 @@
                 
                     
 
-                    <table class="fancyTable" width=100% style="font-size:12px">
+                    
+                                <div class="box" style="width:auto;margin-bottom:5px;">
+                                <div class="header">
+                                    <h3>Anchors</h3>
+                                </div>
+                                <div class="content no-padding" style="">
+
+                               
+                                    <table id="table-domains" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
+<thead>
                         <tr>
-                            <th width=10><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
+                            <th><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
                             <th>Bundle Name</th>
                             <th width=150>Anchor Certificates</th>
                             <th width=20>In</th>
                             <th width=20>Out</th>
                         </tr>
 
-
+</thead>
                     <c:forEach var="trustBundle" items="${trustBundles}" varStatus="rowCounter">
                         <c:choose>
                             <c:when test="${rowCounter.count % 2 == 0}">
@@ -599,9 +617,9 @@
                             <td>                                  
                                  <a rel="leanModal" name="anchorList" href="#anchors_${trustBundle.trustBundle.id}">View Anchors</a>
                                     <div id="anchors_${trustBundle.trustBundle.id}" class="roundedCorners" style="display:none;background:white;padding:10px;width:350px;height:auto;">
-                                    <div style="float:right"><a class="modal_close">Close</a></div>
+                                    <div style="float:right"><a class="modal_close" style="cursor:pointer">Close</a></div>
                                     <br clear="both"/>
-                                    <h3>Anchor List</h3>
+                                    <h3 style="color:black">Anchor List</h3>
                                     <div style="overflow:auto;height:250px;">
                                     <ul class="anchorList block-list"> 
                                     <c:forEach items="${bundleMap[trustBundle.trustBundle.bundleName]}" var="anchor">
@@ -616,7 +634,9 @@
                         </tr>
                     </c:forEach>
                     </table>
-                    
+                    </div>                                
+                                
+                            </div>
                     <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
 
                 
