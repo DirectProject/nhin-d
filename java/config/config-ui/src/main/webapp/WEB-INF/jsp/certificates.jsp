@@ -74,8 +74,15 @@
 		action="${fn:escapeXml(formUrlcertificates)}" cssClass="cleanform"
 		method="POST">
 		<form:hidden path="id" />
-		<div id="tablelist" style="width:100%;overflow:auto;">
-			<table  id="certificatesTable" class="fancyTable">
+		<div class="box" style="width:auto;margin-bottom:5px;">
+                                <div class="header">
+                                    <h3>Anchors</h3>
+                                </div>
+                                <div class="content no-padding" style="">
+
+                               
+                                    <table id="table-certificates" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
+<thead>
 				<thead>
 					<tr>
 						<th width="10"></th>
@@ -128,6 +135,7 @@
 				</tbody>
 			
 			</table>
+</div>
 		</div>
 		<!-- Wire this up to jQuery to add an input row to the table.
 					                 Don't submit it all until the final submit is done -->

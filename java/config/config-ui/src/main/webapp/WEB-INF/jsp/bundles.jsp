@@ -28,7 +28,7 @@ $(function() {
 	
     <a rel="leanModal" name="newBundle" href="#newBundle">Add New Bundle</a>
 
-    <br/><br/>
+    <br/>
 
     <div id="newBundle" class="roundedCorners" style="display:none;background:white;padding:10px;width:300px;height:auto;"></div>
 
@@ -45,7 +45,14 @@ $(function() {
                 <spring:url value="/config/bundles/refreshBundles" var="formURLRefreshBundles" />
                 <form:form modelAttribute="bundleForm" action="${fn:escapeXml(formURLRemoveBundles)}" cssClass="cleanform" method="POST">
 		<form:hidden path="id" />
-                 <table  id="trustBundlesTable" class="fancyTable" style="width:100%;font-size:10px">
+                 
+<div class="box" style="margin-top:10px;margin-bottom:5px;">
+        <div class="header">
+            <h3>Trust Bundles</h3>
+        </div>
+<div class="content no-padding">
+<table cellpadding="1px" cellspacing="1px" id="trustBundlesTable" class="table" style="margin-bottom:0;font-size:10px;">	
+			
                     <thead>
                         <tr>
                             <th><input type="checkbox" onclick="var checkBoxes = $(':checkbox[name=bundlesSelected]');checkBoxes.attr('checked', !checkBoxes.attr('checked'));"/></th>
@@ -83,7 +90,9 @@ $(function() {
                             </c:forEach>
                     </tbody>
 
-                </table>
+                </table> 
+</div></div>
+
                 <button type="submit" id="submitType" value="delete">Delete</button>
                 <button id="submitType" value="refresh" onclick="$('#bundleForm').attr('action','${fn:escapeXml(formURLRefreshBundles)}');$('#bundleForm').submit();">Refresh Bundle</button>
                 
