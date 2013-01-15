@@ -61,6 +61,15 @@ function selectAll() {
 }
 
 
+
+function updateDomainBundles() {
+
+    
+
+    
+}
+
+
 </script>
 
 <div style="float:right"><a class="modal_close" href="#">Close</a></div>
@@ -101,7 +110,7 @@ function selectAll() {
     </table>
 </div>
 <div>
-    <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Assign to Domain</button>
+    <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="updateDomainBundles();">Assign to Domain</button>
 </div>
 
 

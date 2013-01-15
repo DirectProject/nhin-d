@@ -151,6 +151,50 @@ public class DomainController {
 		}	
 		return form;
 	}
+        
+        @PreAuthorize("hasRole('ROLE_ADMIN')") 
+	@RequestMapping(value="/addBundle", method = RequestMethod.POST)
+	public ModelAndView addBundle (
+            @RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+            HttpSession session,
+            @ModelAttribute AnchorForm anchorForm,
+            Model model,
+            @RequestParam(value="domainId") String domainId,
+            @RequestParam(value="bundles") String bundles
+            ) { 		
+
+		ModelAndView mav = new ModelAndView();                 
+		
+                // DEBUG
+                if ( log.isDebugEnabled() ) {
+                    log.debug("Enter domain/addBundle");
+                }
+                
+                String[] bundleIds = bundles.split(":");
+
+                for(String bundle : bundleIds) {
+                    String[] bundleArray = bundle.split("_");
+                    
+                    try {
+                    
+                        if(bundleArray[1].equals("both")) {
+                            configSvc.associateTrustBundleToDomain(Long.parseLong(domainId), Integer.parseInt(bundleArray[0]), true, true);
+                        } else if (bundleArray[1].equals("in")) {
+                            configSvc.associateTrustBundleToDomain(Long.parseLong(domainId), Integer.parseInt(bundleArray[0]), true, false);
+                        } else if (bundleArray[1].equals("out")) {
+                            configSvc.associateTrustBundleToDomain(Long.parseLong(domainId), Integer.parseInt(bundleArray[0]), false, true);
+                        } else {
+                            configSvc.associateTrustBundleToDomain(Long.parseLong(domainId), Integer.parseInt(bundleArray[0]), false, false);
+                        }
+                    } catch (ConfigurationServiceException cse) {
+                        
+                    }
+                    
+                }
+                
+                return new ModelAndView("redirect:/config/domain?id="+domainId+"&action=update#tab3");
+                
+        }
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addanchor", method = RequestMethod.POST)
@@ -884,6 +928,13 @@ public class DomainController {
 		return mav;
 	}		
 	
+        
+        /**  removeDomain
+        * 
+        * 
+        * 
+        * 
+        */        
 	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/remove", method = RequestMethod.POST)
 	public ModelAndView removeDomain (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -1002,6 +1053,11 @@ public class DomainController {
 		return mav;
 	}	
 	
+        
+        
+        
+        
+
 	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(method = RequestMethod.POST)
 	public ModelAndView onSubmitAndView(Object command){
