@@ -189,6 +189,12 @@
             });
 
         
+            $(function() {
+                $('a[name=addMoreBundles]').click(function() {
+                    $('#addMoreBundles').load('/config-ui/config/bundles/addMoreBundlesForm?domainId=${domainId}');
+                });
+            });
+
              function selectAllBoxes() {
 
                     var checkBoxes = $(':checkbox[name=bundlesSelected]'); 
@@ -393,7 +399,7 @@
                                                  <td><form:checkbox path="remove"
                                                                value="${address.id}" /></td>
                                                 <td><a
-                                                        href='../address?id=<c:out value="${address.id}"/>'>${address.emailAddress}</a></td>
+                                                        href='mailto:${address.emailAddress}'>${address.emailAddress}</a></td>
                                                 <td><c:out value="${address.displayName}" /></td>
                                                 <td><c:out value="${address.endpoint}" /></td>
                                                 <td><c:out value="${address.type}" /></td>
@@ -502,7 +508,7 @@
                                 <div class="content no-padding" style="">
 
                                
-                                    <table id="table-domains" class="table" style="margin-bottom:0;font-size:12px;">
+                                    <table id="table-domains" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
                                         <thead>
                                             <tr>
                                                 <th></th>
@@ -533,8 +539,7 @@
                                                     <td><form:checkbox path="remove"
                                                                    value="${anchors.id}" /></td>
                                                     <td><c:out value="${anchors.trusteddomainoruser}" /></td>
-                                                    <td><a
-                                                            href='../anchor?id=<c:out value="${anchors.id}"/>'>'${anchors.owner}'</a></td>
+                                                    <td><a href='#tab2'>${anchors.owner}</a></td>
                                                     <td><c:out value="${anchors.thumbprint}" /></td>
                                                     <td><fmt:formatDate
                                                         value="${anchors.createTime.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
@@ -571,9 +576,12 @@
                     <c:otherwise>
 
                 <h3>Trust Bundles</h3>
-
                 
+                <div id="addMoreBundles" class="roundedCorners" style="display:none;background:white;padding:10px;width:500px;height:auto;"></div>
 
+                <div style="margin:5px 0">
+                    <a rel="leanModal" name="addMoreBundles" href="#addMoreBundles">Assign Additional Trust Bundles</a>
+</div>
 
                 <c:choose>
                 
@@ -584,7 +592,7 @@
                     
                                 <div class="box" style="width:auto;margin-bottom:5px;">
                                 <div class="header">
-                                    <h3>Anchors</h3>
+                                    <h3>Bundles</h3>
                                 </div>
                                 <div class="content no-padding" style="">
 
@@ -610,7 +618,7 @@
                             </c:otherwise>
                         </c:choose>
 
-                            <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.trustBundle.id}|${trustBundle.trustBundle.bundleName}"/></td>
+                            <td width=10><input name="bundlesToRemove" type="checkbox" value="${trustBundle.trustBundle.id}"/></td>
                             <td>${trustBundle.trustBundle.bundleName}<br/>
 
                             </td>     
@@ -637,7 +645,7 @@
                     </div>                                
                                 
                             </div>
-                    <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="selectBundles();">Remove Selected</button>
+                    <button name="submitType" id="submitType" type="button" value="assignBundles" onclick="removeBundles();">Remove Selected</button>
 
                 
 

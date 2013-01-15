@@ -54,9 +54,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.nhindirect.config.store.TrustBundle;
 import java.security.cert.CertificateException;
 import org.nhindirect.config.service.TrustBundleService;
+import org.nhindirect.config.store.TrustBundleDomainReltn;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Collections;
 
 @Controller
 @RequestMapping("/bundles")
@@ -447,6 +449,81 @@ public class BundlesController {
         bform.setId(0);
         model.addAttribute("bundleForm", bform);
         mav.setViewName("assignBundlesForm");
+        
+        return mav;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/addMoreBundlesForm", method = RequestMethod.GET)
+    public ModelAndView addMoreBundlesForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
+                                                    HttpSession session,
+                                                    @ModelAttribute BundleForm simpleForm,
+                                                    @RequestParam(value="domainId") String domainId,
+                                                    Model model)  { 		
+
+        ModelAndView mav = new ModelAndView(); 
+
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Enter bundles/addMoreBundlesForm");
+        }    
+        
+        // Process data for Trust Bundle View
+        try {
+
+            // Get Trust Bundles
+            Collection<TrustBundle> trustBundles = new ArrayList();  
+            Collection<TrustBundle> newBundles = new ArrayList();  
+            Collection<TrustBundleDomainReltn> bundleRelationships = configSvc.getTrustBundlesByDomain(Long.parseLong(domainId), false);
+            Collection<TrustBundle> allBundles = configSvc.getTrustBundles(false);
+            boolean bundleMatch = false;
+            TrustBundle tempBundle;
+            
+            if( bundleRelationships != null ) {
+                
+                
+ 
+                for(TrustBundleDomainReltn relationship : bundleRelationships) {                                   
+                    
+                    trustBundles.add(relationship.getTrustBundle());                                                                         
+
+                }
+                
+                for(TrustBundle bundle : allBundles) {
+                    bundleMatch = false;
+                
+                    for(TrustBundle subBundle : trustBundles) {
+                        if(subBundle.getId() == bundle.getId()) {
+                            bundleMatch = true;
+                        }
+                    }
+                    if(!bundleMatch) {
+                        newBundles.add(bundle);
+                    }
+                }
+                
+                
+            } else { 
+                
+                
+                
+            }
+                       
+            //if(trustBundles != null) {
+                model.addAttribute("trustBundles", newBundles);
+            //}
+
+
+        } catch (ConfigurationServiceException e1) {
+
+        }                               
+        
+        model.addAttribute("domainId", domainId);
+        
+        BundleForm bform = new BundleForm();
+        bform.setId(0);
+        model.addAttribute("bundleForm", bform);
+        mav.setViewName("addMoreBundlesForm");
         
         return mav;
     }

@@ -51,7 +51,7 @@ $(function() {
             <h3>Trust Bundles</h3>
         </div>
 <div class="content no-padding">
-<table cellpadding="1px" cellspacing="1px" id="trustBundlesTable" class="table" style="margin-bottom:0;font-size:10px;">	
+<table cellpadding="1px" cellspacing="1px" id="trustBundlesTable" class="table" style="width:100%;margin-bottom:0;font-size:10px;">	
 			
                     <thead>
                         <tr>
