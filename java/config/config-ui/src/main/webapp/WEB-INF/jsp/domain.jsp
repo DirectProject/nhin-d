@@ -200,7 +200,7 @@
                     }
                 }
 
-            
+
     
 
         </script>
@@ -596,14 +596,19 @@
                             <td>${trustBundle.trustBundle.bundleName}<br/>
 
                             </td>     
-                            <td> 
-                                 <a href="#">View anchors for this bundle</a>
-                                    <div id="anchors_${trustBundle.trustBundle.id}" style="display:none">
-                                    <ul class="anchorList"> 
+                            <td>                                  
+                                 <a rel="leanModal" name="anchorList" href="#anchors_${trustBundle.trustBundle.id}">View Anchors</a>
+                                    <div id="anchors_${trustBundle.trustBundle.id}" class="roundedCorners" style="display:none;background:white;padding:10px;width:350px;height:auto;">
+                                    <div style="float:right"><a class="modal_close">Close</a></div>
+                                    <br clear="both"/>
+                                    <h3>Anchor List</h3>
+                                    <div style="overflow:auto;height:250px;">
+                                    <ul class="anchorList block-list"> 
                                     <c:forEach items="${bundleMap[trustBundle.trustBundle.bundleName]}" var="anchor">
                                         <li>${anchor.value}</li>
                                     </c:forEach>
                                     </ul>
+                                    </div>
                                     </div>   
                             </td>
                             <td><input name="incoming" disabled="disabled" id="incoming_${trustBundle.id}" type="checkbox" <c:if test="${trustBundle.incoming}">checked="true"</c:if>/></td>

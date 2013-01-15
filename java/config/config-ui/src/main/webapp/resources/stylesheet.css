@@ -679,3 +679,18 @@ input.regularButton {
     width: 0px;
     height: 0px;
 }
+
+ul.block-list{
+	list-style:none;
+	list-style-image:none;
+	padding:0;
+	margin:15px 0
+}
+
+ul.block-list li{
+	background-color:#e9e9e9;
+	padding:5px 10px;
+	margin-bottom:4px;
+	border-radius:3px 3px 3px 3px;
+	
+}
