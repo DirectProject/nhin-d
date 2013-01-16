@@ -36,6 +36,13 @@ public class OptionsParameter
 	public final static String JCE_PROVIDER = "JCE_PROVIDER";
 
 	/**
+	 * String value that specifies a comma delimited list of JCE provider classes that should be registered.  Each
+	 * class in the list should be fully qualified with the package name.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptography.JCEProviderClassNames
+	 */
+	public final static String JCE_PROVIDER_CLASSES = "JCE_PROVIDER_CLASSES";
+	
+	/**
 	 * String value that specifies the directory where CRLs will be cached.  The directory may a full or relative path.
 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.CRLCacheLocation
 	 */
