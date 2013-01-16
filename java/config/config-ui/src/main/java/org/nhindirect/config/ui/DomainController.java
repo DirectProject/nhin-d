@@ -481,7 +481,7 @@ public class DomainController {
 		strid = ""+simpleForm.getId();
 		if (log.isDebugEnabled()) log.debug(" the value of id of simpleform is: "+strid);
 		
-		return mav;
+		return new ModelAndView("redirect:/config/domain?id="+simpleForm.getId()+"#tab2");
 	}			
 		
 	
