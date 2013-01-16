@@ -56,7 +56,7 @@ $(function() {
                     <thead>
                         <tr>
                             <th><input type="checkbox" onclick="var checkBoxes = $(':checkbox[name=bundlesSelected]');checkBoxes.attr('checked', !checkBoxes.attr('checked'));"/></th>
-                            <th>Bundle Name</th>
+                            <th>Bundle Name</th>                           
                             <th width="">URL</th>
                             <th width="">Checksum</th>
                             <th width="" >Created</th>
@@ -78,7 +78,19 @@ $(function() {
                                 </c:choose>
                                     <td><form:checkbox path="bundlesSelected" value="${trustBundle.id}" /></td>
                                     <td><c:out value="${trustBundle.bundleName}"/><br/>
-                                        
+                                        <a rel="leanModal" name="anchorList" href="#anchors_${trustBundle.id}">View Anchors</a>
+                                        <div id="anchors_${trustBundle.id}" class="roundedCorners" style="display:none;background:white;padding:10px;width:350px;height:auto;">
+                                        <div style="float:right"><a class="modal_close" style="cursor:pointer">Close</a></div>
+                                        <br clear="both"/>
+                                        <h3 style="color:black">Anchor List</h3>
+                                        <div style="overflow:auto;height:250px;">
+                                        <ul class="anchorList block-list"> 
+                                        <c:forEach items="${bundleMap[trustBundle.bundleName]}" var="anchor">
+                                            <li>${anchor.value}</li>
+                                        </c:forEach>
+                                        </ul>
+                                        </div>
+                                        </div>
                                     </td>
                                     <td><a href="<c:out value="${trustBundle.bundleURL}"/>" target="_blank"><c:out value="${trustBundle.bundleURL}"/></a></td>
                                     <td><c:out value="${trustBundle.checkSum}"/></td>

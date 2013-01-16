@@ -195,6 +195,43 @@ public class DomainController {
                 return new ModelAndView("redirect:/config/domain?id="+domainId+"&action=update#tab3");
                 
         }
+        
+        @PreAuthorize("hasRole('ROLE_ADMIN')") 
+	@RequestMapping(value="/removeBundles", method = RequestMethod.POST)
+	public ModelAndView removeBundles (
+            @RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+            HttpSession session,
+            @ModelAttribute AnchorForm anchorForm,
+            Model model,
+            @RequestParam(value="domainId") String domainId,
+            @RequestParam(value="bundles") String bundles
+            ) { 		
+
+		ModelAndView mav = new ModelAndView();                 
+		
+                // DEBUG
+                if ( log.isDebugEnabled() ) {
+                    log.debug("Enter domain/removeBundles");
+                }
+                
+                String[] bundleIds = bundles.split(":");
+
+                for(String bundle : bundleIds) {
+                    
+                    
+                    try {
+                    
+                        configSvc.disassociateTrustBundleFromDomain(Long.parseLong(domainId), Long.parseLong(bundle));
+                        
+                    } catch (ConfigurationServiceException cse) {
+                        
+                    }
+                    
+                }
+                
+                return new ModelAndView("redirect:/config/domain?id="+domainId+"&action=update#tab3");
+                
+        }
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')") 
 	@RequestMapping(value="/addanchor", method = RequestMethod.POST)
@@ -1196,8 +1233,6 @@ public class DomainController {
                                 if(bundles != null) {
                                 
                                     model.addAttribute("trustBundles", bundles);                                                                        
-
-                                    //Map<String, Object> bundleMap = new HashMap<String, Object>();  // Map for each bundle by bundle name
                                     
                                     Map<String, Object> bundleMap = new HashMap<String, Object>(bundles.size());                                                                                                            
                                     

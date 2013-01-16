@@ -174,7 +174,7 @@
                     var data = { domainId: ${domainId}, bundle: bundle, direction: direction, directionValue: directionValue };
 
                     $.post('/config-ui/config/domain/updateBundleDirection',data, function(data) {
-                                                
+                        window.location.href = "/config-ui/config/domain?id=${domainId}#tab3";
                     });
                 });
 
@@ -205,8 +205,35 @@
                         checkBoxes.attr('checked', '');
                     }
                 }
+             
+             function selectAllBundles() {
 
+                    var checkBoxes = $(':checkbox[name=bundlesToRemove]'); 
 
+                    if($('#bundleCheckbox').attr('checked')) {    
+                        checkBoxes.attr('checked', 'checked');            
+                    } else {
+                        checkBoxes.attr('checked', '');
+                    }
+                }
+
+                function removeBundles() {
+                    
+                    var bundles = "";
+                    $(':checkbox[name=bundlesToRemove]:checked').each( function() {
+                        bundles += $(this).val() + ":";
+                     } );
+                     
+                     bundles = bundles.substr(0, bundles.length-1);
+                    var data = { domainId: ${domainId}, bundles: bundles };
+                    console.log(data);                    
+                    $.post('/config-ui/config/domain/removeBundles', data, function(data) {
+                                 window.location.reload();             
+                    });
+                    
+
+                    
+                }
     
 
         </script>
@@ -600,7 +627,7 @@
                                     <table id="table-domains" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
 <thead>
                         <tr>
-                            <th><input type="checkbox" id="bundleCheckbox" onclick="selectAllBoxes();"/></th>
+                            <th><input type="checkbox" id="bundleCheckbox" onclick="selectAllBundles();"/></th>
                             <th>Bundle Name</th>
                             <th width=150>Anchor Certificates</th>
                             <th width=20>In</th>
