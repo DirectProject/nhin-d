@@ -51,7 +51,7 @@
 
         <div>
         <label>Refresh Interval (hours):</label><br/>
-        <form:input path="refreshInterval" cssStyle="width:60px"/>
+        <form:input path="refreshInterval" cssStyle="width:60px" value="72"/>
         </div>
 
 <div class="form-submit-area">
