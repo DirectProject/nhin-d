@@ -465,136 +465,134 @@
                     <c:otherwise>
 
                         
-                            <fieldset style="width: 95%;" title="anchor"><spring:url
-                                    value="/config/domain/addanchor" var="formUrladdanchor" /> 
-                        <form:form
-                                    modelAttribute="anchorForm" action="${fn:escapeXml(formUrladdanchor)}"
-                                    cssClass="cleanform" method="POST" enctype="multipart/form-data">
-                                    <form:hidden path="id" />
-                                    
+                            <spring:url value="/config/domain/addanchor" var="formUrladdanchor" /> 
+                            <form:form modelAttribute="anchorForm" action="${fn:escapeXml(formUrladdanchor)}" cssClass="cleanform" method="POST" enctype="multipart/form-data">
+                                <form:hidden path="id" />
 
-                                    
-                                    <table cellpadding="1px" cellspacing="1px" id="anchorTable">
-                                        <tr>
-                                            <th>
-                                                <form:label for="fileData" path="fileData">Certificate:</form:label>
-                                            </th>
-                                            <th>
-                                                <form:input path="fileData" id="certificatefile" type="file"/>
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th><form:label path="incoming">Incoming:
-                                                    <form:errors path="incoming" cssClass="error" />
-                                                </form:label></th>
-                                            <th>
-                                                <form:checkbox path="incoming" />
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th><form:label path="outgoing">Outgoing:
-                                                    <form:errors path="outgoing" cssClass="error" />
-                                                </form:label></th>
-                                            <th>
-                                                <form:checkbox path="outgoing" />
-                                            </th>
-                                        </tr>
-                                        <tr>
-                                            <th><form:label path="status">Status:
-                                                    <form:errors path="status" cssClass="error" />
-                                                </form:label></th>
-                                            <th><form:select path="status">
-                                                    <form:options items="${statusList}" />
-                                                </form:select></th>
-                                        </tr>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                        </tr>
-                                    </table>
-                                    <button name="submitType" id="submitType" type="submit"
-                                            value="newanchor">Add anchor</button>
-                            </form:form></fieldset>
+                                <table cellpadding="1px" cellspacing="1px" id="anchorTable">
+                                    <tr>
+                                        <th>
+                                            <form:label for="fileData" path="fileData">Certificate:</form:label>
+                                        </th>
+                                        <th>
+                                            <form:input path="fileData" id="certificatefile" type="file"/>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th><form:label path="incoming">Incoming:
+                                                <form:errors path="incoming" cssClass="error" />
+                                            </form:label></th>
+                                        <th>
+                                            <form:checkbox path="incoming" />
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th><form:label path="outgoing">Outgoing:
+                                                <form:errors path="outgoing" cssClass="error" />
+                                            </form:label></th>
+                                        <th>
+                                            <form:checkbox path="outgoing" />
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th><form:label path="status">Status:
+                                                <form:errors path="status" cssClass="error" />
+                                            </form:label></th>
+                                        <th><form:select path="status">
+                                                <form:options items="${statusList}" />
+                                            </form:select></th>
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </table>
+
+                                <div style="margin-bottom:10px">
+                                    <button name="submitType" id="submitType" type="submit" value="newanchor">Add anchor</button>
+                                </div>
+                            </form:form>
                         </c:otherwise>
                     </c:choose>
+
                     <c:if test="${not empty anchorsResults}">
 
 
 
-                        <fieldset style="width: 95%;" title="anchors"><spring:url
-                                value="/config/domain/removeanchors" var="formUrlremoveanchor" /> <form:form
-                                modelAttribute="anchorForm"
-                                action="${fn:escapeXml(formUrlremoveanchor)}" cssClass="cleanform"
-                                method="POST" enctype="multipart/form-data">
-                                <form:hidden path="id" />
-                                
-                                <div class="box" style="width:auto;margin-bottom:5px;">
-                                <div class="header">
-                                    <h3>Anchors</h3>
-                                </div>
-                                <div class="content no-padding" style="">
+                        <spring:url value="/config/domain/removeanchors" var="formUrlremoveanchor" /> 
+                        <form:form modelAttribute="anchorForm" action="${fn:escapeXml(formUrlremoveanchor)}" cssClass="cleanform" method="POST" enctype="multipart/form-data">
+                        <form:hidden path="id" />
 
-                               
-                                    <table id="table-domains" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
-                                        <thead>
-                                            <tr>
-                                                <th></th>
-                                                <th>Trusted Domain or User</th>
-                                                <th>Owner</th>
-                                                <th>Thumb</th>
-                                                <th>Create</th>
-                                                <th>Start</th>
-                                                <th>End</th>
-                                                <th>Stat</th>
-                                                <th>In</th>
-                                                <th>Out</th>
-                                                
+                        <div class="box" style="width:auto;margin-bottom:5px;">
+                            <div class="header">
+                                <h3>Anchors</h3>
+                            </div>
+                            <div class="content no-padding">
+
+
+                                <table id="table-domains" class="table" style="width:100%;margin-bottom:0;font-size:12px;">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Trusted Domain or User</th>
+                                            <th>Owner</th>
+                                            <th>Thumb</th>
+                                            <th>Create</th>
+                                            <th>Start</th>
+                                            <th>End</th>
+                                            <th>Stat</th>
+                                            <th>In</th>
+                                            <th>Out</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!--  Put the data from the searchResults attribute here -->
+                                        <c:forEach var="anchors" items="${anchorsResults}"
+                                                   varStatus="rowCounter">
+                                            <c:choose>
+                                                <c:when test="${rowCounter.count % 2 == 0}">
+                                                    <tr class="evenRow">
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                    <tr class="oddRow">
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <td><form:checkbox path="remove"
+                                                               value="${anchors.id}" /></td>
+                                                <td><c:out value="${anchors.trusteddomainoruser}" /></td>
+                                                <td><a href='#tab2'>${anchors.owner}</a></td>
+                                                <td><c:out value="${anchors.thumbprint}" /></td>
+                                                <td><fmt:formatDate
+                                                    value="${anchors.createTime.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
+                                                <td><fmt:formatDate
+                                                    value="${anchors.validStartDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
+                                                <td><fmt:formatDate
+                                                    value="${anchors.validEndDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
+                                                <td><c:out value="${anchors.status}" /></td>
+                                                <td><c:out value="${anchors.incoming}" /></td>
+                                                <td><c:out value="${anchors.outgoing}" /></td>
+
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!--  Put the data from the searchResults attribute here -->
-                                            <c:forEach var="anchors" items="${anchorsResults}"
-                                                       varStatus="rowCounter">
-                                                <c:choose>
-                                                    <c:when test="${rowCounter.count % 2 == 0}">
-                                                        <tr class="evenRow">
-                                                        </c:when>
-                                                        <c:otherwise>
-                                                        <tr class="oddRow">
-                                                        </c:otherwise>
-                                                    </c:choose>
-                                                    <td><form:checkbox path="remove"
-                                                                   value="${anchors.id}" /></td>
-                                                    <td><c:out value="${anchors.trusteddomainoruser}" /></td>
-                                                    <td><a href='#tab2'>${anchors.owner}</a></td>
-                                                    <td><c:out value="${anchors.thumbprint}" /></td>
-                                                    <td><fmt:formatDate
-                                                        value="${anchors.createTime.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
-                                                    <td><fmt:formatDate
-                                                        value="${anchors.validStartDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
-                                                    <td><fmt:formatDate
-                                                        value="${anchors.validEndDate.time}" pattern="MM/dd/yyyy, hh:mm" /></td>
-                                                    <td><c:out value="${anchors.status}" /></td>
-                                                    <td><c:out value="${anchors.incoming}" /></td>
-                                                    <td><c:out value="${anchors.outgoing}" /></td>
-                                                    
-                                                </tr>
-                                            </c:forEach>
-                                        </tbody>
-                                        
-                                    </table>
-                                </div>
+                                        </c:forEach>
+                                    </tbody>
 
-                                </div>                                
-                                <!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
-                                <button name="submitType" id="submitType" type="submit"
-                                        value="deleteanchors">Remove Selected Anchors</button>
+                                </table>
+                            </div>
+                        </div>                                
+                        <!-- Wire this up to jQuery to add an input row to the table. Don't submit it all until the final submit is done -->
+                        <button name="submitType" id="submitType" type="submit"
+                                value="deleteanchors">Remove Selected Anchors</button>
                             
 
                                
                         </form:form>
                 </c:if>
             </div>
+
+
+
+
             <div id="tab3" class="tab_content">
             
             <c:choose>
