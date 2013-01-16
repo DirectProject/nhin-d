@@ -3,6 +3,7 @@ package org.nhindirect.stagent.cert.impl;
 import java.io.File;
 import java.util.UUID;
 
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.options.OptionsManager;
 import org.nhindirect.stagent.options.OptionsParameter;
 
@@ -25,6 +26,8 @@ public class CRLRevocationManager_initCRLCacheLocationTest extends TestCase
 	@Override
 	public void setUp()
 	{
+    	CryptoExtensions.registerJCEProviders();
+		
 		CRLRevocationManager.initCRLCacheLocation();
 		CRLRevocationManager.getInstance().flush();		
 		CRLRevocationManager.crlCacheLocation = null;

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -89,9 +88,9 @@ public class ConfigServiceCertificateStore extends CertificateStore implements C
 	
 	static
 	{
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-		
 		initJVMParams();
+		
+		CryptoExtensions.registerJCEProviders();
 	}
 	
 	public synchronized static void initJVMParams()

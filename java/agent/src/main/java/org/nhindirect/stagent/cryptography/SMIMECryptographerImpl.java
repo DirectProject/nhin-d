@@ -309,7 +309,9 @@ public class SMIMECryptographerImpl implements Cryptographer
         
         try
         {
-        	retVal =  gen.generate(bodyPart, toEncyAlgorithmOid(this.m_encryptionAlgorithm), CryptoExtensions.getJCEProviderName());
+        	final String encryAlgOID = toEncyAlgorithmOid(this.m_encryptionAlgorithm);
+        	retVal =  gen.generate(bodyPart, encryAlgOID, 
+        			CryptoExtensions.getJCEProviderNameForTypeAndAlgorithm("KeyGenerator", encryAlgOID));
         }
         catch (Exception e)
         {
@@ -563,7 +565,8 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    		}
 	    	}    	  	    		    	
 	    	
-	    	CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), CryptoExtensions.getJCEProviderName());   
+	    	CertStore certsAndcrls = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), 
+	    			CryptoExtensions.getJCEProviderNameForTypeAndAlgorithm("CertStore", "Collection"));   
 	    	generator.addCertificatesAndCRLs(certsAndcrls);
 	    	CMSProcessableBodyPart content = new CMSProcessableBodyPart(signedContent);
 	    	

@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.security.cert.X509Certificate;
 
 
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.SignatureValidationException;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.utils.TestUtils;
@@ -27,6 +28,8 @@ public class SMIMECryptographerImpl_checkSignature_Test extends TestCase
 	@Override
 	public void setUp() throws Exception
 	{
+    	CryptoExtensions.registerJCEProviders();
+		
 		// load sigCert A
 		sigCertA = TestUtils.loadCertificate("certCheckA.der");
 		

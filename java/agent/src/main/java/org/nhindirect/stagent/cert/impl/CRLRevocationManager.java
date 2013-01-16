@@ -628,17 +628,23 @@ public class CRLRevocationManager implements RevocationManager
             byte[] ext)
             throws AnnotatedException
     {
+    	ASN1InputStream aIn = null;
         try
         {
-            ASN1InputStream aIn = new ASN1InputStream(ext);
+            aIn = new ASN1InputStream(ext);
             ASN1OctetString octs = (ASN1OctetString)aIn.readObject();
-
+        	IOUtils.closeQuietly(aIn);
+            
             aIn = new ASN1InputStream(octs.getOctets());
             return aIn.readObject();
         }
         catch (Exception e)
         {
             throw new NHINDException("exception processing extension " + oid, e);
+        }
+        finally
+        {
+        	IOUtils.closeQuietly(aIn);
         }
     }
     

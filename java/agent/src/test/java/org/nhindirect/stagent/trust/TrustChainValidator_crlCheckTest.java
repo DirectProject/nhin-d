@@ -5,7 +5,6 @@ import java.io.File;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -21,10 +20,11 @@ import junit.framework.TestCase;
 
 public class TrustChainValidator_crlCheckTest extends TestCase
 {
-    static
-    {
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-    }
+	@Override
+	public void setUp()
+	{
+    	CryptoExtensions.registerJCEProviders();
+	}
 	
 	protected byte[] getCertificateFileData(String file) throws Exception
 	{

@@ -50,10 +50,7 @@ public class TestUtils
 	static
 	{
 		try
-		{
-			int pos = Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-			System.out.println(pos);
-			
+		{	
 			keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 			File fl = new File("testfile");
 			int idx = fl.getAbsolutePath().lastIndexOf("testfile");
