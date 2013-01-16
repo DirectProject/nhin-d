@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.security.cert.CertificateEncodingException;
@@ -51,6 +52,7 @@ import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.TrustBundle;
+import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.nhindirect.config.ui.DNSController.CertContainer;
 import org.nhindirect.config.ui.flash.FlashMap.Message;
@@ -348,7 +350,45 @@ public class MainController {
                     try {
 
                         // Get Trust Bundles
-                        Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);                
+                        Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(true); 
+                        
+                        Map<String, Object> bundleMap = new HashMap<String, Object>(trustBundles.size());                                                                                                            
+                                    
+                        Collection<TrustBundleAnchor> tbAnchors;    // Store anchors for each bundle   
+
+
+
+                        for(TrustBundle bundle : trustBundles) 
+                        {                                        
+                            tbAnchors = bundle.getTrustBundleAnchors();    
+                            Map<TrustBundleAnchor, String> anchorMap = new HashMap<TrustBundleAnchor, String>(tbAnchors.size());                                                                                
+
+                            //String[] anchorDNs = new String[tbAnchors.size()];  // String array for storing anchor DNs
+                            int curAnchor = 0;  // Counter as we iterate through anchor list
+
+                            // Loop through anchors to collect some information about the certificates
+                            for(TrustBundleAnchor anchor : tbAnchors) {
+
+                                try {
+                                    X509Certificate cert = anchor.toCertificate();                                            
+
+                                    String subjectDN = cert.getSubjectDN().toString();
+                                    anchorMap.put(anchor, subjectDN);
+
+                                } catch (org.nhindirect.config.store.CertificateException ex) {                                                
+                                }
+
+                                curAnchor++;
+                            }
+
+                            bundleMap.put(bundle.getBundleName(), anchorMap);
+
+                        }
+
+                        model.addAttribute("bundleMap", bundleMap);  
+                        
+                        
+                        
                         model.addAttribute("trustBundles", trustBundles);                                
 
                     } catch (ConfigurationServiceException e1) {

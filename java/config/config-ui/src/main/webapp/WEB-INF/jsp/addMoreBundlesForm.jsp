@@ -10,13 +10,14 @@
 
 
 
-function selectAll() {
-    var checkBoxes = $(':checkbox[name=bundlesSelected]'); 
-        
-    if($('#selectAllCheckbox').attr('checked')) {    
-        checkBoxes.attr('checked', 'checked');            
+function selectBundlesToAdd() {
+    
+    var checkBoxes = $(':checkbox[name=bundlesToAssociate]'); 
+            
+    if($('#bundlesToAssociate').attr('checked') ) {    
+        checkBoxes.attr('checked', true);            
     } else {
-        checkBoxes.attr('checked', '');
+        checkBoxes.attr('checked', false);
     }
 }
 
@@ -26,26 +27,33 @@ function updateDomainBundles() {
 
     var bundleHTML = "";
 
-    var selectedBundles = $(':checkbox[name=bundlesSelected]:checked').map(function () { 
+    var selectedBundles = $(':checkbox[name=bundlesToAssociate]:checked').map(function () { 
             var bundle = this.value.split('|');  
             bundleHTML += bundle[1]+"<br/>";
             return bundle[0];
     }).get();
 
 
-    var directionFlags = $(':checkbox[name=incoming]:checked,:checkbox[name=outgoing]:checked').map(function() { return $(this).attr('id'); });
+    var directionFlags = $(':checkbox[name=new_incoming]:checked,:checkbox[name=new_outgoing]:checked').map(function() { return $(this).attr('id'); });
     
     var bundleArrayString = "";
     
+    
+
     for(var i=0; i<selectedBundles.length; i++) {
 
         var direction = '';
 
-        if( $('#incoming_'+selectedBundles[i]).attr('checked') && $('#outgoing_'+selectedBundles[i]).attr('checked') ) {
+        
+        
+
+        //$('#incoming_'+selectedBundles[i]).attr('checked',false);
+
+        if( $('#new_incoming_'+selectedBundles[i]).attr('checked') == true && $('#new_outgoing_'+selectedBundles[i]).attr('checked') == true ) {
             direction = 'both';
-        } else if ( $('#incoming_'+selectedBundles[i]).attr('checked') ) {
+        } else if ( $('#new_incoming_'+selectedBundles[i]).attr('checked') ) {
             direction = 'in';
-        } else if ( $('#outgoing_'+selectedBundles[i]).attr('checked') ) {
+        } else if ( $('#new_outgoing_'+selectedBundles[i]).attr('checked') ) {
             direction = 'out';
         } 
 
@@ -59,7 +67,10 @@ function updateDomainBundles() {
         $('#noBundlesError').show().fadeOut(5000);
     } else {
         
-        $.post("/config-ui/config/domain/addBundle", { domainId: <c:out value="${domainId}"/>, bundles: bundleArrayString}, function() {
+        
+
+         
+         $.post("/config-ui/config/domain/addBundle", { domainId: <c:out value="${domainId}"/>, bundles: bundleArrayString}, function() {
             window.location.reload();
 
          });       
@@ -91,7 +102,7 @@ There are no trust bundles available to select.
 
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="selectAllCheckbox" onclick="selectAll();"/></th>
+                    <th><input type="checkbox" id="bundlesToAssociate" onclick="selectBundlesToAdd();"/></th>
                     <th>Bundle Name</th>
                     <th width=20>In</th>
                     <th width=20>Out</th>
@@ -108,10 +119,10 @@ There are no trust bundles available to select.
                     </c:otherwise>
                 </c:choose>
 
-                    <td width=10><input name="bundlesSelected" type="checkbox" value="${trustBundle.id}|${trustBundle.bundleName}"/></td>
+                    <td width=10><input name="bundlesToAssociate" type="checkbox" value="${trustBundle.id}|${trustBundle.bundleName}"/></td>
                     <td>${trustBundle.bundleName}</td>                                                     
-                    <td><input name="incoming" id="incoming_${trustBundle.id}" type="checkbox" checked=""/></td>
-                    <td><input name="outgoing" id="outgoing_${trustBundle.id}" type="checkbox" checked=""/></td>
+                    <td><input name="new_incoming" id="new_incoming_${trustBundle.id}" type="checkbox" checked /></td>
+                    <td><input name="new_outgoing" id="new_outgoing_${trustBundle.id}" type="checkbox" checked /></td>
                 </tr>
             </c:forEach>
 

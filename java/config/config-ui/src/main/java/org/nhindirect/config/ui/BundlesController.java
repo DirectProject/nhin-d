@@ -58,7 +58,11 @@ import org.nhindirect.config.store.TrustBundleDomainReltn;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import org.nhindirect.config.store.TrustBundleAnchor;
 
 @Controller
 @RequestMapping("/bundles")
@@ -241,6 +245,8 @@ public class BundlesController {
                 Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
 
                 if(trustBundles != null) {
+                    
+                                                                                                                       
                     model.addAttribute("trustBundles", trustBundles);
                 }
 
@@ -482,6 +488,8 @@ public class BundlesController {
             if( bundleRelationships != null ) {
                 
                 
+                
+               
  
                 for(TrustBundleDomainReltn relationship : bundleRelationships) {                                   
                     
@@ -505,7 +513,7 @@ public class BundlesController {
                 
             } else { 
                 
-                
+                newBundles = configSvc.getTrustBundles(false);
                 
             }
                        
@@ -528,7 +536,7 @@ public class BundlesController {
         return mav;
     }
     
-    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+        @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/newBundleForm", method = RequestMethod.GET)
     public ModelAndView newBundleForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
                                                     HttpSession session,
