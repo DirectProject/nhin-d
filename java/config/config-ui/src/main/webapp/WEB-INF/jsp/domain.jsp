@@ -143,7 +143,7 @@
                 
 		$('#assignBundles').load('/config-ui/config/bundles/assignBundlesForm');
 
-                <c:if test="f${not empty domainId}">
+                <c:if test="${not empty domainId}">
 
                 // Attach listener to incoming/outgoing checkboxes
                 $('[name="incoming"]').change( function() {
@@ -178,6 +178,8 @@
                     });
                 });
 
+               
+
                 </c:if>
                
 
@@ -205,19 +207,9 @@
                         checkBoxes.attr('checked', '');
                     }
                 }
-             
-             function selectAllBundles() {
 
-                    var checkBoxes = $(':checkbox[name=bundlesToRemove]'); 
-
-                    if($('#bundleCheckbox').attr('checked')) {    
-                        checkBoxes.attr('checked', 'checked');            
-                    } else {
-                        checkBoxes.attr('checked', '');
-                    }
-                }
-
-                function removeBundles() {
+<c:if test="${not empty domainId}">
+ function removeBundles() {
                     
                     var bundles = "";
                     $(':checkbox[name=bundlesToRemove]:checked').each( function() {
@@ -234,6 +226,20 @@
 
                     
                 }
+</c:if>
+             
+             function selectAllBundles() {
+
+                    var checkBoxes = $(':checkbox[name=bundlesToRemove]'); 
+
+                    if($('#bundleCheckbox').attr('checked')) {    
+                        checkBoxes.attr('checked', 'checked');            
+                    } else {
+                        checkBoxes.attr('checked', '');
+                    }
+                }
+
+                
     
 
         </script>
