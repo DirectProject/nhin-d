@@ -24,7 +24,6 @@ package org.nhindirect.stagent;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -100,7 +99,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     
     static
     {
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    	CryptoExtensions.registerJCEProviders();
     }
     
     /**

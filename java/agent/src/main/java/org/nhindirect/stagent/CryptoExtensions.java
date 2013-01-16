@@ -25,6 +25,8 @@ package org.nhindirect.stagent;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.security.Provider;
+import java.security.Security;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -61,6 +63,8 @@ public class CryptoExtensions
 {
 	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
 	
+	private static final String DEFAULT_JCE_PROVIDER_CLASS = "org.bouncycastle.jce.provider.BouncyCastleProvider";
+	
 	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
 	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
 	
@@ -81,6 +85,46 @@ public class CryptoExtensions
 	}
 	
 	/**
+	 * Typically JCE providers are registered through JVM properties files or statically calling {@link Security#addProvider(Provider)}.  The method 
+	 * allows for configuration of JCE Providers through the {@link OptionsManager} classes.  This method iterates through a comma delimited set of providers,
+	 * dynamically loads the provider class, and and registered each one if it has not already been registered.
+	 * <p>
+	 * If a provider is not configured via the {@link OptionsManager}, then the default BouncyCastle provider is registered (if it has not been
+	 * already registered).
+	 * @param jceProviderClasses Comma delimited list of the fully qualified class name of the JCE provider.
+	 */
+	public static void registerJCEProviders()
+	{
+		String[] providerClasses = null;
+		final OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_PROVIDER_CLASSES);
+		
+		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
+			providerClasses = new String[] {DEFAULT_JCE_PROVIDER_CLASS};
+		else
+			providerClasses = param.getParamValue().split(",");
+
+		// register the provider classes
+		for (String providerClass : providerClasses)
+		{
+			try
+			{
+				final Class<?> providerClazz = CryptoExtensions.class.getClassLoader().loadClass(providerClass);
+				final Provider provider = Provider.class.cast(providerClazz.newInstance());
+				
+				// check to see if the provider is already registered
+				if (Security.getProvider(provider.getName()) == null)
+					Security.addProvider(provider);
+				
+			}
+			catch (Exception e)
+			{
+				throw new IllegalStateException("Could not load and/or register JCE provider " + providerClass, e);
+			}
+		}
+		
+	}
+	
+	/**
 	 * Gets the configured JCE crypto provider string for crypto operations.  This is configured using the
 	 * -Dorg.nhindirect.stagent.cryptography.JCEProviderName JVM parameters.  If the parameter is not set or is empty,
 	 * then the default string "BC" (BouncyCastle provider) is returned.  By default the agent installs the BouncyCastle provider.
@@ -93,6 +137,49 @@ public class CryptoExtensions
 		
 		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
 			retVal = DEFAULT_JCE_PROVIDER_STRING;
+		else
+		{
+			final String[] JCEString = param.getParamValue().split(",");
+			retVal = JCEString[0];
+		}
+		return retVal;
+	}
+	
+	/**
+	 * Gets the configured JCE crypto provider that supports the combination of the requested type and algorithm.  If a custom set of 
+	 * providers has not been configured, this method will always return the default BouncyCatle provider string regardless if it matches
+	 * the request type/algorithm pair.
+	 * @param type The crypto type such as CertStore or CertPathValidator
+	 * @param algorithm The algorithm such as PKIX or MAC.
+	 * @return The name of the JCE provider string supporting the type/algorithm pair.
+	 */
+	public static String getJCEProviderNameForTypeAndAlgorithm(String type, String algorithm)
+	{
+		String[] JCEString = null;
+		String retVal = "";
+		final OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_PROVIDER);
+		
+		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
+			JCEString = new String[] {DEFAULT_JCE_PROVIDER_STRING};
+		else
+		{
+			final String configuredJCEString = param.getParamValue();
+			JCEString = configuredJCEString.split(",");
+		}
+		
+		for(String provierString : JCEString)
+		{
+			final Provider provider = Security.getProvider(provierString);
+			if (provider != null)
+			{
+				if (provider.getService(type, algorithm) != null)
+				{
+					retVal = provierString;
+					break;
+				}
+			}
+		}
+
 		
 		return retVal;
 	}
@@ -100,6 +187,11 @@ public class CryptoExtensions
 	/**
 	 * Overrides the configured JCE crypto provider string.  If the name is empty or null, the default string "BC" (BouncyCastle provider)
 	 * is used.
+	 * <P>
+	 * The provider name may be a comma delimited list of provider strings.  The first string in the list will be the default provider string
+     * and returned when using {@link #getJCEProviderName()}; however, the {@link #getJCEProviderNameForTypeAndAlgorithm(String, String)} will search
+     * through the provider string until a valid provider that supports the requested type and algorithm is found.  In this case, the first matching
+     * provider string will be used.
 	 * @param name The name of the JCE provider.
 	 */
 	public static void setJCEProviderName(String name)

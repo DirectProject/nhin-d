@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyStore;
-import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
 
@@ -59,7 +58,7 @@ public class CreatePKCS12
 	
 	static
 	{
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    	CryptoExtensions.registerJCEProviders();
 	}
 	
 	/**

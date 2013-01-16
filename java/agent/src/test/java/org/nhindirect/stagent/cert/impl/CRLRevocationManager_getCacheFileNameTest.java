@@ -1,5 +1,7 @@
 package org.nhindirect.stagent.cert.impl;
 
+import org.nhindirect.stagent.CryptoExtensions;
+
 import junit.framework.TestCase;
 
 public class CRLRevocationManager_getCacheFileNameTest extends TestCase
@@ -7,6 +9,8 @@ public class CRLRevocationManager_getCacheFileNameTest extends TestCase
 	@Override
 	public void setUp()
 	{
+    	CryptoExtensions.registerJCEProviders();
+		
 		CRLRevocationManager.initCRLCacheLocation();
 		CRLRevocationManager.getInstance().flush();
 		CRLRevocationManager.crlCacheLocation = null;

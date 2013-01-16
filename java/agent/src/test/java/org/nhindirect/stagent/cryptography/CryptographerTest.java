@@ -11,6 +11,7 @@ import javax.mail.internet.MimeMultipart;
 
 import junit.framework.TestCase;
 
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cryptography.DigestAlgorithm;
 import org.nhindirect.stagent.cryptography.EncryptionAlgorithm;
@@ -23,6 +24,11 @@ import org.nhindirect.stagent.utils.TestUtils;
 
 public class CryptographerTest extends TestCase
 {	
+	@Override
+	public void setUp()
+	{
+    	CryptoExtensions.registerJCEProviders();
+	}
 	
 	public void testEncryptAndDecryptMimeEntityAES128() throws Exception
 	{

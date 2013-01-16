@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -55,7 +54,7 @@ class CertLoader
 {
     static
     {
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    	CryptoExtensions.registerJCEProviders();
     }	
 	
 	public static CertCreateFields loadCertificate(File certFile, File keyFile, char[] password) throws Exception

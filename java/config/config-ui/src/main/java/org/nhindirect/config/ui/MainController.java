@@ -30,6 +30,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -351,6 +352,9 @@ public class MainController {
 
                         // Get Trust Bundles
                         Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(true); 
+                        
+                        if (trustBundles == null)
+                        	trustBundles = Collections.emptyList();
                         
                         Map<String, Object> bundleMap = new HashMap<String, Object>(trustBundles.size());                                                                                                            
                                     

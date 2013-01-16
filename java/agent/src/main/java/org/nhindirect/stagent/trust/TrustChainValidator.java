@@ -164,7 +164,7 @@ public class TrustChainValidator
 	        }
             */
         	certPath = factory.generateCertPath(certs);
-        	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderName());    		
+        	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderNameForTypeAndAlgorithm("CertPathValidator", "PKIX"));    		
     		
 
         	pathValidator.validate(certPath, params);

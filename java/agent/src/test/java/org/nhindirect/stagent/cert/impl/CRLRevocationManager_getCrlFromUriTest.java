@@ -17,6 +17,7 @@ import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.FileUtils;
 import org.bouncycastle.x509.X509V2CRLGenerator;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
@@ -26,6 +27,8 @@ public class CRLRevocationManager_getCrlFromUriTest extends TestCase
 	@Override
 	public void setUp()
 	{
+    	CryptoExtensions.registerJCEProviders();
+		
 		CRLRevocationManager.initCRLCacheLocation();
 		CRLRevocationManager.getInstance().flush();		
 		CRLRevocationManager.crlCacheLocation = null;

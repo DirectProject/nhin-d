@@ -44,6 +44,13 @@ import org.nhindirect.stagent.utils.TestUtils;
  */
 public class DefaultMessageSignatureImpl_CheckThumbprint_Test extends TestCase {
 	abstract class TestPlan extends BaseTestPlan {
+		
+		@Override
+		protected void setupMocks()
+		{
+			CryptoExtensions.registerJCEProviders();
+		}
+		
 		@Override
 		protected void performInner() throws Exception {
 			DefaultMessageSignatureImpl impl = createMessageSignature();

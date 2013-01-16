@@ -7,6 +7,7 @@ import java.io.File;
 import java.security.cert.CRL;
 import java.security.cert.X509CRL;
 
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
@@ -16,6 +17,8 @@ public class CRLRevocationManager_writeCRLCacheFileTest extends TestCase
 	@Override
 	public void setUp()
 	{
+    	CryptoExtensions.registerJCEProviders();
+		
 		CRLRevocationManager.initCRLCacheLocation();
 		CRLRevocationManager.getInstance().flush();		
 		CRLRevocationManager.crlCacheLocation = null;

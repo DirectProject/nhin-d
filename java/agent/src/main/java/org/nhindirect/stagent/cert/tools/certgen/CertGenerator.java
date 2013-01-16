@@ -65,7 +65,7 @@ class CertGenerator
 	
     static
     {
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+		CryptoExtensions.registerJCEProviders();
     }	
 	
 	public static CertCreateFields createCertificate(CertCreateFields fields) throws Exception

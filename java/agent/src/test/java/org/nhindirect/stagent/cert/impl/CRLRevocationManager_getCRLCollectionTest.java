@@ -7,6 +7,8 @@ import java.lang.ref.SoftReference;
 import java.security.cert.X509CRL;
 import java.util.Calendar;
 
+import org.nhindirect.stagent.CryptoExtensions;
+
 import junit.framework.TestCase;
 
 public class CRLRevocationManager_getCRLCollectionTest extends TestCase
@@ -14,6 +16,8 @@ public class CRLRevocationManager_getCRLCollectionTest extends TestCase
 	@Override
 	public void setUp()
 	{
+    	CryptoExtensions.registerJCEProviders();
+		
 		CRLRevocationManager.initCRLCacheLocation();
 		CRLRevocationManager.getInstance().flush();
 		CRLRevocationManager.crlCacheLocation = null;
