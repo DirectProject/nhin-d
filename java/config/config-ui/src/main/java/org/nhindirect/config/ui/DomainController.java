@@ -363,7 +363,8 @@ public class DomainController {
 		
 		model.addAttribute("addressForm",addressForm2);
 		
-		return mav;
+                return new ModelAndView("redirect:/config/domain?id="+anchorForm.getId()+"#tab2");
+		//return mav;
 	}			
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')") 
