@@ -170,7 +170,20 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
@@ -308,11 +321,39 @@
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-jar</artifactId>
 	  <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.nhind</groupId>
+                    <artifactId>agent</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.camel</groupId>
+                    <artifactId>camel-core</artifactId>
+                </exclusion>  
+                <exclusion>
+                    <groupId>org.apache.camel</groupId>
+                    <artifactId>camel-spring</artifactId>
+                </exclusion> 
+                <exclusion>
+                    <groupId>org.apache.camel</groupId>
+                    <artifactId>camel-mina</artifactId>
+                </exclusion>                                                               
+            </exclusions>	  
 	 </dependency>
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-store</artifactId>
 	  <version>1.2-SNAPSHOT</version>
+            <exclusions> 
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-entitymanager</artifactId>
+                </exclusion> 
+                <exclusion>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib</artifactId>
+                </exclusion>                                                                                 
+            </exclusions>	 	  
 	 </dependency>
 	</dependencies>
 
