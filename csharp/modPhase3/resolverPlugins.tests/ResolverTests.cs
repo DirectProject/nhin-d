@@ -151,7 +151,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts500@direct1.testteam.us")]
+        [InlineData("dts500@direct1.direct-test.com")]
         public void Test500(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -164,7 +164,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts500@direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts500@direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
             AssertCert(certs[0], true);
 
             //
@@ -176,7 +176,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts500@direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts500@direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
 
@@ -193,7 +193,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts501@direct1.testteam.us")]
+        [InlineData("dts501@direct1.direct-test.com")]
         public void Test501(string subject)
         {
             //Debugger.Launch();
@@ -212,11 +212,11 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
             AssertCert(certs[0], true);
 
             Assert.Equal(1, diagnostics.ActualErrorMessages.Count);
-            Assert.Equal("Chain Element has problem dts501@direct1.testteam.us;NotTimeValid", diagnostics.ActualErrorMessages[0]);
+            Assert.Equal("Chain Element has problem dts501@direct1.direct-test.com;NotTimeValid", diagnostics.ActualErrorMessages[0]);
             
             //
             // Now prove we can get it from as a domain with no fail over.
@@ -224,7 +224,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             certs = pluginResolver.GetCertificatesForDomain(email.Host);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
 
@@ -238,7 +238,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts501@direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts501@direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], false);
 
@@ -255,7 +255,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts502@direct1.testteam.us")]
+        [InlineData("dts502@direct1.direct-test.com")]
         public void Test502(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -268,7 +268,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts502@direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts502@direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
 
@@ -283,7 +283,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts502@direct1.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts502@direct1.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
         }
@@ -298,7 +298,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts505@direct2.testteam.us")]
+        [InlineData("dts505@direct2.direct-test.com")]
         public void Test505(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -311,7 +311,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts505@direct2.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts505@direct2.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
         }
@@ -326,7 +326,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts506@direct2.testteam.us")]
+        [InlineData("dts506@direct2.direct-test.com")]
         public void Test506(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -344,7 +344,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("direct2.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("direct2.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             //This is not expected according to the 506 test Background Cert info we should not have found a domain cert at all
             AssertCert(certs[0], false);
@@ -361,7 +361,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts506@direct2.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts506@direct2.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
         }
@@ -377,7 +377,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts507@direct3.testteam.us")]
+        [InlineData("dts507@direct3.direct-test.com")]
         public void Test507(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -390,7 +390,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.Equal(1, certs.Count);
-            Assert.Equal("dts507@direct3.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts507@direct3.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
         }
@@ -405,7 +405,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts515@direct2.testteam.us")]
+        [InlineData("dts515@direct2.direct-test.com")]
         public void Test515(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -429,13 +429,13 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             Assert.True(certs.Count == 1);
 
             Assert.Equal(2, diagnosticsForDnsCertResolver.ActualErrorMessages.Count);
-            Assert.Equal("Chain Element has problem dts515@direct2.testteam.us;NotTimeValid", diagnosticsForDnsCertResolver.ActualErrorMessages[0]);
-            Assert.Equal("Chain Element has problem direct2.testteam.us;NotTimeValid", diagnosticsForDnsCertResolver.ActualErrorMessages[1]);
+            Assert.Equal("Chain Element has problem dts515@direct2.direct-test.com;NotTimeValid", diagnosticsForDnsCertResolver.ActualErrorMessages[0]);
+            Assert.Equal("Chain Element has problem direct2.direct-test.com;NotTimeValid", diagnosticsForDnsCertResolver.ActualErrorMessages[1]);
 
             Assert.Equal(1, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
-            Assert.Equal("Chain Element has problem dts515@direct2.testteam.us;NotTimeValid", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
+            Assert.Equal("Chain Element has problem dts515@direct2.direct-test.com;NotTimeValid", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
             
-            Assert.Equal("dts515@direct2.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts515@direct2.direct-test.com", certs[0].ExtractEmailNameOrName());
             AssertCert(certs[0], true);
 
             
@@ -443,7 +443,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         }
 
         [Theory]
-        [InlineData("dts517@direct3.testteam.us")]
+        [InlineData("dts517@direct3.direct-test.com")]
         public void Test517(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -456,14 +456,14 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts517@direct3.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts517@direct3.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
 
 
             //
             // Ok no lets just use the modspec3 LDAP resolver because I don't really know that 
-            // we fell back to LDAP
+            // we fell back to LDAP with above test.
             //
 
             pluginResolver = LocateChild<ModSpec3.ResolverPlugins.LdapCertResolverProxy>(agent.PublicCertResolver);
@@ -473,7 +473,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             certs = pluginResolver.GetCertificates(email);
             Assert.NotNull(certs);
             Assert.True(certs.Count == 1);
-            Assert.Equal("dts517@direct3.testteam.us", certs[0].ExtractEmailNameOrName());
+            Assert.Equal("dts517@direct3.direct-test.com", certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true);
         }
@@ -490,7 +490,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts520@direct5.testteam.us")]
+        [InlineData("dts520@direct5.direct-test.com")]
         public void Test520(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -516,7 +516,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts511@direct4.testteam.us")]
+        [InlineData("dts511@direct4.direct-test.com")]
         public void Test511(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
@@ -542,7 +542,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("dts512@direct6.testteam.us")]
+        [InlineData("dts512@direct6.direct-test.com")]
         public void Test512(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestXml);
