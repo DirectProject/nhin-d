@@ -50,6 +50,8 @@ namespace Health.Direct.Agent.Tests
             return m_innerResolver.GetCertificatesForDomain(domain);
         }
 
+        public event Action<ICertificateResolver, Exception> Error;
+
         #endregion
 
         #region IPlugin Members
