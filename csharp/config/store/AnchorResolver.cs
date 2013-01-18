@@ -64,6 +64,11 @@ namespace Health.Direct.Config.Store
             AnchorManager m_anchorManager;
             bool m_incoming;
 
+            /// <summary>
+            /// Event to subscribe to for notification of errors.
+            /// </summary>
+            public event Action<ICertificateResolver, Exception> Error;
+
             internal AnchorCertResolver(AnchorManager manager, bool incoming)
             {
                 m_anchorManager = manager;

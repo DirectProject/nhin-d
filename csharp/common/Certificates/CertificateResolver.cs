@@ -77,6 +77,11 @@ namespace Health.Direct.Common.Certificates
         public bool OrgCertificatesOnly = false;
 
         /// <summary>
+        /// Event to subscribe to for notification of errors.
+        /// </summary>
+        public event Action<ICertificateResolver, Exception> Error;
+
+        /// <summary>
         /// Create a new certificate resolver. This constructor is used by class extenders.
         /// </summary>
         protected CertificateResolver()

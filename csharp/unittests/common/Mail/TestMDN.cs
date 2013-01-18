@@ -190,7 +190,7 @@ namespace Health.Direct.Common.Tests.Mail
             Disposition expectedDisposition = new Disposition(MDNStandard.NotificationType.Processed);
 
             Message source = this.CreateSourceMessage();            
-            Notification notification = this.CreateProcessedNotification(true);
+            Notification notification = this.CreateProcessedNotification();
             NotificationMessage notificationMessage = source.CreateNotificationMessage(new MailAddress(source.FromValue), notification);
             
             var path = Path.GetTempFileName();
