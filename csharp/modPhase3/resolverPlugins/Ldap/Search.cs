@@ -1,10 +1,10 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2013, Direct Project
  All rights reserved.
 
  Authors:
     Joseph Shook    jshook@kryptiq.com
- 
+  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -15,30 +15,42 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Net.Mail;
-using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Common.Certificates;
-using Health.Direct.Common.Container;
+using System.DirectoryServices.Protocols;
 
-namespace Health.Direct.ResolverPlugins.Tests.Fakes
+namespace Health.Direct.ResolverPlugins.Ldap
 {
-    public class DnsFakeResolver : ICertificateResolver , IPlugin
+    /// <summary>
+    /// Ldap SearchRequests...
+    /// </summary>
+    public static class Search
     {
-        public X509Certificate2Collection GetCertificates(MailAddress address)
+        private const String NAMING_CONTEXTS_ATTRIBUTE = "namingContexts";
+        private const String WILDCARD_OBJECT_CLASS_SEARCH = "objectclass=*";
+        private const String CERT_ATTRIBUTE_BINARY = "userCertificate;binary";
+        private const String CERT_ATTRIBUTE = "userCertificate";
+        private const String EMAIL_ATTRIBUTE = "mail";
+        
+        /// <summary>
+        /// Build a NamingContext ladap request....
+        /// </summary>
+        public static SearchRequest NamingContextRequest()
         {
-            return null;
-        }
 
-        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+            return new SearchRequest("", WILDCARD_OBJECT_CLASS_SEARCH, SearchScope.Base,
+                                            new[] { NAMING_CONTEXTS_ATTRIBUTE });
+
+        }
+        /// <summary>
+        /// Build a mime cert subtree ldap request...
+        /// </summary>
+        /// <param name="distinqishedName"></param>
+        /// <param name="subjectName"></param>
+        /// <returns></returns>
+        public static SearchRequest MimeCertRequest(string distinqishedName, string subjectName)
         {
-            return null;
-        }
+            return new SearchRequest(distinqishedName, EMAIL_ATTRIBUTE + "=" + subjectName, SearchScope.Subtree,
+                                                    new[] { CERT_ATTRIBUTE, CERT_ATTRIBUTE_BINARY });
 
-        public void Init(PluginDefinition pluginDef)
-        {
-            //noop
         }
-
-        public event Action<ICertificateResolver, Exception> Error;
     }
 }

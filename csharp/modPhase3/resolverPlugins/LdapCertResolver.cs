@@ -1,11 +1,10 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2013, Direct Project
  All rights reserved.
 
  Authors:
-    Greg Meyer      gm2552@cerner.com
     Joseph Shook    jshook@kryptiq.com
- 
+  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -18,17 +17,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.DirectoryServices.Protocols;
-using System.Linq;
 using System.Net;
+using System.Linq;
 using System.Net.Mail;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.ModSpec3.ResolverPlugins.Cert;
 using Health.Direct.ResolverPlugins.Ldap;
 
-namespace Health.Direct.ResolverPlugins
+namespace Health.Direct.ModSpec3.ResolverPlugins
 {
     /// <summary>
     /// Implements a certificate resolver using one or more public LDAP server using DNS SRV to resolve server locations
@@ -45,6 +45,20 @@ namespace Health.Direct.ResolverPlugins
         private readonly IPAddress m_dnsServerIp;
         private readonly TimeSpan m_timeout;
         private int m_maxRetries = 1;
+        X509ChainPolicy m_policy;
+
+        /// <summary>
+        /// Chain validations status treated as failing trust validation with the certificate.
+        /// </summary>
+        public static readonly X509ChainStatusFlags DefaultProblemFlags =
+            X509ChainStatusFlags.NotTimeValid |
+            X509ChainStatusFlags.Revoked |
+            X509ChainStatusFlags.NotSignatureValid |
+            X509ChainStatusFlags.InvalidBasicConstraints |
+            X509ChainStatusFlags.CtlNotTimeValid |
+            X509ChainStatusFlags.CtlNotSignatureValid;
+
+        X509ChainStatusFlags m_problemFlags;
 
 
         /// <summary>
@@ -78,7 +92,7 @@ namespace Health.Direct.ResolverPlugins
                 dnsServerIp = GetLocalServerDns(dnsServerIp);
             }
             if (dnsServerIp == null)
-                throw new ArgumentNullException("dnsServerIP could not be resolved");
+                throw new ArgumentNullException("dnsServerIp");
 
             if (timeout.Ticks < 0)
             {
@@ -88,6 +102,12 @@ namespace Health.Direct.ResolverPlugins
             m_dnsServerIp = dnsServerIp;
             m_timeout = timeout;
             m_cacheEnabled = cacheEnabled;
+
+            m_policy = new X509ChainPolicy();
+            m_policy.VerificationFlags = (X509VerificationFlags.IgnoreWrongUsage);
+
+            m_problemFlags = DefaultProblemFlags;
+
         }
 
         /// <summary>
@@ -132,6 +152,21 @@ namespace Health.Direct.ResolverPlugins
             get { return m_timeout; }
         }
 
+        /// <summary>
+        /// Gets and sets the <see cref="X509ChainStatusFlags"/> for this validator
+        /// </summary>
+        public X509ChainStatusFlags ProblemFlags
+        {
+            get
+            {
+                return m_problemFlags;
+            }
+            set
+            {
+                m_problemFlags = value;
+            }
+        }
+
         #region ICertificateResolver Members
 
         /// <summary>
@@ -150,14 +185,28 @@ namespace Health.Direct.ResolverPlugins
                 var lookupName = GetSrvLdapLookupName(address.Address);
                 srvRecords = RequestSrv(client, lookupName);
             }
+            if (srvRecords == null) return null;
 
-            // get certs from Ldap
-            var certs = GetCertificatesBySubect(srvRecords, address.Address);
-            if (certs == null || certs.Count == 0)
+            X509Certificate2Collection validCerts = null;
+           
+            foreach (var srvRecord in srvRecords)
             {
-                certs = GetCertificatesBySubect(srvRecords, address.Host);
+                // get certs from Ldap
+                var certs = GetCertificatesBySubect(srvRecord, address.Address);
+                validCerts = Validator.FilterValidCerts(certs, m_policy, ProblemFlags, NotifyException);
+                if(!validCerts.IsNullOrEmpty()) break;
             }
-            return certs;
+
+            if (validCerts.IsNullOrEmpty())
+            {
+                foreach (var srvRecord in srvRecords)
+                {
+                    var certs = GetCertificatesBySubect(srvRecord, address.Host);
+                    validCerts = Validator.FilterValidCerts(certs, m_policy, ProblemFlags, NotifyException);
+                    if (!validCerts.IsNullOrEmpty()) break;
+                }
+            }
+            return validCerts;
         }
 
         /// <summary>
@@ -172,11 +221,22 @@ namespace Health.Direct.ResolverPlugins
             {
                 throw new ArgumentException("domain");
             }
+            IEnumerable<SRVRecord> srvRecords;
+            X509Certificate2Collection validCerts = null;
+
             // get the location of the LDAP servers using DNS SRV
             using (var client = CreateDnsClient())
             {
-                return GetCertificatesBySubect(RequestSrv(client, GetSrvLdapLookupName(domain)), domain);
+                srvRecords = RequestSrv(client, GetSrvLdapLookupName(domain));
             }
+
+            foreach (var srvRecord in srvRecords)
+            {
+                var certs = GetCertificatesBySubect(srvRecord, domain);
+                validCerts = Validator.FilterValidCerts(certs, m_policy, ProblemFlags, NotifyException);
+                if (!validCerts.IsNullOrEmpty()) break;
+            }
+            return validCerts;
         }
 
         #endregion
@@ -189,6 +249,7 @@ namespace Health.Direct.ResolverPlugins
             {
                 return null;
             }
+
             return response.AnswerRecords.SRV
                 .OrderBy(r => r.Priority)
                 .OrderByDescending(r => r.Weight);
@@ -202,20 +263,17 @@ namespace Health.Direct.ResolverPlugins
         /// <summary>
         /// Resolves X509 certificates for a specific subject.  May either be an address or a domain name.
         /// </summary>
-        /// <param name="srvRecords">List of <see cref="SRVRecord"/> to resolve. </param>
+        /// <param name="srvRecord">Resolve <see cref="SRVRecord"/> to resolve. </param>
         /// /// <param name="subjectName">The <see cref="String"/> subject to resolve. </param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        X509Certificate2Collection GetCertificatesBySubect(IEnumerable<SRVRecord> srvRecords, string subjectName)
+        X509Certificate2Collection GetCertificatesBySubect(SRVRecord srvRecord, string subjectName)
         {
-            if (srvRecords == null)
-            {
-                return null;
-            }
             var retVal = new X509Certificate2Collection();
 
             // get the LDAP connection from the SRV records
-            using (var connection = GetLdapConnection(srvRecords))
+
+            using (var connection = GetLdapConnection(srvRecord))
             {
                 if (connection != null)
                 {
@@ -280,7 +338,7 @@ namespace Health.Direct.ResolverPlugins
             }
         }
 
-        private string GetSrvLdapLookupName(string subjectName)
+        private static string GetSrvLdapLookupName(string subjectName)
         {
             String domainName;
             int index;
@@ -344,37 +402,31 @@ namespace Health.Direct.ResolverPlugins
         /// <summary>
         /// Creates a connection to an LDAP server based on the DNS SRV resolution of the lookup name.
         /// </summary>
-        /// <param name="srvRecords">List of <see cref="SRVRecord"/> to resolve. </param>
+        /// <param name="srvRecord">Resolver <see cref="SRVRecord"/></param>
         /// <returns>An <see cref="LdapConnection"/> to the server that will be searched for certificates.</returns>
-        protected LdapConnection GetLdapConnection(IEnumerable<SRVRecord> srvRecords)
+        protected LdapConnection GetLdapConnection(SRVRecord srvRecord)
         {
-            LdapConnection retVal = null;
+            LdapConnection retVal;
 
-            // create the LDAP client
-            // try each record until we get one that connects
-            foreach (SRVRecord srvRec in srvRecords)
+            var ldapIdentifier = new LdapDirectoryIdentifier(srvRecord.Target, srvRecord.Port);
+            try
             {
-                var ldapIdentifier = new LdapDirectoryIdentifier(srvRec.Target, srvRec.Port);
-                try
-                {
-                    retVal = new LdapConnection(ldapIdentifier);
-                    retVal.AuthType = AuthType.Anonymous; // use anonymous bind
-                    retVal.SessionOptions.ProtocolVersion = LdapProtoVersion;
+                retVal = new LdapConnection(ldapIdentifier);
+                retVal.AuthType = AuthType.Anonymous; // use anonymous bind
+                retVal.SessionOptions.ProtocolVersion = LdapProtoVersion;
 
-                    if (Timeout.Ticks > 0)
-                    {
-                        retVal.Timeout = Timeout;
-                    }
-                    retVal.Bind();
-
-                    break;
-                }
-                catch (Exception)
+                if (Timeout.Ticks > 0)
                 {
-                    // didn't connenct.... go onto the next record
-                    retVal = null;
+                    retVal.Timeout = Timeout;
                 }
+                retVal.Bind();
             }
+            catch (Exception)
+            {
+                // didn't connenct.... go onto the next record
+                retVal = null;
+            }
+
 
             return retVal;
         }

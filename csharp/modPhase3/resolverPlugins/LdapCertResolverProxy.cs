@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2013, Direct Project
  All rights reserved.
 
  Authors:
@@ -20,7 +20,7 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
 
-namespace Health.Direct.ResolverPlugins
+namespace Health.Direct.ModSpec3.ResolverPlugins
 {
     /// <summary>
     /// This plugin resolver actually loads a LdapCertResolver... and proxies calls to it (See Init method)
@@ -70,7 +70,7 @@ namespace Health.Direct.ResolverPlugins
             add
             {
                 CertificateResolverCollection resolvers = m_innerResolver as CertificateResolverCollection;
-                if (resolvers == null)
+                if(resolvers == null)
                 {
                     m_innerResolver.Error += value;
                     return;
@@ -80,7 +80,7 @@ namespace Health.Direct.ResolverPlugins
                 {
                     resolver.Error += value;
                 }
-            }
+            } 
             remove
             {
                 CertificateResolverCollection resolvers = m_innerResolver as CertificateResolverCollection;

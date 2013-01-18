@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2013, Direct Project
  All rights reserved.
 
  Authors:
@@ -20,21 +20,21 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
 
-namespace Health.Direct.ResolverPlugins
+namespace Health.Direct.ModSpec3.ResolverPlugins
 {
     /// <summary>
-    /// This plugin resolver actually loads a LdapCertResolver... and proxies calls to it (See Init method)
+    /// This plugin resolver actually loads a DnsCertResolver... and proxies calls to it (See Init method)
     /// Example of how you could use plugin resolvers to build "layered" certificate resolution...
     /// Including Adding custom caching and other behavior...
     /// </summary>
-    public class LdapCertResolverProxy : ICertificateResolver, IPlugin
+    public class DnsCertResolverProxy : ICertificateResolver, IPlugin
     {
         ICertificateResolver m_innerResolver;
 
         /// <summary>
         /// Required default constructor to be activated as a plugin.
         /// </summary>
-        public LdapCertResolverProxy()
+        public DnsCertResolverProxy()
         {
         }
 
@@ -65,12 +65,11 @@ namespace Health.Direct.ResolverPlugins
         /// <summary>
         /// Event to subscribe to for notification of errors.
         /// </summary>
-        public event Action<ICertificateResolver, Exception> Error
-        {
+        public event Action<ICertificateResolver, Exception> Error { 
             add
             {
                 CertificateResolverCollection resolvers = m_innerResolver as CertificateResolverCollection;
-                if (resolvers == null)
+                if(resolvers == null)
                 {
                     m_innerResolver.Error += value;
                     return;
@@ -80,7 +79,7 @@ namespace Health.Direct.ResolverPlugins
                 {
                     resolver.Error += value;
                 }
-            }
+            } 
             remove
             {
                 CertificateResolverCollection resolvers = m_innerResolver as CertificateResolverCollection;
@@ -108,7 +107,7 @@ namespace Health.Direct.ResolverPlugins
         /// <param name="pluginDef"></param>
         public void Init(PluginDefinition pluginDef)
         {
-            var settings = pluginDef.DeserializeSettings<LdapCertResolverSettings>();
+            var settings = pluginDef.DeserializeSettings<DnsCertResolverSettings>();
             m_innerResolver = settings.CreateResolver();
         }
 
