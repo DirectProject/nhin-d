@@ -376,7 +376,9 @@ namespace Health.Direct.Agent.Tests
         ICertificateResolver m_a;
         ICertificateResolver m_b;
         bool m_includeGood;
-                
+
+        public event Action<ICertificateResolver, Exception> Error;
+
         public BadCertResolver(ICertificateResolver a, ICertificateResolver b, bool includeGood)
         {
             m_a = a;
@@ -429,6 +431,8 @@ namespace Health.Direct.Agent.Tests
         {
         }
 
+        public event Action<ICertificateResolver, Exception> Error;
+
         public NullResolver(bool returnEmpty)
         {
             m_returnEmpty = returnEmpty;
@@ -450,6 +454,8 @@ namespace Health.Direct.Agent.Tests
         public ThrowingCertResolver()
         {
         }
+
+        public event Action<ICertificateResolver, Exception> Error;
 
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {

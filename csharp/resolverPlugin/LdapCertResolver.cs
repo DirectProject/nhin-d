@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.DirectoryServices.Protocols;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Net.NetworkInformation;
@@ -188,7 +189,9 @@ namespace Health.Direct.ResolverPlugins
             {
                 return null;
             }
-            return response.AnswerRecords.SRV;
+            return response.AnswerRecords.SRV
+                .OrderBy(r => r.Priority)
+                .OrderByDescending(r => r.Weight);
         }
 
         /// <summary>

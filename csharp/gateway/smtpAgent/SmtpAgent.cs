@@ -277,16 +277,12 @@ namespace Health.Direct.SmtpAgent
             if (resolvers != null)
             {
                 resolvers.Error += m_diagnostics.OnResolverError;
-                return;
-            }
 
-            DnsCertResolver dnsResolver = m_agent.PublicCertResolver as DnsCertResolver;
-            if (dnsResolver != null)
-            {
-                dnsResolver.Error += m_diagnostics.OnResolverError;
-                return;
+                foreach (var resover in resolvers)
+                {
+                    resover.Error += m_diagnostics.OnResolverError;
+                }
             }
-
         }
         
         //---------------------------------------------------

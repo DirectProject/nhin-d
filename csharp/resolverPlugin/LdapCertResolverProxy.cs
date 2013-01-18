@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
@@ -59,6 +60,41 @@ namespace Health.Direct.ResolverPlugins
         public X509Certificate2Collection GetCertificatesForDomain(string domain)
         {
             return m_innerResolver.GetCertificatesForDomain(domain);
+        }
+
+        /// <summary>
+        /// Event to subscribe to for notification of errors.
+        /// </summary>
+        public event Action<ICertificateResolver, Exception> Error
+        {
+            add
+            {
+                CertificateResolverCollection resolvers = m_innerResolver as CertificateResolverCollection;
+                if (resolvers == null)
+                {
+                    m_innerResolver.Error += value;
+                    return;
+                }
+                // BackupServerIP adds a internal resolver. 
+                foreach (var resolver in resolvers)
+                {
+                    resolver.Error += value;
+                }
+            }
+            remove
+            {
+                CertificateResolverCollection resolvers = m_innerResolver as CertificateResolverCollection;
+                if (resolvers == null)
+                {
+                    m_innerResolver.Error -= value;
+                    return;
+                }
+                // BackupServerIP adds a internal resolver. 
+                foreach (var resolver in resolvers)
+                {
+                    resolver.Error -= value;
+                }
+            }
         }
 
         #endregion

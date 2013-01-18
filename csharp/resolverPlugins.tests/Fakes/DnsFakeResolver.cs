@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
@@ -37,5 +38,7 @@ namespace Health.Direct.ResolverPlugins.Tests.Fakes
         {
             //noop
         }
+
+        public event Action<ICertificateResolver, Exception> Error;
     }
 }
