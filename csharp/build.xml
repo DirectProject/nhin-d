@@ -13,6 +13,7 @@
 
 	<!-- place any strings/properties here that are likely to be used more than once -->
 	<PropertyGroup>
+	    <Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
 		<agent_solution>.\build\agent.sln</agent_solution>
 		<gateway_solution>.\build\gateway.sln</gateway_solution>
 		<xd_solution>.\build\xd.sln</xd_solution>
@@ -30,7 +31,7 @@
 	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd" />
 
 	<Target Name="build-agent">
-		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=Debug" />
+		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
 	</Target>
 
 	<Target Name="clean-agent">
@@ -47,13 +48,13 @@
 	</Target>
 
 	<Target Name="build-gateway32">
-		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Debug;Platform=Win32" />
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
 	</Target>
 
 	<Target Name="build-gateway64">
-		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Debug;Platform=x64" />
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
 	</Target>
-
+		
 	<Target Name="build-release-gateway32">
 		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Release;Platform=Win32" />
 	</Target>
@@ -65,12 +66,12 @@
 	<Target Name="clean-gateway">
 		<!-- common files may have been removed, so... ugly but rebuild them and then clean them! The pain of a
 		     shared bin folder. -->
-		<!-- <MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=Debug;Architecture=Any CPU" /> -->
-		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=Debug;Architecture=Any CPU" />
+		<!-- <MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=$(Configuration);Architecture=Any CPU" /> -->
+		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=$(Configuration);Architecture=Any CPU" />
 	</Target>
 	
 	<Target Name="build-configui">
-		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=Debug" />
+		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
 	</Target>
 	
 	<Target Name="clean-configui">
@@ -82,7 +83,7 @@
 	</Target>
 	
 	<Target Name="build-xd">
-		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=Debug" />
+		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration)" />
 	</Target>
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
@@ -127,7 +128,7 @@
 		<RemoveDir Directories=".\installer\configui" />
 	</Target>
 
-	<Target Name="prepare-installer" DependsOnTargets="build-gateway32;build-gateway64;publish-configui" />
+	<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway32;build-gateway64;publish-configui" />
 
 	<Target Name="build-installer">
 		<Error Text="Use the build-installer.bat script found in the installer directory." />

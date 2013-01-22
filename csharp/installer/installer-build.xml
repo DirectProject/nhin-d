@@ -1,6 +1,7 @@
 <Project DefaultTargets="build-installer" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
 	<PropertyGroup>
+		<Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
 		<ProductName>Direct Project</ProductName>
 		<Copyright>Copyright 2010 &#169;</Copyright>
 		<Version>0.0.0.0</Version>
@@ -15,13 +16,13 @@
 	</Target>
 
 	<Target Name="build-installer-tools">
-		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=Debug" />
+		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
 	</Target>
 	
 	<Target Name="build-installer" DependsOnTargets="build-installer-tools;update-version-info">
-		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q .\Direct.iss' 
+		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' 
 			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
-		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q .\Direct.iss' 
+		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' 
 			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
 		<MSBuild Targets="clean-configui" Projects="..\build.xml" Properties="state=post" />
 	</Target>
