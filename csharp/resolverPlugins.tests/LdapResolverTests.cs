@@ -14,11 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Extensions;
 using Xunit;
 using Xunit.Extensions;
 
@@ -133,7 +136,64 @@ namespace Health.Direct.ResolverPlugins.Tests
             ";
 
 
+        public const string TestRealResolversXml = @"
+            <AgentSettings>
+                <Domain>exampledomain.com</Domain>   
+                <PrivateCerts>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.Agent.Tests.MachineResolverProxy, Health.Direct.Agent.Tests</TypeName>
+                            <Settings>
+                                <Name>NHINDPrivate</Name>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                </PrivateCerts>             
+                <PublicCerts>
+                    <DnsResolver>
+                      <ServerIP>8.8.8.8</ServerIP>
+                      <Timeout>5000</Timeout>
+                    </DnsResolver>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
+                            <Settings> 
+                                <ServerIP>8.8.8.8</ServerIP>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                </PublicCerts> 
+                <Anchors>
+                    <PluginResolver>
+                        <Definition>
+                            <TypeName>Health.Direct.Agent.Tests.MachineAnchorResolverProxy, Health.Direct.Agent.Tests</TypeName>
+                            <Settings>
+                                <Incoming>
+                                    <Name>NHINDAnchors</Name>
+                                </Incoming>
+                                <Outgoing>
+                                    <Name>NHINDAnchors</Name>
+                                </Outgoing>
+                            </Settings>
+                        </Definition>
+                    </PluginResolver>
+                </Anchors>        
+            </AgentSettings>
+            ";
+
+
         #endregion
+
+        /// <summary>
+        /// Chain validations status treated as failing trust validation with the certificate.
+        /// </summary>
+        public static readonly X509ChainStatusFlags DefaultProblemFlags =
+            X509ChainStatusFlags.NotTimeValid |
+            X509ChainStatusFlags.Revoked |
+            X509ChainStatusFlags.NotSignatureValid |
+            X509ChainStatusFlags.InvalidBasicConstraints |
+            X509ChainStatusFlags.CtlNotTimeValid |
+            X509ChainStatusFlags.CtlNotSignatureValid;
 
 
         [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
@@ -185,6 +245,108 @@ namespace Health.Direct.ResolverPlugins.Tests
             Assert.True(certs.Count > 0);
         }
 
+
+        [Theory]
+        [InlineData("dts517@direct3.direct-test.com")]
+        public void Test517(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver pluginResolver = agent.PublicCertResolver;
+            Assert.NotNull(pluginResolver);
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(pluginResolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = pluginResolver.GetCertificates(email);
+            Assert.NotNull(certs);
+            Assert.True(certs.Count == 1);
+            Assert.Equal("dts517@direct3.direct-test.com", certs[0].ExtractEmailNameOrName());
+
+            AssertCert(certs[0], true);
+
+            Assert.Equal(2, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
+            Assert.Equal("Error=NoUserCertificateAttribute\r\n_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
+
+
+            //
+            // OK now lets just use the LDAP resolver because I don't really know that 
+            // we fall back to LDAP with above test.
+            //
+
+            pluginResolver = LocateChild<LdapCertResolverProxy>(agent.PublicCertResolver);
+            Assert.NotNull(pluginResolver);
+
+            email = new MailAddress(subject);
+            certs = pluginResolver.GetCertificates(email);
+            Assert.NotNull(certs);
+            Assert.True(certs.Count == 1);
+            Assert.Equal("dts517@direct3.direct-test.com", certs[0].ExtractEmailNameOrName());
+
+            AssertCert(certs[0], true);
+        }
+
+
+        private void AssertCert(X509Certificate2 cert, bool expectValidCert)
+        {
+
+            X509Chain chainBuilder = new X509Chain();
+            X509ChainPolicy policy = new X509ChainPolicy();
+            policy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
+            chainBuilder.ChainPolicy = policy;
+
+
+            chainBuilder.Build(cert);
+            X509ChainElementCollection chainElements = chainBuilder.ChainElements;
+
+            // If we don't have a trust chain, then we obviously have a problem...
+            Assert.False(chainElements.IsNullOrEmpty(), string.Format("Can't find a trust chain: {0} ", cert.Subject));
+
+            // walk the chain starting at the leaf and see if we hit any issues
+            foreach (X509ChainElement chainElement in chainElements)
+            {
+                if (expectValidCert)
+                {
+                    AssertChainHasNoProblems(chainElement);
+                }
+                else
+                {
+                    AssertChainHasProblems(chainElement);
+                }
+            }
+        }
+
+        private static void AssertChainHasNoProblems(X509ChainElement chainElement)
+        {
+            X509ChainStatus[] chainElementStatus = chainElement.ChainElementStatus;
+            Assert.False(chainElementStatus.IsNullOrEmpty(), "Missing chain status elements.");
+
+            foreach (var chainElementStatu in chainElementStatus)
+            {
+                Assert.False((chainElementStatu.Status & DefaultProblemFlags) != 0);
+            }
+        }
+
+        private static void AssertChainHasProblems(X509ChainElement chainElement)
+        {
+            X509ChainStatus[] chainElementStatus = chainElement.ChainElementStatus;
+            Assert.False(chainElementStatus.IsNullOrEmpty(), "Missing chain status elements.");
+
+            foreach (var chainElementStatu in chainElementStatus)
+            {
+                if ((chainElementStatu.Status & DefaultProblemFlags) != 0)
+                {
+                    return;  //we expect problems
+                }
+            }
+            Assert.True(false, "Expected chain problems and found none.");
+        }
+
         ICertificateResolver LocateChild<T>(ICertificateResolver resolver)
         {
             var resolvers = (CertificateResolverCollection)resolver;
@@ -197,6 +359,30 @@ namespace Health.Direct.ResolverPlugins.Tests
             }
 
             return null;
+        }
+    }
+
+    public class FakeDiagnostics
+    {
+        public bool Called;
+        readonly Type m_resolverType;
+
+        public FakeDiagnostics(Type resolverType)
+        {
+            m_resolverType = resolverType;
+        }
+
+        private readonly List<string> _actualErrorMessages = new List<string>();
+        public List<string> ActualErrorMessages
+        {
+            get { return _actualErrorMessages; }
+        }
+
+        public void OnResolverError(ICertificateResolver resolver, Exception error)
+        {
+            Assert.Equal(m_resolverType.Name, resolver.GetType().Name);
+            _actualErrorMessages.Add(error.Message);
+            //Logger.Error("RESOLVER ERROR {0}, {1}", resolver.GetType().Name, error.Message);
         }
     }
 }

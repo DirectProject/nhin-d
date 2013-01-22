@@ -54,8 +54,10 @@
     <Compile Include="DnsCertResolverProxy.cs" />
     <Compile Include="DnsCertResolverSettings.cs" />
     <Compile Include="LdapCertResolver.cs" />
+    <Compile Include="LdapCertResolverException.cs" />
     <Compile Include="LdapCertResolverProxy.cs" />
     <Compile Include="LdapCertResolverSettings.cs" />
+    <Compile Include="LDAPError.cs" />
     <Compile Include="Ldap\Search.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -78,6 +80,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(TargetDir)*.dll" "$(SolutionDir)..\bin\$(ConfigurationName)"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
