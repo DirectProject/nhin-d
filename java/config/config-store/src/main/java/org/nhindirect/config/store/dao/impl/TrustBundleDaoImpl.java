@@ -250,12 +250,18 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	validateState();
     	
     	try
-    	{
+    	{			
 			final TrustBundle existingBundle = this.getTrustBundleById(trustBundleId);
-
+			
 			if (existingBundle == null)
 				throw new ConfigurationStoreException("Trust bundle does not exist");
 			
+			// blow away all the existing bundles
+	        final Query delete = entityManager.createQuery("DELETE from TrustBundleAnchor tba where tba.trustBundle = ?1");
+	        delete.setParameter(1, existingBundle);
+	        delete.executeUpdate();
+	        		
+			// now update the bundle		
 			existingBundle.setCheckSum(bundleCheckSum);
 			existingBundle.setTrustBundleAnchors(newAnchorSet);
 			existingBundle.setLastRefreshAttempt(attemptTime);
