@@ -98,6 +98,9 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		
 		tbDao.addTrustBundle(bundle);
 		
+		TrustBundle addedBundle = tbDao.getTrustBundleById(bundle.getId());
+		assertEquals(1, addedBundle.getTrustBundleAnchors().size());
+		
 		final TrustBundleAnchor newAnchor = new TrustBundleAnchor();
 		newAnchor.setData(loadCertificateData("umesh.der"));
 		newAnchor.setTrustBundle(bundle);
@@ -105,7 +108,7 @@ public class TrustBundleDaoImpl_updateTrustBundleAnchorsTest extends TrustBundle
 		tbDao.updateTrustBundleAnchors(bundle.getId(), 
 				Calendar.getInstance(Locale.getDefault()), Arrays.asList(newAnchor), "6789");
 		
-		final TrustBundle addedBundle = tbDao.getTrustBundleById(bundle.getId());
+		addedBundle = tbDao.getTrustBundleById(bundle.getId());
 		assertEquals(1, addedBundle.getTrustBundleAnchors().size());
 		
 		TrustBundleAnchor addedAnchor = addedBundle.getTrustBundleAnchors().iterator().next();

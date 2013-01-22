@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.nhindirect.config.store.Domain;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.dao.DomainDao;
@@ -39,6 +40,18 @@ public abstract class SpringBaseTest extends TestCase
 		try
 		{
 			cleanDataStore();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+		
+		// clean up the file system
+		File dir = new File("./target/tempFiles");
+		if (dir.exists())
+		try
+		{
+			FileUtils.cleanDirectory(dir);
 		}
 		catch (Exception e)
 		{
