@@ -54,6 +54,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="LdapCertResolverException.cs" />
+    <Compile Include="LDAPError.cs" />
     <Compile Include="MultiSourceAnchorResolver.cs" />
     <Compile Include="MultiSourceAnchorResolverSettings.cs" />
     <Compile Include="BundleAnchorIndex.cs" />

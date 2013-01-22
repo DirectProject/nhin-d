@@ -52,6 +52,21 @@ namespace Health.Direct.Agent.Tests
 
         public event Action<ICertificateResolver, Exception> Error;
 
+        void NotifyException(Exception ex)
+        {
+            var errorHandler = this.Error;
+            if (errorHandler != null)
+            {
+                try
+                {
+                    errorHandler(this, ex);
+                }
+                catch
+                {
+                }
+            }
+        }
+
         #endregion
 
         #region IPlugin Members

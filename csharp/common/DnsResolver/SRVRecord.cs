@@ -131,5 +131,22 @@ namespace Health.Direct.Common.DnsResolver
             this.Port = reader.ReadUShort();
             this.Target = reader.ReadDomainName();
         }
+
+        /// <summary>
+        /// Returns a default string representation of this SRV record
+        /// </summary>
+        /// <returns>The SRV record text as seen in DNS</returns>
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(Name)
+                .Append(":")
+                .Append(Port)
+                .Append(" Priority:")
+                .Append(Priority)
+                .Append(" Weight:")
+                .Append(Weight);
+            return sb.ToString();
+        }
     }
 }

@@ -26,7 +26,7 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.ModSpec3.ResolverPlugins.Cert;
-using Health.Direct.ResolverPlugins.Ldap;
+using Health.Direct.ModSpec3.ResolverPlugins.Ldap;
 
 namespace Health.Direct.ModSpec3.ResolverPlugins
 {
@@ -288,9 +288,13 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
                         {
                             SetCerts(connection, request, retVal);
                         }
-                        catch (Exception ldapEx)
+                        catch (LdapCertResolverException ldapEx)
                         {
-                            NotifyException(ldapEx);
+                            NotifyException(new LdapCertResolverException(ldapEx.Error, srvRecord.ToString(), ldapEx.InnerException));
+                        }
+                        catch (Exception ex)
+                        {
+                            NotifyException(ex);
                         }
                     }
                 }
@@ -313,25 +317,26 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
 
         private void SetCerts(SearchResultEntry entry, X509Certificate2Collection retVal)
         {
-            if (entry.Attributes.Count > 0)
+            if (entry.Attributes.Values == null || entry.Attributes.Count <= 0)
             {
-                foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
+                throw new LdapCertResolverException(LDAPError.NoUserCertificateAttribute);
+            }
+            foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
+            {
+                if (entryAttr.Count > 0)
                 {
-                    if (entryAttr.Count > 0)
+                    // search could possibly return more than one entry and each entry may contain
+                    // more that one certificates
+                    foreach (object t in entryAttr)
                     {
-                        // search could possibly return more than one entry and each entry may contain
-                        // more that one certificates
-                        foreach (object t in entryAttr)
+                        try
                         {
-                            try
-                            {
-                                var cert = new X509Certificate2((byte[])t);
-                                retVal.Add(cert);
-                            }
-                            catch (Exception ex)
-                            {
-                                NotifyException(ex);
-                            }
+                            var cert = new X509Certificate2((byte[])t);
+                            retVal.Add(cert);
+                        }
+                        catch (Exception ex)
+                        {
+                            NotifyException(ex);
                         }
                     }
                 }
@@ -421,13 +426,12 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
                 }
                 retVal.Bind();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 // didn't connenct.... go onto the next record
+                NotifyException(new LdapCertResolverException(LDAPError.BindFailure, srvRecord.ToString(), ex));
                 retVal = null;
             }
-
-
             return retVal;
         }
 

@@ -1,10 +1,10 @@
 ﻿/* 
- Copyright (c) 2013, Direct Project
+ Copyright (c) 2012, Direct Project
  All rights reserved.
 
  Authors:
     Joseph Shook    jshook@kryptiq.com
-  
+ 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -15,42 +15,43 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.DirectoryServices.Protocols;
+using Health.Direct.Common;
 
-namespace Health.Direct.ModSpec3.ResolverPlugins.Ldap
+namespace Health.Direct.ModSpec3.ResolverPlugins
 {
     /// <summary>
-    /// Ldap SearchRequests...
+    /// Exception for DSN processing errors
     /// </summary>
-    public static class Search
+    public class LdapCertResolverException : DirectException<LDAPError>
     {
-        private const String NAMING_CONTEXTS_ATTRIBUTE = "namingContexts";
-        private const String WILDCARD_OBJECT_CLASS_SEARCH = "objectclass=*";
-        private const String CERT_ATTRIBUTE_BINARY = "userCertificate;binary";
-        private const String CERT_ATTRIBUTE = "userCertificate";
-        private const String EMAIL_ATTRIBUTE = "mail";
-        
         /// <summary>
-        /// Build a NamingContext ladap request....
+        /// Creates an LdapCertResolverException with the specified error
         /// </summary>
-        public static SearchRequest NamingContextRequest()
+        /// <param name="error">error code</param>
+        public LdapCertResolverException(LDAPError error)
+            : base(error)
         {
-
-            return new SearchRequest("", WILDCARD_OBJECT_CLASS_SEARCH, SearchScope.Base,
-                                            new[] { NAMING_CONTEXTS_ATTRIBUTE });
-
         }
-        /// <summary>
-        /// Build a mime cert subtree ldap request...
-        /// </summary>
-        /// <param name="distinqishedName"></param>
-        /// <param name="subjectName"></param>
-        /// <returns></returns>
-        public static SearchRequest MimeCertRequest(string distinqishedName, string subjectName)
-        {
-            return new SearchRequest(distinqishedName, EMAIL_ATTRIBUTE + "=" + subjectName, SearchScope.Subtree,
-                                                    new[] { CERT_ATTRIBUTE, CERT_ATTRIBUTE_BINARY });
 
+        /// <summary>
+        /// Creates an LdapCertResolverException with the specified error
+        /// </summary>
+        /// <param name="error">error code</param>
+        /// <param name="innerException">Inner exception</param>
+        public LdapCertResolverException(LDAPError error, Exception innerException)
+            : base(error, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Creates an LdapCertResolverException with the specified error
+        /// </summary>
+        /// <param name="error">error code</param>
+        /// <param name="message"></param>
+        /// <param name="innerException">Inner exception</param>
+        public LdapCertResolverException(LDAPError error, string message, Exception innerException)
+            : base(error, message, innerException)
+        {
         }
     }
 }
