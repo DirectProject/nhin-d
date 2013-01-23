@@ -1,2 +1,2 @@
 echo off
-java -classpath ./lib/* org.nhindirect.stagent.cert.tools.LDAPCertDumper %*
+java -classpath .;.\lib\* org.nhindirect.stagent.cert.tools.LDAPCertDumper %*

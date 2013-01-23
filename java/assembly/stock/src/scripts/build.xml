@@ -52,6 +52,7 @@
 	<property name="james3.stage.conf.dir" value="${james3.stage.dir}/conf"></property>
 	<property name="james3.stage.domainlist" value="${james3.stage.conf.dir}/domainlist.conf"></property>
 	<property name="james3.stage.mailetcontainer" value="${james3.stage.conf.dir}/mailetcontainer.conf"></property>
+	<property name="james3.stage.wrapper" value="${james3.stage.conf.dir}/wrapper.conf"></property>	
 	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
 	
 	<!-- tomcat properties -->
@@ -71,10 +72,10 @@
 	<!-- Config server files -->
 	<property name="config.root" value="${config.root}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-1.2.1.war"></property>
+	<property name="config.service.orig.war" value="config-service-1.3-SNAPSHOT.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
-	<property name="config.ui.orig.war" value="config-ui-1.2.war"></property>
+	<property name="config.ui.orig.war" value="config-ui-1.3-SNAPSHOT.war"></property>
 	<property name="config.ui.dest.war" value="config-ui.war"></property>
 
 	<!-- xd server files -->
@@ -113,6 +114,7 @@
 	<property name="lib.jackson-jaxrs" value="${install.root.dir}/lib/jackson-jaxrs-1.7.5.jar"></property>		
 	<property name="lib.jackson-mapper-asl" value="${install.root.dir}/lib/jackson-mapper-asl-1.7.5.jar"></property>		
 	<property name="lib.jdom" value="${install.root.dir}/lib/jdom-1.1.jar"></property>		
+	<property name="lib.jaxb-impl" value="${install.root.dir}/lib/jaxb-impl-2.1.13.jar"></property>			
 	
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${install.root.dir}/lib/jcs-1.3.jar"></property>
@@ -124,7 +126,7 @@
 	<property name="lib.jaxrpc-api" value="${install.root.dir}/lib/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${install.root.dir}/lib/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${install.root.dir}/lib/axis-1.4.jar"></property>
-	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.1.jar"></property>
+	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.2-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
@@ -132,8 +134,8 @@
 	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.4.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.0.2.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.5-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.1-SNAPSHOT.jar"></property>
 	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1.2.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.3.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
@@ -349,11 +351,13 @@
 	    <copy file="${lib.jackson-jaxrs}" todir="${james3.stage.lib.dir}"></copy>			
 	    <copy file="${lib.jackson-mapper-asl}" todir="${james3.stage.lib.dir}"></copy>		
 	    <copy file="${lib.jdom}" todir="${james3.stage.lib.dir}"></copy>	
+	    <copy file="${lib.jaxb-impl}" todir="${james3.stage.lib.dir}"></copy>			
 		
 		<!-- copy the new config files -->
 		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/mailetcontainer.conf" tofile="${james3.stage.mailetcontainer}" overwrite="true"></copy>
-
+		<copy file="${src}/scripts/james3/wrapper.conf" tofile="${james3.stage.wrapper}" overwrite="true"></copy>
+		
 		<copy file="${src}/scripts/james3/setdomain.sh" todir="${james3.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/set-domain.xml" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/james3/set-domain-domainlist.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
@@ -363,7 +367,7 @@
 	</target>	
 	
 	<target name="configure-tomcat">
-		<property name="config.service.orig.war" value="config-service-1.2.1.war"></property>
+		<property name="config.service.orig.war" value="config-service-1.3-SNAPSHOT.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
@@ -378,8 +382,9 @@
 		<copy file="${install.root.dir}/lib/${xd.service.orig.war}" tofile="${tomcat.webapp.dir}/${xd.service.dest.war}"></copy>
 		<copy file="${install.root.dir}/lib/${msg-monitor.service.orig.war}" tofile="${tomcat.webapp.dir}/${msg-monitor.service.dest.war}"></copy>
 		
-		<!-- Copy catalina.sh file -->
+		<!-- Copy catalina.sh and catalina.bat files -->
 		<copy file="${src}/scripts/catalina.sh" tofile="${tomcat.bin.dir}/catalina.sh"></copy>
+	    <copy file="${src}/scripts/catalina.bat" tofile="${tomcat.bin.dir}/catalina.bat"></copy>
 		
 		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
 		    <param name="port" expression="8081"></param>
