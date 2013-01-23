@@ -388,30 +388,38 @@ namespace Health.Direct.Agent.Tests
         
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            X509Certificate2Collection certs;
-            
-            //
-            // Very trivial - deliberately 'confuses' certs - returns certs meant for redmond when the caller
-            // asked for nhind and vice-versa. 
-            //
-            if (address.Host.Equals("redmond.hsgincubator.com", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                certs = m_b.GetCertificates(new MailAddress(address.User + '@' + "nhind.hsgincubator.com"));
-                if (m_includeGood)
+                X509Certificate2Collection certs;
+                
+                //
+                // Very trivial - deliberately 'confuses' certs - returns certs meant for redmond when the caller
+                // asked for nhind and vice-versa. 
+                //
+                if (address.Host.Equals("redmond.hsgincubator.com", StringComparison.OrdinalIgnoreCase))
                 {
-                    certs.Add(m_a.GetCertificates(address));
+                    certs = m_b.GetCertificates(new MailAddress(address.User + '@' + "nhind.hsgincubator.com"));
+                    if (m_includeGood)
+                    {
+                        certs.Add(m_a.GetCertificates(address));
+                    }
                 }
-            }
-            else
-            {
-                certs = m_a.GetCertificates(new MailAddress(address.User + '@' + "redmond.hsgincubator.com"));
-                if (m_includeGood)
+                else
                 {
-                    certs.Add(m_b.GetCertificates(address));
+                    certs = m_a.GetCertificates(new MailAddress(address.User + '@' + "redmond.hsgincubator.com"));
+                    if (m_includeGood)
+                    {
+                        certs.Add(m_b.GetCertificates(address));
+                    }
                 }
-            }
 
-            return certs;
+                return certs;
+            }
+            catch(Exception ex)
+            {
+                this.Error.NotifyEvent(this, ex);
+                throw;
+            }            
         }
         
         public X509Certificate2Collection GetCertificatesForDomain(string domain)
@@ -440,7 +448,15 @@ namespace Health.Direct.Agent.Tests
 
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            return (m_returnEmpty) ? new X509Certificate2Collection() : null;
+            try
+            {
+                return (m_returnEmpty) ? new X509Certificate2Collection() : null;
+            }
+            catch(Exception ex)
+            {
+                this.Error.NotifyEvent(this, ex);
+                throw;
+            }
         }
 
         public X509Certificate2Collection GetCertificatesForDomain(string domain)
@@ -459,12 +475,40 @@ namespace Health.Direct.Agent.Tests
 
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            throw new InvalidOperationException();
+            try
+            {
+                throw new InvalidOperationException();
+            }
+            catch(Exception ex)
+            {
+                this.Error.NotifyEvent(this, ex);
+                throw;
+            }
         }
 
         public X509Certificate2Collection GetCertificatesForDomain(string domain)
         {
-            throw new InvalidOperationException();
+            try
+            {
+                throw new InvalidOperationException();
+            }
+            catch(Exception ex)
+            {
+                this.Error.NotifyEvent(this, ex);
+                throw;
+            }
+        }
+    }
+    
+    public class ThrowingX509Index : IX509CertificateIndex
+    {
+        public ThrowingX509Index()
+        {
+        }
+
+        public X509Certificate2Collection this[string subjectName]
+        {
+            get { throw new InvalidOperationException("Forced Failure!"); }
         }
     }
 }

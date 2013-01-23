@@ -64,16 +64,13 @@ namespace Health.Direct.Config.Store
             AnchorManager m_anchorManager;
             bool m_incoming;
 
-            /// <summary>
-            /// Event to subscribe to for notification of errors.
-            /// </summary>
-            public event Action<ICertificateResolver, Exception> Error;
-
             internal AnchorCertResolver(AnchorManager manager, bool incoming)
             {
                 m_anchorManager = manager;
                 m_incoming = incoming;
             }
+
+            public event Action<ICertificateResolver, Exception> Error;
 
             public X509Certificate2Collection GetCertificates(MailAddress address)
             {
@@ -91,18 +88,26 @@ namespace Health.Direct.Config.Store
                 {
                     throw new ArgumentException("domain");
                 }
-
-                Anchor[] anchors = null;
-                if (m_incoming)
+                
+                try
                 {
-                    anchors = m_anchorManager.GetIncoming(domain);
-                }
-                else
-                {
-                    anchors = m_anchorManager.GetOutgoing(domain);
-                }
+                    Anchor[] anchors = null;
+                    if (m_incoming)
+                    {
+                        anchors = m_anchorManager.GetIncoming(domain);
+                    }
+                    else
+                    {
+                        anchors = m_anchorManager.GetOutgoing(domain);
+                    }
 
-                return this.ToCerts(anchors);
+                    return this.ToCerts(anchors);
+                }
+                catch(Exception ex)
+                {
+                    this.Error.NotifyEvent(this, ex);
+                    throw;
+                }
             }
 
             X509Certificate2Collection ToCerts(Anchor[] anchors)
