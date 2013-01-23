@@ -19,24 +19,36 @@
 			<fileMode>777</fileMode>
 		</file>
 		<file>
+			<source>src/tools/certGen.bat</source>
+			<outputDirectory>direct/tools/</outputDirectory>
+		</file>		
+		<file>
 			<source>src/tools/createPKCS12.sh</source>
 			<outputDirectory>direct/tools/</outputDirectory>
 			<fileMode>777</fileMode>
-		</file>
+		</file>		
 		<file>
 			<source>src/tools/dnsCertDumper.sh</source>
 			<outputDirectory>direct/tools/</outputDirectory>
 			<fileMode>777</fileMode>
 		</file>	
 		<file>
+			<source>src/tools/dnsCertDumper.bat</source>
+			<outputDirectory>direct/tools/</outputDirectory>
+		</file>			
+		<file>
 			<source>src/tools/ldapCertDumper.sh</source>
 			<outputDirectory>direct/tools/</outputDirectory>
-			<fileMode>777</fileMode>
+			<fileMode>777</fileMode>			
 		</file>		
+		<file>
+			<source>src/tools/ldapCertDumper.bat</source>
+			<outputDirectory>direct/tools/</outputDirectory>
+		</file>	
 		<file>
 			<source>src/tools/stripP12Pass.sh</source>
 			<outputDirectory>direct/tools/</outputDirectory>
 			<fileMode>777</fileMode>
-		</file>						
+		</file>										
   </files>  
 </assembly>
