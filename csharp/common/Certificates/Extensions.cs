@@ -737,6 +737,25 @@ namespace Health.Direct.Common.Certificates
                 cert.Reset();
             }            
         }
-
+        
+        /// <summary>
+        /// Used by Resolvers to fire events
+        /// </summary>
+        /// <param name="handler">Event handler to fire, if any subscribers</param>
+        /// <param name="resolver">resolver for which this is an event handler</param>
+        /// <param name="ex">exception to notify</param>
+        public static void NotifyEvent(this Action<ICertificateResolver, Exception> handler, ICertificateResolver resolver, Exception ex)
+        {
+            if (handler != null)
+            {
+                try
+                {
+                    handler(resolver, ex);
+                }
+                catch
+                {
+                }
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Caching;
 using Xunit;
 using Xunit.Extensions;
 
@@ -218,6 +219,57 @@ namespace Health.Direct.Agent.Tests
             
             resolvers.Insert(0, new NullResolver());
             Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());
+        }
+        
+        [Fact]
+        public void TestErrorEventHandler()
+        {
+            ThrowingX509Index throwingIndex = new ThrowingX509Index();
+            CacheSettings cacheSettings = new CacheSettings();
+            cacheSettings.Cache = false;
+            
+            List<Exception> notifiedErrors = new List<Exception>();
+            List<Exception> thrownErrors = new List<Exception>();
+            //
+            // Test Notifications are fired
+            //
+            CertificateResolver resolver = new CertificateResolver(throwingIndex, cacheSettings);
+            resolver.Error += (r, e) => notifiedErrors.Add(e);
+            MailAddress address = new MailAddress("toby@toby");
+            this.TryResolveCerts(resolver, address, thrownErrors);
+            
+            Assert.True(notifiedErrors.Count == thrownErrors.Count);
+            //
+            // Test they are NOT fired
+            //
+            int countThrownFiredBefore = thrownErrors.Count;
+            resolver = new CertificateResolver(throwingIndex, cacheSettings);
+            notifiedErrors.Clear();
+            thrownErrors.Clear();
+            this.TryResolveCerts(resolver, address, thrownErrors);
+            
+            Assert.True(notifiedErrors.Count == 0);
+            Assert.True(thrownErrors.Count == countThrownFiredBefore);
+        }
+        
+        void TryResolveCerts(ICertificateResolver resolver, MailAddress address, List<Exception> thrownErrors)
+        {
+            try
+            {
+                resolver.GetCertificates(address);
+            }
+            catch (Exception ex)
+            {
+                thrownErrors.Add(ex);
+            }
+            try
+            {
+                resolver.GetCertificatesForDomain(address.Host);
+            }
+            catch (Exception ex)
+            {
+                thrownErrors.Add(ex);
+            }
         }
     }
 }

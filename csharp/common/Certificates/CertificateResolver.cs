@@ -127,13 +127,21 @@ namespace Health.Direct.Common.Certificates
                 throw new ArgumentException("domain");
             }
             
-            X509Certificate2Collection domainCerts = this.Resolve(domain);
-            if (domainCerts.IsNullOrEmpty())
+            try
             {
-                return null;
+                X509Certificate2Collection domainCerts = this.Resolve(domain);
+                if (domainCerts.IsNullOrEmpty())
+                {
+                    return null;
+                }
+                
+                return new X509Certificate2Collection(domainCerts);
             }
-            
-            return new X509Certificate2Collection(domainCerts);
+            catch (Exception ex)
+            {
+                this.Error.NotifyEvent(this, ex);
+                throw;
+            }            
         }
         
         /// <summary>
@@ -168,6 +176,6 @@ namespace Health.Direct.Common.Certificates
             }
 
             return matches;
-        }
+       }
     }
 }
