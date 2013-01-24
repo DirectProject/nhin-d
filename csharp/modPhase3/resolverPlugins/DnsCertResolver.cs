@@ -310,7 +310,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
             }
             catch (Exception ex)
             {
-                NotifyException(ex);
+                this.Error.NotifyEvent(this, ex);
                 throw;
             }
 
@@ -354,17 +354,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
 
         public void NotifyException(Exception ex)
         {
-            var errorHandler = Error;
-            if (errorHandler != null)
-            {
-                try
-                {
-                    errorHandler(this, ex);
-                }
-                catch
-                {
-                }
-            }
+            this.Error.NotifyEvent(this, ex);
         }
     }
 }
