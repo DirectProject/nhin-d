@@ -75,7 +75,7 @@ namespace Health.Direct.Common.Certificates
                 }
                 catch(Exception ex)
                 {
-                    this.NotifyException(resolver, ex);
+                    this.Error.NotifyEvent(resolver, ex);
                     if (this.IsDone(ex))
                     {
                         throw;
@@ -108,7 +108,7 @@ namespace Health.Direct.Common.Certificates
                 }
                 catch(Exception ex)
                 {
-                    this.NotifyException(resolver, ex);
+                    this.Error.NotifyEvent(resolver, ex);
                     if (this.IsDone(ex))
                     {
                         throw;
@@ -131,7 +131,7 @@ namespace Health.Direct.Common.Certificates
             // Stop trying if we had an exception and we were not set up to continue on exceptions
             return (ex != null && (this.TryNextWhen & TryNextCriteria.Exception) == 0);
         }
-        
+
         /// <summary>
         /// Notify any subscribers of an error in this resolver
         /// </summary>
@@ -139,17 +139,8 @@ namespace Health.Direct.Common.Certificates
         /// <param name="ex">The error</param>
         protected void NotifyException(ICertificateResolver resolver, Exception ex)
         {
-            var errorHandler = this.Error;
-            if (errorHandler != null)
-            {
-                try
-                {
-                    errorHandler(resolver, ex);
-                }
-                catch
-                {
-                }
-            }
+            this.Error.NotifyEvent(resolver, ex);
         }
+
     }
 }

@@ -26,12 +26,21 @@ namespace Health.Direct.ResolverPlugins.Tests.Fakes
     {
         public X509Certificate2Collection GetCertificates(MailAddress address)
         {
-            return null;
+            X509Certificate2Collection certs = GetCertificatesForDomain(address.Host);
+            return certs;
         }
 
         public X509Certificate2Collection GetCertificatesForDomain(string domain)
         {
-            return null;
+            try
+            {
+                return null;
+            }
+            catch(Exception ex)
+            {
+                this.Error.NotifyEvent(this, ex);
+                throw;
+            }
         }
 
         public void Init(PluginDefinition pluginDef)
@@ -41,19 +50,6 @@ namespace Health.Direct.ResolverPlugins.Tests.Fakes
 
         public event Action<ICertificateResolver, Exception> Error;
 
-        void NotifyException(Exception ex)
-        {
-            var errorHandler = this.Error;
-            if (errorHandler != null)
-            {
-                try
-                {
-                    errorHandler(this, ex);
-                }
-                catch
-                {
-                }
-            }
-        }
+        
     }
 }

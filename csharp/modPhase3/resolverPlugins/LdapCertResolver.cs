@@ -191,20 +191,15 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
            
             foreach (var srvRecord in srvRecords)
             {
-                // get certs from Ldap
+                // get address certs from Ldap
                 var certs = GetCertificatesBySubect(srvRecord, address.Address);
                 validCerts = Validator.FilterValidCerts(certs, m_policy, ProblemFlags, NotifyException);
                 if(!validCerts.IsNullOrEmpty()) break;
-            }
 
-            if (validCerts.IsNullOrEmpty())
-            {
-                foreach (var srvRecord in srvRecords)
-                {
-                    var certs = GetCertificatesBySubect(srvRecord, address.Host);
-                    validCerts = Validator.FilterValidCerts(certs, m_policy, ProblemFlags, NotifyException);
-                    if (!validCerts.IsNullOrEmpty()) break;
-                }
+                // get org certs from Ldap
+                certs = GetCertificatesBySubect(srvRecord, address.Host);
+                validCerts = Validator.FilterValidCerts(certs, m_policy, ProblemFlags, NotifyException);
+                if (!validCerts.IsNullOrEmpty()) break;
             }
             return validCerts;
         }
@@ -290,11 +285,11 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
                         }
                         catch (LdapCertResolverException ldapEx)
                         {
-                            NotifyException(new LdapCertResolverException(ldapEx.Error, srvRecord.ToString(), ldapEx.InnerException));
+                            this.Error.NotifyEvent(this, new LdapCertResolverException(ldapEx.Error, subjectName + srvRecord, ldapEx.InnerException));
                         }
                         catch (Exception ex)
                         {
-                            NotifyException(ex);
+                            this.Error.NotifyEvent(this, ex);
                         }
                     }
                 }
@@ -336,7 +331,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
                         }
                         catch (Exception ex)
                         {
-                            NotifyException(ex);
+                            this.Error.NotifyEvent(this, ex);
                         }
                     }
                 }
@@ -387,7 +382,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
             }
             catch (Exception ldapEx)
             {
-                NotifyException(ldapEx);
+                this.Error.NotifyEvent(this, ldapEx);
             }
             return retVal;
         }
@@ -429,7 +424,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
             catch (Exception ex)
             {
                 // didn't connenct.... go onto the next record
-                NotifyException(new LdapCertResolverException(LDAPError.BindFailure, srvRecord.ToString(), ex));
+                this.Error.NotifyEvent(this, new LdapCertResolverException(LDAPError.BindFailure, srvRecord.ToString(), ex));
                 retVal = null;
             }
             return retVal;
@@ -451,17 +446,7 @@ namespace Health.Direct.ModSpec3.ResolverPlugins
 
         void NotifyException(Exception ex)
         {
-            Action<ICertificateResolver, Exception> errorHandler = Error;
-            if (errorHandler != null)
-            {
-                try
-                {
-                    errorHandler(this, ex);
-                }
-                catch
-                {
-                }
-            }
+            this.Error.NotifyEvent(this, ex);
         }
     }
 }

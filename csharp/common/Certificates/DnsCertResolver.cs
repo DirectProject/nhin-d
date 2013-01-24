@@ -267,7 +267,7 @@ namespace Health.Direct.Common.Certificates
             }
             catch (Exception ex)
             {
-                this.NotifyException(ex);
+                this.Error.NotifyEvent(this, ex);
                 throw;
             }
 
@@ -309,19 +309,6 @@ namespace Health.Direct.Common.Certificates
             return client;
         }
                 
-        void NotifyException(Exception ex)
-        {
-            var errorHandler = this.Error;
-            if (errorHandler != null)
-            {
-                try
-                {
-                    errorHandler(this, ex);
-                }
-                catch
-                {
-                }
-            }
-        }
+        
     }
 }

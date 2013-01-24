@@ -269,9 +269,10 @@ namespace Health.Direct.ResolverPlugins.Tests
 
             AssertCert(certs[0], true);
 
-            Assert.Equal(2, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+            Assert.Equal(3, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
             Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
-            Assert.Equal("Error=NoUserCertificateAttribute\r\n_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
+            Assert.Equal("Error=NoUserCertificateAttribute\r\ndts517@direct3.direct-test.com_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[2]);
 
 
             //
