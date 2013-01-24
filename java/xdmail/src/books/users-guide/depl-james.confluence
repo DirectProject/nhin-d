@@ -1,0 +1,92 @@
+h1. Apache James Deployment
+
+[James|http://james.apache.org/] is an open source Java based mail and news server supported by the [Apache|http://www.apache.org/index.html] software foundation.  It is implemented using a modular pattern and can extended by adding new modules and components.  It can run either as a completely stand alone email system, or can be integrated into a more complex mail deployment acting as either the final mail destination or a smart relay.  
+
+This section is not intended to be a full fledged James configuration and deployment guide, but to explain how the NHIN Direct XD Mail component integrates with the James platform.  
+
+h2. NHINDMailet
+
+As stated earlier, James is modular platform that facilitates easy integration of custom processing modules into the SMTP stack.  The most common modular constructs of James are the Mailet and Matcher interfaces.  In fact the default James configuration consists mainly of pre-configured Mailets and Matchers.  The NHIN Direct XD Mail component provides the NHINDMailet as protocol bridge for James.  This custom mailet intercepts messages as they pass through the James *transport* processor, extracts the content from the SMTP envelope, and transforms messages to XDS.  After transforming, the component forwards the XDS message to a configured XDR endpoint.
+
+h3. Mailet installation
+
+All custom modules are deployed in jar files and placed in the James lib directory:
+
+_%jamesInstallRoot%/apps/james/SAR-INF/lib_
+
+All jars and transient dependencies should be placed in this directory.
+
+The following is a list of minimum dependencies to run the XD Mail component within James.
+
+* apache-mailet-2.4.jar       
+* apache-mailet-base-1.1.jar  
+* commons-logging-1.1.1.jar
+* commons-lang-2.5.jar
+* webservices-rt-2.0.1.jar
+* xdmail-1.0-SNAPSHOT.jar
+
+h3. Mailet Configuration
+
+The NHINDMailet is added to the James processing stack by adding specific lines into the James configuration file:
+
+_%jamesInstallRoot%/apps/james/SAR-INF/config.xml_
+
+All configuration examples in this section are located in the config.xml file. 
+
+All custom Mailet packages must be registered with James in the <mailetpackages> elements.
+
+{code}
+   <mailetpackages>
+      <mailetpackage>org.apache.james.transport.mailets</mailetpackage>
+      <mailetpackage>org.apache.james.transport.mailets.smime</mailetpackage>
+      <mailetpackage>org.nhind.james.mailet</mailetpackage>
+   </mailetpackages>
+{code}
+
+To install the XD Mail mailet into the James stack, you need to a define a mailet element under the transport processor.  *NOTE* James executes mailets in the order that they are listed in the configuration file, so place your mailet appropriately if you have other custom processing that needs to be executed before or after the XD Mail mailet.
+
+Example:
+
+{code}
+   <mailet match="All" class="NHINDMailet">
+      <EndpointURL>http://localhost:8080/xd/services/DocumentRepository_Service</EndpointURL>
+   </mailet>
+{code}
+
+
+*Mailet*
+
+Attributes:
+
+||Attribute||Description||
+|match|The matcher used to decide if the message should be processed by the mailet.|
+|class|The class name of the mailet.  James searches through all the mailetpackages to find a fully qualified class name.|
+
+Elements:
+
+||Element||Type||Description||
+|EndpointURL|URL|A URL to forward the generated XDS message.|
+
+The above example tell James to send all messages to the agent using the *All* matcher. 
+
+The EndpointURL must be a valid and well formed URL that is addressable by the James application.
+
+h2. Logging
+
+James uses the Avalon logging system and NHIN Direct components use [apache-commons-logging|http://commons.apache.org/logging/index.html] (JCL).  Generally JCL will try to discover an application's configured logging mechanism, so you may be OK with the James logging configuration found in _%jamesInstallRoot%/apps/james/SAR-INF/environment.xml_.  However you are free to change this and set custom log levels and formats.  You can also override JCL to use a different logging sub system such as log4j or JDK 1.4.  Details for configuring JCL can be found on the JCL [guide|http://commons.apache.org/logging/commons-logging-1.1/guide.html].
+
+A quick way to turn on TRACE logging for debugging purposes is to add the following lines to the phoenix.sh shell script and run James interactively with run.sh.
+
+Search the phoenix.sh file for the following text:
+
+{code}
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS" 
+{code}
+
+and change it to: 
+
+{code}
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace"
+{code}
+
+This will configure JCL to output all logging to the console and sets the threshold to trace.
