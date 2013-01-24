@@ -1,0 +1,12 @@
+    -----
+    Introduction
+    -----
+    Greg Meyer
+    -----
+
+About this Document
+
+  This document describes the Bare Metal installation of the Java Direct Project reference implementation from a pre-compiled assembly (no source).  For instructions of a source code based
+  install, see the Bare Metal Project Java source {{{http://wiki.directproject.org/Bare+Metal+Project+-+Java+%28source%29}page}} on the Direct Project {{{http://wiki.directproject.org}wiki}}. 
+  
+  * {{{./depl-intro.html}Deployment Guide}} - This section describes how to deploy a Bare Metal installation from the stock reference implementation assembly.
