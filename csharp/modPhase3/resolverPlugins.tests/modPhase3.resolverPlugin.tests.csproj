@@ -45,11 +45,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\nhin-d35\csharp\external\xunit\xunit.dll</HintPath>
+      <HintPath>..\..\external\xunit\xunit.dll</HintPath>
     </Reference>
     <Reference Include="xunit.extensions, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\nhin-d35\csharp\external\xunit\xunit.extensions.dll</HintPath>
+      <HintPath>..\..\external\xunit\xunit.extensions.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

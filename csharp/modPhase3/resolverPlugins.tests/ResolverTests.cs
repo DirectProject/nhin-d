@@ -434,10 +434,9 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
 
             Assert.Equal(1, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
             Assert.Equal("Chain Element has problem dts515@direct2.direct-test.com;NotTimeValid", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
-            
-            Assert.Equal("dts515@direct2.direct-test.com", certs[0].ExtractEmailNameOrName());
-            AssertCert(certs[0], true);
 
+            Assert.Equal("direct2.direct-test.com", certs[0].ExtractEmailNameOrName());
+            AssertCert(certs[0], true);
             
             
         }
@@ -465,10 +464,10 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
 
             AssertCert(certs[0], true);
 
-            Assert.Equal(2, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+            Assert.Equal(3, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
             Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
-            Assert.Equal("Error=NoUserCertificateAttribute\r\n_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
-
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
+            Assert.Equal("Error=NoUserCertificateAttribute\r\ndts517@direct3.direct-test.com_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[2]);
 
 
             //
@@ -492,10 +491,11 @@ namespace Health.Direct.ModSpec3.ResolverPlugins.tests
             AssertCert(certs[0], true);
 
 
-            Assert.Equal(2, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+            Assert.Equal(3, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
             Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
-            Assert.Equal("Error=NoUserCertificateAttribute\r\n_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
-
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.direct3.direct-test.com:389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[1]);
+            Assert.Equal("Error=NoUserCertificateAttribute\r\ndts517@direct3.direct-test.com_ldap._tcp.direct3.direct-test.com:10389 Priority:1 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[2]);
+                       
 
         }
 
