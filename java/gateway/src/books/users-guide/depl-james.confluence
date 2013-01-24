@@ -4,6 +4,8 @@ h1. Apache James Deployment
 
 This section is not intended to be a full fledged James configuration and deployment guide, but to explain how the Direct Project gateway module integrates with the James platform.  
 
+*NOTE* All James instructions in the following sections are specific to James 2.3.2.  James 3 at the time of writing is still under development in beata relase and radically changes the structure of the James deployment.
+
 h2. NHINDSecurityAndTrustMailet
 
 As stated earlier, James is modular platform that facilitates easy integration of custom processing modules into the SMTP stack.  The modular constructs of James are the Mailet and Matcher interfaces.  In fact the default James configuration consists mainly of pre-configured Mailets and Matchers.  The Direct Project gateway module provides the NHINDSecurityAndTrustMailet as protocol bridge for James.  This custom mailet intercepts messages as they pass through the James *transport* processor, extracts the sender and recipients from the SMTP envelope, and calls the SMTPAgent to process the messages according the security and trust policy.  After processing, the bridge either allows the message to continue through the James stack or calls appropriate error handling routines if the message cannot be processed correctly.
@@ -67,7 +69,7 @@ Elements:
 
 ||Element||Type||Description||
 |ConfigURL|URL|A URL to the location of the SMTPAgent configuration information.  This information is forwarded to the SmtpAgentFactory to locate and parse the configuration|
-|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
+|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
 |AutoDSNFailueCreation|Comma Delimited String|Determines if DSN bounce messages should be automatically created for failed security and trust recipients.  Defaults to ReliableAndTimely if this parameter is not present.|
 
 The above example tell James to send all messages to the agent using the *All* matcher.  More on matchers later.
@@ -123,7 +125,7 @@ NOTE: The settings are only applicable for out bound message and do not apply to
 
 h3. Message Monitoring
 
-Messages that are not trusted by a receiving HISP do not receive any type of positive notification.  To provide feedback to the sender, the NHINDSecurityAndTrustMailet can send outbound message information to a monitoring service that keeps track of all out bound messages and received notifications.  The monitoring service is responsible for generating DSN bounce messages for messages that have not received notification messages within a given time period.  The time period is configured in the monitoring [service|http://api.nhindirect.org/java/site/direct-msg-monitor/1.0/users-guide/overview.html].  
+Messages that are not trusted by a receiving HISP do not receive any type of positive notification.  To provide feedback to the sender, the NHINDSecurityAndTrustMailet can send outbound message information to a monitoring service that keeps track of all out bound messages and received notifications.  The monitoring service is responsible for generating DSN bounce messages for messages that have not received notification messages within a given time period.  The time period is configured in the monitoring [service|http://api.nhindirect.org/java/site/direct-msg-monitor/1.1.3/users-guide/overview.html].  
 
 h3. Delivery Failure
 
@@ -148,12 +150,12 @@ The SuppressAndTrackAggregate mailet is responsible for sending inbound notifica
 The following mailet elements are used:
 
 ||Element||Type||Description||
-|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
+|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
 |ConsumeMDNProcessed|Boolean |Indicates if all MDN processed messages should be suppressed. It is recommended that this be set to true.  Setting to false will allow all MDN processed message to be sent to the sender's edge client.  This setting is mainly here to enable passivity from older versions of the agent (setting to false enables the passive behavior).|
 
 h2. Prebuilt Assembly Configuration
 
-A full [stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|http://api.nhindirect.org/java/site/assembly/stock/1.3.2/] for installation and configuration details.
+A full [stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|http://api.nhindirect.org/java/site/assembly/stock/2.0.1/] for installation and configuration details.
 
 h2. Deployment Configuration Scenarios
 

@@ -10,26 +10,75 @@ Many configuration settings is persisted in the config-store implementation of t
 
 !images/WSConfigUIHome.png! 
 
-Several aspects of the SMTP agent from domains to certificate storage locations can be configured through configuration web UI.  Certificates and trust anchors themselves can be stored in the configuration service and accessed through the web service interface.
+Several aspects of the SMTP agent from domains to certificate storage locations can be configured through configuration web UI.  Certificates, trust anchors, and trust bundles themselves can be stored in the configuration service and accessed through the web service interface.
 
-Configuration or the SMTP agent is separated into four components, however they are related to each other:
+Configuration or the SMTP agent is separated into five components, however they are related to each other:
 * Domains - The list of domains managed by the agent.
 * Certificates - Private and optionally public certificate storage.
-* Trust Anchors - Trust anchor certificate storage.
-* Settings - Configuration settings for numerous components of a HISP.  These are generally higher level configuration settings.  Fine grained tuning is available via the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
+* Trust Anchors - Trust anchor certificate storage for course grain anchor configuration.
+* Trust Bundles - Collections of anchors published by trust communities.
+* Settings - Configuration settings for numerous components of a HISP.  These are generally higher level configuration settings.  Fine grained tuning is available via the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5.4/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
+
+Domains, certificates, trust anchors, and trust bundles have specific configuration elements stored in the settings component.
+
+h2. Trust Bundles
+
+Trust bundles are a collection of trust anchors that are intended to represent a trust community and generally meet a common set of criteria to be included in the bundle.  Trust bundles are packaged into a single file using the PKCS7 standard and distributed via a known URL (the location is discovered out of band).  Trust bundles are configured in the _Trust Bundles_ tab of the configuration UI tool.
+
+The Java reference implementation treats bundles as wholistic objects and does not support  exclusion of anchors within the bundle.  This is partly because the definition of a bundle indicates that each anchor within the bundle meets the same minimal requirements.  The decision to include a bundle becomes a simple binary decision, you either trust the bundle or you don't.
+
+Bundles are configured separately from domains as opposed to the importing of anchors per domain (as you will see in the next section).  Each bundle is identified by a name and its URL.
+
+To add a trust bundle, click the *_Add New Bundle_* link from the configuration UI TrustBundles tab.
+
+!images/WSConfigEmptyBundles.png!
+
+The Add New Trust Bundle dialog will display waiting for you enter in the following information:
+
+* Name (Required): A unique name of the bundle that describes the trust community of the bundle. 
+* Trust Bundle URL (Required): The fully qualified URL where the trust bundle can be retrieved.
+* Signing Certificate (Optional): If the bundle has been signed, this is the certificate that signed the bundle to validate the integrity of the bundle.  *NOTE:*  It is completely optional to validate the bundle integrity against a signing certificate.  If the bundle has not been signed, the signing certificate is ignored.
+* Refresh Interval (Required): Indicates the frequency that the system will look for updates to the bundle.  If this value is 0, then the system will never automatically look for updates, however you can always check for updates manually by clicking the refresh button.
+
+!images/WSConfigAddBundle.png!
+
+Once the bundle has been added, it will appear in the table of bundles; however, some of the fields will be empty.  This is because the bundle is downloaded from the provided URL in the background and information is updated in the table at a later time.
+
+!images/WSConfigAddedBundle.png!
+
+If the bundle is successfully downloaded and optionally validated, the table will be updated (you may need to click on another tab and come back to the trust bundle tab to see the updates).
+
+!images/WSConfigDownloadedBundle.png!
+
+The table contains the following information:
+
+||Column||Description||
+|Bundle Name|The bundle name|
+|URL|The URL where the bundle is downloaded from|
+|Checksum|A SHA1 hash of the bundle|
+|Created|Date and time when the bundle was configured in the system}
+|Current As Of|The date when the bundle was last updated in the system|
+|Last Refresh|The date and time when the system last checked for an update.  If a newer/different bundle was found, the Current As Of date is also updated.  If not updates were found, then the Current As Of date does not change.|
+|Refresh Interval|How often (in hours) updates are automatically check|
+
+If you would like to see the anchor within a bundle, simply click the _View Anchors_ link under the bundle name.  This will display a list with the _Distinguished Name_ of each anchor.
+
+!images/WSConfigBundleAnchors.png!
 
 
-Domains, certificates, and trust anchors have specific configuration elements stored in the settings component.
+To remove a bundle from the system, check the box next to the name of each bundles that you want to remove and click the _Delete_ button.  If you delete a bundle that has been associated to a domain, the association is automatically removed.
+
+During the operation of your HISP, it may be necessary to updated bundles in between their configure refresh cycle.  To manually refresh/update a bundle, check the box next to the name of the bundles you want to update.  The update operation is a background procedure, so the information in the table will not be updated immediately.  You may need to click on another tab and come back to the trust bundle tab to see updates.
 
 h2. Domains
 
 The domains component describes the list of domains that will be managed by the agent.  Domains are created and maintained in the configuration UI tool.
 
-To create a new domain, click the new *_Create New Domain_* linke from the configuration UI Manage Domains page (the first page after logging in).
+To create a new domain, click the new *_Create New Domain_* link from the configuration UI Manage Domains tab (the first page after logging in).
 
 !images/WSConfigDomainSearch.png!
 
-Each domain requires the domain name and an option postmaster address.  Enter the domain name, postmaster address, set the status to enabled, and click add.  *NOTE* If the postmaster address is not specified, the SMPT Agent will default it to postmaster@<domain name>.
+Each domain requires the domain name and an option postmaster address.  Enter the domain name, postmaster address, set the status to enabled, and click add.  Optionally, trust bundle can be added at this time by clicking _Select Trust Bundles_.  If you choose not to add bundles at this time, you may do so later.  *NOTE* If the postmaster address is not specified, the SMPT Agent will default it to postmaster@<domain name>.
 
 
 !images/WSConfigAddDomain.png!
@@ -87,6 +136,16 @@ Example settings for the domain cerner.com using an LDAP store:
 
 *NOTE* Regardless of the storage mechanism, a domain should always add its own trust anchor to its list or trusted anchors.  This is a security precaution to ensure only users with valid certificates signed by the trust anchor can send from the agent's managed domain(s).
 
+h3. Trust Bundles
+
+Configured trust bundles can be added to a domain from the *_Trust Bundles_* tab of the configuration service *_Manage Domains_* page.  Each anchor in the bundle is used to create trust between the domain and the system represented by the anchor.  Similar to configuring anchors, each bundle can be set to incoming or outgoing to control the direction of trust.
+
+!images/WSConfigAssociateTrustBundle.png!
+
+To associate one or more bundles to a domain, click the *Assign Additional Trust Bundles* link.  Select each bundle and select if the bundle should be incoming, outgoing, or both.
+
+!images/WSConfigSelectBundle.png!
+
 h2. PublicCertStore
 
 Similar to anchors, public certificates can be retrieved from different source mediums.  The public certificate storage medium is configured in the settings page of the configuration UI.
@@ -123,7 +182,7 @@ The private certificate storage medium is configured in the settings page of the
 
 *Web Service Private/Public Certificate Storage*
 
-Private certificates stored in the configuration service are added and maintained in the *_Manage Certificates_* page of the configuration service application.
+Private and public certificates stored in the configuration service are added and maintained in the *_Manage Certificates_* page of the configuration service application.
 
 !images/WSConfigAddCertificate.png!
 

@@ -1,6 +1,6 @@
 h1. Fined Grained Tuning
 
-Fine grained tuning of the following components can be achieved using the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
+Fine grained tuning of the following components can be achieved using the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5.4/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
 
 h2. WS Certificate Resolver
 

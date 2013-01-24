@@ -1,6 +1,6 @@
 h1. Apache James Fine Grain Tuning
 
-Fine grained tuning of the following James implementation specific components can be achieved using the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
+Fine grained tuning of the following James implementation specific components can be achieved using the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5.4/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
 
 h2. Message Monitoring Service URL
 
