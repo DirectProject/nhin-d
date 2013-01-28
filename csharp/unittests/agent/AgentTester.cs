@@ -200,13 +200,19 @@ namespace Health.Direct.Agent.Tests
 
             return new DirectAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors);
         }
-        
-        static string MakeCertificatesPath(string basePath, string agentFolder)
+
+        public static string MakeCertificatesPath(string basePath, string agentFolder)
         {
             return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
         }
-        
-        static MemoryX509Store LoadPrivateCerts(string certsBasePath, bool persist)
+
+        public static MemoryX509Store LoadPrivateCerts(string name)
+        {
+            string basePath = Directory.GetCurrentDirectory();
+            return LoadPrivateCerts(MakeCertificatesPath(basePath, name), false);
+        }
+
+        public static MemoryX509Store LoadPrivateCerts(string certsBasePath, bool persist)
         {
             X509KeyStorageFlags flags = X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.Exportable;
             if (persist)
@@ -216,17 +222,17 @@ namespace Health.Direct.Agent.Tests
             return LoadCertificates(Path.Combine(certsBasePath, "Private"), flags);
         }
 
-        static MemoryX509Store LoadPublicCerts(string certsBasePath)
+        public static MemoryX509Store LoadPublicCerts(string certsBasePath)
         {
             return LoadCertificates(Path.Combine(certsBasePath, "Public"));
         }
         
-        static MemoryX509Store LoadIncomingAnchors(string certsBasePath)
+        public static MemoryX509Store LoadIncomingAnchors(string certsBasePath)
         {
             return LoadCertificates(Path.Combine(certsBasePath, "IncomingAnchors"));
         }
 
-        static MemoryX509Store LoadOutgoingAnchors(string certsBasePath)
+        public static MemoryX509Store LoadOutgoingAnchors(string certsBasePath)
         {
             return LoadCertificates(Path.Combine(certsBasePath, "OutgoingAnchors"));
         }

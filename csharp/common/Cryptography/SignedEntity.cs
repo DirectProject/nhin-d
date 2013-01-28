@@ -156,7 +156,12 @@ namespace Health.Direct.Common.Cryptography
             return new SignedEntity(source.ParsedContentType, source.GetParts());
         }
         
-        static ContentType CreateContentType(DigestAlgorithm digestAlgorithm)
+        /// <summary>
+        /// Create the ContentType MIME header for a Signed MIME entity
+        /// </summary>
+        /// <param name="digestAlgorithm">Digest algorithm being used, such as SHA1</param>
+        /// <returns>ContentType header</returns>
+        public static ContentType CreateContentType(DigestAlgorithm digestAlgorithm)
         {
             ContentType contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);

@@ -50,7 +50,17 @@ namespace Health.Direct.Agent.Tests
             return m_innerResolver.GetCertificatesForDomain(domain);
         }
 
-        public event Action<ICertificateResolver, Exception> Error;
+        public event Action<ICertificateResolver, Exception> Error
+        {
+            add
+            {
+                m_innerResolver.Error += value;
+            }
+            remove
+            {
+                m_innerResolver.Error -= value;
+            }
+        }
 
         
         #endregion

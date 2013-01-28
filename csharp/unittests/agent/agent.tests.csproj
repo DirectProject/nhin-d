@@ -60,6 +60,7 @@
     <Compile Include="AgentTester.cs" />
     <Compile Include="BasicAgentTests.cs" />
     <Compile Include="AddressTest.cs" />
+    <Compile Include="CryptographerTests.cs" />
     <Compile Include="DnsResolverTest.cs" />
     <Compile Include="PlugingDomainResolverTests.cs" />
     <Compile Include="PluginResolverTests.cs" />
