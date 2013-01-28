@@ -200,6 +200,7 @@ namespace Health.Direct.Common.Cryptography
                                                                                         Base64FormattingOptions.InsertLineBreaks))
                                              };
 
+            encryptedEntity.ContentDisposition = SMIMEStandard.EncryptedEnvelopeDisposition;
             return encryptedEntity;
         }
 
@@ -534,7 +535,7 @@ namespace Health.Direct.Common.Cryptography
                                            ContentTransferEncoding = TransferEncoding.Base64.AsString(),
                                            Body = new Body(Convert.ToBase64String(signatureBytes))
                                        };
-
+            signature.ContentDisposition = SMIMEStandard.SignatureDisposition;
             return signature;
         }
 

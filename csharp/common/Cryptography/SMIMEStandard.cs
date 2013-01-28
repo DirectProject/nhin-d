@@ -65,6 +65,10 @@ namespace Health.Direct.Common.Cryptography
         /// </summary>
         public const string EncryptedEnvelopeContentTypeHeaderValue = "application/pkcs7-mime; smime-type=enveloped-data; name=\"smime.p7m\"";
         /// <summary>
+        /// S/MIME encrypted (enveloped) data <c>Content-Disposition</c> header value.
+        /// </summary>
+        public const string EncryptedEnvelopeDisposition = "attachment; filename=\"smime.p7m\"";
+        /// <summary>
         /// S/MIME non-detached signature full <c>Content-Type</c> with parameters
         /// </summary>
         public const string SignatureEnvelopeContentTypeHeaderValue = "application/pkcs7-mime; smime-type=signed-data; name=\"smime.p7\"";
