@@ -39,10 +39,10 @@ namespace Health.Direct.Config.Console.Command
             PatientTest = 3
         }
         
-        public const string ProviderBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=ba942b18-ad48-e211-8bc3-78e3b5114607";
-        public const string PatientBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=d7a59811-ad48-e211-8bc3-78e3b5114607";
-        public const string ProviderTestBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=cb300117-3a4a-e211-8bc3-78e3b5114607";
-        public const string PatientTestBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=4d9daaf9-384a-e211-8bc3-78e3b5114607";
+        public const string ProviderBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=ba942b18-ad48-e211-8bc3-78e3b5114607&name=Provider";
+        public const string PatientBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=d7a59811-ad48-e211-8bc3-78e3b5114607&name=Patient";
+        public const string ProviderTestBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=cb300117-3a4a-e211-8bc3-78e3b5114607&name=ProviderTest";
+        public const string PatientTestBundle = "https://secure.bluebuttontrust.org/p7b.ashx?id=4d9daaf9-384a-e211-8bc3-78e3b5114607&name=PatientTest";
         
         public static string UrlForBundleType(BundleType type)
         {
