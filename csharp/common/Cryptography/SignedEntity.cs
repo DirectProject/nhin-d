@@ -160,7 +160,7 @@ namespace Health.Direct.Common.Cryptography
         {
             ContentType contentType = new ContentType(SMIMEStandard.MultiPartTypeSigned);
             contentType.Parameters.Add(SMIMEStandard.ProtocolParameterKey, SMIMEStandard.SignatureProtocol);
-            contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, digestAlgorithm.ToString());
+            contentType.Parameters.Add(SMIMEStandard.MICAlgorithmKey, SMIMEStandard.ToString(digestAlgorithm));
             return contentType;
         }
     }
