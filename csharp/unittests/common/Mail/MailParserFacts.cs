@@ -70,6 +70,69 @@ namespace Health.Direct.Common.Tests.Mail
         public void ParseAddressCollectionFail(string source)
         {
             Assert.Throws<FormatException>(() => MailParser.ParseAddressCollection(source));
-        }        
+        }
+
+        public static string TestMessage =
+            @"From: <toby@redmond.hsgincubator.com>
+To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
+Subject: Simple Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        [Fact]
+        public void ParseSimpleMessage()
+        {
+            Message message = null;
+            string headerValue = null;
+
+            Assert.DoesNotThrow(() => message = Message.Load(MailParserFacts.TestMessage));
+            Assert.NotNull(message);
+
+            Assert.DoesNotThrow(() => headerValue = message.ToValue);
+            Assert.DoesNotThrow(() => headerValue = message.SubjectValue);
+            Assert.DoesNotThrow(() => headerValue = message.DateValue);
+        }
+
+        public static string TestMessageNoSubject =
+        @"From: <toby@redmond.hsgincubator.com>
+To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        public static string TestMessageEmptySubject =
+@"From: <toby@redmond.hsgincubator.com>
+To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
+Subject: 
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        [Fact]
+        public void ParseSubject()
+        {
+            Message message = null;
+            string headerValue = null;
+
+            Assert.DoesNotThrow(() => message = Message.Load(MailParserFacts.TestMessageNoSubject));
+            Assert.NotNull(message);
+            Assert.DoesNotThrow(() => headerValue = message.SubjectValue);
+            Assert.True(headerValue == null);
+
+            Assert.DoesNotThrow(() => message = Message.Load(MailParserFacts.TestMessageEmptySubject));
+            Assert.NotNull(message);
+            Assert.DoesNotThrow(() => headerValue = message.SubjectValue);
+            Assert.True(string.IsNullOrEmpty(headerValue));
+        }
     }
 }

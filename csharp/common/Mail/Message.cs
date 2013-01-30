@@ -276,7 +276,9 @@ namespace Health.Direct.Common.Mail
         {
             get
             {
-                return this.Headers.GetValue(MailStandard.Headers.Subject);
+                // Return Raw value. Subject is optional. 
+                // GetValue will throw the Header does not have a valid OR empty value
+                return this.Headers.GetValueRaw(MailStandard.Headers.Subject);
             }
             set
             {
