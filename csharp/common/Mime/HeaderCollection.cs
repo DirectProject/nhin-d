@@ -340,9 +340,9 @@ namespace Health.Direct.Common.Mime
         /// <summary>
         /// Gets the value of the header with the given name.
         /// </summary>
-        /// <remarks>Header matching uses case insenstive comparison.</remarks>
+        /// <remarks>Header matching uses case insensitive comparison.</remarks>
         /// <param name="headerName">The header name for which to retrieve the value.</param>
-        /// <returns>The value of the header, or <c>null</c> if the header does not exist in this collection</returns>
+        /// <returns>The value of the header, or <c>null</c> if the header does not exist in this collection. If the Header has no Value, throws MimeException with MissingHeader error code.</returns>
         public string GetValue(string headerName)
         {
             Header header = this[headerName];
@@ -352,6 +352,23 @@ namespace Health.Direct.Common.Mime
             }
             
             return header.Value;
+        }
+
+        /// <summary>
+        /// Gets the value of the header with the given name.
+        /// </summary>
+        /// <remarks>Header matching uses case insensitive comparison.</remarks>
+        /// <param name="headerName">The header name for which to retrieve the value.</param>
+        /// <returns>The raw value of the header, or <c>null</c> if the header does not exist in this collection.</returns>
+        public string GetValueRaw(string headerName)
+        {
+            Header header = this[headerName];
+            if (header == null)
+            {
+                return null;
+            }
+
+            return header.ValueRaw;
         }
 
         /// <summary>
