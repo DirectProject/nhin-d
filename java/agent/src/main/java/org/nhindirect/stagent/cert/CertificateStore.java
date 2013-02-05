@@ -204,9 +204,7 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         
         Collection<X509Certificate> certs = getCertificates("EMAILADDRESS=" + theAddress);
 
-        Collection<X509Certificate> filteredCerts = filterUsable(certs);
-        
-        if (filteredCerts == null || filteredCerts.size() == 0)
+        if (certs == null || certs.size() == 0)
         {
         	// find by host
         	
@@ -214,10 +212,9 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         	{
         		theAddress = theAddress.substring(index + 1);
         		certs = getCertificates("EMAILADDRESS=" + theAddress);
-        		filteredCerts = filterUsable(certs);
         	}
         	else
-        		return filteredCerts;
+        		return null;
         }
 
         return filterUsable(certs);
