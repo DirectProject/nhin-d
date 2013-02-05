@@ -50,7 +50,7 @@ import org.nhindirect.stagent.CryptoExtensions;
  *
  */
 ///CLOVER:OFF
-class CertLoader 
+public class CertLoader 
 {
     static
     {
