@@ -14,7 +14,7 @@ public class CertificateStore_getUsableCertsTest extends TestCase
 {
 	
 	
-	public void testGetUsableCerts_inValidUserCert_retriveDomainCert() throws Exception
+	public void testGetUsableCerts_inValidUserCert_noCertsRetrieved() throws Exception
 	{
 		final X509CertificateEx userCert = TestUtils.getInternalCert("user1");
 		final X509CertificateEx domainCert = TestUtils.getInternalCert("gm2552");
@@ -39,7 +39,7 @@ public class CertificateStore_getUsableCertsTest extends TestCase
 		};
 		
 		Collection<X509Certificate> foundCert = store.getCertificates(new InternetAddress("user1@domain.com"));
-		assertEquals(domainCert, foundCert.iterator().next());
+		assertNull(foundCert);
 	}
 
 	public void testGetUsableCerts_allCertsInvalid_assertNoCerts() throws Exception
