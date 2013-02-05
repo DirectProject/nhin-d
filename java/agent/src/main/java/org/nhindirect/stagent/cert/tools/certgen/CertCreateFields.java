@@ -33,7 +33,7 @@ import java.util.Map;
  *
  */
 ///CLOVER:OFF
-class CertCreateFields 
+public class CertCreateFields 
 {
 	private Map<String, Object> attributes;
 	private File newCertFile;
