@@ -28,7 +28,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
@@ -121,66 +120,59 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
     	
 		final String lookupName = LDAP_SRV_PREFIX + domainName;
 		
-		Collection<InitialDirContext> ctxs = null;
+		InitialDirContext ctx = null;
 		try
 		{
-			ctxs =  getDirContexts(lookupName);
-			if (ctxs != null && !ctxs.isEmpty())
+	        ctx =  getDirContext(lookupName);
+			if (ctx != null)
 			{
-				for (InitialDirContext ctx : ctxs)
-				{
+				// discover the naming contexts
+				List<String> dNs = getBaseNamingContexts(ctx);
+				
+				if (!dNs.isEmpty()){
 					
-					try
-					{
-						// discover the naming contexts
-						List<String> dNs = getBaseNamingContexts(ctx);
+					for (String dn : dNs){
 						
-						if (!dNs.isEmpty()){
-							
-							for (String dn : dNs){
-								
-								NamingEnumeration<SearchResult> searchResult = ctx.search(
-										dn, 
-										EMAIL_ATTRIBUTE + "=" + subjectName,
-										getDefaultSearchControls());
-								
-								while (searchResult != null && searchResult.hasMore()) {
-									final SearchResult certEntry = searchResult.nextElement();
-									if (certEntry != null) {
-										final Attributes certAttributes = certEntry.getAttributes();
-										if (certAttributes != null) {
-											// get only the returning cert attribute (for now, ignore all other attributes)
-										    Attribute certAttribute = certAttributes.get(CERT_ATTRIBUTE_BINARY);
-										    
-										    // some LDAP servers do not properly support binary types... try again without the 
-										    // binary modifier
-											if (certAttribute == null)
-												certAttribute = certAttributes.get(CERT_ATTRIBUTE);
+						NamingEnumeration<SearchResult> searchResult = ctx.search(
+								dn, 
+								EMAIL_ATTRIBUTE + "=" + subjectName,
+								getDefaultSearchControls());
+						
+						while (searchResult != null && searchResult.hasMore()) {
+							final SearchResult certEntry = searchResult.nextElement();
+							if (certEntry != null) {
+								final Attributes certAttributes = certEntry.getAttributes();
+								if (certAttributes != null) {
+									// get only the returning cert attribute (for now, ignore all other attributes)
+								    Attribute certAttribute = certAttributes.get(CERT_ATTRIBUTE_BINARY);
+								    
+								    // some LDAP servers do not properly support binary types... try again without the 
+								    // binary modifier
+									if (certAttribute == null)
+										certAttribute = certAttributes.get(CERT_ATTRIBUTE);
+									
+									
+									if (certAttribute != null) {
+										NamingEnumeration<? extends Object> allValues = certAttribute.getAll();
+										// LDAP may contain a collection of certificates.
+										while(allValues.hasMoreElements()) {
+											byte[] rawCert = null;
 											
+											Object obj = allValues.nextElement();
+										
+											rawCert = (byte[]) obj;
+	
 											
-											if (certAttribute != null) {
-												NamingEnumeration<? extends Object> allValues = certAttribute.getAll();
-												// LDAP may contain a collection of certificates.
-												while(allValues.hasMoreElements()) {
-													byte[] rawCert = null;
-													
-													Object obj = allValues.nextElement();
-												
-													rawCert = (byte[]) obj;
-			
-													
-													final CertificateFactory cf = CertificateFactory.getInstance("X.509");
-													final ByteArrayInputStream inputStream = new ByteArrayInputStream(rawCert);
-													try
-													{
-														X509Certificate addCert = (X509Certificate)cf.generateCertificate(inputStream);
-														retVal.add(addCert);
-													}
-													finally
-													{
-														IOUtils.closeQuietly(inputStream);
-													}
-												}
+											final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+											final ByteArrayInputStream inputStream = new ByteArrayInputStream(rawCert);
+											try
+											{
+												X509Certificate addCert = (X509Certificate)cf.generateCertificate(inputStream);
+												retVal.add(addCert);
+											}
+											finally
+											{
+												IOUtils.closeQuietly(inputStream);
 											}
 										}
 									}
@@ -188,20 +180,16 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 							}
 						}
 					}
-					catch (Exception e)
-					{
-						/*no-op*/
-					}
-					finally
-					{
-						this.closeDirContext(ctx);
-					}
 				}
 			}
 		}
 		catch (Exception e)
 		{
 			throw new NHINDException(e);
+		}
+		finally
+		{
+			this.closeDirContext(ctx);
 		}
 		
 		return retVal;
@@ -211,7 +199,7 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 	/**
 	 * Creates the LDAP directory context from an SRV lookup name.
 	 * @param lookupName The SRV record name used to discover the LDAP services.
-	 * @return An InitialDirContext object that is connected to a discovered LDAP service.
+	 * @return And InitialDirContext object that is connected to a discoverd LDAP service.
 	 * @throws Exception
 	 */
 	protected InitialDirContext getDirContext(String lookupName) throws Exception
@@ -239,65 +227,6 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		}
 		
 		return ctx;
-	}
-	
-	/**
-	 * Gets a collection of InitialContexts where each context represents a connection to an LDAP server
-	 * in the list of returned SRV records.
-	 * @param lookupName The SRV record name used to discover the LDAP services.
-	 * @return An collection InitialDirContext objects that are connected to discovered LDAP service.
-	 * @throws Exception
-	 */
-	protected Collection<InitialDirContext> getDirContexts(String lookupName) throws Exception
-	{
-	
-		// try the configured servers first
-		Collection<InitialDirContext> retVal = null;
-		
-		final Lookup lu = LookupFactory.getFactory().getInstance(new Name(lookupName), Type.SRV);
-		lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]),2, 3)); // default retries is 3, limit to 2
-		
-		final Record[] retRecords = lu.run();
-		if (retRecords != null && retRecords.length > 0) {
-			
-			final String ldapURLs[] = createLDAPUrls(retRecords);
-			
-			retVal = new ArrayList<InitialDirContext>();
-			
-			for (String ldapURL: ldapURLs)
-			{
-				final Hashtable<String, String> env = new Hashtable<String, String>();
-				env.put(Context.INITIAL_CONTEXT_FACTORY, LDAP_FACTORY);
-				env.put(Context.PROVIDER_URL, ldapURL);
-				env.put(Context.SECURITY_AUTHENTICATION, "none");
-				env.put(LDAP_TIMEOUT, DEFAULT_LDAP_TIMEOUT);
-				env.put("java.naming.ldap.attributes.binary", "userCertificate, usercertificate");
-				
-				try
-				{
-					final InitialDirContext ctx =  new InitialDirContext(env);
-					if (ctx != null)
-						retVal.add(ctx);
-				}
-				catch (Exception e) {/*no-op*/}
-			}
-		}
-		else 
-			return Collections.emptyList();
-		
-		return retVal;
-	}
-	
-	/**
-	 * Creates the LDAP connection URLs from a set of SRV records.
-	 * @param retRecords SRV records containing the LDAP connection information.
-	 * @return List of URLs 
-	 */
-	protected String[] createLDAPUrls(Record[] retRecords)
-	{
-		final String urlString = createLDAPUrl(retRecords);
-		
-		return urlString.split(" ");
 	}
 	
 	/**
