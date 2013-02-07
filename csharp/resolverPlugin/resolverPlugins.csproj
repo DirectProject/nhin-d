@@ -101,6 +101,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(TargetDir)*.dll" "$(SolutionDir)..\bin\$(ConfigurationName)"</PostBuildEvent>
+    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(TargetDir)*.dll" "$(SolutionDir)..\bin\$(ConfigurationName)"
+XCOPY /I /Q /R /S /Y "$(TargetDir)*.pdb" "$(SolutionDir)..\bin\$(ConfigurationName)"</PostBuildEvent>
   </PropertyGroup>
 </Project>
