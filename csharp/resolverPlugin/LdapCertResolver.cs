@@ -23,6 +23,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Net.NetworkInformation;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
@@ -52,6 +53,15 @@ namespace Health.Direct.ResolverPlugins
         /// </summary>
         public LdapCertResolver()
             : this(null, DefaultTimeout, true)
+        {
+        }
+
+        /// <summary>
+        /// Create an LDAP certificate resolver, using default timeout and default DNS server for SRV lookup
+        /// </summary>
+        /// <param name="serverIP">An <see cref="IPAddress"/> instance providing the IP address of the DNS server</param>
+        public LdapCertResolver(IPAddress serverIP)
+            : this(serverIP, DefaultTimeout)
         {
         }
 
@@ -157,13 +167,9 @@ namespace Health.Direct.ResolverPlugins
 
             foreach (var srvRecord in srvRecords)
             {
-                // get address certs from Ldap
-                certs = GetCertificatesBySubect(srvRecord, address.Address);
+                certs = GetCertificatesBySubect(srvRecord, address);
                 if (!certs.IsNullOrEmpty()) break;
 
-                // get org certs from Ldap
-                certs = GetCertificatesBySubect(srvRecord, address.Host);
-                if (!certs.IsNullOrEmpty()) break;
             }
             return certs;
         }
@@ -189,7 +195,7 @@ namespace Health.Direct.ResolverPlugins
             }
             foreach (var srvRecord in srvRecords)
             {
-                certs = GetCertificatesBySubect(srvRecord, domain);
+                certs = GetCertificatesByDomain(srvRecord, domain);
             }
             return certs;
         }
@@ -218,10 +224,10 @@ namespace Health.Direct.ResolverPlugins
         /// Resolves X509 certificates for a specific subject.  May either be an address or a domain name.
         /// </summary>
         /// <param name="srvRecord">Resolve <see cref="SRVRecord"/> to resolve. </param>
-        /// /// <param name="subjectName">The <see cref="String"/> subject to resolve. </param>
+        /// /// <param name="address">The <see cref="String"/> address to resolve. </param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        X509Certificate2Collection GetCertificatesBySubect(SRVRecord srvRecord, string subjectName)
+        X509Certificate2Collection GetCertificatesBySubect(SRVRecord srvRecord, MailAddress address)
         {
             var retVal = new X509Certificate2Collection();
 
@@ -234,29 +240,63 @@ namespace Health.Direct.ResolverPlugins
                     // gate the base naming contexts
                     var distNames = GetBaseNamingContext(connection);
 
-                    foreach (var dn in distNames)
+                    SetCerts(srvRecord, connection, distNames, address.Address, retVal);
+                    if(retVal.Count == 0)
                     {
-                        // search each base context
-                        var request = Search.MimeCertRequest(dn, subjectName);
-                        try
-                        {
-                            SetCerts(connection, request, retVal);
-                        }
-                        catch(LdapCertResolverException ldapEx)
-                        {
-                            this.Error.NotifyEvent(this, new LdapCertResolverException(ldapEx.Error, subjectName + srvRecord, ldapEx.InnerException));
-                        }
-                        catch (Exception ex)
-                        {
-                            this.Error.NotifyEvent(this, ex);
-                        }
+                        SetCerts(srvRecord, connection, distNames, address.Host, retVal);
                     }
                 }
             }
             return retVal;
         }
 
-        private void SetCerts(LdapConnection connection, SearchRequest request, X509Certificate2Collection retVal)
+        /// <summary>
+        /// Resolves X509 certificates for a specific subject.  May either be an address or a domain name.
+        /// </summary>
+        /// <param name="srvRecord">Resolve <see cref="SRVRecord"/> to resolve. </param>
+        /// /// <param name="domain">The <see cref="String"/> domain to resolve. </param>
+        /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
+        /// or <c>null</c> if no certificates are found.</returns>
+        X509Certificate2Collection GetCertificatesByDomain(SRVRecord srvRecord, string domain)
+        {
+            var retVal = new X509Certificate2Collection();
+
+            // get the LDAP connection from the SRV records
+
+            using (var connection = GetLdapConnection(srvRecord))
+            {
+                if (connection != null)
+                {
+                    // gate the base naming contexts
+                    var distNames = GetBaseNamingContext(connection);
+                    SetCerts(srvRecord, connection, distNames, domain, retVal);
+                   
+                }
+            }
+            return retVal;
+        }
+
+
+        private void SetCerts(SRVRecord srvRecord, LdapConnection connection, List<string> distNames, string subject, X509Certificate2Collection retVal)
+        {
+            foreach (var dn in distNames)
+            {
+                // search each base context
+                        
+                try
+                {
+                    var request = Search.MimeCertRequest(dn, subject);
+                    SetCerts(connection, request, retVal, srvRecord, subject);
+                }
+                catch (Exception ex)
+                {
+                    Error.NotifyEvent(this, ex);
+                }
+            }
+        }
+
+
+        private void SetCerts(LdapConnection connection, SearchRequest request, X509Certificate2Collection retVal, SRVRecord srvRecord, string subjectName)
         {
             // send the LDAP request using the mail attribute as the search filter and return the userCertificate attribute
             var response = (SearchResponse)connection.SendRequest(request);
@@ -264,16 +304,19 @@ namespace Health.Direct.ResolverPlugins
             {
                 foreach (SearchResultEntry entry in response.Entries)
                 {
-                    SetCerts(entry, retVal);
+                    SetCerts(entry, retVal, srvRecord, subjectName);
                 }
             }
         }
 
-        private void SetCerts(SearchResultEntry entry, X509Certificate2Collection retVal)
+        private void SetCerts(SearchResultEntry entry, X509Certificate2Collection retVal, SRVRecord srvRecord, string subjectName)
         {
             if (entry.Attributes.Values == null || entry.Attributes.Count <= 0)
             {
-                throw new LdapCertResolverException(LDAPError.NoUserCertificateAttribute);
+                StringBuilder sb = new StringBuilder();
+                sb.Append(subjectName).Append(" SRV:").Append(srvRecord).Append(" LDAP:").Append(entry.DistinguishedName);
+                Error.NotifyEvent(this, new LdapCertResolverException(LDAPError.NoUserCertificateAttribute, sb.ToString()));
+                return;
             }
             foreach (DirectoryAttribute entryAttr in entry.Attributes.Values)
             {
@@ -290,14 +333,14 @@ namespace Health.Direct.ResolverPlugins
                         }
                         catch (Exception ex)
                         {
-                            this.Error.NotifyEvent(this, ex);
+                            Error.NotifyEvent(this, ex);
                         }
                     }
                 }
             }
         }
 
-        private string GetSrvLdapLookupName(string subjectName)
+        private static string GetSrvLdapLookupName(string subjectName)
         {
             String domainName;
             int index;
@@ -341,7 +384,7 @@ namespace Health.Direct.ResolverPlugins
             }
             catch (Exception ldapEx)
             {
-                this.Error.NotifyEvent(this, ldapEx);
+                Error.NotifyEvent(this, ldapEx);
             }
             return retVal;
         }
@@ -383,7 +426,7 @@ namespace Health.Direct.ResolverPlugins
             catch (Exception ex)
             {
                 // didn't connenct.... go onto the next record
-                this.Error.NotifyEvent(this, new LdapCertResolverException(LDAPError.BindFailure, srvRecord.ToString(), ex));
+                Error.NotifyEvent(this, new LdapCertResolverException(LDAPError.BindFailure, srvRecord.ToString(), ex));
                 retVal = null;
             }
             return retVal;

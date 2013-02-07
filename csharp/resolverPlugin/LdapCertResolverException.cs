@@ -48,6 +48,16 @@ namespace Health.Direct.ResolverPlugins
         /// </summary>
         /// <param name="error">error code</param>
         /// <param name="message"></param>
+        public LdapCertResolverException(LDAPError error, string message)
+            : base(error, message)
+        {
+        }
+
+        /// <summary>
+        /// Creates an LdapCertResolverException with the specified error
+        /// </summary>
+        /// <param name="error">error code</param>
+        /// <param name="message"></param>
         /// <param name="innerException">Inner exception</param>
         public LdapCertResolverException(LDAPError error, string message, Exception innerException)
             : base(error, message, innerException)
