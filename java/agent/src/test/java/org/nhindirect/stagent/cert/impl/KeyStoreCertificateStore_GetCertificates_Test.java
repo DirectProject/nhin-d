@@ -7,7 +7,9 @@ import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.stagent.AgentError;
 import org.nhindirect.stagent.CryptoExtensions;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.utils.BaseTestPlan;
 
@@ -187,9 +189,20 @@ public class KeyStoreCertificateStore_GetCertificates_Test extends TestCase
 			}
 			
 			@Override
+			protected void assertException(Exception exception) throws Exception 
+			{
+				// default case should not throw an exception
+				assertNotNull(exception != null);
+				assertTrue((exception instanceof NHINDException));
+				NHINDException ex = NHINDException.class.cast(exception);
+				assertEquals(ex.getError(), AgentError.AllCertsInResolverInvalid);
+				
+			}
+			
+			@Override
 			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
 			{
-				assertNull(certs);
+	
 			}
 			
 		}.perform();

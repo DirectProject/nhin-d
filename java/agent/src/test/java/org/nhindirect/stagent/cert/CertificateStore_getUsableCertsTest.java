@@ -6,6 +6,8 @@ import java.util.Collection;
 
 import javax.mail.internet.InternetAddress;
 
+import org.nhindirect.stagent.AgentError;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
@@ -38,8 +40,18 @@ public class CertificateStore_getUsableCertsTest extends TestCase
 		    }
 		};
 		
-		Collection<X509Certificate> foundCert = store.getCertificates(new InternetAddress("user1@domain.com"));
-		assertNull(foundCert);
+		boolean exceptionOccured = false;
+		try
+		{
+			store.getCertificates(new InternetAddress("user1@domain.com"));
+		}
+		catch (NHINDException e)
+		{
+			assertEquals(e.getError(), AgentError.AllCertsInResolverInvalid);
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
 	}
 
 	public void testGetUsableCerts_allCertsInvalid_assertNoCerts() throws Exception
@@ -63,8 +75,19 @@ public class CertificateStore_getUsableCertsTest extends TestCase
 		    }
 		};
 		
-			Collection<X509Certificate> foundCert = store.getCertificates(new InternetAddress("user1@domain.com"));
-			assertNull(foundCert);
+			
+		boolean exceptionOccured = false;
+		try
+		{
+			store.getCertificates(new InternetAddress("user1@domain.com"));
+		}
+		catch (NHINDException e)
+		{
+			assertEquals(e.getError(), AgentError.AllCertsInResolverInvalid);
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);			
 	}
 	
 	public void testGetUsableCerts_getUserCert() throws Exception

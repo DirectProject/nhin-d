@@ -256,16 +256,23 @@ public class TrustChainValidator
 		// multiple resolvers
     	for (CertificateResolver publicResolver : certResolvers)
     	{
-    		try
-    		{	
-    			Collection<X509Certificate> holdCerts = publicResolver.getCertificates(new InternetAddress(address));
-    			if (holdCerts != null && holdCerts.size() > 0)
-    				issuerCerts.addAll(holdCerts);
-    		}
+	
+			Collection<X509Certificate> holdCerts = null;
+			try
+			{
+				holdCerts = publicResolver.getCertificates(new InternetAddress(address));
+			}
     		catch (AddressException e)
     		{
-    			// no-op
+    			continue;
     		}
+			catch (Exception e)
+			{
+				/* no-op*/
+			}
+			if (holdCerts != null && holdCerts.size() > 0)
+				issuerCerts.addAll(holdCerts);
+
         }
 
 		
