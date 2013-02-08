@@ -156,7 +156,7 @@ namespace Health.Direct.Common.DnsResolver
     public class DnsProtocolException : DnsException
     {
         DnsProtocolError m_error;
-        IPAddress m_address;
+        IPAddress m_serverIP;
 
         /// <summary>
         /// Intializes an exception with the specified <paramref name="error"/>
@@ -193,14 +193,13 @@ namespace Health.Direct.Common.DnsResolver
         /// Intializes an exception with the specified <paramref name="error"/>
         /// </summary>
         /// <param name="error">The specific error subtype.</param>
-        /// <param name="message">message associated with this exception</param>
-        public DnsProtocolException(DnsProtocolError error, IPAddress address)
+        /// <param name="serverIP">The IPAddress of the DNS Server which returned the error</param>
+        public DnsProtocolException(DnsProtocolError error, IPAddress serverIP)
         {
             m_error = error;
-            m_address = address;
+            m_serverIP = serverIP;
         }
-
-        
+      
         /// <summary>
         /// The error subtype.
         /// </summary>
@@ -211,6 +210,14 @@ namespace Health.Direct.Common.DnsResolver
                 return m_error;
             }
         }
+        
+        /// <summary>
+        /// If available - the ServerIP that a client connected to when this error was seen
+        /// </summary>
+        public IPAddress ServerIP
+        {
+            get { return m_serverIP; }
+        }
 
         /// <summary>
         /// Returns a string representation of this exception.
@@ -218,7 +225,12 @@ namespace Health.Direct.Common.DnsResolver
         /// <returns>The string representation.</returns>
         public override string ToString()
         {
-            return string.Format("ERROR={0}{1}{2}", m_error, Environment.NewLine, base.ToString());
+            if (m_serverIP == null)
+            {
+                return string.Format("ERROR={0}{1}{2}", m_error, Environment.NewLine, base.ToString());
+            }
+
+            return string.Format("ERROR={0} ServerIP:{1}{2}{3}", m_error, m_serverIP, Environment.NewLine, base.ToString());
         }
 
         /// <summary>
@@ -229,7 +241,11 @@ namespace Health.Direct.Common.DnsResolver
         {
             get
             {
-                return string.Format("ERROR={0} server:{1}{2}{3}", m_error, m_address, Environment.NewLine, base.Message);
+                if (m_serverIP == null)
+                {
+                    return string.Format("ERROR={0}{1}{2}", m_error, Environment.NewLine, base.Message);
+                }
+                return string.Format("ERROR={0} ServerIP:{1}{2}{3}", m_error, m_serverIP, Environment.NewLine, base.Message);
             }
         }
     }
