@@ -31,7 +31,9 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.stagent.AgentError;
 import org.nhindirect.stagent.CryptoExtensions;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 
 /**
@@ -179,6 +181,8 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
 	
     protected Collection<X509Certificate> getUsableCerts(InternetAddress address)
     {
+    	Collection<X509Certificate> retVal;
+    	
         if (address == null)
         {
             throw new IllegalArgumentException();
@@ -217,7 +221,15 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         		return null;
         }
 
-        return filterUsable(certs);
+        if (certs == null || certs.size() == 0)
+        	return null;
+        
+        retVal = filterUsable(certs);
+        
+        if (retVal == null)
+        	throw new NHINDException(AgentError.AllCertsInResolverInvalid);
+        
+        return retVal;
     }
         
     /*

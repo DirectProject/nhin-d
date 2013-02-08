@@ -749,7 +749,15 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         		
             recipient.setCertificates(privateCerts);
             
-            Collection<X509Certificate> anchors = this.trustAnchors.getIncomingAnchors().getCertificates(recipient);
+            Collection<X509Certificate> anchors = null;
+            try
+            {
+            	anchors = this.trustAnchors.getIncomingAnchors().getCertificates(recipient);
+            }
+            catch (Exception e)
+            {
+            	/*no-op*/
+            }
             if (anchors == null || anchors.size() == 0)
             	LOGGER.warn("bindAddresses(IncomingMessage message) - Could not obtain incoming trust anchors for recipient " + recipient.getAddress());
             recipient.setTrustAnchors(anchors);
@@ -1074,8 +1082,17 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a private certificate for sender " + message.getSender().getAddress());
     	message.getSender().setCertificates(privateCerts);
     	
-    	Collection<X509Certificate> anchors = this.trustAnchors.getOutgoingAnchors().getCertificates(message.getSender());
-        if (anchors == null || anchors.size() == 0)
+    	Collection<X509Certificate> anchors = null;
+    	try
+    	{
+    		anchors = this.trustAnchors.getOutgoingAnchors().getCertificates(message.getSender());
+    	}
+    	catch (Exception e)
+    	{
+    		/*no-op*/
+    	}
+    	
+    	if (anchors == null || anchors.size() == 0)
         	LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not obtain outgoing trust anchors for sender " + message.getSender().getAddress());    	
         message.getSender().setTrustAnchors(anchors);
 
@@ -1239,8 +1256,16 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     	Collection<X509Certificate> certs = null;
         try
         {
-            certs = this.privateCertResolver.getCertificates(address);
-            if (certs == null && required)
+        	try
+        	{
+        		certs = this.privateCertResolver.getCertificates(address);
+        	}
+			catch (NHINDException e)
+			{
+				if (!e.getError().equals(AgentError.AllCertsInResolverInvalid))
+					throw e;
+			}
+        	if (certs == null && required)
             {
             	if (incoming)
             		throw new AgentException(AgentError.MissingRecipientCertificate);
@@ -1278,7 +1303,19 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
             // try each resolver until it's found
         	for (CertificateResolver publicResolver : publicCertResolver)
         	{
-        		certs = publicResolver.getCertificates(address);
+        		try
+        		{
+        			certs = publicResolver.getCertificates(address);
+        		}
+        		catch (NHINDException e)
+        		{
+        			// if we found some certs, but they are invalid, we are not
+        			// suppose to move on
+        			if (e.getError().equals(AgentError.AllCertsInResolverInvalid))
+        				break;	
+        			else 
+        				throw e;
+        		}
         		if (certs != null)
         			break;
         	}
