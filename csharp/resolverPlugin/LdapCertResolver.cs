@@ -167,9 +167,16 @@ namespace Health.Direct.ResolverPlugins
 
             foreach (var srvRecord in srvRecords)
             {
-                certs = GetCertificatesBySubect(srvRecord, address);
-                if (!certs.IsNullOrEmpty()) break;
+                 // get the LDAP connection from the SRV records
 
+                using (var connection = GetLdapConnection(srvRecord))
+                {
+                    if (connection != null)
+                    {
+                        certs = GetCertificatesBySubect(connection, srvRecord, address);
+                        if (!certs.IsNullOrEmpty()) return certs;
+                    }
+                }
             }
             return certs;
         }
@@ -195,7 +202,15 @@ namespace Health.Direct.ResolverPlugins
             }
             foreach (var srvRecord in srvRecords)
             {
-                certs = GetCertificatesByDomain(srvRecord, domain);
+                // get the LDAP connection from the SRV records
+
+                using (var connection = GetLdapConnection(srvRecord))
+                {
+                    if (connection != null)
+                    {
+                        certs = GetCertificatesByDomain(connection, srvRecord, domain);
+                    }
+                }
             }
             return certs;
         }
@@ -221,58 +236,45 @@ namespace Health.Direct.ResolverPlugins
         public event Action<ICertificateResolver, Exception> Error;
 
         /// <summary>
-        /// Resolves X509 certificates for a specific subject.  May either be an address or a domain name.
+        /// Resolves X509 certificates for a specific subject.  Will search address and then domain.
         /// </summary>
+        /// <param name="connection">Active LDAP connection</param>
         /// <param name="srvRecord">Resolve <see cref="SRVRecord"/> to resolve. </param>
         /// /// <param name="address">The <see cref="String"/> address to resolve. </param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        X509Certificate2Collection GetCertificatesBySubect(SRVRecord srvRecord, MailAddress address)
+        X509Certificate2Collection GetCertificatesBySubect(LdapConnection connection, SRVRecord srvRecord, MailAddress address)
         {
             var retVal = new X509Certificate2Collection();
 
-            // get the LDAP connection from the SRV records
+            // gate the base naming contexts
+            var distNames = GetBaseNamingContext(connection);
 
-            using (var connection = GetLdapConnection(srvRecord))
+            SetCerts(srvRecord, connection, distNames, address.Address, retVal);
+            if(retVal.Count == 0)
             {
-                if (connection != null)
-                {
-                    // gate the base naming contexts
-                    var distNames = GetBaseNamingContext(connection);
-
-                    SetCerts(srvRecord, connection, distNames, address.Address, retVal);
-                    if(retVal.Count == 0)
-                    {
-                        SetCerts(srvRecord, connection, distNames, address.Host, retVal);
-                    }
-                }
+                SetCerts(srvRecord, connection, distNames, address.Host, retVal);
             }
+        
             return retVal;
         }
 
         /// <summary>
-        /// Resolves X509 certificates for a specific subject.  May either be an address or a domain name.
+        /// Resolves X509 certificates for a specific subject.  By domain name.
         /// </summary>
+        /// <param name="connection">Active LDAP connection</param>
         /// <param name="srvRecord">Resolve <see cref="SRVRecord"/> to resolve. </param>
         /// /// <param name="domain">The <see cref="String"/> domain to resolve. </param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        X509Certificate2Collection GetCertificatesByDomain(SRVRecord srvRecord, string domain)
+        X509Certificate2Collection GetCertificatesByDomain(LdapConnection connection, SRVRecord srvRecord, string domain)
         {
             var retVal = new X509Certificate2Collection();
 
-            // get the LDAP connection from the SRV records
-
-            using (var connection = GetLdapConnection(srvRecord))
-            {
-                if (connection != null)
-                {
-                    // gate the base naming contexts
-                    var distNames = GetBaseNamingContext(connection);
-                    SetCerts(srvRecord, connection, distNames, domain, retVal);
+            // gate the base naming contexts
+            var distNames = GetBaseNamingContext(connection);
+            SetCerts(srvRecord, connection, distNames, domain, retVal);
                    
-                }
-            }
             return retVal;
         }
 

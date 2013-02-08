@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Net;
 
 namespace Health.Direct.Common.DnsResolver
 {
@@ -155,6 +156,7 @@ namespace Health.Direct.Common.DnsResolver
     public class DnsProtocolException : DnsException
     {
         DnsProtocolError m_error;
+        IPAddress m_address;
 
         /// <summary>
         /// Intializes an exception with the specified <paramref name="error"/>
@@ -186,6 +188,18 @@ namespace Health.Direct.Common.DnsResolver
         {
             m_error = error;
         }
+
+        /// <summary>
+        /// Intializes an exception with the specified <paramref name="error"/>
+        /// </summary>
+        /// <param name="error">The specific error subtype.</param>
+        /// <param name="message">message associated with this exception</param>
+        public DnsProtocolException(DnsProtocolError error, IPAddress address)
+        {
+            m_error = error;
+            m_address = address;
+        }
+
         
         /// <summary>
         /// The error subtype.
@@ -205,6 +219,18 @@ namespace Health.Direct.Common.DnsResolver
         public override string ToString()
         {
             return string.Format("ERROR={0}{1}{2}", m_error, Environment.NewLine, base.ToString());
+        }
+
+        /// <summary>
+        /// Returns a base Message with DnsProtocolException specific additions.
+        /// </summary>
+        ///  <returns>The string representation.</returns>
+        public override string Message
+        {
+            get
+            {
+                return string.Format("ERROR={0} server:{1}{2}{3}", m_error, m_address, Environment.NewLine, base.Message);
+            }
         }
     }
 }

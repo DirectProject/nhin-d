@@ -402,8 +402,8 @@ namespace Health.Direct.Common.DnsResolver
                     System.Threading.Thread.Sleep(m_postFailurePause.Value);
                 }            
             }
-            
-            throw new DnsProtocolException(DnsProtocolError.MaxAttemptsReached);
+
+            throw new DnsProtocolException(DnsProtocolError.MaxAttemptsReached, Server.Address);
         }
         
         /// <summary>
