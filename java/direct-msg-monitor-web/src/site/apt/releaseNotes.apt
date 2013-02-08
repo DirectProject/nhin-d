@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{1.1.4}
+
+    Changes included with release 1.1.4
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Updated path of WEB-INF/applicationContext.xml so it will work with Tomcat in windows when launched from explorer.
+
 {1.1.3}
 
     Changes included with release 1.1.3
