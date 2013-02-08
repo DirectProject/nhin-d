@@ -92,7 +92,26 @@ namespace Health.Direct.Common.Tests.DnsResolver
             request.Header.IsRequest = false;
             Assert.Throws<DnsProtocolException>(() => request.Validate());
         }
-               
+
+        [Fact]
+        public void TestProtocolException()
+        {
+            DnsProtocolException ex = new DnsProtocolException(DnsProtocolError.InvalidMXRecord);
+            string error;
+            Assert.DoesNotThrow(() => ex.ToString());
+            Assert.DoesNotThrow(() => error = ex.Message);
+            Assert.True(ex.ToString().Contains("MXRecord"));
+            Assert.True(ex.Message.Contains("MXRecord"));
+
+            ex = new DnsProtocolException(DnsProtocolError.InvalidMXRecord, IPAddress.Parse("1.2.3.4"));
+            Assert.DoesNotThrow(() => ex.ToString());
+            Assert.DoesNotThrow(() => error = ex.Message);
+            Assert.True(ex.ToString().Contains("MXRecord"));
+            Assert.True(ex.Message.Contains("MXRecord"));
+            Assert.True(ex.ToString().Contains("1.2.3.4"));
+            Assert.True(ex.Message.Contains("1.2.3.4"));
+        }
+
         T Roundtrip<T>(T record)
             where T : DnsResourceRecord
         {
