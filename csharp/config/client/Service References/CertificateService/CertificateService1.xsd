@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="EntityStatus">
+    <xs:annotation>
+      <xs:appinfo>
+        <ActualType Name="unsignedByte" Namespace="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="New" />
+      <xs:enumeration value="Enabled" />
+      <xs:enumeration value="Disabled" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="EntityStatus" nillable="true" type="tns:EntityStatus" />
+  <xs:simpleType name="ConfigStoreError">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Unknown" />
+      <xs:enumeration value="Unexpected" />
+      <xs:enumeration value="Conflict" />
+      <xs:enumeration value="DatabaseError" />
+      <xs:enumeration value="UniqueConstraint" />
+      <xs:enumeration value="ForeignKeyConstraint" />
+      <xs:enumeration value="InvalidIDs" />
+      <xs:enumeration value="InvalidDomain" />
+      <xs:enumeration value="InvalidDomainName" />
+      <xs:enumeration value="DomainNameLength" />
+      <xs:enumeration value="InvalidDomainID" />
+      <xs:enumeration value="InvalidAddress" />
+      <xs:enumeration value="AddressLength" />
+      <xs:enumeration value="DisplayNameLength" />
+      <xs:enumeration value="InvalidEmailAddress" />
+      <xs:enumeration value="InvalidCertificate" />
+      <xs:enumeration value="InvalidX509Certificate" />
+      <xs:enumeration value="MissingCertificateData" />
+      <xs:enumeration value="InvalidOwnerName" />
+      <xs:enumeration value="OwnerLength" />
+      <xs:enumeration value="InvalidThumbprint" />
+      <xs:enumeration value="InvalidAnchor" />
+      <xs:enumeration value="AccountNameLength" />
+      <xs:enumeration value="InvalidMXSMTPName" />
+      <xs:enumeration value="MXSMTPNameLength" />
+      <xs:enumeration value="InvalidMX" />
+      <xs:enumeration value="InvalidDnsRecord" />
+      <xs:enumeration value="NotesLength" />
+      <xs:enumeration value="InvalidAdministrator" />
+      <xs:enumeration value="InvalidUsername" />
+      <xs:enumeration value="InvalidPassword" />
+      <xs:enumeration value="InvalidPropertyName" />
+      <xs:enumeration value="InvalidPropertyNameLength" />
+      <xs:enumeration value="InvalidTextBlobName" />
+      <xs:enumeration value="InvalidTextBlobNameLength" />
+      <xs:enumeration value="InvalidBlob" />
+      <xs:enumeration value="AgentNameLength" />
+      <xs:enumeration value="InvalidAgentName" />
+      <xs:enumeration value="InvalidMdnIdentifier" />
+      <xs:enumeration value="InvalidMdn" />
+      <xs:enumeration value="DuplicateProcessedMdn" />
+      <xs:enumeration value="DuplicateDispatchedMdn" />
+      <xs:enumeration value="DuplicateFailedMdn" />
+      <xs:enumeration value="MdnPreviouslyProcessed" />
+      <xs:enumeration value="MdnUncorrelated" />
+      <xs:enumeration value="MdnPreviouslyFailed" />
+      <xs:enumeration value="InvalidUrl" />
+      <xs:enumeration value="UrlLength" />
+      <xs:enumeration value="InvalidBundle" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
+</xs:schema>
