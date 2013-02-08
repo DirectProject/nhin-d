@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>agent</artifactId>    
     <name>Direct Project Security And Trust Agent</name>
-    <version>1.6</version>
+    <version>1.5.5</version>
     <description>Direct Project Security And Trust Agent</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url> 
@@ -29,7 +29,7 @@
         </developer>                          
      </developers>
      <organization>
-        <name>NHIN Direct</name>
+        <name>HNIN Direct</name>
         <url>http://nhindirect.org</url>
     </organization>
    <prerequisites>

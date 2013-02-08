@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{1.5.5}
+
+    Changes included with release 1.5.5
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Additional fixes for NIST and MU2 certification regarding certificate discovery.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=185}185}}: Backing out bug 185 as it is not in compliance with the applicability statement.
+
 {1.5.4}
 
     Changes included with release 1.5.4
