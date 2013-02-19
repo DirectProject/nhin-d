@@ -63,8 +63,10 @@ namespace Health.Direct.Common.Tests.Caching
             : base(DumpIsEnabled)
         {
             m_cache = new DnsResponseCache(Guid.NewGuid().ToString("D"));
-            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(10), Cache = m_cache};
-            m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
+            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(5), Cache = m_cache};
+            m_client.MaxRetries = 1;
+            m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(5) };
+            m_clientNoCache.MaxRetries = 1;
         }
 
         /// <summary>

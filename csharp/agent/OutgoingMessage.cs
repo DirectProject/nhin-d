@@ -144,12 +144,9 @@ namespace Health.Direct.Agent
         /// </remarks>
         public bool? IsTimelyAndReliable;
 
-
         /// <summary>
         /// Is system configured for reliable delivery.  And if required is message requesting timely and reliable delivery.
         /// </summary>
         public bool UsingDeliveryStatus = false;
-
-        
     }
 }

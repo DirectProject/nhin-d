@@ -19,6 +19,7 @@ using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using System.Xml;
+using System.Globalization;
 
 namespace Health.Direct.Common.Extensions
 {
@@ -227,6 +228,25 @@ namespace Health.Direct.Common.Extensions
                     return serializer.Deserialize(xmlReader);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Extensions for <see cref="DateTime"/>
+    /// </summary>
+    public static class DateTimeExtensions
+    {
+        /// <summary>
+        /// Serializes the given DateTime to an RFC822 compliant Date Time string
+        /// </summary>
+        /// <param name="dateTime">DateTime</param>
+        /// <returns>RFC822 compliant date time string</returns>
+        public static string ToRFC822String(this DateTime dateTime)
+        {
+            // Its crazy we have to do this...
+            string dateTimeString = dateTime.ToString("ddd, d MMM yyyy HH:mm:ss zzz", CultureInfo.InvariantCulture);
+            string rfc822Date = dateTimeString.Remove(dateTimeString.LastIndexOf(':'), 1);
+            return rfc822Date;
         }
     }
 }

@@ -15,7 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-
+using System.Net.Mail;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail
@@ -388,7 +389,24 @@ namespace Health.Direct.Common.Mail
         /// </summary>        
         public void Timestamp()
         {
-            this.DateValue = DateTime.Now.ToString("d MMM yyyy HH:mm:ss zzz");
+            this.DateValue = DateTime.Now.ToRFC822String();
+        }
+        
+        /// <summary>
+        /// Assigns a new message ID to this message. Overwrites any existing Message IDs
+        /// </summary>
+        public void AssignMessageID()
+        {
+            string hostName = null;
+            string fromValue = this.FromValue;
+            if (!string.IsNullOrEmpty(fromValue))
+            {
+                MailAddress address = new MailAddress(fromValue);
+                hostName = address.Host;
+            }
+            
+            string messageID = Message.GenerateMessageID(hostName);
+            this.IDValue = messageID;
         }
         
         /// <summary>
@@ -423,6 +441,23 @@ namespace Health.Direct.Common.Mail
         public static Message Load(string messageText)
         {
             return MailParser.ParseMessage(messageText);
+        }
+        
+        /// <summary>
+        /// Generate a unique RFC822 Message ID originating from the sending host.
+        /// </summary>
+        /// <param name="sendingHost">If null or empty, uses System.Dns.GetHostName()</param>
+        /// <returns>Message ID formatted according to RFC822 rules</returns>
+        public static string GenerateMessageID(string sendingHost)
+        {
+            string left = StringExtensions.UniqueString();
+            string right = sendingHost;
+            if (string.IsNullOrEmpty(right))
+            {
+                right = System.Net.Dns.GetHostName();
+            }
+
+            return string.Format("<{0}@{1}>", left, right);
         }
     }
 }

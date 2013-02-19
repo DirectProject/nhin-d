@@ -81,6 +81,8 @@
     <Compile Include="DnsResolver\BasicResolverTests.cs" />
     <Compile Include="DnsResolver\TestSerialization.cs" />
     <Compile Include="Mail\MailParserFacts.cs" />
+    <Compile Include="Mail\MessageIDFacts.cs" />
+    <Compile Include="Mail\RFC822DateFacts.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
     <Compile Include="Mail\TestDSN.cs" />
     <Compile Include="Mail\TestMDN.cs" />

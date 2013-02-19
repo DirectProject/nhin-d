@@ -85,7 +85,7 @@ namespace Health.Direct.Common.Mail.DSN
             string notifyTo = message.From.Value;
 
             DSNMessage statusMessage = new DSNMessage(notifyTo, from.ToString(), dsn);
-            statusMessage.IDValue = StringExtensions.UniqueString();
+            statusMessage.AssignMessageID();
 
             statusMessage.SubjectValue = string.Format("{0}:{1}", "Rejected", message.SubjectValue);
             

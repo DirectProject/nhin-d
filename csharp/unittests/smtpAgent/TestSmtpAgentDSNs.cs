@@ -53,7 +53,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Generation of DSN bounce messages for rejected outgoing message for security and trust reasons
         /// Select AutoDsnOption of Always and do not request TimelyAndReliable.
         /// </summary>
-        [Fact]//(Skip = "Requires Config Service to be installed")]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly_AlwaysGenerate()
         {
             CleanMessages(m_agent.Settings);
@@ -133,7 +133,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// This interesting because in the past if no trusted recipients exist the message is dropped
         /// in the bad messages folder.
         /// </summary>
-        [Theory]//(Skip = "Requires Config Service to be installed")]
+        [Theory(Skip = "Requires Config Service to be installed")]
         [PropertyData("UntrustedRecipientMessages")]
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly_AlwaysGenerate_AllRecipientsRejected(
             string untrustedRecipientMessage
@@ -232,7 +232,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Select AutoDsnOption of TimelyAndReliable.
         /// Mime message in this test does not request TimelyAndReliable.
         /// </summary>
-        [Fact]//(Skip = "Requires Config Service to be installed")]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly_TimelyAndReliable_missingRequest()
         {
             CleanMessages(m_agent.Settings);
@@ -290,7 +290,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Generation of DSN bounce messages for rejected outgoing message for security and trust reasons
         /// Select AutoDsnOption of TimelyAndReliable and request TimelyAndReliable.
         /// </summary>
-        [Fact]//(Skip = "Requires Config Service to be installed")]
+        [Fact(Skip = "Requires Config Service to be installed")]
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly_GenerateOnlyIfRequested()
         {
             CleanMessages(m_agent.Settings);
@@ -369,7 +369,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute.
         /// Need more research to figure out this scenario.
         /// </summary>
-        [Theory]//(Skip = "Requires Config Service to be installed")]
+        [Theory(Skip = "Requires Config Service to be installed")]
         [PropertyData("UnDeliverableRecipientMessages")]
         public void TestFinalDestinationDelivery(string unDeliverableRecipientMessage
             , List<DSNPerRecipient> perRecipientExpected)
