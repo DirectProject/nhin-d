@@ -83,7 +83,7 @@ namespace Health.Direct.MdnMonitor
 
             var sender = new MailAddress(mdn.Sender);
             var notificationMessage = new DSNMessage(sender.Address, new MailAddress("Postmaster@" + sender.Host).Address, notification);
-            notificationMessage.IDValue = StringExtensions.UniqueString();
+            notificationMessage.AssignMessageID();
             notificationMessage.SubjectValue = string.Format("{0}:{1}", "Rejected", mdn.SubjectValue);
             notificationMessage.Timestamp();
             return notificationMessage;

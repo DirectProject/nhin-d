@@ -109,7 +109,7 @@ namespace Health.Direct.Common.Mail.Notifications
             }
                        
             NotificationMessage notificationMessage = new NotificationMessage(notifyTo, from.ToString(), notification);
-            notificationMessage.IDValue = StringExtensions.UniqueString();
+            notificationMessage.AssignMessageID();
 
             string originalSubject = message.SubjectValue;
             if (!string.IsNullOrEmpty(originalSubject))
