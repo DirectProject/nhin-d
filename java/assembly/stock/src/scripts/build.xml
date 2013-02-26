@@ -56,9 +56,9 @@
 	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
 	
 	<!-- tomcat properties -->
-	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.34/bin/apache-tomcat-7.0.34.tar.gz"></property>
-	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.34.tar.gz"></property>
-	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.34"></property>
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.37/bin/apache-tomcat-7.0.37.tar.gz"></property>
+	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.37.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.37"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.bin.dir" value="${tomcat.stage.dir}/bin"></property>	
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>

@@ -14,13 +14,17 @@
     
     Enhancements/Bug Fixes
     
-    * More fixes for MU2 compliance
+    * Tomcat updated to Version 7.0.34    
+    
+    * Additional fixes for MU2 compliance
     
     * Agent Version 1.5.5  See agent {{{http://api.nhindirect.org/java/site/agent/1.5.5/releaseNotes.html}release notes}}:
     
     * Gateway Version 2.1  See gateway {{{http://api.nhindirect.org/java/site/gateway/2.1/releaseNotes.html}release notes}}:
 
     * Initial support for Direct trust bundles.  Allows for configuration and downloading of bundles into Direct instance.
+    
+    * Config-service updated to version 1.3.  This upgrade required for the new gateway and trust bundle functionality.     
     
     * Minor look and feel changes in config-ui tool.
 
