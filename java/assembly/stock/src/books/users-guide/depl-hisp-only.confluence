@@ -239,7 +239,7 @@ The stock assembly contains all of the pre-assembled and configured components o
 
 The assembly contains a root directly named _direct_ and has the following folders under the root.
 
-* apache-tomcat-7.0.34
+* apache-tomcat-7.0.37
 * DirectDNSServices
 * james-2.3.2
 * apache-james-3.0-beta4
@@ -277,7 +277,7 @@ h2. Launch Tomcat
 
 Before running the James mail servier, the configuration and message monitiroing services must be running and some minimum configuration completed.  All of these services run inside the Tomcat web server.
 
-To start the tomcat server, run the following command from the DIRECT HOME/apache-tomcat-7.0.34/bin directory.
+To start the tomcat server, run the following command from the DIRECT HOME/apache-tomcat-7.0.37/bin directory.
 
 _Windows_
 {code}
@@ -506,13 +506,13 @@ To further protect the configuration service, or if port 8081 must remain public
 
 _Windows_ 
 
-Manuall edit the config-servlet.xml file under DIRECT HOME/apache-tomcat-7.0.34/webapps/config-ui/WEB-INF and change the following setting to your new password:
+Manuall edit the config-servlet.xml file under DIRECT HOME/apache-tomcat-7.0.37/webapps/config-ui/WEB-INF and change the following setting to your new password:
 
 {code}
  <security:user name="admin" password="adm1nD1r3ct" authorities="ROLE_ADMIN"/>
 {code}
 
-Restart the tomcat server by running the following commands from the DIRECT HOME/apache-tomcat-7.0.34/bin directory.
+Restart the tomcat server by running the following commands from the DIRECT HOME/apache-tomcat-7.0.37/bin directory.
 
 {code}
  shutdown
@@ -522,8 +522,8 @@ Restart the tomcat server by running the following commands from the DIRECT HOME
 _All Unix/Linux_
 
 {code}
- cp $DIRECT_HOME/apache-tomcat-7.0.34/webapps/config-ui/WEB-INF/config-servlet.xml $DIRECT_HOME/apache-tomcat-7.0.34/webapps/config-ui/WEB-INF/config-servlet.xml.orig
- sed -i "s/adm1nD1r3ct/your_new_password/g" $DIRECT_HOME/apache-tomcat-7.0.34/webapps/config-ui/WEB-INF/config-servlet.xml
+ cp $DIRECT_HOME/apache-tomcat-7.07/webapps/config-ui/WEB-INF/config-servlet.xml $DIRECT_HOME/apache-tomcat-7.0.37/webapps/config-ui/WEB-INF/config-servlet.xml.orig
+ sed -i "s/adm1nD1r3ct/your_new_password/g" $DIRECT_HOME/apache-tomcat-7.0.37/webapps/config-ui/WEB-INF/config-servlet.xml
  sh bin/shutdown.sh
  sh bin/startup.sh
 {code}
