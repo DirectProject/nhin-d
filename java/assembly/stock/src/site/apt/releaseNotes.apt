@@ -6,6 +6,24 @@
         Greg Meyer
         ---
 
+{2.1}
+
+    Changes included with release 2.1
+    
+    []
+    
+    Enhancements/Bug Fixes
+    
+    * More fixes for MU2 compliance
+    
+    * Agent Version 1.5.5  See agent {{{http://api.nhindirect.org/java/site/agent/1.5.5/releaseNotes.html}release notes}}:
+    
+    * Gateway Version 2.1  See gateway {{{http://api.nhindirect.org/java/site/gateway/2.1/releaseNotes.html}release notes}}:
+
+    * Initial support for Direct trust bundles.  Allows for configuration and downloading of bundles into Direct instance.
+    
+    * Minor look and feel changes in config-ui tool.
+
 {2.0.1}
 
     Changes included with release 2.0.1
