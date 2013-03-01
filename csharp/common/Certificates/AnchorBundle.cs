@@ -48,7 +48,7 @@ namespace Health.Direct.Common.Certificates
         /// <param name="checkSignatureOnly">If bundle is signed, check signature but don't verify signature cert chain</param>
         public AnchorBundle(byte[] bundleData, bool checkSignatureOnly)
         {
-            SignedCms cms = ParseCms(bundleData, true);
+            SignedCms cms = ParseCms(bundleData, checkSignatureOnly);
             if (cms != null)
             {
                 this.Certificates = cms.Certificates;
