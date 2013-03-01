@@ -127,24 +127,21 @@ namespace Health.Direct.Common.Certificates
         /// Downloads an Anchor bundle from the given Uri
         /// </summary>
         /// <param name="bundleUri">Uri from where to retreive the bundle</param>
-        /// <returns>Parsed PKCS7 bundle</returns>
-        public SignedCms Download(Uri bundleUri)
+        /// <returns>Anchor Bundle</returns>
+        public AnchorBundle Download(Uri bundleUri)
         {
             if (bundleUri == null)
             {
                 throw new ArgumentNullException("bundleUri");
             }
             
-            byte[] p7bBytes = this.DownloadRaw(bundleUri);
-            if (p7bBytes.IsNullOrEmpty())
+            byte[] bundleData = this.DownloadRaw(bundleUri);
+            if (bundleData.IsNullOrEmpty())
             {
                 throw new InvalidOperationException("Empty bytes received");
             }
-
-            SignedCms envelope = new SignedCms();
-            envelope.Decode(p7bBytes);
-
-            return envelope;
+            
+            return new AnchorBundle(bundleData);
         }
 
         /// <summary>
@@ -155,25 +152,8 @@ namespace Health.Direct.Common.Certificates
         /// <returns>Collection of X509 Certificates</returns>
         public X509Certificate2Collection DownloadCertificates(Uri bundleUri)
         {
-            return this.DownloadCertificates(bundleUri, false);
-        }
-
-        /// <summary>
-        /// Downloads the bundle and returns the certificates contained within.
-        /// Optionally validates signatures
-        /// </summary>
-        /// <param name="bundleUri">Uri from where to retreive the bundle</param>
-        /// <param name="verifySignature">if true, validate signatures</param>
-        /// <returns>Collection of X509 Certificates</returns>
-        public X509Certificate2Collection DownloadCertificates(Uri bundleUri, bool verifySignature)
-        {
-            SignedCms bundle = this.Download(bundleUri);
-            if (verifySignature)
-            {
-                bundle.CheckSignature(verifySignature);
-            }
-            
+            AnchorBundle bundle = this.Download(bundleUri);
             return bundle.Certificates;
-        }                
+        }
     }
 }

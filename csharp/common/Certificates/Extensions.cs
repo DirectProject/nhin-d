@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Security.Cryptography.Pkcs;
 using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Certificates
@@ -756,6 +756,31 @@ namespace Health.Direct.Common.Certificates
                 {
                 }
             }
+        }
+ 
+        //---------------------------------------
+        //
+        // PKCS
+        //
+        //---------------------------------------
+        /// <summary>
+        /// Checks if the given SignedCms object has signatures
+        /// </summary>
+        /// <param name="cms">Cms object</param>
+        /// <returns>true if signatures present</returns>
+        public static bool HasSignatures(this SignedCms cms)
+        {
+            return (!cms.SignerInfos.IsNullOrEmpty());
+        }
+        
+        /// <summary>
+        /// Checks if the given SignedCms object has encapsulated content
+        /// </summary>
+        /// <param name="cms">Cms object</param>
+        /// <returns>true if content present</returns>
+        public static bool HasContent(this SignedCms cms)
+        {
+            return (cms.ContentInfo != null && !cms.ContentInfo.Content.IsNullOrEmpty());
         }
     }
 }

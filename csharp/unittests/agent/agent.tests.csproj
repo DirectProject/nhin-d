@@ -35,6 +35,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -60,6 +61,7 @@
     <Compile Include="AgentTester.cs" />
     <Compile Include="BasicAgentTests.cs" />
     <Compile Include="AddressTest.cs" />
+    <Compile Include="BundleResolverTests.cs" />
     <Compile Include="CryptographerTests.cs" />
     <Compile Include="DnsResolverTest.cs" />
     <Compile Include="PlugingDomainResolverTests.cs" />
@@ -72,6 +74,12 @@
     <Compile Include="TrustChainTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Certificates\Bundles\bundleNoMetadata.p7b">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\Bundles\bundleWithMetadata.p7b">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\Chain\end.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
