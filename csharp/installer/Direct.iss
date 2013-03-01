@@ -32,7 +32,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.2.0.0
+AppVerName=Direct Project .NET Gateway 1.2.0.1
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -41,10 +41,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.2.0.0-NET35
+OutputBaseFilename=Direct-1.2.0.1-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.2.0.0
+VersionInfoVersion=1.2.0.1
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -91,7 +91,7 @@ Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshos
 Source: "..\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
 Source: "..\bin\{#Configuration}\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "..\bin\{#Configuration}\jobs.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: monitorserver;
+Source: "jobs.xml"; DestDir: "{app}"; Flags: ignoreversion; Components: monitorserver;
 
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
