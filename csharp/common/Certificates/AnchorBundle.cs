@@ -156,7 +156,8 @@ namespace Health.Direct.Common.Certificates
 
             SignedCms cms = new SignedCms(new ContentInfo(p7bData), false);
             CmsSigner signer = new CmsSigner(signingCert);
-            cms.ComputeSignature(signer);
+            signer.IncludeOption = X509IncludeOption.EndCertOnly;
+            cms.ComputeSignature(signer, true);
 
             return cms.Encode();
         }
