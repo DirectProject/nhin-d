@@ -615,8 +615,9 @@ namespace Health.Direct.Agent
                         return true;
                     }
                 }
-                catch
+                catch(Exception ex)
                 {
+                    this.Notify(message, ex);
                 }
             }
             
