@@ -23,9 +23,16 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.stagent.mail;
 
 import java.util.Enumeration;
+import java.io.InputStream;
+import java.io.IOException;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.ContentType;
 import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
+
+import org.apache.commons.io.IOUtils;
 
 import org.nhindirect.stagent.parser.EntitySerializer;
 
@@ -103,8 +110,9 @@ public class WrappedMessage
     		return false; 	
     	
     	try
-    	{    		
-    		return message.getContentType().equalsIgnoreCase(MailStandard.MediaType.WrappedMessage);
+    	{    	
+                ContentType contentType = new ContentType(message.getContentType());
+    		return contentType.match(MailStandard.MediaType.WrappedMessage);
     	}
     	catch (MessagingException e) {/* no-op */}
     	
@@ -121,9 +129,26 @@ public class WrappedMessage
     {
     	if (!isWrapped(message))
     		 throw new MimeException(MimeError.ContentTypeMismatch);
-
-    	byte[] body = message.getContentAsBytes();
-    	
+        
+        //check encoding and decode quoted printable payload if necessary
+        byte[] body = null;
+        MimeMessage mime = (MimeMessage)message;
+        String encoding = mime.getEncoding();
+        if(encoding != null) {
+            if(encoding.toLowerCase().contains(MimeStandard.TransferEncodingQuoted)) {
+                try {
+                    InputStream decoded = MimeUtility.decode(mime.getInputStream(),MimeStandard.TransferEncodingQuoted);
+                    body = IOUtils.toByteArray(decoded);
+                }
+                catch(IOException e) {
+                    //TO-DO: handle exception
+                }
+            }
+        }
+        //if no encoding or not quoted printable, just get content without decoding
+        if(body == null) {
+            body = message.getContentAsBytes();
+        }
     	if (body == null || body.length == 0)
     		throw new MimeException(MimeError.MissingBody);
     	
