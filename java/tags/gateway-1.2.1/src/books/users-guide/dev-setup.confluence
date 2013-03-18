@@ -1,0 +1,187 @@
+h1. James Development Setup
+
+This setup targets an SMTP protocol implementation using Apache James as the protocol implementation.  It is indented to facilitate deploying a stand alone development and test system for sending messaging using Apache James.  It consists of installing and configuring two instances of James: one for sending and one for receiving.  The James configuration files including port information are pre-configured specifically for the test environment.
+
+*Prerequisites*
+
+* Java 6 JDK
+* Mecurial and Maven2.  
+
+See the Software Development [Process|http://nhindirect.org/Software+Development+Process] and Java Reference [Implementation|http://nhindirect.org/Java+Reference+Implementation] pages on the NHIN Direct wiki for more information.
+
+Follow the steps below to setup a testing.  *NOTE:*  Many of the commands below are Unix/Linux and OS X specific.  You may need to change the commands to something equivalent for you operating system.  
+
+*Setting up Environment Variable*
+
+Set the following environment variable for you operating system.
+
+{code}
+   JAVA_HOME=<path to the JDK directory>
+   NHIN_D_ROOT=<path to the directory that will contain the nhin-d directory>
+   JAMES_ROOT=<path to the directory that will contain James instances>
+{code}
+
+The following are common locations for the JDK for various operating systems for the JAVA_HOME variable.
+
+{code}
+  Windows: C:\Program Files\Java\jdk1.6.0_20
+  OS X: /System/Library/Frameworks/JavaVM.framework/Home
+  Unix or Linux: /usr/lib/jvm/java-6-sun
+{code}
+
+*Java Cryptographic Extensions*
+
+The Java Cryptographic Extensions (JCE) are required for proper encryption functionality by the bouncy castle libraries.  
+
+Download and the [JCE|http://java.sun.com/products/archive/jce/1.4.2/index.html] zip file and unzip the archived jar files into the $JAVA_HOME/jre/lib/security folder (for OS X, $JAVA_HOME/lib/security).
+
+*NOTE:*  The jar files in zip may be older than the ones found in your JDK.  You must replace the files in your JDK regardless of data.  JDKs by default are not package with the strong encryption policy jars.  If you have multiple JDKs installed on your machine, ensure that you replace the jar files in each JDK that you plan on using for developement.
+
+
+Linux Example:
+{code}
+   unzip jce_policy-1_4_2_zip
+   sudo cp local_policy.jar $JAVA_HOME/jre/lib/security
+   sudo cp US_export_policy.jar $JAVA_HOME/jre/lib/security
+{code}  
+
+*Check out and build the source code*
+
+{code}
+   cd $NHIN_D_ROOT
+   hg clone https://nhin-d.googlecode.com/hg/ nhin-d
+   cd nhin-d/java
+   mvn clean install
+{code}
+
+*Install the outgoing James instance*
+
+*NOTE:* For this, and other sections, substitute curl -O for wget on OS X, or if your platform doesn't have wget.
+
+{code}
+   mkdir /tmp/stage
+   cd /tmp/stage
+   wget http://www.eng.lsu.edu/mirrors/apache/james/server/apache-james-2.3.2.tar.gz
+   tar xvfz apache-james-2.3.2.tar.gz
+   rm apache-james-2.3.2.tar.gz
+   mv james-2.3.2/ $JAMES_ROOT/james_v1
+{code}
+
+*Configure James*
+
+{code}
+   cd $JAMES_ROOT/james_v1/
+   chmod +x bin/run.sh
+   chmod +x bin/phoenix.sh
+   sudo -E ./bin/run.sh
+   <control-c>  (This terminates James. You must run James at least one to setup it's directory structure)
+   sudo mkdir apps/james/SAR-INF/lib
+{code}
+
+*Install the Agent and Gateway JARs*
+
+{code}
+   sudo cp $NHIN_D_ROOT/nhin-d/java/agent/target/agent-1.1-SNAPSHOT.jar $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
+   sudo cp $NHIN_D_ROOT/nhin-d/java/gateway/target/gateways-1.1-SNAPSHOT.jar $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
+{code}
+
+*Install Dependencies*
+
+The following are transitive jars used by the security and test agent, SMTP agent, and James protocol bridge.
+
+{code}
+   cd $JAMES_ROOT/james_v1/apps/james/SAR-INF/lib/
+   sudo wget http://repository.jboss.org/maven2/javax/activation/activation/1.1/activation-1.1.jar
+   sudo wget http://repository.jboss.org/maven2/aopalliance/aopalliance/1.0/aopalliance-1.0.jar
+   sudo wget http://repository.jboss.org/maven2/commons-io/commons-io/1.4/commons-io-1.4.jar
+   sudo wget http://mirror.cc.columbia.edu/pub/software/apache/james/apache-mailet/2.4/apache-mailet-2.4.jar
+   sudo wget http://mirror.cc.columbia.edu/pub/software/apache/james/apache-mailet-base/1.1/apache-mailet-base-1.1.jar
+   sudo wget http://jakarta.apache.uasw.edu/pub/security/bouncycastle/release1.40/bcmail-jdk15-140.jar
+   sudo wget http://jakarta.apache.uasw.edu/pub/security/bouncycastle/release1.40/bcprov-jdk15-140.jar
+   sudo wget http://ftp.us.xemacs.org/pub/mirrors/maven2/commons-codec/commons-codec/1.4/commons-codec-1.4.jar
+   sudo wget http://ftp.us.xemacs.org/pub/mirrors/maven2/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar
+   sudo wget http://dist.codehaus.org/mule/dependencies/maven2/guice/guice/2.0/guice-2.0.jar
+   sudo wget http://download.java.net/maven/1/javax.mail/jars/mail-1.4.1.jar
+{code}
+
+*Install the incoming James instance*
+
+{code}
+   cd $JAMES_ROOT
+   cp -r james_v1/ james_v2
+{code}
+
+*Get supporting configuration files*
+
+{code}
+   wget http://nhindirect.org/file/view/keystore.jks -O /tmp/stage/keystore.jks
+   wget http://nhindirect.org/file/view/STConfig_v1.xml -O /tmp/stage/STConfig_v1.xml
+   wget http://nhindirect.org/file/view/STConfig_v2.xml -O /tmp/stage/STConfig_v2.xml
+   sudo wget http://nhindirect.org/file/view/config_v1.xml -O $JAMES_ROOT/james_v1/apps/james/SAR-INF/config.xml
+   sudo wget http://nhindirect.org/file/view/config_v2.xml -O $JAMES_ROOT/james_v2/apps/james/SAR-INF/config.xml
+{code}
+
+*Start outgoing and incoming James intances*
+
+You may need to start multiple terminal/command line sessions to run each instance.  If you are unix you can launch each process in the background by adding the _&_ character to the end of the command.
+
+
+Run instance one.
+{code}
+  cd $JAMES_ROOT/james_v1
+  sudo -E ./bin/run.sh
+{code}
+
+Run instance two.
+{code}
+  cd $JAMES_ROOT/james_v2
+  sudo -E ./bin/run.sh
+{code}
+
+*Create James users*
+
+James has a configuration and administration interface that can be accessed via telnet.  The ports for the interface are set in the config.xml files.
+
+Note: If you are using Windows Server 2008, it no longer ships with the telnet client.  You must [install|http://blogs.technet.com/b/dougl/archive/2009/05/28/installing-telnet-client-on-windows-server-2008.aspx] it seperately.
+
+{code}
+   telnet localhost 4555
+   > root
+   > root
+   > adduser bob password
+   > quit
+ 
+   telnet localhost 8555
+   > root
+   > root
+   > adduser tom password
+   > quit
+{code} 
+
+*Send a test message*
+
+{code}
+   telnet localhost 25
+   > ehlo localhost
+   > mail from: <bob@fl.provider.com>
+   > rcpt to: <tom@dc.clinic.com>
+   > data
+   > Subject:Direct Test Message
+   >
+   > This is a test message
+   > .
+   >
+   > quit
+{code}
+
+*Verify S/MIME encryption*
+
+{code}
+   cat $JAMES_ROOT/james_v1/bin/OutgoingMsgFolder/*
+{code}
+
+*Verify S/MIME decryption*
+
+{code}
+   cat $JAMES_ROOT/james_v2/apps/james/var/mail/inboxes/tom/*.FileStreamStore
+{code}
