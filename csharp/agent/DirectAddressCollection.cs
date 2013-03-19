@@ -205,12 +205,42 @@ namespace Health.Direct.Agent
         }
                 
         /// <summary>
-        /// A string represntation of the addresses.
+        /// A <see cref="string"/> representation of the addresses.
         /// </summary>
         /// <returns>A string representing the address collection</returns>
         public override string ToString()
         {
             return this.ToMailAddressCollection().ToString();
+        }
+
+        /// <summary>
+        /// A <see cref="string"/> representation of the addresses with line folding.
+        /// </summary>
+        /// <returns>A string representing the address collection</returns>
+        public string ToStringWithFolding()
+        {
+            return this.ToMailAddressCollection().ToStringWithFolding();
+        }
+        
+        /// <summary>
+        /// Turns this address collection into a <see cref="Header"/>
+        /// </summary>
+        /// <param name="headerName">header name</param>
+        /// <returns>Header object, OR null if this collection is empty</returns>
+        public Header ToHeader(string headerName)
+        {
+            if (string.IsNullOrEmpty(headerName))
+            {
+                throw new ArgumentException("headerName");
+            }
+            if (this.Count == 0)
+            {
+                return null;
+            }
+            
+            string foldedValue = this.ToStringWithFolding();
+            string unfoldedValue = this.ToString();
+            return new Header(headerName, foldedValue, unfoldedValue);
         }
         
         internal static DirectAddressCollection Create(IEnumerable<DirectAddress> source)

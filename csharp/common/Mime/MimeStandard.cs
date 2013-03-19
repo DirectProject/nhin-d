@@ -108,7 +108,6 @@ namespace Health.Direct.Common.Mime
         //
         // Mime/Content-Type
         //
-        //TODO: Needs to be a class of its own. Likely a generic class.
         /// <summary>
         /// Default <c>Content-Type</c> media type values as per the IANA registry.
         /// </summary>
@@ -135,7 +134,7 @@ namespace Health.Direct.Common.Mime
         //
         // Used to implement Parsing Operations
         //
-        
+        internal const int MaxLineLength = 1000;               
         /// <summary>
         /// Tests if the <paramref name="ch"/> is MIME whitespace.
         /// </summary>
@@ -226,7 +225,7 @@ namespace Health.Direct.Common.Mime
             switch (encoding)
             {
                 default:
-                    throw new NotSupportedException();
+                    throw new MimeException(MimeError.TransferEncodingNotSupported);
 
                 case TransferEncoding.Base64:
                     return MimeStandard.TransferEncodingBase64;
@@ -236,6 +235,30 @@ namespace Health.Direct.Common.Mime
 
                 case TransferEncoding.QuotedPrintable:
                     return MimeStandard.TransferEncodingQuoted;
+            }
+        }
+        
+        /// <summary>
+        /// Parse the text representing the value of a ContentTransferEncodingHeader.
+        /// </summary>
+        /// <param name="value">header value</param>
+        /// <returns>The <see cref="TransferEncoding"/> enum that represents the value.</returns>
+        public static TransferEncoding ToTransferEncoding(string value)
+        {
+            value = value.Trim().ToLower();
+            switch(value)
+            {
+                default:
+                    return TransferEncoding.Unknown;
+                    
+                case MimeStandard.TransferEncodingBase64:
+                    return TransferEncoding.Base64;
+                
+                case MimeStandard.TransferEncoding7Bit:
+                    return TransferEncoding.SevenBit;
+                    
+                case MimeStandard.TransferEncodingQuoted:
+                    return TransferEncoding.QuotedPrintable;    
             }
         }
     }

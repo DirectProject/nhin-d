@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net.Mail;
+using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Common.Mail
 {
@@ -55,6 +56,27 @@ namespace Health.Direct.Common.Mail
             }
         }
         
+        /// <summary>
+        /// Serializes the address, such that the result is compliant with the line folding recommendations
+        /// of the SMTP spec
+        /// </summary>
+        /// <param name="addresses">Addresses to serialize</param>
+        public static string ToStringWithFolding(this MailAddressCollection addresses)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach(MailAddress address in addresses)
+            {
+                if (builder.Length > 0)
+                {
+                    builder.Append(',');
+                    builder.Append(MailStandard.CRLF);
+                    builder.Append(' ');
+                }
+                builder.Append(address.ToString());
+            }
+            
+            return builder.ToString();
+        }
         /// <summary>
         /// Sends this <see cref="MailMessage"/> to the specified path.
         /// </summary>

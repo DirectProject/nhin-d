@@ -66,6 +66,10 @@ namespace Health.Direct.Common.Mime
         /// </summary>
         TransferEncodingMismatch,
         /// <summary>
+        /// This type of transfer encoding is not supported by the system.
+        /// </summary>
+        TransferEncodingNotSupported,
+        /// <summary>
         /// Base64 encoded content was expected but not provided.
         /// </summary>
         Base64EncodingRequired,
@@ -76,6 +80,10 @@ namespace Health.Direct.Common.Mime
         /// <summary>
         /// A multipart message was missing a boundary separator.
         /// </summary>
-        MissingBoundarySeparator
+        MissingBoundarySeparator,
+        /// <summary>
+        /// Quotable Printable encoding - characters encoded incorrectly
+        /// </summary>
+        InvalidQuotedPrintableEncodedChar
     }
 }
