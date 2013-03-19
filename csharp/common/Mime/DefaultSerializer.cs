@@ -150,8 +150,6 @@ namespace Health.Direct.Common.Mime
             return MimeParser.ReadHeaders(messageText);
         }
 
-        // TODO: name overload misery. One of these wants to split a header string into header name/value, the other to split the header value...
-
         /// <summary>
         /// Splits a value by the supplied <paramref name="separator"/> <see cref="char"/>.
         /// </summary>
@@ -172,8 +170,7 @@ namespace Health.Direct.Common.Mime
         {
             return MimeParser.ReadNameValue(headerText);
         }
-        
-
+                
         /// <summary>
         /// Joins a pair as a header
         /// </summary>

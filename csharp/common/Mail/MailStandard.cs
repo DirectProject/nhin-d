@@ -25,7 +25,11 @@ namespace Health.Direct.Common.Mail
         /// <summary>
         /// Character used to enclose quoted strings
         /// </summary>
-        public const char DQUOTE = '"';
+        public const char DQUOTE = '"';        
+        /// <summary>
+        /// Maximum allowed characters per line, INCLUDING the CRLF at the end
+        /// </summary>
+        public const int MaxCharsInLine = 1000; 
         /// <summary>
         /// Header values for common RFC822/5322 Headers
         /// </summary>

@@ -291,6 +291,42 @@ namespace Health.Direct.Common.Mime
         }
         
         /// <summary>
+        /// Parses the ContentTransferEncoding header, if any.
+        /// If no header specified, returns SevenBit, the default
+        /// If transfer encoding not recognized, returns TransferEncoding.Unknown
+        /// </summary>
+        /// <returns>The transfer encoding for this Mime Entity</returns>
+        public TransferEncoding GetTransferEncoding()
+        {
+            TransferEncoding encoding = TransferEncoding.SevenBit;
+            string transferEncodingHeader = this.ContentTransferEncoding;
+            if (!string.IsNullOrEmpty(transferEncodingHeader))
+            {
+                encoding = MimeStandard.ToTransferEncoding(transferEncodingHeader);
+            }
+            return encoding;
+        }
+        
+        /*
+        /// <summary>
+        /// The Message Body may be encoded using a TransferEncoding. 
+        /// If the body is encoded using a supported encoding (7bit, base64, quotedPrintable), will decode
+        /// and return the decoded text
+        /// </summary>
+        /// <returns>Decoded message body</returns>
+        public string GetDecodedBody()
+        {
+            TransferEncoding transferEncoding = this.GetTransferEncoding();
+            if (transferEncoding == TransferEncoding.Unknown)
+            {
+                throw new MimeException(MimeError.TransferEncodingNotSupported);
+            }
+            
+            
+        }
+        */
+                
+        /// <summary>
         /// Updates this entity with the multipart entity, updating headers and body as appropriate.
         /// </summary>
         /// <param name="multipartEntity">The mulitpart entity to update.</param>

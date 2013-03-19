@@ -63,7 +63,9 @@
     <Compile Include="AddressTest.cs" />
     <Compile Include="BundleResolverTests.cs" />
     <Compile Include="CryptographerTests.cs" />
+    <Compile Include="DirectAddressCollectionFacts.cs" />
     <Compile Include="DnsResolverTest.cs" />
+    <Compile Include="MessageEnvelopeFacts.cs" />
     <Compile Include="PlugingDomainResolverTests.cs" />
     <Compile Include="PluginResolverTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

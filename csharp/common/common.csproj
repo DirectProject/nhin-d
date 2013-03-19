@@ -201,6 +201,7 @@
     <Compile Include="Mime\MultipartEntity.cs" />
     <Compile Include="Collections\ObjectCollection.cs" />
     <Compile Include="Mime\MimeException.cs" />
+    <Compile Include="Mime\QuotedPrintableEncoding.cs" />
     <Compile Include="Mime\StringSegment.cs" />
     <Compile Include="DirectException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
