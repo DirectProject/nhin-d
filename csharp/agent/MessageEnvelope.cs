@@ -385,7 +385,16 @@ namespace Health.Direct.Agent
             }
             return addresses;
         }
-
+        
+        /// <summary>
+        /// Remove addresses from Routing headers
+        /// </summary>
+        /// <param name="addresses"><see cref="DirectAddressCollection"/> containing addresses to remove</param>
+        public void RemoveFromRoutingHeaders(DirectAddressCollection addresses)
+        {
+            this.UpdateRoutingHeaders(addresses);
+        }
+        
         internal void UpdateRoutingHeaders(DirectAddressCollection rejectedRecipients)
         {
             if (rejectedRecipients.IsNullOrEmpty()) 
@@ -403,7 +412,7 @@ namespace Health.Direct.Agent
             if (recipients != null) 
             {
                 recipients.Remove(rejectedRecipients);
-                this.Message.Headers[headerName] = (recipients.Count > 0) ? new Header(headerName, recipients.ToString()) : null;	   
+                this.Message.Headers[headerName] = recipients.ToHeader(headerName);
             }
         }
 
