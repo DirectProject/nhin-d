@@ -65,7 +65,7 @@ namespace Health.Direct.Common.Tests.Mime
             
             string decodedString = null;    
             Assert.DoesNotThrow(() => decodedString = new string(chars));
-            Assert.True(string.Equals(text, expectedText));
+            Assert.True(string.Equals(decodedString, expectedText));
         }
         
         
