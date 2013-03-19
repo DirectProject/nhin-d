@@ -119,10 +119,18 @@ namespace Health.Direct.Common.Mime
         {
             m_text = Text + text;
         }
-
+        
+        /// <summary>
+        /// Expands the source segment for this entity
+        /// </summary>
         internal virtual void AppendSourceText(StringSegment segment)
         {
             m_sourceText.Union(segment);
+        }
+        
+        internal void SetTextTo(string text)
+        {
+            m_text = text;
         }
     }
 
