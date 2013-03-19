@@ -12,6 +12,19 @@
     
     []
     
+ 	* Added ability to use outgoing policy for incoming notification messages.
+    
+    [] 
+     
+    Bug Fixes
+
+    * NA
+{2.1}
+
+    Changes included with release 2.0.2
+    
+    []
+    
  	* Updated trust anchor configuration to pull anchors from configured trust bundles.
     
  	* Updated config-ui to reflect trust bundle configuration and new look and feel.
