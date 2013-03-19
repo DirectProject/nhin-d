@@ -96,6 +96,12 @@ public class OptionsManager
 		 */
 		JVM_PARAMS.put(OptionsParameter.CRYPTOGRAHPER_SMIME_ENCRYPTION_ALGORITHM, "org.nhindirect.stagent.cryptographer.smime.EncryptionAlgorithm");
 		JVM_PARAMS.put(OptionsParameter.CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM, "org.nhindirect.stagent.cryptographer.smime.DigestAlgorithm");
+		
+		/*
+		 * Policy parameters
+		 */
+		JVM_PARAMS.put(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, "org.nhindirect.stagent.cert.ldapresolver.UseOutgoingPolForNoficiations");
+		
 	}
 	
 	

@@ -54,6 +54,7 @@ import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
 import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 
 import com.google.inject.Module;
 import com.google.inject.Provider;
@@ -88,7 +89,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, "org.nhindirect.gateway.smtp.james.mailet.TxServiceURL");
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM, "org.nhindirect.gateway.smtp.james.mailet.AutoDSNFailueCreation");
-		
+				
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
 	
@@ -101,6 +102,24 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		LOGGER.info("Initializing NHINDSecurityAndTrustMailet");
 		
 		super.init();
+		
+		// set the outbound policy for notifications if possible
+		try
+		{
+			boolean useOutboundPolicy = Boolean.parseBoolean(
+					GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, this, "false"));
+			
+			// we don't know if this parameter came from the mailet config or the options manager, so just go ahead and set it at
+			// the options manager level because that it where the agent reads the value... no danger that we will overwrite the value that we want...
+			// we would just be writing the same value if the information came from the options manager module
+			// the mailet parameter gets precedence, so we want to overwrite the options manager if the value exists in the mailet configuration
+			OptionsManager.getInstance().setOptionsParameter(
+					new OptionsParameter(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, Boolean.toString(useOutboundPolicy)));
+		}
+		catch (Exception e)
+		{
+			// log a warning that the parameter could not be set
+		}
 		
 		// Get the configuration URL
 		final String configURLParam = getInitParameter(SecurityAndTrustMailetOptions.CONFIG_URL_PARAM);
@@ -480,6 +499,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 	 * @param tx The message to monitor and track
 	 * @param isOutgoing Indicates the message direction: incoming or outgoing
 	 */
+	@SuppressWarnings("incomplete-switch")
 	protected void trackMessage(Tx tx, boolean isOutgoing)
 	{
 		// only track the following message..

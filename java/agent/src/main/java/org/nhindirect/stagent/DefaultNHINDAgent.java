@@ -25,6 +25,7 @@ package org.nhindirect.stagent;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,8 @@ import javax.mail.util.ByteArrayDataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.cms.CMSSignedData;
+import org.nhindirect.common.tx.TxUtil;
+import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.stagent.annotation.AgentDomains;
 import org.nhindirect.stagent.annotation.PrivateCerts;
 import org.nhindirect.stagent.annotation.PublicCerts;
@@ -59,6 +62,8 @@ import org.nhindirect.stagent.mail.MimeError;
 import org.nhindirect.stagent.mail.MimeException;
 import org.nhindirect.stagent.mail.MimeStandard;
 import org.nhindirect.stagent.mail.WrappedMessage;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 import org.nhindirect.stagent.parser.EntitySerializer;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
@@ -712,6 +717,38 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 
         // Enforce trust requirements, including checking signatures
         //
+        
+        // need to decide if this message is a notification and message and 
+        // if outgoing policy can be used for trust enforcement
+        final boolean allowOutgoingPolicyForIncomingNotifications =
+        		OptionsParameter.getParamValueAsBoolean(OptionsManager.getInstance().
+        				getParameter(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS), false);
+        
+        if (allowOutgoingPolicyForIncomingNotifications)
+        {
+        	final TxMessageType msgType = TxUtil.getMessageType(message.getMessage());
+        	// determine if this message is a notification message
+        	if (msgType.equals(TxMessageType.DSN) || msgType.equals(TxMessageType.MDN))
+        	{
+        		// need to apply outgoing anchor policy to each recipient
+                for (NHINDAddress recipient : message.getDomainRecipients())
+                {
+                    try
+                    {
+                    	final Collection<X509Certificate> anchors = new ArrayList<X509Certificate>(trustAnchors.getIncomingAnchors().getCertificates(recipient));
+                    	anchors.addAll(trustAnchors.getOutgoingAnchors().getCertificates(recipient));
+                    	recipient.setTrustAnchors(anchors);
+                    }
+                    catch (Exception e)
+                    {
+                    	/*no-op*/
+                    }
+                }
+        	}
+        }
+        
+        
+        
         this.trustModel.enforce(message);        
         
         //
@@ -740,7 +777,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         //
         // Bind each recpient's certs and trust settings
         //
-
+   		
         for (NHINDAddress recipient : message.getDomainRecipients())
         {
         	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(recipient, false, true);
@@ -752,7 +789,8 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
             Collection<X509Certificate> anchors = null;
             try
             {
-            	anchors = this.trustAnchors.getIncomingAnchors().getCertificates(recipient);
+            	anchors = new ArrayList<X509Certificate>(trustAnchors.getIncomingAnchors().getCertificates(recipient));
+
             }
             catch (Exception e)
             {

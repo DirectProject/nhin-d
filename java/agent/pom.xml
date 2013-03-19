@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>agent</artifactId>    
     <name>Direct Project Security And Trust Agent</name>
-    <version>1.6</version>
+    <version>1.6-SNAPSHOT</version>
     <description>Direct Project Security And Trust Agent</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url> 
@@ -49,7 +49,12 @@
         <url>http://nhindirect.org/BSDLicense</url>
      </license>
   </licenses>       
-  <dependencies>    
+  <dependencies>  
+		<dependency>
+		  <groupId>org.nhind</groupId>
+		  <artifactId>direct-common</artifactId>
+		  <version>1.1.2</version>
+		</dependency>	    
 		<dependency>
 		  <groupId>com.google.inject</groupId>
 		  <artifactId>guice</artifactId>
@@ -87,7 +92,7 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>1.4.1</version>
+			<version>1.4.3</version>
 	        <scope>compile</scope>			
 		</dependency>				
 		<dependency>

@@ -75,5 +75,17 @@ public class SecurityAndTrustMailetOptions
  	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ConsumeMDNProcessed
      */
     public static final String CONSUME_MND_PROCESSED_PARAM = "ConsumeMDNProcessed";
+    
+    
+    /**
+     * Mailet configuration option determining if the outgoing trust policy should be applied for incoming notification messages.  This is recommended to be set to true
+     * if your system will be exchanging messages with other Direct instances that are configured to allow outbound messages only.  If this parameter is set to 
+     * false, quality of service cannot be tracked for outbound only destinations.  Valid options are "true" or "false".
+     * <p>
+     * This option can either be configured by using either the <b>UseOutgoingPolicyForIncomingNotifications</b> element of the NHINDSecurityAndTrustMailet 
+     * configuration or set using the {@link org.nhindirect.stagent.options.OptionsParameter#USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS}
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ConsumeMDNProcessed
+     */
+    public static final String USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS = "UseOutgoingPolicyForIncomingNotifications";
      
 }

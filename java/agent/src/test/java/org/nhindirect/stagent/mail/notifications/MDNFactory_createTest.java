@@ -13,6 +13,8 @@ import junit.framework.TestCase;
 import org.apache.mailet.base.mail.MimeMultipartReport;
 import org.nhindirect.stagent.NHINDException;
 
+import com.sun.mail.dsn.DispositionNotification;
+
 
 public class MDNFactory_createTest extends TestCase
 {
@@ -30,7 +32,11 @@ public class MDNFactory_createTest extends TestCase
 			
 			// the second part should be the notification
 			BodyPart part = mm.getBodyPart(1);
-				
+			
+			if (part.getContent() instanceof DispositionNotification)
+			{
+				return ((DispositionNotification)part.getContent()).getNotifications();
+			}
 			// parse fields
 			retVal = new InternetHeaders();	
 			String[] fields = Notification.getPartContentBodyAsString(part).split("\r\n");
@@ -46,7 +52,7 @@ public class MDNFactory_createTest extends TestCase
 			}
 
 		}
-		catch (MessagingException e)
+		catch (Exception e)
 		{
 			throw new NHINDException("Failed to parse notification fields.", e);
 		}

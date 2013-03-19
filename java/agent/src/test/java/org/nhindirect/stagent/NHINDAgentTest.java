@@ -1,5 +1,7 @@
 package org.nhindirect.stagent;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -13,9 +15,16 @@ import javax.mail.Header;
 import javax.mail.internet.MimeMessage;
 
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.mail.MailStandard;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.MimeStandard;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsManagerUtils;
+import org.nhindirect.stagent.options.OptionsParameter;
+import org.nhindirect.stagent.trust.DefaultTrustAnchorResolver;
+import org.nhindirect.stagent.trust.TrustError;
+import org.nhindirect.stagent.trust.TrustException;
 import org.nhindirect.stagent.utils.TestUtils;
 
 import junit.framework.TestCase;
@@ -33,6 +42,18 @@ public class NHINDAgentTest extends TestCase
 		{
 			System.out.println("Name: " + entry.getKey() + " Value: " + entry.getValue());
 		}
+	}
+	
+	@Override
+	public void setUp()
+	{
+		OptionsManagerUtils.clearOptionsManagerInstance();
+	}
+	
+	@Override
+	public void tearDown()
+	{
+		OptionsManagerUtils.clearOptionsManagerOptions();
 	}
 	
 	public void testEndToEndMessageWithCertKeyStore() throws Exception
@@ -342,5 +363,182 @@ public class NHINDAgentTest extends TestCase
 		
 		assertNull(SMIMEenvMessage);
 	}
+	
+	public void testIncomingMDN_incomingNotTrusted_outgoingTrusted_assertMDNMessageTrusted() throws Exception
+	{
+
+		OptionsManager.getInstance().setOptionsParameter(
+				new OptionsParameter(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, "true"));
+		
+		// first create the encyrpted message
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
+		String testMessage = TestUtils.readResource("MDNMessage.txt");
+		
+		final OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);;
+		
+		assertNotNull(SMIMEenvMessage);
+		
+		// now send received the MDN
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"Cerner.com"})); 
+		
+		DefaultTrustAnchorResolver resolver = (DefaultTrustAnchorResolver)agent.getTrustAnchors();
+		
+		CertificateResolver mockResolver = mock(CertificateResolver.class);
+		DefaultTrustAnchorResolver newResolver = new DefaultTrustAnchorResolver(resolver.getOutgoingAnchors(), 
+				mockResolver);
+		
+		
+		agent.setTrustAnchorResolver(newResolver);
+		
+		IncomingMessage incomingMessage = agent.processIncoming(SMIMEenvMessage.getMessage());
+		
+		assertNotNull(incomingMessage);
+		
+	}
+	
+	public void testIncomingDSN_incomingNotTrusted_outgoingTrusted_assertMDNMessageTrusted() throws Exception
+	{
+		OptionsManager.getInstance().setOptionsParameter(
+				new OptionsParameter(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, "true"));
+		
+		// first create the encyrpted message
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
+		String testMessage = TestUtils.readResource("DSNMessage.txt");
+		
+		final OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);;
+		
+		assertNotNull(SMIMEenvMessage);
+		
+		// now send received the MDN
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"Cerner.com"})); 
+		
+		DefaultTrustAnchorResolver resolver = (DefaultTrustAnchorResolver)agent.getTrustAnchors();
+		
+		CertificateResolver mockResolver = mock(CertificateResolver.class);
+		DefaultTrustAnchorResolver newResolver = new DefaultTrustAnchorResolver(resolver.getOutgoingAnchors(), 
+				mockResolver);
+		
+		
+		agent.setTrustAnchorResolver(newResolver);
+		
+		IncomingMessage incomingMessage = agent.processIncoming(SMIMEenvMessage.getMessage());
+		
+		assertNotNull(incomingMessage);
+		
+	}
+	
+	public void testIncomingNormalMessage_incomingNotTrusted_outgoingTrusted_assertMessageNotTrusted() throws Exception
+	{
+
+		// first create the encyrpted message
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"cerner.com"})); 
+		String testMessage = TestUtils.readResource("MultipartMimeMessage.txt");
+		
+		final OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);;
+		
+		assertNotNull(SMIMEenvMessage);
+		
+		// now send received the MDN
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
+		
+		DefaultTrustAnchorResolver resolver = (DefaultTrustAnchorResolver)agent.getTrustAnchors();
+		
+		CertificateResolver mockResolver = mock(CertificateResolver.class);
+		DefaultTrustAnchorResolver newResolver = new DefaultTrustAnchorResolver(resolver.getOutgoingAnchors(), 
+				mockResolver);
+				
+		agent.setTrustAnchorResolver(newResolver);
+		
+		IncomingMessage incomingMessage = null;
+		try 
+		{
+		   incomingMessage = agent.processIncoming(SMIMEenvMessage.getMessage());
+		}
+		catch(NHINDException e) 
+		{
+			TrustException agentexception = (TrustException) e.m_error;
+			assertEquals(TrustError.NoTrustedRecipients, agentexception.getError());
+		}
+		assertNull(incomingMessage);
+		
+	}	
+	
+	public void testIncomingMDN_incomingNotTrusted_outgoingTrusted_useIncomingSettingFalse_assertMDNMessageNotTrusted() throws Exception
+	{
+
+		OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, "false"));
+		
+		// first create the encyrpted message
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
+		String testMessage = TestUtils.readResource("MDNMessage.txt");
+		
+		final OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);;
+		
+		assertNotNull(SMIMEenvMessage);
+		
+		// now send received the MDN
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"Cerner.com"})); 
+		
+		DefaultTrustAnchorResolver resolver = (DefaultTrustAnchorResolver)agent.getTrustAnchors();
+		
+		CertificateResolver mockResolver = mock(CertificateResolver.class);
+		DefaultTrustAnchorResolver newResolver = new DefaultTrustAnchorResolver(resolver.getOutgoingAnchors(), 
+				mockResolver);
+		
+		
+		agent.setTrustAnchorResolver(newResolver);
+		
+		IncomingMessage incomingMessage = null;
+		try 
+		{
+			incomingMessage = agent.processIncoming(SMIMEenvMessage.getMessage());
+		}
+		catch(NHINDException e) 
+		{
+			TrustException agentexception = (TrustException) e.m_error;
+			assertEquals(TrustError.NoTrustedRecipients, agentexception.getError());
+		}
+		assertNull(incomingMessage);
+		
+	}	
+	
+	public void testIncomingDSN_incomingNotTrusted_outgoingTrusted_useIncomingSettingFalse_assertMDNMessageNotTrusted() throws Exception
+	{
+
+		OptionsManager.getInstance().setOptionsParameter(new OptionsParameter(OptionsParameter.USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS, "false"));
+		
+		// first create the encyrpted message
+		DefaultNHINDAgent agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"starugh-stateline.com"})); 
+		String testMessage = TestUtils.readResource("DSNMessage.txt");
+		
+		final OutgoingMessage SMIMEenvMessage = agent.processOutgoing(testMessage);;
+		
+		assertNotNull(SMIMEenvMessage);
+		
+		// now send received the MDN
+		agent = TestUtils.getStockAgent(Arrays.asList(new String[]{"Cerner.com"})); 
+		
+		DefaultTrustAnchorResolver resolver = (DefaultTrustAnchorResolver)agent.getTrustAnchors();
+		
+		CertificateResolver mockResolver = mock(CertificateResolver.class);
+		DefaultTrustAnchorResolver newResolver = new DefaultTrustAnchorResolver(resolver.getOutgoingAnchors(), 
+				mockResolver);
+		
+		
+		agent.setTrustAnchorResolver(newResolver);
+		
+		IncomingMessage incomingMessage = null;
+		try 
+		{
+			incomingMessage = agent.processIncoming(SMIMEenvMessage.getMessage());
+		}
+		catch(NHINDException e) 
+		{
+			TrustException agentexception = (TrustException) e.m_error;
+			assertEquals(TrustError.NoTrustedRecipients, agentexception.getError());
+		}
+		assertNull(incomingMessage);
+		
+	}	
 }
 

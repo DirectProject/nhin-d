@@ -14,6 +14,8 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.nhindirect.stagent.mail.MimeEntity;
 import org.nhindirect.stagent.utils.TestUtils;
 
+import com.sun.mail.dsn.DispositionNotification;
+
 import junit.framework.TestCase;
 
 public class NotificationTest extends TestCase 
@@ -52,11 +54,9 @@ public class NotificationTest extends TestCase
 		
 		entity = entities.get(1);
 		assertTrue(entity.getContentType().startsWith("message/disposition-notification"));
-		ByteArrayInputStream str = (ByteArrayInputStream)entity.getContent();
-		byte[] bytes = new byte[str.available()];
-		str.read(bytes);
-		String content = new String(bytes);
-		assertTrue(content.contains("automatic-action/MDN-sent-automatically;processed"));	
+		DispositionNotification notification = (DispositionNotification)entity.getContent();
+
+		assertEquals(notification.getNotifications().getHeader("disposition", ","), "automatic-action/MDN-sent-automatically;processed");	
 	}
 	
 	public void testCreateNotification_AssertDispatched() throws Exception
@@ -70,11 +70,9 @@ public class NotificationTest extends TestCase
 		
 		entity = entities.get(1);
 		assertTrue(entity.getContentType().startsWith("message/disposition-notification"));
-		ByteArrayInputStream str = (ByteArrayInputStream)entity.getContent();
-		byte[] bytes = new byte[str.available()];
-		str.read(bytes);
-		String content = new String(bytes);
-		assertTrue(content.contains("automatic-action/MDN-sent-automatically;dispatched"));	
+		DispositionNotification notification = (DispositionNotification)entity.getContent();
+
+		assertEquals(notification.getNotifications().getHeader("disposition", ","), "automatic-action/MDN-sent-automatically;dispatched");	
 	}
 	
 	public void testCreateNotification_AssertInputStream() throws Exception
@@ -93,11 +91,9 @@ public class NotificationTest extends TestCase
 			
 		part = mm.getBodyPart(1);
 		assertTrue(part.getContentType().startsWith("message/disposition-notification"));
-		ByteArrayInputStream str = (ByteArrayInputStream)part.getContent();
-		byte[] bytes = new byte[str.available()];
-		str.read(bytes);
-		String content = new String(bytes);
-		assertTrue(content.contains("automatic-action/MDN-sent-automatically;processed"));	
+		DispositionNotification notification = (DispositionNotification)part.getContent();
+
+		assertEquals(notification.getNotifications().getHeader("disposition", ","), "automatic-action/MDN-sent-automatically;processed");	
 	}	
 	
 	public void testSetExplanation_AssertExplanation() throws Exception

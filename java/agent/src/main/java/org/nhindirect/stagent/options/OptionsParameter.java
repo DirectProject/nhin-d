@@ -117,6 +117,13 @@ public class OptionsParameter
 	 */
     public final static String CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM = "CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM";
     
+ 	/**
+ 	 * Boolean value that determines if the set of outgoing anchors can be used to trust incoming MDN and DSN messages.  This
+ 	 * is necessary to allow QoS to happen when messages are set to be outgoing only.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cert.ldapresolver.UseOutgoingPolForNoficiations
+ 	 */
+    public final static String USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS = "UseOutgoingPolicyForIncomingNotifications"; 
+    
 	private final String paramName;
 	private final String paramValue;
 	
