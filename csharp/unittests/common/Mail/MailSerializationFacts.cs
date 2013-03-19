@@ -65,8 +65,9 @@ namespace Health.Direct.Common.Tests.Mail
                 Assert.True(line.Length > 0);
                 Assert.True(line.Length < MailStandard.MaxCharsInLine);
                 if (i > 0)
-                {
-                    Assert.True(MailStandard.IsWhitespace(line[i]));
+                {   
+                    // Verify starts with whitespace
+                    Assert.True(MailStandard.IsWhitespace(line[0]));
                 }
                 if (i < foldedParts.Length - 1)
                 {
