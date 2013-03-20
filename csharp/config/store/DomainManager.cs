@@ -243,12 +243,11 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
             }
 
-            Domain update = Get(db, domain.Name);
+            Domain update = new Domain(); 
             update.CopyFixed(domain);
 
             db.Domains.Attach(update);
-            update.ApplyChanges(domain);
-           
+            update.ApplyChanges(domain);           
         }
                 
         public void Remove(string name)

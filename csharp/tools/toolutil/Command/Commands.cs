@@ -227,9 +227,7 @@ namespace Health.Direct.Config.Tools.Command
             CommandDef cmd = this[commandName];
             if (cmd == null)
             {
-                CommandUI.PrintUpperCase("{0} not found", commandName);
-                CommandUI.PrintSectionBreak();
-                Console.WriteLine(HelpUsage);
+                this.ShowUsageCommandNotFound(commandName);
                 return;
             }
             
@@ -264,6 +262,28 @@ namespace Health.Direct.Config.Tools.Command
             foreach(string name in this.CommandNames)
             {
                 this.ShowUsage(name);
+            }
+        }
+
+        void ShowUsageCommandNotFound(string commandName)
+        {
+            Console.WriteLine();
+            CommandUI.PrintUpperCase("{0}:  No such command.", commandName);
+            CommandUI.PrintSectionBreak();
+            //
+            // Speculatively print out names of commands with this prefix..
+            //
+            if (this.PrefixMatchCommandNames(commandName).FirstOrDefault() != null)
+            {
+                //
+                // Speculatively print out names of commands with this prefix..
+                //
+                CommandUI.PrintHeading("Did you mean?");
+                this.ListCommands(new string[] { commandName });
+            }
+            else
+            {
+                Console.WriteLine(HelpUsage);
             }
         }
 
