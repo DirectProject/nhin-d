@@ -20,6 +20,7 @@ using System.Text;
 using Xunit;
 using Xunit.Extensions;
 using System.Net.Mime;
+using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
@@ -68,6 +69,20 @@ namespace Health.Direct.Agent.Tests
         {
             ContentType type = SignedEntity.CreateContentType(algo);
             Assert.True(type.Parameters["micalg"] == SMIMEStandard.ToString(algo));
+        }
+
+        [Theory]
+        [PropertyData("DigestAlgorithms")]
+        public void TestSignatureOIDs(DigestAlgorithm algo)
+        {
+            string messageText = m_tester.ReadMessageText("simple.eml");
+            m_cryptographer.DigestAlgorithm = algo;
+            SignedCms signedData = null;
+            
+            Assert.DoesNotThrow(() => signedData = m_cryptographer.CreateSignature(Encoding.ASCII.GetBytes(messageText), m_cert)); 
+            
+            Assert.True(signedData.SignerInfos.Count == 1);
+            Assert.True(signedData.SignerInfos[0].DigestAlgorithm.Value == SMIMECryptographer.ToDigestAlgorithmOid(algo).Value);
         }
 
         [Fact]
