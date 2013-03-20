@@ -14,9 +14,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Net.Mail;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Common.Mail
@@ -77,6 +80,7 @@ namespace Health.Direct.Common.Mail
             
             return builder.ToString();
         }
+        
         /// <summary>
         /// Sends this <see cref="MailMessage"/> to the specified path.
         /// </summary>
@@ -88,11 +92,44 @@ namespace Health.Direct.Common.Mail
             {
                 throw new ArgumentException("value was null or empty", "folderPath");
             }
-            
+
             SmtpClient smtpClient = new SmtpClient();
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-            smtpClient.PickupDirectoryLocation = folderPath;            
+            smtpClient.PickupDirectoryLocation = folderPath;
             smtpClient.Send(message);
+        }
+
+        /// <summary>
+        /// Warning: this writes to disk and is NOT efficient. 
+        /// This convenience method was created to make it easy for you to Test. 
+        /// <see cref="MailMessage"/> does not support writing a messages to a string. It only
+        /// writes to a folder. 
+        /// 
+        /// This method creates a temporary folder in the app's Temp Directory to deposit the message into.
+        /// Then it loads the message text, and deletes the folder
+        /// </summary>
+        /// <param name="message">The message to serialize</param>
+        /// <returns>message text</returns>
+        public static string Serialize(this MailMessage message)
+        {
+            string tempFolder = Path.GetTempPath();
+            string folderPath = Path.Combine(tempFolder, "Mail_" + StringExtensions.UniqueString());
+            Directory.CreateDirectory(folderPath);
+            try
+            {
+                message.SendToFolder(folderPath);
+                string fileName = Directory.GetFiles(folderPath).FirstOrDefault();
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    throw new InvalidOperationException("Serialization failed");
+                }
+                
+                return File.ReadAllText(Path.Combine(folderPath, fileName));
+            }
+            finally
+            {
+                Directory.Delete(folderPath, true);
+            }
         }
         
         /// <summary>
