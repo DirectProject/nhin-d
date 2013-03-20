@@ -32,6 +32,10 @@ namespace Health.Direct.Common.Tests.Mime
             get
             {
                 yield return new[] { 
+                        string.Empty,
+                        string.Empty
+                };
+                yield return new[] { 
                         "There is no code in this",
                         "There is no code in this"
                 };
@@ -40,8 +44,24 @@ namespace Health.Direct.Common.Tests.Mime
                         "There is only one"
                 };
                 yield return new[] { 
-                        "There is only one =\r\n line in this text",
+                        "There is only one =\r\n line in this text", 
                         "There is only one  line in this text"
+                };
+                yield return new[] { 
+                        "This line has trailing encoded whitespace.=20=20=20",
+                        "This line has trailing encoded whitespace.   ",
+                };
+                yield return new[] { 
+                        "This line has trailing non-encoded whitespace.=20=20=20  \t\t\t  ",
+                        "This line has trailing non-encoded whitespace.   ",
+                };
+                yield return new[] { 
+                        "This line has trailing non-encoded whitespace.=\r\n  \t\t\r\n\t  ",
+                        "This line has trailing non-encoded whitespace.\r\n",
+                };
+                yield return new[] { 
+                        "This line has trailing non-encoded whitespace.=\r\n  A\t\t\t  ",
+                        "This line has trailing non-encoded whitespace.  A",
                 };
                 yield return new[] { 
                         "This is line one=\r\n, and this is line two =\r\n and line 3.",
@@ -65,10 +85,9 @@ namespace Health.Direct.Common.Tests.Mime
             
             string decodedString = null;    
             Assert.DoesNotThrow(() => decodedString = new string(chars));
-            Assert.True(string.Equals(decodedString, expectedText));
+            Assert.True(string.Equals(decodedString , expectedText));
         }
-        
-        
+                
         public static IEnumerable<object[]> FileNames
         {
             get
@@ -92,7 +111,7 @@ namespace Health.Direct.Common.Tests.Mime
             Assert.DoesNotThrow(() => decodedString = new string(chars));            
         }
         
-        static string LoadFile(string name)
+        public static string LoadFile(string name)
         {
             string path = Path.Combine("Mime\\TestFiles", name);
             return File.ReadAllText(path);
@@ -201,16 +220,40 @@ namespace Health.Direct.Common.Tests.Mime
             Random rand = new Random();
             StringBuilder encodedBuilder = new StringBuilder();
             StringBuilder expectedBuilder = new StringBuilder();
+            int lineLength = 0;
             for (int i = 0; i < textLength; ++i)
             {
                 char ch = (char) rand.Next(1, byte.MaxValue);
-                if (ch == QuotedPrintableDecoder.EncodingChar || rand.NextDouble() <= encodeProbability)
+                
+                if (ch == MimeStandard.CR || ch == MimeStandard.LF)
                 {
+                    encodedBuilder.Append(MimeStandard.CRLF);
+                    expectedBuilder.Append(MimeStandard.CRLF);
+                    lineLength += 2;
+                    continue;
+                }
+                
+                if (ch == QuotedPrintableDecoder.EncodingChar || 
+                    MimeStandard.IsWhitespace(ch) ||            // Always encode whitespace
+                    rand.NextDouble() <= encodeProbability)
+                {
+                    if (lineLength > 72)
+                    {
+                        encodedBuilder.Append("=\r\n"); // Soft line break
+                        lineLength = 0;
+                    }
                     encodedBuilder.Append(this.Encode(ch, rand.NextDouble() <= lowerCaseProbability));
+                    lineLength += 3;
                 }
                 else
                 {
+                    if (lineLength >= 75)
+                    {
+                        encodedBuilder.Append("=\r\n"); // Soft line break
+                        lineLength = 0;
+                    }
                     encodedBuilder.Append(ch);
+                    ++lineLength;
                 }
                 expectedBuilder.Append(ch);
             }

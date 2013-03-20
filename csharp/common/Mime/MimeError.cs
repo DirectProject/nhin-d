@@ -84,6 +84,10 @@ namespace Health.Direct.Common.Mime
         /// <summary>
         /// Quotable Printable encoding - characters encoded incorrectly
         /// </summary>
-        InvalidQuotedPrintableEncodedChar
+        InvalidQuotedPrintableEncodedChar,
+        /// <summary>
+        /// Quotable Printable encoding - Invalid soft line break
+        /// </summary>
+        InvalidQuotedPrintableSoftLineBreak
     }
 }
