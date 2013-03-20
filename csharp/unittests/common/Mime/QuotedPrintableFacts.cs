@@ -32,10 +32,6 @@ namespace Health.Direct.Common.Tests.Mime
             get
             {
                 yield return new[] { 
-                        string.Empty,
-                        string.Empty
-                };
-                yield return new[] { 
                         "There is no code in this",
                         "There is no code in this"
                 };
