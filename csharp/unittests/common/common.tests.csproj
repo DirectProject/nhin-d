@@ -80,6 +80,7 @@
     <Compile Include="Diagnostics\RolloverFacts.cs" />
     <Compile Include="DnsResolver\BasicResolverTests.cs" />
     <Compile Include="DnsResolver\TestSerialization.cs" />
+    <Compile Include="Mail\MailMessageGenerator.cs" />
     <Compile Include="Mail\MailSerializationFacts.cs" />
     <Compile Include="Mail\MailParserFacts.cs" />
     <Compile Include="Mail\MessageIDFacts.cs" />
@@ -130,6 +131,9 @@
     <None Include="DnsResolver\DnsTestCerts\umesh.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Mail\TestFiles\Wrapped_Quoted.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="DsnTestMessages\DSNMessage.txt">
