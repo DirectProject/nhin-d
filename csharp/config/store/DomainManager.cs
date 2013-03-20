@@ -246,7 +246,7 @@ namespace Health.Direct.Config.Store
             Domain update = Get(db, domain.Name);
             update.CopyFixed(domain);
 
-            //db.Domains.Attach(update);
+            db.Domains.Attach(update);
             update.ApplyChanges(domain);
            
         }

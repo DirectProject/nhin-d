@@ -14,7 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-
+using System.Text;
+using System.Net.Mime;
 using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail
@@ -102,8 +103,24 @@ namespace Health.Direct.Common.Mail
             {
                 throw new MimeException(MimeError.MissingBody);
             }
-            
-            return MimeSerializer.Default.Deserialize<Message>(message.Body.SourceText);
+
+            StringSegment innerMessageText = message.Body.SourceText;
+            TransferEncoding encoding = message.GetTransferEncoding();
+            switch(encoding)
+            {
+                default:
+                    throw new MimeException(MimeError.TransferEncodingNotSupported);
+                
+                case TransferEncoding.SevenBit:
+                    break; // Nothing to do
+                                    
+                case TransferEncoding.QuotedPrintable:
+                    string decodedText = QuotedPrintableDecoder.Decode(innerMessageText);
+                    innerMessageText = new StringSegment(decodedText);
+                    break;                
+            }
+
+            return MimeSerializer.Default.Deserialize<Message>(innerMessageText);
         }
     }
 }
