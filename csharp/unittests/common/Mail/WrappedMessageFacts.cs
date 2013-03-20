@@ -21,8 +21,10 @@ using System.Text;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.IO;
+using Health.Direct.Common.Collections;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
+using Health.Direct.Common.Cryptography;
 using Xunit;
 using Xunit.Extensions;
 
@@ -52,8 +54,8 @@ namespace Health.Direct.Common.Tests.Mail
         public void TestRoundTrip(int toCount, int ccCount, int bodyLength)
         {
             // Manually wrap the mail...
-            MailMessage mail = this.GenerateRandomMail(toCount, ccCount, bodyLength);
-            MailMessage wrappedMessage = WrappedMailMessage(mail); 
+            MailMessage mail = MailMessageGenerator.GenerateRandomMail(toCount, ccCount, bodyLength);
+            MailMessage wrappedMessage = MailMessageGenerator.WrappedMailMessage(mail); 
             string wrappedMessageText = wrappedMessage.Serialize();
             
             Message parsedMessage = null;
@@ -70,85 +72,36 @@ namespace Health.Direct.Common.Tests.Mail
             Assert.True(extractedBody == mail.Body);
         }
         
-        MailMessage WrappedMailMessage(MailMessage inner)
+        [Theory]
+        [InlineData("Wrapped_Quoted.eml")]
+        public void TestFiles(string fileName)
         {
-            MailMessage wrapped = new MailMessage();
-            wrapped.From = inner.From;
-            if (inner.To.Count > 0)
-            {
-                wrapped.To.Add(inner.To.ToString());
-            }
-            if (inner.CC.Count > 0)
-            {
-                wrapped.CC.Add(inner.CC.ToString());
-            }
-            wrapped.Headers.Add(MailStandard.ContentTypeHeader, MailStandard.MediaType.WrappedMessage);
-
-            string innerText = inner.Serialize();
-            wrapped.Body = innerText;
+            string filePath = Path.Combine("Mail\\TestFiles", fileName);
+            string mailtext = File.ReadAllText(filePath);
             
-            return wrapped;
-        }
-        
-        MailMessage GenerateRandomMail(int toCount, int ccCount, int bodyLength)
-        {
-            MailMessage mail = new MailMessage();
-            this.AddRandomAddresses(mail, toCount, ccCount);
-            mail.Subject = string.Format("Random long subject text with a timestamp in it  {0} and some ====", DateTime.Now);
-            mail.Body = this.GenerateRandomBody(bodyLength);
-            return mail;
-        }
-                        
-        void AddRandomAddresses(MailMessage mail, int toCount, int ccCount)
-        {
-            mail.From = new MailAddress(this.GenerateEmailAddress(50, 35, 40));
-            for (int i = 0; i < toCount; ++i)
+            Message message = null;
+            Assert.DoesNotThrow(() => message = Message.Load(mailtext));
+            
+            if (SMIMEStandard.IsContentMultipartSignature(message.ParsedContentType))
             {
-                string addr = this.GenerateEmailAddress(50, 35, 30);
-                mail.To.Add(new MailAddress(addr));
+                SignedEntity signedEntity = null;
+                
+                Assert.DoesNotThrow(() => signedEntity = SignedEntity.Load(message));
+                message.Headers = message.Headers.SelectNonMimeHeaders();
+                message.UpdateBody(signedEntity.Content); // this will merge in content + content specific mime headers
             }
 
-            for (int i = 0; i < ccCount; ++i)
-            {
-                string addr = this.GenerateEmailAddress(40, 40, 30);
-                mail.CC.Add(new MailAddress(addr));
-            }
-        }
-        
-        string GenerateEmailAddress(int nameLength, int userNameLength, int hostLength)
-        {
-            StringBuilder builder = new StringBuilder(nameLength + userNameLength + hostLength + 10);
-            builder.Append('"');
-            builder.Append('N', nameLength);
-            builder.Append('"');
-            builder.Append(" <");
-            builder.Append('u', userNameLength);
-            builder.Append('@');
-            builder.Append('H', hostLength);
-            builder.Append(".foo");
-            builder.Append('>');
+            Message extracted = null;
+            Assert.DoesNotThrow(() => extracted = WrappedMessage.ExtractInner(message));
             
-            return builder.ToString();
-        }
-        
-        string GenerateRandomBody(int length)
-        {
-            Random rand = new Random();
-            StringBuilder builder = new StringBuilder(length);
-            for (int i = 0; i < length; ++i)
-            {
-                char ch = (char) rand.Next(1, 127);
-                if (ch == MimeStandard.CR || ch == MimeStandard.LF)
-                {
-                    builder.Append(MimeStandard.CRLF);
-                }
-                else
-                {
-                    builder.Append(ch);
-                }
-            }
+            Header to = null;
+            Assert.DoesNotThrow(() => to = extracted.To);
             
-            return builder.ToString();
-        }
+            MailAddressCollection addresses = null;
+            Assert.DoesNotThrow(() => addresses = MailParser.ParseAddressCollection(to));
+            Assert.True(addresses.Count > 0);
+
+            Assert.DoesNotThrow(() => MailParser.ParseMailAddress(extracted.From));
+        }        
     }
 }
