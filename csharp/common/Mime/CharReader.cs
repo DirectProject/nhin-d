@@ -115,7 +115,7 @@ namespace Health.Direct.Common.Mime
         }
 
         /// <summary>
-        /// Read up the specified character, or to the end, skippng escaped characters.
+        /// Read up the specified character, or to the end, skipping escaped characters.
         /// </summary>
         /// <param name="chTo">The character to read to</param>
         /// <param name="ignoreEscape">Indicates if the reader should skip escape characters</param>
@@ -136,7 +136,7 @@ namespace Health.Direct.Common.Mime
             
             return false;
         }
-
+        
         /// <summary>
         /// Read up the specified character, or to the end, skippng escaped characters.
         /// </summary>
@@ -178,6 +178,16 @@ namespace Health.Direct.Common.Mime
             return false;
         }
 
+        /// <summary>
+        /// Peeks at the current character at <see cref="Position"/> in the buffer, but does not advance
+        /// the <see cref="Position"/>.
+        /// </summary>
+        /// <returns>Returns the current character or <see cref="EOF"/> if at the end of the buffer.</returns>
+        public char Peek()
+        {
+            return IsDone ? EOF : m_source[m_position];
+        }
+                
         /// <summary>
         /// Returns the specified part of the reader's buffer as a <see cref="StringSegment"/>.
         /// </summary>

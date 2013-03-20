@@ -88,6 +88,7 @@
     <Compile Include="Mail\TestDSN.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Mail\TimelyAndReliableFacts.cs" />
+    <Compile Include="Mail\WrappedMessageFacts.cs" />
     <Compile Include="Metadata\AuthorFacts.cs" />
     <Compile Include="Metadata\DocumentMetadataFacts.cs" />
     <Compile Include="Metadata\HL7UtilFacts.cs" />
