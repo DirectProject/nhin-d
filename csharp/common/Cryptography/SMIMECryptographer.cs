@@ -767,7 +767,7 @@ namespace Health.Direct.Common.Cryptography
         /// </summary>
         /// <param name="type">The <see cref="DigestAlgorithm"/> to map to an OID</param>
         /// <returns>The OID corresponding to the digest algorithm.</returns>
-        static Oid ToDigestAlgorithmOid(DigestAlgorithm type)
+        public static Oid ToDigestAlgorithmOid(DigestAlgorithm type)
         {
             switch (type)
             {
