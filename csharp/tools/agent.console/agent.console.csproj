@@ -52,6 +52,7 @@
     <Compile Include="AgentConsole.cs" />
     <Compile Include="CertificateCommands.cs" />
     <Compile Include="DnsCommands.cs" />
+    <Compile Include="MailCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmtpAgentCommands.cs" />
   </ItemGroup>
