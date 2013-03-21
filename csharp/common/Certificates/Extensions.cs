@@ -575,6 +575,20 @@ namespace Health.Direct.Common.Certificates
             return (extension != null) ? extension.CertificateAuthority : false;
         }
 
+        /// <summary>
+        /// If a certificate is issued by this anchor, then it must proffer these additional Oids to be truly trusted
+        /// </summary>    
+        public static Oid[] GetRequiredOidsForIssuedCerts(this X509Certificate2 cert)        
+        {
+            AnchorX509Certificate2 anchorCert = cert as AnchorX509Certificate2;
+            if (anchorCert != null)
+            {
+                return anchorCert.RequiredOidsForIssuedCerts;
+            }
+            
+            return null;
+        }
+
         //---------------------------------------
         //
         // OidCollection

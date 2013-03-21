@@ -131,6 +131,12 @@
     <None Include="DnsResolver\DnsTestCerts\umesh.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Mail\TestFiles\Wrapped_Quoted2.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Mail\TestFiles\Wrapped_Quoted3.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Mail\TestFiles\Wrapped_Quoted.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

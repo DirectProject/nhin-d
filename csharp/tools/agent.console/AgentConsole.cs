@@ -37,6 +37,7 @@ namespace Health.Direct.Tools.Agent
             m_commands.Register(new DnsCommands());
             m_commands.Register(new SmtpAgentCommands());
             m_commands.Register(new CertificateCommands());
+            m_commands.Register(new MailCommands());
         }
         
         public void Run(string[] args)

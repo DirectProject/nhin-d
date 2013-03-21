@@ -103,10 +103,11 @@ namespace Health.Direct.Common.Tests.Mail
             {
                 wrapped.CC.Add(inner.CC.ToString());
             }
-            wrapped.Headers.Add(MailStandard.ContentTypeHeader, MailStandard.MediaType.WrappedMessage);
 
             string innerText = inner.Serialize();
             wrapped.Body = innerText;
+            
+            wrapped.Headers.Add(MailStandard.ContentTypeHeader, MailStandard.MediaType.WrappedMessage);
 
             return wrapped;
         }        
