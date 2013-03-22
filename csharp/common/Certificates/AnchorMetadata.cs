@@ -19,61 +19,53 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Xml.Serialization;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Certificates
 {
     /// <summary>
-    /// A X509Certificate2 representing an Anchor
-    /// You can tack on additional properties such as required OIDs and data. 
-    /// Note: these properties are not persisted when you save the certificate.
+    /// Anchor metadata. XmlSerializable for easy stashing in blobs and elsewhere
     /// </summary>
-    public class AnchorX509Certificate2 : DisposableX509Certificate2
+    [XmlType("AnchorMetadata")]
+    public class AnchorMetadata
     {
-            /// <summary>
-        /// Construct a new certificate
-        /// </summary>
-        /// <param name="rawData">certificate data</param>
-        public AnchorX509Certificate2(byte[] rawData)
-            : base(rawData)
-        {
-        }
-        
         /// <summary>
-        /// Construct a new certificate
+        /// Construct a new AnchorMetadata object
         /// </summary>
-        /// <param name="rawData">rawData</param>
-        /// <param name="password">password</param>
-        public AnchorX509Certificate2(byte[] rawData, string password)
-            : base(rawData, password)
+        public AnchorMetadata()
         {
         }
-        
-        /// <summary>
-        /// Construct a new X509Certificate
-        /// </summary>
-        /// <param name="rawData">certificate data</param>
-        /// <param name="password">password</param>
-        /// <param name="keyStorageFlags">storage flags</param>
-        public AnchorX509Certificate2(byte[] rawData, string password, X509KeyStorageFlags keyStorageFlags)
-            : base(rawData, password, keyStorageFlags)
-        {
-        }
-        
+
         /// <summary>
         /// OPTIONAL
-        /// Additional properties associated with this Anchor certificate
-        /// </summary>
-        public AnchorMetadata Metadata
+        /// If a certificate is issued by this anchor, then it must proffer these additional Oids to be truly trusted
+        /// </summary>    
+        [XmlArray]
+        [XmlArrayItem("Oid", typeof(Oid))]
+        public Oid[] RequiredOids
         {
             get; set;
-        }        
+        }
+
+        /// <summary>
+        /// OPTIONAL
+        /// Bundle in which this Anchor originated. 
+        /// </summary>
+        [XmlElement]
+        public string BundleSource
+        {
+            get;
+            set;
+        }
         
         /// <summary>
-        /// Returns true if this certificate has associated metadata
+        /// Returns true if any issued certificates must contain these Oids
         /// </summary>
-        public bool HasMetadata
+        [XmlIgnore]
+        public bool HasRequiredOids
         {
-            get { return (this.Metadata != null);}
+            get { return !this.RequiredOids.IsNullOrEmpty();}
         }
     }
 }

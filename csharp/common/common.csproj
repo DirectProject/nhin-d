@@ -56,6 +56,7 @@
     <Compile Include="Certificates\AnchorBundleDownloader.cs">
     </Compile>
     <Compile Include="Certificates\AnchorBundle.cs" />
+    <Compile Include="Certificates\AnchorMetadata.cs" />
     <Compile Include="Certificates\AnchorX509Certificate2.cs" />
     <Compile Include="Certificates\CertificateCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />

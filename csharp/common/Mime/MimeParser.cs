@@ -309,7 +309,7 @@ namespace Health.Direct.Common.Mime
         /// <param name="line">The line to test</param>
         /// <param name="boundary">The multipart boundary string.</param>
         /// <returns><c>true</c> if the line is the multipart boundary, <c>false</c> if not.</returns>
-        static bool IsBoundary(StringSegment line, string boundary)
+        public static bool IsBoundary(StringSegment line, string boundary)
         {
             int length = line.Length;
             return (length > 1
@@ -324,7 +324,7 @@ namespace Health.Direct.Common.Mime
         /// </summary>
         /// <param name="line">The line to test</param>
         /// <returns><c>true</c> if the line is the last multipart boundary separator, <c>false</c> otherwise.</returns>
-        static bool IsBoundaryEnd(StringSegment line)
+        public static bool IsBoundaryEnd(StringSegment line)
         {
             int length = line.Length;
             return (length > 4

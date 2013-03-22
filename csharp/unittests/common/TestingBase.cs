@@ -5,6 +5,7 @@
  Authors:
     Chris Lomonico chris.lomonico@surescripts.com
     John Theisen john.theisen@krypitq.com
+    Umesh Madan umeshma@microsoft.com
 
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -15,6 +16,8 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
+using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests
 {
@@ -116,4 +119,45 @@ namespace Health.Direct.Common.Tests
             Console.Out.WriteLine(msg);
         }
     }
+    
+    public static class AssertEx
+    {
+        public static Exception Throws(Action action)
+        {
+            try
+            { 
+                action();
+            }
+            catch(Exception ex)
+            {
+                return ex;
+            }
+            
+            Assert.True(false, "Method did not throw exception!");
+            return null;
+        }
+
+        public static T Throws<T>(Action action)
+            where T : Exception
+        {
+            try
+            {
+                try
+                {
+                    action();
+                }
+                catch(T ex)
+                {
+                    return ex;
+                }
+            }
+            catch
+            {
+            }
+                        
+            Assert.True(false, string.Format("Method did not throw exception of type {0}", typeof(T)));
+            
+            return null;
+        }
+    }   
 }

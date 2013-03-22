@@ -173,7 +173,7 @@ namespace Health.Direct.Common.Extensions
         /// </summary>
         /// <param name="serializer">This serializer</param>
         /// <param name="obj">object to serialize</param>
-        /// <returns>Serialized bytes</returns>
+        /// <returns>Serialized xml text</returns>
         public static string ToXml(this XmlSerializer serializer, object obj)
         {
             using (StringWriter writer = new StringWriter())
@@ -184,6 +184,17 @@ namespace Health.Direct.Common.Extensions
                 }
                 return writer.ToString();
             }
+        }
+
+        /// <summary>
+        /// Serialize the given object to a string. The object must meet the rules of <see cref="XmlSerializer"/>
+        /// </summary>
+        /// <param name="obj">object to serialize</param>
+        /// <returns>Serialized xml text</returns>
+        public static string ToXml(this object obj)
+        {
+            XmlSerializer serializer = new XmlSerializer(obj.GetType());
+            return serializer.ToXml(obj);
         }
         
         /// <summary>
