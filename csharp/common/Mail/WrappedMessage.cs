@@ -104,23 +104,35 @@ namespace Health.Direct.Common.Mail
                 throw new MimeException(MimeError.MissingBody);
             }
 
+            StringSegment innerMessageText = DecodeBody(message);
+            return MimeSerializer.Default.Deserialize<Message>(innerMessageText);
+        }
+        
+        static StringSegment DecodeBody(Message message)
+        {
             StringSegment innerMessageText = message.Body.SourceText;
             TransferEncoding encoding = message.GetTransferEncoding();
-            switch(encoding)
+            switch (encoding)
             {
                 default:
                     throw new MimeException(MimeError.TransferEncodingNotSupported);
-                
+
                 case TransferEncoding.SevenBit:
                     break; // Nothing to do
-                                    
+
                 case TransferEncoding.QuotedPrintable:
                     string decodedText = QuotedPrintableDecoder.Decode(innerMessageText);
                     innerMessageText = new StringSegment(decodedText);
-                    break;                
+                    break;
+                
+                case TransferEncoding.Base64:
+                    byte[] bytes = Convert.FromBase64String(innerMessageText.ToString());
+                    string textFromBytes = Encoding.ASCII.GetString(bytes);
+                    innerMessageText = new StringSegment(textFromBytes);
+                    break;                    
             }
-
-            return MimeSerializer.Default.Deserialize<Message>(innerMessageText);
+            
+            return innerMessageText;
         }
     }
 }

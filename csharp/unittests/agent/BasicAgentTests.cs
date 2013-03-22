@@ -303,6 +303,7 @@ namespace Health.Direct.Agent.Tests
                 yield return "multipart_1to.eml";
                 yield return "multipart_2to.eml";
                 yield return "Complicated.eml";
+                yield return "Attachments.eml";
             }
         }
 
