@@ -581,9 +581,9 @@ namespace Health.Direct.Common.Certificates
         public static Oid[] GetRequiredOidsForIssuedCerts(this X509Certificate2 cert)        
         {
             AnchorX509Certificate2 anchorCert = cert as AnchorX509Certificate2;
-            if (anchorCert != null)
+            if (anchorCert != null && anchorCert.HasMetadata)
             {
-                return anchorCert.RequiredOidsForIssuedCerts;
+                return anchorCert.Metadata.RequiredOids;
             }
             
             return null;
