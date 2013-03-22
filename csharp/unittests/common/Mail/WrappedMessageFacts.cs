@@ -76,6 +76,9 @@ namespace Health.Direct.Common.Tests.Mail
         [InlineData("Wrapped_Quoted.eml")]
         [InlineData("Wrapped_Quoted2.eml")]
         [InlineData("Wrapped_Quoted3.eml")]
+        [InlineData("Wrapped_Quoted4.eml")]
+        [InlineData("Wrapped_Base64.eml")]
+        [InlineData("Wrapped_Base642.eml")]
         public void TestFiles(string fileName)
         {
             string filePath = Path.Combine("Mail\\TestFiles", fileName);

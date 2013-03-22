@@ -151,6 +151,15 @@
     <Content Include="DsnTestMessages\DSNMessageOrigInReplyTo.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Mail\TestFiles\Wrapped_Base64.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Mail\TestFiles\Wrapped_Base642.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Mail\TestFiles\Wrapped_Quoted4.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Mime\TestFiles\QuotedHtml_1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

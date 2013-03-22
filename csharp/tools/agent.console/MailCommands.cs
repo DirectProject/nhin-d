@@ -52,13 +52,26 @@ namespace Health.Direct.Tools.Agent
         }
         const string SaveMailUsage = "Save the mail you constructed to the given filePath.";
 
-        [Command(Name = "Mail_SaveWrapped", Usage = SaveMailUsage)]
+        [Command(Name = "Mail_SaveWrapped", Usage = SaveWrappedUsage)]
         public void SaveWrappedMail(string[] args)
         {
             this.VerifyStarted();
             string path = args.GetRequiredValue(0);
             
             MailMessage wrapped = this.WrapMessage();
+            this.SaveMessageToFile(wrapped, args.GetRequiredValue(0));
+        }
+        const string SaveWrappedUsage = "Saves the mail you constructed, but embedded as the body of a wrapper email.";
+        
+        [Command(Name = "Mail_SaveWrapped64", Usage = SaveWrappedUsage)]
+        public void SaveWrappedMail64(string[] args)
+        {
+            this.VerifyStarted();
+            string path = args.GetRequiredValue(0);
+
+            MailMessage wrapped = this.WrapMessage();
+            wrapped.BodyEncoding = Encoding.UTF8; // This will force Transfer Encoding to be base64 instead of QuotedPrintable
+            
             this.SaveMessageToFile(wrapped, args.GetRequiredValue(0));
         }
 
