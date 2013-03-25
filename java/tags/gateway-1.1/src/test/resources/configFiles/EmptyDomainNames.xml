@@ -1,0 +1,9 @@
+<SmtpAgentConfig>
+   <Domains>
+      <AnchorStore type="Uniform" storeType="KeyStore" file="KeyStore" filePass="h3||0 wor|d" privKeyPass="pKpa$$wd"/>    
+      <Domain name=" " postmaster="postmaster@cerner.com">        
+      </Domain> 
+      <Domain name=" " postmaster="postmaster@securehealthemail.com">           
+      </Domain> 
+   </Domains> 
+</SmtpAgentConfig>
