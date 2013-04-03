@@ -34,7 +34,7 @@ public class DefaultBundleRefreshProcessorImpl_convertRawBundleToAnchorCollectio
 	
 	public void testConvertRawBundleToAnchorCollection_getFromSignedBundle_noVerification_assertAnchors() throws Exception
 	{
-		final byte[] rawBundle = TestUtils.loadBundle("signedbundle.der.eml");
+		final byte[] rawBundle = TestUtils.loadBundle("signedbundle.p7m");
 		
 		final DefaultBundleRefreshProcessorImpl processor = new DefaultBundleRefreshProcessorImpl();
 		
@@ -53,7 +53,7 @@ public class DefaultBundleRefreshProcessorImpl_convertRawBundleToAnchorCollectio
 	{
 		final X509Certificate signer = TestUtils.loadSigner("bundleSigner.der");
 		
-		final byte[] rawBundle = TestUtils.loadBundle("signedbundle.der.eml");
+		final byte[] rawBundle = TestUtils.loadBundle("signedbundle.p7m");
 		
 		final DefaultBundleRefreshProcessorImpl processor = new DefaultBundleRefreshProcessorImpl();
 		
@@ -75,7 +75,7 @@ public class DefaultBundleRefreshProcessorImpl_convertRawBundleToAnchorCollectio
 		
 		final X509Certificate signer = TestUtils.loadSigner("sm1.direct.com Root CA.der");
 		
-		final byte[] rawBundle = TestUtils.loadBundle("signedbundle.der.eml");
+		final byte[] rawBundle = TestUtils.loadBundle("signedbundle.p7m");
 		
 		final DefaultBundleRefreshProcessorImpl processor = new DefaultBundleRefreshProcessorImpl();
 		processor.setDao(dao);

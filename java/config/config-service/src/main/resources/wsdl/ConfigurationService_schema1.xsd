@@ -261,6 +261,10 @@
 
   <xs:element name="updateSettingResponse" type="tns:updateSettingResponse"/>
 
+  <xs:element name="updateTrustBundleAttributes" type="tns:updateTrustBundleAttributes"/>
+
+  <xs:element name="updateTrustBundleAttributesResponse" type="tns:updateTrustBundleAttributesResponse"/>
+
   <xs:element name="updateTrustBundleSigningCertificate" type="tns:updateTrustBundleSigningCertificate"/>
 
   <xs:element name="updateTrustBundleSigningCertificateResponse" type="tns:updateTrustBundleSigningCertificateResponse"/>
@@ -660,6 +664,20 @@
     <xs:sequence>
       <xs:element name="return" type="tns:setting" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateTrustBundleAttributes">
+    <xs:sequence>
+      <xs:element name="trustBundleId" type="xs:long"/>
+      <xs:element name="trustBundleName" type="xs:string" minOccurs="0"/>
+      <xs:element name="trustBundleURL" type="xs:string" minOccurs="0"/>
+      <xs:element name="signingCert" type="tns:certificate" minOccurs="0"/>
+      <xs:element name="trustBundleRefreshInterval" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateTrustBundleAttributesResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getDNSCount">

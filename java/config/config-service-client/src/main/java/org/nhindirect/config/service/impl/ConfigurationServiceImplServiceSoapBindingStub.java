@@ -16,7 +16,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[65];
+        _operations = new org.apache.axis.description.OperationDesc[66];
         _initOperationDesc1();
         _initOperationDesc2();
         _initOperationDesc3();
@@ -1176,23 +1176,6 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         _operations[62] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("deleteTrustBundles");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), java.lang.Long[].class, false, false);
-        param.setOmittable(true);
-        param.setNillable(true);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[63] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("updateLastUpdateError");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
         oper.addParameter(param);
@@ -1211,7 +1194,50 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
+        _operations[63] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("updateTrustBundleAttributes");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleURL"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "signingCert"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certificate"), org.nhind.config.Certificate.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleRefreshInterval"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
         _operations[64] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("deleteTrustBundles");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), java.lang.Long[].class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[65] = oper;
 
     }
 
@@ -3806,23 +3832,23 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public void updateLastUpdateError(long trustBundleId, java.util.Calendar attemptTime, org.nhind.config.BundleRefreshError error) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[63]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:DeleteTrustBundles");
+        _call.setSOAPActionURI("urn:UpdateLastUpdateError");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "deleteTrustBundles"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateLastUpdateError"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {trustBundleIds});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(trustBundleId), attemptTime, error});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -3841,23 +3867,58 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void updateLastUpdateError(long trustBundleId, java.util.Calendar attemptTime, org.nhind.config.BundleRefreshError error) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public void updateTrustBundleAttributes(long trustBundleId, java.lang.String trustBundleName, java.lang.String trustBundleURL, org.nhind.config.Certificate signingCert, int trustBundleRefreshInterval) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[64]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:UpdateLastUpdateError");
+        _call.setSOAPActionURI("urn:UpdateTrustBundleAttributes");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateLastUpdateError"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateTrustBundleAttributes"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(trustBundleId), attemptTime, error});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(trustBundleId), trustBundleName, trustBundleURL, signingCert, new java.lang.Integer(trustBundleRefreshInterval)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[65]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:DeleteTrustBundles");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "deleteTrustBundles"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {trustBundleIds});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;

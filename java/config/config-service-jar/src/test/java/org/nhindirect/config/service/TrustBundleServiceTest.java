@@ -118,6 +118,23 @@ public class TrustBundleServiceTest extends TestCase
 		verify(dao, times(1)).updateTrustBundleSigningCertificate(eq((long)1234), (X509Certificate)any());
 	}	
 	
+	public void testUpdateTrustBundleAttributes() throws Exception
+	{	
+		X509Certificate cert = mock(X509Certificate.class); 
+		
+		CertContainer container = mock(CertContainer.class);
+		when(container.getCert()).thenReturn(cert);
+		
+		Certificate confCert = mock(Certificate.class);
+		when(confCert.toCredential()).thenReturn(container);
+		
+		impl.updateTrustBundleAttributes(1234, "test bundle", "http://bundle/bundle", confCert, 8);
+		
+		verify(dao, times(1)).updateTrustBundleAttributes(eq((long)1234), eq("test bundle"), eq("http://bundle/bundle"), (X509Certificate)any(),
+				eq((int)8));
+	}	
+	
+	
 	public void testAssociateTrustBundleToDomain() throws Exception
 	{
 		impl.associateTrustBundleToDomain(1234, 5678, true, true);

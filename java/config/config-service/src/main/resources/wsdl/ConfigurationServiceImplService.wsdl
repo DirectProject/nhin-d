@@ -715,6 +715,18 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="updateTrustBundleAttributes">
+      <soap:operation soapAction="urn:UpdateTrustBundleAttributes"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
     <operation name="associateTrustBundleToDomain">
       <soap:operation soapAction="urn:AssociateTrustBundleToDomain"/>
       <input>

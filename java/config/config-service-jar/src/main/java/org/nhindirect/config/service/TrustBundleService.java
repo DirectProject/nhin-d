@@ -113,6 +113,20 @@ public interface TrustBundleService
     @WebMethod(operationName = "updateTrustBundleSigningCertificate", action = "urn:UpdateTrustBundleSigningCertificate")
     public void updateTrustBundleSigningCertificate(@WebParam(name = "trustBundleIds") long trustBundleId, 
     		@WebParam(name = "signingCert") Certificate signingCert) throws ConfigurationServiceException;  
+   
+	/**
+	 * Updates multiple attributes of a trust bundle.
+	 * @param trustBundleId  The id of the bundle to update.
+	 * @param bundleName The new bundle name.  If empty or null, then the name is not updated.  If the URL changes, a bundle refresh is forced.
+	 * @param bundleUrl The new bundle url.  If empty or null, then the url is not updated.
+	 * @param signingCert The new certificate used to sign the bundle.  The attributes will be applied even if the signingCert is null.
+	 * @param refreshInterval The new refresh interval.
+	 * @throws ConfigurationServiceException
+	 */
+    @WebMethod(operationName = "updateTrustBundleAttributes", action = "urn:UpdateTrustBundleAttributes")
+	public void updateTrustBundleAttributes(@WebParam(name = "trustBundleId") long trustBundleId, @WebParam(name = "trustBundleName") String bundleName, 
+			@WebParam(name = "trustBundleURL") String bundleUrl, @WebParam(name = "signingCert") Certificate signingCert,
+			 @WebParam(name = "trustBundleRefreshInterval") int refreshInterval) throws ConfigurationServiceException;
     
 	/**
 	 * Associates a domain to a trust bundle.  Bundle associates are directional and may be set as incoming only, outgoing only,
@@ -157,7 +171,7 @@ public interface TrustBundleService
 	/**
 	 * Gets all trust bundles associated with a domain
 	 * @param domainId The domain id
-	 * @param fetchAnchors Indicates if the anchors should be returned with each bundle.  When only the trust bundle names are needed, it is desireable
+	 * @param fetchAnchors Indicates if the anchors should be returned with each bundle.  When only the trust bundle names are needed, it is desirable
 	 * to suppress returning the list of anchors for efficiency.
 	 * @return Collection of all trust bundles associated with a specific domain.
 	 * @throws ConfigurationServiceException

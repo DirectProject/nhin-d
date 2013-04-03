@@ -107,6 +107,18 @@ public interface TrustBundleDao
 	public void updateTrustBundleSigningCertificate(long trustBundleId, X509Certificate signingCert) throws ConfigurationStoreException;
 	
 	/**
+	 * Updates multiple attributes of a trust bundle.
+	 * @param trustBundleId  The id of the bundle to update.
+	 * @param bundleName The new bundle name.  If empty or null, then the name is not updated.
+	 * @param bundleUrl The new bundle url.  If empty or null, then the url is not updated.
+	 * @param signingCert The new certificate used to sign the bundle.  The attributes will be applied even if the signingCert is null.
+	 * @param refreshInterval The new refreshInterval
+	 * @throws ConfigurationStoreException
+	 */
+	public void updateTrustBundleAttributes(long trustBundleId, String bundleName, String bundleUrl, X509Certificate signingCert,
+			int refreshInterval) throws ConfigurationStoreException;
+	
+	/**
 	 * Associates a domain to a trust bundle.  Bundle associates are directional and may be set as incoming only, outgoing only,
 	 * or incoming and outgoing.
 	 * @param domainId The id of the domain.
