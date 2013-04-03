@@ -282,6 +282,7 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	///CLOVER:ON
 	}
 
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -363,7 +364,10 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 			if (existingBundle == null)
 				throw new ConfigurationStoreException("Trust bundle does not exist");
 			
-			existingBundle.setSigningCertificateData(signingCert.getEncoded());
+			if (signingCert == null)
+				existingBundle.setSigningCertificateData(null);
+			else
+				existingBundle.setSigningCertificateData(signingCert.getEncoded());
 			
 			entityManager.persist(existingBundle);
 			entityManager.flush();
@@ -381,6 +385,50 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+    @Transactional(readOnly = false)
+	public void updateTrustBundleAttributes(long trustBundleId, String bundleName, String bundleUrl, X509Certificate signingCert,
+			int refreshInterval) throws ConfigurationStoreException
+	{
+    	validateState();
+    	
+    	try
+    	{
+			final TrustBundle existingBundle = this.getTrustBundleById(trustBundleId);
+			if (existingBundle == null)
+				throw new ConfigurationStoreException("Trust bundle does not exist");
+			
+			if (signingCert == null)
+				existingBundle.setSigningCertificateData(null);
+			else
+				existingBundle.setSigningCertificateData(signingCert.getEncoded());
+					
+			existingBundle.setRefreshInterval(refreshInterval);
+			
+			if (bundleName != null && !bundleName.isEmpty())
+				existingBundle.setBundleName(bundleName);
+	
+			if (bundleUrl != null && !bundleUrl.isEmpty())
+				existingBundle.setBundleURL(bundleUrl);			
+			
+			entityManager.persist(existingBundle);
+			entityManager.flush();
+    	}
+    	catch (ConfigurationStoreException cse)
+    	{
+    		throw cse;
+    	}
+    	///CLOVER:OFF
+    	catch (Exception e)
+    	{
+    		throw new ConfigurationStoreException("Failed to update bundle last refresh error.", e);
+    	}	
+    	///CLOVER:ON
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */

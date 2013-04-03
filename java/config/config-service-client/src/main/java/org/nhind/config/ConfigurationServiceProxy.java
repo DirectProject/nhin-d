@@ -422,16 +422,22 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     return configurationService.getCertificate(owner, thumbprint, options);
   }
   
-  public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
-    if (configurationService == null)
-      _initConfigurationServiceProxy();
-    configurationService.deleteTrustBundles(trustBundleIds);
-  }
-  
   public void updateLastUpdateError(long trustBundleId, java.util.Calendar attemptTime, org.nhind.config.BundleRefreshError error) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
     if (configurationService == null)
       _initConfigurationServiceProxy();
     configurationService.updateLastUpdateError(trustBundleId, attemptTime, error);
+  }
+  
+  public void updateTrustBundleAttributes(long trustBundleId, java.lang.String trustBundleName, java.lang.String trustBundleURL, org.nhind.config.Certificate signingCert, int trustBundleRefreshInterval) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.updateTrustBundleAttributes(trustBundleId, trustBundleName, trustBundleURL, signingCert, trustBundleRefreshInterval);
+  }
+  
+  public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    configurationService.deleteTrustBundles(trustBundleIds);
   }
   
   

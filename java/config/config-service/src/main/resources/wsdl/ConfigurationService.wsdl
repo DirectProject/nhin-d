@@ -369,6 +369,12 @@
   <message name="updateTrustBundleSigningCertificateResponse">
     <part name="parameters" element="tns:updateTrustBundleSigningCertificateResponse"/>
   </message>
+  <message name="updateTrustBundleAttributes">
+    <part name="parameters" element="tns:updateTrustBundleAttributes"/>
+  </message>
+  <message name="updateTrustBundleAttributesResponse">
+    <part name="parameters" element="tns:updateTrustBundleAttributesResponse"/>
+  </message>
   <message name="associateTrustBundleToDomain">
     <part name="parameters" element="tns:associateTrustBundleToDomain"/>
   </message>
@@ -695,6 +701,11 @@
     <operation name="updateTrustBundleSigningCertificate">
       <input message="tns:updateTrustBundleSigningCertificate"/>
       <output message="tns:updateTrustBundleSigningCertificateResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateTrustBundleAttributes">
+      <input message="tns:updateTrustBundleAttributes"/>
+      <output message="tns:updateTrustBundleAttributesResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
     <operation name="associateTrustBundleToDomain">

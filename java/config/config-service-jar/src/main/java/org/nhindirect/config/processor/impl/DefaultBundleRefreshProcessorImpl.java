@@ -247,6 +247,7 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 
 			bundle.setTrustBundleAnchors(newAnchors);
 			dao.updateTrustBundleAnchors(bundle.getId(), processAttempStart, newAnchors, checkSum);
+			dao.updateLastUpdateError(bundle.getId(), processAttempStart, BundleRefreshError.SUCCESS);
 		}
 		catch (ConfigurationStoreException e) 
 		{ 

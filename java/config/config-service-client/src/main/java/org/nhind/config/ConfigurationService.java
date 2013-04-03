@@ -71,6 +71,7 @@ public interface ConfigurationService extends java.rmi.Remote {
     public void addCertificates(org.nhind.config.Certificate[] certs) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.DnsRecord[] getDNSByRecordIds(java.lang.Long[] recordIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.Certificate getCertificate(java.lang.String owner, java.lang.String thumbprint, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
-    public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void updateLastUpdateError(long trustBundleId, java.util.Calendar attemptTime, org.nhind.config.BundleRefreshError error) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
+    public void updateTrustBundleAttributes(long trustBundleId, java.lang.String trustBundleName, java.lang.String trustBundleURL, org.nhind.config.Certificate signingCert, int trustBundleRefreshInterval) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
+    public void deleteTrustBundles(java.lang.Long[] trustBundleIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
 }

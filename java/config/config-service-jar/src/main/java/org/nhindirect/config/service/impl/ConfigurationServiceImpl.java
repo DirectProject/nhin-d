@@ -894,6 +894,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 		trustBundleSvc.updateTrustBundleSigningCertificate(trustBundleId, signingCert);
 	}
 
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateTrustBundleAttributes(long trustBundleId, String bundleName, String bundleUrl, Certificate signingCert,
+			 int refreshInterval) throws ConfigurationServiceException
+	{
+		trustBundleSvc.updateTrustBundleAttributes(trustBundleId, bundleName, bundleUrl, signingCert, refreshInterval);
+	}
+	
     /**
      * {@inheritDoc}
      */
