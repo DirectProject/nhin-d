@@ -394,25 +394,27 @@ public class SMIMECryptographerImpl implements Cryptographer
             
             SMIMEEnveloped m = new SMIMEEnveloped(encryptedEntity);            
             
-            X509CertificateEx decryptCert = decryptingCertificates.iterator().next();
-            
-            RecipientId recId = generateRecipientSelector(decryptCert);
+            for (X509CertificateEx decryptCert : decryptingCertificates)
+            {   
+	            RecipientId recId = generateRecipientSelector(decryptCert);
+		
+		        RecipientInformationStore recipients = m.getRecipientInfos();
+		        RecipientInformation recipient = recipients.get(recId);	
+		        if (recipient == null)
+		        	continue;
 	
-	        RecipientInformationStore recipients = m.getRecipientInfos();
-	        RecipientInformation recipient = recipients.get(recId);	
-	        	        	        	       
-
-	        byte[] decryptedPayload = recipient.getContent(decryptCert.getPrivateKey(), CryptoExtensions.getJCEProviderName());
-	        
-            if (LOGGER.isDebugEnabled())
-            {	
-            	writePostDecrypt(decryptedPayload);
-            }   
-	        
-            ByteArrayInputStream inStream = new ByteArrayInputStream(decryptedPayload);
-            
-	        retEntity = new MimeEntity(inStream);
-	        
+		        byte[] decryptedPayload = recipient.getContent(decryptCert.getPrivateKey(), CryptoExtensions.getJCEProviderName());
+		        
+	            if (LOGGER.isDebugEnabled())
+	            {	
+	            	writePostDecrypt(decryptedPayload);
+	            }   
+		        
+	            ByteArrayInputStream inStream = new ByteArrayInputStream(decryptedPayload);
+	            
+		        retEntity = new MimeEntity(inStream);
+		        break;
+            }
         }
         catch (MessagingException e)
         {
@@ -423,6 +425,11 @@ public class SMIMECryptographerImpl implements Cryptographer
         	throw new MimeException(MimeError.Unexpected, e);
         }
 
+        if (retEntity == null)
+        {
+        	throw new NHINDException(MimeError.Unexpected, "None of the the provided decryption certs were found in message's RecipientsInfo set.");
+        }
+        
         return retEntity;
     }
 

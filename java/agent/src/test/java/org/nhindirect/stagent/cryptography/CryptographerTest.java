@@ -12,12 +12,14 @@ import javax.mail.internet.MimeMultipart;
 import junit.framework.TestCase;
 
 import org.nhindirect.stagent.CryptoExtensions;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cryptography.DigestAlgorithm;
 import org.nhindirect.stagent.cryptography.EncryptionAlgorithm;
 import org.nhindirect.stagent.cryptography.SMIMECryptographerImpl;
 import org.nhindirect.stagent.cryptography.SignedEntity;
 import org.nhindirect.stagent.mail.MimeEntity;
+import org.nhindirect.stagent.mail.MimeError;
 import org.nhindirect.stagent.mail.MimeStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
 import org.nhindirect.stagent.utils.TestUtils;
@@ -81,6 +83,7 @@ public class CryptographerTest extends TestCase
 		assertTrue(Arrays.equals(decryEntityBytes, entityBytes));
 		
 	}
+	
 	
 	public void testEncryptAndDecryptMultipartEntityAES128() throws Exception
 	{
@@ -224,4 +227,64 @@ public class CryptographerTest extends TestCase
 
 	}
 
+	public void testEncryptWithSingleCert_wrongDecryptCert_assertFailDecrypt() throws Exception
+	{
+		X509Certificate cert = TestUtils.getExternalCert("user1");
+		
+		SMIMECryptographerImpl cryptographer = new SMIMECryptographerImpl();
+		
+		MimeEntity entity = new MimeEntity();
+		entity.setText("Hello world.");
+		entity.setHeader(MimeStandard.ContentTypeHeader, "text/plain");
+		entity.setHeader(MimeStandard.ContentTransferEncodingHeader, "7bit");
+		
+		
+		MimeEntity encEntity = cryptographer.encrypt(entity, cert);
+		
+		assertNotNull(encEntity);
+		
+		X509CertificateEx certex = TestUtils.getInternalCert("altnameonly");
+		
+		boolean exceptionOccured = false;
+		try
+		{
+			cryptographer.decrypt(encEntity, certex);
+		}
+		catch (NHINDException e)
+		{
+			if (e.getError().equals(MimeError.Unexpected));
+				exceptionOccured = true;
+		}
+		assertTrue(exceptionOccured);
+	}
+	
+	public void testEncryptWithSingleCert_decryptWithMutlipeCerts_onlyOneCertCorrect_assertDecrypted() throws Exception
+	{
+		X509Certificate cert = TestUtils.getExternalCert("user1");
+		
+		SMIMECryptographerImpl cryptographer = new SMIMECryptographerImpl();
+		
+		MimeEntity entity = new MimeEntity();
+		entity.setText("Hello world.");
+		entity.setHeader(MimeStandard.ContentTypeHeader, "text/plain");
+		entity.setHeader(MimeStandard.ContentTransferEncodingHeader, "7bit");
+		
+		
+		MimeEntity encEntity = cryptographer.encrypt(entity, cert);
+		
+		assertNotNull(encEntity);
+		
+		X509CertificateEx certex1 = TestUtils.getInternalCert("altnameonly");
+		X509CertificateEx certex2 = TestUtils.getInternalCert("user1");
+
+		MimeEntity decryEntity = cryptographer.decrypt(encEntity, Arrays.asList(certex1, certex2));
+
+		assertNotNull(decryEntity);
+		
+		byte[] decryEntityBytes = EntitySerializer.Default.serializeToBytes(decryEntity);
+		byte[] entityBytes = EntitySerializer.Default.serializeToBytes(entity);
+		
+		assertTrue(Arrays.equals(decryEntityBytes, entityBytes));
+	}	
+	
 }
