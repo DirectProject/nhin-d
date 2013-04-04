@@ -71,6 +71,7 @@ Elements:
 |ConfigURL|URL|A URL to the location of the SMTPAgent configuration information.  This information is forwarded to the SmtpAgentFactory to locate and parse the configuration|
 |MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
 |AutoDSNFailueCreation|Comma Delimited String|Determines if DSN bounce messages should be automatically created for failed security and trust recipients.  Defaults to ReliableAndTimely if this parameter is not present.|
+|UseOutgoingPolicyForIncomingNotifications|Indicates if the outbound trust policy should be applied to incoming notification messages.  Defaults to false if this parameter is not present.|
 
 The above example tell James to send all messages to the agent using the *All* matcher.  More on matchers later.
 
@@ -130,6 +131,21 @@ Messages that are not trusted by a receiving HISP do not receive any type of pos
 h3. Delivery Failure
 
 The gateway overrides the default James LocalDelivery mailet with the TimelyAndReliableLocalDelivery mailet to generate DSN bounce messages if the message cannot be delivered to the local users mailbox.  It also adds the DirectBounce mailet to the 'local-address-error' processor to generate a DSN bounce if the local mail account does not exist.  
+
+h2. Incoming Notification Policy
+
+Trust can be configured to be directional meaning trust can be configured to allow either outbound only or inbound only messages to be trusted.  If directional trust is set for outbound only, issues can occur with message monitoring because the incoming MDN and DSN notification messages will be marked as not trusted.  To allow message monitoring and QoS in general to operate properly, notification (and only notifications messages) must be allowed to flow through the system as trusted messages.  However the agent needs to ensure that only notification messages that are generated from trusted outbound destinations are allowed to marked as trusted.
+
+The security and trust mailet supports the setting UseOutgoingPolicyForIncomingNotifications to allow incoming notification messages to be marked as trusted.  The following is sample configuration:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=securehealthemail.com,cerner.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>http://localhost:8081/config/ConfigurationService</ConfigURL> 
+       <UseOutgoingPolicyForIncomingNotifications>true</UseOutgoingPolicyForIncomingNotifications>      
+   </mailet>
+{code}
+
+For backward behavioural passivity, the mailet defaults this parameter to false if it does not exist in the mailet configuration.  If you system will be configured with outbound only directional trust, it is recommended that this parameter be present and set to true.
 
 h2. SuppressAndTrackAggregate Mailet
 
