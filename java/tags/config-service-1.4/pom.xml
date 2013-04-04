@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-service</artifactId>
-	<version>1.5-SNAPSHOT</version>
+	<version>1.4</version>
 	<packaging>war</packaging>
 	<name>NHIN-Direct Configuration Service</name>
 	<description>NHIN-Direct Configuration Web Services</description>
