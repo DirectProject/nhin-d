@@ -21,6 +21,8 @@
     Bug Fixes
     
     * {{{http://code.google.com/p/nhin-d/issues/detail?id=208}208}}: Fixed message wrappers when a content encoding or other parameters are present with the rfc822 content type.
+    
+    * Fixed issue where multiple certs encrypted message, but the receiving HISP filters usable certs to decrypt.
 
 {1.5.5}
 
