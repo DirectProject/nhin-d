@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<quartz xmlns="http://quartznet.sourceforge.net/JobSchedulingData"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 				version="1.0"
+				overwrite-existing-jobs="true">
+
+
+  <job>
+    <job-detail>
+      <name>MdnProcessedTimeout</name>
+      <group>MdnProcessedGroup</group>
+      <description>Create failed DSN's for timed out process MDN's.</description>
+      <job-type>Health.Direct.MdnMonitor.MdnProcessedTimeout, Health.Direct.MdnMonitor</job-type>
+      <volatile>false</volatile>
+      <durable>true</durable>
+      <recover>false</recover>
+      <job-data-map>
+        <entry>
+          <key>BulkCount</key>
+          <value>100</value>
+        </entry>
+        <entry>
+          <key>ExpiredMinutes</key>
+          <value>10</value>
+        </entry>
+        <entry>
+          <key>PickupFolder</key>
+          <value>c:\inetpub\mailroot\Pickup</value>
+        </entry>
+      </job-data-map>
+    </job-detail>
+
+    <trigger>
+      <simple>
+        <name>MdnProcessedTimeoutTrigger</name>
+        <group>MdnProcessedTimeoutTriggerGroup</group>
+        <description>Continuously trigger the MdnProcessedTimeout job.</description>
+        <misfire-instruction>SmartPolicy</misfire-instruction>
+        <volatile>false</volatile>
+        <job-name>MdnProcessedTimeout</job-name>
+        <job-group>MdnProcessedGroup</job-group>
+        <repeat-count>RepeatIndefinitely</repeat-count>       
+        <repeat-interval>10000</repeat-interval><!-- 10 seconds-->
+      </simple>
+    </trigger>
+  </job>
+
+  <job>
+    <job-detail>
+      <name>MdnDispatchedTimeout</name>
+      <group>MdnDispatchedGroup</group>
+      <description>Create failed mdn's for timed out dispatched mdn's.</description>
+      <job-type>Health.Direct.MdnMonitor.MdnDispatchedTimeout, Health.Direct.MdnMonitor</job-type>
+      <volatile>false</volatile>
+      <durable>true</durable>
+      <recover>false</recover>
+      <job-data-map>        
+        <entry>
+          <key>BulkCount</key>
+          <value>100</value>
+        </entry>
+        <entry>
+          <key>ExpiredMinutes</key>
+          <value>10</value>
+        </entry>        
+        <entry>
+          <key>PickupFolder</key>
+          <value>c:\inetpub\mailroot\Pickup</value>
+        </entry>
+      </job-data-map>
+    </job-detail>
+
+    <trigger>
+      <simple>
+        <name>MdnDispatchedTimeoutTrigger</name>
+        <group>MdnDispatchedTimeoutTriggerGroup</group>
+        <description>Continuously trigger the MdnDispatchedTimeout job.</description>
+        <misfire-instruction>SmartPolicy</misfire-instruction>
+        <volatile>false</volatile>
+        <job-name>MdnDispatchedTimeout</job-name>
+        <job-group>MdnDispatchedGroup</job-group>
+        <repeat-count>RepeatIndefinitely</repeat-count>
+        <repeat-interval>10000</repeat-interval><!-- 10 seconds-->
+      </simple>
+    </trigger>
+  </job>
+  
+  <job>
+    <job-detail>
+      <name>CleanTimeOut</name>
+      <group>CleanTimeOutGroup</group>
+      <description>Clean up incomplete MDNs</description>
+      <job-type>Health.Direct.MdnMonitor.CleanTimeOut, Health.Direct.MdnMonitor</job-type>
+      <volatile>false</volatile>
+      <durable>true</durable>
+      <recover>false</recover>
+      <job-data-map>
+        <entry>
+          <key>Days</key>
+          <value>1</value>
+        </entry>
+      </job-data-map>
+    </job-detail>
+
+    <trigger>
+      <simple>
+        <name>CleanTimeOutTrigger</name>
+        <group>CleanTimeOuttriggerGroup</group>
+        <description>Continuously trigger the CleanTimeOut job.</description>
+        <misfire-instruction>SmartPolicy</misfire-instruction>
+        <volatile>false</volatile>
+        <job-name>CleanTimeOut</job-name>
+        <job-group>CleanTimeOutGroup</job-group>
+        <repeat-count>RepeatIndefinitely</repeat-count>
+        <repeat-interval>60000</repeat-interval><!-- 1 minute-->
+      </simple>
+    </trigger>
+  </job>
+
+
+
+
+  <job>
+    <job-detail>
+      <name>CleanDispositions</name>
+      <group>CleanDispositionsGroup</group>
+      <description>Clean up completed MDNs</description>
+      <job-type>Health.Direct.MdnMonitor.CleanDispositions, Health.Direct.MdnMonitor</job-type>
+      <volatile>false</volatile>
+      <durable>true</durable>
+      <recover>false</recover>
+      <job-data-map>
+        <entry>
+          <key>Days</key>
+          <value>1</value>
+        </entry>
+      </job-data-map>
+    </job-detail>
+
+    <trigger>
+      <simple>
+        <name>CleanDispositionsTrigger</name>
+        <group>CleanDispositionstriggerGroup</group>
+        <description>Continuously trigger the CleanDispositions job.</description>
+        <misfire-instruction>SmartPolicy</misfire-instruction>
+        <volatile>false</volatile>
+        <job-name>CleanDispositions</job-name>
+        <job-group>CleanDispositionsGroup</job-group>
+        <repeat-count>RepeatIndefinitely</repeat-count>
+        <repeat-interval>60000</repeat-interval><!-- 1 minute-->
+      </simple>
+    </trigger>
+  </job>
+  
+</quartz>
+
