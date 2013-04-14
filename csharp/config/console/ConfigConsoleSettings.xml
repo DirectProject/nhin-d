@@ -20,6 +20,9 @@
   <BlobManager>
     <Url>http://localhost/ConfigService/SettingsManager.svc/Blobs</Url>
   </BlobManager>
+  <MdnMonitor>
+    <Url>http://localhost/ConfigService/MonitorService.svc/Dispositions</Url>
+  </MdnMonitor>
   <BundleManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
   </BundleManager>
