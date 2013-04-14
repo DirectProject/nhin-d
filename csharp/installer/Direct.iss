@@ -612,7 +612,7 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText');  
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'AnchorsText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'BundleText');
 
   Result := True;
 end;
