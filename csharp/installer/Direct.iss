@@ -23,7 +23,7 @@
 #include "InnoScripts\WindowsServicesUtils.iss"
 #include "InnoScripts\GetCommandLineParams.iss"
 
- 
+#define Configuration = "Debug" 
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -583,7 +583,8 @@ begin
 end;
 
    
-function SetGatewayConfigOnClick(Sender: TWizardPage): Boolean;
+   
+function SetGatewayConfigPageOneOnClick(Sender: TWizardPage): Boolean;
 var                
   configFile  : String;
 begin
@@ -592,17 +593,30 @@ begin
   configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domain', 'DomainText');
+  
+  Result := True;
+end;
+
+function SetGatewayConfigPageTwoOnClick(Sender: TWizardPage): Boolean;
+var                
+  configFile  : String;
+begin
+  
+  // Setting SmtpAgentConfig for Gateway
+  configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/DomainManager/Url', 'DomainManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/AddressManager/Url', 'AddressManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url', 'AnchorsText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText');  
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'AnchorsText');
 
   Result := True;
 end;
 
-function SetConfigSmtpAdminEndpointsOnClick(Sender: TWizardPage): Boolean;
+function SetConfigAdminPageThreeEndpointsOnClick(Sender: TWizardPage): Boolean;
 var                
   configFile  : String;
 begin
@@ -620,7 +634,7 @@ end;
 
 
 
-function SetConfigConsoleEndpointsOnClick(Sender: TwizardPage): Boolean;
+function SetConfigConsolePageOneEndpointsOnClick(Sender: TwizardPage): Boolean;
 var
   configFile : String;
 begin
@@ -632,14 +646,28 @@ begin
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/CertificateManager/Url', 'PrivateCertsText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/AnchorManager/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/DnsRecordManager/Url', 'DnsRecordManagerText');
-  WriteConfigItem(Sender, configFile, '/ConsoleSettings/PropertyManager/Url', 'PropertyText');
-  WriteConfigItem(Sender, configFile, '/ConsoleSettings/BlobManager/Url', 'BlobText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/MdnMonitor/Url', 'MdnMonitorText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/BundleManager/Url', 'BundleText');
 
   Result := True;
 
 end;
 
+
+
+function SetConfigConsolePageTwoEndpointsOnClick(Sender: TwizardPage): Boolean;
+var
+  configFile : String;
+begin
+  // Setting ConfigConsoleSettings.xml
+  configFile := ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
+         
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/PropertyManager/Url', 'PropertyText');
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/BlobManager/Url', 'BlobText');
+  
+  Result := True;
+
+end;
 
 
 
@@ -675,6 +703,7 @@ begin
     RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
     RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
+    RunTestConnect(GatewayAdminPage, 'BundleLabel', 'BundleText');
   except         
     RaiseException(GetExceptionMessage);
   finally
@@ -684,7 +713,7 @@ begin
 end;
 
 
-procedure ConfigConsoleOnClick (Sender: TObject);
+procedure ConfigConsolePageOneOnClick (Sender: TObject);
 var
   EndPointsButton: TNewButton;
   buttonCaption : String;
@@ -700,9 +729,30 @@ begin
     RunTestConnect(GatewayAdminPage, 'DnsRecordManagerLabel', 'DnsRecordManagerText');
     RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
+    RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
+    RunTestConnect(GatewayAdminpage, 'BundleLabel', 'BundleText');
+  except
+    RaiseException(GetExceptionMessage);
+  finally
+    EndPointsButton.Caption := buttonCaption;
+    EndPointsButton.Update;
+  end;
+end;
+
+
+procedure ConfigConsolePageTwoOnClick (Sender: TObject);
+var
+  EndPointsButton: TNewButton;
+  buttonCaption : String;
+  GatewayAdminPage : TWizardPage;
+begin
+  EndPointsButton := TNewButton(Sender);
+  GatewayAdminPage := TWizardPage(EndPointsButton.Owner);
+  buttonCaption := EndPointsButton.Caption;
+  EndPointsButton.Caption := 'Checking...';
+  try    
     RunTestConnect(GatewayAdminPage, 'PropertyLabel', 'PropertyText');
     RunTestConnect(GatewayAdminPage, 'BlobLabel', 'BlobText');
-    RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
   except
     RaiseException(GetExceptionMessage);
   finally
@@ -867,12 +917,9 @@ end;
 
 
 
-
-
-procedure GatewayAdminPageOnActivate(Sender: TWizardPage);
+          
+procedure GatewayAdminPageOneOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText: TNewEdit;
-  MdnMonitorLabel:  TNewStaticText;
   DomainText: TNewEdit;
   configFile : String;
 begin
@@ -880,7 +927,18 @@ begin
   configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   DomainText := TNewEdit(Sender.FindComponent('DomainText'));
   DomainText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Domain');
+       
+end; 
 
+
+procedure GatewayAdminPageTwoOnActivate(Sender: TWizardPage);
+var
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText: TNewEdit;
+  configFile : String;
+begin
+
+  configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
   DomainManagerText := TNewEdit(Sender.FindComponent('DomainManagerText'));
   DomainManagerText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/DomainManager/Url');
 
@@ -891,7 +949,7 @@ begin
   PrivateCertsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url');
   
   AnchorsText := TNewEdit(Sender.FindComponent('AnchorsText'));
-  AnchorsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url');
+  AnchorsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url');
   
   DnsResolverIpText := TNewEdit(Sender.FindComponent('DnsResolverIpText'));
   DnsResolverIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
@@ -899,11 +957,14 @@ begin
   MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
   MdnMonitorText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/MdnMonitor/Url');
 
+  BundleText := TNewEdit(Sender.FindComponent('BundleText'));
+  BundleText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url');
+
 end; 
 
 
 
-procedure ConfigSmtpAdminPageOnActivate(Sender: TWizardPage);
+procedure GatewayAdminPageThreeOnActivate(Sender: TWizardPage);
 var
   PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
   configFile : String;
@@ -929,10 +990,9 @@ end;
 
 
 
-procedure ConfigConsolePageOnActivate(Sender: TWizardPage);
+procedure ConfigConsolePageOneOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText: TNewEdit;
-  MdnMonitorLabel:  TNewStaticText;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText, BundleText: TNewEdit;
   configFile : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
@@ -951,6 +1011,22 @@ begin
 
   AnchorsText := TNewEdit(Sender.FindComponent('AnchorsText'));
   AnchorsText.Text := GetConfigSetting(configFile, '/ConsoleSettings/AnchorManager/Url');
+                          
+  MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
+  MdnMonitorText.Text := GetConfigSetting(configFile, '/ConsoleSettings/MdnMonitor/Url');
+
+  BundleText := TNewEdit(Sender.FindComponent('BundleText'));
+  BundleText.Text := GetConfigSetting(configFile, '/ConsoleSettings/BundleManager/Url');
+end;
+
+
+
+procedure ConfigConsolePageTwoOnActivate(Sender: TWizardPage);
+var
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText, BundleText: TNewEdit;
+  configFile : String;
+begin
+  configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
 
   PropertyText := TNewEdit(Sender.FindComponent('PropertyText'));
   PropertyText.Text := GetConfigSetting(configFile, '/ConsoleSettings/PropertyManager/Url');
@@ -958,10 +1034,8 @@ begin
   BlobText := TNewEdit(Sender.FindComponent('BlobText'));
   BlobText.Text := GetConfigSetting(configFile, '/ConsoleSettings/BlobManager/Url');
 
-  MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
-  MdnMonitorText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/MdnMonitor/Url');
-
 end;
+
 
 
 
@@ -1114,8 +1188,9 @@ end;
 
 procedure GatewayAdminHelpButtonOnClick(Sender: TObject);
 begin
-  MsgBox('Part I configures Domains and endpoints.'  #13#10 +
-    'Part II configures message folders and SMTP pickup up folder.' #13#10 +
+  MsgBox('Part I configures Domains' #13#10 +
+    'Part II configures config store endpoints.'  #13#10 +
+    'Part III configures message folders and SMTP pickup up folder.' #13#10 +
     'Note: Both sending messges to SMTP server and dropping in the pickup folder are supported for sending messages.' #13#10 +
     'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
 end;
@@ -1254,166 +1329,201 @@ end;
 
 
 
-
-
-function CreateGatewayWizardPage(pageBefore: TWizardPage): TWizardPage;
+function CreateGatewayWizardPageOne(pageBefore: TWizardPage): TWizardPage;
 var
-  GatewayAdminPage: TWizardPage;
+  GatewayAdminPageOne: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel, MdnMonitorLabel: TNewStaticText;
+  DomainLabel: TNewStaticText;
   DomainText : TNewEdit;
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText: TNewEdit;
-  
+   
 begin
-    GatewayAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
+    GatewayAdminPageOne := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
      
-    HelpButton := TNewButton.Create(GatewayAdminPage);      
-    HelpButton.Left := GatewayAdminPage.Surface.Width - ScaleX(20);
+    HelpButton := TNewButton.Create(GatewayAdminPageOne);      
+    HelpButton.Left := GatewayAdminPageOne.Surface.Width - ScaleX(20);
     HelpButton.Width := ScaleX(20);
     HelpButton.Height := ScaleY(20);   
     HelpButton.Caption := '?';
     HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
-    HelpButton.Parent := GatewayAdminPage.Surface;  
+    HelpButton.Parent := GatewayAdminPageOne.Surface;  
     
     //Set Domains
-    DomainLabel := TNewStaticText.Create(GatewayAdminPage);
+    DomainLabel := TNewStaticText.Create(GatewayAdminPageOne);
     DomainLabel.Name := 'DomainLabel';
     DomainLabel.Caption := 'Domain Name: ';
-    DomainLabel.Parent := GatewayAdminPage.Surface;
+    DomainLabel.Parent := GatewayAdminPageOne.Surface;
                               
-    DomainText := TNewEdit.Create(GatewayAdminPage);
+    DomainText := TNewEdit.Create(GatewayAdminPageOne);
     DomainText.Name := 'DomainText';
     DomainText.Top := HelpButton.Top;
     DomainText.Left := DomainLabel.Width + ScaleX(8);
-    DomainText.Width := GatewayAdminPage.SurfaceWidth - ScaleX(20) - HelpButton.Width - DomainLabel.Width;
-    DomainText.Parent := GatewayAdminPage.Surface;
+    DomainText.Width := GatewayAdminPageOne.SurfaceWidth - ScaleX(20) - HelpButton.Width - DomainLabel.Width;
+    DomainText.Parent := GatewayAdminPageOne.Surface;
 
+    GatewayAdminPageOne.OnActivate := @GatewayAdminPageOneOnActivate;
+    GatewayAdminPageOne.OnNextButtonClick := @SetGatewayConfigPageOneOnClick;
+    GatewayAdminPageOne.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
+
+    Result := GatewayAdminPageOne;
+end;
+
+function CreateGatewayWizardPageTwo(pageBefore: TWizardPage): TWizardPage;
+var
+  GatewayAdminPageTwo: TWizardPage;
+  HelpButton, EndPointsButton: TNewButton;
+  DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel, MdnMonitorLabel, BundleLabel: TNewStaticText;
+  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText : TNewEdit;
+  
+begin
+    GatewayAdminPageTwo := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II', '');
+     
+    HelpButton := TNewButton.Create(GatewayAdminPageTwo);      
+    HelpButton.Left := GatewayAdminPageTwo.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);   
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
+    HelpButton.Parent := GatewayAdminPageTwo.Surface;  
+    
+    
     //Test button
-    EndPointsButton := TNewButton.Create(GatewayAdminPage);
-    EndPointsButton.Top :=  DomainLabel.Top + DomainLabel.Height + ScaleY(11);
+    EndPointsButton := TNewButton.Create(GatewayAdminPageTwo);
+    EndPointsButton.Top :=  HelpButton.Top;
     EndPointsButton.Caption := 'Test End Points:';
-    EndPointsButton.Width :=  GatewayAdminPage.SurfaceWidth div 4;
+    EndPointsButton.Width :=  GatewayAdminPageTwo.SurfaceWidth div 4;
     EndPointsButton.OnClick := @GatewayOnClick;
-    EndPointsButton.Parent := GatewayAdminPage.Surface;
+    EndPointsButton.Parent := GatewayAdminPageTwo.Surface;
 
     //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.       
-    PrivateCertsLabel := TNewStaticText.Create(GatewayAdminPage);
+    PrivateCertsLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     PrivateCertsLabel.Caption := 'Certificate Resolver: ';
     PrivateCertsLabel.Width := PrivateCertsLabel.Width + ScaleX(4);
 
     //Set Domain Manager
-    DomainManagerLabel := TNewStaticText.Create(GatewayAdminPage);
+    DomainManagerLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     DomainManagerLabel.Name := 'DomainManagerLabel';
     DomainManagerLabel.Top :=  EndPointsButton.Top + EndPointsButton.Height + ScaleY(11);
     DomainManagerLabel.Caption := 'Domain Manager: ';
-    DomainManagerLabel.Parent := GatewayAdminPage.Surface;
+    DomainManagerLabel.Parent := GatewayAdminPageTwo.Surface;
                               
-    DomainManagerText := TNewEdit.Create(GatewayAdminPage);
+    DomainManagerText := TNewEdit.Create(GatewayAdminPageTwo);
     DomainManagerText.Name := 'DomainManagerText';
     DomainManagerText.Top := DomainManagerLabel.Top;
     DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(4);
-    DomainManagerText.Width := GatewayAdminPage.SurfaceWidth - PrivateCertsLabel.Width - ScaleX(4);
-    DomainManagerText.Parent := GatewayAdminPage.Surface;
+    DomainManagerText.Width := GatewayAdminPageTwo.SurfaceWidth - PrivateCertsLabel.Width - ScaleX(4);
+    DomainManagerText.Parent := GatewayAdminPageTwo.Surface;
 
 
     //Set Address Manager
-    AddressManagerLabel := TNewStaticText.Create(GatewayAdminPage);
+    AddressManagerLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     AddressManagerLabel.Name := 'AddressManagerLabel';
     AddressManagerLabel.Top :=  DomainManagerLabel.Top + DomainManagerLabel.Height + ScaleY(11);
     AddressManagerLabel.Caption := 'Address Manager: ';
-    AddressManagerLabel.Parent := GatewayAdminPage.Surface;
+    AddressManagerLabel.Parent := GatewayAdminPageTwo.Surface;
                               
-    AddressManagerText := TNewEdit.Create(GatewayAdminPage);
+    AddressManagerText := TNewEdit.Create(GatewayAdminPageTwo);
     AddressManagerText.Name := 'AddressManagerText';
     AddressManagerText.Top := AddressManagerLabel.Top;
     AddressManagerText.Left := DomainManagerText.Left;
     AddressManagerText.Width := DomainManagerText.Width;
-    AddressManagerText.Parent := GatewayAdminPage.Surface;
+    AddressManagerText.Parent := GatewayAdminPageTwo.Surface;
 
     //Set Privates Certs (Created above)                
     PrivateCertsLabel.Name := 'PrivateCertsLabel';
     PrivateCertsLabel.Top :=  AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(11);
-    PrivateCertsLabel.Parent := GatewayAdminPage.Surface;
+    PrivateCertsLabel.Parent := GatewayAdminPageTwo.Surface;
                               
-    PrivateCertsText := TNewEdit.Create(GatewayAdminPage);
+    PrivateCertsText := TNewEdit.Create(GatewayAdminPageTwo);
     PrivateCertsText.Name := 'PrivateCertsText';
     PrivateCertsText.Top := PrivateCertsLabel.Top;
     PrivateCertsText.Left := DomainManagerText.Left;
     PrivateCertsText.Width := DomainManagerText.Width;
-    PrivateCertsText.Parent := GatewayAdminPage.Surface;
+    PrivateCertsText.Parent := GatewayAdminPageTwo.Surface;
 
     //Set Anchors
-    AnchorsLabel := TNewStaticText.Create(GatewayAdminPage);
+    AnchorsLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     AnchorsLabel.Name := 'AnchorsLabel';
     AnchorsLabel.Top :=  PrivateCertsLabel.Top + PrivateCertsLabel.Height + ScaleY(11);
     AnchorsLabel.Caption := 'Anchor Resolver: ';
-    AnchorsLabel.Parent := GatewayAdminPage.Surface;
+    AnchorsLabel.Parent := GatewayAdminPageTwo.Surface;
                               
-    AnchorsText := TNewEdit.Create(GatewayAdminPage);
+    AnchorsText := TNewEdit.Create(GatewayAdminPageTwo);
     AnchorsText.Name := 'AnchorsText';
     AnchorsText.Top := AnchorsLabel.Top;
     AnchorsText.Left := DomainManagerText.Left;
     AnchorsText.Width := DomainManagerText.Width;
-    AnchorsText.Parent := GatewayAdminPage.Surface;
+    AnchorsText.Parent := GatewayAdminPageTwo.Surface;
 
 
 
 
 
     //Set MdnMonitor Manager
-    MdnMonitorLabel := TNewStaticText.Create(GatewayAdminPage);
+    MdnMonitorLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     MdnMonitorLabel.Name := 'MdnMonitorLabel';
     MdnMonitorLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(11);
     MdnMonitorLabel.Caption := 'MDN Monitor: ';
-    MdnMonitorLabel.Parent := GatewayAdminPage.Surface;
+    MdnMonitorLabel.Parent := GatewayAdminPageTwo.Surface;
 
-    MdnMonitorText := TNewEdit.Create(GatewayAdminPage);
+    MdnMonitorText := TNewEdit.Create(GatewayAdminPageTwo);
     MdnMonitorText.Name := 'MdnMonitorText';
     MdnMonitorText.Top := MdnMonitorLabel.Top;
     MdnMonitorText.Left := DomainManagerText.Left;
     MdnMonitorText.Width := DomainManagerText.Width;
-    MdnMonitorText.Parent := GatewayAdminPage.Surface;
+    MdnMonitorText.Parent := GatewayAdminPageTwo.Surface;
     
     
-    
+    //Set Trust Bundle Manager
+    BundleLabel := TNewStaticText.Create(GatewayAdminPageTwo);
+    BundleLabel.Name := 'BundleLabel';
+    BundleLabel.Top :=  MdnMonitorLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
+    BundleLabel.Caption := 'TrustBundle Manager: ';
+    BundleLabel.Parent := GatewayAdminPageTwo.Surface;
+
+    BundleText := TNewEdit.Create(GatewayAdminPageTwo);
+    BundleText.Name := 'BundleText';
+    BundleText.Top := BundleLabel.Top;
+    BundleText.Left := DomainManagerText.Left;
+    BundleText.Width := DomainManagerText.Width;
+    BundleText.Parent := GatewayAdminPageTwo.Surface;
     
 
     //Set DnsResolverIp
-    DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPage);
+    DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
-    DnsResolverIpLabel.Top :=  MdnMonitorLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
+    DnsResolverIpLabel.Top :=  BundleLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
     DnsResolverIpLabel.Caption := 'Dns Resolver IP: ';
-    DnsResolverIpLabel.Parent := GatewayAdminPage.Surface;
+    DnsResolverIpLabel.Parent := GatewayAdminPageTwo.Surface;
                               
-    DnsResolverIpText := TNewEdit.Create(GatewayAdminPage);
+    DnsResolverIpText := TNewEdit.Create(GatewayAdminPageTwo);
     DnsResolverIpText.Name := 'DnsResolverIpText';
     DnsResolverIpText.Top := DnsResolverIpLabel.Top;
     DnsResolverIpText.Left := DomainManagerText.Left;
     DnsResolverIpText.Width := DomainManagerText.Width;
-    DnsResolverIpText.Parent := GatewayAdminPage.Surface;
+    DnsResolverIpText.Parent := GatewayAdminPageTwo.Surface;
     
 
 
 
 
-    GatewayAdminPage.OnActivate := @GatewayAdminPageOnActivate;
-    GatewayAdminPage.OnNextButtonClick := @SetGatewayConfigOnClick;
-    GatewayAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
+    GatewayAdminPageTwo.OnActivate := @GatewayAdminPageTwoOnActivate;
+    GatewayAdminPageTwo.OnNextButtonClick := @SetGatewayConfigPageTwoOnClick;
+    GatewayAdminPageTwo.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
 
-    Result := GatewayAdminPage;
+    Result := GatewayAdminPageTwo;
 end;
 
 
 
 
-function CreateGatewaySmtpWizardPage(pageBefore: TWizardPage): TWizardPage;
+function CreateGatewayWizardPageThree(pageBefore: TWizardPage): TWizardPage;
 var
   GatewaySmtpAdminPage: TWizardPage;
   HelpButton: TNewButton;
   PickupLabel, RawMessageLabel, BadMessageLabel, IncommingMessageLabel, OutgoingMessageLabel : TNewStaticText;
   PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
 begin
-    GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II (SMTP)', '');
+    GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part III (SMTP)', '');
 
     HelpButton := TNewButton.Create(GatewaySmtpAdminPage);      
     HelpButton.Left := GatewaySmtpAdminPage.Surface.Width - ScaleX(20);
@@ -1512,22 +1622,22 @@ begin
     OutgoingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
     OutgoingMessageLabel.Caption := 'Outgoing Folder: ';
         
-    GatewaySmtpAdminPage.OnActivate := @ConfigSmtpAdminPageOnActivate;
-    GatewaySmtpAdminPage.OnNextButtonClick := @SetConfigSmtpAdminEndpointsOnClick;
+    GatewaySmtpAdminPage.OnActivate := @GatewayAdminPageThreeOnActivate;
+    GatewaySmtpAdminPage.OnNextButtonClick := @SetConfigAdminPageThreeEndpointsOnClick;
     GatewaySmtpAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
 
     Result := GatewaySmtpAdminPage;
 end;
 
-function CreateConfigConsolePage(pageBefore: TWizardPage): TWizardPage;
+function CreateConfigConsolePageOne(pageBefore: TWizardPage): TWizardPage;
 var
   ConfigConsolePage: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, PropertyLabel, BlobLabel, MdnMonitorLabel: TNewStaticText;
-  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText: TNewEdit;
+  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, MdnMonitorLabel, BundleLabel: TNewStaticText;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, MdnMonitorText, BundleText: TNewEdit;
 
 begin
-    ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway Console', '');
+    ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway Console I', '');
 
     HelpButton := TNewButton.Create(ConfigConsolePage);
     HelpButton.Left := ConfigConsolePage.Surface.Width - ScaleX(20);
@@ -1541,13 +1651,14 @@ begin
     EndPointsButton := TNewButton.Create(ConfigConsolePage);
     EndPointsButton.Caption := 'Test End Points:';
     EndPointsButton.Width :=  ConfigConsolePage.SurfaceWidth div 4;
-    EndPointsButton.OnClick := @ConfigConsoleOnClick;
+    EndPointsButton.OnClick := @ConfigConsolePageOneOnClick;
     EndPointsButton.Parent := ConfigConsolePage.Surface;
     
-    //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.
-    PrivateCertsLabel := TNewStaticText.Create(ConfigConsolePage);
-    PrivateCertsLabel.Caption := 'Certificate Resolver: ';
-    PrivateCertsLabel.Width :=  PrivateCertsLabel.Width - ScaleX(4);
+    //Set Trust Bundle.  Later it is placed in the page location.  Using its width to base all the texbox left positions.
+    BundleLabel := TNewStaticText.Create(ConfigConsolePage);
+    BundleLabel.Name := 'BundleLabel';
+    BundleLabel.Caption := 'TrustBundle Manager: ';
+    BundleLabel.Width := BundleLabel.Width - ScaleX(4);
     
     //Set Domain Manager
     DomainManagerLabel := TNewStaticText.Create(ConfigConsolePage);
@@ -1559,8 +1670,8 @@ begin
     DomainManagerText := TNewEdit.Create(ConfigConsolePage);
     DomainManagerText.Name := 'DomainManagerText';
     DomainManagerText.Top := DomainManagerLabel.Top;
-    DomainManagerText.Left := PrivateCertsLabel.Width + ScaleX(4);
-    DomainManagerText.Width := ConfigConsolePage.SurfaceWidth - PrivateCertsLabel.Width - ScaleX(4);
+    DomainManagerText.Left := BundleLabel.Width + ScaleX(4);
+    DomainManagerText.Width := ConfigConsolePage.SurfaceWidth - BundleLabel.Width - ScaleX(4);
     DomainManagerText.Parent := ConfigConsolePage.Surface;
 
 
@@ -1578,7 +1689,9 @@ begin
     AddressManagerText.Width := DomainManagerText.Width;
     AddressManagerText.Parent := ConfigConsolePage.Surface;
 
-    //Set Privates Certs (Created above)
+    //Set Privates Certs 
+    PrivateCertsLabel := TNewStaticText.Create(ConfigConsolePage);
+    PrivateCertsLabel.Caption := 'Certificate Resolver: ';
     PrivateCertsLabel.Name := 'PrivateCertsLabel';
     PrivateCertsLabel.Top :=  AddressManagerLabel.Top + AddressManagerLabel.Height + ScaleY(11);
     PrivateCertsLabel.Parent := ConfigConsolePage.Surface;
@@ -1619,19 +1732,88 @@ begin
     DnsRecordManagerText.Width := DomainManagerText.Width;
     DnsRecordManagerText.Parent := ConfigConsolePage.Surface;
 
+                     
+    
+
+
+    //Set MdnMonitor Record Manager
+    MdnMonitorLabel := TNewStaticText.Create(ConfigConsolePage);
+    MdnMonitorLabel.Name := 'MdnMonitorLabel';
+    MdnMonitorLabel.Top :=  DnsRecordManagerLabel.Top + DnsRecordManagerLabel.Height + ScaleY(11);
+    MdnMonitorLabel.Caption := 'MDN Monitor: ';
+    MdnMonitorLabel.Parent := ConfigConsolePage.Surface;
+
+    MdnMonitorText := TNewEdit.Create(ConfigConsolePage);
+    MdnMonitorText.Name := 'MdnMonitorText';
+    MdnMonitorText.Top := MdnMonitorLabel.Top;
+    MdnMonitorText.Left := DomainManagerText.Left;
+    MdnMonitorText.Width := DomainManagerText.Width;
+    MdnMonitorText.Parent := ConfigConsolePage.Surface;
+
+
+    //Set Trust Bundle Manager  (Created above)            
+    BundleLabel.Top :=  MdnMonitorLabel.Top + MdnMonitorLabel.Height + ScaleY(11);      
+    BundleLabel.Parent := ConfigConsolePage.Surface;
+
+    BundleText := TNewEdit.Create(ConfigConsolePage);
+    BundleText.Name := 'BundleText';
+    BundleText.Top := BundleLabel.Top;
+    BundleText.Left := DomainManagerText.Left;
+    BundleText.Width := DomainManagerText.Width;
+    BundleText.Parent := ConfigConsolePage.Surface;
+
+
+    ConfigConsolePage.OnActivate := @ConfigConsolePageOneOnActivate;
+    ConfigConsolePage.OnNextButtonClick := @SetConfigConsolePageOneEndpointsOnClick;
+    ConfigConsolePage.OnShouldSkipPage := @ConfigConsolePage_ShouldSkip;
+
+    Result := ConfigConsolePage;
+end;
+
+
+
+
+
+function CreateConfigConsolePageTwo(pageBefore: TWizardPage): TWizardPage;
+var
+  ConfigConsolePage: TWizardPage;
+  HelpButton, EndPointsButton: TNewButton;
+  PropertyLabel, BlobLabel: TNewStaticText;
+  PropertyText, BlobText: TNewEdit;
+
+begin
+    ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway Console II', '');
+
+    HelpButton := TNewButton.Create(ConfigConsolePage);
+    HelpButton.Left := ConfigConsolePage.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @ConfigConsolePageHelpButtonOnClick;
+    HelpButton.Parent := ConfigConsolePage.Surface;
+
+    //Test button
+    EndPointsButton := TNewButton.Create(ConfigConsolePage);
+    EndPointsButton.Caption := 'Test End Points:';
+    EndPointsButton.Width :=  ConfigConsolePage.SurfaceWidth div 4;
+    EndPointsButton.OnClick := @ConfigConsolePageTwoOnClick;
+    EndPointsButton.Parent := ConfigConsolePage.Surface;
+    
+     
     
     //Set Property Service endpoint
     PropertyLabel := TNewStaticText.Create(ConfigConsolePage);
     PropertyLabel.Name := 'PropertyLabel';
-    PropertyLabel.Top :=  DnsRecordManagerLabel.Top + DnsRecordManagerLabel.Height + ScaleY(11);
+    PropertyLabel.Width := PropertyLabel.Width - ScaleX(4);
+    PropertyLabel.Top :=  EndPointsButton.Top + EndPointsButton.Height + ScaleY(11);
     PropertyLabel.Caption := 'Property (Console): ';
     PropertyLabel.Parent := ConfigConsolePage.Surface;
 
     PropertyText := TNewEdit.Create(ConfigConsolePage);
     PropertyText.Name := 'PropertyText';
     PropertyText.Top := PropertyLabel.Top;
-    PropertyText.Left := DomainManagerText.Left;
-    PropertyText.Width := DomainManagerText.Width;
+    PropertyText.Left := PropertyLabel.Width + ScaleX(4);
+    PropertyText.Width := ConfigConsolePage.SurfaceWidth - PropertyLabel.Width - ScaleX(4);
     PropertyText.Parent := ConfigConsolePage.Surface;
 
     //Set Blob Service endpoint
@@ -1644,33 +1826,13 @@ begin
     BlobText := TNewEdit.Create(ConfigConsolePage);
     BlobText.Name := 'BlobText';
     BlobText.Top := BlobLabel.Top;
-    BlobText.Left := DomainManagerText.Left;
-    BlobText.Width := DomainManagerText.Width;
+    BlobText.Left := PropertyText.Left;
+    BlobText.Width := PropertyText.Width;
     BlobText.Parent := ConfigConsolePage.Surface;
     
-    
 
-
-    //Set MdnMonitor Record Manager
-    MdnMonitorLabel := TNewStaticText.Create(ConfigConsolePage);
-    MdnMonitorLabel.Name := 'MdnMonitorLabel';
-    MdnMonitorLabel.Top :=  BlobLabel.Top + BlobLabel.Height + ScaleY(11);
-    MdnMonitorLabel.Caption := 'MDN Monitor: ';
-    MdnMonitorLabel.Parent := ConfigConsolePage.Surface;
-
-    MdnMonitorText := TNewEdit.Create(ConfigConsolePage);
-    MdnMonitorText.Name := 'MdnMonitorText';
-    MdnMonitorText.Top := MdnMonitorLabel.Top;
-    MdnMonitorText.Left := DomainManagerText.Left;
-    MdnMonitorText.Width := DomainManagerText.Width;
-    MdnMonitorText.Parent := ConfigConsolePage.Surface;
-
-
-
-
-
-    ConfigConsolePage.OnActivate := @ConfigConsolePageOnActivate;
-    ConfigConsolePage.OnNextButtonClick := @SetConfigConsoleEndpointsOnClick;
+    ConfigConsolePage.OnActivate := @ConfigConsolePageTwoOnActivate;
+    ConfigConsolePage.OnNextButtonClick := @SetConfigConsolePageTwoEndpointsOnClick;
     ConfigConsolePage.OnShouldSkipPage := @ConfigConsolePage_ShouldSkip;
 
     Result := ConfigConsolePage;
@@ -1903,12 +2065,15 @@ begin
   Page.Name := 'DnsService';
   Page.Description := '\DnsService\Web.Config';
   
-  Page := CreateGatewayWizardPage(Page);      //Gateway part I
-  Page := CreateGatewaySmtpWizardPage(Page);  //Gateway part II
-  Page := CreateConfigConsolePage(Page);      //ConfigConsoleSettings.xml.  Almost like part III of Gateway.  It is included as part of the gateway component
-                                              //but in the future we may want to migrate the config console into its own install.
+  Page := CreateGatewayWizardPageOne(Page);      //Gateway part I
+  Page := CreateGatewayWizardPageTwo(Page);      //Gateway part II
+  Page := CreateGatewayWizardPageThree(Page);    //Gateway part III
+  Page := CreateConfigConsolePageOne(Page);      //ConfigConsoleSettings.xml.  Almost like part III of Gateway.  It is included as part of the gateway component
+  Page := CreateConfigConsolePageTwo(Page);                         
                                               //If you wanted to install the configConsole onto a workstation then pass skipsmtpcheck as a command line parameter to the installer.
                                               //It will ignore the port 25 check and still install.
+  
+
   Page := CreateDnsResponderWizardPage(Page);
 
   Page := CreateDatabaseConnWizardPage(Page);
