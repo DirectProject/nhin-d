@@ -90,9 +90,9 @@ Source: "..\bin\{#Configuration}\x64\smtpEventHandler.dll"; DestDir: "{app}"; Fl
 Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config,DirectDnsResponderSvc.exe.config"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
-Source: "..\bin\{#Configuration}\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: confirmoverwrite;
-Source: "jobs.xml"; DestDir: "{app}"; Flags: confirmoverwrite; Components: monitorserver;
-Source: "..\bin\{#Configuration}\DirectDnsResponderSvc.exe.config"; DestDir: "{app}"; Flags: confirmoverwrite; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+Source: "..\bin\{#Configuration}\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
+Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
+Source: "..\bin\{#Configuration}\DirectDnsResponderSvc.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnswebservice developergateway;
            
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
@@ -105,11 +105,11 @@ Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: 
 Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice developergateway; 
 
 Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway;
-Source: "..\installer\configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: confirmoverwrite; Components: configui and not developergateway
+Source: "..\installer\configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: onlyifdoesntexist; Components: configui and not developergateway
 
 Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway developergateway;
 Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway developergateway;
-Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: confirmoverwrite; Components: directgateway developergateway;
+Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: onlyifdoesntexist; Components: directgateway developergateway;
 
 
 Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}"; DestName: "DevAgentConfig.xml"; Flags: ignoreversion; Components: developergateway;            
@@ -525,6 +525,26 @@ end;
 
 
 
+
+
+
+function GetConfigSetting(configFile, xpath : String): String;
+var
+  xpathTools: Variant;    
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := configFile ;
+    Result := xpathTools.SelectSingleAttribute(xpath);
+end;
+
+
+
+
+
 procedure WriteConfigItem(wizardPage : TWizardPage; configFile, xpath, objectName : String);
 var
   xpathTools: Variant;     
@@ -561,6 +581,25 @@ begin
     end;
     
     xpathTools.SetSingleAttribute(xpath, value);
+    
+end;
+
+procedure WriteXmlFragment(wizardPage : TWizardPage; configFile, xpath, fragement : String);
+var
+  xpathTools: Variant;     
+  textBox: TCustomEdit; 
+  labelText: TNewStaticText;
+  value : String;
+  existingValue : String;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    
+    xpathTools.XmlFilePath := configFile;     
+    xpathTools.ReplaceFragment(xpath, fragement);       
     
 end;
 
@@ -601,6 +640,8 @@ end;
 function SetGatewayConfigPageTwoOnClick(Sender: TWizardPage): Boolean;
 var                
   configFile  : String;
+  anchorPlugin : String;
+  BundleText: TNewEdit;
 begin
   
   // Setting SmtpAgentConfig for Gateway
@@ -608,11 +649,34 @@ begin
   
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/DomainManager/Url', 'DomainManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/AddressManager/Url', 'AddressManagerText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url', 'AnchorsText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');                           
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText');  
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'BundleText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText'); 
+  
+  BundleText := TNewEdit(Sender.FindComponent('BundleText'));
+
+  anchorPlugin := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/PluginResolver')
+  if ( Length(anchorPlugin) > 0 ) and ( Length(Trim(BundleText.Text)) > 0) then
+  begin
+    WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url', 'AnchorsText'); 
+    WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'BundleText');
+  end
+  else
+  begin  // Anchor Plugin did not exist        
+    if ( Length(Trim(BundleText.Text)) > 0 ) then
+    begin
+        //create anchor plugin
+        WriteXmlFragment(Sender, configFile, '/SmtpAgentConfig/Anchors', '<Anchors><PluginResolver><!-- NEW Resolver that COMBINES Anchors from multiple sources into a single list--><Definition><TypeName>Health.Direct.ResolverPlugins.MultiSourceAnchorResolver, Health.Direct.ResolverPlugins</TypeName><Settings><!-- New Bundle Resolver --><BundleResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><!-- Set cache to longer duration in production --><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings><MaxRetries>1</MaxRetries><Timeout>30000</Timeout><!-- In milliseconds --><VerifySSL>true</VerifySSL></BundleResolver><!-- Standard Resolver that pulls from Anchor store --><ServiceResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></ServiceResolver></Settings></Definition></PluginResolver></Anchors>'); 
+
+        WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url', 'AnchorsText'); 
+        WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'BundleText');
+    end
+    else //just write the anchor manager url
+    begin
+      WriteXmlFragment(Sender, configFile, '/SmtpAgentConfig/Anchors', '<Anchors><ServiceResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url></ClientSettings></ServiceResolver></Anchors>'); 
+      WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url', 'AnchorsText'); 
+    end;
+  end;
 
   Result := True;
 end;
@@ -672,18 +736,6 @@ end;
 
 
 
-function GetConfigSetting(configFile, xpath : String): String;
-var
-  xpathTools: Variant;    
-begin
-  try                              
-    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
-  except
-    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-    xpathTools.XmlFilePath := configFile ;
-    Result := xpathTools.SelectSingleAttribute(xpath);
-end;
 
 
 
@@ -950,7 +1002,7 @@ begin
   PrivateCertsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url');
   
   AnchorsText := TNewEdit(Sender.FindComponent('AnchorsText'));
-  AnchorsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url');
+  AnchorsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url | /SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url');
   
   DnsResolverIpText := TNewEdit(Sender.FindComponent('DnsResolverIpText'));
   DnsResolverIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
