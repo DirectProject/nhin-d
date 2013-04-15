@@ -30,7 +30,22 @@ namespace Health.Direct.Install.Tools
         string XmlFilePath { get; set; }
         string SelectSingleAttribute(string xpath);
         void SetSingleAttribute(string xpath, string value);
+        /// <summary>
+        /// Adds a simple leaf node to the xml document
+        /// </summary>
+        /// <remarks>
+        /// Xpath should not contain attributes.
+        /// </remarks>
+        /// <param name="xpath"></param>
         void CreateFragment(string xpath);
+
+        /// <summary>
+        /// Replace a xml fragment in the document.
+        /// This is different then SetSingleAttribute in that it is a full xml node.
+        /// </summary>
+        /// <param name="xpath"></param>
+        /// <param name="xmlFragment"></param>
+        void ReplaceFragment(string xpath, string xmlFragment);
     }
 
     [ComVisible(true), GuidAttribute("142E02A1-CEF8-4305-AB70-9A26F1ED0F41")]
@@ -81,13 +96,7 @@ namespace Health.Direct.Install.Tools
             _document.Save(XmlFilePath);
         }
 
-        /// <summary>
-        /// Create a document node hierarchy.
-        /// </summary>
-        /// <remarks>
-        /// Xpath should not contain attributes.
-        /// </remarks>
-        /// <param name="xpath"></param>
+        
         public void CreateFragment(string xpath)
         {
             List<string> nodes = xpath.Split('/').ToList();
@@ -110,6 +119,23 @@ namespace Health.Direct.Install.Tools
                 xmlNode = _document.CreateElement(node);
                 element = element.AppendChild(xmlNode);
             }
+            
+            _document.Save(XmlFilePath);
+        }
+
+
+        public void ReplaceFragment(string xpath, string xmlFragment)
+        {
+            
+            XmlNode node = _document.SelectSingleNode(xpath);
+            XmlDataDocument newDoc = new XmlDataDocument();
+            newDoc.LoadXml(xmlFragment);
+
+            XmlNode newNode = _document.CreateDocumentFragment();
+            newNode.InnerXml = xmlFragment;
+            _document.DocumentElement.RemoveChild(node);
+            _document.DocumentElement.AppendChild(newNode);
+            
             
             _document.Save(XmlFilePath);
         }

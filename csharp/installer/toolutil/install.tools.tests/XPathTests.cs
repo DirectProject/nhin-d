@@ -16,6 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.IO;
+using System.Text;
+using System.Xml;
 using Xunit;
 
 namespace Health.Direct.Install.Tools.tests
@@ -112,13 +114,108 @@ namespace Health.Direct.Install.Tools.tests
             expected = null;
             Assert.Equal(expected, actual);
 
-            editor.CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
+            editor. CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
 
             editor.SetSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url", @"http://localhost/ConfigService/MonitorService.svc/Dispositions");
 
             actual = editor.SelectSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url");
             expected = @"http://localhost/ConfigService/MonitorService.svc/Dispositions";
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void ReplaceFragment_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            string anchorsPlugin = @"<Anchors>
+<PluginResolver>
+  <!-- NEW Resolver that COMBINES Anchors from multiple sources into a single list-->
+  <Definition>
+    <TypeName>Health.Direct.ResolverPlugins.MultiSourceAnchorResolver, Health.Direct.ResolverPlugins</TypeName>
+    <Settings>
+	  <!-- New Bundle Resolver -->
+      <BundleResolver>
+        <ClientSettings>
+          <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+        </ClientSettings>
+        <CacheSettings>
+          <Cache>true</Cache>
+          <NegativeCache>true</NegativeCache>
+          <!-- Set cache to longer duration in production -->
+          <CacheTTLSeconds>60</CacheTTLSeconds>
+        </CacheSettings>
+        <MaxRetries>1</MaxRetries>
+        <Timeout>30000</Timeout> <!-- In milliseconds -->
+        <VerifySSL>true</VerifySSL>
+      </BundleResolver>
+	  <!-- Standard Resolver that pulls from Anchor store -->
+      <ServiceResolver>
+        <ClientSettings>
+          <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
+        </ClientSettings>
+        <CacheSettings>
+          <Cache>true</Cache>
+          <NegativeCache>true</NegativeCache>
+          <CacheTTLSeconds>60</CacheTTLSeconds>
+        </CacheSettings>
+      </ServiceResolver>
+    </Settings>
+  </Definition>
+</PluginResolver>    
+</Anchors>";
+
+            string xpath = "/SmtpAgentConfig/Anchors";
+            XPath editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            //var original = editor.SelectSingleAttribute("xpath");
+           
+            //Act
+            editor.ReplaceFragment(xpath, anchorsPlugin);
+
+            
+            //Assert
+            XmlDocument updatedDocument = new XmlDocument();
+            updatedDocument.Load("SmtpAgentConfig.xml.test");
+            
+            XmlNode updatedAnchors = updatedDocument.SelectSingleNode(xpath);
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.NewLineChars = string.Empty;
+            settings.Indent = false;
+            settings.IndentChars = "";
+            settings.ConformanceLevel = ConformanceLevel.Auto;
+
+            string actualFragment;
+            using(var stringWriter = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
+                {
+                    updatedAnchors.WriteTo(writer);
+                    writer.Flush();
+                    actualFragment = stringWriter.ToString();
+                }
+            }
+
+            string expectedFragment;
+            using (var stringWriter = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
+                {
+                    XmlNode newNode = updatedDocument.CreateDocumentFragment();
+                    newNode.InnerXml = anchorsPlugin;
+                    newNode.WriteTo(writer);
+                    writer.Flush();
+                    expectedFragment = stringWriter.ToString();
+                }
+            }
+
+            XmlDocument cleanExpectedFragment = new XmlDocument();
+            cleanExpectedFragment.LoadXml(expectedFragment);
+            expectedFragment = cleanExpectedFragment.OuterXml;
+
+            Assert.Equal(expectedFragment, actualFragment);
         }
 
         [Fact]
@@ -138,7 +235,6 @@ namespace Health.Direct.Install.Tools.tests
 
             actual = editor.SelectSingleAttribute("/SmtpAgentConfig/Domain");
             expected = "Direct.South.Hobo.Lab";
-
             Assert.Equal(expected, actual);
         }
 
