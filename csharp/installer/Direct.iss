@@ -24,6 +24,7 @@
 #include "InnoScripts\GetCommandLineParams.iss"
 
 #define Configuration = "Debug" 
+#define Instructions = "http://wiki.directproject.org/Enterprise+Installation+Instructions"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -584,26 +585,36 @@ begin
     
 end;
 
-procedure WriteXmlFragment(wizardPage : TWizardPage; configFile, xpath, fragement : String);
+procedure WriteXmlFragment(configFile, xpath, fragement : String);
 var
-  xpathTools: Variant;     
-  textBox: TCustomEdit; 
-  labelText: TNewStaticText;
-  value : String;
-  existingValue : String;
+  xpathTools: Variant;
 begin
   try                              
     xpathTools := CreateOleObject('Direct.Installer.XPathTools');
   except
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
-    
     xpathTools.XmlFilePath := configFile;     
-    xpathTools.ReplaceFragment(xpath, fragement);       
-    
+    if ( Length(xpathTools.SelectSingleAttribute(xpath)) > 0 ) then
+      begin
+        xpathTools.ReplaceFragment(xpath, fragement); 
+      end;
 end;
 
 
+
+procedure InsertXmlFragmentBefore(configFile, fragement, xPathBefore : String);
+var
+  xpathTools: Variant;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := configFile;     
+    xpathTools.CreateFragmentBefore(fragement, xPathBefore);     
+end;
 
 //Configure Config Admin client endpoint urls.
 function SetConfigAdminEndpointsOnClick(Sender: TWizardPage): Boolean;
@@ -627,15 +638,37 @@ end;
 function SetGatewayConfigPageOneOnClick(Sender: TWizardPage): Boolean;
 var                
   configFile  : String;
+  StaticDomainRadio, DynamicDomainRadio : TNewRadioButton;
 begin
   
+  StaticDomainRadio := TNewRadioButton(Sender.FindComponent('StaticDomainRadio'));
+  DynamicDomainRadio := TNewRadioButton(Sender.FindComponent('DynamicDomainRadio'));
+
+
   // Setting SmtpAgentConfig for Gateway
   configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domain', 'DomainText');
+  if ( StaticDomainRadio.Checked = True )  then
+  begin
+    WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domain', 'DomainText');
+    WriteXmlFragment(configFile, '/SmtpAgentConfig/Domains', '');
+  end;
+
+  if ( DynamicDomainRadio.Checked = True ) then
+  begin
+    WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domains/ServiceResolver/AgentName', 'AgentNameText');
+    WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Domains/ServiceResolver/ClientSettings/Url', 'DomainManagerText');
+    WriteXmlFragment(configFile, '/SmtpAgentConfig/Domain', '');
+  end;
+
+  
   
   Result := True;
 end;
+
+
+
+
 
 function SetGatewayConfigPageTwoOnClick(Sender: TWizardPage): Boolean;
 var                
@@ -666,14 +699,14 @@ begin
     if ( Length(Trim(BundleText.Text)) > 0 ) then
     begin
         //create anchor plugin
-        WriteXmlFragment(Sender, configFile, '/SmtpAgentConfig/Anchors', '<Anchors><PluginResolver><!-- NEW Resolver that COMBINES Anchors from multiple sources into a single list--><Definition><TypeName>Health.Direct.ResolverPlugins.MultiSourceAnchorResolver, Health.Direct.ResolverPlugins</TypeName><Settings><!-- New Bundle Resolver --><BundleResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><!-- Set cache to longer duration in production --><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings><MaxRetries>1</MaxRetries><Timeout>30000</Timeout><!-- In milliseconds --><VerifySSL>true</VerifySSL></BundleResolver><!-- Standard Resolver that pulls from Anchor store --><ServiceResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></ServiceResolver></Settings></Definition></PluginResolver></Anchors>'); 
+        WriteXmlFragment(configFile, '/SmtpAgentConfig/Anchors', '<Anchors><PluginResolver><!-- NEW Resolver that COMBINES Anchors from multiple sources into a single list--><Definition><TypeName>Health.Direct.ResolverPlugins.MultiSourceAnchorResolver, Health.Direct.ResolverPlugins</TypeName><Settings><!-- New Bundle Resolver --><BundleResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><!-- Set cache to longer duration in production --><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings><MaxRetries>1</MaxRetries><Timeout>30000</Timeout><!-- In milliseconds --><VerifySSL>true</VerifySSL></BundleResolver><!-- Standard Resolver that pulls from Anchor store --><ServiceResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></ServiceResolver></Settings></Definition></PluginResolver></Anchors>'); 
 
         WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url', 'AnchorsText'); 
         WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url', 'BundleText');
     end
     else //just write the anchor manager url
     begin
-      WriteXmlFragment(Sender, configFile, '/SmtpAgentConfig/Anchors', '<Anchors><ServiceResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url></ClientSettings></ServiceResolver></Anchors>'); 
+      WriteXmlFragment(configFile, '/SmtpAgentConfig/Anchors', '<Anchors><ServiceResolver><ClientSettings><Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url></ClientSettings></ServiceResolver></Anchors>'); 
       WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url', 'AnchorsText'); 
     end;
   end;
@@ -738,9 +771,30 @@ end;
 
 
 
+        
+       
+procedure TestEndPointPageOneOnClick (Sender: TObject);
+var                   
+  EndPointsButton: TNewButton;
+  buttonCaption : String;
+  GatewayAdminPage : TWizardPage;
+begin         
+  EndPointsButton := TNewButton(Sender);
+  GatewayAdminPage := TWizardPage(EndPointsButton.Owner);
+  buttonCaption := EndPointsButton.Caption;
+  EndPointsButton.Caption := 'Checking...';
+  try      
+    RunTestConnect(GatewayAdminPage, 'DomainManagerLabel', 'DomainManagerText');     
+  except         
+    RaiseException(GetExceptionMessage);
+  finally
+    EndPointsButton.Caption := buttonCaption;
+    EndPointsButton.Update;  
+  end;   
+end;
 
        
-procedure GatewayOnClick (Sender: TObject);
+procedure TestEndPointPageTwoOnClick (Sender: TObject);
 var                   
   EndPointsButton: TNewButton;
   buttonCaption : String;
@@ -970,18 +1024,112 @@ end;
 
 
 
+
+
+
           
 procedure GatewayAdminPageOneOnActivate(Sender: TWizardPage);
 var
-  DomainText: TNewEdit;
+  StaticDomainRadio, DynamicDomainRadio : TNewRadioButton;
+  StaticPanel, DynamicPanel : TPanel;
   configFile : String;
+  DomainName, SmtpAgentName, DomainManager : String;
+  StaticDomainFragment, DynamicDomainFragment : String;
 begin
 
   configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
-  DomainText := TNewEdit(Sender.FindComponent('DomainText'));
-  DomainText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Domain');
-       
+  StaticDomainRadio := TNewRadioButton(Sender.FindComponent('StaticDomainRadio'));
+  DynamicDomainRadio := TNewRadioButton(Sender.FindComponent('DynamicDomainRadio'));
+  StaticPanel := TPanel(Sender.FindComponent('StaticPanel'));
+  DynamicPanel := TPanel(Sender.FindComponent('DynamicPanel'));
+
+  DomainName := GetConfigSetting(configFile, '/SmtpAgentConfig/Domain');
+  SmtpAgentName := GetConfigSetting(configFile, '/SmtpAgentConfig/Domains/ServiceResolver/AgentName');
+  DomainManager := GetConfigSetting(configFile, '/SmtpAgentConfig/Domains/ServiceResolver/ClientSettings/Url');
+
+  if ( Length(DomainName) > 0 ) then
+    begin
+      StaticDomainRadio.Checked := True;
+    end
+    else 
+    begin
+      DynamicDomainRadio.Checked := True; 
+    end;
 end; 
+
+
+
+
+
+
+procedure DomainOptionClick (Sender: TObject);
+var       
+  DomainText, AgentNameText, DomainManagerText: TNewEdit;            
+  RadioButton: TNewRadioButton;
+  StaticPanel, DynamicPanel : TPanel;
+  configFile : String;
+  DomainName, SmtpAgentName, DomainManager : String;
+  GatewayAdminPage : TWizardPage;
+  StaticDomainFragment, DynamicDomainFragment : String;
+begin         
+  RadioButton := TNewRadioButton(Sender);
+  GatewayAdminPage := TWizardPage(RadioButton.Owner);     
+  
+  configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  DomainName := GetConfigSetting(configFile, '/SmtpAgentConfig/Domain');
+  SmtpAgentName := GetConfigSetting(configFile, '/SmtpAgentConfig/Domains/ServiceResolver/AgentName');
+  DomainManager := GetConfigSetting(configFile, '/SmtpAgentConfig/Domains/ServiceResolver/ClientSettings/Url');
+
+  StaticPanel := TPanel(GatewayAdminPage.FindComponent('StaticPanel'));
+  DynamicPanel := TPanel(GatewayAdminPage.FindComponent('DynamicPanel'));
+
+  DynamicDomainFragment := '<Domains><ServiceResolver><AgentName>SmtpAgent1</AgentName><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url></ClientSettings><CacheSettings><Cache>true</Cache><CacheTTLSeconds>20</CacheTTLSeconds></CacheSettings></ServiceResolver></Domains>';
+  StaticDomainFragment := '<Domain>DomainName</Domain>';
+    
+  if ( RadioButton.Checked = True ) and ( RadioButton.Name = 'StaticDomainRadio' ) then
+  begin
+    StaticPanel.Show();
+    DynamicPanel.Hide();
+    DomainText := TNewEdit(GatewayAdminPage.FindComponent('DomainText'));
+    if ( Length(DomainText.Text) = 0 ) then
+      begin
+        DomainText.Text := DomainName;  
+      end;
+    if ( Length(DomainName) = 0 ) then
+    begin
+        InsertXmlFragmentBefore(configFile, StaticDomainFragment, '/SmtpAgentConfig/DomainManager');
+        GatewayAdminPageOneOnActivate(GatewayAdminPage);  
+    end;         
+  end;
+
+  if ( RadioButton.Checked = True ) and ( RadioButton.Name = 'DynamicDomainRadio' ) then
+  begin
+    DynamicPanel.Show();
+    StaticPanel.Hide();
+    AgentNameText := TNewEdit(GatewayAdminPage.FindComponent('AgentNameText'));
+    if ( Length(AgentNameText.Text) = 0 ) then
+      begin
+        AgentNameText.Text := SmtpAgentName;
+      end;
+    DomainManagerText := TNewEdit(GatewayAdminPage.FindComponent('DomainManagerText'));
+    if ( Length(DomainManagerText.Text) = 0 ) then
+      begin            
+        DomainManagerText.Text := DomainManager;
+      end;
+
+    if ( Length(SmtpAgentName) = 0 ) then
+    begin
+      //Insert  DynamicDomainFragment
+      InsertXmlFragmentBefore(configFile, DynamicDomainFragment, '/SmtpAgentConfig/DomainManager');
+      GatewayAdminPageOneOnActivate(GatewayAdminPage);  
+    end;
+  end;
+  
+end;
+
+
+
+
 
 
 procedure GatewayAdminPageTwoOnActivate(Sender: TWizardPage);
@@ -1261,7 +1409,7 @@ var
   URLLabel: TNewStaticText;
   begin
   URLLabel := TNewStaticText(Sender);
-  ShellExecAsOriginalUser('open', URLLabel.Caption, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
+  ShellExecAsOriginalUser('open', '{#Instructions}', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);
 end;
 
 
@@ -1386,9 +1534,10 @@ function CreateGatewayWizardPageOne(pageBefore: TWizardPage): TWizardPage;
 var
   GatewayAdminPageOne: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainLabel: TNewStaticText;
-  DomainText : TNewEdit;
-   
+  DomainLabel, SmtpAgentLabel, DomainManagerLabel : TNewStaticText;
+  DomainText, AgentNameText, DomainManagerText : TNewEdit;
+  StaticDomainRadio, DynamicDomainRadio : TNewRadioButton; 
+  StaticPanel, DynamicPanel : TPanel;
 begin
     GatewayAdminPageOne := CreateCustomPage(pageBefore.ID, 'Configure Gateway part I', '');
      
@@ -1400,18 +1549,110 @@ begin
     HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
     HelpButton.Parent := GatewayAdminPageOne.Surface;  
     
-    //Set Domains
+    //Set Static Domain             
+    StaticDomainRadio := TNewRadioButton.Create(GatewayAdminPageOne);
+    StaticDomainRadio.Name := 'StaticDomainRadio';
+    StaticDomainRadio.Caption :=  'Static Domain Option';
+    StaticDomainRadio.Width :=    GatewayAdminPageOne.SurfaceWidth - ScaleX(20) - HelpButton.Width;
+    StaticDomainRadio.Parent := GatewayAdminPageOne.Surface;
+    StaticDomainRadio.Top := HelpButton.Top;
+    StaticDomainRadio.OnClick := @DomainOptionClick;
+
+    StaticPanel := TPanel.Create(GatewayAdminPageOne); 
+    StaticPanel.Name := 'StaticPanel';   
+    StaticPanel.Parent := GatewayAdminPageOne.Surface;
+    StaticPanel.Top :=  StaticDomainRadio.Top + StaticDomainRadio.Height + ScaleY(11);
+    StaticPanel.BevelOuter := bvNone;
+    //StaticPanel.Align := alBottom;
+    StaticPanel.Caption := '';
+    StaticPanel.BorderWidth := 2;
+    StaticPanel.BorderStyle := bsSingle;
+    //StaticPanel.Color := $E5B13A;  
+    StaticPanel.Height := 40;
+    StaticPanel.Width :=  GatewayAdminPageOne.SurfaceWidth - ScaleX(20);
+    StaticPanel.ParentBackground := False;
+    
+    
     DomainLabel := TNewStaticText.Create(GatewayAdminPageOne);
     DomainLabel.Name := 'DomainLabel';
+    DomainLabel.Left :=  ScaleX(8);
+    DomainLabel.Top := ScaleY(11);
     DomainLabel.Caption := 'Domain Name: ';
-    DomainLabel.Parent := GatewayAdminPageOne.Surface;
+    DomainLabel.Parent := StaticPanel;        
                               
     DomainText := TNewEdit.Create(GatewayAdminPageOne);
     DomainText.Name := 'DomainText';
-    DomainText.Top := HelpButton.Top;
     DomainText.Left := DomainLabel.Width + ScaleX(8);
+    DomainText.Top := ScaleY(11);
     DomainText.Width := GatewayAdminPageOne.SurfaceWidth - ScaleX(20) - HelpButton.Width - DomainLabel.Width;
-    DomainText.Parent := GatewayAdminPageOne.Surface;
+    DomainText.Text := '';
+    DomainText.Parent := StaticPanel;
+
+
+    //Set Dynamic Domain
+    DynamicDomainRadio := TNewRadioButton.Create(GatewayAdminPageOne);
+    DynamicDomainRadio.Name := 'DynamicDomainRadio';
+    DynamicDomainRadio.Caption :=  'Dynamic Domain Option';
+    DynamicDomainRadio.Width :=  DynamicDomainRadio.Width;
+    DynamicDomainRadio.Parent := GatewayAdminPageOne.Surface;
+    DynamicDomainRadio.Top := StaticPanel.Top + StaticPanel.Height + ScaleY(11);
+    DynamicDomainRadio.OnClick := @DomainOptionClick;
+
+    DynamicPanel := TPanel.Create(GatewayAdminPageOne);
+    DynamicPanel.Name := 'DynamicPanel';
+    DynamicPanel.Parent := GatewayAdminPageOne.Surface;
+    DynamicPanel.Top :=  DynamicDomainRadio.Top + DynamicDomainRadio.Height + ScaleY(11);
+    DynamicPanel.BevelOuter := bvNone;
+    DynamicPanel.Caption := '';
+    DynamicPanel.BorderWidth := 2;
+    DynamicPanel.BorderStyle := bsSingle;
+    //DynamicPanel.Color := $E5B13A;  
+    DynamicPanel.Height := 100;
+    DynamicPanel.Width := GatewayAdminPageOne.SurfaceWidth - ScaleX(20)
+    DynamicPanel.ParentBackground := False;
+    
+
+    SmtpAgentLabel := TNewStaticText.Create(GatewayAdminPageOne);
+    SmtpAgentLabel.Name := 'SmtpAgentLabel';
+    SmtpAgentLabel.Caption := 'Smtp Agent Name: ';
+    SmtpAgentLabel.Left :=  ScaleX(8);
+    SmtpAgentLabel.Top :=  ScaleY(11);
+    SmtpAgentLabel.Parent := DynamicPanel;
+    
+                              
+    AgentNameText := TNewEdit.Create(GatewayAdminPageOne);
+    AgentNameText.Name := 'AgentNameText';       
+    AgentNameText.Left := SmtpAgentLabel.Width + ScaleX(8);
+    AgentNameText.Width := GatewayAdminPageOne.SurfaceWidth - ScaleX(20) - HelpButton.Width - SmtpAgentLabel.Width;
+    AgentNameText.Top :=  ScaleY(11);
+    AgentNameText.Parent := DynamicPanel;
+    AgentNameText.Text := '';
+
+    //Test button
+    EndPointsButton := TNewButton.Create(GatewayAdminPageOne);
+    EndPointsButton.Top :=  SmtpAgentLabel.Top + SmtpAgentLabel.Height + ScaleY(11);
+    EndPointsButton.Left :=  ScaleX(8);
+    EndPointsButton.Caption := 'Test End Points:';
+    EndPointsButton.Width :=  DynamicPanel.Width div 4;
+    EndPointsButton.OnClick := @TestEndPointPageOneOnClick;
+    EndPointsButton.Parent := DynamicPanel;
+
+
+    DomainManagerLabel := TNewStaticText.Create(GatewayAdminPageOne);
+    DomainManagerLabel.Name := 'DomainManagerLabel';
+    DomainManagerLabel.Left :=  ScaleX(8);
+    DomainManagerLabel.Caption := 'Domain Manager: ';
+    DomainManagerLabel.Parent := DynamicPanel;
+    DomainManagerLabel.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(11);
+    DomainManagerLabel.Width := SmtpAgentLabel.Width;
+                              
+    DomainManagerText := TNewEdit.Create(GatewayAdminPageOne);
+    DomainManagerText.Name := 'DomainManagerText';       
+    DomainManagerText.Left := DomainManagerLabel.Width + ScaleX(8);
+    DomainManagerText.Width := GatewayAdminPageOne.SurfaceWidth - ScaleX(20) - HelpButton.Width - SmtpAgentLabel.Width;
+    DomainManagerText.Parent := DynamicPanel;
+    DomainManagerText.Top := EndPointsButton.Top + EndPointsButton.Height + ScaleY(11);
+    DomainManagerText.Text := '';
 
     GatewayAdminPageOne.OnActivate := @GatewayAdminPageOneOnActivate;
     GatewayAdminPageOne.OnNextButtonClick := @SetGatewayConfigPageOneOnClick;
@@ -1444,7 +1685,7 @@ begin
     EndPointsButton.Top :=  HelpButton.Top;
     EndPointsButton.Caption := 'Test End Points:';
     EndPointsButton.Width :=  GatewayAdminPageTwo.SurfaceWidth div 4;
-    EndPointsButton.OnClick := @GatewayOnClick;
+    EndPointsButton.OnClick := @TestEndPointPageTwoOnClick;
     EndPointsButton.Parent := GatewayAdminPageTwo.Surface;
 
     //Set Privates Certs.  Later it is placed in its page location.  Using its width to base all the texbox left positions.       
@@ -2021,7 +2262,7 @@ var
 begin
   
   URLLabel := TNewStaticText.Create(ParentForm);
-  URLLabel.Caption := 'http://wiki.directproject.org/';
+  URLLabel.Caption := 'See instructions';
   URLLabel.Cursor := crHand;
   URLLabel.OnClick := @URLLabelOnClick;
   URLLabel.Parent := ParentForm;

@@ -219,6 +219,98 @@ namespace Health.Direct.Install.Tools.tests
         }
 
         [Fact]
+        public void ReplaceFragment_Empty_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            string emptyFragment = @"";
+
+            string xpath = "/SmtpAgentConfig/Domain";
+            XPath editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            //var original = editor.SelectSingleAttribute("xpath");
+            XmlDocument originalDocument = new XmlDocument();
+            originalDocument.Load("SmtpAgentConfig.xml.test");
+            XmlNode domainNode = originalDocument.SelectSingleNode(xpath);
+            Assert.NotNull(domainNode);
+
+            //Act
+            editor.ReplaceFragment(xpath, emptyFragment);
+
+
+            //Assert
+            XmlDocument updatedDocument = new XmlDocument();
+            updatedDocument.Load("SmtpAgentConfig.xml.test");
+
+            domainNode = updatedDocument.SelectSingleNode(xpath);
+            Assert.Null(domainNode);
+        }
+
+        /// <summary>
+        /// Fragement does not exist so create a container for it.
+        /// </summary>
+        [Fact]
+        public void CreateFragmentBefore_Create_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            string domainsFragement = @"<Domains><ServiceResolver><AgentName>SmtpAgent1</AgentName><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url></ClientSettings><CacheSettings><Cache>true</Cache><CacheTTLSeconds>20</CacheTTLSeconds></CacheSettings></ServiceResolver></Domains>";
+
+            string xpath = "/SmtpAgentConfig/Domains";
+            IPath editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            //var original = editor.SelectSingleAttribute("xpath");
+
+            //Act
+            editor.CreateFragmentBefore(domainsFragement, "//DomainManager");
+
+
+            //Assert
+            XmlDocument updatedDocument = new XmlDocument();
+            updatedDocument.Load("SmtpAgentConfig.xml.test");
+
+            XmlNode updatedAnchors = updatedDocument.SelectSingleNode(xpath);
+
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.NewLineChars = string.Empty;
+            settings.Indent = false;
+            settings.IndentChars = "";
+            settings.ConformanceLevel = ConformanceLevel.Auto;
+
+            string actualFragment;
+            using (var stringWriter = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
+                {
+                    updatedAnchors.WriteTo(writer);
+                    writer.Flush();
+                    actualFragment = stringWriter.ToString();
+                }
+            }
+
+            string expectedFragment;
+            using (var stringWriter = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
+                {
+                    XmlNode newNode = updatedDocument.CreateDocumentFragment();
+                    newNode.InnerXml = domainsFragement;
+                    newNode.WriteTo(writer);
+                    writer.Flush();
+                    expectedFragment = stringWriter.ToString();
+                }
+            }
+
+            XmlDocument cleanExpectedFragment = new XmlDocument();
+            cleanExpectedFragment.LoadXml(expectedFragment);
+            expectedFragment = cleanExpectedFragment.OuterXml;
+
+            Assert.Equal(expectedFragment, actualFragment);
+        }
+
+        [Fact]
         public void GetDomain_Test()
         {
 
