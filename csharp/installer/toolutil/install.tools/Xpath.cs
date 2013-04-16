@@ -40,6 +40,13 @@ namespace Health.Direct.Install.Tools
         void CreateFragment(string xpath);
 
         /// <summary>
+        /// Add xml fragment at a position in the document.
+        /// </summary>
+        /// <param name="xmlFragment"></param>
+        /// <param name="xPathBefore">Position to be placed before xPathBefore XmlNode</param>
+        void CreateFragmentBefore(string xmlFragment, string xPathBefore);
+
+        /// <summary>
         /// Replace a xml fragment in the document.
         /// This is different then SetSingleAttribute in that it is a full xml node.
         /// </summary>
@@ -59,11 +66,13 @@ namespace Health.Direct.Install.Tools
         public string XmlFilePath
         {
             get { return _xmlFilePath; }
-            set { _xmlFilePath = value;
+            set
+            {
+                _xmlFilePath = value;
                 _document.Load(_xmlFilePath);
             }
         }
-        
+
 
         public XPath()
         {
@@ -96,14 +105,14 @@ namespace Health.Direct.Install.Tools
             _document.Save(XmlFilePath);
         }
 
-        
+
         public void CreateFragment(string xpath)
         {
             List<string> nodes = xpath.Split('/').ToList();
             nodes = nodes.FindAll(n => n.Trim().Length > 0);
-            
+
             XmlNode element = _document.DocumentElement;
-            if(element == null)
+            if (element == null)
             {
                 throw new Exception("Cannot find XML document!");
             }
@@ -112,31 +121,43 @@ namespace Health.Direct.Install.Tools
             {
                 buildPath = buildPath + "/" + node;
                 XmlNode xmlNode = _document.SelectSingleNode(buildPath);
-                if(xmlNode != null)
+                if (xmlNode != null)
                 {
                     continue;
                 }
                 xmlNode = _document.CreateElement(node);
                 element = element.AppendChild(xmlNode);
             }
-            
+
             _document.Save(XmlFilePath);
         }
 
 
         public void ReplaceFragment(string xpath, string xmlFragment)
         {
-            
             XmlNode node = _document.SelectSingleNode(xpath);
+            
+            XmlNode newNode = _document.CreateDocumentFragment();
+            newNode.InnerXml = xmlFragment;
+            _document.DocumentElement.RemoveChild(node);
+            _document.DocumentElement.AppendChild(newNode);
+
+
+            _document.Save(XmlFilePath);
+        }
+
+        public void CreateFragmentBefore(string xmlFragment, string xPathBefore)
+        {
             XmlDataDocument newDoc = new XmlDataDocument();
             newDoc.LoadXml(xmlFragment);
 
             XmlNode newNode = _document.CreateDocumentFragment();
             newNode.InnerXml = xmlFragment;
-            _document.DocumentElement.RemoveChild(node);
-            _document.DocumentElement.AppendChild(newNode);
-            
-            
+            XmlNode beforeNode = _document.SelectSingleNode(xPathBefore);
+
+            _document.DocumentElement.InsertBefore(newNode, beforeNode);
+
+
             _document.Save(XmlFilePath);
         }
     }
