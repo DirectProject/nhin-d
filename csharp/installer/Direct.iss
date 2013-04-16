@@ -23,6 +23,9 @@
 #include "InnoScripts\WindowsServicesUtils.iss"
 #include "InnoScripts\GetCommandLineParams.iss"
 
+#ifndef Configuration
+# define Configuration "Debug"
+#endif
 
 #define Instructions = "http://wiki.directproject.org/Enterprise+Installation+Instructions"
 
