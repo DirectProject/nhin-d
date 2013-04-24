@@ -1,0 +1,44 @@
+﻿<HTML><HEAD></HEAD>
+<BODY dir=3Dltr>
+<DIV dir=3Dltr>
+<DIV style=3D"FONT-FAMILY: 'Calibri'; COLOR: #000000; FONT-SIZE: 12pt">
+<DIV=20
+style=3D"FONT-STYLE: normal; DISPLAY: inline; FONT-FAMILY: 'Calibri'; =
+COLOR: #000000; FONT-SIZE: small; FONT-WEIGHT: normal; TEXT-DECORATION: =
+none">
+<DIV dir=3Dltr>
+<DIV style=3D"FONT-FAMILY: 'Calibri'; COLOR: #000000; FONT-SIZE: 12pt">
+<DIV>This is a complicated message containing HTML, Embedded Images as =
+well as=20
+CCRs &amp; PDFs.</DIV>
+<DIV><IMG=20
+style=3D"BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; =
+BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none"=20
+class=3D"wlEmoticon wlEmoticon-smilewithtongueout" alt=3D"Smile with =
+tongue out"=20
+src=3D"cid:CEFAF81349F84E42871B3F9C6F975951@northamerica.corp.microsoft.c=
+om"></DIV>
+<DIV><STRONG>Here is some <FONT =
+size=3D6>formatting.</FONT></STRONG></DIV>
+<DIV><FONT color=3D#0000ff>The image below is embedded. </FONT></DIV>
+<DIV><IMG=20
+style=3D"BACKGROUND-IMAGE: none; BORDER-BOTTOM: 0px; BORDER-LEFT: 0px; =
+PADDING-LEFT: 0px; PADDING-RIGHT: 0px; DISPLAY: inline; BORDER-TOP: 0px; =
+BORDER-RIGHT: 0px; PADDING-TOP: 0px"=20
+title=3D"toe x-ray" border=3D0 alt=3D"toe x-ray"=20
+src=3D"cid:039B455F87A54CDF9B1F9DA3A39A240A@northamerica.corp.microsoft.c=
+om"=20
+width=3D298 height=3D484></DIV>
+<DIV>&nbsp;</DIV>
+<DIV>And this is an embedded hyperlink:</DIV>
+<DIV><A href=3D"http://www.bing.com">http://www.bing.com</A></DIV>
+<DIV>&nbsp;</DIV>
+<DIV>There are also 3 attachments.</DIV>
+<DIV>&nbsp;</DIV>
+<DIV><IMG=20
+style=3D"BORDER-BOTTOM-STYLE: none; BORDER-RIGHT-STYLE: none; =
+BORDER-TOP-STYLE: none; BORDER-LEFT-STYLE: none"=20
+class=3D"wlEmoticon wlEmoticon-hotsmile" alt=3D"Hot smile"=20
+src=3D"cid:D267A1C170BA412689D1B8DA7DCD00CA@northamerica.corp.microsoft.c=
+om"></DIV>
+<DIV>-Biff</DIV></DIV></DIV></DIV></DIV></DIV></BODY></HTML>
