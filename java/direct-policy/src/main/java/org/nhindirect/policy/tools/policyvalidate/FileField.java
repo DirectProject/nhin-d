@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+///CLOVER:OFF
 public class FileField extends JPanel
 {
 	static final long serialVersionUID = 8783281209944790372L;
@@ -104,3 +105,4 @@ public class FileField extends JPanel
 		search.setEnabled(b);
 	}	
 }
+///CLOVER:ON

@@ -20,6 +20,8 @@ public abstract class AbstractX509Field<P> implements X509Field<P>
 	
 	protected transient X509Certificate certificate;
 	
+	protected boolean required;
+	
 	@Override
 	public PolicyExpressionReferenceType getPolicyExpressionReferenceType() 
 	{
@@ -39,6 +41,18 @@ public abstract class AbstractX509Field<P> implements X509Field<P>
 			throw new IllegalStateException("Policy value is null");
 		
 		return this.policyValue;
+	}
+	
+	@Override
+	public boolean isRequired()
+	{
+		return required;
+	}
+	
+	@Override 
+	public void setRequired(boolean required)
+	{
+		this.required = required;
 	}
 	
     protected DERObject getObject(byte[] ext)

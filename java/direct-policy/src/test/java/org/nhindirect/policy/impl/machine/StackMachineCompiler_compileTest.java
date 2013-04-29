@@ -23,7 +23,7 @@ import org.nhindirect.policy.x509.KeyUsageExtensionField;
 
 import junit.framework.TestCase;
 
-public class StackMachineCompiler_testCompile extends TestCase
+public class StackMachineCompiler_compileTest extends TestCase
 {
 	public void testCompile_simpleUnaryLiteralOperation_assertEntriesAndEvaluation() throws Exception
 	{

@@ -3,7 +3,6 @@ package org.nhindirect.policy.x509;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.DSAKey;
-import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 
 import org.nhindirect.policy.PolicyProcessException;
@@ -41,9 +40,10 @@ public class SubjectPublicKeySizeField extends AbstractTBSField<Integer>
 		{
 			retVal = ((DSAKey)pubKey).getParams().getP().bitLength();
 		}
-		else if (pubKey instanceof ECKey)
+		else
 		{
-			retVal = ((ECKey)pubKey).getParams().getCurve().getField().getFieldSize();
+			// undertermined
+			retVal = 0;
 		}
 		
 		this.policyValue = PolicyValueFactory.getInstance(retVal);

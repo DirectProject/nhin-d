@@ -1,5 +1,6 @@
 package org.nhindirect.policy.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -73,7 +74,7 @@ public class UnaryBooleanPolicyOperatorExecutor<O> implements BooleanPolicyOpera
 					if (respCode >= 200 && respCode < 300)
 						retVal = true;
 				}
-				catch (Exception e)
+				catch (IOException e)
 				{
 					retVal = false;
 				}
@@ -83,8 +84,10 @@ public class UnaryBooleanPolicyOperatorExecutor<O> implements BooleanPolicyOpera
 				}
 				break;
 			}
+			///CLOVER:OFF
 			default: 
 				retVal = false;
+			///CLOVER:ON	
 		}
 		return PolicyValueFactory.getInstance(retVal);
 	}

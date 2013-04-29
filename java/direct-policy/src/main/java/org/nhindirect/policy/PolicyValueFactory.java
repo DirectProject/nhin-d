@@ -44,5 +44,11 @@ public class PolicyValueFactory
 			return value.equals(obj);
 		}
 		
+		@Override
+		public int hashCode()
+		{
+			return value.hashCode();
+		}
+		
 	}
 }

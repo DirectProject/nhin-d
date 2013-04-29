@@ -4,17 +4,9 @@ public abstract class AbstractTBSField<P> extends AbstractX509Field<P> implement
 {	
 	static final long serialVersionUID = -5732010856760538062L;	
 	
-	protected final boolean required;
-	
 	protected AbstractTBSField(boolean required)
 	{
 		this.required = required;
-	}
-	
-	@Override
-	public boolean isRequired()
-	{
-		return required;
 	}
 	
 	@Override

@@ -64,7 +64,7 @@ public class IssuerAttributeField extends AbstractTBSField<Collection<String>>
 		final Vector<String> values = x509Name.getValues(new DERObjectIdentifier(getRDNAttributeFieldId().getId()));
 		
 		if (values.isEmpty() && this.isRequired())
-			throw new PolicyRequiredException("TDB Field " + getFieldName() + " is marked as required by is not present.");
+			throw new PolicyRequiredException(getFieldName() + " field attribute " + rdnAttributeId.getName()  + " is marked as required but is not present.");
 		
 		final Collection<String> retVal = values; 
 			

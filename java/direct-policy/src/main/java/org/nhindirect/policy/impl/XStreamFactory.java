@@ -15,8 +15,10 @@ public class XStreamFactory
 	            {
 	                public boolean shouldSerializeMember(@SuppressWarnings("rawtypes") final Class definedIn, final String fieldName) 
 	                {
+	                	///CLOVER:OFF
 	                    if (definedIn == Object.class)
 	                        return false;
+	                    ///CLOVER:ON
 	                    return super.shouldSerializeMember(definedIn, fieldName);
 	                }
 	            };

@@ -7,7 +7,7 @@ import java.awt.Point;
 
 import javax.swing.JFrame;
 
-
+///CLOVER:OFF
 public class CertPolicyValidator extends JFrame
 {
 	static final long serialVersionUID = -5834001498578311969L;
@@ -48,3 +48,4 @@ public class CertPolicyValidator extends JFrame
 		getContentPane().add(validate);
 	}
 }
+///CLOVER:ON

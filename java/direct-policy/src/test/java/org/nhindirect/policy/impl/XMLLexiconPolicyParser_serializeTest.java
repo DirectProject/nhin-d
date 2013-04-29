@@ -1,5 +1,7 @@
 package org.nhindirect.policy.impl;
 
+import static org.mockito.Mockito.mock;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.Vector;
@@ -12,6 +14,7 @@ import org.nhindirect.policy.OperationPolicyExpressionFactory;
 import org.nhindirect.policy.PolicyExpression;
 import org.nhindirect.policy.PolicyExpressionType;
 import org.nhindirect.policy.PolicyOperator;
+import org.nhindirect.policy.PolicyParseException;
 import org.nhindirect.policy.PolicyValue;
 import org.nhindirect.policy.PolicyValueFactory;
 import org.nhindirect.policy.impl.XMLLexiconPolicyParser;
@@ -48,7 +51,7 @@ public class XMLLexiconPolicyParser_serializeTest extends TestCase
 		// deserialize
 		final ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
 
-		final PolicyExpression deserExpression = parser.deserialize(inStream);
+		final PolicyExpression deserExpression = parser.parse(inStream);
 		
 		assertNotNull(deserExpression);
 		
@@ -116,10 +119,82 @@ public class XMLLexiconPolicyParser_serializeTest extends TestCase
 		// deserialize
 		final ByteArrayInputStream inStream = new ByteArrayInputStream(outStream.toByteArray());
 
-		final PolicyExpression deserExpression = parser.deserialize(inStream);
+		final PolicyExpression deserExpression = parser.parse(inStream);
 		
 		assertNotNull(deserExpression);
 		
 		assertEquals(PolicyExpressionType.OPERATION, deserExpression.getExpressionType());
+	}
+	
+	public void testSerialize_nullExpression_assertExecption() throws Exception
+	{
+		boolean exceptionOccured = false;
+		
+		final XMLLexiconPolicyParser parser = new XMLLexiconPolicyParser();
+		
+		try
+		{
+			parser.serialize(null,  null);
+		}
+		catch (IllegalArgumentException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+	}
+	
+	public void testSerialize_nullStream_assertExecption() throws Exception
+	{
+		boolean exceptionOccured = false;
+		
+		final XMLLexiconPolicyParser parser = new XMLLexiconPolicyParser();
+		
+		try
+		{
+			parser.serialize(mock(PolicyExpression.class),  null);
+		}
+		catch (IllegalArgumentException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+	}
+	
+	public void testDeserialize_nullStream_assertExecption() throws Exception
+	{
+		boolean exceptionOccured = false;
+		
+		final XMLLexiconPolicyParser parser = new XMLLexiconPolicyParser();
+		
+		try
+		{
+			parser.deserialize(null);
+		}
+		catch (IllegalArgumentException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
 	}	
+	
+	public void testDeserializeo_invalidXML_assertExecption() throws Exception
+	{
+		boolean exceptionOccured = false;
+		
+		final XMLLexiconPolicyParser parser = new XMLLexiconPolicyParser();
+		
+		try
+		{
+			parser.deserialize(new ByteArrayInputStream(new byte[] {0,1,2}));
+		}
+		catch (PolicyParseException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+	}		
 }

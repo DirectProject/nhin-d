@@ -61,10 +61,12 @@ public class JavaSerializedObjectLexiconPolicyParser implements PolicyLexiconPar
 			objectStream.close();	
 
 		}
+		///CLOVER:OFF
 		catch (IOException e)
 		{
 			throw new PolicyParseException("Could not serialize policy expression to serialized POJO.", e);
 		}
+		///CLOVER:ON
 	}
 	
 	

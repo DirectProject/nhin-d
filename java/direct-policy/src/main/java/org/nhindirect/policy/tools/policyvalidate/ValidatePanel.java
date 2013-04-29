@@ -11,6 +11,11 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Locale;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -25,15 +30,16 @@ import javax.swing.border.SoftBevelBorder;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.nhindirect.policy.PolicyFilterFactory;
 import org.nhindirect.policy.PolicyLexicon;
 import org.nhindirect.policy.PolicyExpression;
 import org.nhindirect.policy.PolicyFilter;
 import org.nhindirect.policy.PolicyLexiconParser;
 import org.nhindirect.policy.PolicyLexiconParserFactory;
 import org.nhindirect.policy.PolicyRequiredException;
-import org.nhindirect.policy.impl.DefaultPolicyFilter;
+import org.nhindirect.policy.impl.machine.StackMachineCompiler;
 
-
+///CLOVER:OFF
 public class ValidatePanel extends JPanel 
 {
 	static final long serialVersionUID = -1058079566562354445L;
@@ -156,20 +162,37 @@ public class ValidatePanel extends JPanel
 			return;
 		}
 		
+		final DateFormat dateFormat = new SimpleDateFormat("EEE, MMM d yyyy HH:mm:ss", Locale.getDefault());
+		final StringBuilder reportTextBuilder = new StringBuilder("Validation run at " + dateFormat.format(Calendar.getInstance(Locale.getDefault()).getTime())
+				+ "\r\n\r\n");
+		
 		try
 		{
 			final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(PolicyLexicon.XML);
 			final PolicyExpression policyExpression = parser.parse(policyInput);
-			final PolicyFilter filter = new DefaultPolicyFilter();
+		
 			
-			if (filter.isCompliant(cert, policyExpression))			
-				reportText.setText("Validation Successful\r\nCertificate is compliant with the provided policy.");
+			final org.nhindirect.policy.Compiler compiler = new StackMachineCompiler();
+			compiler.setReportModeEnabled(true);
+			final PolicyFilter filter = PolicyFilterFactory.getInstance(compiler);
+			
+			if (filter.isCompliant(cert, policyExpression) && compiler.getCompilationReport().isEmpty())			
+				reportTextBuilder.append("Certificate is compliant with the provided policy.");
 			else
-				reportText.setText("Validation Successful\r\nCertificate is NOT compliant with the provided policy.");
+			{
+				reportTextBuilder.append("Certificate is NOT compliant with the provided policy.\r\n\r\n");
+				
+				final Collection<String> report = compiler.getCompilationReport();
+				if (!report.isEmpty())
+				{
+					for (String reportEntry : report)
+						reportTextBuilder.append(reportEntry + "\r\n");
+				}
+			}
 		}
 		catch (PolicyRequiredException e)
 		{
-			reportText.setText("Validation Successful\r\nCertificate is missing a required field\r\n\t" + e.getMessage());
+			reportTextBuilder.append("Validation Successful\r\nCertificate is missing a required field\r\n\t" + e.getMessage());
 		}
 		catch (Exception e)
 		{
@@ -182,11 +205,13 @@ public class ValidatePanel extends JPanel
 			
 			final String stackTrace = new String(str.toByteArray());
 			
-			reportText.setText("Validation Failed\r\nError compiling or proccessing policy\r\n\t" + e.getMessage() + "\r\n" + stackTrace);
+			reportTextBuilder.append("Validation Failed\r\nError compiling or proccessing policy\r\n\t" + e.getMessage() + "\r\n" + stackTrace);
 		}
 		finally
 		{
+			reportText.setText(reportTextBuilder.toString());
 			IOUtils.closeQuietly(policyInput);
 		}
 	}
 }
+///CLOVER:ON

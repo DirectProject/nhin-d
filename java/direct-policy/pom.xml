@@ -3,9 +3,9 @@
     <groupId>org.nhind</groupId>    
     <modelVersion>4.0.0</modelVersion>
     <artifactId>direct-policy</artifactId>    
-    <name>Direct Project policy enablement APIs</name>
+    <name>Direct Project policy enablement engine</name>
     <version>1.0-SNAPSHOT</version>
-    <description>Direct Project policy enablement APIs. </description>
+    <description>Direct Project policy enablement engine</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-policy/${project.version}</url> 
     <developers>
@@ -334,7 +334,7 @@
 	            <configuration>
 	                <dates>
 	                    <!-- Insert the date of the most recent release -->
-                        <date>2011-01-15</date>
+                        <date>2013-04-01</date>
 	                </dates>
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>
