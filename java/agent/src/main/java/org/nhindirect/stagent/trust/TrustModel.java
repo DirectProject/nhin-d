@@ -28,8 +28,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyFilter;
+import org.nhindirect.policy.PolicyFilterFactory;
+import org.nhindirect.policy.PolicyParseException;
+import org.nhindirect.policy.PolicyProcessException;
+import org.nhindirect.policy.PolicyRequiredException;
 import org.nhindirect.stagent.AgentError;
 import org.nhindirect.stagent.AgentException;
 import org.nhindirect.stagent.CryptoExtensions;
@@ -39,6 +47,9 @@ import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.OutgoingMessage;
 import org.nhindirect.stagent.cert.SignerCertPair;
+import org.nhindirect.stagent.policy.PolicyResolver;
+import org.nhindirect.stagent.trust.annotation.TrustPolicyFilter;
+import org.nhindirect.stagent.trust.annotation.TrustPolicyResolver;
 
 import com.google.inject.Inject;
 
@@ -59,14 +70,27 @@ public class TrustModel
     public static final TrustModel Default = new TrustModel();
     
     private final TrustChainValidator certChainValidator;
-	private static final Log LOGGER = LogFactory.getFactory().getInstance(TrustModel.class);
+
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(TrustModel.class);
     
+	private PolicyResolver trustPolicyResolver;
+    
+	private PolicyFilter policyFilter;
+	
     /**
      * Constructs a model with a default validator.
      */
     public TrustModel()
     {
     	certChainValidator = new TrustChainValidator();
+        try
+        {
+        	this.policyFilter = PolicyFilterFactory.getInstance();
+        }
+        catch (PolicyParseException e)
+        {
+        	throw new AgentException(AgentError.Unexpected, "Failed to create policy filter object.", e);
+        }
     }
 
     /**
@@ -77,6 +101,14 @@ public class TrustModel
     public TrustModel(TrustChainValidator validator)
     {
     	certChainValidator = validator;
+        try
+        {
+        	this.policyFilter = PolicyFilterFactory.getInstance();
+        }
+        catch (PolicyParseException e)
+        {
+        	throw new AgentException(AgentError.Unexpected, "Failed to create policy filter object.", e);
+        }
     }    
     
     /**
@@ -87,7 +119,29 @@ public class TrustModel
     {
     	return certChainValidator;
     }
-           
+    
+    @Inject(optional=true)
+	public void setPolicyFilter(@TrustPolicyFilter PolicyFilter policyFilter)
+	{
+		this.policyFilter = policyFilter;
+	}
+	
+	public PolicyFilter getPolicyFilter()
+	{
+		return this.policyFilter;
+	}
+    
+    @Inject(optional=true)
+	public void setTrustPolicyResolver(@TrustPolicyResolver PolicyResolver trustPolicyResolver)
+	{
+		this.trustPolicyResolver = trustPolicyResolver;
+	}
+	
+	public PolicyResolver getTrustPolicyResolver()
+	{
+		return this.trustPolicyResolver;
+	}
+    
     /**
      * Enforces the trust policy an incoming message.  Each domain recipient's trust status is set according the models trust policy. 
      */
@@ -119,7 +173,7 @@ public class TrustModel
         	{
 	        	
 	        	// Find a trusted signature
-	        	DefaultMessageSignatureImpl trustedSignature = findTrustedSignature(message, recipient.getTrustAnchors());
+	        	DefaultMessageSignatureImpl trustedSignature = findTrustedSignature(message, recipient, recipient.getTrustAnchors());
 	        	
 	        	// verify the signature
 	        	if (trustedSignature != null)
@@ -217,7 +271,13 @@ public class TrustModel
     	message.setSenderSignatures(senderSignatures);
     }
     
-    protected DefaultMessageSignatureImpl findTrustedSignature(IncomingMessage message, Collection<X509Certificate> anchors)    
+    protected  DefaultMessageSignatureImpl findTrustedSignature(IncomingMessage message, Collection<X509Certificate> anchors)    
+    {
+    	// implemented for passivity reasons
+    	return findTrustedSignature(message, null, anchors);
+    }
+    
+    protected DefaultMessageSignatureImpl findTrustedSignature(IncomingMessage message, InternetAddress recipient, Collection<X509Certificate> anchors)    
     {
     	NHINDAddress sender = message.getSender();
     	
@@ -231,7 +291,13 @@ public class TrustModel
         	// return if we find a thumb print match... otherwise keep searching until we either find one
         	// of find the best possible match
         	
-        	if (certChainValidator.isTrusted(signature.getSignerCert(), anchors) && signature.checkSignature())
+        	boolean certTrustedAndInPolicy = certChainValidator.isTrusted(signature.getSignerCert(), anchors) && signature.checkSignature();
+        	if (certTrustedAndInPolicy && recipient != null)
+        	{
+        		certTrustedAndInPolicy = this.isCertPolicyCompliant(recipient, signature.getSignerCert());
+        	}
+        	
+        	if (certTrustedAndInPolicy)
         	{
         		if (!sender.hasCertificates())
         			return signature; // Can't really check thumbprints etc. So, this is about as good as its going to get
@@ -252,5 +318,40 @@ public class TrustModel
         }
         
         return lastTrustedSignature;
+    }
+    
+    protected boolean isCertPolicyCompliant(InternetAddress recipient, X509Certificate cert)
+    {
+    	boolean isCompliant = true;
+    	// apply the policy if it exists
+    	if (this.trustPolicyResolver != null && policyFilter != null)
+    	{	
+    		// get the incoming public policy based on the sender
+    		final Collection<PolicyExpression> expressions = trustPolicyResolver.getIncomingPolicy(recipient); 
+
+    		for (PolicyExpression expression : expressions)
+    		{
+    			try
+    			{
+    				// check for compliance
+	    			if (!policyFilter.isCompliant(cert, expression))
+	    			{
+	    				isCompliant = false;
+	    				break;
+	    			}
+    			}
+    			catch (PolicyRequiredException requiredException)
+    			{
+    				isCompliant = false;
+    				break;
+    			}
+    			catch (PolicyProcessException processException)
+    			{
+    				throw new AgentException(AgentError.InvalidPolicy, processException);
+    			}
+    		}
+    	}
+    	
+    	return isCompliant;
     }
 }

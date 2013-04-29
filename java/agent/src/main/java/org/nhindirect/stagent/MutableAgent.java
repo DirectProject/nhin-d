@@ -24,9 +24,12 @@ package org.nhindirect.stagent;
 
 import java.util.Collection;
 
+import org.nhindirect.policy.PolicyFilter;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cryptography.Cryptographer;
+import org.nhindirect.stagent.policy.PolicyResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
+import org.nhindirect.stagent.trust.TrustModel;
 
 /**
  * Defines an interface for modifying agent properties.  Care should be taken when implementing this interface to ensure thread safe operation of agent modification.
@@ -123,4 +126,52 @@ public interface MutableAgent
      * @return True if the agent automatically wraps messages.
      */
     public boolean isWrappingEnabled();
+    
+    /**
+     * Sets the policy resolver for publicly discovered certificates
+     * @param publicPolicyResolver The policy resolver for publicly discovered certificates
+     */
+    public void setPublicPolicyResolver(PolicyResolver publicPolicyResolver);
+    
+    /**
+     * Gets the policy resolver for publicly discovered certificates
+     * @return The policy resolver for publicly discovered certificates
+     */
+    public PolicyResolver getPublicPolicyResolver();
+    
+    /**
+     * Sets the policy resolvers for privately discovered certificates
+     * @param privatePolicyResolver The policy resolvers for privately discovered certificates
+     */
+    public void setPrivatePolicyResolver(PolicyResolver privatePolicyResolver);
+    
+    /**
+     * Gets the policy resolvers for privately discovered certificates
+     * @return The policy resolvers for privately discovered certificates
+     */
+    public PolicyResolver getPrivatePolicyResolver();
+    
+    /**
+     * Sets the policy filter engine for the agent.
+     * @param filter The policy filter engine for the agent.
+     */
+    public void setPolicyFilter(PolicyFilter filter);
+    
+    /**
+     * Gets the policy filter engine for the agent.
+     * @return The policy filter engine for the agent.
+     */
+    public PolicyFilter getPolicyFilter();
+    
+    /**
+     * Sets the trust model for enforcing message trust
+     * @param trustModel The trust model for enforcing message trust
+     */
+    public void setTrustModel(TrustModel trustModel);
+    
+    /**
+     * Gets the trust model for enforcing message trust
+     * @return The trust model for enforcing message trust
+     */
+    public TrustModel getTrustModel();
 }
