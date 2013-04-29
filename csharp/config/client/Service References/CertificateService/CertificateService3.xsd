@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+  <xs:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:element name="AddCertificate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="certificate" nillable="true" type="tns:Certificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Certificate">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="Data" nillable="true" type="xs:base64Binary" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q1:EntityStatus" />
+      <xs:element name="Thumbprint" nillable="true" type="xs:string" />
+      <xs:element name="ValidEndDate" type="xs:dateTime" />
+      <xs:element name="ValidStartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Certificate" nillable="true" type="tns:Certificate" />
+  <xs:element name="AddCertificateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddCertificateResult" nillable="true" type="tns:Certificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ConfigStoreFault">
+    <xs:sequence>
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="AddCertificates">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="certificates" nillable="true" type="tns:ArrayOfCertificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfCertificate">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Certificate" nillable="true" type="tns:Certificate" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCertificate" nillable="true" type="tns:ArrayOfCertificate" />
+  <xs:element name="AddCertificatesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCertificate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="thumbprint" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="CertificateGetOptions">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="IncludeData" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IncludePrivateKey" type="xs:boolean" />
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Status" nillable="true" type="q3:EntityStatus" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CertificateGetOptions" nillable="true" type="tns:CertificateGetOptions" />
+  <xs:element name="GetCertificateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCertificateResult" nillable="true" type="tns:Certificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCertificates">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q4:ArrayOflong" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCertificatesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCertificatesResult" nillable="true" type="tns:ArrayOfCertificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCertificatesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetCertificatesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetCertificatesForOwnerResult" nillable="true" type="tns:ArrayOfCertificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetCertificateStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q5:ArrayOflong" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q6:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetCertificateStatusResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetCertificateStatusForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q7:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetCertificateStatusForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveCertificates">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q8="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="certificateIDs" nillable="true" type="q8:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveCertificatesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveCertificatesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveCertificatesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateCertificates">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastCertificateID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateCertificatesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateCertificatesResult" nillable="true" type="tns:ArrayOfCertificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAnchor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="anchor" nillable="true" type="tns:Anchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Anchor">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="Data" nillable="true" type="xs:base64Binary" />
+      <xs:element name="ForIncoming" type="xs:boolean" />
+      <xs:element name="ForOutgoing" type="xs:boolean" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q9:EntityStatus" />
+      <xs:element name="Thumbprint" nillable="true" type="xs:string" />
+      <xs:element name="ValidEndDate" type="xs:dateTime" />
+      <xs:element name="ValidStartDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Anchor" nillable="true" type="tns:Anchor" />
+  <xs:element name="AddAnchorResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddAnchorResult" nillable="true" type="tns:Anchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="anchors" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfAnchor">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Anchor" nillable="true" type="tns:Anchor" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAnchor" nillable="true" type="tns:ArrayOfAnchor" />
+  <xs:element name="AddAnchorsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="thumbprint" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchorResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAnchorResult" nillable="true" type="tns:Anchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q10="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q10:ArrayOflong" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchorsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchorsForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAnchorsForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAnchorsForOwnerResult" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIncomingAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIncomingAnchorsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetIncomingAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingAnchorsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetOutgoingAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAnchorStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q11="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q11:ArrayOflong" />
+        <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q12:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAnchorStatusResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAnchorStatusForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q13:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetAnchorStatusForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastAnchorID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element minOccurs="0" name="options" nillable="true" type="tns:CertificateGetOptions" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateAnchorsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateAnchorsResult" nillable="true" type="tns:ArrayOfAnchor" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAnchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q14="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="anchorIDs" nillable="true" type="q14:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAnchorsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAnchorsForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAnchorsForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddBundle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bundle" nillable="true" type="tns:Bundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Bundle">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="ForIncoming" type="xs:boolean" />
+      <xs:element name="ForOutgoing" type="xs:boolean" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Owner" nillable="true" type="xs:string" />
+      <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q15:EntityStatus" />
+      <xs:element name="Url" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Bundle" nillable="true" type="tns:Bundle" />
+  <xs:element name="AddBundleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddBundleResult" nillable="true" type="tns:Bundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bundles" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfBundle">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Bundle" nillable="true" type="tns:Bundle" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfBundle" nillable="true" type="tns:ArrayOfBundle" />
+  <xs:element name="AddBundlesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="bundleId" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundleResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBundleResult" nillable="true" type="tns:Bundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q16="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="bundleIDs" nillable="true" type="q16:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundlesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetBundlesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetBundlesForOwnerResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIncomingBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q17:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetIncomingBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetIncomingBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q18:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetOutgoingBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q19="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="bundleIDs" nillable="true" type="q19:ArrayOflong" />
+        <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q20:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatusResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatusForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+        <xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q21:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetBundleStatusForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastBundleID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateBundlesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateBundlesResult" nillable="true" type="tns:ArrayOfBundle" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundles">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q22="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="bundleIDs" nillable="true" type="q22:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundlesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundlesForOwner">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveBundlesForOwnerResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
