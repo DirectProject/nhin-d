@@ -55,7 +55,7 @@ public class CertificateDaoImpl implements CertificateDao
     @Autowired
     private EntityManager entityManager;
 
-    private static final Log log = LogFactory.getLog(DomainDaoImpl.class);
+    private static final Log log = LogFactory.getLog(CertificateDaoImpl.class);
     
     /*
      * (non-Javadoc)
