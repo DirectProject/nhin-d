@@ -30,7 +30,8 @@
 				  <property name="certSvc" ref="certSvc"/>
 				  <property name="settingSvc" ref="settingSvc"/>
                   <property name="DNSSvc" ref="dnsSvc"/>
-                  <property name="trustBundleSvc" ref="trustBundleSvc"/>                        
+                  <property name="trustBundleSvc" ref="trustBundleSvc"/>   
+                  <property name="certificatePolicySvc" ref="certificatePolicySvc"/>                                           
 			</bean>
 			
 		</jaxws:implementor>
@@ -61,6 +62,9 @@
 	<bean id="trustBundleSvc" class="org.nhindirect.config.service.impl.TrustBundleServiceImpl">
 	   <property name="dao" ref="trustBundleDao"/>
 	</bean>	
+	<bean id="certificatePolicySvc" class="org.nhindirect.config.service.impl.CertificatePolicyServiceImpl">
+	   <property name="dao" ref="certPolicyDao"/>
+	</bean>		
 	
     <!--  DAO's -->
     <bean id="domainDao" class="org.nhindirect.config.store.dao.impl.DomainDaoImpl"/>
@@ -70,7 +74,8 @@
     <bean id="settingDao" class="org.nhindirect.config.store.dao.impl.SettingDaoImpl"/> 
     <bean id="dnsDao" class="org.nhindirect.config.store.dao.impl.DNSDaoImpl"/> 
     <bean id="trustBundleDao" class="org.nhindirect.config.store.dao.impl.TrustBundleDaoImpl"/> 
-        
+     <bean id="certPolicyDao" class="org.nhindirect.config.store.dao.impl.CertPolicyDaoImpl"/>   
+            
 	<!-- Exception translation bean post processor -->
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
