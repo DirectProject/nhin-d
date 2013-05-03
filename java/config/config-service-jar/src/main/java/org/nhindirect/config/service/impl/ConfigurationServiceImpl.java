@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.service.AddressService;
 import org.nhindirect.config.service.AnchorService;
+import org.nhindirect.config.service.CertificatePolicyService;
 import org.nhindirect.config.service.CertificateService;
 import org.nhindirect.config.service.ConfigurationFault;
 import org.nhindirect.config.service.ConfigurationService;
@@ -43,6 +44,10 @@ import org.nhindirect.config.service.TrustBundleService;
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Anchor;
 import org.nhindirect.config.store.BundleRefreshError;
+import org.nhindirect.config.store.CertPolicy;
+import org.nhindirect.config.store.CertPolicyGroup;
+import org.nhindirect.config.store.CertPolicyGroupDomainReltn;
+import org.nhindirect.config.store.CertPolicyUse;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.Domain;
@@ -50,6 +55,7 @@ import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleDomainReltn;
+import org.nhindirect.policy.PolicyLexicon;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -75,6 +81,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private DNSService dnsSvc;
     
     private TrustBundleService trustBundleSvc;
+  
+    private CertificatePolicyService certPolicySvc;
     
     /**
      * Initialization method.
@@ -504,6 +512,26 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Autowired
     public void setTrustBundleSvc(TrustBundleService trustBundleSvc) {
         this.trustBundleSvc = trustBundleSvc;
+    }   
+    
+    /**
+     * Get the CertificatePolicyService object.
+     * 
+     * @return the CertificatePolicyService object.
+     */
+    public CertificatePolicyService getCertificatePolicySvc() {
+        return certPolicySvc;
+    }
+
+    /**
+     * Set the CertificatePolicyService object.
+     * 
+     * @param certPolicySvc
+     *            The CertificatePolicyService object.
+     */
+    @Autowired
+    public void setCertificatePolicySvc(CertificatePolicyService certPolicySvc) {
+        this.certPolicySvc = certPolicySvc;
     }   
     
     /*
@@ -958,5 +986,138 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 		return trustBundleSvc.getTrustBundlesByDomain(domainId, fetchAnchors);
 	}   
 	
-	
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<CertPolicy> getPolicies() throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicies();
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public CertPolicy getPolicyByName(String policyName) throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicyByName(policyName);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public CertPolicy getPolicyById(long id) throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicyById(id);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void addPolicy(CertPolicy policy) throws ConfigurationServiceException 
+	{
+		certPolicySvc.addPolicy(policy);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void deletePolicies(long[] policyIds) throws ConfigurationServiceException 
+	{
+		certPolicySvc.deletePolicies(policyIds);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updatePolicyAttributes(long id, String policyName,
+			PolicyLexicon lexicon, byte[] policyData) throws ConfigurationServiceException 
+	{
+		certPolicySvc.updatePolicyAttributes(id, policyName, lexicon, policyData);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<CertPolicyGroup> getPolicyGroups() throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicyGroups();
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public CertPolicyGroup getPolicyGroupByName(String policyGroupName) throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicyGroupByName(policyGroupName);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public CertPolicyGroup getPolicyGroupById(long id) throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicyGroupById(id);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void addPolicyGroup(CertPolicyGroup group) throws ConfigurationServiceException 
+	{
+		certPolicySvc.addPolicyGroup(group);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void deletePolicyGroups(long[] groupIds) throws ConfigurationServiceException 
+	{
+		certPolicySvc.deletePolicyGroups(groupIds);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void updateGroupAttributes(long id, String groupName) throws ConfigurationServiceException 
+	{	
+		certPolicySvc.updateGroupAttributes(id, groupName);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void addPolicyUseToGroup(long groupId, long policyId, CertPolicyUse policyUse,
+			boolean incoming, boolean outgoing) throws ConfigurationServiceException 
+	{	
+		certPolicySvc.addPolicyUseToGroup(groupId, policyId, policyUse, incoming, outgoing);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void removePolicyUseFromGroup(long policyGroupReltnId) throws ConfigurationServiceException 
+	{
+		certPolicySvc.removePolicyUseFromGroup(policyGroupReltnId);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void associatePolicyGroupToDomain(long domainId,long policyGroupId) throws ConfigurationServiceException 
+	{	
+		certPolicySvc.associatePolicyGroupToDomain(domainId, policyGroupId);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void disassociatePolicyGroupFromDomain(long domainId, long policyGroupId) throws ConfigurationServiceException 
+	{
+		certPolicySvc.disassociatePolicyGroupFromDomain(domainId, policyGroupId);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void disassociatePolicyGroupsFromDomain(long domainId) throws ConfigurationServiceException 
+	{	
+		certPolicySvc.disassociatePolicyGroupsFromDomain(domainId);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public void disassociatePolicyGroupFromDomains(long policyGroupId) throws ConfigurationServiceException 
+	{
+		certPolicySvc.disassociatePolicyGroupFromDomains(policyGroupId);
+	}
+
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
+	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupsByDomain(long domainId) throws ConfigurationServiceException 
+	{
+		return certPolicySvc.getPolicyGroupsByDomain(domainId);
+	}   
 }

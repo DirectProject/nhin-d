@@ -6,7 +6,7 @@
 	<version>1.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI config service jar</name>
-    <description>&gt;NHIN Direct Java RI config service.</description>	
+    <description>NHIN Direct Java RI config service jar.</description>	
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-service-jar/${project.version}</url>  
 
 	<scm>
@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.3</version>
+			<version>1.4-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

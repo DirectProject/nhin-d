@@ -405,6 +405,120 @@
   <message name="getTrustBundlesByDomainResponse">
     <part name="parameters" element="tns:getTrustBundlesByDomainResponse"/>
   </message>
+  <message name="getPolicies">
+    <part name="parameters" element="tns:getPolicies"/>
+  </message>
+  <message name="getPoliciesResponse">
+    <part name="parameters" element="tns:getPoliciesResponse"/>
+  </message>
+  <message name="getPolicyByName">
+    <part name="parameters" element="tns:getPolicyByName"/>
+  </message>
+  <message name="getPolicyByNameResponse">
+    <part name="parameters" element="tns:getPolicyByNameResponse"/>
+  </message>
+  <message name="getPolicyById">
+    <part name="parameters" element="tns:getPolicyById"/>
+  </message>
+  <message name="getPolicyByIdResponse">
+    <part name="parameters" element="tns:getPolicyByIdResponse"/>
+  </message>
+  <message name="addPolicy">
+    <part name="parameters" element="tns:addPolicy"/>
+  </message>
+  <message name="addPolicyResponse">
+    <part name="parameters" element="tns:addPolicyResponse"/>
+  </message>
+  <message name="deletePolicies">
+    <part name="parameters" element="tns:deletePolicies"/>
+  </message>
+  <message name="deletePoliciesResponse">
+    <part name="parameters" element="tns:deletePoliciesResponse"/>
+  </message>
+  <message name="updatePolicyAttributes">
+    <part name="parameters" element="tns:updatePolicyAttributes"/>
+  </message>
+  <message name="updatePolicyAttributesResponse">
+    <part name="parameters" element="tns:updatePolicyAttributesResponse"/>
+  </message>
+  <message name="getPolicyGroups">
+    <part name="parameters" element="tns:getPolicyGroups"/>
+  </message>
+  <message name="getPolicyGroupsResponse">
+    <part name="parameters" element="tns:getPolicyGroupsResponse"/>
+  </message>
+  <message name="getPolicyGroupByName">
+    <part name="parameters" element="tns:getPolicyGroupByName"/>
+  </message>
+  <message name="getPolicyGroupByNameResponse">
+    <part name="parameters" element="tns:getPolicyGroupByNameResponse"/>
+  </message>
+  <message name="getPolicyGroupById">
+    <part name="parameters" element="tns:getPolicyGroupById"/>
+  </message>
+  <message name="getPolicyGroupByIdResponse">
+    <part name="parameters" element="tns:getPolicyGroupByIdResponse"/>
+  </message>
+  <message name="addPolicyGroup">
+    <part name="parameters" element="tns:addPolicyGroup"/>
+  </message>
+  <message name="addPolicyGroupResponse">
+    <part name="parameters" element="tns:addPolicyGroupResponse"/>
+  </message>
+  <message name="deletePolicyGroups">
+    <part name="parameters" element="tns:deletePolicyGroups"/>
+  </message>
+  <message name="deletePolicyGroupsResponse">
+    <part name="parameters" element="tns:deletePolicyGroupsResponse"/>
+  </message>
+  <message name="updateGroupAttributes">
+    <part name="parameters" element="tns:updateGroupAttributes"/>
+  </message>
+  <message name="updateGroupAttributesResponse">
+    <part name="parameters" element="tns:updateGroupAttributesResponse"/>
+  </message>
+  <message name="addPolicyUseToGroup">
+    <part name="parameters" element="tns:addPolicyUseToGroup"/>
+  </message>
+  <message name="addPolicyUseToGroupResponse">
+    <part name="parameters" element="tns:addPolicyUseToGroupResponse"/>
+  </message>
+  <message name="removePolicyUseFromGroup">
+    <part name="parameters" element="tns:removePolicyUseFromGroup"/>
+  </message>
+  <message name="removePolicyUseFromGroupResponse">
+    <part name="parameters" element="tns:removePolicyUseFromGroupResponse"/>
+  </message>
+  <message name="associatePolicyGroupToDomain">
+    <part name="parameters" element="tns:associatePolicyGroupToDomain"/>
+  </message>
+  <message name="associatePolicyGroupToDomainResponse">
+    <part name="parameters" element="tns:associatePolicyGroupToDomainResponse"/>
+  </message>
+  <message name="disassociatePolicyGroupFromDomain">
+    <part name="parameters" element="tns:disassociatePolicyGroupFromDomain"/>
+  </message>
+  <message name="disassociatePolicyGroupFromDomainResponse">
+    <part name="parameters" element="tns:disassociatePolicyGroupFromDomainResponse"/>
+  </message>
+  <message name="disassociatePolicyGroupsFromDomain">
+    <part name="parameters" element="tns:disassociatePolicyGroupsFromDomain"/>
+  </message>
+  <message name="disassociatePolicyGroupsFromDomainResponse">
+    <part name="parameters" element="tns:disassociatePolicyGroupsFromDomainResponse"/>
+  </message>
+  <message name="disassociatePolicyGroupFromDomains">
+    <part name="parameters" element="tns:disassociatePolicyGroupFromDomains"/>
+  </message>
+  <message name="disassociatePolicyGroupFromDomainsResponse">
+    <part name="parameters" element="tns:disassociatePolicyGroupFromDomainsResponse"/>
+  </message>
+  <message name="getPolicyGroupsByDomain">
+    <part name="parameters" element="tns:getPolicyGroupsByDomain"/>
+  </message>
+  <message name="getPolicyGroupsByDomainResponse">
+    <part name="parameters" element="tns:getPolicyGroupsByDomainResponse"/>
+  </message>
   <portType name="ConfigurationService">
     <operation name="getAddresss">
       <input message="tns:getAddresss"/>
@@ -731,6 +845,101 @@
     <operation name="getTrustBundlesByDomain">
       <input message="tns:getTrustBundlesByDomain"/>
       <output message="tns:getTrustBundlesByDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicies">
+      <input message="tns:getPolicies"/>
+      <output message="tns:getPoliciesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyByName">
+      <input message="tns:getPolicyByName"/>
+      <output message="tns:getPolicyByNameResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyById">
+      <input message="tns:getPolicyById"/>
+      <output message="tns:getPolicyByIdResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="addPolicy">
+      <input message="tns:addPolicy"/>
+      <output message="tns:addPolicyResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="deletePolicies">
+      <input message="tns:deletePolicies"/>
+      <output message="tns:deletePoliciesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updatePolicyAttributes">
+      <input message="tns:updatePolicyAttributes"/>
+      <output message="tns:updatePolicyAttributesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyGroups">
+      <input message="tns:getPolicyGroups"/>
+      <output message="tns:getPolicyGroupsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyGroupByName">
+      <input message="tns:getPolicyGroupByName"/>
+      <output message="tns:getPolicyGroupByNameResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyGroupById">
+      <input message="tns:getPolicyGroupById"/>
+      <output message="tns:getPolicyGroupByIdResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="addPolicyGroup">
+      <input message="tns:addPolicyGroup"/>
+      <output message="tns:addPolicyGroupResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="deletePolicyGroups">
+      <input message="tns:deletePolicyGroups"/>
+      <output message="tns:deletePolicyGroupsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="updateGroupAttributes">
+      <input message="tns:updateGroupAttributes"/>
+      <output message="tns:updateGroupAttributesResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="addPolicyUseToGroup">
+      <input message="tns:addPolicyUseToGroup"/>
+      <output message="tns:addPolicyUseToGroupResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="removePolicyUseFromGroup">
+      <input message="tns:removePolicyUseFromGroup"/>
+      <output message="tns:removePolicyUseFromGroupResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="associatePolicyGroupToDomain">
+      <input message="tns:associatePolicyGroupToDomain"/>
+      <output message="tns:associatePolicyGroupToDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="disassociatePolicyGroupFromDomain">
+      <input message="tns:disassociatePolicyGroupFromDomain"/>
+      <output message="tns:disassociatePolicyGroupFromDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="disassociatePolicyGroupsFromDomain">
+      <input message="tns:disassociatePolicyGroupsFromDomain"/>
+      <output message="tns:disassociatePolicyGroupsFromDomainResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="disassociatePolicyGroupFromDomains">
+      <input message="tns:disassociatePolicyGroupFromDomains"/>
+      <output message="tns:disassociatePolicyGroupFromDomainsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyGroupsByDomain">
+      <input message="tns:getPolicyGroupsByDomain"/>
+      <output message="tns:getPolicyGroupsByDomainResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
   </portType>
