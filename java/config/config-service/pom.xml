@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.3</version>
+			<version>1.4-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -196,7 +196,7 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-service-jar</artifactId>
-			<version>1.4</version>
+			<version>1.5-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -367,7 +367,7 @@
 							<maxIdleTime>60000</maxIdleTime>                
 						</connector> 
 			        </connectors>
-			        <webApp>${basedir}/target/config-service-1.1</webApp>
+			        <webApp>${basedir}/target/config-service-1.5</webApp>
 			        <requestLog implementation="org.mortbay.jetty.NCSARequestLog">
 			            <filename>target/yyyy_mm_dd.request.log</filename>
 			            <retainDays>90</retainDays>
@@ -423,7 +423,7 @@
 			<dependency>
 				<groupId>org.nhind</groupId>
 				<artifactId>config-store</artifactId>
-				<version>1.3</version>
+				<version>1.4-SNAPSHOT</version>
 				<type>jar</type>
 				<scope>compile</scope>
 			</dependency>

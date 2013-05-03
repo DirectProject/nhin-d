@@ -271,10 +271,10 @@ public class TrustBundleServiceImpl implements TrustBundleService
 	}
             
 	/**
-     * Set the value of the DNSDao object.
+     * Set the value of the TrustBundlDao object.
      * 
      * @param dao
-     *            the value of the DNSDao object.
+     *            the value of the TrustBundlDao object.
      */
     @Autowired
     public void setDao(TrustBundleDao dao) 
@@ -283,9 +283,9 @@ public class TrustBundleServiceImpl implements TrustBundleService
     }
 
     /**
-     * Return the value of the DNSDao object.
+     * Return the value of the TrustBundlDao object.
      * 
-     * @return the value of the DNSDao object.
+     * @return the value of the TrustBundlDao object.
      */
     ///CLOVER:OFF
     public TrustBundleDao getDao() 

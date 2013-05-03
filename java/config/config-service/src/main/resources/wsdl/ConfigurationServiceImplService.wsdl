@@ -787,6 +787,234 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="getPolicies">
+      <soap:operation soapAction="urn:GetPolicies"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getPolicyByName">
+      <soap:operation soapAction="urn:GetPolicyByName"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getPolicyById">
+      <soap:operation soapAction="urn:GetPolicyById"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addPolicy">
+      <soap:operation soapAction="urn:AddPolicy"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="deletePolicies">
+      <soap:operation soapAction="urn:DeletePolicies"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updatePolicyAttributes">
+      <soap:operation soapAction="urn:UpdatePolicyAttributes"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getPolicyGroups">
+      <soap:operation soapAction="urn:GetPolicyGroups"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getPolicyGroupByName">
+      <soap:operation soapAction="urn:GetPolicyGroupByName"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getPolicyGroupById">
+      <soap:operation soapAction="urn:GetPolicyGroupById"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addPolicyGroup">
+      <soap:operation soapAction="urn:AddPolicyGroup"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="deletePolicyGroups">
+      <soap:operation soapAction="urn:DeletePolicyGroups"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="updateGroupAttributes">
+      <soap:operation soapAction="urn:UpdateGroupAttributes"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="addPolicyUseToGroup">
+      <soap:operation soapAction="urn:AddPolicyUseToGroup"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="removePolicyUseFromGroup">
+      <soap:operation soapAction="urn:RemovePolicyUseFromGroup"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="associatePolicyGroupToDomain">
+      <soap:operation soapAction="urn:AssociatePolicyGroupToDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="disassociatePolicyGroupFromDomain">
+      <soap:operation soapAction="urn:DisassociatePolicyGroupFromDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="disassociatePolicyGroupsFromDomain">
+      <soap:operation soapAction="urn:DisassociatePolicyGroupsFromDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="disassociatePolicyGroupFromDomains">
+      <soap:operation soapAction="urn:DisassociatePolicyGroupFromDomains"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getPolicyGroupsByDomain">
+      <soap:operation soapAction="urn:GetPolicyGroupsByDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
   </binding>
   <service name="ConfigurationServiceImplService">
     <port name="ConfigurationServiceImplPort" binding="tns:ConfigurationServiceImplPortBinding">

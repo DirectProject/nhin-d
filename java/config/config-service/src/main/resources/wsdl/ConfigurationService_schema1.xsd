@@ -23,6 +23,18 @@
 
   <xs:element name="addDomainResponse" type="tns:addDomainResponse"/>
 
+  <xs:element name="addPolicy" type="tns:addPolicy"/>
+
+  <xs:element name="addPolicyGroup" type="tns:addPolicyGroup"/>
+
+  <xs:element name="addPolicyGroupResponse" type="tns:addPolicyGroupResponse"/>
+
+  <xs:element name="addPolicyResponse" type="tns:addPolicyResponse"/>
+
+  <xs:element name="addPolicyUseToGroup" type="tns:addPolicyUseToGroup"/>
+
+  <xs:element name="addPolicyUseToGroupResponse" type="tns:addPolicyUseToGroupResponse"/>
+
   <xs:element name="addSetting" type="tns:addSetting"/>
 
   <xs:element name="addSettingResponse" type="tns:addSettingResponse"/>
@@ -30,6 +42,10 @@
   <xs:element name="addTrustBundle" type="tns:addTrustBundle"/>
 
   <xs:element name="addTrustBundleResponse" type="tns:addTrustBundleResponse"/>
+
+  <xs:element name="associatePolicyGroupToDomain" type="tns:associatePolicyGroupToDomain"/>
+
+  <xs:element name="associatePolicyGroupToDomainResponse" type="tns:associatePolicyGroupToDomainResponse"/>
 
   <xs:element name="associateTrustBundleToDomain" type="tns:associateTrustBundleToDomain"/>
 
@@ -39,6 +55,14 @@
 
   <xs:element name="containsResponse" type="tns:containsResponse"/>
 
+  <xs:element name="deletePolicies" type="tns:deletePolicies"/>
+
+  <xs:element name="deletePoliciesResponse" type="tns:deletePoliciesResponse"/>
+
+  <xs:element name="deletePolicyGroups" type="tns:deletePolicyGroups"/>
+
+  <xs:element name="deletePolicyGroupsResponse" type="tns:deletePolicyGroupsResponse"/>
+
   <xs:element name="deleteSetting" type="tns:deleteSetting"/>
 
   <xs:element name="deleteSettingResponse" type="tns:deleteSettingResponse"/>
@@ -46,6 +70,18 @@
   <xs:element name="deleteTrustBundles" type="tns:deleteTrustBundles"/>
 
   <xs:element name="deleteTrustBundlesResponse" type="tns:deleteTrustBundlesResponse"/>
+
+  <xs:element name="disassociatePolicyGroupFromDomain" type="tns:disassociatePolicyGroupFromDomain"/>
+
+  <xs:element name="disassociatePolicyGroupFromDomainResponse" type="tns:disassociatePolicyGroupFromDomainResponse"/>
+
+  <xs:element name="disassociatePolicyGroupFromDomains" type="tns:disassociatePolicyGroupFromDomains"/>
+
+  <xs:element name="disassociatePolicyGroupFromDomainsResponse" type="tns:disassociatePolicyGroupFromDomainsResponse"/>
+
+  <xs:element name="disassociatePolicyGroupsFromDomain" type="tns:disassociatePolicyGroupsFromDomain"/>
+
+  <xs:element name="disassociatePolicyGroupsFromDomainResponse" type="tns:disassociatePolicyGroupsFromDomainResponse"/>
 
   <xs:element name="disassociateTrustBundleFromDomain" type="tns:disassociateTrustBundleFromDomain"/>
 
@@ -141,6 +177,34 @@
 
   <xs:element name="getOutgoingAnchorsResponse" type="tns:getOutgoingAnchorsResponse"/>
 
+  <xs:element name="getPolicies" type="tns:getPolicies"/>
+
+  <xs:element name="getPoliciesResponse" type="tns:getPoliciesResponse"/>
+
+  <xs:element name="getPolicyById" type="tns:getPolicyById"/>
+
+  <xs:element name="getPolicyByIdResponse" type="tns:getPolicyByIdResponse"/>
+
+  <xs:element name="getPolicyByName" type="tns:getPolicyByName"/>
+
+  <xs:element name="getPolicyByNameResponse" type="tns:getPolicyByNameResponse"/>
+
+  <xs:element name="getPolicyGroupById" type="tns:getPolicyGroupById"/>
+
+  <xs:element name="getPolicyGroupByIdResponse" type="tns:getPolicyGroupByIdResponse"/>
+
+  <xs:element name="getPolicyGroupByName" type="tns:getPolicyGroupByName"/>
+
+  <xs:element name="getPolicyGroupByNameResponse" type="tns:getPolicyGroupByNameResponse"/>
+
+  <xs:element name="getPolicyGroups" type="tns:getPolicyGroups"/>
+
+  <xs:element name="getPolicyGroupsByDomain" type="tns:getPolicyGroupsByDomain"/>
+
+  <xs:element name="getPolicyGroupsByDomainResponse" type="tns:getPolicyGroupsByDomainResponse"/>
+
+  <xs:element name="getPolicyGroupsResponse" type="tns:getPolicyGroupsResponse"/>
+
   <xs:element name="getSettingByName" type="tns:getSettingByName"/>
 
   <xs:element name="getSettingByNameResponse" type="tns:getSettingByNameResponse"/>
@@ -225,6 +289,10 @@
 
   <xs:element name="removeDomainResponse" type="tns:removeDomainResponse"/>
 
+  <xs:element name="removePolicyUseFromGroup" type="tns:removePolicyUseFromGroup"/>
+
+  <xs:element name="removePolicyUseFromGroupResponse" type="tns:removePolicyUseFromGroupResponse"/>
+
   <xs:element name="searchDomain" type="tns:searchDomain"/>
 
   <xs:element name="searchDomainResponse" type="tns:searchDomainResponse"/>
@@ -253,9 +321,17 @@
 
   <xs:element name="updateDomainResponse" type="tns:updateDomainResponse"/>
 
+  <xs:element name="updateGroupAttributes" type="tns:updateGroupAttributes"/>
+
+  <xs:element name="updateGroupAttributesResponse" type="tns:updateGroupAttributesResponse"/>
+
   <xs:element name="updateLastUpdateError" type="tns:updateLastUpdateError"/>
 
   <xs:element name="updateLastUpdateErrorResponse" type="tns:updateLastUpdateErrorResponse"/>
+
+  <xs:element name="updatePolicyAttributes" type="tns:updatePolicyAttributes"/>
+
+  <xs:element name="updatePolicyAttributesResponse" type="tns:updatePolicyAttributesResponse"/>
 
   <xs:element name="updateSetting" type="tns:updateSetting"/>
 
@@ -337,6 +413,16 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="disassociatePolicyGroupsFromDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociatePolicyGroupsFromDomainResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="getCertificate">
     <xs:sequence>
       <xs:element name="owner" type="xs:string" minOccurs="0"/>
@@ -395,6 +481,16 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="deletePolicyGroups">
+    <xs:sequence>
+      <xs:element name="policyGroupIds" type="xs:long" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deletePolicyGroupsResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="removeDomainById">
     <xs:sequence>
       <xs:element name="id" type="xs:long" minOccurs="0"/>
@@ -426,6 +522,26 @@
       <xs:element name="updateTime" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="value" type="xs:string" minOccurs="0"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicies">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPoliciesResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicy" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certPolicy">
+    <xs:sequence>
+      <xs:element name="createTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="policyData" type="xs:base64Binary" minOccurs="0"/>
+      <xs:element name="policyName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="lexicon" type="tns:policyLexicon"/>
   </xs:complexType>
 
   <xs:complexType name="getAllSettings">
@@ -582,6 +698,17 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="disassociatePolicyGroupFromDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+      <xs:element name="policyGroupId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociatePolicyGroupFromDomainResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="setCertificateStatusForOwner">
     <xs:sequence>
       <xs:element name="owner" type="xs:string" minOccurs="0"/>
@@ -700,6 +827,49 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="getPolicyGroupById">
+    <xs:sequence>
+      <xs:element name="policyGroupId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupByIdResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicyGroup" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certPolicyGroup">
+    <xs:sequence>
+      <xs:element name="certPolicyGroupReltn" type="tns:certPolicyGroupReltn" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="createTime" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="policyGroupName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certPolicyGroupReltn">
+    <xs:sequence>
+      <xs:element name="certPolicy" type="tns:certPolicy" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+      <xs:element name="incoming" type="xs:boolean"/>
+      <xs:element name="outgoing" type="xs:boolean"/>
+    </xs:sequence>
+    <xs:attribute name="policyUse" type="tns:certPolicyUse"/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyByName">
+    <xs:sequence>
+      <xs:element name="policyName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyByNameResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicy" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="removeAnchorsForOwner">
     <xs:sequence>
       <xs:element name="owner" type="xs:string" minOccurs="0"/>
@@ -811,6 +981,16 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="disassociatePolicyGroupFromDomains">
+    <xs:sequence>
+      <xs:element name="policyGroupId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disassociatePolicyGroupFromDomainsResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="getCertificates">
     <xs:sequence>
       <xs:element name="certificateIds" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
@@ -847,6 +1027,20 @@
     <xs:sequence>
       <xs:element name="return" type="tns:dnsRecord" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addPolicyUseToGroup">
+    <xs:sequence>
+      <xs:element name="policyGroupId" type="xs:long"/>
+      <xs:element name="policyId" type="xs:long"/>
+      <xs:element name="policyUse" type="tns:certPolicyUse" minOccurs="0"/>
+      <xs:element name="incoming" type="xs:boolean"/>
+      <xs:element name="outgoing" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addPolicyUseToGroupResponse">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="removeAddress">
@@ -906,6 +1100,29 @@
     </xs:sequence>
   </xs:complexType>
 
+  <xs:complexType name="updatePolicyAttributes">
+    <xs:sequence>
+      <xs:element name="policyId" type="xs:long"/>
+      <xs:element name="policyName" type="xs:string" minOccurs="0"/>
+      <xs:element name="policyLexicon" type="tns:policyLexicon" minOccurs="0"/>
+      <xs:element name="policyData" type="xs:base64Binary" nillable="true" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updatePolicyAttributesResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="addPolicyGroup">
+    <xs:sequence>
+      <xs:element name="policyGroup" type="tns:certPolicyGroup" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addPolicyGroupResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
   <xs:complexType name="addDomain">
     <xs:sequence>
       <xs:element name="domain" type="tns:domain" minOccurs="0"/>
@@ -948,6 +1165,37 @@
 
   <xs:complexType name="removeDNSByRecordIdResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="updateGroupAttributes">
+    <xs:sequence>
+      <xs:element name="policyGroupId" type="xs:long"/>
+      <xs:element name="policyGroupName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="updateGroupAttributesResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupsByDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupsByDomainResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicyGroupDomainReltn" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="certPolicyGroupDomainReltn">
+    <xs:sequence>
+      <xs:element name="certPolicyGroup" type="tns:certPolicyGroup" minOccurs="0"/>
+      <xs:element name="domain" type="tns:domain" minOccurs="0"/>
+      <xs:element name="id" type="xs:long"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="getTrustBundles">
@@ -1058,6 +1306,18 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="getPolicyById">
+    <xs:sequence>
+      <xs:element name="policyId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyByIdResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicy" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="removeDNS">
     <xs:sequence>
       <xs:element name="records" type="tns:dnsRecord" minOccurs="0" maxOccurs="unbounded"/>
@@ -1065,6 +1325,26 @@
   </xs:complexType>
 
   <xs:complexType name="removeDNSResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="removePolicyUseFromGroup">
+    <xs:sequence>
+      <xs:element name="policyGroupReltnId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="removePolicyUseFromGroupResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="addPolicy">
+    <xs:sequence>
+      <xs:element name="policy" type="tns:certPolicy" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="addPolicyResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -1096,6 +1376,18 @@
 
   <xs:complexType name="addTrustBundleResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupByName">
+    <xs:sequence>
+      <xs:element name="policyGroupName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupByNameResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicyGroup" minOccurs="0"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="updateSetting">
@@ -1141,6 +1433,27 @@
     <xs:sequence/>
   </xs:complexType>
 
+  <xs:complexType name="associatePolicyGroupToDomain">
+    <xs:sequence>
+      <xs:element name="domainId" type="xs:long"/>
+      <xs:element name="policyGroupId" type="xs:long"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="associatePolicyGroupToDomainResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroups">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupsResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicyGroup" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="addCertificates">
     <xs:sequence>
       <xs:element name="certs" type="tns:certificate" minOccurs="0" maxOccurs="unbounded"/>
@@ -1148,6 +1461,16 @@
   </xs:complexType>
 
   <xs:complexType name="addCertificatesResponse">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="deletePolicies">
+    <xs:sequence>
+      <xs:element name="policyIds" type="xs:long" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deletePoliciesResponse">
     <xs:sequence/>
   </xs:complexType>
 
@@ -1159,6 +1482,13 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="policyLexicon">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="XML"/>
+      <xs:enumeration value="JAVA_SER"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:simpleType name="bundleRefreshError">
     <xs:restriction base="xs:string">
       <xs:enumeration value="SUCCESS"/>
@@ -1167,6 +1497,15 @@
       <xs:enumeration value="INVALID_BUNDLE_FORMAT"/>
       <xs:enumeration value="INVALID_SIGNING_CERT"/>
       <xs:enumeration value="UNMATCHED_SIGNATURE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="certPolicyUse">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="TRUST"/>
+      <xs:enumeration value="PRIVATE_RESOLVER"/>
+      <xs:enumeration value="PUBLIC_RESOLVER"/>
+      <xs:enumeration value="VALIDATION"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>
