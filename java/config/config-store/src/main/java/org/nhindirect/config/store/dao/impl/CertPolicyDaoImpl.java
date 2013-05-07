@@ -482,17 +482,10 @@ public class CertPolicyDaoImpl implements CertPolicyDao
         
         try
         {
-            final Query select = entityManager.createQuery("SELECT cpr from CertPolicyGroupReltn cpr WHERE cpr.id = ?1");
+            final Query select = entityManager.createQuery("DELETE from CertPolicyGroupReltn cpr WHERE cpr.id = ?1");
             select.setParameter(1, policyGroupReltnId);
-            
-            final CertPolicyGroupReltn rs = (CertPolicyGroupReltn)select.getSingleResult();
-            
-	        final CertPolicyGroup group = this.getPolicyGroupById(rs.getCertPolicyGroup().getId());
-	        
-	        group.getCertPolicyGroupReltn().remove(rs);
-	        
-			entityManager.persist(group);
-			
+
+            select.executeUpdate();
 			entityManager.flush();
         }
         catch (NoResultException e)

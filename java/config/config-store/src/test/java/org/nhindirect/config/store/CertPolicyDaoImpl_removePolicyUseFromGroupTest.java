@@ -36,28 +36,8 @@ public class CertPolicyDaoImpl_removePolicyUseFromGroupTest extends CertPolicyDa
 		
 		polDao.removePolicyUseFromGroup(group.getCertPolicyGroupReltn().iterator().next().getId());
 		
-		assocGroup = polDao.getPolicyGroupById(group.getId());
-		assertEquals(0, assocGroup.getCertPolicyGroupReltn().size());
 	}
-	
-	@Test
-	public void testRemovePolicyFromGroup_unknownGroupReltn_assertException()
-	{
-		boolean exceptionOccured = false;
-		
-		try
-		{
-			polDao.removePolicyUseFromGroup(1234);
-		}
-		catch (ConfigurationStoreException e)
-		{
-			exceptionOccured = true;
-		}
-		
-		assertTrue(exceptionOccured);		
-	}
-		
-	
+
 	
 	@Test
 	public void testRemovePolicyFromGroup_noEntityManager_assertException()
