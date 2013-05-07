@@ -16,7 +16,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[66];
+        _operations = new org.apache.axis.description.OperationDesc[85];
         _initOperationDesc1();
         _initOperationDesc2();
         _initOperationDesc3();
@@ -24,6 +24,8 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         _initOperationDesc5();
         _initOperationDesc6();
         _initOperationDesc7();
+        _initOperationDesc8();
+        _initOperationDesc9();
     }
 
     private static void _initOperationDesc1(){
@@ -54,6 +56,24 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         _operations[0] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("updateGroupAttributes");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[1] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getAnchors");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "anchorId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long[].class, false, false);
         param.setOmittable(true);
@@ -72,7 +92,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[1] = oper;
+        _operations[2] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDNSByType");
@@ -89,7 +109,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[2] = oper;
+        _operations[3] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("listCertificates");
@@ -111,7 +131,24 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[3] = oper;
+        _operations[4] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getPolicyGroupById");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroup"));
+        oper.setReturnClass(org.nhind.config.CertPolicyGroup.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[5] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDomains");
@@ -132,7 +169,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[4] = oper;
+        _operations[6] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addAnchor");
@@ -148,19 +185,22 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[5] = oper;
+        _operations[7] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getDomain");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "id"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), java.lang.Long.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "domain"));
-        oper.setReturnClass(org.nhind.config.Domain.class);
+        oper.setName("getPolicies");
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicy"));
+        oper.setReturnClass(org.nhind.config.CertPolicy[].class);
         oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[6] = oper;
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[8] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addSetting");
@@ -179,7 +219,65 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[7] = oper;
+        _operations[9] = oper;
+
+    }
+
+    private static void _initOperationDesc2(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "id"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), java.lang.Long.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "domain"));
+        oper.setReturnClass(org.nhind.config.Domain.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[10] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("addPolicy");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policy"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certPolicy"), org.nhind.config.CertPolicy.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[11] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("updatePolicyAttributes");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyLexicon"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "policyLexicon"), org.nhind.config.PolicyLexicon.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyData"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "base64Binary"), byte[].class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[12] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getTrustBundleByName");
@@ -197,7 +295,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[8] = oper;
+        _operations[13] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDNSByNameAndType");
@@ -217,13 +315,8 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[9] = oper;
+        _operations[14] = oper;
 
-    }
-
-    private static void _initOperationDesc2(){
-        org.apache.axis.description.OperationDesc oper;
-        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getTrustBundleById");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "id"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
@@ -239,7 +332,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[10] = oper;
+        _operations[15] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeDNS");
@@ -255,7 +348,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[11] = oper;
+        _operations[16] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("setCertificateStatusForOwner");
@@ -274,7 +367,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[12] = oper;
+        _operations[17] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getTrustBundles");
@@ -291,7 +384,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[13] = oper;
+        _operations[18] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeDomainById");
@@ -307,8 +400,13 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[14] = oper;
+        _operations[19] = oper;
 
+    }
+
+    private static void _initOperationDesc3(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getOutgoingAnchors");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
@@ -328,7 +426,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[15] = oper;
+        _operations[20] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeDNSByRecordIds");
@@ -345,7 +443,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[16] = oper;
+        _operations[21] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDNSByName");
@@ -363,7 +461,22 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[17] = oper;
+        _operations[22] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("removePolicyUseFromGroup");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupReltnId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[23] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("listAnchors");
@@ -386,7 +499,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[18] = oper;
+        _operations[24] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("listDomains");
@@ -406,13 +519,8 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[19] = oper;
+        _operations[25] = oper;
 
-    }
-
-    private static void _initOperationDesc3(){
-        org.apache.axis.description.OperationDesc oper;
-        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("updateDomain");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domain"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "domain"), org.nhind.config.Domain.class, false, false);
@@ -427,7 +535,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[20] = oper;
+        _operations[26] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getSettingByName");
@@ -445,7 +553,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[21] = oper;
+        _operations[27] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("updateAddress");
@@ -461,8 +569,29 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[22] = oper;
+        _operations[28] = oper;
 
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("addPolicyGroup");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroup"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroup"), org.nhind.config.CertPolicyGroup.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[29] = oper;
+
+    }
+
+    private static void _initOperationDesc4(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("setCertificateStatus");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "certificateIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long[].class, false, false);
@@ -480,7 +609,25 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[23] = oper;
+        _operations[30] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getPolicyGroupByName");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroup"));
+        oper.setReturnClass(org.nhind.config.CertPolicyGroup.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[31] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addDomain");
@@ -496,7 +643,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[24] = oper;
+        _operations[32] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("deleteSetting");
@@ -512,12 +659,11 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[25] = oper;
+        _operations[33] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("addDNS");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "records"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "dnsRecord"), org.nhind.config.DnsRecord[].class, false, false);
-        param.setOmittable(true);
+        oper.setName("disassociatePolicyGroupFromDomains");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
         oper.addParameter(param);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
@@ -528,44 +674,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[26] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("setAnchorStatusForOwner");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "status"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "entityStatus"), org.nhind.config.EntityStatus.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[27] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("updateDNS");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "recordId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "record"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "dnsRecord"), org.nhind.config.DnsRecord.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[28] = oper;
+        _operations[34] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("associateTrustBundleToDomain");
@@ -586,24 +695,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[29] = oper;
-
-    }
-
-    private static void _initOperationDesc4(){
-        org.apache.axis.description.OperationDesc oper;
-        org.apache.axis.description.ParameterDesc param;
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("contains");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "cert"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certificate"), org.nhind.config.Certificate.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
-        oper.setReturnClass(boolean.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[30] = oper;
+        _operations[35] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("listAddresss");
@@ -623,94 +715,16 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[31] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("removeCertificatesForOwner");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[32] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("refreshTrustBundle");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "id"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[33] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("addAddress");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "address"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "address"), org.nhind.config.Address[].class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[34] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getTrustBundlesByDomain");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "fetchAnchors"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"), boolean.class, false, false);
-        oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "trustBundleDomainReltn"));
-        oper.setReturnClass(org.nhind.config.TrustBundleDomainReltn[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[35] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getAllSettings");
-        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "setting"));
-        oper.setReturnClass(org.nhind.config.Setting[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
         _operations[36] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getAddressCount");
-        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        oper.setReturnClass(int.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setName("updateDNS");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "recordId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "record"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "dnsRecord"), org.nhind.config.DnsRecord.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
@@ -722,12 +736,14 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         _operations[37] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getDNSByRecordId");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "recordId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.setName("setAnchorStatusForOwner");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
         oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "dnsRecord"));
-        oper.setReturnClass(org.nhind.config.DnsRecord.class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "status"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "entityStatus"), org.nhind.config.EntityStatus.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
@@ -739,10 +755,8 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         _operations[38] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("updateTrustBundleSigningCertificate");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "signingCert"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certificate"), org.nhind.config.Certificate.class, false, false);
+        oper.setName("addDNS");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "records"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "dnsRecord"), org.nhind.config.DnsRecord[].class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
@@ -762,6 +776,186 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         org.apache.axis.description.OperationDesc oper;
         org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("associatePolicyGroupToDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[40] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("contains");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "cert"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certificate"), org.nhind.config.Certificate.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        oper.setReturnClass(boolean.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[41] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("removeCertificatesForOwner");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[42] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("refreshTrustBundle");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "id"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[43] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("addAddress");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "address"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "address"), org.nhind.config.Address[].class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[44] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getTrustBundlesByDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "fetchAnchors"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"), boolean.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "trustBundleDomainReltn"));
+        oper.setReturnClass(org.nhind.config.TrustBundleDomainReltn[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[45] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("disassociatePolicyGroupsFromDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[46] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getAllSettings");
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "setting"));
+        oper.setReturnClass(org.nhind.config.Setting[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[47] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getDNSByRecordId");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "recordId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "dnsRecord"));
+        oper.setReturnClass(org.nhind.config.DnsRecord.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[48] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("updateTrustBundleSigningCertificate");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "signingCert"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certificate"), org.nhind.config.Certificate.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[49] = oper;
+
+    }
+
+    private static void _initOperationDesc6(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getAddressCount");
+        oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        oper.setReturnClass(int.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[50] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getSettingsByNames");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "names"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String[].class, false, false);
         param.setOmittable(true);
@@ -777,7 +971,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[40] = oper;
+        _operations[51] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeAddress");
@@ -793,7 +987,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[41] = oper;
+        _operations[52] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeAnchors");
@@ -809,15 +1003,13 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[42] = oper;
+        _operations[53] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("updateSetting");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "name"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        oper.setName("deletePolicyGroups");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), java.lang.Long[].class, false, false);
         param.setOmittable(true);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "value"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
+        param.setNillable(true);
         oper.addParameter(param);
         oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
@@ -828,14 +1020,13 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[43] = oper;
+        _operations[54] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("removeDomain");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "name"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setName("getPolicyGroups");
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroup"));
+        oper.setReturnClass(org.nhind.config.CertPolicyGroup[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
@@ -844,7 +1035,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[44] = oper;
+        _operations[55] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getAddresss");
@@ -865,7 +1056,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[45] = oper;
+        _operations[56] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getCertificates");
@@ -886,7 +1077,64 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[46] = oper;
+        _operations[57] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("disassociatePolicyGroupFromDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[58] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("updateSetting");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "name"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "value"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[59] = oper;
+
+    }
+
+    private static void _initOperationDesc7(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("removeDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "name"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[60] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getIncomingAnchors");
@@ -907,7 +1155,48 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[47] = oper;
+        _operations[61] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("addPolicyUseToGroup");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyGroupId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyUse"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyUse"), org.nhind.config.CertPolicyUse.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "incoming"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"), boolean.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "outgoing"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"), boolean.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[62] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getPolicyById");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicy"));
+        oper.setReturnClass(org.nhind.config.CertPolicy.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[63] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeDNSByRecordId");
@@ -922,7 +1211,22 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[48] = oper;
+        _operations[64] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("searchDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "name"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "status"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "entityStatus"), org.nhind.config.EntityStatus.class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "domain"));
+        oper.setReturnClass(org.nhind.config.Domain[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[65] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addTrustBundle");
@@ -938,27 +1242,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[49] = oper;
-
-    }
-
-    private static void _initOperationDesc6(){
-        org.apache.axis.description.OperationDesc oper;
-        org.apache.axis.description.ParameterDesc param;
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("searchDomain");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "name"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "status"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://nhind.org/config", "entityStatus"), org.nhind.config.EntityStatus.class, false, false);
-        param.setOmittable(true);
-        oper.addParameter(param);
-        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "domain"));
-        oper.setReturnClass(org.nhind.config.Domain[].class);
-        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        _operations[50] = oper;
+        _operations[66] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getCertificatesForOwner");
@@ -979,24 +1263,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[51] = oper;
-
-        oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("disassociateTrustBundleFromDomain");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
-        oper.addParameter(param);
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
-        oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
-        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
-        oper.setUse(org.apache.axis.constants.Use.LITERAL);
-        oper.addFault(new org.apache.axis.description.FaultDesc(
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
-                      "org.nhind.config.ConfigurationServiceException",
-                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
-                      true
-                     ));
-        _operations[52] = oper;
+        _operations[67] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("disassociateTrustBundlesFromDomain");
@@ -1011,14 +1278,16 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[53] = oper;
+        _operations[68] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("removeCertificates");
-        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "certificateIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long[].class, false, false);
+        oper.setName("getPolicyByName");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
         param.setOmittable(true);
         oper.addParameter(param);
-        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicy"));
+        oper.setReturnClass(org.nhind.config.CertPolicy.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
         oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         oper.addFault(new org.apache.axis.description.FaultDesc(
@@ -1027,8 +1296,13 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[54] = oper;
+        _operations[69] = oper;
 
+    }
+
+    private static void _initOperationDesc8(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("removeAnchorsForOwner");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
@@ -1043,7 +1317,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[55] = oper;
+        _operations[70] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getAnchorsForOwner");
@@ -1064,7 +1338,74 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[56] = oper;
+        _operations[71] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getPolicyGroupsByDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroupDomainReltn"));
+        oper.setReturnClass(org.nhind.config.CertPolicyGroupDomainReltn[].class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "return"));
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[72] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("deletePolicies");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "policyIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), java.lang.Long[].class, false, false);
+        param.setOmittable(true);
+        param.setNillable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[73] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("disassociateTrustBundleFromDomain");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "domainId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "trustBundleId"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[74] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("removeCertificates");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "certificateIds"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"), long[].class, false, false);
+        param.setOmittable(true);
+        oper.addParameter(param);
+        oper.setReturnType(org.apache.axis.encoding.XMLType.AXIS_VOID);
+        oper.setStyle(org.apache.axis.constants.Style.WRAPPED);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        oper.addFault(new org.apache.axis.description.FaultDesc(
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"),
+                      "org.nhind.config.ConfigurationServiceException",
+                      new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
+                      true
+                     ));
+        _operations[75] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDomainCount");
@@ -1079,7 +1420,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[57] = oper;
+        _operations[76] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("addCertificates");
@@ -1095,7 +1436,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[58] = oper;
+        _operations[77] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("disassociateTrustBundleFromDomains");
@@ -1110,13 +1451,8 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[59] = oper;
+        _operations[78] = oper;
 
-    }
-
-    private static void _initOperationDesc7(){
-        org.apache.axis.description.OperationDesc oper;
-        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDNSCount");
         oper.setReturnType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
@@ -1130,8 +1466,13 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[60] = oper;
+        _operations[79] = oper;
 
+    }
+
+    private static void _initOperationDesc9(){
+        org.apache.axis.description.OperationDesc oper;
+        org.apache.axis.description.ParameterDesc param;
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getCertificate");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "owner"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
@@ -1154,7 +1495,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[61] = oper;
+        _operations[80] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("getDNSByRecordIds");
@@ -1173,7 +1514,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[62] = oper;
+        _operations[81] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("updateLastUpdateError");
@@ -1194,7 +1535,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[63] = oper;
+        _operations[82] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("updateTrustBundleAttributes");
@@ -1220,7 +1561,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[64] = oper;
+        _operations[83] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
         oper.setName("deleteTrustBundles");
@@ -1237,7 +1578,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
                       new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException"), 
                       true
                      ));
-        _operations[65] = oper;
+        _operations[84] = oper;
 
     }
 
@@ -1305,6 +1646,41 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             cachedSerFactories.add(beansf);
             cachedDeserFactories.add(beandf);
 
+            qName = new javax.xml.namespace.QName("http://nhind.org/config", "certPolicy");
+            cachedSerQNames.add(qName);
+            cls = org.nhind.config.CertPolicy.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroup");
+            cachedSerQNames.add(qName);
+            cls = org.nhind.config.CertPolicyGroup.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroupDomainReltn");
+            cachedSerQNames.add(qName);
+            cls = org.nhind.config.CertPolicyGroupDomainReltn.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyGroupReltn");
+            cachedSerQNames.add(qName);
+            cls = org.nhind.config.CertPolicyGroupReltn.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(beansf);
+            cachedDeserFactories.add(beandf);
+
+            qName = new javax.xml.namespace.QName("http://nhind.org/config", "certPolicyUse");
+            cachedSerQNames.add(qName);
+            cls = org.nhind.config.CertPolicyUse.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
             qName = new javax.xml.namespace.QName("http://nhind.org/config", "ConfigurationServiceException");
             cachedSerQNames.add(qName);
             cls = org.nhind.config.ConfigurationServiceException.class;
@@ -1329,6 +1705,13 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             qName = new javax.xml.namespace.QName("http://nhind.org/config", "entityStatus");
             cachedSerQNames.add(qName);
             cls = org.nhind.config.EntityStatus.class;
+            cachedSerClasses.add(cls);
+            cachedSerFactories.add(enumsf);
+            cachedDeserFactories.add(enumdf);
+
+            qName = new javax.xml.namespace.QName("http://nhind.org/config", "policyLexicon");
+            cachedSerQNames.add(qName);
+            cls = org.nhind.config.PolicyLexicon.class;
             cachedSerClasses.add(cls);
             cachedSerFactories.add(enumsf);
             cachedDeserFactories.add(enumdf);
@@ -1469,12 +1852,47 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public org.nhind.config.Anchor[] getAnchors(long[] anchorId, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public void updateGroupAttributes(long policyGroupId, java.lang.String policyGroupName) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[1]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:UpdateGroupAttributes");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateGroupAttributes"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyGroupId), policyGroupName});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public org.nhind.config.Anchor[] getAnchors(long[] anchorId, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[2]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetAnchors");
         _call.setEncodingStyle(null);
@@ -1516,7 +1934,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[2]);
+        _call.setOperation(_operations[3]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDNSByType");
         _call.setEncodingStyle(null);
@@ -1558,7 +1976,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[3]);
+        _call.setOperation(_operations[4]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:ListCertificates");
         _call.setEncodingStyle(null);
@@ -1595,12 +2013,54 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public org.nhind.config.CertPolicyGroup getPolicyGroupById(long policyGroupId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[5]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:GetPolicyGroupById");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicyGroupById"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyGroupId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.CertPolicyGroup) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.CertPolicyGroup) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicyGroup.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public org.nhind.config.Domain[] getDomains(java.lang.String[] names, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[4]);
+        _call.setOperation(_operations[6]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDomains");
         _call.setEncodingStyle(null);
@@ -1642,7 +2102,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[5]);
+        _call.setOperation(_operations[7]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AddAnchor");
         _call.setEncodingStyle(null);
@@ -1672,23 +2132,23 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public org.nhind.config.Domain getDomain(java.lang.Long id) throws java.rmi.RemoteException {
+    public org.nhind.config.CertPolicy[] getPolicies() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[6]);
+        _call.setOperation(_operations[8]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:GetDomain");
+        _call.setSOAPActionURI("urn:GetPolicies");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getDomain"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicies"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {id});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -1696,12 +2156,20 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
         else {
             extractAttachments(_call);
             try {
-                return (org.nhind.config.Domain) _resp;
+                return (org.nhind.config.CertPolicy[]) _resp;
             } catch (java.lang.Exception _exception) {
-                return (org.nhind.config.Domain) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.Domain.class);
+                return (org.nhind.config.CertPolicy[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicy[].class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
   throw axisFaultException;
 }
     }
@@ -1711,7 +2179,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[7]);
+        _call.setOperation(_operations[9]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AddSetting");
         _call.setEncodingStyle(null);
@@ -1741,12 +2209,116 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public org.nhind.config.Domain getDomain(java.lang.Long id) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[10]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:GetDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {id});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.Domain) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.Domain) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.Domain.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public void addPolicy(org.nhind.config.CertPolicy policy) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[11]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:AddPolicy");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "addPolicy"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {policy});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void updatePolicyAttributes(long policyId, java.lang.String policyName, org.nhind.config.PolicyLexicon policyLexicon, byte[] policyData) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[12]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:UpdatePolicyAttributes");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updatePolicyAttributes"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyId), policyName, policyLexicon, policyData});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public org.nhind.config.TrustBundle getTrustBundleByName(java.lang.String bundleName) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[8]);
+        _call.setOperation(_operations[13]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetTrustBundleByName");
         _call.setEncodingStyle(null);
@@ -1788,7 +2360,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[9]);
+        _call.setOperation(_operations[14]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDNSByNameAndType");
         _call.setEncodingStyle(null);
@@ -1830,7 +2402,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[10]);
+        _call.setOperation(_operations[15]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetTrustBundleById");
         _call.setEncodingStyle(null);
@@ -1872,7 +2444,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[11]);
+        _call.setOperation(_operations[16]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveDNS");
         _call.setEncodingStyle(null);
@@ -1907,7 +2479,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[12]);
+        _call.setOperation(_operations[17]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:SetCertificateStatusForOwner");
         _call.setEncodingStyle(null);
@@ -1942,7 +2514,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[13]);
+        _call.setOperation(_operations[18]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetTrustBundles");
         _call.setEncodingStyle(null);
@@ -1984,7 +2556,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[14]);
+        _call.setOperation(_operations[19]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveDomainById");
         _call.setEncodingStyle(null);
@@ -2019,7 +2591,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[15]);
+        _call.setOperation(_operations[20]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetOutgoingAnchors");
         _call.setEncodingStyle(null);
@@ -2061,7 +2633,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[16]);
+        _call.setOperation(_operations[21]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveDNSByRecordIds");
         _call.setEncodingStyle(null);
@@ -2096,7 +2668,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[17]);
+        _call.setOperation(_operations[22]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDNSByName");
         _call.setEncodingStyle(null);
@@ -2133,12 +2705,47 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public void removePolicyUseFromGroup(long policyGroupReltnId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[23]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:RemovePolicyUseFromGroup");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "removePolicyUseFromGroup"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyGroupReltnId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public org.nhind.config.Anchor[] listAnchors(java.lang.Long lastAnchorId, int maxResults, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[18]);
+        _call.setOperation(_operations[24]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:ListAnchors");
         _call.setEncodingStyle(null);
@@ -2180,7 +2787,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[19]);
+        _call.setOperation(_operations[25]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:listDomains");
         _call.setEncodingStyle(null);
@@ -2222,7 +2829,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[20]);
+        _call.setOperation(_operations[26]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:UpdateDomain");
         _call.setEncodingStyle(null);
@@ -2257,7 +2864,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[21]);
+        _call.setOperation(_operations[27]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetSettingByName");
         _call.setEncodingStyle(null);
@@ -2299,7 +2906,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[22]);
+        _call.setOperation(_operations[28]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:UpdateAddress");
         _call.setEncodingStyle(null);
@@ -2329,12 +2936,47 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public void addPolicyGroup(org.nhind.config.CertPolicyGroup policyGroup) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[29]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:AddPolicyGroup");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "addPolicyGroup"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {policyGroup});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public void setCertificateStatus(long[] certificateIds, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[23]);
+        _call.setOperation(_operations[30]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:SetCertificateStatus");
         _call.setEncodingStyle(null);
@@ -2364,12 +3006,54 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public org.nhind.config.CertPolicyGroup getPolicyGroupByName(java.lang.String policyGroupName) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[31]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:GetPolicyGroupByName");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicyGroupByName"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {policyGroupName});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.CertPolicyGroup) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.CertPolicyGroup) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicyGroup.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public void addDomain(org.nhind.config.Domain domain) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[24]);
+        _call.setOperation(_operations[32]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AddDomain");
         _call.setEncodingStyle(null);
@@ -2404,7 +3088,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[25]);
+        _call.setOperation(_operations[33]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:DeleteSetting");
         _call.setEncodingStyle(null);
@@ -2434,93 +3118,23 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void addDNS(org.nhind.config.DnsRecord[] records) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public void disassociatePolicyGroupFromDomains(long policyGroupId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[26]);
+        _call.setOperation(_operations[34]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:AddDNS");
+        _call.setSOAPActionURI("urn:DisassociatePolicyGroupFromDomains");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "addDNS"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "disassociatePolicyGroupFromDomains"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {records});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        extractAttachments(_call);
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-    if (axisFaultException.detail != null) {
-        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
-              throw (java.rmi.RemoteException) axisFaultException.detail;
-         }
-        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
-              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
-         }
-   }
-  throw axisFaultException;
-}
-    }
-
-    public void setAnchorStatusForOwner(java.lang.String owner, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[27]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:SetAnchorStatusForOwner");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "setAnchorStatusForOwner"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {owner, status});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        extractAttachments(_call);
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-    if (axisFaultException.detail != null) {
-        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
-              throw (java.rmi.RemoteException) axisFaultException.detail;
-         }
-        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
-              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
-         }
-   }
-  throw axisFaultException;
-}
-    }
-
-    public void updateDNS(long recordId, org.nhind.config.DnsRecord record) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[28]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:UpdateDNS");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateDNS"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(recordId), record});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyGroupId)});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -2544,7 +3158,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[29]);
+        _call.setOperation(_operations[35]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AssociateTrustBundleToDomain");
         _call.setEncodingStyle(null);
@@ -2574,46 +3188,12 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public boolean contains(org.nhind.config.Certificate cert) throws java.rmi.RemoteException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[30]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:Contains");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "contains"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {cert});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        else {
-            extractAttachments(_call);
-            try {
-                return ((java.lang.Boolean) _resp).booleanValue();
-            } catch (java.lang.Exception _exception) {
-                return ((java.lang.Boolean) org.apache.axis.utils.JavaUtils.convert(_resp, boolean.class)).booleanValue();
-            }
-        }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-  throw axisFaultException;
-}
-    }
-
     public org.nhind.config.Address[] listAddresss(java.lang.String lastEmailAddress, int maxResults) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[31]);
+        _call.setOperation(_operations[36]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:ListAddresss");
         _call.setEncodingStyle(null);
@@ -2650,12 +3230,186 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public void updateDNS(long recordId, org.nhind.config.DnsRecord record) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[37]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:UpdateDNS");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateDNS"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(recordId), record});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void setAnchorStatusForOwner(java.lang.String owner, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[38]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:SetAnchorStatusForOwner");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "setAnchorStatusForOwner"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {owner, status});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void addDNS(org.nhind.config.DnsRecord[] records) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[39]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:AddDNS");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "addDNS"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {records});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void associatePolicyGroupToDomain(long domainId, long policyGroupId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[40]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:AssociatePolicyGroupToDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "associatePolicyGroupToDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(domainId), new java.lang.Long(policyGroupId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public boolean contains(org.nhind.config.Certificate cert) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[41]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:Contains");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "contains"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {cert});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return ((java.lang.Boolean) _resp).booleanValue();
+            } catch (java.lang.Exception _exception) {
+                return ((java.lang.Boolean) org.apache.axis.utils.JavaUtils.convert(_resp, boolean.class)).booleanValue();
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
     public void removeCertificatesForOwner(java.lang.String owner) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[32]);
+        _call.setOperation(_operations[42]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveCertificatesForOwner");
         _call.setEncodingStyle(null);
@@ -2690,7 +3444,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[33]);
+        _call.setOperation(_operations[43]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RefreshTrustBundle");
         _call.setEncodingStyle(null);
@@ -2725,7 +3479,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[34]);
+        _call.setOperation(_operations[44]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AddAddress");
         _call.setEncodingStyle(null);
@@ -2760,7 +3514,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[35]);
+        _call.setOperation(_operations[45]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetTrustBundlesByDomain");
         _call.setEncodingStyle(null);
@@ -2797,12 +3551,47 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public void disassociatePolicyGroupsFromDomain(long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[46]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:DisassociatePolicyGroupsFromDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "disassociatePolicyGroupsFromDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(domainId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public org.nhind.config.Setting[] getAllSettings() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[36]);
+        _call.setOperation(_operations[47]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetAllSettings");
         _call.setEncodingStyle(null);
@@ -2839,54 +3628,12 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public int getAddressCount() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[37]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:GetAddressCount");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getAddressCount"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        else {
-            extractAttachments(_call);
-            try {
-                return ((java.lang.Integer) _resp).intValue();
-            } catch (java.lang.Exception _exception) {
-                return ((java.lang.Integer) org.apache.axis.utils.JavaUtils.convert(_resp, int.class)).intValue();
-            }
-        }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-    if (axisFaultException.detail != null) {
-        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
-              throw (java.rmi.RemoteException) axisFaultException.detail;
-         }
-        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
-              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
-         }
-   }
-  throw axisFaultException;
-}
-    }
-
     public org.nhind.config.DnsRecord getDNSByRecordId(long recordId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[38]);
+        _call.setOperation(_operations[48]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDNSByRecordId");
         _call.setEncodingStyle(null);
@@ -2928,7 +3675,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[39]);
+        _call.setOperation(_operations[49]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:UpdateTrustBundleSigningCertificate");
         _call.setEncodingStyle(null);
@@ -2958,12 +3705,54 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public int getAddressCount() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[50]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:GetAddressCount");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getAddressCount"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return ((java.lang.Integer) _resp).intValue();
+            } catch (java.lang.Exception _exception) {
+                return ((java.lang.Integer) org.apache.axis.utils.JavaUtils.convert(_resp, int.class)).intValue();
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public org.nhind.config.Setting[] getSettingsByNames(java.lang.String[] names) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[40]);
+        _call.setOperation(_operations[51]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetSettingsByNames");
         _call.setEncodingStyle(null);
@@ -3005,7 +3794,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[41]);
+        _call.setOperation(_operations[52]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveAddress");
         _call.setEncodingStyle(null);
@@ -3040,7 +3829,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[42]);
+        _call.setOperation(_operations[53]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveAnchors");
         _call.setEncodingStyle(null);
@@ -3070,23 +3859,23 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void updateSetting(java.lang.String name, java.lang.String value) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public void deletePolicyGroups(java.lang.Long[] policyGroupIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[43]);
+        _call.setOperation(_operations[54]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:UpdateSetting");
+        _call.setSOAPActionURI("urn:DeletePolicyGroups");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateSetting"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "deletePolicyGroups"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name, value});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {policyGroupIds});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
@@ -3105,28 +3894,35 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public org.nhind.config.CertPolicyGroup[] getPolicyGroups() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[44]);
+        _call.setOperation(_operations[55]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:RemoveDomain");
+        _call.setSOAPActionURI("urn:GetPolicyGroups");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "removeDomain"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicyGroups"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
         }
-        extractAttachments(_call);
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.CertPolicyGroup[]) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.CertPolicyGroup[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicyGroup[].class);
+            }
+        }
   } catch (org.apache.axis.AxisFault axisFaultException) {
     if (axisFaultException.detail != null) {
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
@@ -3145,7 +3941,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[45]);
+        _call.setOperation(_operations[56]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetAddresss");
         _call.setEncodingStyle(null);
@@ -3187,7 +3983,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[46]);
+        _call.setOperation(_operations[57]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetCertificates");
         _call.setEncodingStyle(null);
@@ -3224,12 +4020,117 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public void disassociatePolicyGroupFromDomain(long domainId, long policyGroupId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[58]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:DisassociatePolicyGroupFromDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "disassociatePolicyGroupFromDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(domainId), new java.lang.Long(policyGroupId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void updateSetting(java.lang.String name, java.lang.String value) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[59]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:UpdateSetting");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "updateSetting"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name, value});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void removeDomain(java.lang.String name) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[60]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:RemoveDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "removeDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public org.nhind.config.Anchor[] getIncomingAnchors(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[47]);
+        _call.setOperation(_operations[61]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetIncomingAnchors");
         _call.setEncodingStyle(null);
@@ -3266,12 +4167,89 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public void addPolicyUseToGroup(long policyGroupId, long policyId, org.nhind.config.CertPolicyUse policyUse, boolean incoming, boolean outgoing) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[62]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:AddPolicyUseToGroup");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "addPolicyUseToGroup"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyGroupId), new java.lang.Long(policyId), policyUse, new java.lang.Boolean(incoming), new java.lang.Boolean(outgoing)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public org.nhind.config.CertPolicy getPolicyById(long policyId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[63]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:GetPolicyById");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicyById"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(policyId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.CertPolicy) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.CertPolicy) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicy.class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public void removeDNSByRecordId(long recordId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[48]);
+        _call.setOperation(_operations[64]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveDNSByRecordId");
         _call.setEncodingStyle(null);
@@ -3301,12 +4279,46 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public org.nhind.config.Domain[] searchDomain(java.lang.String name, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[65]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:SearchDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "searchDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name, status});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.Domain[]) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.Domain[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.Domain[].class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
     public void addTrustBundle(org.nhind.config.TrustBundle bundle) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[49]);
+        _call.setOperation(_operations[66]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AddTrustBundle");
         _call.setEncodingStyle(null);
@@ -3336,46 +4348,12 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public org.nhind.config.Domain[] searchDomain(java.lang.String name, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[50]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:SearchDomain");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "searchDomain"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {name, status});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        else {
-            extractAttachments(_call);
-            try {
-                return (org.nhind.config.Domain[]) _resp;
-            } catch (java.lang.Exception _exception) {
-                return (org.nhind.config.Domain[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.Domain[].class);
-            }
-        }
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-  throw axisFaultException;
-}
-    }
-
     public org.nhind.config.Certificate[] getCertificatesForOwner(java.lang.String owner, org.nhind.config.CertificateGetOptions options) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[51]);
+        _call.setOperation(_operations[67]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetCertificatesForOwner");
         _call.setEncodingStyle(null);
@@ -3412,47 +4390,12 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void disassociateTrustBundleFromDomain(long domainId, long trustBundleId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
-        if (super.cachedEndpoint == null) {
-            throw new org.apache.axis.NoEndPointException();
-        }
-        org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[52]);
-        _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:DisassociateTrustBundleFromDomain");
-        _call.setEncodingStyle(null);
-        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
-        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "disassociateTrustBundleFromDomain"));
-
-        setRequestHeaders(_call);
-        setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(domainId), new java.lang.Long(trustBundleId)});
-
-        if (_resp instanceof java.rmi.RemoteException) {
-            throw (java.rmi.RemoteException)_resp;
-        }
-        extractAttachments(_call);
-  } catch (org.apache.axis.AxisFault axisFaultException) {
-    if (axisFaultException.detail != null) {
-        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
-              throw (java.rmi.RemoteException) axisFaultException.detail;
-         }
-        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
-              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
-         }
-   }
-  throw axisFaultException;
-}
-    }
-
     public void disassociateTrustBundlesFromDomain(long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[53]);
+        _call.setOperation(_operations[68]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:DisassociateTrustBundlesFromDomain");
         _call.setEncodingStyle(null);
@@ -3482,28 +4425,35 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
-    public void removeCertificates(long[] certificateIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+    public org.nhind.config.CertPolicy getPolicyByName(java.lang.String policyName) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[54]);
+        _call.setOperation(_operations[69]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("urn:RemoveCertificates");
+        _call.setSOAPActionURI("urn:GetPolicyByName");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "removeCertificates"));
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicyByName"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
- try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {certificateIds});
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {policyName});
 
         if (_resp instanceof java.rmi.RemoteException) {
             throw (java.rmi.RemoteException)_resp;
         }
-        extractAttachments(_call);
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.CertPolicy) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.CertPolicy) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicy.class);
+            }
+        }
   } catch (org.apache.axis.AxisFault axisFaultException) {
     if (axisFaultException.detail != null) {
         if (axisFaultException.detail instanceof java.rmi.RemoteException) {
@@ -3522,7 +4472,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[55]);
+        _call.setOperation(_operations[70]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:RemoveAnchorsForOwner");
         _call.setEncodingStyle(null);
@@ -3557,7 +4507,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[56]);
+        _call.setOperation(_operations[71]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetAnchorsForOwner");
         _call.setEncodingStyle(null);
@@ -3594,12 +4544,159 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
 }
     }
 
+    public org.nhind.config.CertPolicyGroupDomainReltn[] getPolicyGroupsByDomain(long domainId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[72]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:GetPolicyGroupsByDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "getPolicyGroupsByDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(domainId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (org.nhind.config.CertPolicyGroupDomainReltn[]) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (org.nhind.config.CertPolicyGroupDomainReltn[]) org.apache.axis.utils.JavaUtils.convert(_resp, org.nhind.config.CertPolicyGroupDomainReltn[].class);
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void deletePolicies(java.lang.Long[] policyIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[73]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:DeletePolicies");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "deletePolicies"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {policyIds});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void disassociateTrustBundleFromDomain(long domainId, long trustBundleId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[74]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:DisassociateTrustBundleFromDomain");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "disassociateTrustBundleFromDomain"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Long(domainId), new java.lang.Long(trustBundleId)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
+    public void removeCertificates(long[] certificateIds) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[75]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("urn:RemoveCertificates");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("http://nhind.org/config", "removeCertificates"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {certificateIds});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        extractAttachments(_call);
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+    if (axisFaultException.detail != null) {
+        if (axisFaultException.detail instanceof java.rmi.RemoteException) {
+              throw (java.rmi.RemoteException) axisFaultException.detail;
+         }
+        if (axisFaultException.detail instanceof org.nhind.config.ConfigurationServiceException) {
+              throw (org.nhind.config.ConfigurationServiceException) axisFaultException.detail;
+         }
+   }
+  throw axisFaultException;
+}
+    }
+
     public int getDomainCount() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[57]);
+        _call.setOperation(_operations[76]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDomainCount");
         _call.setEncodingStyle(null);
@@ -3641,7 +4738,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[58]);
+        _call.setOperation(_operations[77]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:AddCertificates");
         _call.setEncodingStyle(null);
@@ -3676,7 +4773,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[59]);
+        _call.setOperation(_operations[78]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:DisassociateTrustBundleFromDomains");
         _call.setEncodingStyle(null);
@@ -3711,7 +4808,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[60]);
+        _call.setOperation(_operations[79]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDNSCount");
         _call.setEncodingStyle(null);
@@ -3753,7 +4850,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[61]);
+        _call.setOperation(_operations[80]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetCertificate");
         _call.setEncodingStyle(null);
@@ -3795,7 +4892,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[62]);
+        _call.setOperation(_operations[81]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:GetDNSByRecordIds");
         _call.setEncodingStyle(null);
@@ -3837,7 +4934,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[63]);
+        _call.setOperation(_operations[82]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:UpdateLastUpdateError");
         _call.setEncodingStyle(null);
@@ -3872,7 +4969,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[64]);
+        _call.setOperation(_operations[83]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:UpdateTrustBundleAttributes");
         _call.setEncodingStyle(null);
@@ -3907,7 +5004,7 @@ public class ConfigurationServiceImplServiceSoapBindingStub extends org.apache.a
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
-        _call.setOperation(_operations[65]);
+        _call.setOperation(_operations[84]);
         _call.setUseSOAPAction(true);
         _call.setSOAPActionURI("urn:DeleteTrustBundles");
         _call.setEncodingStyle(null);

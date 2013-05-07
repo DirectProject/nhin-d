@@ -45,6 +45,13 @@
 	</issueManagement>
 	<dependencies>
 		<dependency>
+			<groupId>org.nhind</groupId>
+			<artifactId>direct-policy</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>	
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-asm</artifactId>
 			<version>3.0.4.RELEASE</version>
