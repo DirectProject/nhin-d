@@ -1,0 +1,24 @@
+package org.nhindirect.policy.x509;
+
+public enum TBSFieldName 
+{
+	VERSION,
+	
+	SERIAL_NUMBER,
+	
+	SIGNATURE,
+	
+	ISSUER,
+	
+	VALIDITY,
+	
+	SUBJECT,
+	
+	SUBJECT_PUBLIC_KEY_INFO,
+	
+	ISSUER_UNIQUE_ID,
+	
+	SUBJECT_UNIQUE_ID,
+	
+	EXTENSIONS;
+}
