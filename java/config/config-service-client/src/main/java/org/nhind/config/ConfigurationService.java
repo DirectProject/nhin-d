@@ -40,6 +40,7 @@ public interface ConfigurationService extends java.rmi.Remote {
     public void addPolicyGroup(org.nhind.config.CertPolicyGroup policyGroup) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void setCertificateStatus(long[] certificateIds, org.nhind.config.EntityStatus status) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public org.nhind.config.CertPolicyGroup getPolicyGroupByName(java.lang.String policyGroupName) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
+    public org.nhind.config.CertPolicyGroupDomainReltn[] getPolicyGroupDomainReltns() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void addDomain(org.nhind.config.Domain domain) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void deleteSetting(java.lang.String[] names) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;
     public void disassociatePolicyGroupFromDomains(long policyGroupId) throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException;

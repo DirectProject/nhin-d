@@ -49,5 +49,7 @@ public interface CertPolicyDao
 
 	public void disassociatePolicyGroupFromDomains(long policyGroupId) throws ConfigurationStoreException;		
 
+	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupDomainReltns() throws ConfigurationStoreException;	
+	
 	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupsByDomain(long domainId) throws ConfigurationStoreException;	
 }

@@ -198,6 +198,11 @@ public class ClientProxyCertificatePolicyTest
 		proxy.associatePolicyGroupToDomain(retrievedDomains[0].getId(), retrievedGroups[0].getId());
 		CertPolicyGroupDomainReltn[] domainGroups = proxy.getPolicyGroupsByDomain(retrievedDomains[0].getId());
 		assertEquals(1, domainGroups.length);
+		
+		// also get all domain/group relts without domain id qualifier
+		domainGroups = proxy.getPolicyGroupDomainReltns();
+		assertEquals(1, domainGroups.length);
+		
 
 		// should delete domain without error
 		proxy.removeDomainById(retrievedDomains[0].getId());
@@ -306,6 +311,10 @@ public class ClientProxyCertificatePolicyTest
 		proxy.associatePolicyGroupToDomain(retrievedDomains[1].getId(), retrievedGroups[0].getId());
 		domainGroups = proxy.getPolicyGroupsByDomain(retrievedDomains[1].getId());
 		assertEquals(1, domainGroups.length);
+		
+		// also get all domain/group relts without domain id qualifier
+		domainGroups = proxy.getPolicyGroupDomainReltns();
+		assertEquals(2, domainGroups.length);
 		
 		// remove policy from all domains domains
 		proxy.disassociatePolicyGroupFromDomains(retrievedGroups[0].getId());

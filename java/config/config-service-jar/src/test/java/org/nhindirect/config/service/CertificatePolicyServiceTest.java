@@ -162,6 +162,13 @@ public class CertificatePolicyServiceTest extends TestCase
 		verify(dao, times(1)).disassociatePolicyGroupFromDomains(1234);
 	}
 	
+	public void testGetPolicyGroupDomainReltns() throws Exception
+	{
+		impl.getPolicyGroupDomainReltns();
+		
+		verify(dao, times(1)).getPolicyGroupDomainReltns();
+	}
+	
 	public void testGetPolicyGroupsByDomain() throws Exception
 	{
 		impl.getPolicyGroupsByDomain(1234);

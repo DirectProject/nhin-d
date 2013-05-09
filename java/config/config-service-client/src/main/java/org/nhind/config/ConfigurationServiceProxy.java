@@ -554,5 +554,11 @@ public class ConfigurationServiceProxy implements org.nhind.config.Configuration
     configurationService.deleteTrustBundles(trustBundleIds);
   }
   
+  public org.nhind.config.CertPolicyGroupDomainReltn[] getPolicyGroupDomainReltns() throws java.rmi.RemoteException, org.nhind.config.ConfigurationServiceException{
+    if (configurationService == null)
+      _initConfigurationServiceProxy();
+    return configurationService.getPolicyGroupDomainReltns();
+  }
+  
   
 }

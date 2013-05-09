@@ -197,6 +197,10 @@
 
   <xs:element name="getPolicyGroupByNameResponse" type="tns:getPolicyGroupByNameResponse"/>
 
+  <xs:element name="getPolicyGroupDomainReltns" type="tns:getPolicyGroupDomainReltns"/>
+
+  <xs:element name="getPolicyGroupDomainReltnsResponse" type="tns:getPolicyGroupDomainReltnsResponse"/>
+
   <xs:element name="getPolicyGroups" type="tns:getPolicyGroups"/>
 
   <xs:element name="getPolicyGroupsByDomain" type="tns:getPolicyGroupsByDomain"/>
@@ -1462,6 +1466,16 @@
 
   <xs:complexType name="addCertificatesResponse">
     <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupDomainReltns">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="getPolicyGroupDomainReltnsResponse">
+    <xs:sequence>
+      <xs:element name="return" type="tns:certPolicyGroupDomainReltn" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="deletePolicies">

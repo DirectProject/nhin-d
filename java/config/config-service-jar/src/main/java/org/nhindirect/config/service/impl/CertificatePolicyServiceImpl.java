@@ -168,6 +168,12 @@ public class CertificatePolicyServiceImpl implements CertificatePolicyService
 	}
 
 	@Override
+	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupDomainReltns() throws ConfigurationServiceException
+	{
+		return dao.getPolicyGroupDomainReltns();
+	}
+	
+	@Override
 	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupsByDomain(long domainId) throws ConfigurationServiceException 
 	{
 		return dao.getPolicyGroupsByDomain(domainId);

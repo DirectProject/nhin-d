@@ -51,7 +51,7 @@ public class DomainPolicyResolver implements PolicyResolver
 		}
 		
 		// copy this map, but make all the domains upper case for lookups
-		//Set<Entry<String, Collection<X509Certificate>>> entrySet = ;
+		//Set<Entry<String, Collection<PolicyExpression>>> entrySet = ;
 		for (Entry<String, Collection<PolicyExpression>> entry : policies.entrySet())
 		{
 			toPolicies.put(entry.getKey().toUpperCase(Locale.getDefault()), entry.getValue());
