@@ -3,6 +3,7 @@ package org.nhindirect.gateway.smtp.config;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -18,7 +19,12 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 
+import org.apache.commons.io.IOUtils;
 import org.nhind.config.Anchor;
+import org.nhind.config.CertPolicy;
+import org.nhind.config.CertPolicyGroupDomainReltn;
+import org.nhind.config.CertPolicyGroupReltn;
+import org.nhind.config.CertPolicyUse;
 import org.nhind.config.ConfigurationService;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
@@ -43,6 +49,11 @@ import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceCertificateStor
 import org.nhindirect.gateway.smtp.config.cert.impl.provider.ConfigServiceCertificateStoreProvider;
 import org.nhindirect.gateway.smtp.module.SmtpAgentModule;
 import org.nhindirect.gateway.smtp.provider.DefaultSmtpAgentProvider;
+import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyLexicon;
+import org.nhindirect.policy.PolicyLexiconParser;
+import org.nhindirect.policy.PolicyLexiconParserFactory;
+import org.nhindirect.policy.PolicyParseException;
 import org.nhindirect.stagent.NHINDAgent;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
@@ -56,10 +67,14 @@ import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
 import org.nhindirect.stagent.cert.impl.provider.PublicLdapCertificateStoreProvider;
 import org.nhindirect.stagent.module.AgentModule;
 import org.nhindirect.stagent.module.PrivateCertStoreModule;
+import org.nhindirect.stagent.module.PrivatePolicyResolverModule;
 import org.nhindirect.stagent.module.PublicCertStoreModule;
+import org.nhindirect.stagent.module.PublicPolicyResolverModule;
 import org.nhindirect.stagent.module.TrustAnchorModule;
+import org.nhindirect.stagent.module.TrustPolicyResolverModule;
 import org.nhindirect.stagent.options.OptionsManager;
 import org.nhindirect.stagent.options.OptionsParameter;
+import org.nhindirect.stagent.policy.impl.provider.DomainPolicyResolverProvider;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.trust.provider.MultiDomainTrustAnchorResolverProvider;
 import org.nhindirect.stagent.trust.provider.UniformTrustAnchorResolverProvider;
@@ -101,6 +116,9 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 	protected Module certAnchorModule;
 	protected Module publicCertModule;
 	protected Module privateCertModule;
+	protected Module publicPolicyResolverModule;
+	protected Module privatePolicyResolverModule;
+	protected Module trustPolicyResolverModule;
 	
 	protected RawMessageSettings rawSettings;
 	protected ProcessIncomingSettings incomingSettings;
@@ -195,6 +213,9 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		// build bad message settings
 		buildMessageSettings(MESSAGE_SETTING_BAD);
 		
+		// build policy resolver modules
+		buildPolicyResolvers();
+		
 		SmtpAgentSettings settings = new SmtpAgentSettings(domainPostmasters, rawSettings, outgoingSettings,
 				incomingSettings, badSettings, notificationProducer);
 		
@@ -203,12 +224,104 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		
 		AgentModule agentModule;
 		if (agentProvider == null)
-			agentModule = AgentModule.create(domains, publicCertModule, privateCertModule, certAnchorModule);
+			agentModule = AgentModule.create(domains, publicCertModule, privateCertModule, certAnchorModule, null,
+					publicPolicyResolverModule, privatePolicyResolverModule, trustPolicyResolverModule);
 		else
 			agentModule = AgentModule.create(agentProvider);
 			
 		return Guice.createInjector(agentModule, SmtpAgentModule.create(smtpAgentProvider));		
 	
+	}
+	
+	protected void buildPolicyResolvers()
+	{
+		final Map<String, Collection<PolicyExpression>> incomingPrivatePolicies = new HashMap<String, Collection<PolicyExpression>>();
+		final Map<String, Collection<PolicyExpression>> outgoingPrivatePolicies = new HashMap<String, Collection<PolicyExpression>>();
+		
+		final Map<String, Collection<PolicyExpression>> incomingPublicPolicies = new HashMap<String, Collection<PolicyExpression>>();
+		final Map<String, Collection<PolicyExpression>> outgoingPublicPolicies = new HashMap<String, Collection<PolicyExpression>>();
+	
+		final Map<String, Collection<PolicyExpression>> trustPolicies = new HashMap<String, Collection<PolicyExpression>>();
+		
+		CertPolicyGroupDomainReltn[] domainReltns = null;
+		try
+		{   
+			// get all of the policy group to domain relations... 
+			// doing this all in one call for efficiency
+			domainReltns = cfService.getPolicyGroupDomainReltns();
+		}
+		catch (Exception e)
+		{
+			throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat, "WebService error getting certificate policy configuration: " + e.getMessage(), e);
+		}
+		
+		if (domainReltns != null)
+		{
+			for (CertPolicyGroupDomainReltn domainReltn : domainReltns)
+			{
+				if (domainReltn.getCertPolicyGroup().getCertPolicyGroupReltn() != null)
+				{
+					for (CertPolicyGroupReltn policyReltn : domainReltn.getCertPolicyGroup().getCertPolicyGroupReltn())
+					{
+						Map<String, Collection<PolicyExpression>> mapToAddTo = null;
+						
+						if (policyReltn.getPolicyUse().equals(CertPolicyUse.PRIVATE_RESOLVER))
+							mapToAddTo = (policyReltn.isIncoming()) ? incomingPrivatePolicies : outgoingPrivatePolicies;
+						else if (policyReltn.getPolicyUse().equals(CertPolicyUse.PUBLIC_RESOLVER))
+						{
+							mapToAddTo = (policyReltn.isIncoming()) ? incomingPublicPolicies : outgoingPublicPolicies;
+						}
+						else if (policyReltn.getPolicyUse().equals(CertPolicyUse.TRUST))
+						{
+							mapToAddTo = trustPolicies;
+						}	
+						
+						if (mapToAddTo != null)
+							addPolicyToMap(mapToAddTo, domainReltn.getDomain().getDomainName(), policyReltn);
+					}
+				}
+			}
+		}
+		publicPolicyResolverModule = PublicPolicyResolverModule.create(new DomainPolicyResolverProvider(incomingPublicPolicies, outgoingPublicPolicies));
+		privatePolicyResolverModule = PrivatePolicyResolverModule.create(new DomainPolicyResolverProvider(incomingPrivatePolicies, outgoingPrivatePolicies));
+		trustPolicyResolverModule = TrustPolicyResolverModule.create(new DomainPolicyResolverProvider(trustPolicies));
+	}
+	
+	public void addPolicyToMap(Map<String, Collection<PolicyExpression>> policyMap, String domainName, CertPolicyGroupReltn policyReltn)
+	{
+		// check to see if the domain is in the map
+		Collection<PolicyExpression> policyExpressionCollection = policyMap.get(domainName);
+		if (policyExpressionCollection == null)
+		{
+			policyExpressionCollection = new ArrayList<PolicyExpression>();
+			policyMap.put(domainName, policyExpressionCollection);
+		}
+		
+		final CertPolicy policy = policyReltn.getCertPolicy();
+		final PolicyLexicon lexicon;
+		if (policy.getLexicon().equals(org.nhind.config.PolicyLexicon.JAVA_SER))
+			lexicon = PolicyLexicon.JAVA_SER;
+		else
+			lexicon = PolicyLexicon.XML;
+		
+		final InputStream inStr = new ByteArrayInputStream(policy.getPolicyData());
+		
+		try
+		{
+			// grab a parser and compile this policy
+			final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(lexicon);
+			
+			policyExpressionCollection.add(parser.parse(inStr));
+		}
+		catch (PolicyParseException ex)
+		{
+			throw new SmtpAgentException(SmtpAgentError.InvalidConfigurationFormat, "Failed parse policy into policy expression: " + ex.getMessage(), ex);
+		}
+		finally
+		{
+			IOUtils.closeQuietly(inStr);
+		}
+		
 	}
 	
 	protected void buildDomains()

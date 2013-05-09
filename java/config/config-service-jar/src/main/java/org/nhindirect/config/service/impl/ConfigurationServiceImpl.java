@@ -1116,6 +1116,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
 	@Override
 	@FaultAction(className = ConfigurationFault.class)
+	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupDomainReltns() throws ConfigurationServiceException
+	{
+		return certPolicySvc.getPolicyGroupDomainReltns();
+	}
+	
+	@Override
+	@FaultAction(className = ConfigurationFault.class)
 	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupsByDomain(long domainId) throws ConfigurationServiceException 
 	{
 		return certPolicySvc.getPolicyGroupsByDomain(domainId);

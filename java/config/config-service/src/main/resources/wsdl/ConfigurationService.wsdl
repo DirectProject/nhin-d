@@ -513,6 +513,12 @@
   <message name="disassociatePolicyGroupFromDomainsResponse">
     <part name="parameters" element="tns:disassociatePolicyGroupFromDomainsResponse"/>
   </message>
+  <message name="getPolicyGroupDomainReltns">
+    <part name="parameters" element="tns:getPolicyGroupDomainReltns"/>
+  </message>
+  <message name="getPolicyGroupDomainReltnsResponse">
+    <part name="parameters" element="tns:getPolicyGroupDomainReltnsResponse"/>
+  </message>
   <message name="getPolicyGroupsByDomain">
     <part name="parameters" element="tns:getPolicyGroupsByDomain"/>
   </message>
@@ -935,6 +941,11 @@
     <operation name="disassociatePolicyGroupFromDomains">
       <input message="tns:disassociatePolicyGroupFromDomains"/>
       <output message="tns:disassociatePolicyGroupFromDomainsResponse"/>
+      <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
+    </operation>
+    <operation name="getPolicyGroupDomainReltns">
+      <input message="tns:getPolicyGroupDomainReltns"/>
+      <output message="tns:getPolicyGroupDomainReltnsResponse"/>
       <fault message="tns:ConfigurationServiceException" name="ConfigurationServiceException"/>
     </operation>
     <operation name="getPolicyGroupsByDomain">

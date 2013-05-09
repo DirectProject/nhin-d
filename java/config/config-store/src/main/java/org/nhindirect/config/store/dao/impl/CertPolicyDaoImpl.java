@@ -627,6 +627,36 @@ public class CertPolicyDaoImpl implements CertPolicyDao
 	@SuppressWarnings("unchecked")
 	@Override
     @Transactional(readOnly = true)	
+	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupDomainReltns() throws ConfigurationStoreException
+	{
+		validateState();
+		
+        try
+        {
+	        final Query select = entityManager.createQuery("SELECT cpdr from CertPolicyGroupDomainReltn cpdr");
+	        
+	        final Collection<CertPolicyGroupDomainReltn> rs = select.getResultList();
+	        if (rs.size() == 0)
+	        	return Collections.emptyList();
+	        
+	        for (CertPolicyGroupDomainReltn reltn : rs)
+	        {
+                if (!reltn.getCertPolicyGroup().getCertPolicyGroupReltn().isEmpty())
+                	for (CertPolicyGroupReltn groupReltn : reltn.getCertPolicyGroup().getCertPolicyGroupReltn())
+                		groupReltn.getCertPolicy().getPolicyData();
+	        }
+	        
+	        return rs;
+        }
+      	catch (Exception e)
+    	{
+    		throw new ConfigurationStoreException("Failed to execute certificate policy DAO query.", e);
+    	}
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+    @Transactional(readOnly = true)	
 	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupsByDomain(long domainId) throws ConfigurationStoreException 
 	{
 		validateState();

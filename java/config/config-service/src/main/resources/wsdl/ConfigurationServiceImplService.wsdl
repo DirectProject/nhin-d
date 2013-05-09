@@ -1003,6 +1003,18 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="getPolicyGroupDomainReltns">
+      <soap:operation soapAction="urn:GetPolicyGroupDomainReltns"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
     <operation name="getPolicyGroupsByDomain">
       <soap:operation soapAction="urn:GetPolicyGroupsByDomain"/>
       <input>

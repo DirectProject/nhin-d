@@ -74,6 +74,9 @@ public interface CertificatePolicyService
     @WebMethod(operationName = "disassociatePolicyGroupFromDomains", action = "urn:DisassociatePolicyGroupFromDomains")
 	public void disassociatePolicyGroupFromDomains(@WebParam(name = "policyGroupId") long policyGroupId) throws ConfigurationServiceException;		
 
+    @WebMethod(operationName = "getPolicyGroupDomainReltns", action = "urn:GetPolicyGroupDomainReltns")
+	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupDomainReltns() throws ConfigurationServiceException;	
+    
     @WebMethod(operationName = "getPolicyGroupsByDomain", action = "urn:GetPolicyGroupsByDomain")
 	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupsByDomain(
 			@WebParam(name = "domainId") long domainId) throws ConfigurationServiceException;	

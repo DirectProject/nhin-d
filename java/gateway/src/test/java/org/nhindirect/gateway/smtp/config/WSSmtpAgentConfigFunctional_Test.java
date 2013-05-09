@@ -4,6 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
+
+import org.nhindirect.policy.PolicyExpression;
 import org.nhindirect.stagent.cert.impl.util.Lookup;
 import org.nhindirect.stagent.cert.impl.util.LookupFactory;
 
@@ -39,9 +41,13 @@ import org.apache.directory.server.core.schema.bootstrap.AbstractBootstrapSchema
 import org.apache.directory.server.unit.AbstractServerTest;
 import org.apache.directory.shared.ldap.ldif.Entry;
 import org.nhind.config.Anchor;
+import org.nhind.config.CertPolicy;
+import org.nhind.config.CertPolicyGroup;
+import org.nhind.config.CertPolicyUse;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.Domain;
+import org.nhind.config.PolicyLexicon;
 import org.nhind.config.Setting;
 import org.nhind.config.TrustBundle;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
@@ -53,12 +59,14 @@ import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.MutableAgent;
 import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.TrustAnchorCertificateStore;
+import org.nhindirect.stagent.policy.PolicyResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Name;
@@ -268,6 +276,31 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
     		
     		bundles = proxy.getTrustBundles(true);
     		assertNull(bundles);
+    		
+    		// clean policies
+    		int idx;
+    		Long[] ids;
+    		CertPolicy[] retrievedPolicies = proxy.getPolicies();
+    		if (retrievedPolicies != null && retrievedPolicies.length > 0)
+    		{
+    			idx = 0;
+    			ids = new Long[retrievedPolicies.length];
+    			for (CertPolicy policy : retrievedPolicies)
+    				ids[idx++] = policy.getId();
+    			
+    			proxy.deletePolicies(ids);
+    		}
+    		
+    		CertPolicyGroup[] retrievedGroups = proxy.getPolicyGroups();
+    		if (retrievedGroups != null && retrievedGroups.length > 0)
+    		{
+    			idx = 0;
+    			ids = new Long[retrievedGroups.length];
+    			for (CertPolicyGroup group : retrievedGroups)
+    				ids[idx++] = group.getId();
+    			
+    			proxy.deletePolicyGroups(ids);
+    		}	
         }
 
         
@@ -1350,6 +1383,243 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	assertNotNull(anchors);
             	assertEquals(1, anchors.size());    
             	
+            }
+        }.perform();
+    }
+
+	public void testPublicPolicy_assertPolicyDomainAndDirection() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	protected Domain domainTested;
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	super.addDomains();
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	domainTested = domains[0];
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("Test Incoming Policy");
+            	policy.setLexicon(PolicyLexicon.XML);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dataEnciphermentOnlyRequired.xml"));
+            	proxy.addPolicy(policy);
+            	
+            	policy = new CertPolicy();
+            	policy.setPolicyName("Test Outgoing Policy");
+            	policy.setLexicon(PolicyLexicon.XML);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dataEnciphermentOnlyRequired.xml"));
+            	proxy.addPolicy(policy);
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	policy = proxy.getPolicyByName("Test Incoming Policy");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PUBLIC_RESOLVER, true, false);
+            
+            	policy = proxy.getPolicyByName("Test Outgoing Policy");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PUBLIC_RESOLVER, false, true);
+            	
+            	proxy.associatePolicyGroupToDomain(domainTested.getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+ 
+            	final MutableAgent mutableNHINDAgent = (MutableAgent)agent.getAgent();
+            	final PolicyResolver publicResolver = mutableNHINDAgent.getPublicPolicyResolver();
+            	
+            	Collection<PolicyExpression> expressions = 
+            			publicResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(1, expressions.size());
+            	
+            	expressions = publicResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(1, expressions.size());
+            	
+            	expressions =  publicResolver.getOutgoingPolicy(new InternetAddress("me@notthere.com"));
+            	assertEquals(0, expressions.size());
+            	
+            	final PolicyResolver privateResolver = mutableNHINDAgent.getPrivatePolicyResolver();
+            	expressions = 
+            			privateResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            	
+            	expressions = privateResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            }
+        }.perform();
+    }
+	
+	public void testPrivatePolicy_assertPolicyDomainAndDirection() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	protected Domain domainTested;
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	super.addDomains();
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	domainTested = domains[0];
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("Test Incoming Policy");
+            	policy.setLexicon(PolicyLexicon.XML);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dataEnciphermentOnlyRequired.xml"));
+            	proxy.addPolicy(policy);
+            	
+            	policy = new CertPolicy();
+            	policy.setPolicyName("Test Outgoing Policy");
+            	policy.setLexicon(PolicyLexicon.XML);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dataEnciphermentOnlyRequired.xml"));
+            	proxy.addPolicy(policy);
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	policy = proxy.getPolicyByName("Test Incoming Policy");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PRIVATE_RESOLVER, true, false);
+            
+            	policy = proxy.getPolicyByName("Test Outgoing Policy");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PRIVATE_RESOLVER, false, true);
+            	
+            	proxy.associatePolicyGroupToDomain(domainTested.getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+ 
+            	final MutableAgent mutableNHINDAgent = (MutableAgent)agent.getAgent();
+            	final PolicyResolver privateResolver = mutableNHINDAgent.getPrivatePolicyResolver();
+            	
+            	Collection<PolicyExpression> expressions = 
+            			privateResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(1, expressions.size());
+            	
+            	expressions = privateResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(1, expressions.size());
+            	
+            	expressions =  privateResolver.getOutgoingPolicy(new InternetAddress("me@notthere.com"));
+            	assertEquals(0, expressions.size());
+            	
+            	final PolicyResolver publicResolver = mutableNHINDAgent.getPublicPolicyResolver();
+            	expressions = 
+            			publicResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            	
+            	expressions = publicResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            }
+        }.perform();
+    }
+	
+	public void testTrustPolicy_assertPolicyDomainAndDirection() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	protected Domain domainTested;
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+            	// doesn't matter
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	super.addDomains();
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	domainTested = domains[0];
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("Test Incoming Policy");
+            	policy.setLexicon(PolicyLexicon.XML);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dataEnciphermentOnlyRequired.xml"));
+            	proxy.addPolicy(policy);
+            	
+            	policy = new CertPolicy();
+            	policy.setPolicyName("Test Outgoing Policy");
+            	policy.setLexicon(PolicyLexicon.XML);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dataEnciphermentOnlyRequired.xml"));
+            	proxy.addPolicy(policy);
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	policy = proxy.getPolicyByName("Test Incoming Policy");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.TRUST, true, false);
+            
+            	policy = proxy.getPolicyByName("Test Outgoing Policy");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.TRUST, false, true);
+            	
+            	proxy.associatePolicyGroupToDomain(domainTested.getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+ 
+            	final MutableAgent mutableNHINDAgent = (MutableAgent)agent.getAgent();
+            	
+            	final PolicyResolver trustResolver = mutableNHINDAgent.getTrustModel().getTrustPolicyResolver();
+            	
+            	// trust policies are the same for incoming and outgoing
+                Collection<PolicyExpression> expressions = 
+                		trustResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(2, expressions.size());
+            	
+            	// trust policies are the same for incoming and outgoing
+            	expressions = trustResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(2, expressions.size());
+            	
+            	expressions =  trustResolver.getOutgoingPolicy(new InternetAddress("me@notthere.com"));
+            	assertEquals(0, expressions.size());
+            			
+            	final PolicyResolver privateResolver = mutableNHINDAgent.getPrivatePolicyResolver();
+            	
+            	expressions = privateResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            	
+            	expressions = privateResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            	
+            	
+            	final PolicyResolver publicResolver = mutableNHINDAgent.getPublicPolicyResolver();
+            	expressions = 
+            			publicResolver.getOutgoingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
+            	
+            	expressions = publicResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
+            	assertEquals(0, expressions.size());
             }
         }.perform();
     }
