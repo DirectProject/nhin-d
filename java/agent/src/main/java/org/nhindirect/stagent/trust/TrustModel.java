@@ -120,24 +120,40 @@ public class TrustModel
     	return certChainValidator;
     }
     
+    /**
+     * Sets the policy filter for trust validation.
+     * @param policyFilter The filter used to check certificate for policy compliance.
+     */
     @Inject(optional=true)
 	public void setPolicyFilter(@TrustPolicyFilter PolicyFilter policyFilter)
 	{
 		this.policyFilter = policyFilter;
 	}
 	
+    /**
+    * Gets the policy filter for trust validation.
+    * @return policyFilter The filter used to check certificate for policy compliance.    
+    **/
 	public PolicyFilter getPolicyFilter()
 	{
 		return this.policyFilter;
 	}
     
+	/**
+	 * Sets the policy resolver for trust validation
+	 * @param trustPolicyResolver The policy resolver used to finding certificate policies for trust validation.
+	 */
     @Inject(optional=true)
 	public void setTrustPolicyResolver(@TrustPolicyResolver PolicyResolver trustPolicyResolver)
 	{
 		this.trustPolicyResolver = trustPolicyResolver;
 	}
-	
-	public PolicyResolver getTrustPolicyResolver()
+    
+	/**
+	 * Gets the policy resolver for trust validation
+	 * @return  The policy resolver used to finding certificate policies for trust validation.
+	 */
+    public PolicyResolver getTrustPolicyResolver()
 	{
 		return this.trustPolicyResolver;
 	}
