@@ -8,7 +8,8 @@ if($snapinError -ne $null)
     #Named resources to ignore
     $ignoreArray = "Direct.Drhisp.Com Root CAKey.der"
 
-    Export-Bundle 'C:\nhin-d35\certs\anchors' -Ignore $ignoreArray  -ErrorVariable bundleError  -ErrorAction SilentlyContinue | Set-Content test.p7b  -enc Byte
+    Bundle-Anchors 'C:\nhin-d35\certs\anchors' -Ignore $ignoreArray  -ErrorVariable bundleError  -ErrorAction SilentlyContinue `
+        | Set-Content psTestBundle.p7b  -enc Byte
     
 
     if($? -ne $true){
@@ -17,7 +18,7 @@ if($snapinError -ne $null)
     }
     else{
         $currentPath = Split-Path ((Get-Variable MyInvocation -Scope 0).Value).MyCommand.Path
-        Write-Host 'Successfuly expored to ' $currentPath'\test.p7b'
+        Write-Host 'Successfuly expored to ' $currentPath'\psTestBundle.p7b'
     }
 
 
