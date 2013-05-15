@@ -44,7 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BundleCommand.cs" />
+    <Compile Include="BundleAnchorsCommand.cs" />
+    <Compile Include="SignBundleCommand.cs" />
     <Compile Include="TrustBundlePsSnapIn.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -57,15 +58,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CreateBundleWithMetaData.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="CreateBundle.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="InstallBundleSnap-in.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="Examples\CreateSignedTrustBundleWithMetaData.ps1" />
+    <None Include="Examples\CreateSignedTrustBundle.ps1" />
+    <None Include="Examples\CreateSignedTrustBundleBasedOnFileStructure.ps1" />
+    <None Include="Examples\CreateTrustBundleWithMetaData.ps1" />
+    <None Include="Examples\CreateTrustBundle.ps1" />
+    <None Include="Examples\InstallBundleSnap-in.ps1" />
     <None Include="TrustBundleMetadata.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
