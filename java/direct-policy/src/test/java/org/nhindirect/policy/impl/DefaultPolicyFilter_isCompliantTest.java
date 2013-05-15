@@ -4,18 +4,41 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.any;
 
+import java.io.File;
+import java.io.InputStream;
 import java.security.cert.X509Certificate;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.nhindirect.policy.Compiler;
 import org.nhindirect.policy.ExecutionEngine;
 import org.nhindirect.policy.Opcode;
 import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyLexicon;
 
 import junit.framework.TestCase;
 
 public class DefaultPolicyFilter_isCompliantTest extends TestCase
 {
+	
+	@SuppressWarnings("unchecked")
+	public void testIsCompliant_parse_engineReturnsCompliant_assertTrue() throws Exception
+	{
+		final InputStream inStream = FileUtils.openInputStream(new File("./src/test/resources/policies/dataEnciphermentOnlyRequired.xml"));
+		
+		final Compiler compiler = mock(Compiler.class);
+		final ExecutionEngine engine = mock(ExecutionEngine.class);
+		final X509Certificate cert = mock(X509Certificate.class);
+		
+		when(engine.evaluate((Vector<Opcode>)any())).thenReturn(true);
+		
+		final DefaultPolicyFilter filter = new DefaultPolicyFilter();
+		filter.setCompiler(compiler);
+		filter.setExecutionEngine(engine);
+		
+		assertTrue(filter.isCompliant(cert, inStream, PolicyLexicon.XML));
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void testIsCompliant_engineReturnsCompliant_assertTrue() throws Exception
 	{
