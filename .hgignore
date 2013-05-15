@@ -111,3 +111,4 @@ csharp/installer/DirectConfig.tmp
 csharp/installer/DirectConfig.sql
 csharp/installer/*.zip
 trust/csharp/cmdlet/Examples/*.p7*
+trust/csharp/build/packages/**
