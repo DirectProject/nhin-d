@@ -176,7 +176,7 @@ namespace Health.Direct.Trust
                     , Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             ISignProvider signProvider =
                 new FileSignerProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"C:\nhin-d35\csharp\unittests\agent\bin\Debug\Certificates\nhind\Private"),
+                    Path.Combine(Directory.GetCurrentDirectory(), @"Certificates\nhind\Private"),
                     secString);
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
 
