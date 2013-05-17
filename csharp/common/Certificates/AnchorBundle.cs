@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Pkcs;
 using Health.Direct.Common.Extensions;
@@ -91,9 +92,20 @@ namespace Health.Direct.Common.Certificates
             {
                 throw new ArgumentNullException("bundleData");
             }
-            
-            SignedCms cms = new SignedCms();
-            cms.Decode(bundleData);            
+
+            SignedCms cms = null;
+            try
+            {
+                cms = DecodeDerBundle(bundleData);
+            }
+            catch
+            {
+            }
+            if (cms == null)
+            {
+                cms = DecodePEMBundle(bundleData);
+            }
+
             if (!cms.HasSignatures())
             {
                 // No signature. Must assume is already p7b
@@ -162,5 +174,84 @@ namespace Health.Direct.Common.Certificates
             return cms.Encode();
         }
 
+        static SignedCms DecodeDerBundle(byte[] bytes)
+        {
+            SignedCms cms = new SignedCms();
+            cms.Decode(bytes);
+            return cms;
+        }
+
+        static SignedCms DecodePEMBundle(byte[] bytes)
+        {
+            byte[] cmsData = PEMDecoder.Decode(bytes);
+            return DecodeDerBundle(cmsData);
+        }
+    }
+
+    /// <summary>
+    /// Simple parser for PEM files - just extracts base64 data
+    /// </summary>
+    public class PEMDecoder
+    {
+        const string BoundaryMarker = "-----";
+
+        /// <summary>
+        /// Extract data bytes from a PEM file, after removing PEM headers/footers
+        /// </summary>
+        /// <param name="bytes">PEM encoded bytes</param>
+        /// <returns>Data contained</returns>
+        public static byte[] Decode(byte[] bytes)
+        {
+            return Decode(Encoding.UTF8.GetString(bytes));
+        }
+
+        /// <summary>
+        /// Decode data in PEM encoded text
+        /// </summary>
+        /// <param name="text">PEM text</param>
+        /// <returns>Decoded data</returns>
+        public static byte[] Decode(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+            string boundaryText;
+            int dataStartAt = ParseBoundary(text, 0, out boundaryText);
+            int dataEndAt = ParseToBoundaryMarker(text, dataStartAt);
+            if (dataStartAt >= dataEndAt)
+            {
+                ThrowInvalidPEM();
+            }
+            string data = text.Substring(dataStartAt, dataEndAt - dataStartAt).Trim();
+            if (string.IsNullOrEmpty(data))
+            {
+                ThrowInvalidPEM();
+            }
+            return Convert.FromBase64String(data);
+        }
+
+        static int ParseBoundary(string text, int startAt, out string boundaryText)
+        {
+            int sectionNameStartAt = ParseToBoundaryMarker(text, startAt) + BoundaryMarker.Length;
+            int sectionNameEndAt = ParseToBoundaryMarker(text, sectionNameStartAt);
+            boundaryText = text.Substring(sectionNameStartAt, sectionNameEndAt - sectionNameStartAt);
+            return sectionNameEndAt + BoundaryMarker.Length;
+        }
+
+        static int ParseToBoundaryMarker(string text, int startAt)
+        {
+            int boundaryPos = text.IndexOf(BoundaryMarker, startAt);
+            if (boundaryPos < 0)
+            {
+                ThrowInvalidPEM();
+            }
+            return boundaryPos;
+        }
+
+        static void ThrowInvalidPEM()
+        {
+            throw new CryptographicException("Invalid PEM Encoding");
+        }
     }
 }

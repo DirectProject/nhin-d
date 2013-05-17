@@ -306,26 +306,7 @@ namespace Health.Direct.Common.Mime
             }
             return encoding;
         }
-        
-        /*
-        /// <summary>
-        /// The Message Body may be encoded using a TransferEncoding. 
-        /// If the body is encoded using a supported encoding (7bit, base64, quotedPrintable), will decode
-        /// and return the decoded text
-        /// </summary>
-        /// <returns>Decoded message body</returns>
-        public string GetDecodedBody()
-        {
-            TransferEncoding transferEncoding = this.GetTransferEncoding();
-            if (transferEncoding == TransferEncoding.Unknown)
-            {
-                throw new MimeException(MimeError.TransferEncodingNotSupported);
-            }
-            
-            
-        }
-        */
-                
+                        
         /// <summary>
         /// Updates this entity with the multipart entity, updating headers and body as appropriate.
         /// </summary>
