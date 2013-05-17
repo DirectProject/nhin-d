@@ -53,6 +53,15 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Fact]
+        public void TestPEM()
+        {
+            byte[] p7bData = File.ReadAllBytes(@"Certificates\Bundles\bundlePEM.p7b");
+            AnchorBundle bundle = null;
+            Assert.DoesNotThrow(() => bundle = new AnchorBundle(p7bData));
+            Assert.True(!bundle.Certificates.IsNullOrEmpty());
+        }
+
+        [Fact]
         public void TestSigned()
         {
             X509Certificate2 signingCert = AgentTester.LoadPrivateCerts("redmond").First();
