@@ -292,6 +292,10 @@ public class GatewayState
 					runningAgent.setCryptographer(newMutableAgent.getCryptographer());
 					runningAgent.setPrivateCertResolver(newMutableAgent.getPrivateCertResolver());
 					runningAgent.setPublicCertResolvers(newMutableAgent.getPublicCertResolvers());
+					runningAgent.setPolicyFilter(newMutableAgent.getPolicyFilter());
+					runningAgent.setPrivatePolicyResolver(newMutableAgent.getPrivatePolicyResolver());
+					runningAgent.setPublicPolicyResolver(newMutableAgent.getPublicPolicyResolver());
+					runningAgent.setTrustModel(newMutableAgent.getTrustModel());
 					
 				}
 				finally

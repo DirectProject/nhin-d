@@ -7,6 +7,9 @@
   <AddressManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
   </AddressManager>
+  <MdnMonitor>
+    <Url>http://localhost/ConfigService/MonitorService.svc/Dispositions</Url>
+  </MdnMonitor>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
     <NamePrefix>gateway</NamePrefix>
@@ -43,11 +46,40 @@
     -->
   </PublicCerts>
   <Anchors>
-    <ServiceResolver>
-      <ClientSettings>
-        <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
-      </ClientSettings>
-    </ServiceResolver>
+	<PluginResolver>
+      <!-- NEW Resolver that COMBINES Anchors from multiple sources into a single list-->
+      <Definition>
+        <TypeName>Health.Direct.ResolverPlugins.MultiSourceAnchorResolver, Health.Direct.ResolverPlugins</TypeName>
+        <Settings>
+		  <!-- New Bundle Resolver -->
+          <BundleResolver>
+            <ClientSettings>
+              <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+            </ClientSettings>
+            <CacheSettings>
+              <Cache>true</Cache>
+              <NegativeCache>true</NegativeCache>
+              <!-- Set cache to longer duration in production -->
+              <CacheTTLSeconds>60</CacheTTLSeconds>
+            </CacheSettings>
+            <MaxRetries>1</MaxRetries>
+            <Timeout>30000</Timeout> <!-- In milliseconds -->
+            <VerifySSL>true</VerifySSL>
+          </BundleResolver>
+		  <!-- Standard Resolver that pulls from Anchor store -->
+          <ServiceResolver>
+            <ClientSettings>
+              <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
+            </ClientSettings>
+            <CacheSettings>
+              <Cache>true</Cache>
+              <NegativeCache>true</NegativeCache>
+              <CacheTTLSeconds>60</CacheTTLSeconds>
+            </CacheSettings>
+          </ServiceResolver>
+        </Settings>
+      </Definition>
+    </PluginResolver>    
   </Anchors>
   
   <Trust>

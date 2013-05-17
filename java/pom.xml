@@ -23,6 +23,7 @@
 	</issueManagement>  	    
     <modules>
         <module>./direct-common</module>
+        <module>./direct-policy</module>
         <module>./config</module>
         <module>./agent</module>
         <module>./gateway</module>

@@ -227,6 +227,8 @@ public class DomainDaoImpl implements DomainDao {
         {      
         	disassociateTrustBundlesFromDomain(domain.getId());
         	
+        	removePolicyGroupFromDomain(domain.getId());
+        	
 	        entityManager.remove(domain);
         }
         else 
@@ -252,6 +254,8 @@ public class DomainDaoImpl implements DomainDao {
         if (domain != null) 
         {
         	disassociateTrustBundlesFromDomain(domain.getId());
+        	
+        	removePolicyGroupFromDomain(domain.getId());
         	
         	entityManager.remove(domain);
         }
@@ -483,6 +487,14 @@ public class DomainDaoImpl implements DomainDao {
 		dao.setEntityManager(this.entityManager);
 		dao.setDomainDao(this);
 		dao.disassociateTrustBundlesFromDomain(domainId);
+	}
+	
+	protected void removePolicyGroupFromDomain(long domainId)
+	{
+		final CertPolicyDaoImpl dao = new CertPolicyDaoImpl();
+		dao.setEntityManager(this.entityManager);
+		dao.setDomainDao(this);
+		dao.disassociatePolicyGroupsFromDomain(domainId);
 	}
     
 }

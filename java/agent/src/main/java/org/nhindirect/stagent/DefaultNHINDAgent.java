@@ -47,9 +47,18 @@ import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.cms.CMSSignedData;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.TxMessageType;
+import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyFilter;
+import org.nhindirect.policy.PolicyFilterFactory;
+import org.nhindirect.policy.PolicyParseException;
+import org.nhindirect.policy.PolicyProcessException;
+import org.nhindirect.policy.PolicyRequiredException;
 import org.nhindirect.stagent.annotation.AgentDomains;
+import org.nhindirect.stagent.annotation.AgentPolicyFilter;
 import org.nhindirect.stagent.annotation.PrivateCerts;
+import org.nhindirect.stagent.annotation.PrivatePolicyResolver;
 import org.nhindirect.stagent.annotation.PublicCerts;
+import org.nhindirect.stagent.annotation.PublicPolicyResolver;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cryptography.Cryptographer;
@@ -65,6 +74,7 @@ import org.nhindirect.stagent.mail.WrappedMessage;
 import org.nhindirect.stagent.options.OptionsManager;
 import org.nhindirect.stagent.options.OptionsParameter;
 import org.nhindirect.stagent.parser.EntitySerializer;
+import org.nhindirect.stagent.policy.PolicyResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.nhindirect.stagent.trust.TrustEnforcementStatus;
 import org.nhindirect.stagent.trust.TrustError;
@@ -89,15 +99,20 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 
     protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
 	
-	private Cryptographer cryptographer;
-    private CertificateResolver privateCertResolver;
-    private Collection<CertificateResolver> publicCertResolver;
-    private TrustAnchorResolver trustAnchors;
+    protected Cryptographer cryptographer;
+    protected CertificateResolver privateCertResolver;
+    protected Collection<CertificateResolver> publicCertResolver;
+    protected TrustAnchorResolver trustAnchors;
 
-    private TrustModel trustModel;
-    private TrustEnforcementStatus minTrustRequirement;
-    private Collection<String> domains;
-    private NHINDAgentEventListener m_listener = null;
+    protected TrustModel trustModel;
+    protected TrustEnforcementStatus minTrustRequirement;
+    protected Collection<String> domains;
+    protected NHINDAgentEventListener m_listener = null;
+    
+    protected PolicyResolver publicPolicyResolver;
+    protected PolicyResolver privatePolicyResolver;
+    
+    protected PolicyFilter policyFilter;
     
     private boolean encryptionEnabled = true;
     private boolean wrappingEnabled = true;
@@ -195,6 +210,15 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         {
         	this.trustModel.getCertChainValidator().setCertificateResolver(this.publicCertResolver);
         }
+        
+        try
+        {
+        	this.policyFilter = PolicyFilterFactory.getInstance();
+        }
+        catch (PolicyParseException e)
+        {
+        	throw new AgentException(AgentError.Unexpected, "Failed to create policy filter object.", e);
+        }
     }          
     
     /**
@@ -222,14 +246,10 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 	{
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{
-    		this.domains = domains;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}
+
+    	this.domains = domains;
+    	
+    	lock.unlock();
 	}
     
     
@@ -275,14 +295,11 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 	{
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{
-    		this.cryptographer = cryptographer;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}
+
+    	this.cryptographer = cryptographer;
+ 
+    	lock.unlock();
+
 	}
     
     /**
@@ -311,14 +328,11 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     {
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{    	
-    		this.encryptionEnabled = value;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}
+  	
+    	this.encryptionEnabled = value;
+
+    	lock.unlock();
+
     }
 
     /**
@@ -346,14 +360,11 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 	{
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{   
-    		this.wrappingEnabled = wrappingEnabled;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}
+ 
+    	this.wrappingEnabled = wrappingEnabled;
+
+    	lock.unlock();
+
 	}
 
 
@@ -403,14 +414,11 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
 	{
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{   
-    		this.publicCertResolver = resolvers;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}
+ 
+    	this.publicCertResolver = resolvers;
+
+    	lock.unlock();
+
 	}
     
     /**
@@ -437,14 +445,11 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     {
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{ 
-    		this.privateCertResolver = resolver;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}	
+
+    	this.privateCertResolver = resolver;
+
+    	lock.unlock();
+	
     }
     
     /**
@@ -471,14 +476,11 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     {
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{ 
-    		this.trustAnchors = resolver;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}	
+
+    	this.trustAnchors = resolver;
+
+    	lock.unlock();
+	
     }
     
     /**
@@ -528,17 +530,13 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     {
     	Lock lock = readWriteLock.writeLock();
     	lock.lock();
-    	try
-    	{     	
-    		m_listener = listener;
-    	}
-    	finally
-    	{
-    		lock.unlock();
-    	}	
+	
+    	m_listener = listener;
+
+    	lock.unlock();
+
     }
-    
-    
+      
     /**
      * {@inheritDoc}
      */
@@ -556,6 +554,136 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     	}		
     }
     
+    /**
+     * {@inheritDoc}
+     */
+    @Inject(optional=true)
+	@Override
+	public void setPublicPolicyResolver(@PublicPolicyResolver PolicyResolver publicPolicyResolver) 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+
+    	this.publicPolicyResolver = publicPolicyResolver;
+
+    	lock.unlock();
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public PolicyResolver getPublicPolicyResolver() 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return this.publicPolicyResolver;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Inject(optional=true)
+	@Override
+	public void setPrivatePolicyResolver(@PrivatePolicyResolver PolicyResolver privatePolicyResolver) 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+
+    	this.privatePolicyResolver = privatePolicyResolver;
+
+    	lock.unlock();
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public PolicyResolver getPrivatePolicyResolver() 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return privatePolicyResolver;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Inject(optional=true)
+	@Override
+	public void setPolicyFilter(@AgentPolicyFilter PolicyFilter filter) 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+
+    	this.policyFilter = filter;
+
+    	lock.unlock();
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public PolicyFilter getPolicyFilter() 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return policyFilter;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public void setTrustModel(TrustModel trustModel) 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+
+    	this.trustModel = trustModel;
+
+    	lock.unlock();		
+	}
+
+    /**
+     * {@inheritDoc}
+     */
+	@Override
+	public TrustModel getTrustModel() 
+	{
+    	Lock lock = readWriteLock.readLock();
+    	lock.lock();
+    	try
+    	{
+    		return this.trustModel;
+    	}
+    	finally
+    	{
+    		lock.unlock();
+    	}	
+	}
 
 	/**
 	 * Processes an incoming message represented by a raw string.  The message will be decrypted and validated that it meets trust assertions.
@@ -771,8 +899,13 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
      */
     protected void bindAddresses(IncomingMessage message)
     {
-
-   		message.getSender().setCertificates(this.resolvePublicCerts(message.getSender(), false, true));
+    	
+    	Collection<X509Certificate> resolvedPublicCerts = this.resolvePublicCerts(message.getSender(), false, true);
+    	
+    	// filter public certs based on policy if one exists
+    	resolvedPublicCerts = filterCertificatesByPolicy(message.getSender(), publicPolicyResolver, resolvedPublicCerts, true);
+    		
+   		message.getSender().setCertificates(resolvedPublicCerts);
     	
         //
         // Bind each recpient's certs and trust settings
@@ -781,6 +914,10 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         for (NHINDAddress recipient : message.getDomainRecipients())
         {
         	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(recipient, false, true);
+        	
+        	// filter private certs based on policy
+        	privateCerts = filterCertificatesByPolicy(recipient, privatePolicyResolver, privateCerts, true);
+        	
         	if (privateCerts == null || privateCerts.size() == 0)
         		LOGGER.warn("bindAddresses(IncomingMessage message) - Could not resolve a private certificate for recipient " + recipient.getAddress());
         		
@@ -1116,6 +1253,10 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         // Retrieving the sender's private certificate is requied for encryption
         //
     	Collection<X509Certificate> privateCerts = this.resolvePrivateCerts(message.getSender(), true, false);
+    	
+    	// filter private certs based on policy if one exists
+    	privateCerts = filterCertificatesByPolicy(message.getSender(), privatePolicyResolver, privateCerts, false);
+    	
     	if (privateCerts == null || privateCerts.size() == 0)
     		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a private certificate for sender " + message.getSender().getAddress());
     	message.getSender().setCertificates(privateCerts);
@@ -1140,6 +1281,10 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         for(NHINDAddress recipient : message.getRecipients())
         {
         	Collection<X509Certificate> publicCerts = this.resolvePublicCerts(recipient, false, false);
+        	
+        	// filter public certs based on policy if one exists
+        	publicCerts = filterCertificatesByPolicy(message.getSender(), this.publicPolicyResolver, publicCerts, false);
+        	
         	if (publicCerts == null || publicCerts.size() == 0)
         		LOGGER.warn("bindAddresses(OutgoingMessage message) - Could not resolve a public certificate for recipient " + recipient.getAddress());
             recipient.setCertificates(publicCerts);
@@ -1405,5 +1550,52 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         
         recipients.setSource(AddressSource.RcptTo);
         sender.setSource(AddressSource.MailFrom);
-    }    
+    } 
+    
+    protected Collection<X509Certificate> filterCertificatesByPolicy(InternetAddress sender, PolicyResolver resolver, 
+    		Collection<X509Certificate> certsToFilter, boolean incoming)
+    {
+    	final Collection<X509Certificate> filteredCerts;
+    	// apply the policy if it exists
+    	if (resolver != null)
+    	{
+    		filteredCerts = new ArrayList<X509Certificate>();
+    		
+    		// get the incoming policy based on the sender
+    		final Collection<PolicyExpression> expressions = (incoming) ? 
+    				resolver.getIncomingPolicy(sender) : resolver.getOutgoingPolicy(sender);
+    		// loop through filters and certs
+    		for (X509Certificate cert : certsToFilter)
+    		{
+    			boolean filterCert = false;
+	    		for (PolicyExpression expression : expressions)
+	    		{
+	    			try
+	    			{
+	    				// check for compliance
+		    			if (!policyFilter.isCompliant(cert, expression))
+		    			{
+		    				filterCert = true;
+		    				break;
+		    			}
+	    			}
+	    			catch (PolicyRequiredException requiredException)
+	    			{
+	    				filterCert = true;
+	    				break;
+	    			}
+	    			catch (PolicyProcessException processException)
+	    			{
+	    				throw new AgentException(AgentError.InvalidPolicy, processException);
+	    			}
+	    		}
+	    		if (!filterCert)
+	    			filteredCerts.add(cert);
+    		}
+    	}
+    	else
+    		filteredCerts = certsToFilter;  
+    	
+    	return filteredCerts;
+    }
 }

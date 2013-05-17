@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>agent</artifactId>    
     <name>Direct Project Security And Trust Agent</name>
-    <version>1.6-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <description>Direct Project Security And Trust Agent</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url> 
@@ -52,8 +52,19 @@
   <dependencies>  
 		<dependency>
 		  <groupId>org.nhind</groupId>
+		  <artifactId>direct-policy</artifactId>
+		  <version>1.0-SNAPSHOT</version>
+		</dependency>	  
+		<dependency>
+		  <groupId>org.nhind</groupId>
 		  <artifactId>direct-common</artifactId>
 		  <version>1.1.2</version>
+			<exclusions>
+				<exclusion>
+					<groupId>bouncycastle</groupId>
+					<artifactId>bcprov-jdk15</artifactId>
+				</exclusion>
+			</exclusions>			  
 		</dependency>	    
 		<dependency>
 		  <groupId>com.google.inject</groupId>
@@ -386,7 +397,7 @@
 	          <source>1.6</source>
 	          <show>public</show>
 	          <excludePackageNames>
-	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils
+	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils:org.nhindirect.stagent.policy.impl
 	          </excludePackageNames>          	          
 	        </configuration>
             <executions>
@@ -471,7 +482,7 @@
 	          <source>1.6</source>
 	          <show>public</show>
 	          <excludePackageNames>
-	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils
+	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils:org.nhindirect.stagent.policy.impl
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>

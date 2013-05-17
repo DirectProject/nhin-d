@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-service-jar</artifactId>
-	<version>1.4-SNAPSHOT</version>
+	<version>1.5-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI config service jar</name>
-    <description>&gt;NHIN Direct Java RI config service.</description>	
+    <description>NHIN Direct Java RI config service jar.</description>	
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-service-jar/${project.version}</url>  
 
 	<scm>
@@ -90,14 +90,14 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.2</version>
+			<version>1.4-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>agent</artifactId>
-			<version>1.5.4</version>
+			<version>1.5.5</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>		

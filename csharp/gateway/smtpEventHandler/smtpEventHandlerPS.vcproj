@@ -3,8 +3,9 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="smtpEventHandlerPS"
-	ProjectGUID="{82D0C2F7-FE88-40FD-9FE9-1C0B8B66274E}"
+	ProjectGUID="{82D0C2F7-FE88-40FD-9FE9-1C0B8B66274E}"	
 	Keyword="AtlPSProj"
+	AssemblyReferenceSearchPaths="&quot;$(SolutionDir)..\bin\$(ConfigurationName)&quot;"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
