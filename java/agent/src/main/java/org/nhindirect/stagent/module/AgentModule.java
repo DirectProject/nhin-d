@@ -38,26 +38,41 @@ public class AgentModule extends AbstractModule
 	private final Module publicCertModule;
 	private final Module privateCertModule;
 	private final Module trustAnchorModule;
+	private final Module publicPolicyResolverModule;
+	private final Module privatePolicyResolverModule;
+	private final Module trustModelModule;
+	
 	private final Provider<NHINDAgent> agentProvider;
+	
+	public static AgentModule create(Collection<String> domains, Module publicCertModule, Module privateCertModule, Module trustAnchorModule,
+			 Provider<NHINDAgent> agentProvider, Module publicPolicyResolverModule, Module privatePolicyResolverModule, Module trustModelModule)
+	{
+		return new AgentModule(domains, publicCertModule, privateCertModule, trustAnchorModule, agentProvider, 
+				publicPolicyResolverModule, privatePolicyResolverModule, trustModelModule);
+		
+	}
 	
 	public static AgentModule create(Collection<String> domains, Module publicCertModule, Module privateCertModule, Module trustAnchorModule)
 	{
-		return new AgentModule(domains, publicCertModule, privateCertModule, trustAnchorModule, null);
+		return new AgentModule(domains, publicCertModule, privateCertModule, trustAnchorModule, null, null, null, null);
 	}
 	
 	public static AgentModule create(Provider<NHINDAgent> agentProvider)
 	{
-		return new AgentModule(null, null, null, null, agentProvider);
+		return new AgentModule(null, null, null, null, agentProvider, null, null, null);
 	}
 	
 	private AgentModule(Collection<String> domains, Module publicCertModule, Module privateCertModule, Module trustAnchorModule,
-			Provider<NHINDAgent> agentProvider)
+			Provider<NHINDAgent> agentProvider, Module publicPolicyResolverModule, Module privatePolicyResolverModule, Module trustModelModule)
 	{
 		this.domains = domains;
 		this.publicCertModule = publicCertModule;
 		this.privateCertModule = privateCertModule;
 		this.trustAnchorModule = trustAnchorModule;
 		this.agentProvider = agentProvider;
+		this.publicPolicyResolverModule = publicPolicyResolverModule;
+		this.privatePolicyResolverModule = privatePolicyResolverModule;
+		this.trustModelModule = trustModelModule;
 	}
 	
 	protected void configure()
@@ -70,6 +85,12 @@ public class AgentModule extends AbstractModule
 			this.install(privateCertModule);
 			this.install(trustAnchorModule);
 			this.bind(InjectionUtils.collectionOf(String.class)).annotatedWith(AgentDomains.class).toInstance(domains);
+			if (publicPolicyResolverModule != null)
+				this.install(publicPolicyResolverModule);
+			if (privatePolicyResolverModule != null)
+				this.install(privatePolicyResolverModule);
+			if (trustModelModule != null)
+				this.install(trustModelModule);
 		}
 	}
 }

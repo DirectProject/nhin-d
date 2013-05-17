@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{2.0}
+
+    Changes included with release 2.0
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=156}156}}: Policy enablement enhancement
+    
+    [] 
+     
+    Bug Fixes
+    
+    * NA
+
 {1.6}
 
     Changes included with release 1.6
@@ -21,6 +37,8 @@
     Bug Fixes
     
     * {{{http://code.google.com/p/nhin-d/issues/detail?id=208}208}}: Fixed message wrappers when a content encoding or other parameters are present with the rfc822 content type.
+    
+    * Fixed issue where multiple certs encrypted message, but the receiving HISP filters usable certs to decrypt.
 
 {1.5.5}
 

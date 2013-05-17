@@ -47,5 +47,6 @@ public enum AgentError
     MissingSenderCertificate,
     MissingRecipientCertificate,
     NoTrustedRecipients,
-    AllCertsInResolverInvalid
+    AllCertsInResolverInvalid,
+    InvalidPolicy
 }

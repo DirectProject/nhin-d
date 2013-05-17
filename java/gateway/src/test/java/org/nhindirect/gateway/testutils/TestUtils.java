@@ -27,6 +27,8 @@ public class TestUtils
 	
 	private static final String certBasePath = "src/test/resources/certs/";
 	
+	private static final String policyBasePath = "src/test/resources/policies/";
+	
 	public static String getTestConfigFile(String fileName)
 	{
 		File fl = new File("dummy");
@@ -60,6 +62,21 @@ public class TestUtils
 	            } 
 	        }); 
 	 }	
+
+	 public static byte[] readBytePolicyResource(String _rec) throws Exception
+	 {
+			final String msgResource = policyBasePath + _rec;
+			
+			return FileUtils.readFileToByteArray(new File(msgResource));
+	 }
+	 
+	 public static String readStringPolicyResource(String _rec) throws Exception
+	 {
+		
+			final String msgResource = policyBasePath + _rec;
+		
+			return FileUtils.readFileToString(new File(msgResource));
+	 }
 	 
 	public static String readMessageResource(String _rec) throws Exception
 	{

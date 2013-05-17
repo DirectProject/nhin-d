@@ -21,6 +21,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.service.impl;
 
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -172,6 +173,46 @@ public class TrustBundleServiceImpl implements TrustBundleService
     /**
      * {@inheritDoc}
      */
+	@Override
+	public void updateTrustBundleAttributes(long trustBundleId, String bundleName, String bundleUrl, Certificate signingCert,
+			 int refreshInterval) throws ConfigurationServiceException
+	{
+		final TrustBundle oldBundle = dao.getTrustBundleById(trustBundleId);
+		String oldBundleURL = "";
+		X509Certificate newSigningCert = null; 
+		
+		// need to know if the URL changed... store off the old URL
+		if (oldBundle != null)
+			oldBundleURL = oldBundle.getBundleURL();
+		
+		try
+		{
+			// make sure the cert isn't null before converting to an X509Certificate
+			if (signingCert != null && signingCert.toCredential() != null)
+				newSigningCert = signingCert.toCredential().getCert();
+			
+			dao.updateTrustBundleAttributes(trustBundleId, bundleName, bundleUrl, newSigningCert, refreshInterval);
+			
+			// if the URL changed, the bundle needs to be refreshed
+			if (!oldBundleURL.equals(bundleUrl))
+			{
+				final TrustBundle bundle = dao.getTrustBundleById(trustBundleId);
+				
+				if (bundle != null)
+					template.sendBody(bundle);
+			}
+			
+		}
+		catch (CertificateException e)
+		{
+				throw new ConfigurationServiceException(e);
+		}
+		 
+	}
+	
+    /**
+     * {@inheritDoc}
+     */
     @Override
 	public void associateTrustBundleToDomain(long domainId, long trustBundleId,  boolean incoming,
     		boolean outgoing)
@@ -230,10 +271,10 @@ public class TrustBundleServiceImpl implements TrustBundleService
 	}
             
 	/**
-     * Set the value of the DNSDao object.
+     * Set the value of the TrustBundlDao object.
      * 
      * @param dao
-     *            the value of the DNSDao object.
+     *            the value of the TrustBundlDao object.
      */
     @Autowired
     public void setDao(TrustBundleDao dao) 
@@ -242,9 +283,9 @@ public class TrustBundleServiceImpl implements TrustBundleService
     }
 
     /**
-     * Return the value of the DNSDao object.
+     * Return the value of the TrustBundlDao object.
      * 
-     * @return the value of the DNSDao object.
+     * @return the value of the TrustBundlDao object.
      */
     ///CLOVER:OFF
     public TrustBundleDao getDao() 

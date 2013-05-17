@@ -16,6 +16,7 @@
 	    <Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
 		<agent_solution>.\build\agent.sln</agent_solution>
 		<gateway_solution>.\build\gateway.sln</gateway_solution>
+		<smtpEventHandler_solution>.\build\smtpEventHandler.sln</smtpEventHandler_solution>
 		<xd_solution>.\build\xd.sln</xd_solution>
 		<configui_solution>.\admin\AdminUI.sln</configui_solution>
 	</PropertyGroup>
@@ -47,20 +48,25 @@
 		<CallTarget Targets="build-gateway64" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'AMD64' " />
 	</Target>
 
-	<Target Name="build-gateway32">
+	<Target Name="build-smtpEventHandler" DependsOnTargets="Clean">
+		<CallTarget Targets="build-smtpEventHandler32"  />
+		<CallTarget Targets="build-smtpEventHandler64"  />
+	</Target>	
+	
+	<Target Name="build-gateway32" DependsOnTargets="get-smtpEventHandlerBin">
 		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
 	</Target>
-
-	<Target Name="build-gateway64">
+	
+	<Target Name="build-gateway64" DependsOnTargets="get-smtpEventHandlerBin">
 		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
 	</Target>
 		
-	<Target Name="build-release-gateway32">
-		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Release;Platform=Win32" />
+	<Target Name="build-smtpEventHandler32" DependsOnTargets="build-gateway32">
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
 	</Target>
-
-	<Target Name="build-release-gateway64">
-		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=Release;Platform=x64" />
+	
+	<Target Name="build-smtpEventHandler64" DependsOnTargets="build-gateway64">
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
 	</Target>
 
 	<Target Name="clean-gateway">
@@ -128,8 +134,25 @@
 		<RemoveDir Directories=".\installer\configui" />
 	</Target>
 
+	
 	<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway32;build-gateway64;publish-configui" />
 
+	<Target Name="get-smtpEventHandlerBin" >
+		<ItemGroup>
+			<smtpEventHandler32 Include="$(MSBuildProjectDirectory)\gateway\smtpEventHandler\bin\$(Configuration)\Win32\**\*.*"/>
+			<smtpEventHandler64 Include="$(MSBuildProjectDirectory)\gateway\smtpEventHandler\bin\$(Configuration)\x64\**\*.*"/>
+		</ItemGroup>
+		
+		<Copy
+            SourceFiles="@(smtpEventHandler32)"
+            DestinationFiles="@(smtpEventHandler32->'$(MSBuildProjectDirectory)\bin\$(Configuration)\Win32\%(Filename)%(Extension)')"
+        />
+		<Copy
+            SourceFiles="@(smtpEventHandler64)"
+            DestinationFiles="@(smtpEventHandler64->'$(MSBuildProjectDirectory)\bin\$(Configuration)\x64\%(Filename)%(Extension)')"
+        />
+	</Target>
+	
 	<Target Name="build-installer">
 		<Error Text="Use the build-installer.bat script found in the installer directory." />
 	</Target>
