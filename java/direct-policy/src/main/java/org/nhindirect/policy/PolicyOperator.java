@@ -21,6 +21,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.policy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nhindirect.policy.impl.BinaryBooleanPolicyOperatorExecutor;
 import org.nhindirect.policy.impl.BinaryCollectionPolicyOperatorExecutor;
 import org.nhindirect.policy.impl.BinaryIntegerPolicyOperatorExecutor;
@@ -28,17 +31,18 @@ import org.nhindirect.policy.impl.UnaryBooleanPolicyOperatorExecutor;
 import org.nhindirect.policy.impl.UnaryIntegerPolicyOperatorExecutor;
 
 /**
- * Enumeration of operators supported by the policy engine.
+ * Enumeration of operators supported by the policy engine.  Each operator has equal precedence and are evaluated in the 
+ * order they are encountered.
  * @author Greg Meyer
  * @since 1.0
  */
 public enum PolicyOperator 
 {	
+	
 	/**
 	 * Performs an equality operation against two operands.  Equality semantics are specific the operands types.
 	 */
 	EQUALS("=", "equals", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
-	
 	
 	/**
 	 * Performs a non-equality operation against two operands.  Equality semantics are specific the operands types.
@@ -143,6 +147,16 @@ public enum PolicyOperator
 	protected final String operatorText;
 	protected final Class<?> executorClass;
 	protected final PolicyOperatorParamsType paramsType;
+	protected static final Map<String, PolicyOperator> tokenOperatorMap; 
+	
+	static
+	{
+		tokenOperatorMap = new HashMap<String, PolicyOperator>();
+		
+		final PolicyOperator[] operators = (PolicyOperator[].class.cast(PolicyOperator.class.getEnumConstants()));
+		for (PolicyOperator operator : operators)
+			tokenOperatorMap.put(operator.getOperatorToken(), operator);
+	}	
 	
 	/*
 	 * Private constructor
@@ -189,5 +203,15 @@ public enum PolicyOperator
 	public PolicyOperatorParamsType getParamsType()
 	{
 		return paramsType;
+	}
+	
+	/**
+	 * Gets the policy operator associated with a specific token string.
+	 * @param token The token used to look up the PolicyOperator.
+	 * @return The PolicyOperator associated with the token.  If the token does not represent a known operator, then null is returned,.
+	 */
+	public static PolicyOperator fromToken(String token)
+	{
+		return tokenOperatorMap.get(token);
 	}
 }

@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.policy;
 
 import org.nhindirect.policy.impl.JavaSerializedObjectLexiconPolicyParser;
+import org.nhindirect.policy.impl.SimpleTextV1LexiconPolicyParser;
 import org.nhindirect.policy.impl.XMLLexiconPolicyParser;
 
 /**
@@ -44,7 +45,12 @@ public enum PolicyLexicon
 	/**
 	 * Java serialized object format of a {@link PolicyExpression}.
 	 */
-	JAVA_SER(JavaSerializedObjectLexiconPolicyParser.class);
+	JAVA_SER(JavaSerializedObjectLexiconPolicyParser.class),
+	
+	/**
+	 * Simple text version 1 lexicon
+	 */
+	SIMPLE_TEXT_V1(SimpleTextV1LexiconPolicyParser.class);
 	
 	protected final Class<? extends PolicyLexiconParser> parserClass;
 	

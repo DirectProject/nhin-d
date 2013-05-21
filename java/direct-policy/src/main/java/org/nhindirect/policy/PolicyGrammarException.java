@@ -19,27 +19,50 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.policy.x509;
+package org.nhindirect.policy;
 
 /**
- * Interface definition of a certificate extension field.  Extensions are identified by a unique object identified (OID) and
- * can be marked critical as defined by RFC5280.
+ * Thrown if an invalid lexicon grammar is encountered..
+ * This exception is thrown in the parsed phase of the policy engine and may not be suppressed.
  * @author Greg Meyer
  * @since 1.0
- *
- * @param <P> The object type of the evaluated extension value.
  */
-public interface ExtensionField<P> extends TBSField<P>
+public class PolicyGrammarException extends PolicyProcessException
 {
-	/**
-	 * Gets the object identifier for the extension field.
-	 * @return The object identifier for the extension field.
-	 */
-	public ExtensionIdentifier getExtentionIdentifier();
-	
-	/**
-	 * Indicates if the extension is marked as critical.
-	 * @return true if the extension is marked critical.  false otherwise
-	 */
-	public boolean isCritical();
+
+	private static final long serialVersionUID = -7159467802135677344L;
+
+		/////CLOVER:OFF
+		/**
+		 * {@inheritDoc}
+		 */
+	    public PolicyGrammarException() 
+	    {
+	    	super();
+	    }
+
+		/**
+		 * {@inheritDoc}
+		 */
+	    public PolicyGrammarException(String msg) 
+	    {
+	        super(msg);
+	    }
+
+		/**
+		 * {@inheritDoc}
+		 */
+	    public PolicyGrammarException(String msg, Throwable t) 
+	    {
+	        super(msg, t);
+	    }
+
+		/**
+		 * {@inheritDoc}
+		 */
+	    public PolicyGrammarException(Throwable t) 
+	    {
+	        super(t);
+	    }
+	    /////CLOVER:ON
 }

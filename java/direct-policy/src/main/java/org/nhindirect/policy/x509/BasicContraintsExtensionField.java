@@ -82,8 +82,8 @@ public class BasicContraintsExtensionField extends AbstractExtensionField<Boolea
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.BASIC_CONSTRAINTS;
+		return ExtensionIdentifier.BASIC_CONSTRAINTS;
 	}	
 }

@@ -101,8 +101,8 @@ public class CertificatePolicyIndentifierExtensionField extends AbstractExtensio
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.CERTIFICATE_POLICIES;
+		return ExtensionIdentifier.CERTIFICATE_POLICIES;
 	}	
 }

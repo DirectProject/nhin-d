@@ -86,8 +86,8 @@ public class ExtendedKeyUsageExtensionField extends AbstractExtensionField<Colle
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.EXTENDED_KEY_USAGE;
+		return ExtensionIdentifier.EXTENDED_KEY_USAGE;
 	}	
 }

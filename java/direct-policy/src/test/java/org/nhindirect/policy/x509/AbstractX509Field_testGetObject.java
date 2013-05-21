@@ -16,7 +16,7 @@ public class AbstractX509Field_testGetObject extends TestCase
 		
 		// use a concreate class and check for key usage
 		final SignatureAlgorithmField field = new SignatureAlgorithmField();
-		assertNotNull(field.getObject(cert.getExtensionValue(ExtentionIdentifier.KEY_USAGE.getId())));
+		assertNotNull(field.getObject(cert.getExtensionValue(ExtensionIdentifier.KEY_USAGE.getId())));
 	}
 	
 	public void testGetObject_invalidObjectEncoding() throws Exception
