@@ -21,6 +21,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.policy.x509;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Enumeration of relative distinguished name object identifiers (OIDs) found in the subject and issuer fields of the TBS section of an X509 Certificate.
  * These OIDs are used to select a specific attribute from a distinguished name.
@@ -126,6 +129,17 @@ public enum RDNAttributeIdentifier
 	
 	protected final String name;
 	
+	protected static final Map<String, RDNAttributeIdentifier> nameFieldMap; 
+	
+	static
+	{
+		nameFieldMap = new HashMap<String, RDNAttributeIdentifier>();
+		
+		final RDNAttributeIdentifier[] rdns = (RDNAttributeIdentifier[].class.cast(RDNAttributeIdentifier.class.getEnumConstants()));
+		for (RDNAttributeIdentifier rdn : rdns)
+			nameFieldMap.put(rdn.getName(), rdn);
+	}
+	
 	private RDNAttributeIdentifier(String id, String name)
 	{
 		this.id = id;
@@ -148,5 +162,32 @@ public enum RDNAttributeIdentifier
 	public String getName()
 	{
 		return name;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		return name;
+	}
+	
+	/**
+	 * Gets the RDNAttributeIdentifier associated with the RDN name.  This method also accepts a parsed token ending with the 
+	 * RDN name.the RDNAttributeIdentifier associated with the RDN name.
+	 * @param name Name or parsed token used to lookup the RDNAttributeIdentifier.
+	 * @return The RDNAttributeIdentifier associated with the RDN name.   If the name does not represent a known RDN, then null is returned.
+	 */
+	public static RDNAttributeIdentifier fromName(String name)
+	{
+		String lookupName;
+		int idx = name.lastIndexOf(".");
+		if (idx >= 0)
+			lookupName = name.substring(idx + 1);
+		else
+			lookupName = name;
+		
+		return nameFieldMap.get(lookupName);
 	}
 }

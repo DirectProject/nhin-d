@@ -99,8 +99,8 @@ public class AuthorityInfoAccessOCSPLocExtentionField extends AbstractExtensionF
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.AUTHORITY_INFO_ACCESS;
+		return ExtensionIdentifier.AUTHORITY_INFO_ACCESS;
 	}
 }

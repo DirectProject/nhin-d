@@ -71,7 +71,7 @@ public class IssuerAttributeField extends AbstractTBSField<Collection<String>>
 	{
 		return TBSFieldName.ISSUER;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
