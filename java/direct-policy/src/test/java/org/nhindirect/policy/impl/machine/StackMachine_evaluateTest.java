@@ -82,7 +82,7 @@ public class StackMachine_evaluateTest extends TestCase
 		assertTrue(stMachine.evaluate(stuffToProcess));
 	}
 	
-	public void testEvaluate_equalsDifferentTypeValues_assertFalse() throws Exception
+	public void testEvaluate_equalsDifferentTypeValues_assertTrue() throws Exception
 	{
 		final Vector<Opcode> stuffToProcess = new Vector<Opcode>();
 		stuffToProcess.add(new StackMachineEntry(PolicyValueFactory.getInstance("12345")));
@@ -91,10 +91,10 @@ public class StackMachine_evaluateTest extends TestCase
 		
 		final StackMachine stMachine = new StackMachine();
 		
-		assertFalse(stMachine.evaluate(stuffToProcess));
+		assertTrue(stMachine.evaluate(stuffToProcess));
 	}	
 	
-	public void testEvaluate_notEqualsDifferentTypeValues_assertTrue() throws Exception
+	public void testEvaluate_notEqualsDifferentTypeValues_assertFalse() throws Exception
 	{
 		final Vector<Opcode> stuffToProcess = new Vector<Opcode>();
 		stuffToProcess.add(new StackMachineEntry(PolicyValueFactory.getInstance("12345")));
@@ -103,7 +103,7 @@ public class StackMachine_evaluateTest extends TestCase
 		
 		final StackMachine stMachine = new StackMachine();
 		
-		assertTrue(stMachine.evaluate(stuffToProcess));
+		assertFalse(stMachine.evaluate(stuffToProcess));
 	}	
 	
 	public void testEvaluate_regExStringMatches_assertTrue() throws Exception

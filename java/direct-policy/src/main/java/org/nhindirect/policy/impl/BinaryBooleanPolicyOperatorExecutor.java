@@ -76,17 +76,27 @@ public class BinaryBooleanPolicyOperatorExecutor<O1,O2> implements BooleanPolicy
 		switch (operator)
 		{
 		    case EQUALS:
-				retVal = operand1.getPolicyValue().equals(operand2.getPolicyValue());
+		    {
+		    	Object op1 = (operand1.getPolicyValue() instanceof Integer) ? operand1.getPolicyValue().toString() : operand1.getPolicyValue();
+		    	Object op2 = (operand2.getPolicyValue() instanceof Integer) ? operand2.getPolicyValue().toString() : operand2.getPolicyValue();
+				retVal = op1.equals(op2);
 				break;
+		    }
 		    case NOT_EQUALS:
-				retVal = !operand1.getPolicyValue().equals(operand2.getPolicyValue());	
+		    {
+		    	Object op1 = (operand1.getPolicyValue() instanceof Integer) ? operand1.getPolicyValue().toString() : operand1.getPolicyValue();
+		    	Object op2 = (operand2.getPolicyValue() instanceof Integer) ? operand2.getPolicyValue().toString() : operand2.getPolicyValue();
+				retVal = !op1.equals(op2);	
 				break;
+		    }
 		    case GREATER:
 		    case LESS:
 		    {
 				// get the two operands as booleans
-				final Integer op1 = Integer.class.cast(operand1.getPolicyValue());
-				final Integer op2 = Integer.class.cast(operand2.getPolicyValue());
+				final Integer op1 = (operand1.getPolicyValue() instanceof Integer) ? Integer.class.cast(operand1.getPolicyValue()) :
+					Integer.valueOf(operand1.getPolicyValue().toString());
+				final Integer op2 = (operand2.getPolicyValue() instanceof Integer) ? Integer.class.cast(operand2.getPolicyValue()) :
+					Integer.valueOf(operand2.getPolicyValue().toString());
 				
 				// needs to be backwards because we are using RPN to push parameters
 				// in the stack machine

@@ -59,7 +59,10 @@ public enum X509FieldType
 		
 		final X509FieldType[] fields = (X509FieldType[].class.cast(X509FieldType.class.getEnumConstants()));
 		for (X509FieldType field : fields)
+		{
 			tokenFieldMap.put(field.getFieldToken(), field);
+			tokenFieldMap.put(field.getFieldToken() + "+", field);
+		}
 	}
 	
 	private X509FieldType(String rfcName, String display, Class<? extends X509Field<?>> referenceClass)

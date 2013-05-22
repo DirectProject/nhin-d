@@ -34,9 +34,11 @@ import java.util.Vector;
 import org.nhindirect.policy.LiteralPolicyExpressionFactory;
 import org.nhindirect.policy.OperationPolicyExpressionFactory;
 import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyGrammarException;
 import org.nhindirect.policy.PolicyLexiconParser;
 import org.nhindirect.policy.PolicyOperator;
 import org.nhindirect.policy.PolicyLexicon;
+import org.nhindirect.policy.PolicyOperatorParamsType;
 import org.nhindirect.policy.PolicyParseException;
 import org.nhindirect.policy.x509.ExtensionField;
 import org.nhindirect.policy.x509.ExtensionIdentifier;
@@ -59,6 +61,8 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 	
 	protected static Map<String, TokenType> tokenMap;
 	protected static Map<String, PolicyOperator> operatorExpressionMap;
+	protected ThreadLocal<Integer> buildLevel;
+	
 	
 	static
 	{
@@ -100,7 +104,7 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 	 */
 	public SimpleTextV1LexiconPolicyParser()
 	{
-		
+		buildLevel = new ThreadLocal<Integer>();
 	}
 
 
@@ -112,7 +116,9 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 	{
 		final Vector<TokenTypeAssociation> tokens = parseToTokens(stream);
 		
-		final PolicyExpression retExpression = buildExpression(tokens.iterator(), 0);
+		resetLevel();
+		
+		final PolicyExpression retExpression = buildExpression(tokens.iterator());
 		
 		return retExpression;
 	}
@@ -124,19 +130,27 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 	 * @return A {@link PolicyExpression} built from the parsed list of tokens.
 	 * @throws PolicyParseException
 	 */
-	protected PolicyExpression buildExpression(Iterator<TokenTypeAssociation> tokens, final int level) throws PolicyParseException 
+	protected PolicyExpression buildExpression(Iterator<TokenTypeAssociation> tokens) throws PolicyParseException 
 	{
-		Vector<PolicyExpression> builtOperandExpressions = new Vector<PolicyExpression>();
+		if (!tokens.hasNext())
+			return null;
 		
+		Vector<PolicyExpression> builtOperandExpressions = new Vector<PolicyExpression>();
+
 		do
-		{
+		{	
 			TokenTypeAssociation assos = tokens.next();
 			switch (assos.getType())
 			{
 				case START_LEVEL:
-					builtOperandExpressions.add(buildExpression(tokens, (level + 1)));
+					incrementLevel();
+					builtOperandExpressions.add(buildExpression(tokens));
 					break;
 				case END_LEVEL:
+					if (getLevel() == 0)
+						throw new PolicyGrammarException("To many \")\" tokens.  Delete this token");
+					
+					this.decrementLevel();
 					return builtOperandExpressions.get(0);
 				case OPERATOR_EXPRESSION:
 				{
@@ -145,9 +159,17 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 					
 					// regardless if this is a unary or binary expression, then next set of tokens should consist 
 					// of a parameter to this operator
-					builtOperandExpressions.add(buildExpression(tokens, level));
+					final PolicyExpression subExpression = buildExpression(tokens);
+					
+					if (subExpression == null)
+						throw new PolicyGrammarException("Missing parameter.  Operator must be followed by an expression.");
+					
+					builtOperandExpressions.add(subExpression);
 					
 					// now add the parameters to the operator
+					if (builtOperandExpressions.size() == 1 && operator.getParamsType().equals(PolicyOperatorParamsType.BINARY))
+						throw new PolicyGrammarException("Missing parameter.  Binary operators require two parameters.");
+					
 					final PolicyExpression operatorExpression = OperationPolicyExpressionFactory.getInstance(operator, builtOperandExpressions);
 					builtOperandExpressions = new Vector<PolicyExpression>();
 					builtOperandExpressions.add(operatorExpression);
@@ -171,15 +193,14 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 							checkObj = buildExtensionField(assos.getToken());
 						}
 					}
-					
-					if (checkObj != null)
-						builtOperandExpressions.add(checkObj);
+
+					builtOperandExpressions.add(checkObj);
 					
 					break;
 				}
 			}
 		} while(tokens.hasNext());
-		
+	
 		return builtOperandExpressions.get(0);
 	}
 	
@@ -198,12 +219,22 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		{
 			try
 			{
-				retVal = fieldType.getReferenceClass().newInstance();
+				Class<? extends X509Field<?>> fieldRefClass = fieldType.getReferenceClass();
+				if (fieldRefClass == null)
+					throw new PolicyParseException("X509Field with token name " + token + " has not been implemented yet.");
+				
+				retVal = fieldRefClass.newInstance();
 			}
+			catch (PolicyParseException ex)
+			{
+				throw ex;
+			}
+			///CLOVER:OFF
 			catch (Exception e)
 			{
 				throw new PolicyParseException("Error building X509Field", e);
 			}
+			///CLOVER:ON
 		}
 		
 		return retVal;
@@ -230,9 +261,13 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 				
 				if (fieldRefClass.equals(IssuerAttributeField.class) || fieldRefClass.equals(SubjectAttributeField.class))
 				{
-					final RDNAttributeIdentifier identifier = RDNAttributeIdentifier.fromName(token);
-					retVal = fieldRefClass.equals(IssuerAttributeField.class) ? new IssuerAttributeField(false, identifier) :
-						new SubjectAttributeField(false, identifier);
+					boolean required = token.endsWith("+");
+					
+					final String rdnLookupToken = (required) ? token.substring(0, token.length() - 1) : token;
+					
+					final RDNAttributeIdentifier identifier = RDNAttributeIdentifier.fromName(rdnLookupToken);
+					retVal = fieldRefClass.equals(IssuerAttributeField.class) ? new IssuerAttributeField(required, identifier) :
+						new SubjectAttributeField(required, identifier);
 				}
 				else
 				{	
@@ -243,10 +278,12 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 			{
 				throw ex;
 			}
+			///CLOVER:OFF
 			catch (Exception e)
 			{
 				throw new PolicyParseException("Error building TBSField", e);
 			}
+			///CLOVER:ON
 		}
 		
 		return retVal;
@@ -267,22 +304,26 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		{
 			try
 			{
+				boolean required = token.endsWith("+");
+				
 				final Class<? extends ExtensionField<?>> fieldRefClass = fieldType.getReferenceClass(token);
 				
 				if (fieldRefClass == null)
 					throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
 				
 				final Constructor<?> cons = fieldRefClass.getConstructor(Boolean.TYPE);
-				retVal = (ExtensionField<?>)cons.newInstance(Boolean.FALSE);
+				retVal = (ExtensionField<?>)cons.newInstance(required);
 			}
 			catch (PolicyParseException ex)
 			{
 				throw ex;
 			}
+			///CLOVER:OFF
 			catch (Exception e)
 			{
 				throw new PolicyParseException("Error building ExtensionField", e);
 			}
+			///CLOVER:ON
 		}
 		
 		return retVal;
@@ -304,6 +345,7 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 			final InputStreamReader isr = new InputStreamReader(stream);
 			StringWriter writer = new StringWriter();
 			boolean holdMode = false;
+			TokenType holdType = null;
 			
 			for (int i; (i = isr.read()) > 0; ) 
 			{
@@ -318,8 +360,9 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 					// if the token is an operator, we need to keep looking forward to the next
 					// character because some operators are made up of the exact same characters.. we
 					// may have a partial string of an operator with more characters
-					if (exactMatchToken == TokenType.OPERATOR_EXPRESSION)
+					if (exactMatchToken == TokenType.OPERATOR_EXPRESSION || exactMatchToken == TokenType.CERTIFICATE_REFERENCE_EXPRESSION)
 					{
+						holdType = exactMatchToken;
 						// go into hold mode so we can check the next character
 						holdMode = true;
 					}
@@ -336,12 +379,12 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 					{
 						// we know that the checkForTokenString is comprised of an exact match at the beginning of the string
 						// up to the last character in the string
-						// break the string into the operator and the start of the next token
+						// break the string into the known token and the start of the next token
 						final String operatorToken = checkForTokenString.substring(0, (checkForTokenString.length() - 1));
 						final String nextToken = checkForTokenString.substring((checkForTokenString.length() - 1));
 						
-						// add the operator token to the token vector
-						tokens.add(new TokenTypeAssociation(operatorToken, TokenType.OPERATOR_EXPRESSION));
+						// add the token to the token vector
+						tokens.add(new TokenTypeAssociation(operatorToken, holdType));
 						
 						// reset the writer
 						writer = new StringWriter();
@@ -350,15 +393,15 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 
 						exactMatchToken = tokenMap.get(nextToken);
 						if (exactMatchToken != null)
-						{
-							// our grammar does not allow for two subsequent operators
-							// so assume this token is a non operator
+						{							
+								
 							tokens.add(new TokenTypeAssociation(nextToken, exactMatchToken));
 						}
 						else
 							writer.write(nextToken); // not a reserved token, so queue up the nextToken to continue on with the parsing
 						
 						holdMode = false;
+						holdType = null;
 					}
 					else
 					{
@@ -384,10 +427,11 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 								// is an operator... 
 								exactMatchToken = tokenMap.get(secondToken);
 								
-								if (exactMatchToken == TokenType.OPERATOR_EXPRESSION)
+								if (exactMatchToken == TokenType.OPERATOR_EXPRESSION || exactMatchToken == TokenType.CERTIFICATE_REFERENCE_EXPRESSION)
 								{
 									// go into hold mode
 									holdMode = true;
+									holdType = exactMatchToken;
 									writer.write(secondToken);
 								}
 								else
@@ -419,6 +463,8 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		
 		return tokens;
 	}
+	
+	
 	
 	/**
 	 * Enumeration of token types.
@@ -453,6 +499,48 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		CERTIFICATE_REFERENCE_EXPRESSION;
 	}
 	
+	protected Integer resetLevel()
+	{
+		Integer level = buildLevel.get();
+		if (level == null)
+		{
+			level = Integer.valueOf(0);
+			buildLevel.set(level);
+		}
+		level = 0;
+		
+		return level;
+	}
+	
+	protected Integer getLevel()
+	{
+		Integer level = buildLevel.get();
+		if (level == null)
+			level = resetLevel();
+		
+		return level;
+	}
+	
+	protected Integer incrementLevel()
+	{
+		Integer level = getLevel();
+		
+		++level;
+		buildLevel.set(level);
+		
+		return level;
+	}
+	
+	protected Integer decrementLevel()
+	{
+		Integer level = getLevel();
+		
+		--level;
+		buildLevel.set(level);
+		
+		return level;
+	}
+	
 	/**
 	 * Association of a token to a {@link TokenType}
 	 * @author gm2552
@@ -466,7 +554,7 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		/**
 		 * Constructor
 		 * @param token The token
-		 * @param type The toke type
+		 * @param type The token type
 		 */
 		public TokenTypeAssociation(String token, TokenType type)
 		{

@@ -5,20 +5,23 @@ import java.io.InputStream;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.policy.LiteralPolicyExpression;
 import org.nhindirect.policy.OperationPolicyExpression;
 import org.nhindirect.policy.PolicyExpression;
 import org.nhindirect.policy.PolicyExpressionType;
+import org.nhindirect.policy.PolicyGrammarException;
 import org.nhindirect.policy.PolicyOperator;
 import org.nhindirect.policy.x509.KeyUsageExtensionField;
 import org.nhindirect.policy.x509.SubjectAttributeField;
+import org.nhindirect.policy.x509.SubjectKeyIdentifierExtensionField;
 import org.nhindirect.policy.x509.X509Field;
 
 import junit.framework.TestCase;
 
 public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCase
 {
-	public void testParse_simpleExpression_validatePolicyExpression() throws Exception
+	public void testBuildExpression_simpleExpression_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/simpleLexiconSamp1.txt"));
@@ -26,7 +29,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
-		PolicyExpression expression = parser.buildExpression(tokens.iterator(), 0);
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
 		
 		// check that the expression is a logical and
 		assertNotNull(expression);
@@ -69,7 +72,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		assertEquals("1" ,((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());		
 	}
 	
-	public void testParse_x509FieldsType_validatePolicyExpression() throws Exception
+	public void testBuildExpression_x509FieldsType_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/lexiconWithCertificateStruct.txt"));
@@ -77,7 +80,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
-		PolicyExpression expression = parser.buildExpression(tokens.iterator(), 0);
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
 		
 		// check that the expression is an equals
 		assertNotNull(expression);
@@ -95,7 +98,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		assertEquals("1.2.840.113549.1.1.11" ,((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
 	}
 	
-	public void testParse_tbsFieldName_rdnAttribute_validatePolicyExpression() throws Exception
+	public void testBuildExpression_tbsFieldName_rdnAttribute_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/literalWithSpaces.txt"));
@@ -103,7 +106,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
-		PolicyExpression expression = parser.buildExpression(tokens.iterator(), 0);
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
 		
 		// check that the expression is an equals
 		assertNotNull(expression);
@@ -121,7 +124,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		assertEquals("United States", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
 	}
 	
-	public void testParse_extensionName_keyUsage_validatePolicyExpression() throws Exception
+	public void testBuildExpression_extensionName_keyUsage_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/lexiconWithKeyUsage.txt"));
@@ -129,7 +132,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
-		PolicyExpression expression = parser.buildExpression(tokens.iterator(), 0);
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
 		
 		// check that the expression is an equals
 		assertNotNull(expression);
@@ -145,5 +148,143 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		expression = operationExpression.getOperands().get(1);
 		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
 		assertEquals("1", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+	}	
+	
+	public void testBuildExpression_tinaryExpression_validatePolicyExpression() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		
+		InputStream stream = IOUtils.toInputStream("2 = 1 != true");
+		
+		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		// now build expressions
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
+		
+		// check that the expression is an equals
+		assertNotNull(expression);
+		assertEquals(PolicyExpressionType.OPERATION, expression.getExpressionType());
+		OperationPolicyExpression operationExpression = (OperationPolicyExpression)expression;
+		assertEquals(PolicyOperator.EQUALS, operationExpression.getPolicyOperator());
+		
+		// break down the sub operation parameters... should be a literal and an operation
+		expression = operationExpression.getOperands().get(0);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+
+		expression = operationExpression.getOperands().get(1);
+		assertEquals(PolicyExpressionType.OPERATION, expression.getExpressionType());
+
+		
+		// break down the sub parameters again of this operation
+		OperationPolicyExpression subOperation = (OperationPolicyExpression)expression;
+		assertEquals(PolicyOperator.NOT_EQUALS, subOperation.getPolicyOperator());
+		
+		expression = subOperation.getOperands().get(0);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+		assertEquals("1", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+		
+		expression = subOperation.getOperands().get(1);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+		assertEquals("true", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+	}
+	
+	public void  testBuildExpression_requiredCertField_validateTokens() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		final InputStream stream = IOUtils.toInputStream("X509.TBS.EXTENSION.SubjectKeyIdentifier+ = 1.3.2.3");
+		
+		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		// now build expressions
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
+		
+		// check that the expression is an equals
+		assertNotNull(expression);
+		assertEquals(PolicyExpressionType.OPERATION, expression.getExpressionType());
+		OperationPolicyExpression operationExpression = (OperationPolicyExpression)expression;
+		assertEquals(PolicyOperator.EQUALS, operationExpression.getPolicyOperator());
+		
+		// break down the sub operation parameters... should be a literal and an operation
+		expression = operationExpression.getOperands().get(0);
+		assertEquals(PolicyExpressionType.REFERENCE, expression.getExpressionType());
+		assertTrue(expression instanceof SubjectKeyIdentifierExtensionField);
+		assertTrue(((SubjectKeyIdentifierExtensionField)expression).isRequired());
+
+		expression = operationExpression.getOperands().get(1);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+		
+		stream.close();
+	}	
+	
+	public void testBuildExpression_toManyClosingParenthesis_assertException() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		
+		final InputStream stream = IOUtils.toInputStream("(2 = 1) != true)");
+		
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		boolean exceptionOccured = false;
+		
+		try
+		{
+			parser.buildExpression(tokens.iterator());
+		}
+		catch (PolicyGrammarException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+		
+		stream.close();
+	}	
+	
+	public void testBuildExpression_binaryOperation_missingParameter_assertException() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		
+		final InputStream stream = IOUtils.toInputStream("&& true");
+		
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		boolean exceptionOccured = false;
+		
+		try
+		{
+			parser.buildExpression(tokens.iterator());
+		}
+		catch (PolicyGrammarException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+		
+		stream.close();
+	}	
+	
+	public void testBuildExpression_operation_missingSingleParameter_assertException() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		
+		final InputStream stream = IOUtils.toInputStream("&&");
+		
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		boolean exceptionOccured = false;
+		
+		try
+		{
+			parser.buildExpression(tokens.iterator());
+		}
+		catch (PolicyGrammarException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+		
+		stream.close();
 	}	
 }

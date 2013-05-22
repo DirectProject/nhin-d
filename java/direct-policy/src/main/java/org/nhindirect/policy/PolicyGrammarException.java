@@ -27,7 +27,7 @@ package org.nhindirect.policy;
  * @author Greg Meyer
  * @since 1.0
  */
-public class PolicyGrammarException extends PolicyProcessException
+public class PolicyGrammarException extends PolicyParseException
 {
 
 	private static final long serialVersionUID = -7159467802135677344L;
