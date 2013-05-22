@@ -75,7 +75,7 @@ public enum PolicyOperator
 	 * Performs a search for the non-existence of an object within a collection.  This operation returns true if the object 
 	 * does not exist within the collection.  One of the operands MUST be a collection of arbitrary types that will be searched.
 	 */
-	NOT_CONTAINS("!{?}", "not contains", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
+	NOT_CONTAINS("{?}!", "not contains", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
 	
 	/**
 	 * Performs a regular expressions match on a collection of strings.  This operations returns true if one of the elements
@@ -101,12 +101,12 @@ public enum PolicyOperator
 	 * Performs an evaluation of the number of elements within a collection and determines if the collection is non-empty.  
 	 * This operation is only performed on a single collection of arbitrary objects.
 	 */
-	NOT_EMPTY("!{}", "not empty", UnaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.UNARY),
+	NOT_EMPTY("{}!", "not empty", UnaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.UNARY),
 	
 	/**
 	 * Performs an intersection of two sets and returns the resulting set.  This operation can only be performed on collection operands.
 	 */
-	INTERSECTION("&{}", "intersection", BinaryCollectionPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
+	INTERSECTION("{}&", "intersection", BinaryCollectionPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
 	
 	/**
 	 * Performs a logical or operation against two operands.  This operation can only be performed on two boolean values.  Boolean
