@@ -7,7 +7,7 @@ import org.nhindirect.policy.util.TestUtils;
 
 import junit.framework.TestCase;
 
-public class AbstractX509Field_testGetObject extends TestCase
+public class AbstractX509Field_testGetObjectTest extends TestCase
 {
 	public void testGetObject_validObjectEncoding() throws Exception
 	{

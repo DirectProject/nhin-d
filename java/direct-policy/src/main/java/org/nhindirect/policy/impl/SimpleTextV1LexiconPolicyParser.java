@@ -53,8 +53,106 @@ import org.nhindirect.policy.x509.X509FieldType;
 /**
  * Implementation of a {@link PolicyLexiconParser} that parses expressions using the {@link PolicyLexicon#SIMPLE_TEXT_V1} lexicon.  This parser
  * utilizes the XStream XML engine to serialize expressions.
+ * <p>
+ * The SimpleTextV1Lexicon strategy is to allow expressions to be written in a simple syntax similar to writing an "if" statement.  Expression are 
+ * evaluated from left to right executing each operator in the order that it is encountered.  Although there is no precedence of operations
+ * in the policy engine, this lexicon allows for expressions to be prioritized and grouped by placing them in parentheses.
+ * <p>
+ * Error reporting in the parser is limited, but detected grammar errors will throw either a {@link PolicyParseException} or a {@link PolicyGrammarException}.
+ * Not all of the certificateReferenceExpression structures are supported yet, but will be available in subsequent releases.  Unsupported structures will
+ * throw a {@link PolicyParseException} exception.
+ * <p>
+ * The following is an EBNF definition of the simple text v1 lexicon.
+ * <p>
+ * <pre>
+ * letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+ *      | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+ *      | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+ *      | "V" | "W" | "X" | "Y" | "Z" 
+ *      | "a" | "b" | "c" | "d" | "e" | "f" | "g"
+ *      | "h" | "i" | "j" | "k" | "l" | "m" | "n"
+ *      | "o" | "p" | "q" | "r" | "s" | "t" | "u" 
+ *      | "v" | "w" | "x" | "y" | "z" ;
+ *      
+ * digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+ * 
+ * symbol = "[" | "]" |  "." | "#" | "%" | "+" ;
+ * 
+ * unaryOperator = "^" | "{}" | "{}!" | "!" | "@@" ;
+ * 
+ * binaryOperator = "=" | "!=" |  ">" | "<" | "$" | "{?}" | "{?}!" | "{$}" 
+ *      | "{}&" |  "||" | "&&"  | "&" | "|" ;
+ *      
+ * operator = unaryOperator | binaryOperator
+ *      
+ * literalExpression = { letter | digit | symbol | white space} ;
+ * 
+ * rdnAttributeName = "CN" | "C" | "O" | "OU" | "ST" | "L" | "E" | "DC"
+ *      | "DNQUALIFIER" | "SERIALNUMBER" | "SN" | "TITLE" | "GIVENNAME"
+ *      | "INITIALS" | "PSEUDONYM" | "GERNERAL_QUALIFIER" | "DN" ;
+ *      
+ * x509Expression = "X509.Algorithm" | "X509.Signature" ;
+ * 
+ * tbsExpression = "X509.TBS.Version" | "X509.TBS.SerialNumber" 
+ *      | "X509.TBS.Signature" | "X509.TBS.Issuer.", rdnAttributeName
+ *      | "X509.TBS.Validity.ValidFrom" | "X509.TBS.Validity.ValidTo"
+ *      | "X509.TBS.Subject.", rdnAttributeName | X509.TBS.IssuerUniqueID
+ *      | X509.TBS.SubjectUniqueID ;
+ *      
+ * extensionExpression = "X509.TBS.EXTENSION.KeyUsage" | "X509.TBS.EXTENSION.SubjectAltName"
+ *      | "X509.TBS.EXTENSION.SubjectDirectoryAttributes" 
+ *      | "X509.TBS.EXTENSION.SubjectKeyIdentifier" | "X509.TBS.EXTENSION.IssuerAltName"
+ *      | "X509.TBS.EXTENSION.AuthorityKeyIdentifier.KeyId" 
+ *      | "X509.TBS.EXTENSION.AuthorityKeyIdentifier.CertIssuers"
+ *      | "X509.TBS.EXTENSION.AuthorityKeyIdentifier.SerialNumber"
+ *      | "X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs"
+ *      | "X509.TBS.EXTENSION.CertificatePolicies.CPSUrls"
+ *      | "X509.TBS.EXTENSION.PolicyMappings" | "X509.TBS.EXTENSION.BasicConstraints.CA"
+ *      | "X509.TBS.EXTENSION.BasicConstraints.MaxPathLength"
+ *      | "X509.TBS.EXTENSION.NameConstraints" | "X509.TBS.EXTENSION.PolicyConstraints"
+ *      | "X509.TBS.EXTENSION.ExtKeyUsageSyntax" | "X509.TBS.EXTENSION.InhibitAnyPolicy"
+ *      | "X509.TBS.EXTENSION.CRLDistributionPoints.FullName" 
+ *      | "X509.TBS.EXTENSION.CRLDistributionPoints.RelativeToIssuer" 
+ *      | "X509.TBS.EXTENSION.CRLDistributionPoints.Reasons"
+ *      | "X509.TBS.EXTENSION.CRLDistributionPoints.CRLIssuer"
+ *      | "X509.TBS.EXTENSION.FreshestCRL.FullName"
+ *      | "X509.TBS.EXTENSION.FreshestCRL.RelativeToIssuer"
+ *      | "X509.TBS.EXTENSION.FreshestCRL.Reasons" 
+ *      | "X509.TBS.EXTENSION.FreshestCRL.CRLIssuer"
+ *      | "X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.Url"
+ *      | "X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.OCSPLocation"
+ *      | "X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.AccessMethod"
+ *      | "X509.TBS.EXTENSION.SubjectInfoAccessSyntax.Url"
+ *      | "X509.TBS.EXTENSION.SubjectInfoAccessSyntax.AccessMethod"
+ *      | "X509.TBS.EXTENSION.SubjectInfoAccessSyntax.OCSPLocation" ;
+ *      
+ *  requiredExpression =  tbsExpression, "+" | extensionExpression, "+" ;
+ *  
+ *  certificateReferenceExpression = x509Expression | tbsExpression | 
+ *      | extensionExpression | requiredExpression ;
+ *      
+ *  operatorExpression = [{(}] unaryOperator, [{white space}],  (literalExpression | certificateReferenceExpression | operatorExpression) , [{)}] |
+ *      (literalExpression | certificateReferenceExpression | operatorExpression) ,  [{white space}] , binaryOperator ,
+ *      (literalExpression | certificateReferenceExpression | operatorExpression) , [{)}] ;
+ *      
+ *  policyExpression = {operatorExpression}    
+ * </pre>
+ * <p>
+ * <b>Examples</b>
+ * <br>
+ * <pre>
+ * X509.Algorithm = 1.2.840.113549.1.1.11
+ * (X509.TBS.EXTENSION.KeyUsage+ = 224) && (X509.Algorithm = 1.2.840.113549.1.1.11)
+ * </pre>
  * @author gm2552
  * @since 1.0
+ * @see PolicyOperator
+ * @see TBSFieldName
+ * @see ExtensionIdentifier
+ * @see X509FieldType
+ * @see RDNAttributeIdentifier
+ * @see PublicKeyAlgorithmIdentifier
+ * @see SignatureAlgorithmIdentifier
  */
 public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 {

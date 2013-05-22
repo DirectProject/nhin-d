@@ -24,9 +24,9 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 	public void testBuildExpression_simpleExpression_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
-		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/simpleLexiconSamp1.txt"));
+		final InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/simpleLexiconSamp1.txt"));
 		
-		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
 		PolicyExpression expression = parser.buildExpression(tokens.iterator());
@@ -75,9 +75,9 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 	public void testBuildExpression_x509FieldsType_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
-		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/lexiconWithCertificateStruct.txt"));
+		final InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/lexiconWithCertificateStruct.txt"));
 		
-		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
 		PolicyExpression expression = parser.buildExpression(tokens.iterator());
@@ -101,9 +101,9 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 	public void testBuildExpression_tbsFieldName_rdnAttribute_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
-		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/literalWithSpaces.txt"));
+		final InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/literalWithSpaces.txt"));
 		
-		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
 		PolicyExpression expression = parser.buildExpression(tokens.iterator());
@@ -127,9 +127,9 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 	public void testBuildExpression_extensionName_keyUsage_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
-		InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/lexiconWithKeyUsage.txt"));
+		final InputStream stream = FileUtils.openInputStream(new File("./src/test/resources/policies/lexiconWithKeyUsage.txt"));
 		
-		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
 
 		// now build expressions
 		PolicyExpression expression = parser.buildExpression(tokens.iterator());
