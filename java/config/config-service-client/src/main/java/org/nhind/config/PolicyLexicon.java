@@ -19,8 +19,10 @@ public class PolicyLexicon implements java.io.Serializable {
 
     public static final java.lang.String _XML = "XML";
     public static final java.lang.String _JAVA_SER = "JAVA_SER";
+    public static final java.lang.String _SIMPLE_TEXT_V1 = "SIMPLE_TEXT_V1";
     public static final PolicyLexicon XML = new PolicyLexicon(_XML);
     public static final PolicyLexicon JAVA_SER = new PolicyLexicon(_JAVA_SER);
+    public static final PolicyLexicon SIMPLE_TEXT_V1 = new PolicyLexicon(_SIMPLE_TEXT_V1);
     public java.lang.String getValue() { return _value_;}
     public static PolicyLexicon fromValue(java.lang.String value)
           throws java.lang.IllegalArgumentException {

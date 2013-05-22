@@ -104,9 +104,7 @@ public enum TBSFieldName
 		final TBSFieldName[] fields = (TBSFieldName[].class.cast(TBSFieldName.class.getEnumConstants()));
 		for (TBSFieldName field : fields)	
 			for (String token : field.getFieldTokens())
-			{
 				tokenFieldMap.put(token, field);
-			}
 	}
 
 	
@@ -124,8 +122,20 @@ public enum TBSFieldName
 	{
 		this.rfcName = rfcName;
 		this.display = display;
-		this.subAttributes = subAttributes;
+		this.subAttributes = new ArrayList<AttributeReferenceClass>(subAttributes);
 		this.referenceClass = null;
+		
+		//add required flag option to each sub attribute
+		if (this.subAttributes.size() > 0)
+		{
+			final Collection<AttributeReferenceClass> addAttributes = new ArrayList<AttributeReferenceClass>();
+					
+			for (AttributeReferenceClass addRefClass: this.subAttributes)		
+				addAttributes.add(new AttributeReferenceClass(addRefClass.getAttribute() + "+", addRefClass.getReferenceClass()));
+
+			this.subAttributes.addAll(addAttributes);
+		}
+		
 	}
 	
 	private TBSFieldName(String rfcName, String display, Class<? extends TBSField<?>> referenceClass)
@@ -164,7 +174,7 @@ public enum TBSFieldName
 	public Collection<String> getFieldTokens()
 	{
 		if (subAttributes == null || subAttributes.isEmpty())
-			return Arrays.asList("X509.TBS." + this.rfcName);
+			return Arrays.asList("X509.TBS." + this.rfcName, "X509.TBS." + this.rfcName + "+");
 		
 		final Collection<String> names = new ArrayList<String>();
 		for (AttributeReferenceClass attrRef : subAttributes)

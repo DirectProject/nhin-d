@@ -164,8 +164,19 @@ public enum ExtensionIdentifier
 		this.id = id;
 		this.rfcName = rfcName;
 		this.display = display;
-		this.subAttributes = subAttributes;
+		this.subAttributes = new ArrayList<AttributeReferenceClass>(subAttributes);
 		this.referenceClass = null;
+		
+		//add required flag option to each sub attribute
+		if (this.subAttributes.size() > 0)
+		{
+			final Collection<AttributeReferenceClass> addAttributes = new ArrayList<AttributeReferenceClass>();
+					
+			for (AttributeReferenceClass addRefClass: this.subAttributes)		
+				addAttributes.add(new AttributeReferenceClass(addRefClass.getAttribute() + "+", addRefClass.getReferenceClass()));
+			
+			this.subAttributes.addAll(addAttributes);
+		}
 	}
 	
 	private ExtensionIdentifier(String id, String rfcName, String display, Class<? extends ExtensionField<?>> referenceClass)
@@ -214,7 +225,7 @@ public enum ExtensionIdentifier
 	public Collection<String> getFieldTokens()
 	{
 		if (subAttributes == null || subAttributes.isEmpty())
-			return Arrays.asList("X509.TBS.EXTENSION." + this.rfcName);
+			return Arrays.asList("X509.TBS.EXTENSION." + this.rfcName, "X509.TBS.EXTENSION." + this.rfcName + "+");
 		
 		final Collection<String> names = new ArrayList<String>();
 		for (AttributeReferenceClass attrRef : subAttributes)
