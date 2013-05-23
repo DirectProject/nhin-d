@@ -25,42 +25,45 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DEREncodable;
 import org.bouncycastle.asn1.DERObject;
-import org.bouncycastle.asn1.x509.PolicyInformation;
-import org.bouncycastle.asn1.x509.PolicyQualifierId;
-import org.bouncycastle.asn1.x509.PolicyQualifierInfo;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
+
 import org.nhindirect.policy.PolicyProcessException;
 import org.nhindirect.policy.PolicyRequiredException;
 import org.nhindirect.policy.PolicyValueFactory;
 
 /**
- * Certificate policy extension field.
+ * Subject alternative name extension field.
  * <p>
- * The policy value of this extension is returned as a collection of strings containing the CPS URIs of certificate policies.
+ * The policy value of this extension is returned as a collection of strings containing a concatenation of the name type and the actual name.  For example, an alt name of rfc822
+ * would look like the following.
  * <br>
- * If the extension does not exist in the certificate of if none of the certificate policy entries contain a CPS URL, then the policy value returned by this class
+ * <pre>
+ *   rfc822:gm2552@direct.securehealthemail.com
+ * </pre>
+ * <br>
+ * If the extension does not exist in the certificate, then the policy value returned by this class
  * evaluates to an empty collection.
  * 
  * @author Greg Meyer
  * @since 1.0
  */
-public class CertificatePolicyCpsUriExtensionField extends AbstractExtensionField<Collection<String>> implements ExtensionField<Collection<String>>
+public class SubjectAltNameExtensionField extends AbstractExtensionField<Collection<String>> implements ExtensionField<Collection<String>>
 {
-	static final long serialVersionUID = 3455029791848193406L;
-	
+
+	private static final long serialVersionUID = -5981093598324156863L;
+
 	/**
 	 * Constructor
 	 * @param required Indicates if the field is required to be present in the certificate to be compliant with the policy.
 	 */	
-	public CertificatePolicyCpsUriExtensionField(boolean required)
+	public SubjectAltNameExtensionField(boolean required)
 	{
 		super(required);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -83,44 +86,28 @@ public class CertificatePolicyCpsUriExtensionField extends AbstractExtensionFiel
 			}
 		}
 		
-		final Collection<String> retVal = new ArrayList<String>();
+		final Collection<String> names = new ArrayList<String>();
 		
-		final ASN1Sequence seq = (ASN1Sequence)exValue;
-		
-		@SuppressWarnings("unchecked")
-		final Enumeration<DEREncodable> pols = seq.getObjects();
-		while (pols.hasMoreElements())
+		final GeneralNames generalNames = GeneralNames.getInstance(exValue);
+	
+		for (GeneralName name : generalNames.getNames())
 		{
-			final PolicyInformation pol = PolicyInformation.getInstance(pols.nextElement());
-			
-			if (pol.getPolicyQualifiers() != null)
+			final GeneralNameType type = GeneralNameType.fromTag(name.getTagNo());
+			if (type != null)
 			{
-				@SuppressWarnings("unchecked")
-				final Enumeration<DEREncodable> polInfos = pol.getPolicyQualifiers().getObjects();
-				
-				while (polInfos.hasMoreElements())
-				{
-					final PolicyQualifierInfo polInfo = PolicyQualifierInfo.getInstance(polInfos.nextElement());
-					if (polInfo.getPolicyQualifierId().equals(PolicyQualifierId.id_qt_cps))
-					{
-						retVal.add(polInfo.getQualifier().toString());
-					}
-				}
+				names.add(type.getDisplay() + ":" + name.getName().toString());
 			}
 		}
 		
-		if (retVal.isEmpty() && isRequired())
-			throw new PolicyRequiredException("Extention " + getExtentionIdentifier().getDisplay() + " is marked as required by is not present.");
-		
-		this.policyValue = PolicyValueFactory.getInstance(retVal);
+		this.policyValue = PolicyValueFactory.getInstance(names);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtensionIdentifier.CERTIFICATE_POLICIES;
-	}	
+		return ExtensionIdentifier.SUBJECT_ALT_NAME;
+	}
 }
