@@ -13,6 +13,7 @@ import org.nhindirect.policy.x509.CertificatePolicyIndentifierExtensionField;
 import org.nhindirect.policy.x509.ExtendedKeyUsageExtensionField;
 import org.nhindirect.policy.x509.ExtensionField;
 import org.nhindirect.policy.x509.KeyUsageExtensionField;
+import org.nhindirect.policy.x509.SubjectAltNameExtensionField;
 import org.nhindirect.policy.x509.SubjectKeyIdentifierExtensionField;
 
 
@@ -33,31 +34,19 @@ public class SimpleTextV1LexiconPolicyParser_buildExtensionFieldTest extends Tes
 		assertTrue(field.isRequired());
 	}
 	
-	public void testBuildExtensionField_subjectAltName_assertFieldNotImplemented() throws Exception
+	public void testBuildExtensionField_subjectAltName_assertBuilt() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		
-		boolean exceptionOccured = false;
-		try
-		{
-			parser.buildExtensionField("X509.TBS.EXTENSION.SubjectAltName");
-		}
-		catch (PolicyParseException e)
-		{
-			exceptionOccured = true;
-		}	
-		assertTrue(exceptionOccured);
+		ExtensionField<?> field = ExtensionField.class.cast(parser.buildExtensionField("X509.TBS.EXTENSION.SubjectAltName"));
+		assertNotNull(field);
+		assertTrue(field instanceof SubjectAltNameExtensionField);
+		assertFalse(field.isRequired());
 		
-		exceptionOccured = false;
-		try
-		{
-			parser.buildExtensionField("X509.TBS.EXTENSION.SubjectAltName+");
-		}
-		catch (PolicyParseException e)
-		{
-			exceptionOccured = true;
-		}	
-		assertTrue(exceptionOccured);
+		field = ExtensionField.class.cast(parser.buildExtensionField("X509.TBS.EXTENSION.SubjectAltName+"));
+		assertNotNull(field);
+		assertTrue(field instanceof SubjectAltNameExtensionField);
+		assertTrue(field.isRequired());
 	}	
 	
 	public void testBuildExtensionField_subjectDirectoryAttributes_assertFieldNotImplemented() throws Exception

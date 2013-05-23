@@ -43,7 +43,7 @@ public enum ExtensionIdentifier
 	/**
 	 * Subject alternative name extension.  Defined by RFC5230 section 4.2.1.6
 	 */
-	SUBJECT_ALT_NAME("2.5.29.17", "SubjectAltName", "Subject Alternative Name", new ArrayList<AttributeReferenceClass>()),
+	SUBJECT_ALT_NAME("2.5.29.17", "SubjectAltName", "Subject Alternative Name", SubjectAltNameExtensionField.class),
 	
 	/**
 	 * Subject direct attributes extension.  Defined by RFC5280 section 4.2.1.8

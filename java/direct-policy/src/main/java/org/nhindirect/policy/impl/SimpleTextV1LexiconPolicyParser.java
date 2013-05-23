@@ -132,7 +132,7 @@ import org.nhindirect.policy.x509.X509FieldType;
  *      | extensionExpression | requiredExpression ;
  *      
  *  operatorExpression = [{(}] unaryOperator, [{white space}],  (literalExpression | certificateReferenceExpression | operatorExpression) , [{)}] |
- *      (literalExpression | certificateReferenceExpression | operatorExpression) ,  [{white space}] , binaryOperator ,
+ *      [{(}], (literalExpression | certificateReferenceExpression | operatorExpression) ,  [{white space}] , binaryOperator , [{white space}]
  *      (literalExpression | certificateReferenceExpression | operatorExpression) , [{)}] ;
  *      
  *  policyExpression = {operatorExpression}    
