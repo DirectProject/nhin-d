@@ -15,7 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Text;
 using Health.Direct.Common.Certificates;
 
 using Xunit;
@@ -96,6 +96,63 @@ namespace Health.Direct.Agent.Tests
             Assert.False(string.IsNullOrEmpty(name));
             Assert.True(cert.MatchEmailNameOrName(name));
         }
+
+
+
+        /// <summary>
+        /// Certificate extracted from the NIST INVALID_CERT test.
+        /// Sender Address: InvalidCert@ttt.transport-testing.org
+        /// dNSName in subjectAltName = foo.transport-testing.org
+        /// 
+        /// Applicability Statement 4.1.2
+        /// </summary>
+        [Fact]
+        public void TestVerifySignature_dNSName_in_subjectAltName_doesNotMatch_Health_Internet_Domain()
+        {
+
+            string signingCert = @"MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIAwggQhMIID
+iqADAgECAghs4QKo+HXxyzANBgkqhkiG9w0BAQUFADCBpDEkMCIGCSqGSIb3DQEJARYVdHJhbnNw
+b3J0LXRlc3Rpbmcub3JnMR4wHAYDVQQDDBV0cmFuc3BvcnQtdGVzdGluZy5vcmcxCzAJBgNVBAYT
+AlVTMQswCQYDVQQIDAJNRDEVMBMGA1UEBwwMR2FpdGhlcnNidXJnMSswKQYDVQQKDCJ0cmFuc3Bv
+cnQtdGVzdGluZy5vcmcgVHJ1c3QgQW5jaG9yMB4XDTEzMDMwMTIwMDQxOFoXDTIzMDIyMzIwMDQx
+OFowga4xKDAmBgkqhkiG9w0BCQEWGWZvby50cmFuc3BvcnQtdGVzdGluZy5vcmcxIjAgBgNVBAMM
+GXR0dC50cmFuc3BvcnQtdGVzdGluZy5vcmcxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNRDEVMBMG
+A1UEBwwMR2FpdGhlcnNidXJnMS0wKwYDVQQKDCRUVFQgb24gdHJhbnNwb3J0LXRlc3Rpbmcub3Jn
+IElOVkFMSUQwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKEpqL3f+SPBEbrY+NCRCVcykXHD
+0sQybh1/M0Hw2mcif6j6Lb5kU6asWc3OeceM0IoUZTUVKeJHFIvofDXZ0DOEDm0GbQkmc+obKABy
+yJ8w7Rj4/Fnm7MZjU9jho6i/YEKO2ugPbZ7z+ySRqNsfCbWtgx/iukodnAAXJKNViRynAgMBAAGj
+ggFOMIIBSjCB0gYDVR0jBIHKMIHHgBTrrsEnwuMJMY/2SPMsnJRWLJsXwKGBpKSBoTCBnjEkMCIG
+CSqGSIb3DQEJARYVc2luZ2luZy52aWRlbnRpdHkuY29tMR4wHAYDVQQDDBVzaW5naW5nLnZpZGVu
+dGl0eS5jb20xCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJNRDESMBAGA1UEBwwJQmFsdGltb3JlMSgw
+JgYDVQQKDB9WaWRlbnRpdHkgSW5jIFNpZ25pbmcgQXV0aG9yaXR5gggL3YP9ycOMUTAdBgNVHQ4E
+FgQUVAgSrXlommFjDPdcsh6RC+upobEwDAYDVR0TAQH/BAIwADAgBgNVHRIEGTAXghV0cmFuc3Bv
+cnQtdGVzdGluZy5vcmcwJAYDVR0RBB0wG4IZZm9vLnRyYW5zcG9ydC10ZXN0aW5nLm9yZzANBgkq
+hkiG9w0BAQUFAAOBgQBxTmu9qwK/aXB1c6CJQzqdWh3UsbLFdG/DlhhDvAIOxt8fCtkUNvTO0DZQ
+nzNRiHpNIXlHrixzppg2utKDBe050OuSKZhdLqr+BI/XmR/386T2t9Da8i8DUoEfOfT7HnH0I80Y
+bJkn0NbdA7LzIVt/tq15kvm1ijEdfJ7/h6G3ugAAMYIC0TCCAs0CAQEwgbEwgaQxJDAiBgkqhkiG
+9w0BCQEWFXRyYW5zcG9ydC10ZXN0aW5nLm9yZzEeMBwGA1UEAwwVdHJhbnNwb3J0LXRlc3Rpbmcu
+b3JnMQswCQYDVQQGEwJVUzELMAkGA1UECAwCTUQxFTATBgNVBAcMDEdhaXRoZXJzYnVyZzErMCkG
+A1UECgwidHJhbnNwb3J0LXRlc3Rpbmcub3JnIFRydXN0IEFuY2hvcgIIbOECqPh18cswCQYFKw4D
+AhoFAKCCAXUwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTMwNTIz
+MTkwODI0WjAjBgkqhkiG9w0BCQQxFgQUsKPMV4E62N7WgadDDEyKEiBKHDswTwYJKoZIhvcNAQkP
+MUIwQDAKBggqhkiG9w0DBzAOBggqhkiG9w0DAgICAIAwBwYFKw4DAgcwCwYJKoZIhvcNAQcBMAwG
+CiqGSIb3DQEJFgEwgcQGCyqGSIb3DQEJEAILMYG0oIGxMIGkMSQwIgYJKoZIhvcNAQkBFhV0cmFu
+c3BvcnQtdGVzdGluZy5vcmcxHjAcBgNVBAMMFXRyYW5zcG9ydC10ZXN0aW5nLm9yZzELMAkGA1UE
+BhMCVVMxCzAJBgNVBAgMAk1EMRUwEwYDVQQHDAxHYWl0aGVyc2J1cmcxKzApBgNVBAoMInRyYW5z
+cG9ydC10ZXN0aW5nLm9yZyBUcnVzdCBBbmNob3ICCGzhAqj4dfHLMA0GCSqGSIb3DQEBAQUABIGA
+g9DY8Y/ubZz99nUCA0ZEMUYEaLG+gWjzD0TXU+IBKmzX55p2DktPBSGz+rO3TdDzCa3oRJsHBIFp
+4jyAfk0shWgFxuio9fpIBvJNOvhSmjE6e3T+is5TE3ZGnhkMCic1ukOxZd9kTZnot3JMHhOlpgnt
+8RhS81VCdshLgSTuLLwAAAAAAAA=";
+
+            X509Certificate2 cert = new X509Certificate2();
+            cert.Import(Encoding.UTF8.GetBytes(signingCert));
+            
+            Assert.Equal("foo.transport-testing.org", cert.GetNameInfo(X509NameType.DnsFromAlternativeName, false));
+
+            Assert.False(cert.MatchEmailNameOrName("InvalidCert@ttt.transport-testing.org"));
+            Assert.False(cert.MatchDnsOrEmailOrName("ttt.transport-testing.org"));
+        }
+
     }
 
     public class TestCertFind

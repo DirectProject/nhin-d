@@ -412,7 +412,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns><c>true</c> if the certificate matches by email or subject name, <c>false</c> otherwise.</returns>
         public static bool MatchDnsOrEmailOrName(this X509Certificate2 cert, string name)
         {
-            return (cert.MatchDnsName(name) || cert.MatchEmailName(name) || cert.MatchName(name));
+            return (cert.MatchDnsName(name) || cert.MatchEmailName(name)); 
         }
 
         /// <summary>
