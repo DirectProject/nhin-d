@@ -50,7 +50,7 @@ public class CertPolicyValidator extends JFrame
 	
 	public CertPolicyValidator()
 	{	
-		super("The Direct Project Certificate Policy Validator");
+		super("DirectProject Certificate Policy Validator");
 		setDefaultLookAndFeelDecorated(true);
 		setSize(700, 300);
 		setResizable(false);
