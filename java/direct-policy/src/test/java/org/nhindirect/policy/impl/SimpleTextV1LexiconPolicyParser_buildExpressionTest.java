@@ -216,7 +216,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		stream.close();
 	}	
 	
-	public void testBuildExpression_toManyClosingParenthesis_assertException() throws Exception
+	public void testBuildExpression_toManyClosingParenthesis_assertGrammarException() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		
@@ -240,7 +240,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		stream.close();
 	}	
 	
-	public void testBuildExpression_binaryOperation_missingParameter_assertException() throws Exception
+	public void testBuildExpression_binaryOperation_missingParameter_assertGrammarException() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		
@@ -264,7 +264,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		stream.close();
 	}	
 	
-	public void testBuildExpression_operation_missingSingleParameter_assertException() throws Exception
+	public void testBuildExpression_operation_missingSingleParameter_assertGrammarException() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		
@@ -287,4 +287,47 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		
 		stream.close();
 	}	
+	
+	public void testBuildExpression_emptyGroup_assertGrammarException() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		final InputStream stream = IOUtils.toInputStream("()");
+		
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		boolean exceptionOccured = false;
+		
+		try
+		{
+			parser.buildExpression(tokens.iterator());
+		}
+		catch (PolicyGrammarException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+	}	
+	
+	public void testBuildExpression_erroniousExpressionAtEnd_assertGrammarException() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		final InputStream stream = IOUtils.toInputStream("((d = 1)) +");
+		
+		final Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		boolean exceptionOccured = false;
+		
+		try
+		{
+			parser.buildExpression(tokens.iterator());
+		}
+		catch (PolicyGrammarException e)
+		{
+			exceptionOccured = true;
+		}
+		
+		assertTrue(exceptionOccured);
+	}
+
 }

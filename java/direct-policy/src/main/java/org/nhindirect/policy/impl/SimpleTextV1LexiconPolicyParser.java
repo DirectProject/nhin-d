@@ -34,6 +34,7 @@ import java.util.Vector;
 import org.nhindirect.policy.LiteralPolicyExpressionFactory;
 import org.nhindirect.policy.OperationPolicyExpressionFactory;
 import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyExpressionType;
 import org.nhindirect.policy.PolicyGrammarException;
 import org.nhindirect.policy.PolicyLexiconParser;
 import org.nhindirect.policy.PolicyOperator;
@@ -217,6 +218,12 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		resetLevel();
 		
 		final PolicyExpression retExpression = buildExpression(tokens.iterator());
+			
+		if (getLevel() != 0)
+			throw new PolicyGrammarException("Group not closed.");
+		
+		if (retExpression.getExpressionType() != PolicyExpressionType.OPERATION)
+			throw new PolicyGrammarException("Expression must evaluate to an operation");
 		
 		return retExpression;
 	}
@@ -247,6 +254,9 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 				case END_LEVEL:
 					if (getLevel() == 0)
 						throw new PolicyGrammarException("To many \")\" tokens.  Delete this token");
+					
+					if (builtOperandExpressions.size() == 0)
+						throw new PolicyGrammarException("Group must contain at least one expression.");
 					
 					this.decrementLevel();
 					return builtOperandExpressions.get(0);
@@ -299,6 +309,9 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 			}
 		} while(tokens.hasNext());
 	
+		if (builtOperandExpressions.size() > 1)
+			throw new PolicyGrammarException("Erroneous expression.");
+			
 		return builtOperandExpressions.get(0);
 	}
 	
@@ -600,12 +613,9 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 	protected Integer resetLevel()
 	{
 		Integer level = buildLevel.get();
-		if (level == null)
-		{
-			level = Integer.valueOf(0);
-			buildLevel.set(level);
-		}
-		level = 0;
+		
+		level = (level == null) ? level = Integer.valueOf(0) : 0;
+		buildLevel.set(level);
 		
 		return level;
 	}
