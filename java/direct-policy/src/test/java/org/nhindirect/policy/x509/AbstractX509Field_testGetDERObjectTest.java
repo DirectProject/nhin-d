@@ -7,7 +7,7 @@ import org.nhindirect.policy.util.TestUtils;
 
 import junit.framework.TestCase;
 
-public class AbstractX509Field_testGetObject extends TestCase
+public class AbstractX509Field_testGetDERObjectTest extends TestCase
 {
 	public void testGetObject_validObjectEncoding() throws Exception
 	{
@@ -16,7 +16,7 @@ public class AbstractX509Field_testGetObject extends TestCase
 		
 		// use a concreate class and check for key usage
 		final SignatureAlgorithmField field = new SignatureAlgorithmField();
-		assertNotNull(field.getObject(cert.getExtensionValue(ExtentionIdentifier.KEY_USAGE.getId())));
+		assertNotNull(field.getDERObject(cert.getTBSCertificate()));
 	}
 	
 	public void testGetObject_invalidObjectEncoding() throws Exception
@@ -28,7 +28,7 @@ public class AbstractX509Field_testGetObject extends TestCase
 		
 		try
 		{
-			assertNotNull(field.getObject(new byte[]{1,2,3}));
+			assertNotNull(field.getDERObject(new byte[]{1,2,3}));
 		}
 		catch(PolicyProcessException e)
 		{
@@ -36,5 +36,5 @@ public class AbstractX509Field_testGetObject extends TestCase
 		}
 		
 		assertTrue(exceptionOccured);
-	}	
+	}
 }

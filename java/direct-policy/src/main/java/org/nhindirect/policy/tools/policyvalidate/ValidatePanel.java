@@ -48,10 +48,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
+import javax.swing.text.Document;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.nhindirect.policy.PolicyFilterFactory;
+import org.nhindirect.policy.PolicyGrammarException;
 import org.nhindirect.policy.PolicyLexicon;
 import org.nhindirect.policy.PolicyExpression;
 import org.nhindirect.policy.PolicyFilter;
@@ -76,6 +78,12 @@ public class ValidatePanel extends JPanel
 	
 	protected JButton cmdValidate;
 	
+	protected boolean feedMode = false;
+	
+	protected PolicyLexicon feedLexicon;
+	
+	protected Document feed;
+	
 	public ValidatePanel()
 	{
 		super();
@@ -97,9 +105,9 @@ public class ValidatePanel extends JPanel
 		
 		
 		final JPanel filePanel = new JPanel(new GridLayout(1, 2));
-		filePanel.add(policyFileField);
 		filePanel.add(certFileField);
-		
+		filePanel.add(policyFileField);
+
 		this.add(filePanel, BorderLayout.NORTH);
 		
 		// Report panel
@@ -138,6 +146,14 @@ public class ValidatePanel extends JPanel
 		});
 	}
 	
+	public void setFeedMode(PolicyLexicon lexicon, Document feed)
+	{
+		this.feedLexicon = lexicon;
+		this.feedMode = true;
+		this.feed = feed;
+		this.policyFileField.setVisible(false);
+	}
+	
 	private void validateCert()
 	{
 		reportText.setText("");
@@ -152,17 +168,50 @@ public class ValidatePanel extends JPanel
 			return;
 		}
 		
-		if (!policyFile.exists())
-		{
-			JOptionPane.showMessageDialog(this,"Policy file does not exist or cannot be found.", 
-		 		    "Invalid Policy File", JOptionPane.ERROR_MESSAGE );
-			
-			return;
-		}
 		
+		InputStream policyInput = null;
+		if (!feedMode)
+		{
+			if (!policyFile.exists())
+			{
+				JOptionPane.showMessageDialog(this,"Policy file does not exist or cannot be found.", 
+			 		    "Invalid Policy File", JOptionPane.ERROR_MESSAGE );
+				
+				return;
+			}
+			
+			try
+			{
+				// load the policy as an input stream
+				policyInput = FileUtils.openInputStream(policyFile);
+			}
+			catch (Exception e)
+			{
+				JOptionPane.showMessageDialog(this,"Could not load policy from file: " + e.getMessage(), 
+			 		    "Invalid Policy File", JOptionPane.ERROR_MESSAGE );
+				
+				return;
+			}
+		}
+		else
+		{
+			try
+			{
+				final int length = feed.getLength();
+				policyInput = IOUtils.toInputStream(feed.getText(0, length));
+			}			
+			catch (Exception e)
+			{
+				JOptionPane.showMessageDialog(this,"Could not load policy: " + e.getMessage(), 
+			 		    "Invalid Policy", JOptionPane.ERROR_MESSAGE );
+				
+				return;
+			}
+		}
+			
 		// load the certificate
 		X509Certificate cert = null;
-		InputStream policyInput = null;
+
 		try
 		{
 			cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(FileUtils.openInputStream(certFile));    
@@ -175,26 +224,15 @@ public class ValidatePanel extends JPanel
 			return;
 		}
 		
-		try
-		{
-			// load the policy as an input stream
-			policyInput = FileUtils.openInputStream(policyFile);
-		}
-		catch (Exception e)
-		{
-			JOptionPane.showMessageDialog(this,"Could not load policy from file: " + e.getMessage(), 
-		 		    "Invalid Policy File", JOptionPane.ERROR_MESSAGE );
-			
-			return;
-		}
-		
 		final DateFormat dateFormat = new SimpleDateFormat("EEE, MMM d yyyy HH:mm:ss", Locale.getDefault());
 		final StringBuilder reportTextBuilder = new StringBuilder("Validation run at " + dateFormat.format(Calendar.getInstance(Locale.getDefault()).getTime())
 				+ "\r\n\r\n");
 		
 		try
 		{
-			final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(PolicyLexicon.XML);
+			final PolicyLexiconParser parser = (feedMode) ? PolicyLexiconParserFactory.getInstance(feedLexicon): 
+				PolicyLexiconParserFactory.getInstance(PolicyLexicon.XML);
+			
 			final PolicyExpression policyExpression = parser.parse(policyInput);
 		
 			
@@ -220,6 +258,10 @@ public class ValidatePanel extends JPanel
 		{
 			reportTextBuilder.append("Validation Successful\r\nCertificate is missing a required field\r\n\t" + e.getMessage());
 		}
+		catch (PolicyGrammarException e)
+		{
+			reportTextBuilder.append("Validation Failed\r\nError compiling policy\r\n\t" + e.getMessage());
+		}		
 		catch (Exception e)
 		{
 			final ByteArrayOutputStream str = new ByteArrayOutputStream();

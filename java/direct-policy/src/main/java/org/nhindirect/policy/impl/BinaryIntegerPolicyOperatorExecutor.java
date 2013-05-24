@@ -63,8 +63,10 @@ public class BinaryIntegerPolicyOperatorExecutor<O1,O2> implements IntegerPolicy
 			case BITWISE_AND:
 			case BITWISE_OR:
 			{
-				int int1 = Integer.class.cast(operand1.getPolicyValue());
-				int int2 = Integer.class.cast(operand2.getPolicyValue());
+				int int1 = (operand1.getPolicyValue() instanceof Integer) ? Integer.class.cast(operand1.getPolicyValue()) :
+					Integer.valueOf(operand1.getPolicyValue().toString());
+				int int2 = (operand2.getPolicyValue() instanceof Integer) ? Integer.class.cast(operand2.getPolicyValue()) :
+					Integer.valueOf(operand2.getPolicyValue().toString());
 				
 				if (operator.equals(PolicyOperator.BITWISE_AND))
 					retVal = int1 & int2;

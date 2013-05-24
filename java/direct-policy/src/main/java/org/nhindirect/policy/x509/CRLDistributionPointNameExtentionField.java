@@ -110,8 +110,8 @@ public class CRLDistributionPointNameExtentionField extends AbstractExtensionFie
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.CRL_DISTRIBUTION_POINTS;
+		return ExtensionIdentifier.CRL_DISTRIBUTION_POINTS;
 	}
 }

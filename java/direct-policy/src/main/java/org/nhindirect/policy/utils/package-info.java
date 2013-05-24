@@ -19,27 +19,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.policy.x509;
-
 /**
- * Interface definition of a certificate extension field.  Extensions are identified by a unique object identified (OID) and
- * can be marked critical as defined by RFC5280.
- * @author Greg Meyer
- * @since 1.0
- *
- * @param <P> The object type of the evaluated extension value.
+ * Utility classes consumed by the policy engine.
  */
-public interface ExtensionField<P> extends TBSField<P>
-{
-	/**
-	 * Gets the object identifier for the extension field.
-	 * @return The object identifier for the extension field.
-	 */
-	public ExtensionIdentifier getExtentionIdentifier();
-	
-	/**
-	 * Indicates if the extension is marked as critical.
-	 * @return true if the extension is marked critical.  false otherwise
-	 */
-	public boolean isCritical();
-}
+package org.nhindirect.policy.utils;

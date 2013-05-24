@@ -7,6 +7,6 @@ public class CertificatePolicyCpsUriExtensionField_getExtensionIdentifierTest ex
 	public void testGetExtenstionIdentifier()
 	{
 		final CertificatePolicyCpsUriExtensionField field = new CertificatePolicyCpsUriExtensionField(true);
-		assertEquals(ExtentionIdentifier.CERTIFICATE_POLICIES, field.getExtentionIdentifier());
+		assertEquals(ExtensionIdentifier.CERTIFICATE_POLICIES, field.getExtentionIdentifier());
 	}
 }

@@ -309,7 +309,7 @@
 	          <source>1.6</source>
 	          <show>public</show>    
 	          <excludePackageNames>
-	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module
+	              org.nhindirect.policy.tools
 	          </excludePackageNames>      	           	          
 	        </configuration>
 	      </plugin>

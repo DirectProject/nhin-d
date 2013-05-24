@@ -88,8 +88,8 @@ public class KeyUsageExtensionField extends AbstractExtensionField<Integer> impl
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.KEY_USAGE;
+		return ExtensionIdentifier.KEY_USAGE;
 	}	
 }

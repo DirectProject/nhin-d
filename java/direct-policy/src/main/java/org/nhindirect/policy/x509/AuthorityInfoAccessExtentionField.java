@@ -105,8 +105,8 @@ public class AuthorityInfoAccessExtentionField extends AbstractExtensionField<Co
 	 * @param required Indicates if the field is required to be present in the certificate to be compliant with the policy.
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.AUTHORITY_INFO_ACCESS;
+		return ExtensionIdentifier.AUTHORITY_INFO_ACCESS;
 	}
 }
