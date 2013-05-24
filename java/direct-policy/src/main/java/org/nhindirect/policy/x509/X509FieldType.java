@@ -21,6 +21,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.policy.x509;
 
+import java.util.HashMap;
+import java.util.Map;
+
+
 /**
  * Enumeration of the field type of the X509 certificate.  These are broken in two fields and aggregated structure
  * as defined by RFC 5280
@@ -32,15 +36,94 @@ public enum X509FieldType
 	/**
 	 * The certificates signature.
 	 */
-	SIGNATURE,
+	SIGNATURE("Signature", "Signature", null),
 	
 	/**
 	 * The algorithm used to sign the certificates.
 	 */
-	SIGNATURE_ALGORITHM,
+	SIGNATURE_ALGORITHM("Algorithm", "Algorithm", SignatureAlgorithmField.class),
 	
 	/**
 	 * The to be signed fields of the certificate.  These fields are used to generate the certificate signature.
 	 */
-	TBS;
+	TBS("TbsCertificate", "To Be Signed Certificate", null);
+	
+	protected final String rfcName;
+	protected final String display;
+	protected final Class<? extends X509Field<?>> referenceClass;
+	protected static final Map<String, X509FieldType> tokenFieldMap; 
+	
+	static
+	{
+		tokenFieldMap = new HashMap<String, X509FieldType>();
+		
+		final X509FieldType[] fields = (X509FieldType[].class.cast(X509FieldType.class.getEnumConstants()));
+		for (X509FieldType field : fields)
+		{
+			tokenFieldMap.put(field.getFieldToken(), field);
+			tokenFieldMap.put(field.getFieldToken() + "+", field);
+		}
+	}
+	
+	private X509FieldType(String rfcName, String display, Class<? extends X509Field<?>> referenceClass)
+	{
+		this.rfcName = rfcName;
+		this.display = display;
+		this.referenceClass = referenceClass;
+	}
+	
+	/**
+	 * Gets the name of the field as defined by RFC5280.
+	 * @return The name of the field as defined by RFC5280.
+	 */
+	public String getRfcName()
+	{
+		return rfcName;
+	}
+	
+	/**
+	 * Gets a human readable display name of the field.
+	 * @return A human readable display name of the field.
+	 */
+	public String getDisplay()
+	{
+		return display;
+	}
+	
+	/**
+	 * Gets the class implementing the field type.
+	 * @return The class implementing the field type.
+	 */
+	public Class<? extends X509Field<?>> getReferenceClass()
+	{
+		return referenceClass;
+	}
+	
+	/**
+	 * Gets the token of the field used in a lexicon parser.
+	 * @return  The token of the field used in a lexicon parser.
+	 */
+	public String getFieldToken()
+	{
+		return "X509." + rfcName;
+	}
+	
+	/**
+	 * Gets the field type associated with a specific token string.
+	 * @param token The token used to look up the X509FieldType.
+	 * @return The X509FieldType associated with the token.  If the token does not represent a known field, then null is returned.
+	 */
+	public static X509FieldType fromToken(String token)
+	{
+		return tokenFieldMap.get(token);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		return getFieldToken();
+	}
 }

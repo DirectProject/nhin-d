@@ -19,27 +19,17 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.policy.x509;
-
 /**
- * Interface definition of a certificate extension field.  Extensions are identified by a unique object identified (OID) and
- * can be marked critical as defined by RFC5280.
- * @author Greg Meyer
- * @since 1.0
- *
- * @param <P> The object type of the evaluated extension value.
+ * Interface definition and structures for the certificate policy engine.
+ * <p>
+ * The policy engine is more or less a boolean logic engine.  It processes a set of rules called a {@link PolicyExpression }
+ * against a provided X509 certificate and determines if the certificate is in compliance with the policy.
+ * <p>
+ * The engine itself is structurally similar to a compiled programming language and runtime environment that the compiled code execute in.
+ * Polices start as definition files written in a specific {@link PolicyLexicon}, are compiled to an intermediate state, converted into an 
+ * {@link ExecutionEngine} specific set of {@link Opcode Opcodes}, and finally processed by the {@link ExecutionEngine}.
+ * <p>
+ * The engine is broken into four modules that can be consumed independently for the purpose of building tooling, but generally
+ * the aggregate {@link PolicyFilter} interface is used to process certificates against a {@link PolicyExpression.}
  */
-public interface ExtensionField<P> extends TBSField<P>
-{
-	/**
-	 * Gets the object identifier for the extension field.
-	 * @return The object identifier for the extension field.
-	 */
-	public ExtensionIdentifier getExtentionIdentifier();
-	
-	/**
-	 * Indicates if the extension is marked as critical.
-	 * @return true if the extension is marked critical.  false otherwise
-	 */
-	public boolean isCritical();
-}
+package org.nhindirect.policy;

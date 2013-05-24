@@ -42,7 +42,7 @@ import org.nhindirect.policy.PolicyValueFactory;
  * <p>
  * The policy value of this extension is returned as a collection of strings containing the CPS URIs of certificate policies.
  * <br>
- * If the extension does not exist in the certificate of if none of the certificate policy entries contain a CPS URL, the policy value returned by this class
+ * If the extension does not exist in the certificate of if none of the certificate policy entries contain a CPS URL, then the policy value returned by this class
  * evaluates to an empty collection.
  * 
  * @author Greg Meyer
@@ -119,8 +119,8 @@ public class CertificatePolicyCpsUriExtensionField extends AbstractExtensionFiel
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.CERTIFICATE_POLICIES;
+		return ExtensionIdentifier.CERTIFICATE_POLICIES;
 	}	
 }

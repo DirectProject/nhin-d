@@ -97,9 +97,9 @@ public class AuthorityKeyIdentifierKeyIdExtensionField extends AbstractExtension
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.AUTHORITY_KEY_IDENTIFIER;
+		return ExtensionIdentifier.AUTHORITY_KEY_IDENTIFIER;
 	}	
 	
 }

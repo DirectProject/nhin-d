@@ -12,7 +12,7 @@ public class AbstractExtensionField_isCriticalTest extends TestCase
 	{
 		X509Certificate cert = TestUtils.loadCertificate("umesh.der");
 		
-		assertFalse(cert.getCriticalExtensionOIDs().contains(ExtentionIdentifier.EXTENDED_KEY_USAGE.getId()));
+		assertFalse(cert.getCriticalExtensionOIDs().contains(ExtensionIdentifier.EXTENDED_KEY_USAGE.getId()));
 		
 		
 		final ExtendedKeyUsageExtensionField field = new ExtendedKeyUsageExtensionField(false);
@@ -25,7 +25,7 @@ public class AbstractExtensionField_isCriticalTest extends TestCase
 	{
 		X509Certificate cert = TestUtils.loadCertificate("umesh.der");
 		
-		assertFalse(cert.getCriticalExtensionOIDs().contains(ExtentionIdentifier.SUBJECT_KEY_IDENTIFIER.getId()));
+		assertFalse(cert.getCriticalExtensionOIDs().contains(ExtensionIdentifier.SUBJECT_KEY_IDENTIFIER.getId()));
 		
 		
 		final SubjectKeyIdentifierExtensionField field = new SubjectKeyIdentifierExtensionField(false);
@@ -38,7 +38,7 @@ public class AbstractExtensionField_isCriticalTest extends TestCase
 	{
 		X509Certificate cert = TestUtils.loadCertificate("CernerDirect DevCert Provider CA.der");
 		
-		assertTrue(cert.getCriticalExtensionOIDs().contains(ExtentionIdentifier.BASIC_CONSTRAINTS.getId()));
+		assertTrue(cert.getCriticalExtensionOIDs().contains(ExtensionIdentifier.BASIC_CONSTRAINTS.getId()));
 		
 		
 		final BasicContraintsExtensionField field = new BasicContraintsExtensionField(false);

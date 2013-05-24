@@ -79,6 +79,9 @@
     <None Include="Certificates\Bundles\bundleNoMetadata.p7b">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\Bundles\bundlePEM.p7b">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\Bundles\bundleWithMetadata.p7b">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

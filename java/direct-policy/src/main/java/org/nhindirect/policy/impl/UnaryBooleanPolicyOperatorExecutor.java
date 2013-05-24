@@ -75,7 +75,7 @@ public class UnaryBooleanPolicyOperatorExecutor<O> implements BooleanPolicyOpera
 		switch(operator)
 		{
 			case LOGICAL_NOT:
-				retVal = !Boolean.class.cast(operand.getPolicyValue());
+				retVal = !Boolean.parseBoolean(operand.getPolicyValue().toString());
 				break;
 			case EMPTY:
 			case NOT_EMPTY:

@@ -21,6 +21,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.policy;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nhindirect.policy.impl.BinaryBooleanPolicyOperatorExecutor;
 import org.nhindirect.policy.impl.BinaryCollectionPolicyOperatorExecutor;
 import org.nhindirect.policy.impl.BinaryIntegerPolicyOperatorExecutor;
@@ -28,17 +31,18 @@ import org.nhindirect.policy.impl.UnaryBooleanPolicyOperatorExecutor;
 import org.nhindirect.policy.impl.UnaryIntegerPolicyOperatorExecutor;
 
 /**
- * Enumeration of operators supported by the policy engine.
+ * Enumeration of operators supported by the policy engine.  Each operator has equal precedence and are evaluated in the 
+ * order they are encountered.
  * @author Greg Meyer
  * @since 1.0
  */
 public enum PolicyOperator 
 {	
+	
 	/**
 	 * Performs an equality operation against two operands.  Equality semantics are specific the operands types.
 	 */
 	EQUALS("=", "equals", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
-	
 	
 	/**
 	 * Performs a non-equality operation against two operands.  Equality semantics are specific the operands types.
@@ -71,7 +75,7 @@ public enum PolicyOperator
 	 * Performs a search for the non-existence of an object within a collection.  This operation returns true if the object 
 	 * does not exist within the collection.  One of the operands MUST be a collection of arbitrary types that will be searched.
 	 */
-	NOT_CONTAINS("!{?}", "not contains", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
+	NOT_CONTAINS("{?}!", "not contains", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
 	
 	/**
 	 * Performs a regular expressions match on a collection of strings.  This operations returns true if one of the elements
@@ -97,12 +101,12 @@ public enum PolicyOperator
 	 * Performs an evaluation of the number of elements within a collection and determines if the collection is non-empty.  
 	 * This operation is only performed on a single collection of arbitrary objects.
 	 */
-	NOT_EMPTY("!{}", "not empty", UnaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.UNARY),
+	NOT_EMPTY("{}!", "not empty", UnaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.UNARY),
 	
 	/**
 	 * Performs an intersection of two sets and returns the resulting set.  This operation can only be performed on collection operands.
 	 */
-	INTERSECTION("&{}", "intersection", BinaryCollectionPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
+	INTERSECTION("{}&", "intersection", BinaryCollectionPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
 	
 	/**
 	 * Performs a logical or operation against two operands.  This operation can only be performed on two boolean values.  Boolean
@@ -143,6 +147,16 @@ public enum PolicyOperator
 	protected final String operatorText;
 	protected final Class<?> executorClass;
 	protected final PolicyOperatorParamsType paramsType;
+	protected static final Map<String, PolicyOperator> tokenOperatorMap; 
+	
+	static
+	{
+		tokenOperatorMap = new HashMap<String, PolicyOperator>();
+		
+		final PolicyOperator[] operators = (PolicyOperator[].class.cast(PolicyOperator.class.getEnumConstants()));
+		for (PolicyOperator operator : operators)
+			tokenOperatorMap.put(operator.getOperatorToken(), operator);
+	}	
 	
 	/*
 	 * Private constructor
@@ -189,5 +203,15 @@ public enum PolicyOperator
 	public PolicyOperatorParamsType getParamsType()
 	{
 		return paramsType;
+	}
+	
+	/**
+	 * Gets the policy operator associated with a specific token string.
+	 * @param token The token used to look up the PolicyOperator.
+	 * @return The PolicyOperator associated with the token.  If the token does not represent a known operator, then null is returned,.
+	 */
+	public static PolicyOperator fromToken(String token)
+	{
+		return tokenOperatorMap.get(token);
 	}
 }

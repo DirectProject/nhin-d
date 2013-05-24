@@ -88,9 +88,9 @@ public class SubjectKeyIdentifierExtensionField extends AbstractExtensionField<S
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ExtentionIdentifier getExtentionIdentifier() 
+	public ExtensionIdentifier getExtentionIdentifier() 
 	{
-		return ExtentionIdentifier.SUBJECT_KEY_IDENTIFIER;
+		return ExtensionIdentifier.SUBJECT_KEY_IDENTIFIER;
 	}	
 	
 	

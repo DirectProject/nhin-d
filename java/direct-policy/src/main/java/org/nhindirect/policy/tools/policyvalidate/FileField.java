@@ -103,7 +103,7 @@ public class FileField extends JPanel
  	 			
  		int result = fc.showOpenDialog(this); 
  		 
- 		// if we selected an image, load the image 
+ 		// if we selected file, load the file 
  		if(result == JFileChooser.APPROVE_OPTION) 
  		{ 
  			text.setText(fc.getSelectedFile().getPath()); 
