@@ -1,0 +1,176 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd"       
+       default-autowire="byName">
+       
+   	<context:annotation-config />
+    <context:component-scan base-package="org.nhindirect.monitor.providers"/>
+    <context:component-scan base-package="org.nhindirect.monitor.resources"/>
+    <context:component-scan base-package="org.nhindirect.monitor.dao"/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+  <!-- Exception translation bean post processor -->
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+  <bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+			</bean>
+		</property>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="persistenceUnitName" value="direct-msg-monitor-store" />
+  </bean>
+	
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="${monitor.dupStateDAO.driverClass}" />
+		<property name="url" value="${monitor.dupStateDAO.url}" />
+		<property name="username" value="${monitor.dupStateDAO.username}" />
+		<property name="password" value="${monitor.dupStateDAO.password}" />
+  </bean>
+   
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />   
+
+  <bean id="notificationDuplicationDAO" class="org.nhindirect.monitor.dao.impl.NotificationDuplicationDAOImpl" />
+
+  <bean id="duplicationStateManager" class="org.nhindirect.monitor.processor.impl.DefaultDuplicateNotificationStateManager" >
+        <property name="messageRetention" value="${monitor.dupStateDAO.retensionTime}" />
+		<property name="dao" ref="notificationDuplicationDAO" />
+  </bean>
+
+
+  <context:property-placeholder location="classpath:properties/monitor.properties"/>	
+
+  <bean id="generalTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="${monitor.condition.generalConditionTimeout}"/>
+  </bean>
+
+  <bean id="reliableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="${monitor.condition.reliableConditionTimeout}"/>
+  </bean>
+
+  <bean id="varaiableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.VariableTimeoutCondition">
+		<constructor-arg ref="generalTimeoutCondition" />
+		<constructor-arg ref="reliableTimeoutCondition" />
+  </bean>
+
+  <bean id="generalCompletionCondition" class="org.nhindirect.monitor.condition.impl.GeneralCompletionCondition" />
+
+  <bean id="reliableCompletionCondition" class="org.nhindirect.monitor.condition.impl.TimelyAndReliableCompletionCondition" >
+        <property name="dupDAO" ref="notificationDuplicationDAO" />
+  </bean>
+  
+  <bean id="variableCompletionCondition" class="org.nhindirect.monitor.condition.impl.VariableCompletionCondition">
+		<constructor-arg ref="reliableCompletionCondition" />
+		<constructor-arg ref="generalCompletionCondition" />
+  </bean>
+
+  <bean id="aggregationStrategy" class="org.nhindirect.monitor.aggregator.BasicTxAggregator">
+		<constructor-arg ref="variableCompletionCondition" />  
+		<constructor-arg ref="varaiableTimeoutCondition" />  		
+  </bean>
+
+  <bean id="msgIdCorrelator" class="org.nhindirect.monitor.expression.MessageIdCorrelationExpression" />
+
+  <bean id="textAssemblerFactory" class="org.nhindirect.common.mail.dsn.impl.HumanReadableTextAssemblerFactory">
+  </bean> 
+
+  <bean id="textBodyGenerator" class="org.nhindirect.common.mail.dsn.impl.DefaultDSNFailureTextBodyPartGenerator">
+        <constructor-arg value="${monitor.dsnGenerator.header}"/>
+        <constructor-arg value="${monitor.dsnGenerator.footer}"/>        
+        <constructor-arg value="${monitor.dsnGenerator.failedRecipientsTitle}"/>    
+        <constructor-arg value="${monitor.dsnGenerator.errorMessageTitle}"/>            
+        <constructor-arg value="${monitor.dsnGenerator.defaultErrorMessage}"/>
+        <constructor-arg ref="textAssemblerFactory"/>    
+  </bean>
+
+  <bean id="dsnGenerator" class="org.nhindirect.common.mail.dsn.DSNGenerator">
+        <constructor-arg value="${monitor.dsnGenerator.subjectPrefix}"/>
+  </bean>
+
+  <bean id="dsnMessageProcessor" class="org.nhindirect.monitor.processor.DSNMessageGenerator">
+		<constructor-arg ref="dsnGenerator" />
+		<constructor-arg value="${monitor.dsnGenerator.postmasterName}" />	
+		<constructor-arg ref="variableCompletionCondition" />	
+		<constructor-arg value="${monitor.dsnGenerator.mtaName}" />	
+		<constructor-arg ref="textBodyGenerator" />							
+  </bean>
+
+  <bean id="smtpClientFactory" class="org.nhindirect.monitor.processor.SMTPClientFactory"/>
+
+  <bean id="dsnSender" class="org.nhindirect.monitor.processor.DSNMailSender">
+  	<property name="gatewayURL" value="${monitor.dsnSender.gatewayURL}" />
+  	<property name="SMTPClientFactory" ref="smtpClientFactory"/>  	
+  </bean>
+
+  <!-- A persistent aggregation repository using camel-hawtdb.
+       This could be replaced using a JDBC repository as described by the 
+       camel SQL component documentation: http://camel.apache.org/sql-component.html  -->
+  <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository">
+    <!-- store the repo in the hawtdb.dat file -->
+    <property name="persistentFileName" value="${monitor.recovery.recoveryFileName}"/>
+    <!-- and use directMonitoring as the repository name -->
+    <property name="repositoryName" value="${monitor.recovery.repositoryName}"/>
+    <!--  retry interval for failed delivery of notifications... It doesn't appear the
+    HawtDB repository supports a delay multiplier like Camel error handling; it only
+    supports a constant delay.  Set this delay to an appropriate time in ms with 
+    an appropriate maximum retry limit. -->
+    <property name="recoveryInterval" value="${monitor.recovery.retryInterval}" />
+    <property name="maximumRedeliveries" value="${monitor.recovery.maxRetryAttemps}" />   
+    <property name="deadLetterUri" value="${monitor.recovery.deadLetterURL}" />      
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">  
+    <template id="msgMonitoringProducerTemplate" defaultEndpoint="direct:start"/>
+    <route id="direct-reliable">
+      <from uri="direct:start"/>
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
+                aggregationRepositoryRef="directMonitoringRepo">
+        <correlationExpression>
+            <ref>msgIdCorrelator</ref>
+        </correlationExpression>
+        <completionPredicate>
+          <method bean="aggregationStrategy" method="isAggregationComplete"/>
+        </completionPredicate>     
+        <completionTimeout>
+          <method bean="aggregationStrategy" method="getAggregationTime"/>
+        </completionTimeout>  
+        <choice>
+           <when>
+              <method bean="aggregationStrategy" method="isAggregationComplete"/>
+              <stop/>
+           </when>
+           <otherwise>
+              <bean ref="dsnMessageProcessor"/>
+              <bean ref="dsnSender"/>  
+           </otherwise>
+        </choice>      
+      </aggregate>
+    </route>
+    
+    <!--  Simple timer to purge exchanges in the duplication data base.
+          This can replaced more sophisticated quartz configuration using 
+          the Camel Quartz component and cron expressions.  Default configuration
+          purges the table once every 6 hours.
+     -->    
+    <route id="duplicate-store-purge">
+      <from uri="timer://purgeTimer?period=6h"/>
+      <bean ref="duplicationStateManager" method="purge"/>
+    </route> 
+  </camelContext>
+
+</beans>
