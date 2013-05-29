@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.2.0.3-NET35
+OutputBaseFilename=Direct-1.2.0.4-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.2.0.3
+VersionInfoVersion=1.2.0.4
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -2019,7 +2019,7 @@ begin
     DnsRecordManagerLabel := TNewStaticText.Create(ConfigConsolePage);
     DnsRecordManagerLabel.Name := 'DnsRecordManagerLabel';
     DnsRecordManagerLabel.Top :=  AnchorsLabel.Top + AnchorsLabel.Height + ScaleY(11);
-    DnsRecordManagerLabel.Caption := 'Address Manager: ';
+    DnsRecordManagerLabel.Caption := 'DNS Manager: ';
     DnsRecordManagerLabel.Parent := ConfigConsolePage.Surface;
 
     DnsRecordManagerText := TNewEdit.Create(ConfigConsolePage);
