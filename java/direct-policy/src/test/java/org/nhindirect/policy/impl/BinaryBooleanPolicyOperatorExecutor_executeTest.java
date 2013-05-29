@@ -35,6 +35,30 @@ public class BinaryBooleanPolicyOperatorExecutor_executeTest extends TestCase
 		assertFalse(operator.execute().getPolicyValue());
 	}
 	
+	public void testExecute_logicalAnd_stringArguments_assertResults()
+	{
+		// both true
+		PolicyValue<String> op1 = PolicyValueFactory.getInstance("true");
+		PolicyValue<String> op2 = PolicyValueFactory.getInstance("true");
+		
+		BinaryBooleanPolicyOperatorExecutor<String, String> operator = new BinaryBooleanPolicyOperatorExecutor<String, String>(op1, op2, PolicyOperator.LOGICAL_AND);
+		assertTrue(operator.execute().getPolicyValue());
+		
+		// one false one true
+		op1 = PolicyValueFactory.getInstance("true");
+		op2 = PolicyValueFactory.getInstance("false");
+		
+		operator = new BinaryBooleanPolicyOperatorExecutor<String, String>(op1, op2, PolicyOperator.LOGICAL_AND);
+		assertFalse(operator.execute().getPolicyValue());
+	
+		// both false
+		op1 = PolicyValueFactory.getInstance("false");
+		op2 = PolicyValueFactory.getInstance("false");
+		
+		operator = new BinaryBooleanPolicyOperatorExecutor<String, String>(op1, op2, PolicyOperator.LOGICAL_AND);
+		assertFalse(operator.execute().getPolicyValue());
+	}
+	
 	public void testExecute_logicalOr_assertResults()
 	{
 		// both true

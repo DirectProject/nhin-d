@@ -13,6 +13,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+/**
+ * Main application
+ * @author Greg Meyer
+ *
+ */
 public class SimpleTextPolicyBuilder extends JFrame
 {
 

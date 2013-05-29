@@ -160,8 +160,8 @@ public class BinaryBooleanPolicyOperatorExecutor<O1,O2> implements BooleanPolicy
 		    case LOGICAL_OR:
 			{
 				// get the two operands as booleans
-				final Boolean op1 = Boolean.class.cast(operand1.getPolicyValue());
-				final Boolean op2 = Boolean.class.cast(operand2.getPolicyValue());
+				final Boolean op1 = Boolean.parseBoolean(operand1.getPolicyValue().toString());
+				final Boolean op2 = Boolean.parseBoolean(operand2.getPolicyValue().toString());
 				
 				if (operator.equals(PolicyOperator.LOGICAL_AND))
 					retVal = op1 && op2;

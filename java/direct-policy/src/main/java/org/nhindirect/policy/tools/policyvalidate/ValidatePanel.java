@@ -118,7 +118,7 @@ public class ValidatePanel extends JPanel
 		reportText.setEditable(false);
 		
 		
-		JScrollPane scrollPane = new JScrollPane(reportText); 
+		final JScrollPane scrollPane = new JScrollPane(reportText); 
 		scrollPane.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
