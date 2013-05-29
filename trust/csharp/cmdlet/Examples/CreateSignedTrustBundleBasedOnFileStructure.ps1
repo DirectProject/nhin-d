@@ -32,5 +32,6 @@ Bundle-Anchors `
 
 EXIT 0 # nice to have exit codes if called from batch file.
 
-
+# To pretty print trust bundle:
+# openssl cms -print -cmsout -in demoSignedWithMetadata.p7m -inform der
 
