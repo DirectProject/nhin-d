@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:tns="http://nhindirect.org/wsdl/edge/ws" 
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+                  xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:sp="http://schemas.xmlsoap.org/ws/2005/07/securitypolicy"
+                  xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                  
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+                  xmlns:xsdl="http://nhindirect.org/schema/edge/ws" 
+                  xmlns:wsa="http://www.w3.org/2005/08/addressing" 
+                  name="directprojectEdge" 
+                  targetNamespace="http://nhindirect.org/wsdl/edge/ws">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://nhindirect.org/schema/edge/ws"
+                xmlns="http://nhindirect.org/schema/edge/ws">
+        <xsd:include schemaLocation="../schema/Message_v05.xsd"/>
+         <xsd:element name="ServiceInvocationFault">
+             <xsd:complexType>
+                <xsd:all>
+                    <xsd:element name="errorMessage" type="xsd:string"/>
+                    <xsd:element name="errorCode" type="xsd:string"/>
+                </xsd:all>
+            </xsd:complexType>
+      </xsd:element>        
+    </xsd:schema>
+  </wsdl:types>
+  
+  <wsp:Policy xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" 
+              wsu:Id="wsmtom_policy" 
+              xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy">
+    <wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization"/>
+  </wsp:Policy>
+  
+  <wsdl:message name="Message">
+    <wsdl:part element="xsdl:Message" name="body"/>
+  </wsdl:message>
+  <wsdl:message name="MessageResponse">
+    <wsdl:part element="xsdl:SendResponse" name="body"/>
+  </wsdl:message>
+  
+  <wsdl:message name="Status">
+    <wsdl:part element="xsdl:Status" name="body"/>
+  </wsdl:message>
+  <wsdl:message name="StatusResponse">
+    <wsdl:part element="xsdl:StatusResponse" name="body"/>
+  </wsdl:message>
+  
+  <wsdl:message name="ServiceInvocationFault">
+    <wsdl:part element="xsdl:ServiceInvocationFault" name="body"/>
+  </wsdl:message>
+  
+  <wsdl:portType name="nhindirectWSEdgePort">
+    <wsdl:operation name="SendMessage">
+      <wsdl:input message="tns:Message"/>
+      <wsdl:output message="tns:MessageResponse"/>
+      <wsdl:fault name="ServiceInvocationFault" message="tns:ServiceInvocationFault"/>
+    </wsdl:operation>
+    <wsdl:operation name="RequestStatus">
+      <wsdl:input message="tns:Status"/>
+      <wsdl:output message="tns:StatusResponse"/>
+      <wsdl:fault name="ServiceInvocationFault" message="tns:ServiceInvocationFault"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="nhindirectWSEdgeSOAPBinding" type="tns:nhindirectWSEdgePort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SendMessage">
+      <soap:operation soapAction="http://nhindirect.org/schema/edge/ws/SendMessage"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RequestStatus">
+      <soap:operation soapAction="http://nhindirect.org/schema/edge/ws/RequestStatus"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="nhindirectWSEdgeService">
+    <wsdl:port binding="tns:nhindirectWSEdgeSOAPBinding" name="nhindirectWSEdgeSOAPPort">
+      <soap:address location="http://www.nhindirect.org/service/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
