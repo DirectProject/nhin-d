@@ -15,12 +15,12 @@ $ignoreArray = "Direct.Drhisp.Com Root CAKey.der"
 $secureString = ConvertTo-SecureString "passw0rd!" -AsPlainText -Force    
 
 
-Bundle-Anchors 'C:\nhin-d35\certs\anchors' `
+Bundle-Anchors '..\..\..\..\..\certs\anchors' `
 	-Ignore $ignoreArray `
 	-Metadata "<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>" `
 	-ErrorVariable bundleError  `
 	-ErrorAction SilentlyContinue `
-        | Sign-Bundle  'C:\nhin-d35\trust\csharp\unittests\bundle.tests\bin\Debug\Certificates\redmond\Private\redmond.pfx' -PassKey $secureString `
+        | Sign-Bundle  '..\..\unittests\bundle.tests\bin\Debug\Certificates\redmond\Private\redmond.pfx' -PassKey $secureString `
 		| Set-Content psTestBundleWithMetadata.p7b  -enc Byte
     
 

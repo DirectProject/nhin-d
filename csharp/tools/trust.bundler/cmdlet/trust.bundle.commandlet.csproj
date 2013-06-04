@@ -64,10 +64,6 @@
     <None Include="Examples\CreateTrustBundleWithMetaData.ps1" />
     <None Include="Examples\CreateTrustBundle.ps1" />
     <None Include="Examples\InstallBundleSnap-in.ps1" />
-    <None Include="TrustBundleMetadata.xsd">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
