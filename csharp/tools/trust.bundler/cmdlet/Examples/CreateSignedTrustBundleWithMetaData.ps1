@@ -21,7 +21,7 @@ Bundle-Anchors '..\..\..\..\..\certs\anchors' `
 	-ErrorVariable bundleError  `
 	-ErrorAction SilentlyContinue `
         | Sign-Bundle  '..\..\unittests\bundle.tests\bin\Debug\Certificates\redmond\Private\redmond.pfx' -PassKey $secureString `
-		| Set-Content psTestBundleWithMetadata.p7b  -enc Byte
+		| Set-Content psTestBundleSignedWithMetadata.p7b  -enc Byte
     
 
     if($? -ne $true){
