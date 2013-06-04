@@ -14,11 +14,11 @@ $ignoreArray = "Direct.Drhisp.Com Root CAKey.der"
 # $secureString = Read-Host -AsSecureString 
 $secureString = ConvertTo-SecureString "passw0rd!" -AsPlainText -Force    
 
-Bundle-Anchors 'C:\nhin-d35\certs\anchors' `
+Bundle-Anchors '..\..\..\..\..\certs\anchors' `
 	-Ignore $ignoreArray  `
 	-ErrorVariable bundleError  `
 	-ErrorAction SilentlyContinue `
-		| Sign-Bundle  'C:\nhin-d35\trust\csharp\unittests\bundle.tests\bin\Debug\Certificates\redmond\Private\redmond.pfx' -PassKey $secureString `
+		| Sign-Bundle  '..\..\unittests\bundle.tests\bin\Debug\Certificates\redmond\Private\redmond.pfx' -PassKey $secureString `
 		| Set-Content psSignedTestBundle.p7m  -enc Byte
     
 

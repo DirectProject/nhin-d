@@ -28,7 +28,7 @@ namespace Health.Direct.Trust.Commandlet
         /// <summary>
         /// Output file path.
         /// </summary>
-        [Parameter(Position = 3)]
+        [Parameter(Position = 3), ValidateNotNullOrEmpty]
         public string Output { get; set; }
 
         protected override void BeginProcessing()

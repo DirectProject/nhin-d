@@ -8,7 +8,7 @@ if($snapinError -ne $null)
     #Named resources to ignore
     $ignoreArray = "Direct.Drhisp.Com Root CAKey.der"
 
-    Bundle-Anchors 'C:\nhin-d35\certs\anchors' `
+    Bundle-Anchors '..\..\..\..\..\certs\anchors' `
 		-Ignore $ignoreArray `
 		-Metadata "<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>" `
 		-ErrorVariable bundleError  `

@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.Collections;
+using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -90,8 +92,16 @@ namespace Health.Direct.Trust
             {
                 return null;
             }
+
             XmlSchemaSet schemas = new XmlSchemaSet();
-            schemas.Add("", "TrustBundleMetadata.xsd");
+            
+            Assembly myAssembly = Assembly.GetExecutingAssembly();
+            using (Stream stream = myAssembly.GetManifestResourceStream("Health.Direct.Trust.TrustBundleMetadata.xsd"))
+            {
+                XmlSchema schema = XmlSchema.Read(stream, null);
+                schemas.Add(schema);
+            }
+
 
             XDocument metaDoc = XDocument.Parse(metadata);
             
