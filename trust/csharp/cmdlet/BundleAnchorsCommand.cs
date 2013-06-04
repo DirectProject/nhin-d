@@ -25,6 +25,12 @@ namespace Health.Direct.Trust.Commandlet
         [Parameter(Position = 2), ValidateNotNullOrEmpty]
         public string Metadata { get; set; }
 
+        /// <summary>
+        /// Output file path.
+        /// </summary>
+        [Parameter(Position = 3)]
+        public string Output { get; set; }
+
         protected override void BeginProcessing()
         {
             SetDefaults();
@@ -49,7 +55,10 @@ namespace Health.Direct.Trust.Commandlet
 
             if (string.IsNullOrEmpty(Metadata))
             {
-                Metadata = "TrustBundleMetaData.xml";
+                if (File.Exists(@".\TrustBundleMetaData.xml"))
+                {
+                    Metadata = "TrustBundleMetaData.xml";
+                }
             }
         }
 
@@ -62,8 +71,9 @@ namespace Health.Direct.Trust.Commandlet
                 IResourceProvider resourceProvider =
                 new FileResourceProvider(
                     Name
-                    , null
-                    , Ignore);
+                    , Output
+                    , Ignore
+                    , Metadata);
                 bundle.Create(resourceProvider);
 
                 byte[] p7BData = bundle.Create(resourceProvider);
