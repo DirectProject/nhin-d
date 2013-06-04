@@ -25,31 +25,11 @@ using Health.Direct.Common.Certificates;
 using Xunit;
 using Xunit.Extensions;
 
-
-namespace Health.Direct.Trust
+namespace Health.Direct.Trust.Tests
 {
-    public class BundlerTests
+    public class BundlerTests : BaseBundlerTests
     {
-        public BundlerTests()
-        {
-            IEnumerable<FileInfo> files = GetFiles(Directory.GetCurrentDirectory(), ".p7b", ".p7m");
-            foreach (FileInfo fileInfo in files)
-            {
-                File.Delete(fileInfo.FullName); 
-            }
-        }
-
-        private static IEnumerable<FileInfo> GetFiles(string path, params string[] extensions)
-        {
-            List<FileInfo> list = new List<FileInfo>();
-            foreach (string ext in extensions)
-                list.AddRange(new DirectoryInfo(path).GetFiles("*" + ext).Where(p =>
-                      p.Extension.Equals(ext, StringComparison.CurrentCultureIgnoreCase))
-                      .ToArray());
-            return list;
-        }
-
-
+        
         [Fact]
         public void CreateBundleTest()
         {
