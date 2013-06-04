@@ -57,7 +57,7 @@
     <Compile Include="Trustbundle.cmdlet.tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\csharp\common\common.VS2012.csproj">
+    <ProjectReference Include="..\..\..\..\common\common.VS2012.csproj">
       <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
       <Name>common.VS2012</Name>
     </ProjectReference>
@@ -78,7 +78,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(ProjectDir)..\..\..\..\csharp\unittests\agent\Certificates\*.*" "$(ProjectDir)bin\$(ConfigurationName)\Certificates"</PostBuildEvent>
+    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(ProjectDir)..\..\..\..\unittests\agent\Certificates\*.*" "$(ProjectDir)bin\$(ConfigurationName)\Certificates"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
