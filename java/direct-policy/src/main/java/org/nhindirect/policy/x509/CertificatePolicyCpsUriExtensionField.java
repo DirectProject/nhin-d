@@ -109,8 +109,10 @@ public class CertificatePolicyCpsUriExtensionField extends AbstractExtensionFiel
 			}
 		}
 		
+		///CLOVER:OFF
 		if (retVal.isEmpty() && isRequired())
 			throw new PolicyRequiredException("Extention " + getExtentionIdentifier().getDisplay() + " is marked as required by is not present.");
+		///CLOVER:ON	
 		
 		this.policyValue = PolicyValueFactory.getInstance(retVal);
 	}

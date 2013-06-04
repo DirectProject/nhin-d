@@ -69,6 +69,22 @@ public class CertificatePolicyCpsUriExtensionField_injectReferenceValueTest exte
 		
 	}	
 	
+	public void testInjectRefereneValue_mixedCPS_assertValue() throws Exception
+	{
+		final X509Certificate cert = TestUtils.loadCertificate("policyMixedQualifier.der");
+		
+		final CertificatePolicyCpsUriExtensionField field = new CertificatePolicyCpsUriExtensionField(true);
+		
+		field.injectReferenceValue(cert);
+		
+		Collection<String> pols = field.getPolicyValue().getPolicyValue();
+		assertEquals(2, pols.size());
+		
+		
+		//assertTrue(pols.contains("http://www.cerner.com/CPS"));
+		
+	}	
+	
 	public void testInjectRefereneValue_noInjection_getPolicyValue_assertException() throws Exception
 	{
 		

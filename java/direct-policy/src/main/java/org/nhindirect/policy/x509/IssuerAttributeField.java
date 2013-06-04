@@ -93,10 +93,12 @@ public class IssuerAttributeField extends AbstractTBSField<Collection<String>>
 		{
 			tbsValue = this.getDERObject(certificate.getTBSCertificate());
 		}
+		///CLOVER:OFF
 		catch (Exception e)
 		{
 			throw new PolicyProcessException("Exception parsing TBS certificate fields.", e);
 		}
+		///CLOVER:ON
 		
 		final TBSCertificateStructure tbsStruct = TBSCertificateStructure.getInstance(tbsValue);
 		

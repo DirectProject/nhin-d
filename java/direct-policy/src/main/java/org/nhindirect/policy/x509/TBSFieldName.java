@@ -43,7 +43,7 @@ public enum TBSFieldName
 	/**
 	 * Certificate serial number
 	 */
-	SERIAL_NUMBER("SerialNumber", "Serial Number", new ArrayList<AttributeReferenceClass>()),
+	SERIAL_NUMBER("SerialNumber", "Serial Number", SerialNumberAttributeField.class),
 	
 	/**
 	 * Certificate signature algorithm
