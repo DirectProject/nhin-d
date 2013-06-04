@@ -145,7 +145,7 @@ import org.nhindirect.policy.x509.X509FieldType;
  * X509.Algorithm = 1.2.840.113549.1.1.11
  * (X509.TBS.EXTENSION.KeyUsage+ = 224) && (X509.Algorithm = 1.2.840.113549.1.1.11)
  * </pre>
- * @author gm2552
+ * @author Greg Meyer
  * @since 1.0
  * @see PolicyOperator
  * @see TBSFieldName

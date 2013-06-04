@@ -79,6 +79,7 @@ public class AuthorityKeyIdentifierKeyIdExtensionField extends AbstractExtension
 		final AuthorityKeyIdentifier aki = AuthorityKeyIdentifier.getInstance(exValue);
 		
 		byte[] keyId =  aki.getKeyIdentifier();
+		///CLOVER:OFF
 		if (keyId == null)
 		{	
 			if (isRequired())
@@ -89,7 +90,7 @@ public class AuthorityKeyIdentifierKeyIdExtensionField extends AbstractExtension
 				return;
 			}
 		}
-		
+		///CLOVER:ON
 		this.policyValue = PolicyValueFactory.getInstance(PolicyUtils.createByteStringRep(keyId));
 	}
 

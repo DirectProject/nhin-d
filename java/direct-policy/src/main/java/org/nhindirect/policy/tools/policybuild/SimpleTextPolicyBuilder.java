@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
  * @author Greg Meyer
  *
  */
+///CLOVER:OFF
 public class SimpleTextPolicyBuilder extends JFrame
 {
 
@@ -92,6 +93,20 @@ public class SimpleTextPolicyBuilder extends JFrame
 				openPolicyFile();
 			}
 		});
+		
+		save.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				savePolicyFile();
+			}
+		});
+		
+		saveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				savePolicyFileAs();
+			}
+		});
 	}
 	
 	private void openPolicyFile()
@@ -108,4 +123,15 @@ public class SimpleTextPolicyBuilder extends JFrame
  			
  		} 
 	}
+	
+	private void savePolicyFile()
+	{
+		editPanel.savePolicyFile();
+	}
+	
+	private void savePolicyFileAs()
+	{
+		editPanel.savePolicyFileAs();
+	}
 }
+///CLOVER:ON

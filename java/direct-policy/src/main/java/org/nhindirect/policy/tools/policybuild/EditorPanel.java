@@ -3,13 +3,16 @@ package org.nhindirect.policy.tools.policybuild;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -30,6 +33,7 @@ import org.nhindirect.policy.PolicyLexiconParserFactory;
 import org.nhindirect.policy.PolicyParseException;
 import org.nhindirect.policy.tools.policyvalidate.ValidatePanel;
 
+///CLOVER:OFF
 public class EditorPanel extends JPanel 
 {
 	private static final long serialVersionUID = 414048933382044206L;
@@ -129,6 +133,61 @@ public class EditorPanel extends JPanel
 		}
 	}
 	
+	public void savePolicyFile()
+	{
+
+		if (currentFile == null)
+		{
+			savePolicyFileAs();
+			return;
+		}
+		
+		try
+		{
+			FileUtils.writeStringToFile(currentFile, policyText.getText());
+		}
+		catch (IOException e)
+		{
+			JOptionPane.showMessageDialog(this,"Error saving to file: " + e.getMessage(), 
+		 		    "File Save Error", JOptionPane.ERROR_MESSAGE );
+			return;
+		}
+	}
+	
+	public void savePolicyFileAs()
+	{
+		final JFileChooser fc = new JFileChooser();
+		
+		int returnVal = fc.showSaveDialog(this);
+		
+		if (returnVal == JFileChooser.APPROVE_OPTION) 
+		{
+            final File selectedFile = fc.getSelectedFile();
+
+            if (selectedFile.exists())
+            {
+    			int selection = JOptionPane.showConfirmDialog(this, "This file already exists.  Do you wish to overwrite it?",
+    					"Existing File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+    			
+    			if (selection == JOptionPane.NO_OPTION)
+    				return;
+            }
+            
+            // write the file
+    		try
+    		{
+    			FileUtils.writeStringToFile(selectedFile, policyText.getText());
+    			this.loadFromFile(selectedFile);
+    		}
+    		catch (IOException e)
+    		{
+    			JOptionPane.showMessageDialog(this,"Error saving to file: " + e.getMessage(), 
+    		 		    "File Save Error", JOptionPane.ERROR_MESSAGE );
+    			return;
+    		}
+        } 
+	}
+	
 	protected class BuildTask implements Runnable
 	{
 		protected PolicyLexiconParser parser;
@@ -193,3 +252,4 @@ public class EditorPanel extends JPanel
 		}
 	}
 }
+///CLOVER:ON

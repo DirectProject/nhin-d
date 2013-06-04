@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.nhindirect.policy.PolicyParseException;
 import org.nhindirect.policy.x509.IssuerAttributeField;
 import org.nhindirect.policy.x509.RDNAttributeIdentifier;
+import org.nhindirect.policy.x509.SerialNumberAttributeField;
 import org.nhindirect.policy.x509.SubjectAttributeField;
 import org.nhindirect.policy.x509.SubjectPublicKeyAlgorithmField;
 import org.nhindirect.policy.x509.SubjectPublicKeySizeField;
@@ -29,31 +30,14 @@ public class SimpleTextV1LexiconPolicyParser_buildTBSFieldTest extends TestCase
 		assertTrue(exceptionOccured);
 	}
 	
-	public void testBuildTBSField_serialNumber_assertFieldNotImplemented() throws Exception
+	public void testBuildTBSField_serialNumber_assertBuilt() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
-		
-		boolean exceptionOccured = false;
-		try
-		{
-			TBSField.class.cast(parser.buildTBSField("X509.TBS.SerialNumber"));
-		}
-		catch (PolicyParseException e)
-		{
-			exceptionOccured = true;
-		}	
-		assertTrue(exceptionOccured);
-		
-		exceptionOccured = false;
-		try
-		{
-			TBSField.class.cast(parser.buildTBSField("X509.TBS.SerialNumber+"));
-		}
-		catch (PolicyParseException e)
-		{
-			exceptionOccured = true;
-		}	
-		assertTrue(exceptionOccured);
+
+		TBSField<?> field = TBSField.class.cast(parser.buildTBSField("X509.TBS.SerialNumber"));
+		assertNotNull(field);
+		assertTrue(field instanceof SerialNumberAttributeField);
+		assertTrue(field.isRequired());
 	}
 	
 	public void testBuildTBSField_signature_assertFieldNotImplemented() throws Exception

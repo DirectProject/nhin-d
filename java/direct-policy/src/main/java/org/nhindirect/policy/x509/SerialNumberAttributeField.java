@@ -23,28 +23,26 @@ package org.nhindirect.policy.x509;
 
 import java.security.cert.X509Certificate;
 
-import org.bouncycastle.asn1.DERObject;
-import org.bouncycastle.asn1.x509.TBSCertificateStructure;
-
 import org.nhindirect.policy.PolicyProcessException;
 import org.nhindirect.policy.PolicyValueFactory;
 
 /**
- * Subject public key info field of TBS section of certificate
+ * Certificate serial number field of TBS section of certificate
  * <p>
- * The policy value of this extension is returned as a string containing the object identifier (OID) of the key algorithm of the subject's public key.
- * 
+ * The policy value of this field is returned as a string containing an hexadecimal representation of the certificate serial number.  All alpha based digits are
+ * represented with lower case characters.  Leading 0s and/or spaced are not included in the serial number.
  * @author Greg Meyer
  * @since 1.0
  */
-public class SubjectPublicKeyAlgorithmField extends AbstractTBSField<String>
+public class SerialNumberAttributeField extends AbstractTBSField<String>
 {
-	static final long serialVersionUID = -1094029946830031432L;
-	
+
+	private static final long serialVersionUID = 1358574986560802770L;
+
 	/**
-	 * Default contructor
+	 * Default constructor
 	 */
-	public SubjectPublicKeyAlgorithmField()
+	public SerialNumberAttributeField()
 	{
 		super(true);
 	}
@@ -53,36 +51,20 @@ public class SubjectPublicKeyAlgorithmField extends AbstractTBSField<String>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public TBSFieldName getFieldName() 
+	public void injectReferenceValue(X509Certificate value) throws PolicyProcessException 
 	{
-		return TBSFieldName.SUBJECT_PUBLIC_KEY_INFO;
+		this.certificate = value;
+				
+		this.policyValue = PolicyValueFactory.getInstance(value.getSerialNumber().toString(16));
+		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void injectReferenceValue(X509Certificate value) throws PolicyProcessException 
+	public TBSFieldName getFieldName() 
 	{
-		this.certificate = value;
-		
-		DERObject tbsValue = null;
-		
-		try
-		{
-			tbsValue = this.getDERObject(certificate.getTBSCertificate());
-		}
-		///CLOVER:OFF
-		catch (Exception e)
-		{
-			throw new PolicyProcessException("Exception parsing TBS certificate fields.", e);
-		}
-		///CLOVER:ON
-		
-		final TBSCertificateStructure tbsStruct = TBSCertificateStructure.getInstance(tbsValue);
-
-		this.policyValue = PolicyValueFactory.getInstance(tbsStruct.getSubjectPublicKeyInfo().
-				getAlgorithmId().getObjectId().toString());
+		return TBSFieldName.SERIAL_NUMBER;
 	}
-
 }
