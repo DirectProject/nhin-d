@@ -11,6 +11,9 @@ namespace Health.Direct.Trust.Commandlet
         private string _name;
         private byte[] _bundle;
 
+        /// <summary>
+        /// Signing Cert path.
+        /// </summary>
         [Parameter(Position = 0,
             ValueFromPipelineByPropertyName = false,
             HelpMessage = "Signing cert path"), ValidateNotNullOrEmpty]
