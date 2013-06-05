@@ -86,6 +86,7 @@ public class BinaryIntegerPolicyOperatorExecutor<O1,O2> implements IntegerPolicy
 	/**
 	 * {@inheritDoc}
 	 */
+    ///CLOVER:OFF
 	@Override
 	public String toString()
 	{
@@ -95,4 +96,5 @@ public class BinaryIntegerPolicyOperatorExecutor<O1,O2> implements IntegerPolicy
 		
 		return builder.toString();
 	}
+    ///CLOVER:ON
 }

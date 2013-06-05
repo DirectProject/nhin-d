@@ -115,6 +115,7 @@ public class BinaryCollectionPolicyOperatorExecutor<O1,O2> implements Collection
 	/**
 	 * {@inheritDoc}
 	 */
+    ///CLOVER:OFF
 	@Override
 	public String toString()
 	{
@@ -124,4 +125,5 @@ public class BinaryCollectionPolicyOperatorExecutor<O1,O2> implements Collection
 		
 		return builder.toString();
 	}
+    ///CLOVER:ON
 }

@@ -159,6 +159,7 @@ public abstract class AbstractX509Field<P> implements X509Field<P>
     /**
      * {@inheritDoc}
      */
+    ///CLOVER:OFF
     @Override
     public String toString()
     {
@@ -167,4 +168,5 @@ public abstract class AbstractX509Field<P> implements X509Field<P>
     	else
     		return policyValue.toString();
     }
+    ///CLOVER:ON
 }
