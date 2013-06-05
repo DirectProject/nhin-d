@@ -155,4 +155,16 @@ public abstract class AbstractX509Field<P> implements X509Field<P>
         	IOUtils.closeQuietly(aIn);
         }
     }	
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+    	if (policyValue == null)
+    		return "Unevaluated X509 field: " + getX509FieldType().toString();
+    	else
+    		return policyValue.toString();
+    }
 }

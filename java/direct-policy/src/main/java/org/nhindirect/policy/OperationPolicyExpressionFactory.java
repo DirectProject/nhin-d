@@ -92,5 +92,27 @@ public class OperationPolicyExpressionFactory
 		{
 			return operands;
 		}
+		
+		@Override
+		public String toString()
+		{
+			final StringBuilder builder = new StringBuilder("Operator: ").append(operator.toString());
+			
+			int i = 1;
+			
+			for (PolicyExpression operand : operands)
+			{
+				try
+				{
+					builder.append("\r\nOperand ").append(i++).append(": ").append(operand.toString());
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			
+			return builder.toString();
+		}
 	}
 }

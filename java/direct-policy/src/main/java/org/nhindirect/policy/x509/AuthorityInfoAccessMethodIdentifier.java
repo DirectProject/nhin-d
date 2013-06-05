@@ -65,4 +65,20 @@ public enum AuthorityInfoAccessMethodIdentifier
 	{
 		return name;
 	}
+	
+	/**
+	 * Gets an AuthorityInfoAccessMethodIdentifier from an access id.
+	 * @param id The id of the access method.
+	 * @return The AuthorityInfoAccessMethodIdentifier that matches the request id.  If the request id does not match
+	 * a known access method id, then null is returned;
+	 */
+	public static AuthorityInfoAccessMethodIdentifier fromId(String id)
+	{
+		if (id.equals(OCSP.getId()))
+			return OCSP;
+		else if (id.equals(CA_ISSUERS.getId()))
+			return CA_ISSUERS;
+		
+		return null;
+	}
 }

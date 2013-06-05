@@ -53,8 +53,8 @@ public class AuthorityInfoAccessExtentionField_injectReferenceValueTest extends 
 		Collection<String> usages = field.getPolicyValue().getPolicyValue();
 		assertFalse(field.getPolicyValue().getPolicyValue().isEmpty());
 		
-		assertTrue(usages.contains(AuthorityInfoAccessMethodIdentifier.OCSP.getId() + ":" + "http://ca.cerner.com/OCSP"));
-		assertTrue(usages.contains(AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.getId() + ":" + "http://ca.cerner.com/public/root.der"));
+		assertTrue(usages.contains(AuthorityInfoAccessMethodIdentifier.OCSP.getName() + ":" + "http://ca.cerner.com/OCSP"));
+		assertTrue(usages.contains(AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.getName() + ":" + "http://ca.cerner.com/public/root.der"));
 		
 	}	
 	

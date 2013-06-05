@@ -81,7 +81,7 @@ import org.nhindirect.policy.x509.X509FieldType;
  * 
  * unaryOperator = "^" | "{}" | "{}!" | "!" | "@@" ;
  * 
- * binaryOperator = "=" | "!=" |  ">" | "<" | "$" | "{?}" | "{?}!" | "{$}" 
+ * binaryOperator = "=" | "!=" |  ">" | "<" | "$" | "{?}" | "{?}!" | "{}$" 
  *      | "{}&" |  "||" | "&&"  | "&" | "|" ;
  *      
  * operator = unaryOperator | binaryOperator
@@ -227,6 +227,11 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		
 		return retExpression;
 	}
+
+	protected PolicyExpression buildExpression(Iterator<TokenTypeAssociation> tokens) throws PolicyParseException 
+	{
+		return buildExpression(tokens, false);
+	}
 	
 	/**
 	 * Builds an aggregated {@link PolicyExpression} from a parsed list of tokens.
@@ -235,7 +240,7 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 	 * @return A {@link PolicyExpression} built from the parsed list of tokens.
 	 * @throws PolicyParseException
 	 */
-	protected PolicyExpression buildExpression(Iterator<TokenTypeAssociation> tokens) throws PolicyParseException 
+	protected PolicyExpression buildExpression(Iterator<TokenTypeAssociation> tokens, boolean operandFrame) throws PolicyParseException 
 	{
 		if (!tokens.hasNext())
 			return null;
@@ -244,13 +249,19 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 
 		do
 		{	
-			TokenTypeAssociation assos = tokens.next();
+			final TokenTypeAssociation assos = tokens.next();
 			switch (assos.getType())
 			{
 				case START_LEVEL:
+				{
 					incrementLevel();
-					builtOperandExpressions.add(buildExpression(tokens));
+					final PolicyExpression expression = buildExpression(tokens);
+					if (operandFrame)
+						return expression;
+					
+					builtOperandExpressions.add(expression);
 					break;
+				}
 				case END_LEVEL:
 					if (getLevel() == 0)
 						throw new PolicyGrammarException("To many \")\" tokens.  Delete this token");
@@ -267,7 +278,7 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 					
 					// regardless if this is a unary or binary expression, then next set of tokens should consist 
 					// of a parameter to this operator
-					final PolicyExpression subExpression = buildExpression(tokens);
+					final PolicyExpression subExpression = buildExpression(tokens, true);
 					
 					if (subExpression == null)
 						throw new PolicyGrammarException("Missing parameter.  Operator must be followed by an expression.");
@@ -279,31 +290,32 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 						throw new PolicyGrammarException("Missing parameter.  Binary operators require two parameters.");
 					
 					final PolicyExpression operatorExpression = OperationPolicyExpressionFactory.getInstance(operator, builtOperandExpressions);
+					
+					if (operandFrame)
+						return operatorExpression;
+					
 					builtOperandExpressions = new Vector<PolicyExpression>();
 					builtOperandExpressions.add(operatorExpression);
 					
 					break;
 				}
 				case LITERAL_EXPRESSION:
-					builtOperandExpressions.add(LiteralPolicyExpressionFactory.getInstance(assos.getToken()));
+				{
+					final PolicyExpression expression = LiteralPolicyExpressionFactory.getInstance(assos.getToken());
+					if (operandFrame)
+						return expression;  // exit this operand frame
+					
+					builtOperandExpressions.add(expression);
 					break;
+				}
 				case CERTIFICATE_REFERENCE_EXPRESSION:
 				{
-					PolicyExpression checkObj = buildX509Field(assos.getToken());
-					// check to see if its an X509Field
-					if (checkObj == null)
-					{
-						// check to see if TBSFieldName
-						checkObj = buildTBSField(assos.getToken());
-						if (checkObj == null)
-						{
-							// check for extension field
-							checkObj = buildExtensionField(assos.getToken());
-						}
-					}
-
-					builtOperandExpressions.add(checkObj);
+					final PolicyExpression expression = buildCertificateReferenceField(assos.getToken());
 					
+					if (operandFrame)
+						return expression;  // exit this operand frame
+					
+					builtOperandExpressions.add(expression);
 					break;
 				}
 			}
@@ -313,6 +325,24 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 			throw new PolicyGrammarException("Erroneous expression.");
 			
 		return builtOperandExpressions.get(0);
+	}
+	
+	protected PolicyExpression buildCertificateReferenceField(String token) throws PolicyParseException 
+	{
+		PolicyExpression checkObj = buildX509Field(token);
+		// check to see if its an X509Field
+		if (checkObj == null)
+		{
+			// check to see if TBSFieldName
+			checkObj = buildTBSField(token);
+			if (checkObj == null)
+			{
+				// check for extension field
+				checkObj = buildExtensionField(token);
+			}
+		}
+		
+		return checkObj;
 	}
 	
 	/**
@@ -686,6 +716,18 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		public TokenType getType()
 		{
 			return type;
+		}
+		
+		/**
+		 * {@inheritDoc}
+		 */
+		public String toString()
+		{
+			final StringBuilder builder = new StringBuilder("");
+			builder.append("Token Type: " ).append(type.toString())
+			   .append("\r\nToken Value: ").append(token);
+			
+			return builder.toString();
 		}
 	}
 }

@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 /**
- * The compiler is the second step of the execution process after a lexicon has been parse into a {@link PolicyExpression) tree.  The compiler consumes
+ * The compiler is the second step of the execution process after a lexicon has been parse into a {@link PolicyExpression} tree.  The compiler consumes
  * the parsed expressions and generates an ordered vector of {@link Opcode} objects that are specific to a particular {@link ExecutionEngine}. 
  * The resulting vector is then fed to the engine to evaluate the boolean result of the expression.
  * <p>

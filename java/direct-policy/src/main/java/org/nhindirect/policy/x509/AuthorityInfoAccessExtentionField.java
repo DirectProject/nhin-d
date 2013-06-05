@@ -90,7 +90,9 @@ public class AuthorityInfoAccessExtentionField extends AbstractExtensionField<Co
 		
         for (AccessDescription accessDescription : aia.getAccessDescriptions())
     	{
-        	retVal.add(accessDescription.getAccessMethod().toString() + ":" + 
+        	final String accessMethod = AuthorityInfoAccessMethodIdentifier.fromId(accessDescription.getAccessMethod().toString()).getName(); 
+        	
+        	retVal.add(accessMethod + ":" + 
         			accessDescription.getAccessLocation().getName().toString());
         }
 		

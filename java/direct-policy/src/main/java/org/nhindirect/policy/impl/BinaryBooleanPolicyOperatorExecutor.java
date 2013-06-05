@@ -77,15 +77,19 @@ public class BinaryBooleanPolicyOperatorExecutor<O1,O2> implements BooleanPolicy
 		{
 		    case EQUALS:
 		    {
-		    	Object op1 = (operand1.getPolicyValue() instanceof Integer) ? operand1.getPolicyValue().toString() : operand1.getPolicyValue();
-		    	Object op2 = (operand2.getPolicyValue() instanceof Integer) ? operand2.getPolicyValue().toString() : operand2.getPolicyValue();
+		    	Object op1 = (operand1.getPolicyValue() instanceof Integer || operand1.getPolicyValue() instanceof Boolean) 
+		    			? operand1.getPolicyValue().toString() : operand1.getPolicyValue();
+		    	Object op2 = (operand2.getPolicyValue() instanceof Integer || operand2.getPolicyValue() instanceof Boolean)
+		    	        ? operand2.getPolicyValue().toString() : operand2.getPolicyValue();
 				retVal = op1.equals(op2);
 				break;
 		    }
 		    case NOT_EQUALS:
 		    {
-		    	Object op1 = (operand1.getPolicyValue() instanceof Integer) ? operand1.getPolicyValue().toString() : operand1.getPolicyValue();
-		    	Object op2 = (operand2.getPolicyValue() instanceof Integer) ? operand2.getPolicyValue().toString() : operand2.getPolicyValue();
+		    	Object op1 = (operand1.getPolicyValue() instanceof Integer || operand1.getPolicyValue() instanceof Boolean) 
+		    			? operand1.getPolicyValue().toString() : operand1.getPolicyValue();
+		    	Object op2 = (operand2.getPolicyValue() instanceof Integer || operand2.getPolicyValue() instanceof Boolean) ? 
+		    			operand2.getPolicyValue().toString() : operand2.getPolicyValue();
 				retVal = !op1.equals(op2);	
 				break;
 		    }
@@ -177,5 +181,18 @@ public class BinaryBooleanPolicyOperatorExecutor<O1,O2> implements BooleanPolicy
 		}
 		
 		return PolicyValueFactory.getInstance(retVal);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		final StringBuilder builder = new StringBuilder("Operator: ").append(operator.toString())
+		.append("\r\nOperand 1: ").append(operand1)
+		.append("\r\nOperand 2: ").append(operand2).append("\r\n");
+		
+		return builder.toString();
 	}
 }

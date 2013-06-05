@@ -82,4 +82,17 @@ public class BinaryIntegerPolicyOperatorExecutor<O1,O2> implements IntegerPolicy
 		}
 		return PolicyValueFactory.getInstance(retVal);
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString()
+	{
+		final StringBuilder builder = new StringBuilder("Operator: ").append(operator.toString())
+		.append("\r\nOperand 1: ").append(operand1)
+		.append("\r\nOperand 2: ").append(operand2).append("\r\n");
+		
+		return builder.toString();
+	}
 }
