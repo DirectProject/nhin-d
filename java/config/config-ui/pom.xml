@@ -320,7 +320,7 @@
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-jar</artifactId>
-	  <version>${project.version}</version>
+	  <version>1.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.nhind</groupId>
