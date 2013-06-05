@@ -22,7 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.policy;
 
 /**
- * Policy executors perform the logic operations on one or more parameters and {@link PolicyOpertor PolicyOperators) are associated to an executor.  All executors 
+ * Policy executors perform the logic operations on one or more parameters and {@link PolicyOpertor PolicyOperators} are associated to an executor.  All executors 
  * implement the {@link #execute()} method which returns the result of evaluating the parameters given the specified operator.
  * 
  * @author Greg Meyer

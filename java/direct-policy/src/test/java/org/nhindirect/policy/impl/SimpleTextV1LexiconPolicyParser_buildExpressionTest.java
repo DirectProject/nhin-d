@@ -150,7 +150,7 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		assertEquals("1", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
 	}	
 	
-	public void testBuildExpression_tinaryExpression_validatePolicyExpression() throws Exception
+	public void testBuildExpression_tinaryExpression_literalOperands_validatePolicyExpression() throws Exception
 	{
 		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
 		
@@ -165,27 +165,69 @@ public class SimpleTextV1LexiconPolicyParser_buildExpressionTest extends TestCas
 		assertNotNull(expression);
 		assertEquals(PolicyExpressionType.OPERATION, expression.getExpressionType());
 		OperationPolicyExpression operationExpression = (OperationPolicyExpression)expression;
-		assertEquals(PolicyOperator.EQUALS, operationExpression.getPolicyOperator());
+		assertEquals(PolicyOperator.NOT_EQUALS, operationExpression.getPolicyOperator());
 		
-		// break down the sub operation parameters... should be a literal and an operation
-		expression = operationExpression.getOperands().get(0);
-		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
-
+		// break down the sub operation parameters... should be an operation and a literal
 		expression = operationExpression.getOperands().get(1);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+		assertEquals("true", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+		
+		expression = operationExpression.getOperands().get(0);
 		assertEquals(PolicyExpressionType.OPERATION, expression.getExpressionType());
 
 		
 		// break down the sub parameters again of this operation
 		OperationPolicyExpression subOperation = (OperationPolicyExpression)expression;
-		assertEquals(PolicyOperator.NOT_EQUALS, subOperation.getPolicyOperator());
+		assertEquals(PolicyOperator.EQUALS, subOperation.getPolicyOperator());
 		
 		expression = subOperation.getOperands().get(0);
 		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
-		assertEquals("1", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+		assertEquals("2", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
 		
 		expression = subOperation.getOperands().get(1);
 		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
-		assertEquals("true", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+		assertEquals("1", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+	}
+	
+	public void testBuildExpression_tinaryExpression_operatorExpressionOperands_validatePolicyExpression() throws Exception
+	{
+		final SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+		
+		InputStream stream = IOUtils.toInputStream("false = !true && !false");
+		
+		Vector<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.parseToTokens(stream);
+		
+		// now build expressions
+		PolicyExpression expression = parser.buildExpression(tokens.iterator());
+		
+		// check that the expression is an equals
+		assertNotNull(expression);
+		assertEquals(PolicyExpressionType.OPERATION, expression.getExpressionType());
+		OperationPolicyExpression operationExpression = (OperationPolicyExpression)expression;
+		assertEquals(PolicyOperator.LOGICAL_AND, operationExpression.getPolicyOperator());
+		
+		
+		// break down the sub operation parameters... should be two operations
+		OperationPolicyExpression subOperation = (OperationPolicyExpression)operationExpression.getOperands().get(0);
+		assertEquals(PolicyExpressionType.OPERATION, subOperation.getExpressionType());
+		assertEquals(PolicyOperator.EQUALS, subOperation.getPolicyOperator());
+		
+		expression = subOperation.getOperands().get(0);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+		assertEquals("false", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+		
+		OperationPolicyExpression subSubOperation = (OperationPolicyExpression)subOperation.getOperands().get(1);
+		assertEquals(PolicyExpressionType.OPERATION, subSubOperation.getExpressionType());
+		assertEquals(PolicyOperator.LOGICAL_NOT, subSubOperation.getPolicyOperator());
+		
+		subOperation = (OperationPolicyExpression)operationExpression.getOperands().get(1);
+		assertEquals(PolicyExpressionType.OPERATION, subOperation.getExpressionType());
+		assertEquals(PolicyOperator.LOGICAL_NOT, subOperation.getPolicyOperator());
+		
+		expression = subOperation.getOperands().get(0);
+		assertEquals(PolicyExpressionType.LITERAL, expression.getExpressionType());
+		assertEquals("false", ((LiteralPolicyExpression<?>)expression).getPolicyValue().getPolicyValue());
+	
 	}
 	
 	public void  testBuildExpression_requiredCertField_validateTokens() throws Exception

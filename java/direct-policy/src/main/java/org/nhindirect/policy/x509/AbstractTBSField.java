@@ -48,4 +48,16 @@ public abstract class AbstractTBSField<P> extends AbstractX509Field<P> implement
 	{
 		return X509FieldType.TBS;
 	}
+	
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+    	if (policyValue == null)
+    		return "Unevaluated TBS field: " + getFieldName().toString();
+    	else
+    		return policyValue.toString();
+    }
 }

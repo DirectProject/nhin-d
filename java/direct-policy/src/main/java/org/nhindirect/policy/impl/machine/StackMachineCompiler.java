@@ -38,7 +38,7 @@ import org.nhindirect.policy.ReferencePolicyExpression;
 import org.nhindirect.policy.x509.X509Field;
 
 /**
- * Implementation of the {link org.nhindirect.policy.Compiler} interface that generates opcodes used by the 
+ * Implementation of the {@link org.nhindirect.policy.Compiler} interface that generates opcodes used by the 
  * {@link StackMachine} execution engine.
  * <p>
  * This implementation traverses that expression tree and generates a vector of opcodes using a reverse policy notation strategy .

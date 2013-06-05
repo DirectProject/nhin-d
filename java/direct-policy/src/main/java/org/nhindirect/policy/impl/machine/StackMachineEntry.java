@@ -93,10 +93,10 @@ public class StackMachineEntry implements Opcode
 		switch(getEntryType())
 		{
 			case OPERATOR:
-				builder.append("Operator: " + getOperator().getOperatorText());
+				builder.append("Operator: " + getOperator().getOperatorText() + "\r\n");
 				break;
 			case VALUE:
-				builder.append("Value: " + getValue().getPolicyValue());
+				builder.append("Value: " + getValue().getPolicyValue() + "\r\n");
 				break;	
 		}
 		

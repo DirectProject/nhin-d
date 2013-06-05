@@ -82,7 +82,7 @@ public enum PolicyOperator
 	 * within collection matches the regular expressions.  The operation can only be performed on a string a collection arbitrary types.
 	 * Non string types are converted to strings using the object's toString method. 
 	 */
-	CONTAINS_REG_EX("{$}", "matches", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
+	CONTAINS_REG_EX("{}$", "contains match", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
 	
 	/**
 	 * Performs an evaluation of the number of elements within a collection.  This operation is only performed on a single

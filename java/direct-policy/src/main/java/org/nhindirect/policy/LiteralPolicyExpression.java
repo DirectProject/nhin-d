@@ -24,7 +24,7 @@ package org.nhindirect.policy;
 /**
  * Literal expression type object.  Literals are simply primitive types or objects that have a static value.  
  * In the policy engine, literals are represented by {@link PolicyValue} objects and are retrieved by calling the
- * {@link getPolicyValue} method.
+ * {@link #getPolicyValue()} method.
  * <br>
  * Instances of this interface are created using the {@link LiteralPolicyExpressionFactory} class.
  * @author Greg Meyer

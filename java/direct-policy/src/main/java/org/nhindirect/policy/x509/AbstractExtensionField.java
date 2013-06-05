@@ -90,4 +90,16 @@ public abstract class AbstractExtensionField<P> extends AbstractTBSField<P> impl
 
         return getObject(bytes);
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString()
+    {
+    	if (policyValue == null)
+    		return "Unevaluated extension field: " + getExtentionIdentifier().toString();
+    	else
+    		return policyValue.toString();
+    }
 }
