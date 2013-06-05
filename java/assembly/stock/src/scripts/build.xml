@@ -56,9 +56,9 @@
 	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
 	
 	<!-- tomcat properties -->
-	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.37/bin/apache-tomcat-7.0.37.tar.gz"></property>
-	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.37.tar.gz"></property>
-	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.37"></property>
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.40/bin/apache-tomcat-7.0.40.tar.gz"></property>
+	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.40.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.40"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.bin.dir" value="${tomcat.stage.dir}/bin"></property>	
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
@@ -66,13 +66,14 @@
 	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
 	<property name="dnsserver.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DirectDNSServer"></property>
 	<property name="dnsmgmt.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DNSMgmtConsole"></property>
+	<property name="configmgmr.stage.dir" value="${env.DIRECT_INSTALL_DIR}/ConfigTools/ConfigMgmtConsole"></property>
 	
 	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
 	
 	<!-- Config server files -->
 	<property name="config.root" value="${config.root}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-1.3.war"></property>
+	<property name="config.service.orig.war" value="config-service-1.4-SNAPSHOT.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 	<property name="config.ui.orig.war" value="config-ui-1.3.war"></property>
@@ -126,7 +127,7 @@
 	<property name="lib.jaxrpc-api" value="${install.root.dir}/lib/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${install.root.dir}/lib/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${install.root.dir}/lib/axis-1.4.jar"></property>
-	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.2.jar"></property>
+	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.4-SNAPSHOT.jar"></property>
 
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
@@ -134,9 +135,9 @@
 	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.5.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.1.jar"></property>
-	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1.2.jar"></property>	
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-2.0-SNAPSHOT.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-3.0-SNAPSHOT.jar"></property>
+	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.2-SNAPSHOT.jar"></property>	
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.3.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
 	
@@ -422,7 +423,11 @@
 		</exec>		
 		<exec executable="sh">
 			<arg line="-c 'cd ${dnsmgmt.stage.dir}/bin; chmod a+x DNSMgmtConsole'"></arg>
+		</exec>
+		<exec executable="sh">
+			<arg line="-c 'cd ${configmgmr.stage.dir}/bin; chmod a+x ConfigMgmtConsole'"></arg>
 		</exec>				
+
 	</target>
 
 	<!-- clean up -->
