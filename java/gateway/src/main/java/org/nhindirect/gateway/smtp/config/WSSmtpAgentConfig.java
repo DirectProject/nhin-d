@@ -301,6 +301,8 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		final PolicyLexicon lexicon;
 		if (policy.getLexicon().equals(org.nhind.config.PolicyLexicon.JAVA_SER))
 			lexicon = PolicyLexicon.JAVA_SER;
+		else if (policy.getLexicon().equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1))
+			lexicon = PolicyLexicon.SIMPLE_TEXT_V1;
 		else
 			lexicon = PolicyLexicon.XML;
 		
