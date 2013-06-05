@@ -727,7 +727,7 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/InternalMessage/PickupFolder', 'PickupText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/RawMessage/CopyFolder', 'RawMessageText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/BadMessage/CopyFolder', 'BadMessageText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder', 'IncommingMessageText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder', 'IncomingMessageText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/ProcessOutgoing/CopyFolder', 'OutgoingMessageText');
  
   Result := True;
@@ -1170,7 +1170,7 @@ end;
 
 procedure GatewayAdminPageThreeOnActivate(Sender: TWizardPage);
 var
-  PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
+  PickupText, RawMessageText, BadMessageText, IncomingMessageText, OutgoingMessageText : TNewMemo;
   configFile : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
@@ -1184,8 +1184,8 @@ begin
   BadMessageText := TNewMemo(Sender.FindComponent('BadMessageText'));
   BadMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/BadMessage/CopyFolder');
   
-  IncommingMessageText := TNewMemo(Sender.FindComponent('IncommingMessageText'));
-  IncommingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder');
+  IncomingMessageText := TNewMemo(Sender.FindComponent('IncomingMessageText'));
+  IncomingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder');
   
   OutgoingMessageText := TNewMemo(Sender.FindComponent('OutgoingMessageText'));
   OutgoingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessOutgoing/CopyFolder');
@@ -1817,8 +1817,8 @@ function CreateGatewayWizardPageThree(pageBefore: TWizardPage): TWizardPage;
 var
   GatewaySmtpAdminPage: TWizardPage;
   HelpButton: TNewButton;
-  PickupLabel, RawMessageLabel, BadMessageLabel, IncommingMessageLabel, OutgoingMessageLabel : TNewStaticText;
-  PickupText, RawMessageText, BadMessageText, IncommingMessageText, OutgoingMessageText : TNewMemo;
+  PickupLabel, RawMessageLabel, BadMessageLabel, IncomingMessageLabel, OutgoingMessageLabel : TNewStaticText;
+  PickupText, RawMessageText, BadMessageText, IncomingMessageText, OutgoingMessageText : TNewMemo;
 begin
     GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part III (SMTP)', '');
 
@@ -1882,27 +1882,27 @@ begin
     BadMessageText.WantReturns := false;
     BadMessageText.Parent := GatewaySmtpAdminPage.Surface;
 
-    //Set Incomming Message Folder
-    IncommingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
-    IncommingMessageLabel.Name := 'IncommingMessageLabel';
-    IncommingMessageLabel.Top :=  BadMessageLabel.Top + BadMessageLabel.Height + ScaleY(14);
-    IncommingMessageLabel.Caption := 'Incomming Message Folder: ';
-    IncommingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
+    //Set Incoming Message Folder
+    IncomingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
+    IncomingMessageLabel.Name := 'IncomingMessageLabel';
+    IncomingMessageLabel.Top :=  BadMessageLabel.Top + BadMessageLabel.Height + ScaleY(14);
+    IncomingMessageLabel.Caption := 'Incoming Message Folder: ';
+    IncomingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
                               
-    IncommingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
-    IncommingMessageText.Name := 'IncommingMessageText';
-    IncommingMessageText.Top := IncommingMessageLabel.Top;
-    IncommingMessageText.Left := PickupText.Left;
-    IncommingMessageText.Width := PickupText.Width;
-    IncommingMessageText.Height := IncommingMessageText.Height div 4;
-    IncommingMessageText.WordWrap := false;
-    IncommingMessageText.WantReturns := false;
-    IncommingMessageText.Parent := GatewaySmtpAdminPage.Surface;
+    IncomingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    IncomingMessageText.Name := 'IncomingMessageText';
+    IncomingMessageText.Top := IncomingMessageLabel.Top;
+    IncomingMessageText.Left := PickupText.Left;
+    IncomingMessageText.Width := PickupText.Width;
+    IncomingMessageText.Height := IncomingMessageText.Height div 4;
+    IncomingMessageText.WordWrap := false;
+    IncomingMessageText.WantReturns := false;
+    IncomingMessageText.Parent := GatewaySmtpAdminPage.Surface;
 
     //Set Outgoing Message Folder
     OutgoingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
     OutgoingMessageLabel.Name := 'OutgoingMessageLabel';
-    OutgoingMessageLabel.Top :=  IncommingMessageLabel.Top + IncommingMessageLabel.Height + ScaleY(14);
+    OutgoingMessageLabel.Top :=  IncomingMessageLabel.Top + IncomingMessageLabel.Height + ScaleY(14);
     OutgoingMessageLabel.Caption := 'Outgoing Message Folder: ';
     OutgoingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
                               
