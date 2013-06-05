@@ -94,6 +94,7 @@ public abstract class AbstractExtensionField<P> extends AbstractTBSField<P> impl
     /**
      * {@inheritDoc}
      */
+    ///CLOVER:OFF
     @Override
     public String toString()
     {
@@ -102,4 +103,5 @@ public abstract class AbstractExtensionField<P> extends AbstractTBSField<P> impl
     	else
     		return policyValue.toString();
     }
+   ///CLOVER:ON
 }
