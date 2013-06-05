@@ -53,7 +53,7 @@ public class PolicyCommands
             "\r\n\t groupName: Name of the policy group.  Place the policy group name in quotes (\"\") if there are spaces in the name.";
    
     private static final String ADD_POLICY_TO_GROUP_USAGE = "Adds an existing policy to a group with a provided usage." +
-    		"\r\n  policyName groupName policyUse incoming outgoing" +
+    		"\r\n  policyName groupNames policyUse incoming outgoing" +
             "\r\n\t policyName: Name of the policy to add to the group.  Place the policy name in quotes (\"\") if there are spaces in the name." +
     		"\r\n\t groupName: Name of the policy group to add the policy to.  Place the policy group name in quotes (\"\") if there are spaces in the name." +
     		"\r\n\t policyUse: Usage name of the policy in the group.  Must be one of the following values: TRUST, PRIVATE_RESOLVER, PUBLIC_RESOLVER." +
@@ -61,7 +61,7 @@ public class PolicyCommands
     		"\r\n\t outgoing: Indicates if policy is used for outgoing messages.  Must be one of the following values: true, false";
     
     private static final String DELETE_POLICY_FROM_GROUP_USAGE = "Deletes an existing policy from a group." +
-    		"\r\n  policyName groupName policyUse incoming outgoing" +
+    		"\r\n  policyName groupName" +
             "\r\n\t policyName: Name of the policy to delete from the group.  Place the policy name in quotes (\"\") if there are spaces in the name." +
     		"\r\n\t groupName: Name of the policy group to delete the policy from.  Place the policy group name in quotes (\"\") if there are spaces in the name.";
     
