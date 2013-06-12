@@ -53,6 +53,7 @@
 	<property name="james3.stage.domainlist" value="${james3.stage.conf.dir}/domainlist.conf"></property>
 	<property name="james3.stage.mailetcontainer" value="${james3.stage.conf.dir}/mailetcontainer.conf"></property>
 	<property name="james3.stage.wrapper" value="${james3.stage.conf.dir}/wrapper.conf"></property>	
+	<property name="james3.stage.logging" value="${james3.stage.conf.dir}/log4j.properties"></property>		
 	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
 	
 	<!-- tomcat properties -->
@@ -361,6 +362,7 @@
 		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/mailetcontainer.conf" tofile="${james3.stage.mailetcontainer}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/wrapper.conf" tofile="${james3.stage.wrapper}" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/log4j.properties" tofile="${james3.stage.logging}" overwrite="true"></copy>
 		
 		<copy file="${src}/scripts/james3/setdomain.sh" todir="${james3.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/set-domain.xml" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
@@ -408,6 +410,9 @@
 		</exec>		
 		<exec executable="sh">
 			<arg line="-c 'cd ${james3.stage.dir}/bin; chmod a+x wrapper*'"></arg>
+		</exec>	
+		<exec executable="sh">
+			<arg line="-c 'cd ${james3.stage.dir}/bin; chmod a+x james'"></arg>
 		</exec>				
 		<exec executable="sh">
 			<arg line="-c 'cd ${tomcat.stage.dir}/bin; chmod a+x *.sh'"></arg>
