@@ -1555,6 +1555,9 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     protected Collection<X509Certificate> filterCertificatesByPolicy(InternetAddress sender, PolicyResolver resolver, 
     		Collection<X509Certificate> certsToFilter, boolean incoming)
     {
+    	if (certsToFilter == null || certsToFilter.isEmpty())
+    		return certsToFilter;
+    	
     	final Collection<X509Certificate> filteredCerts;
     	// apply the policy if it exists
     	if (resolver != null)
