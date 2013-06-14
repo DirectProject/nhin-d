@@ -92,6 +92,8 @@ class CAPanel extends JPanel
 	protected JButton genCert;
 	protected JCheckBox addToAltSubjects;
 	protected JCheckBox allowedToSign;
+	protected JCheckBox keyEnc;
+	protected JCheckBox digitalSig;
 	
 	protected CertCreateFields currentCert;
 	
@@ -182,14 +184,24 @@ class CAPanel extends JPanel
 		genCert.setVisible(false);
 		
 		addToAltSubjects = new JCheckBox("Add Email To Alt Subject Names");
-		addToAltSubjects.setVisible(true);
+		addToAltSubjects.setVisible(false);
+		addToAltSubjects.setSelected(true);
 		allowedToSign = new JCheckBox("Allowed To Sign Certificates");
 		allowedToSign.setVisible(false);
-		JPanel addAltPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		addAltPanel.add(addToAltSubjects);
+		keyEnc = new JCheckBox("Key Encipherment Use");
+		keyEnc.setVisible(false);
+		keyEnc.setSelected(true);
+		digitalSig = new JCheckBox("Digital Signature Use");
+		digitalSig.setVisible(false);
+		keyEnc.setSelected(true);
+		
+		
+		JPanel addAltPanel = new JPanel(new GridLayout(2, 2));
+		addAltPanel.setPreferredSize(new Dimension(450, addAltPanel.getPreferredSize().height));
+		//addAltPanel.add(addToAltSubjects);
 		addAltPanel.add(allowedToSign);
-		
-		
+		addAltPanel.add(keyEnc);
+		addAltPanel.add(digitalSig);		
 		
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		buttonPanel.add(addAltPanel);		
@@ -285,7 +297,7 @@ class CAPanel extends JPanel
 				createCert.setVisible(true);				
 				clear.setVisible(false);
 				genCert.setVisible(false);
-				addToAltSubjects.setVisible(true);
+				addToAltSubjects.setVisible(false);
 	
 				if(workflowContext == WF_CONTEXT_CLEAR)
 				{
@@ -308,7 +320,7 @@ class CAPanel extends JPanel
 					createCert.setVisible(true);				
 					clear.setVisible(false);
 					genCert.setVisible(false);
-					addToAltSubjects.setVisible(true);
+					addToAltSubjects.setVisible(false);
 					
 					currentCert = null;
 					

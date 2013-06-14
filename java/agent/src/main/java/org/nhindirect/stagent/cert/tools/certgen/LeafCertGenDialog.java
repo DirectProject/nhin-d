@@ -54,7 +54,7 @@ class LeafCertGenDialog extends JDialog
 	{
 		super(parent, "Certificate Creation", true);
 		setResizable(false);
-		setSize(700, 250);
+		setSize(700, 260);
 		setResizable(false);
 		
 		Point pt = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
@@ -93,6 +93,8 @@ class LeafCertGenDialog extends JDialog
 			signerKey = (PrivateKey)signer.getSignerKey();						
 			
 			allowedToSign.setVisible(true);
+			keyEnc.setVisible(true);
+			digitalSig.setVisible(true);
 			
 			prePopulateFields();
 		}
@@ -109,6 +111,9 @@ class LeafCertGenDialog extends JDialog
 		
 		private void prePopulateFields()
 		{
+			keyEnc.setSelected(true);
+			digitalSig.setSelected(true);
+			
 			// get the fields from the cert and pre populate the new cert			
 			
 			if (signer.getAttributes().containsKey("C"))
@@ -131,7 +136,7 @@ class LeafCertGenDialog extends JDialog
 			else
 				this.orgField.setText("");	
 			
-			this.expField.setValue(signer.getExpDays());			
+			this.expField.setValue(signer.getExpDays());		
 			
 		}
 		
@@ -206,6 +211,8 @@ class LeafCertGenDialog extends JDialog
 				attributes.put("EMAILADDRESS", emailField.getText());	
 			
 			attributes.put("ALLOWTOSIGN", Boolean.toString(allowedToSign.isSelected()));	
+			attributes.put("KEYENC", Boolean.toString(keyEnc.isSelected()));	
+			attributes.put("DIGSIG", Boolean.toString(digitalSig.isSelected()));	
 			
 			int exp = Integer.parseInt(expField.getValue().toString());
 			int keyStre =  Integer.parseInt(keyStr.getValue().toString());

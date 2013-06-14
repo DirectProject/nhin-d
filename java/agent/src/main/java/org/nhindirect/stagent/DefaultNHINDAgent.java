@@ -903,7 +903,9 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
     	Collection<X509Certificate> resolvedPublicCerts = this.resolvePublicCerts(message.getSender(), false, true);
     	
     	// filter public certs based on policy if one exists
-    	resolvedPublicCerts = filterCertificatesByPolicy(message.getSender(), publicPolicyResolver, resolvedPublicCerts, true);
+    	// many SMTP servers group message by domain, so pick the first recipient to determine the domain policy to use
+    	if (message.getDomainRecipients().size() > 0)
+    		resolvedPublicCerts = filterCertificatesByPolicy(message.getDomainRecipients().get(0), publicPolicyResolver, resolvedPublicCerts, true);
     		
    		message.getSender().setCertificates(resolvedPublicCerts);
     	
