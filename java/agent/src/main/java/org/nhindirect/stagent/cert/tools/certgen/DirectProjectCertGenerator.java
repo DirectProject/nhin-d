@@ -53,7 +53,7 @@ public class DirectProjectCertGenerator extends JFrame
 	{	
 		super("The Direct Project Certificate Generator");
 		setDefaultLookAndFeelDecorated(true);
-		setSize(700, 300);
+		setSize(700, 310);
 		setResizable(false);
 		
 		Point pt = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
