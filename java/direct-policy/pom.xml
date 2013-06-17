@@ -61,7 +61,13 @@
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.4.3</version>
-	        <scope>compile</scope>			
+	        <scope>compile</scope>	
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>		        		
 		</dependency>  
 	    <dependency>
 	        <groupId>commons-logging</groupId>

@@ -19,60 +19,16 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.cert.tools.certgen;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-
-import javax.swing.JFrame;
+package org.nhindirect.common.tooling;
 
 /**
- * Simple Swing application for generating self signed certificates (CAs) and leaf certificates.  The certificates generated are 
- * streamlined to simple uses cases: it does not support the numerous options supported using tools such as openssl.  Certificates
- * SHA1WithRSAEncryption for digital signatures and the PBEWithMD5AndDES algorithm for private key encryption.
+ * Interface used for getting the text used to describe a command.
  * @author Greg Meyer
  *
+ * @since 1.0
  */
-///CLOVER:OFF
-public class DirectProjectCertGenerator extends JFrame
+public interface CommandUsage 
 {
-	static final long serialVersionUID = 7357116822589862967L;
-	
-	private CAPanel certAuth;
-
-	public static void main(String[] _args)
-	{     		
-		DirectProjectCertGenerator hi = new DirectProjectCertGenerator();
-		hi.setVisible(true);
-		
-	}
-	
-	public DirectProjectCertGenerator()
-	{	
-		super("The Direct Project Certificate Generator");
-		setDefaultLookAndFeelDecorated(true);
-		setSize(700, 310);
-		setResizable(false);
-		
-		Point pt = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-		
-		this.setLocation(pt.x - (150), pt.y - (120));			
-		
-	    enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    
-	    initUI();		
-	}
-
-	private void initUI()
-	{
-		getContentPane().setLayout(new BorderLayout());
-		
-		certAuth = new CAPanel();
-		
-		getContentPane().add(certAuth);
-	}
+	public String getUsage();
 }
-///CLOVER:ON

@@ -52,6 +52,7 @@ public abstract class AbstractTBSField<P> extends AbstractX509Field<P> implement
     /**
      * {@inheritDoc}
      */
+    ///CLOVER:OFF
     @Override
     public String toString()
     {
@@ -60,4 +61,5 @@ public abstract class AbstractTBSField<P> extends AbstractX509Field<P> implement
     	else
     		return policyValue.toString();
     }
+    ///CLOVER:ON
 }
