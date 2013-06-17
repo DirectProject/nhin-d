@@ -369,7 +369,7 @@ namespace Health.Direct.SmtpAgent
 
         
         /// <summary>
-        /// Find <c>DirectAddress</c>s without Certificates
+        /// Find <c>DirectAddress</c>s with Certificates
         /// </summary>
         /// <param name="addresses"></param>
         /// <returns></returns>
