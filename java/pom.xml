@@ -30,7 +30,6 @@
         <module>./xd-common</module>
         <module>./xdmail</module>
         <module>./xd</module>
-        <module>./client</module>
         <module>./dns</module>
         <module>./direct-msg-monitor</module>    
         <module>./direct-msg-monitor-web</module>      
