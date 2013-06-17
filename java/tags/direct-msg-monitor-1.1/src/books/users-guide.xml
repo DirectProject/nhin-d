@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<book xmlns="http://maven.apache.org/BOOK/1.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/BOOK/1.0.0 ../../../doxia/doxia-book/target/generated-site/xsd/book-1.0.0.xsd">
+  <id>users-guide</id>
+  <title>Direct Project message monitor for timely and reliable messaging users guide</title>
+  <chapters>
+    <chapter>
+      <id>preface</id>
+      <title>Preface</title>
+      <sections>
+        <section>
+          <id>preface</id>
+        </section>
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>overview</id>
+      <title>Overview</title>
+      <sections>
+        <section>
+          <id>overview</id>     
+        </section> 
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>dev</id>
+      <title>Developers Guide</title>
+      <sections>
+        <section>
+          <id>dev-intro</id>     
+        </section>   
+        <section>
+          <id>dev-arch</id>     
+        </section>         
+        <section>
+          <id>dev-correlator</id>     
+        </section>
+        <section>
+          <id>dev-aggregator</id>     
+        </section>
+        <section>
+          <id>dev-completion-condition</id>     
+        </section>  
+        <section>
+          <id>dev-failure-generation</id>     
+        </section>  
+        <section>
+          <id>dev-duplication-checking</id>     
+        </section>  
+        <section>
+          <id>dev-custom-components </id>     
+        </section>                                                         
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>deployment</id>
+      <title>Deployment Guide</title>
+      <sections>
+        <section>
+          <id>dep-intro</id>     
+        </section> 
+        <section>
+          <id>web-depl-config</id>     
+        </section>         
+        <section>
+          <id>dep-errata</id>     
+        </section>                                                                
+      </sections>
+    </chapter>      
+  </chapters>
+</book>
