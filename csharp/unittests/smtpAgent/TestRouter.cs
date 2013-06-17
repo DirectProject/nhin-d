@@ -82,7 +82,7 @@ namespace Health.Direct.SmtpAgent.Tests
             EnsureAgent();
             IncomingMessage envelope = this.CreateEnvelope();
 
-            foreach (MessageRoute route in m_agent.Router)
+            foreach (FolderRoute route in m_agent.Router)
             {
                 RoundRobinTest(route);
             }
@@ -118,7 +118,7 @@ namespace Health.Direct.SmtpAgent.Tests
             // We will force some routes to fail, then make sure the router can pick alternatives
             //
             this.SetRouteHandlers(this.ThrowCopyConditional);
-            foreach (MessageRoute route in m_agent.Router)
+            foreach (FolderRoute route in m_agent.Router)
             {
                 this.SetRoutesToFail(route, 2);
             }
@@ -126,7 +126,7 @@ namespace Health.Direct.SmtpAgent.Tests
             this.CheckRoutedCounts(1);
         }
 
-        void RoundRobinTest(MessageRoute route)
+        void RoundRobinTest(FolderRoute route)
         {
             int folderCount = route.CopyFolders.Length;
             int prevFolder = -1;
@@ -194,7 +194,7 @@ namespace Health.Direct.SmtpAgent.Tests
 
         void SetRouteHandlers(Func<ISmtpMessage, string, bool> handler)
         {
-            foreach (MessageRoute route in m_agent.Router)
+            foreach (FolderRoute route in m_agent.Router)
             {
                 route.CopyMessageHandler = handler;
             }
@@ -203,7 +203,7 @@ namespace Health.Direct.SmtpAgent.Tests
         //
         // Set routes that have backup/redundant folders to fail partially
         //
-        void SetRoutesToFail(MessageRoute route, int failureFraction)
+        void SetRoutesToFail(FolderRoute route, int failureFraction)
         {
             int countToFail = route.CopyFolders.Length / failureFraction;
             for (int i = 0; i < countToFail; ++i)
@@ -212,7 +212,7 @@ namespace Health.Direct.SmtpAgent.Tests
             }
         }
 
-        void SetRoutesToFailRandom(MessageRoute route, int failureFraction)
+        void SetRoutesToFailRandom(FolderRoute route, int failureFraction)
         {
             Random random = new Random();
             int countToFail = route.CopyFolders.Length / failureFraction;

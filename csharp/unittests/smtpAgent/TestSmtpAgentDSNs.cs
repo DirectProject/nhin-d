@@ -390,7 +390,7 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
-            foreach (MessageRoute route in m_agent.Settings.IncomingRoutes.Where(route => route.AddressType == "Throw"))
+            foreach (FolderRoute route in m_agent.Settings.IncomingRoutes.Where(route => route.AddressType == "Throw"))
             {
                 route.CopyMessageHandler = ThrowCopy;
             }
