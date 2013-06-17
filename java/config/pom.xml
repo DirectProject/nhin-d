@@ -67,6 +67,7 @@
 		<module>config-service</module> 
 		<module>config-ui</module>
 		<module>config-service-client</module>
+		<module>config-manager</module>		
 	</modules>
 	<distributionManagement>
         <snapshotRepository>

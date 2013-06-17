@@ -54,7 +54,6 @@ import org.bouncycastle.asn1.x509.CRLDistPoint;
 import org.bouncycastle.asn1.x509.DistributionPoint;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.jce.provider.AnnotatedException;
-import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.RevocationManager;
 import org.nhindirect.stagent.options.OptionsManager;
@@ -73,7 +72,7 @@ import org.nhindirect.stagent.options.OptionsParameter;
 public class CRLRevocationManager implements RevocationManager 
 {
 
-    private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultNHINDAgent.class);
+    private static final Log LOGGER = LogFactory.getFactory().getInstance(CRLRevocationManager.class);
 
     private static final int CRL_FETCH_TIMEOUT = 3000;
     

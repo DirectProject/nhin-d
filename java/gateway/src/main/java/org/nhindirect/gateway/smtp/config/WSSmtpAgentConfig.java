@@ -262,22 +262,25 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 				if (domainReltn.getCertPolicyGroup().getCertPolicyGroupReltn() != null)
 				{
 					for (CertPolicyGroupReltn policyReltn : domainReltn.getCertPolicyGroup().getCertPolicyGroupReltn())
-					{
-						Map<String, Collection<PolicyExpression>> mapToAddTo = null;
-						
+					{						
 						if (policyReltn.getPolicyUse().equals(CertPolicyUse.PRIVATE_RESOLVER))
-							mapToAddTo = (policyReltn.isIncoming()) ? incomingPrivatePolicies : outgoingPrivatePolicies;
+						{
+							if (policyReltn.isIncoming())
+								addPolicyToMap(incomingPrivatePolicies, domainReltn.getDomain().getDomainName(), policyReltn);
+							if (policyReltn.isOutgoing())
+								addPolicyToMap(outgoingPrivatePolicies, domainReltn.getDomain().getDomainName(), policyReltn);
+						}
 						else if (policyReltn.getPolicyUse().equals(CertPolicyUse.PUBLIC_RESOLVER))
 						{
-							mapToAddTo = (policyReltn.isIncoming()) ? incomingPublicPolicies : outgoingPublicPolicies;
+							if (policyReltn.isIncoming())
+								addPolicyToMap(incomingPublicPolicies, domainReltn.getDomain().getDomainName(), policyReltn);
+							if (policyReltn.isOutgoing())
+								addPolicyToMap(outgoingPublicPolicies, domainReltn.getDomain().getDomainName(), policyReltn);							
 						}
 						else if (policyReltn.getPolicyUse().equals(CertPolicyUse.TRUST))
 						{
-							mapToAddTo = trustPolicies;
+							addPolicyToMap(trustPolicies, domainReltn.getDomain().getDomainName(), policyReltn);
 						}	
-						
-						if (mapToAddTo != null)
-							addPolicyToMap(mapToAddTo, domainReltn.getDomain().getDomainName(), policyReltn);
 					}
 				}
 			}
@@ -301,6 +304,8 @@ public class WSSmtpAgentConfig implements SmtpAgentConfig
 		final PolicyLexicon lexicon;
 		if (policy.getLexicon().equals(org.nhind.config.PolicyLexicon.JAVA_SER))
 			lexicon = PolicyLexicon.JAVA_SER;
+		else if (policy.getLexicon().equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1))
+			lexicon = PolicyLexicon.SIMPLE_TEXT_V1;
 		else
 			lexicon = PolicyLexicon.XML;
 		

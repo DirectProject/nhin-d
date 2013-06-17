@@ -19,60 +19,71 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.stagent.cert.tools.certgen;
 
-import java.awt.AWTEvent;
-import java.awt.BorderLayout;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
+package org.nhindirect.common.tooling;
 
-import javax.swing.JFrame;
+import java.util.Locale;
 
 /**
- * Simple Swing application for generating self signed certificates (CAs) and leaf certificates.  The certificates generated are 
- * streamlined to simple uses cases: it does not support the numerous options supported using tools such as openssl.  Certificates
- * SHA1WithRSAEncryption for digital signatures and the PBEWithMD5AndDES algorithm for private key encryption.
+ * Defines the attributes of a command. 
  * @author Greg Meyer
  *
  */
-///CLOVER:OFF
-public class DirectProjectCertGenerator extends JFrame
+class CommandDef 
 {
-	static final long serialVersionUID = 7357116822589862967L;
+	private String name;
+	private Action<String[]> eval;
+	private CommandUsage usage;
 	
-	private CAPanel certAuth;
+    public String getName()
+    {
+    	return name;
+    }
+    
+    public void setName(String name)
+    {
+    	this.name = name;
+    }
+    
+    public Action<String[]> getEval()
+    {
+    	return eval;
+    }
+    
+    public void setEval(Action<String[]> eval)
+    {
+    	this.eval = eval;
+    }
 
-	public static void main(String[] _args)
-	{     		
-		DirectProjectCertGenerator hi = new DirectProjectCertGenerator();
-		hi.setVisible(true);
-		
-	}
-	
-	public DirectProjectCertGenerator()
-	{	
-		super("The Direct Project Certificate Generator");
-		setDefaultLookAndFeelDecorated(true);
-		setSize(700, 310);
-		setResizable(false);
-		
-		Point pt = GraphicsEnvironment.getLocalGraphicsEnvironment().getCenterPoint();
-		
-		this.setLocation(pt.x - (150), pt.y - (120));			
-		
-	    enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-	    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	    
-	    initUI();		
-	}
+    public CommandUsage getUsage()
+    { 
+    	return usage;
+    }
+    
+    public void setUsage(CommandUsage usage)
+    {
+    	this.usage = usage;
+    }
+    
 
-	private void initUI()
-	{
-		getContentPane().setLayout(new BorderLayout());
-		
-		certAuth = new CAPanel();
-		
-		getContentPane().add(certAuth);
-	}
+    boolean hasUsage()
+    {
+       return (usage != null);
+    }
+            
+    void showUsage()
+    {
+        System.out.println(getName().toUpperCase(Locale.getDefault()));
+        if (usage != null)
+        {
+        	System.out.println(usage.getUsage());
+        }
+
+        System.out.println();
+    }
+
+    void showCommand()
+    {
+        System.out.println(getName().toUpperCase(Locale.getDefault()));
+    }
 }
-///CLOVER:ON

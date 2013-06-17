@@ -44,6 +44,7 @@ import org.apache.commons.io.FileUtils;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.crypto.prng.VMPCRandomGenerator;
 import org.bouncycastle.jce.X509Principal;
@@ -234,6 +235,19 @@ public class CertGenerator
         
         v1CertGen.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(allowToSign));
         
+        int keyUsage = 0;
+        if  (fields.getAttributes().get("KEYENC") != null && 
+        		fields.getAttributes().get("KEYENC").toString().equalsIgnoreCase("true"))
+        	keyUsage = keyUsage | KeyUsage.keyEncipherment;
+        
+        if  (fields.getAttributes().get("DIGSIG") != null && 
+                fields.getAttributes().get("DIGSIG").toString().equalsIgnoreCase("true"))
+            keyUsage = keyUsage | KeyUsage.digitalSignature;
+        	
+        if (keyUsage > 0)
+            v1CertGen.addExtension(X509Extensions.KeyUsage, false, new KeyUsage(keyUsage));
+        	
+        	
         if (fields.getSignerCert().getSubjectAlternativeNames() != null)
         {
         	for (List<?> names : fields.getSignerCert().getSubjectAlternativeNames())

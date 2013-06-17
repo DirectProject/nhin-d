@@ -186,6 +186,7 @@ public class BinaryBooleanPolicyOperatorExecutor<O1,O2> implements BooleanPolicy
 	/**
 	 * {@inheritDoc}
 	 */
+    ///CLOVER:OFF
 	@Override
 	public String toString()
 	{
@@ -195,4 +196,5 @@ public class BinaryBooleanPolicyOperatorExecutor<O1,O2> implements BooleanPolicy
 		
 		return builder.toString();
 	}
+    ///CLOVER:ON
 }

@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.BasicAttribute;
@@ -59,13 +60,19 @@ import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
+import org.nhindirect.stagent.IncomingMessage;
 import org.nhindirect.stagent.MutableAgent;
+import org.nhindirect.stagent.NHINDAddress;
+import org.nhindirect.stagent.NHINDAddressCollection;
+import org.nhindirect.stagent.NHINDAgentAccessor;
+import org.nhindirect.stagent.OutgoingMessage;
 import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.TrustAnchorCertificateStore;
+import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.policy.PolicyResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
 import org.xbill.DNS.DClass;
@@ -1620,6 +1627,354 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	
             	expressions = publicResolver.getIncomingPolicy(new InternetAddress("me@" + domainTested.getDomainName()));
             	assertEquals(0, expressions.size());
+            }
+        }.perform();
+    }
+	
+	public void testCertResolutionWithPolicy_outgoing_dualUseCertificates() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	
+        	@Override
+        	protected void addSettings() throws Exception
+        	{
+        		super.addSettings();
+        		
+        		proxy.addSetting("PublicStoreType", "WS");
+        	}
+        	
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "externUser1@starugh-stateline.com");
+            	
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "User1@Cerner.com");
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	Domain dom = new Domain();
+            	dom.setDomainName("cerner.com");
+            	dom.setPostMasterEmail("postmaster@cerner.com");
+            	proxy.addDomain(dom);
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("DualUse");
+            	policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dualUseCertRequired.txt"));
+            	proxy.addPolicy(policy);
+            
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	policy = proxy.getPolicyByName("DualUse");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PUBLIC_RESOLVER, true, true);
+            
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PRIVATE_RESOLVER, true, true);
+            	
+            	proxy.associatePolicyGroupToDomain(domains[0].getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	
+            	final X509Certificate policyFilteredCert = TestUtils.loadCertificate("dualUse.der", null);
+            	
+            	final MimeMessage msg = new MimeMessage(null, FileUtils.openInputStream(new File("./src/test/resources/messages/PlainOutgoingMessage.txt")));
+            	final OutgoingMessage outgoingMessage = new OutgoingMessage(new Message(msg));
+            	outgoingMessage.setAgent(agent.getAgent());
+            	
+            	NHINDAgentAccessor.bindAddresses(agent.getAgent(), outgoingMessage);
+            	
+            	final NHINDAddressCollection recips = outgoingMessage.getRecipients();
+            	assertEquals(1, recips.getCertificates().size());
+            	assertEquals(policyFilteredCert, recips.getCertificates().iterator().next());
+            	
+            	final NHINDAddress sender = outgoingMessage.getSender();           	
+            	assertEquals(1, sender.getCertificates().size());
+            	assertEquals(policyFilteredCert, sender.getCertificates().iterator().next());
+            }
+        }.perform();
+    }
+	
+	public void testCertResolutionWithPolicy_incoming_dualUseCertificates() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	
+        	@Override
+        	protected void addSettings() throws Exception
+        	{
+        		super.addSettings();
+        		
+        		proxy.addSetting("PublicStoreType", "WS");
+        	}
+        	
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "externUser1@starugh-stateline.com");
+            	
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "User1@Cerner.com");
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	Domain dom = new Domain();
+            	dom.setDomainName("cerner.com");
+            	dom.setPostMasterEmail("postmaster@cerner.com");
+            	proxy.addDomain(dom);
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("DualUse");
+            	policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("dualUseCertRequired.txt"));
+            	proxy.addPolicy(policy);
+            
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	policy = proxy.getPolicyByName("DualUse");
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PUBLIC_RESOLVER, true, true);
+            
+            	proxy.addPolicyUseToGroup(group.getId(), policy.getId(), CertPolicyUse.PRIVATE_RESOLVER, true, true);
+            	
+            	proxy.associatePolicyGroupToDomain(domains[0].getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	
+            	final X509Certificate policyFilteredCert = TestUtils.loadCertificate("dualUse.der", null);
+            	
+            	final MimeMessage msg = new MimeMessage(null, FileUtils.openInputStream(new File("./src/test/resources/messages/PlainIncomingMessage.txt")));
+            	final IncomingMessage incomingMessage = new IncomingMessage(new Message(msg));
+            	incomingMessage.setAgent(agent.getAgent());
+            	
+            	NHINDAgentAccessor.bindAddresses(agent.getAgent(), incomingMessage);
+            	
+            	final NHINDAddressCollection recips = incomingMessage.getRecipients();
+            	assertEquals(1, recips.getCertificates().size());
+            	assertEquals(policyFilteredCert, recips.getCertificates().iterator().next());
+            	
+            	final NHINDAddress sender = incomingMessage.getSender();           	
+            	assertEquals(1, sender.getCertificates().size());
+            	assertEquals(policyFilteredCert, sender.getCertificates().iterator().next());
+            }
+        }.perform();
+    }
+	
+	public void testCertResolutionWithPolicy_outgoing_singleUseOnlyCertificates() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	
+        	@Override
+        	protected void addSettings() throws Exception
+        	{
+        		super.addSettings();
+        		
+        		proxy.addSetting("PublicStoreType", "WS");
+        	}
+        	
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "externUser1@starugh-stateline.com");
+            	
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "User1@Cerner.com");
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	Domain dom = new Domain();
+            	dom.setDomainName("cerner.com");
+            	dom.setPostMasterEmail("postmaster@cerner.com");
+            	proxy.addDomain(dom);
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("KeyEncOnly");
+            	policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("keyEncOnly.txt"));
+            	proxy.addPolicy(policy);
+            
+            	policy = new CertPolicy();
+            	policy.setPolicyName("DigiSigOnly");
+            	policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("digiSigOnly.txt"));
+            	proxy.addPolicy(policy);
+            	
+            	CertPolicy dataEncPolicy = proxy.getPolicyByName("KeyEncOnly");
+            	CertPolicy digSigPolicy = proxy.getPolicyByName("DigiSigOnly");
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	// for outgoing messages, we want the public resolver to only get data encipherment and the private resolver to digital signatures
+            	proxy.addPolicyUseToGroup(group.getId(), dataEncPolicy.getId(), CertPolicyUse.PUBLIC_RESOLVER, false, true);
+            	proxy.addPolicyUseToGroup(group.getId(), digSigPolicy.getId(), CertPolicyUse.PRIVATE_RESOLVER, false, true);            	
+
+            	// for incoming messages, we want the private resolver to only get data encipherment and the public resolver to digital signatures
+            	proxy.addPolicyUseToGroup(group.getId(), digSigPolicy.getId(), CertPolicyUse.PUBLIC_RESOLVER, true, false);
+            	proxy.addPolicyUseToGroup(group.getId(), dataEncPolicy.getId(), CertPolicyUse.PRIVATE_RESOLVER, true, false);  
+            	
+            	proxy.associatePolicyGroupToDomain(domains[0].getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	
+            	final X509Certificate digSigCert = TestUtils.loadCertificate("digSigOnly.der", null);
+            	final X509Certificate keyEncCert = TestUtils.loadCertificate("keyEncOnly.der", null);
+            	
+            	final MimeMessage msg = new MimeMessage(null, FileUtils.openInputStream(new File("./src/test/resources/messages/PlainOutgoingMessage.txt")));
+            	final OutgoingMessage outgoingMessage = new OutgoingMessage(new Message(msg));
+            	outgoingMessage.setAgent(agent.getAgent());
+            	
+            	NHINDAgentAccessor.bindAddresses(agent.getAgent(), outgoingMessage);
+            	
+            	final NHINDAddressCollection recips = outgoingMessage.getRecipients();
+            	assertEquals(1, recips.getCertificates().size());
+            	assertEquals(keyEncCert, recips.getCertificates().iterator().next());
+            	
+            	final NHINDAddress sender = outgoingMessage.getSender();           	
+            	assertEquals(1, sender.getCertificates().size());
+            	assertEquals(digSigCert, sender.getCertificates().iterator().next());
+            }
+        }.perform();
+    }
+	
+	public void testCertResolutionWithPolicy_incoming_singleUseOnlyCertificates() throws Exception 
+    {
+        new MultiDomainTestPlan() 
+        {                     
+        	
+        	@Override
+        	protected void addSettings() throws Exception
+        	{
+        		super.addSettings();
+        		
+        		proxy.addSetting("PublicStoreType", "WS");
+        	}
+        	
+        	
+            @Override
+            protected void addPrivateCertificates() throws Exception
+            {
+
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "externUser1@starugh-stateline.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "externUser1@starugh-stateline.com");
+            	
+            	addCertificatesToConfig("digSigOnly.der", "digSigOnlyKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("dualUse.der", "dualUseKey.der", "User1@Cerner.com");
+            	addCertificatesToConfig("keyEncOnly.der", "keyEncOnlyKey.der", "User1@Cerner.com");
+            }
+            
+            @Override
+            protected void addDomains() throws Exception
+            {
+            	Domain dom = new Domain();
+            	dom.setDomainName("cerner.com");
+            	dom.setPostMasterEmail("postmaster@cerner.com");
+            	proxy.addDomain(dom);
+            	
+            	// add some policies
+            	Domain[] domains = proxy.listDomains(null, 1000);
+            	
+            	CertPolicy policy = new CertPolicy();
+            	policy.setPolicyName("KeyEncOnly");
+            	policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("keyEncOnly.txt"));
+            	proxy.addPolicy(policy);
+            
+            	policy = new CertPolicy();
+            	policy.setPolicyName("DigiSigOnly");
+            	policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+            	policy.setPolicyData(TestUtils.readBytePolicyResource("digiSigOnly.txt"));
+            	proxy.addPolicy(policy);
+            	
+            	CertPolicy dataEncPolicy = proxy.getPolicyByName("KeyEncOnly");
+            	CertPolicy digSigPolicy = proxy.getPolicyByName("DigiSigOnly");
+            	
+            	CertPolicyGroup group = new CertPolicyGroup();
+            	group.setPolicyGroupName("Test Policy Group");
+            	proxy.addPolicyGroup(group);
+            	
+            	group = proxy.getPolicyGroupByName("Test Policy Group");
+            	// for outgoing messages, we want the public resolver to only get data encipherment and the private resolver to digital signatures
+            	proxy.addPolicyUseToGroup(group.getId(), dataEncPolicy.getId(), CertPolicyUse.PUBLIC_RESOLVER, false, true);
+            	proxy.addPolicyUseToGroup(group.getId(), digSigPolicy.getId(), CertPolicyUse.PRIVATE_RESOLVER, false, true);            	
+
+            	// for incoming messages, we want the private resolver to only get data encipherment and the public resolver to digital signatures
+            	proxy.addPolicyUseToGroup(group.getId(), digSigPolicy.getId(), CertPolicyUse.PUBLIC_RESOLVER, true, false);
+            	proxy.addPolicyUseToGroup(group.getId(), dataEncPolicy.getId(), CertPolicyUse.PRIVATE_RESOLVER, true, false);  
+            	
+            	proxy.associatePolicyGroupToDomain(domains[0].getId(), group.getId());
+            }
+            
+            protected void doAssertions(SmtpAgent agent) throws Exception
+            {
+            	super.doAssertions(agent);
+            	
+            	final X509Certificate digSigCert = TestUtils.loadCertificate("digSigOnly.der", null);
+            	final X509Certificate keyEncCert = TestUtils.loadCertificate("keyEncOnly.der", null);
+            	
+            	final MimeMessage msg = new MimeMessage(null, FileUtils.openInputStream(new File("./src/test/resources/messages/PlainIncomingMessage.txt")));
+            	final IncomingMessage incomingMessage = new IncomingMessage(new Message(msg));
+            	incomingMessage.setAgent(agent.getAgent());
+            	
+            	NHINDAgentAccessor.bindAddresses(agent.getAgent(), incomingMessage);
+            	
+            	final NHINDAddressCollection recips = incomingMessage.getRecipients();
+            	assertEquals(1, recips.getCertificates().size());
+            	assertEquals(keyEncCert, recips.getCertificates().iterator().next());
+            	
+            	final NHINDAddress sender = incomingMessage.getSender();           	
+            	assertEquals(1, sender.getCertificates().size());
+            	assertEquals(digSigCert, sender.getCertificates().iterator().next());
             }
         }.perform();
     }

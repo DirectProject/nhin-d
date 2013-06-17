@@ -295,7 +295,10 @@
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
 	          <source>1.6</source>
-	          <show>public</show>               	          
+	          <show>public</show>   
+	          <excludePackageNames>
+	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module:org.nhindirect.common.tooling
+	          </excludePackageNames>   	                      	          
 	        </configuration>
 	        <executions>
 	            <execution>
@@ -378,7 +381,7 @@
 	          <source>1.6</source>
 	          <show>public</show>    
 	          <excludePackageNames>
-	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module
+	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module:org.nhindirect.common.tooling
 	          </excludePackageNames>      	           	          
 	        </configuration>
 	      </plugin>
