@@ -189,7 +189,8 @@ namespace Health.Direct.SmtpAgent
         /// <summary>
         /// Message Routes: 
         /// If working with an Address Service: an address can have an associated Type
-        /// You can set up routes for address types, where a route deposits a message in a specific folder
+        /// When using the FolderRoute you can set up routes for address types, where a route deposits a message in a specific folder.
+        /// When using a PluginRoute the plugin can use the address types for routing based on the plugin implementation.
         /// </summary>
         [XmlArray("IncomingRoutes")]
         [XmlArrayItem("Route", typeof(FolderRoute))]
