@@ -34,15 +34,13 @@ namespace Health.Direct.SmtpAgent
     /// - Uses Round Robin over folders as default
     /// - If a write fails, switches (for that particular episode) to random writes over other folders
     /// 
-    // Called "MessageRoute" due to legacy - should be renamed FolderRoute or something
-    /// equivalent at the next refactor - or reworked to be subsumed into the more generic 'MessageReceiver'.
     /// </summary>
-    public class MessageRoute : Route
+    public class FolderRoute : Route
     {
         Func<ISmtpMessage, string, bool> m_copyHandler;
         FolderBalancer<ISmtpMessage> m_loadBalancer;
                 
-        public MessageRoute()
+        public FolderRoute()
         {
             m_copyHandler = this.CopyToFolder;
             m_loadBalancer = new FolderBalancer<ISmtpMessage>(m_copyHandler);

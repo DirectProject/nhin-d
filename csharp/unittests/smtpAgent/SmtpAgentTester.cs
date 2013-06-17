@@ -159,9 +159,9 @@ Yo. Wassup?";
             CleanMessages(settings.RawMessage);
             settings.IncomingRoutes.ToList().ForEach(
                 route => {
-                            if(route as MessageRoute != null)
+                            if(route as FolderRoute != null)
                             {   
-                                CleanMessages(((MessageRoute)route).CopyFolders);
+                                CleanMessages(((FolderRoute)route).CopyFolders);
                             }
                 });
         }

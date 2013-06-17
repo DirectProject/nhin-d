@@ -38,7 +38,7 @@ namespace Health.Direct.SmtpAgent
         NoRecipientsInEnvelope,
         MissingAddressTypeInRoute,
         /// <summary>
-        /// MessageRoute has no actual target folders specified
+        /// FolderRoute has no actual target folders specified
         /// </summary>
         NoFoldersInRoute,
         /// <summary>

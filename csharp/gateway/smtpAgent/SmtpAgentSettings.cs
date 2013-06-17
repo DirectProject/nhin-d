@@ -192,7 +192,7 @@ namespace Health.Direct.SmtpAgent
         /// You can set up routes for address types, where a route deposits a message in a specific folder
         /// </summary>
         [XmlArray("IncomingRoutes")]
-        [XmlArrayItem("Route", typeof(MessageRoute))]
+        [XmlArrayItem("Route", typeof(FolderRoute))]
         [XmlArrayItem("PluginRoute", typeof(PluginRoute))]
         public Route[] IncomingRoutes
         {
