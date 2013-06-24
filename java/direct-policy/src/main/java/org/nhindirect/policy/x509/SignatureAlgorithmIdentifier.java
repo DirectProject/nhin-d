@@ -24,7 +24,7 @@ package org.nhindirect.policy.x509;
 /**
  * Enumeration of algorithms used for signing an X509 certificate
  * @author gm2552
- *
+ * @since 1.0
  */
 public enum SignatureAlgorithmIdentifier 
 {
@@ -34,82 +34,98 @@ public enum SignatureAlgorithmIdentifier
 	 */
 	
 	/**
-	 * MD2
+	 * MD2<br>
+	 * OID: 1.2.840.113549.2.1
 	 */
 	MD2("1.2.840.113549.2.1", "md2"),
 	
 	/**
-	 * MD2
+	 * MD2<br>
+	 * OID: 1.2.840.113549.2.5
 	 */
 	MD5("1.2.840.113549.2.5", "md5"),
 
 	/**
-	 * SHA1
+	 * SHA1<br>
+	 * OID: 1.3.14.3.2.26
 	 */
 	SHA1("1.3.14.3.2.26", "sha1"),
 
 	/**
-	 * SHA256
+	 * SHA256<br>
+	 * OID: 2.16.840.1.101.3.4.2.1
 	 */
 	SHA256("2.16.840.1.101.3.4.2.1", "sha256"),
 	
 	/**
-	 * SHA384
+	 * SHA384<br>
+	 * OID: 2.16.840.1.101.3.4.2.2
 	 */
 	SHA384("2.16.840.1.101.3.4.2.2", "sha384"),
 	
 	/**
-	 * SHA512
+	 * SHA512<br>
+	 * OID: 2.16.840.1.101.3.4.2.3
 	 */
 	SHA512("2.16.840.1.101.3.4.2.3", "sha512"),
 	
 	/**
-	 * SAH224
+	 * SAH224<br>
+	 * OID: 2.16.840.1.101.3.4.2.4
 	 */
 	SHA224("2.16.840.1.101.3.4.2.4", "sha224"),
 	
 	/**
-	 * MD2 with RSA
+	 * MD2 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.2
 	 */
 	MD2RSA("1.2.840.113549.1.1.2", "md2RSA"),
 	
 	/**
-	 * MD5 with RSA
+	 * MD5 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.4
 	 */
 	MD5RSA("1.2.840.113549.1.1.4", "md5RSA"),
 
 	/**
-	 * SHA1 with DSA
+	 * SHA1 with DSA<br>
+	 * OID: 1.2.840.10040.4.3
 	 */
 	SHA1DSA("1.2.840.10040.4.3", "sha1DSA"),
 	
 	/**
-	 * SHA1 with RSA
+	 * SHA1 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.5
 	 */
 	SHA1RSA("1.2.840.113549.1.1.5", "sha1RSA"),
 
 	/**
-	 * SHA256 with RSA
+	 * SHA256 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.11
 	 */
 	SHA256RSA("1.2.840.113549.1.1.11", "sha256RSA"),
 
 	/**
-	 * SHA384 with RSA
+	 * SHA384 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.12
 	 */
 	SHA384RSA("1.2.840.113549.1.1.12", "sha384RSA"),
 	
 	/**
-	 * SHA512 with RSA
+	 * SHA512 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.13
 	 */
 	SHA512RSA("1.2.840.113549.1.1.13", "sha512RSA"),
 	
 	/**
-	 * SHA224 with RSA
+	 * SHA224 with RSA<br>
+	 * OID: 1.2.840.113549.1.1.14
 	 */
 	SHA224RSA("1.2.840.113549.1.1.14", "sha224RSA"),
 	
 	/**
-	 * SHA1 with ECDSA
+	 * SHA1 with ECDSA<br>
+	 * OID: 1.2.840.10045.4.1
 	 */
 	SHA1ECDSA("1.2.840.10045.4.1", "sha1ECDSA");
 	

@@ -93,6 +93,7 @@ public class OperationPolicyExpressionFactory
 			return operands;
 		}
 		
+		///CLOVER:OFF
 		@Override
 		public String toString()
 		{
@@ -114,5 +115,6 @@ public class OperationPolicyExpressionFactory
 			
 			return builder.toString();
 		}
+		///CLOVER:ON
 	}
 }

@@ -9,7 +9,9 @@
     <publishDate position="right" format="E M-dd-yyyy HH:mm" />   
     <body>
         <menu name="Documents">
-            <item name="Release Notes" href="releaseNotes.html" />           
+            <item name="Release Notes" href="releaseNotes.html" />  
+            <item name="Policy Enablement Proposal" href="http://wiki.directproject.org/file/detail/Direct+%2B+Policy+Enablement.docx" />                         
+            <item name="Users Guide" href="users-guide/"/>                       
         </menu>
         <menu name="External Links">
         	<item name="The Direct Project Wiki" href="http://nhindirect.org" />

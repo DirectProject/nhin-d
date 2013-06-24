@@ -91,6 +91,7 @@ public class LiteralPolicyExpressionFactory
 			return value;
 		}
 		
+		///CLOVER:OFF
 		/**
 		 * {@inheritDoc}
 		 */
@@ -123,5 +124,6 @@ public class LiteralPolicyExpressionFactory
 		{
 			return value.hashCode();
 		}
+		///CLOVER:ON
 	}
 }

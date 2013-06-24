@@ -22,7 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.policy.x509;
 
 /**
- * Enumeration of bits used in key usage exention field
+ * Enumeration of bits used in key usage extension field
  * @author Greg Meyer
  * @since 1.0
  */
@@ -30,47 +30,74 @@ public enum KeyUsageBit
 {
 
 	/**
-	 * Digital signature
+	 * Digital signature<br>
+	 * Binary: 10000000<br>
+	 * Hex: 0x80<br>
+	 * Dec: 128<br>
 	 */
 	DIGITAL_SIGNATURE((1 << 7), "digitalSignature"),
 	
 	/**
-	 * Non repudiation
+	 * Non repudiation<br>
+	 * Binary: 1000000<br>
+	 * Hex: 0x40<br>
+	 * Dec: 64<br>
 	 */
 	NON_REPUDIATION((1 << 6), "nonRepudiation"),
 	
 	/**
-	 * Key encipherment
+	 * Key encipherment<br>
+	 * Binary: 100000<br>
+	 * Hex: 0x20<br>
+	 * Dec: 32<br>
 	 */
 	KEY_ENCIPHERMENT((1 << 5), "keyEncipherment"),
 	
 	/**
-	 * Data encipherment
+	 * Data encipherment<br>
+	 * Binary: 10000<br>
+	 * Hex: 0x10<br>
+	 * Dec: 16<br>
 	 */
 	DATA_ENCIPHERMENT((1 << 4), "dataEncipherment"),
 	
 	/**
-	 * Key agreement
+	 * Key agreement<br>
+	 * Binary: 100<br>
+	 * Hex: 0x08<br>
+	 * Dec: 8<br>
 	 */
 	KEY_AGREEMENT((1 << 3), "keyAgreement"),
 	
 	/**
-	 * Certificate signing
+	 * Certificate signing<br>
+	 * Binary: 100<br>
+	 * Hex: 0x04<br>
+	 * Dec: 4<br>
 	 */
 	KEY_CERT_SIGN((1 << 2), "keyCertSign"),
 	
 	/**
-	 * CRL signing
+	 * CRL signing<br>
+	 * Binary: 10<br>
+	 * Hex: 0x02<br>
+	 * Dec: 2<br>
 	 */
 	CRL_SIGN((1 << 1), "crlSign"), 
 	
 	/**
-	 * Encipherment only
+	 * Encipherment only<br>
+	 * Binary: 1<br>
+	 * Hex: 0x01<br>
+	 * Dec: 1<br>
 	 */
 	ENCIPHERMENT_ONLY((1 << 0), "encipherOnly"),
 	
 	/**
-	 * Dicipherment only
+	 * Dicipherment only<br>
+	 * Binary: 1000000000000000<br>
+	 * Hex: 0x8000<br>
+	 * Dec: 32768<br>
 	 */
 	DECIPHER_ONLY((1 << 15), "decipherOnly");
 	

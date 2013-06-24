@@ -98,7 +98,8 @@ import org.nhindirect.policy.x509.X509FieldType;
  *      | "X509.TBS.Signature" | "X509.TBS.Issuer.", rdnAttributeName
  *      | "X509.TBS.Validity.ValidFrom" | "X509.TBS.Validity.ValidTo"
  *      | "X509.TBS.Subject.", rdnAttributeName | X509.TBS.IssuerUniqueID
- *      | X509.TBS.SubjectUniqueID ;
+ *      | "X509.TBS.SubjectUniqueID" | "X509.TBS.SubjectPublicKeyInfo.Algorithm"
+ *      | "X509.TBS.SubjectPublicKeyInfo.Size" ;
  *      
  * extensionExpression = "X509.TBS.EXTENSION.KeyUsage" | "X509.TBS.EXTENSION.SubjectAltName"
  *      | "X509.TBS.EXTENSION.SubjectDirectoryAttributes" 

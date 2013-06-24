@@ -29,102 +29,121 @@ package org.nhindirect.policy.x509;
 public enum ExtendedKeyUsageIdentifier 
 {
 	/**
-	 * Any use
+	 * Any use<br>
+	 * OID: 2.5.29.37.0
 	 */
 	ANY_EXTENDED_KEY_USAGE("2.5.29.37.0"),
 	
 	/**
-	 * Server authentication
+	 * Server authentication<br>
+	 * OID: 1.3.6.1.5.5.7.3.1
 	 */
 	ID_KP_SERVER_AUTH("1.3.6.1.5.5.7.3.1"),
 
 	/**
-	 * Client authentication
+	 * Client authentication<br>
+	 * OID: 1.3.6.1.5.5.7.3.2
 	 */
 	ID_KP_CLIENT_AUTH("1.3.6.1.5.5.7.3.2"),
 	
 	/**
-	 * Code signing
+	 * Code signing<br>
+	 * OID: 1.3.6.1.5.5.7.3.3
 	 */
 	ID_KP_CODE_SIGNING("1.3.6.1.5.5.7.3.3"),
 	
 	/**
-	 * Email protection
+	 * Email protection<br>
+	 * OID: 1.3.6.1.5.5.7.3.4
 	 */
 	ID_KP_EMAIL_PROTECTION("1.3.6.1.5.5.7.3.4"),
 
 	/**
-	 * IP security end system
+	 * IP security end system<br>
+	 * OID: 1.3.6.1.5.5.7.3.5
 	 */
 	ID_KP_IPSEC_END_SYSTEM("1.3.6.1.5.5.7.3.5"),
 
 	/**
-	 * IP security tunnel
+	 * IP security tunnel<br>
+	 * OID: 1.3.6.1.5.5.7.3.6
 	 */
 	ID_KP_IPSEC_TUNNEL("1.3.6.1.5.5.7.3.6"),
 
 	/**
-	 * IP security user
+	 * IP security user<br>
+	 * OID: 1.3.6.1.5.5.7.3.7
 	 */
 	ID_KP_IPSEC_USER("1.3.6.1.5.5.7.3.7"),
 	
 	/**
-	 * Time stamping
+	 * Time stamping<br>
+	 * OID: 1.3.6.1.5.5.7.3.8
 	 */
 	ID_KP_TIME_STAMPING("1.3.6.1.5.5.7.3.8"),
 
 	/**
-	 * OCSP signing
+	 * OCSP signing<br>
+	 * OID: 1.3.6.1.5.5.7.3.9
 	 */
 	ID_KP_OCSP_SIGNING("1.3.6.1.5.5.7.3.9"),
 	
 	/**
-	 * Data validation
+	 * Data validation<br>
+	 * OID: 1.3.6.1.5.5.7.3.10
 	 */
 	ID_KP_DVCS("1.3.6.1.5.5.7.3.10"),
 	
 	/**
-	 * 
+	 * OID: 1.3.6.1.5.5.7.3.11
 	 */
 	ID_KP_SBGP_CERT_AA_SERVER_AUTH("1.3.6.1.5.5.7.3.11"),
 
 	/**
-	 * Server based certification validation protocol responder
+	 * Server based certification validation protocol responder<br>
+	 * OID: 1.3.6.1.5.5.7.3.12
 	 */
 	ID_KP_SCVP_RESPONDER("1.3.6.1.5.5.7.3.12"),
 
 	/**
-	 * EAP over PPP
+	 * EAP over PPP<br>
+	 * OID: 1.3.6.1.5.5.7.3.13
 	 */
 	ID_KP_EAP_OVER_PPP("1.3.6.1.5.5.7.3.13"),
 
 	/**
-	 * EAP over LAM
+	 * EAP over LAM<br>
+	 * OID: 1.3.6.1.5.5.7.3.14
 	 */
 	ID_KP_EAP_OVER_LAN("1.3.6.1.5.5.7.3.14"),
 
 	/**
-	 * Server based certification validation protocol responder
+	 * Server based certification validation protocol responder<br>
+	 * OID: 1.3.6.1.5.5.7.3.15
 	 */
 	ID_KP_SCVP_SERVER("1.3.6.1.5.5.7.3.15"),
 
 	/**
-	 * Server based certification validation protocol client
+	 * Server based certification validation protocol client<br>
+	 * OID: 1.3.6.1.5.5.7.3.16
 	 */	
 	ID_KP_SCVP_CLIENT("1.3.6.1.5.5.7.3.16"),
 
 	/**
-	 * Internet key exchange
+	 * Internet key exchange<br>
+	 * OID: 1.3.6.1.5.5.7.3.17
 	 */
 	ID_KP_IPSEC_IKE("1.3.6.1.5.5.7.3.17"),
 
 	/**
-	 * Control And Provisioning of Wireless Access Points, Access Controller
+	 * Control And Provisioning of Wireless Access Points, Access Controller<br>
+	 * OID: 1.3.6.1.5.5.7.3.18
 	 */
 	ID_KP_CAP_WAP_AC("1.3.6.1.5.5.7.3.18"),
 	
 	/**
-	 * Control And Provisioning of Wireless Access Points, Wireless Termination Points
+	 * Control And Provisioning of Wireless Access Points, Wireless Termination Points<br>
+	 * OID: 1.3.6.1.5.5.7.3.19
 	 */
 	ID_KP_CAP_WAP_WPT("1.3.6.1.5.5.7.3.19");
 	

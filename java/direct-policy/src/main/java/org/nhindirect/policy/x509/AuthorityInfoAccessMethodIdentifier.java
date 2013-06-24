@@ -29,12 +29,14 @@ package org.nhindirect.policy.x509;
 public enum AuthorityInfoAccessMethodIdentifier 
 {
 	/**
-	 * OCSP server location URL
+	 * OCSP server location URL<br>
+	 * Access Method Name: OCSP
 	 */
 	OCSP("1.3.6.1.5.5.7.48.1", "OCSP"),
 
 	/**
-	 * Location of the issuer certificate.  Generally takes the form of a URL
+	 * Location of the issuer certificate.  Generally takes the form of a URL<br>
+	 * Access Method Name: caIssuers
 	 */
 	CA_ISSUERS("1.3.6.1.5.5.7.48.2", "caIssuers");
 	

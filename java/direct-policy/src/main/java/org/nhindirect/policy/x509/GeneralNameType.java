@@ -32,47 +32,56 @@ import java.util.Map;
 public enum GeneralNameType 
 {
 	/**
-	 * Other name
+	 * Other name<br>
+	 * Type Name: otherName
 	 */
 	OTHER_NAME(0, "otherName"),
 	
 	/**
-	 * RFC822 (email address) name
+	 * RFC822 (email address) name<br>
+	 * Type Name: rfc822
 	 */
 	RFC822_NAME(1, "rfc822"),
 	
 	/**
-	 * DNS name
+	 * DNS name<br>
+	 * Type Name: dns
 	 */
 	DNS_NAME(2, "dns"),
 	
 	/**
-	 * x400 address
+	 * x400 address<br>
+	 * Type Name: x400Address
 	 */
 	X400ADDRESS_NAME(3, "x400Address"),
 	
 	/**
-	 * Directory name
+	 * Directory name<br>
+	 * Type Name: directory
 	 */
 	DIRECTORY_NAME(4, "directory"),
 	
 	/**
-	 * EDI party name
+	 * EDI party name<br>
+	 * Type Name: ediParty
 	 */
 	EDI_PARTY_NAME(5, "ediParty"),
 	
 	/**
-	 * Uniform resource id name
+	 * Uniform resource id name<br>
+	 * Type Name: uniformResourceIdentifier
 	 */
 	UNIFORM_RESOURCE_IDENTIFIER_NAME(6, "uniformResourceIdentifier"),
 	
 	/**
-	 * IP address
+	 * IP address<br>
+	 * Type Name: ipaddress
 	 */
 	IP_ADDRESS_NAME(7, "ipaddress"),
 	
 	/**
-	 * Registered id name
+	 * Registered id name<br>
+	 * Type Name: registeredId
 	 */
 	REGISTERED_ID_NAME(8, "registeredId");
 	

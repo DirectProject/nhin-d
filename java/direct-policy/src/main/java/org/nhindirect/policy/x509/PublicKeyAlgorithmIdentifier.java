@@ -29,12 +29,14 @@ package org.nhindirect.policy.x509;
 public enum PublicKeyAlgorithmIdentifier 
 {
 	/**
-	 * RSA encryption
+	 * RSA encryption<br>
+	 * OID: 1.2.840.113549.1.1.1
 	 */
 	RSA("1.2.840.113549.1.1.1", "RSA"),
 	
 	/**
-	 * DSA encrytpion
+	 * DSA encryption<br>
+	 * OID: 1.2.840.10040.4.1
 	 */
 	DSA("1.2.840.10040.4.1", "DSA");
 	

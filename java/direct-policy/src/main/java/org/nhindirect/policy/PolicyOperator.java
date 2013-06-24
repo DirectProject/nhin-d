@@ -61,7 +61,7 @@ public enum PolicyOperator
 	
 	/**
 	 * Performs a regular expression match on a string.  This operation returns true if the regular expression is found in 
-	 * the given string can only be performed on two strings.
+	 * the given string and can only be performed on two strings.
 	 */
 	REG_EX("$", "matches", BinaryBooleanPolicyOperatorExecutor.class, PolicyOperatorParamsType.BINARY),
 	

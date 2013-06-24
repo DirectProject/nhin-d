@@ -30,7 +30,7 @@ import javax.swing.JFrame;
 
 ///CLOVER:OFF
 /**
- * Validation tool of X509 certiicates against a policy.
+ * Validation tool of X509 certificates against a policy.
  * @author Greg Meyer
  * @since 1.0
  */

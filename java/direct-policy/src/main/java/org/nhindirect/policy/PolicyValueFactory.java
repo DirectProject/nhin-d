@@ -95,7 +95,7 @@ public class PolicyValueFactory
 			return value.equals(obj);
 		}
 		
-		
+		///CLOVER:OFF
 		/**
 		 * {@inheritDoc}
 		 */
@@ -104,6 +104,7 @@ public class PolicyValueFactory
 		{
 			return value.hashCode();
 		}
+		///CLOVER:ON
 		
 	}
 }

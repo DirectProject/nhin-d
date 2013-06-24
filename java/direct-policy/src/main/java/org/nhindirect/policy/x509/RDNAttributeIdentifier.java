@@ -38,90 +38,106 @@ public enum RDNAttributeIdentifier
 	 */
 	
 	/**
-	 * Common name attribute
+	 * Common name attribute<br>
+	 * RDN Name: CN 
 	 */
 	COMMON_NAME("2.5.4.3", "CN"),
 	
 	/**
-	 * Country attribute
+	 * Country attribute<br>
+	 * RDN Name: C
 	 */
 	COUNTRY("2.5.4.6", "C"),
 	
 	/**
-	 * Organization attribute
+	 * Organization attribute<br>
+	 * RDN Name: O
 	 */
 	ORGANIZATION("2.5.4.10", "O"),
 	
 	/**
-	 * Organizational unit attribute
+	 * Organizational unit attribute<br>
+	 * RDN Name: OU
 	 */
 	ORGANIZATIONAL_UNIT("2.5.4.11", "OU"),
 	
 	/**
-	 * State attribute
+	 * State attribute<br>
+	 * RDN Name: ST
 	 */
 	STATE("2.5.4.8", "ST"),
 	
 	/**
-	 * Locality (city) attribute
+	 * Locality (city) attribute<br>
+	 * RDN Name: L
 	 */
 	LOCALITY("2.5.4.7", "L"),
 	
 	/**
-	 * Legacy email attribute
+	 * Legacy email attribute<br>
+	 * RDN Name: E
 	 */
 	EMAIL("1.2.840.113549.1.9.1", "E"),
 	
 	/**
-	 * Domain component attribute
+	 * Domain component attribute<br>
+	 * RDN Name: DC
 	 */
 	DOMAIN_COMPONENT("0.9.2342.19200300.100.1.25", "DC"),
 	
 	/**
-	 * Distinguished name qualifier attribute
+	 * Distinguished name qualifier attribute<br>
+	 * RDN Name: DNQUALIFIER
 	 */
 	DISTINGUISHED_NAME_QUALIFIER("2.5.4.46", "DNQUALIFIER"),
 	
 	/**
-	 * Serial number attribute
+	 * Serial number attribute<br>
+	 * RDN Name: SERIALNUMBER
 	 */
 	SERIAL_NUMBER("2.5.4.5", "SERIALNUMBER"),
 	
 	/**
-	 * Surname attribute
+	 * Surname attribute<br>
+	 * RDN Name: SN
 	 */
 	SURNAME("2.5.4.4", "SN"),
 	
 	/**
-	 * Title name attribute
+	 * Title name attribute<br>
+	 * RDN Name: TITLE
 	 */
 	TITLE("2.5.4.12", "TITLE"),
 	
 	/**
-	 * Given name attribute
+	 * Given name attribute<br>
+	 * RDN Name: GIVENNAME
 	 */
 	GIVEN_NAME("2.5.4.42", "GIVENNAME"),
 
 	/**
-	 * Initials attribute
+	 * Initials attribute<br>
+	 * RDN Name: INITIALS
 	 */
 	INITIALS("2.5.4.43", "INITIALS"),
 	
 	/**
-	 * Pseudonym attribute
+	 * Pseudonym attribute<br>
+	 * RDN Name: PSEUDONYM
 	 */
 	PSEUDONYM("2.5.4.65", "PSEUDONYM"),
 
 	/**
-	 * General qualifier attribute
+	 * General qualifier attribute<br>
+	 * RDN Name: GERNERAL_QUALIFIER
 	 */
 	GERNERAL_QUALIFIER("2.5.4.64", "GERNERAL_QUALIFIER"),
 	
 	/**
 	 * Distinguished name attribute
 	 * <p>
-	 * This attribute is overloaded by the policy engine and returns the full relative distinguished name using RFC2253 formatting
-	 * 
+	 * This attribute is overloaded by the policy engine and returns the full relative distinguished name using RFC2253 formatting<br>
+	 * RDN Name: GERNERAL_QUALIFIER
 	 */
 	DISTINGUISHED_NAME("2.5.4.49", "DN");
 	
