@@ -159,7 +159,7 @@ import org.nhindirect.policy.x509.X509FieldType;
 public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 {
 	
-	protected static Map<String, TokenType> tokenMap;
+	protected static final Map<String, TokenType> tokenMap;
 	protected static Map<String, PolicyOperator> operatorExpressionMap;
 	protected ThreadLocal<Integer> buildLevel;
 	
@@ -600,7 +600,7 @@ public class SimpleTextV1LexiconPolicyParser extends XMLLexiconPolicyParser
 		}
 		catch (IOException e)
 		{
-			
+			throw new PolicyParseException("Error parsing: " + e.getMessage(), e);
 		}
 		
 		return tokens;
