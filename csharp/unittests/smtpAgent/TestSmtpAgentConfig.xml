@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  SAMPLE
+  Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
+  Customize as per your needs
+-->
+<SmtpAgentConfig>
+  <Domain>redmond.hsgincubator.com</Domain>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>  
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>testSmtpAgent</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Trace</Level>
+  </Log>
+  <Cryptographer>
+    <DefaultEncryption>AES128</DefaultEncryption>
+    <DefaultDigest>SHA1</DefaultDigest>
+  </Cryptographer>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <Notifications>
+    <AutoResponse>false</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+  <IncomingRoutes>
+    <Route>
+      <AddressType>XDR</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\xdr</CopyFolder>
+    </Route>
+  </IncomingRoutes>
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\incoming</CopyFolder>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
+  </ProcessOutgoing>
+</SmtpAgentConfig>
