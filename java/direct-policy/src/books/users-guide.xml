@@ -42,7 +42,10 @@
         </section>   
         <section>
           <id>tools-policyBuilder</id>     
-        </section>          
+        </section>  
+        <section>
+          <id>tools-examplePolicies</id>     
+        </section>                  
       </sections>
     </chapter>    
   </chapters>

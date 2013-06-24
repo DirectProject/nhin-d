@@ -167,7 +167,21 @@
 			<source>1.6</source>
 			<target>1.6</target>
 		</configuration>
-	</plugin>	     
+	</plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/target/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>   		     
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>

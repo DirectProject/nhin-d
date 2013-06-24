@@ -175,7 +175,7 @@ The not contains operator is expressed with the "{?}!" token and the first param
 
 The contains regular expression is expressed with the "{}$" token and the first parameter is a string the second parameter is a collection of objects of any type.  It returns a boolean value indicating if the first operand is a regular expression match to any object in the collection.  If objects in the collection are not string, the operator uses the Java Object toString method to obtain a string representation of the object for regular expression matching.
 
-*INTERSECTION: "\{\}$"*
+*INTERSECTION: "\{\}&"*
 
 The intersection operator is expressed with the "{}$" token and both parameters can be either a comma delimited set of strings or collections of objects of any type.  It returns a collection of elements by performing an intersection of sets operation on both collections.  The intersection is process by the using the Java Collection retainAll method.  If the intersection results in an empty set, then an empty collection is returned.  Comma delimited string are automatically converted into a collection of strings.
 
