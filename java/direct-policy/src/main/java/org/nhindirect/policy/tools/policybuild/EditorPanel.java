@@ -274,7 +274,7 @@ public class EditorPanel extends JPanel
 	{
 		synchronized(needsBuilding)
 		{
-			needsBuilding = buildingNeeded;;
+			needsBuilding = buildingNeeded;
 		}
 	}
 }
