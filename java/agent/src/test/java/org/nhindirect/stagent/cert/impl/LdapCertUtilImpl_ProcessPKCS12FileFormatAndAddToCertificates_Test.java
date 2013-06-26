@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.LdapCertUtilImpl;
 import org.nhindirect.stagent.utils.BaseTestPlan;
@@ -46,6 +47,7 @@ public class LdapCertUtilImpl_ProcessPKCS12FileFormatAndAddToCertificates_Test
 			BufferedInputStream f = new BufferedInputStream(new FileInputStream(path + "src/test/resources/certs/gm2552encrypted.p12"));
 			f.read(buffer);
 			theCreateInputStream = new ByteArrayInputStream(buffer);
+			IOUtils.closeQuietly(f);
 			return theCreateInputStream;
 		}
 

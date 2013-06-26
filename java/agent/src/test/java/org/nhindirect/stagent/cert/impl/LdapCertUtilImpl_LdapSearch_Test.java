@@ -27,6 +27,7 @@ import javax.naming.directory.SearchResult;
 import junit.framework.TestCase;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.nhindirect.stagent.cert.impl.LdapCertUtilImpl;
 import org.nhindirect.stagent.cert.impl.LdapEnvironment;
 import org.nhindirect.stagent.utils.BaseTestPlan;
@@ -493,13 +494,14 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 		new TestPlan() {
 			
 			protected Object nextElement_Internal() {
+				BufferedInputStream f = null;
 				try {
 					File fl = new File("testfile");
 					int idx = fl.getAbsolutePath().lastIndexOf("testfile");
 					String path = fl.getAbsolutePath().substring(0, idx);
 					
 					byte[] buffer = new byte[(int) new File(path + "src/test/resources/certs/bob.der").length()+100];
-					BufferedInputStream f = new BufferedInputStream(new FileInputStream(path + "src/test/resources/certs/bob.der"));
+					f = new BufferedInputStream(new FileInputStream(path + "src/test/resources/certs/bob.der"));
 					f.read(buffer);
 					Base64 base64 = new Base64();
 					theNextElement = new String(base64.encode(buffer));
@@ -507,6 +509,7 @@ public class LdapCertUtilImpl_LdapSearch_Test extends TestCase {
 				} catch (Exception e) {
 					e.printStackTrace();
 					fail();
+					IOUtils.closeQuietly(f);
 				}	
 			  return theNextElement;
 			}
