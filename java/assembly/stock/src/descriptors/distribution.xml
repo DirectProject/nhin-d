@@ -49,6 +49,15 @@
 			<source>src/tools/stripP12Pass.sh</source>
 			<outputDirectory>direct/tools/</outputDirectory>
 			<fileMode>777</fileMode>
-		</file>										
+		</file>	
+		<file>
+			<source>src/tools/policyBuilder.sh</source>
+			<outputDirectory>direct/tools/</outputDirectory>
+			<fileMode>777</fileMode>			
+		</file>		
+		<file>
+			<source>src/tools/policyBuilder.bat</source>
+			<outputDirectory>direct/tools/</outputDirectory>
+		</file>												
   </files>  
 </assembly>
