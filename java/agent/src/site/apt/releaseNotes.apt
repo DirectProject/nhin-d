@@ -20,7 +20,7 @@
      
     Bug Fixes
     
-    * NA
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=216}216}}: Intermediate CAs not being resolved via AIA extension.
 
 {1.6}
 
