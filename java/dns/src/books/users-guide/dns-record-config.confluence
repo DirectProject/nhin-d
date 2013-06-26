@@ -6,7 +6,7 @@ The DNS service stores all DNS records in the Direct Project configurations serv
 
 h2. Managing Records
 
-The configuration UI and DNS management command console tools are used to add, update, and delete all record types.
+The configuration UI and config management command console tools are used to add, update, and delete all record types.
 
 h3. Config UI
 
@@ -16,17 +16,19 @@ The Configuration UI tool is used to managed DNS records in the web UI.  To mana
 
 !images/WSConfigDNSHome.png!
 
-h3. DNS Management Console
+h3. Config Management Console
 
-The DNS Management console is command line tool for managing DNS records.  To run the console:
+*NOTE* The DNS Management console has been deprecated and all DNS configuration commands are now available in the Config Management Console.
 
-# Launch a command shell and navigate to the DNSMgmtConsole/bin directory.
-# Run the command _DNSMgmtConsole_ (./DNSMgmtConsole for unix based systems).
+The Config Management console is command line tool for managing all configuration aspects of the DirectProject Java reference implementation including DNS records.  To run the console:
+
+# Launch a command shell and navigate to the ConfigMgmtConsole/bin directory.
+# Run the command _ConfigMgmtConsole_ (./ConfigMgmtConsole for unix based systems).
 
 The console connects to the Direct Project configuration service and manages records using the configuration service proxy module.  By default it uses the url _http://localhost:8081/config-service/ConfigurationService_, but can be overridden using the configURL command line parameter.
 
 {code}
-  DNSMgmtConsole configURL http://confserver/config-service/ConfigurationService
+  ConfigMgmtConsole configURL http://confserver/config-service/ConfigurationService
 {code}
 
 *NOTE* The configURL must be the first parameter on the command line to change the configuration service URL.

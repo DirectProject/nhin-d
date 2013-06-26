@@ -20,6 +20,8 @@ package org.nhindirect.dns;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -155,8 +157,8 @@ public class ConfigServiceDNSStore implements DNSStore
     		builder.append("\r\n\tDClass: " + queryRecord.getDClass());
     		LOGGER.debug(builder.toString());
     	}
-    	
-    	RRset lookupRecords = null;
+
+    	Collection<Record> lookupRecords= null;
         switch (question.getType())
         {
         	case Type.A:
@@ -168,7 +170,16 @@ public class ConfigServiceDNSStore implements DNSStore
         	{
         		try
         		{
-        			lookupRecords = processGenericRecordRequest(name.toString(), type);
+        			final RRset set = processGenericRecordRequest(name.toString(), type);
+        			
+        			if (set != null)
+        			{
+	        			lookupRecords = new ArrayList<Record>();
+	        			Iterator<Record> iter = set.rrs();
+	        			while (iter.hasNext())
+	        				lookupRecords.add(iter.next());
+        			}
+        			
         		}
         		catch (Exception e)
         		{
@@ -178,31 +189,38 @@ public class ConfigServiceDNSStore implements DNSStore
         	}
         	case Type.CERT:
         	{
-        		lookupRecords = processCERTRecordRequest(name.toString());
+    			final RRset set = processCERTRecordRequest(name.toString());
+    			
+    			if (set != null)
+    			{
+	    			lookupRecords = new ArrayList<Record>();
+	    			Iterator<Record> iter = set.rrs();
+	    			while (iter.hasNext())
+	    				lookupRecords.add(iter.next());
+    			}
+    			
         		break;
         	}
         	case Type.ANY:
         	{
-        		RRset genRecs = processGenericRecordRequest(name.toString(), Type.ANY);
+        		
+        		Collection<Record> genRecs = processGenericANYRecordRequest(name.toString());
         		RRset certRecs = processCERTRecordRequest(name.toString());
 
-        		if (genRecs == null || certRecs == null)
+        		if (genRecs != null || certRecs != null)
         		{
+        			lookupRecords = new ArrayList<Record>();
         			if (genRecs != null)
-        				lookupRecords = genRecs; // certRecs is null, just return genRecs
-        			else if (certRecs != null)
-        				lookupRecords = certRecs; // genRecs is null, just return certRecs
-        			// default case is just leave lookupRecords null
+        				lookupRecords.addAll(genRecs);
+        			
+        			if (certRecs != null)
+        			{
+    	    			Iterator<Record> iter = certRecs.rrs();
+    	    			while (iter.hasNext())
+    	    				lookupRecords.add(iter.next());
+        			}
         		}
-        		else
-        		{
-        			// we know both are non null, merge
-        			lookupRecords = genRecs;
-        			Iterator<Record> iter = certRecs.rrs();
-        			while (iter.hasNext())
-        				lookupRecords.addRR(iter.next());
-        		}  
-        		
+ 
         		break;
         	}
         	default:
@@ -226,7 +244,7 @@ public class ConfigServiceDNSStore implements DNSStore
     	response.addRecord(queryRecord, Section.QUESTION);
     	
     	
-		Iterator<Record> iter = lookupRecords.rrs();
+		Iterator<Record> iter = lookupRecords.iterator();
 		while (iter.hasNext())
 			response.addRecord(iter.next(), Section.ANSWER);
     	
@@ -274,6 +292,41 @@ public class ConfigServiceDNSStore implements DNSStore
 						record.getDclass(), record.getTtl(), record.getData());
 				
 				retVal.addRR(rec);
+			}
+		}		
+		catch (Exception e)
+		{
+			throw new DNSException(DNSError.newError(Rcode.SERVFAIL), "Failure while parsing generic record data: " + e.getMessage(), e);
+		}
+		
+		return retVal;
+	}
+	
+	protected Collection<Record> processGenericANYRecordRequest(String name) throws DNSException
+	{		
+		DnsRecord records[];
+		
+		try
+		{
+			records = proxy.getDNSByNameAndType(name, Type.ANY);
+		}
+		catch (Exception e)
+		{
+			throw new DNSException(DNSError.newError(Rcode.SERVFAIL), "DNS service proxy call for DNS records failed: " + e.getMessage(), e);
+		}
+		
+		if (records == null || records.length == 0)
+			return null;
+		
+		Collection<Record>  retVal = new ArrayList<Record>();	
+		try
+		{
+			for (DnsRecord record : records)						
+			{
+				Record rec = Record.newRecord(Name.fromString(record.getName()), record.getType(), 
+						record.getDclass(), record.getTtl(), record.getData());
+				
+				retVal.add(rec);
 			}
 		}		
 		catch (Exception e)

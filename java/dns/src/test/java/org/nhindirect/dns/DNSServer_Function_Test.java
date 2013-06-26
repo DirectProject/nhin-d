@@ -323,6 +323,43 @@ public class DNSServer_Function_Test extends TestCase
 		}.perform();
 	}
 
+	public void testAnyQueryType_multipleTypesInRecord_AssertRecordsRetrieved() throws Exception
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createARecord("example.domain.com", "127.0.0.1");
+				recs.add(rec);
+
+				rec = DNSRecordUtil.createARecord("example.domain.com", "127.0.0.2");
+				recs.add(rec);
+
+				rec = DNSRecordUtil.createMXRecord("example.domain.com", "domain.com", 1);
+				recs.add(rec);
+				
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+
+			}
+
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("example.domain.com", Type.ANY));
+
+				return queries;
+			}
+
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(3, records.size());
+				assertEquals("example.domain.com.", records.iterator().next().getName().toString());
+			}
+		}.perform();		
+	}
+	
 	public void testQueryCERTRecords_AssertRecordsRetrieved() throws Exception
 	{
 		new TestPlan()
