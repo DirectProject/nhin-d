@@ -40,7 +40,7 @@ public class PolicyCommands
     
     private static final String LIST_POLICY_GROUPS_USAGE = "Lists policy groups in the system";
     
-    private static final String ADD_POLICY_GROUP_USAGE = "Deletes a policy from the system by policy name." +
+    private static final String ADD_POLICY_GROUP_USAGE = "Adds policy group to the system" +
     		"\r\n  groupName " +
             "\r\n\t groupName: Name of the policy group.  Place the policy group name in quotes (\"\") if there are spaces in the name.";
     
