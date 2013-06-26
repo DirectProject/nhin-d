@@ -22,6 +22,9 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.trust;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.Security;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
@@ -43,9 +46,14 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.security.auth.x500.X500Principal;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.policy.PolicyProcessException;
+import org.nhindirect.policy.x509.AuthorityInfoAccessExtentionField;
+import org.nhindirect.policy.x509.AuthorityInfoAccessMethodIdentifier;
 import org.nhindirect.stagent.CryptoExtensions;
+import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.Thumbprint;
 
@@ -60,6 +68,12 @@ public class TrustChainValidator
 {
 	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
 	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
+	
+	private static final String CA_ISSUER_CHECK_STRING = AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.getName() + ":";
+	
+	protected static final int DEFAULT_URL_CONNECTION_TIMEOUT = 10000; // 10 seconds	
+	
+	protected static final int DEFAULT_URL_READ_TIMEOUT = 10000; // 10 hour seconds	
 	
 	private static int DefaultMaxIssuerChainLength = 5;
 
@@ -220,7 +234,7 @@ public class TrustChainValidator
     	return false;
     }
     
-    private void resolveIssuers(X509Certificate certificate, /*in-out*/Collection<X509Certificate> issuers, int chainLength, Collection<X509Certificate> anchors)
+    protected void resolveIssuers(X509Certificate certificate, /*in-out*/Collection<X509Certificate> issuers, int chainLength, Collection<X509Certificate> anchors)
     {
     	
     	X500Principal issuerPrin = certificate.getIssuerX500Principal();
@@ -244,37 +258,43 @@ public class TrustChainValidator
     		// bail out with what we have now
     		return;
     	}
-    	
-    	String address = this.getIssuerAddress(certificate);
-
-    	if (address == null || address.isEmpty())
-    		return;// not much we can do about this... the resolver interface only knows how to work with addresses
-    	
-		Collection<X509Certificate> issuerCerts = new ArrayList<X509Certificate>();
 		
-		// look in each resolver...  the list could be blasted across 
-		// multiple resolvers
-    	for (CertificateResolver publicResolver : certResolvers)
-    	{
+    	// first check to see there is an AIA extension with one ore more caIssuer entries and attempt to resolve the
+		// intermediate via the URL
+		final Collection<X509Certificate> issuerCerts = getIntermediateCertsByAIA(certificate);
+		
+		// if we could not find intermediate certs by the AIA extension, then fall back to the old method
+		// of using resolvers
+		if (issuerCerts.isEmpty())
+		{	
+	    	final String address = this.getIssuerAddress(certificate);
 	
-			Collection<X509Certificate> holdCerts = null;
-			try
-			{
-				holdCerts = publicResolver.getCertificates(new InternetAddress(address));
-			}
-    		catch (AddressException e)
-    		{
-    			continue;
-    		}
-			catch (Exception e)
-			{
-				/* no-op*/
-			}
-			if (holdCerts != null && holdCerts.size() > 0)
-				issuerCerts.addAll(holdCerts);
-
-        }
-
+	    	if (address == null || address.isEmpty())
+	    		return;// not much we can do about this... the resolver interface only knows how to work with addresses
+	    		
+			// look in each resolver...  the list could be blasted across 
+			// multiple resolvers
+	    	for (CertificateResolver publicResolver : certResolvers)
+	    	{
+		
+				Collection<X509Certificate> holdCerts = null;
+				try
+				{
+					holdCerts = publicResolver.getCertificates(new InternetAddress(address));
+				}
+	    		catch (AddressException e)
+	    		{
+	    			continue;
+	    		}
+				catch (Exception e)
+				{
+					/* no-op*/
+				}
+				if (holdCerts != null && holdCerts.size() > 0)
+					issuerCerts.addAll(holdCerts);
+	
+	        }
+		}
 		
 		if (issuerCerts.size() == 0)
 			return; // no intermediates.. just return
@@ -291,6 +311,100 @@ public class TrustChainValidator
 			}
 		}
     }
+    
+    /**
+     * Retrieves intermediate certificate using the AIA extension.
+     * @param certificate The certificate to search for AIA extensions.
+     * @return Returns a collection of intermediate certs using the AIA extension.  If the AIA extension does not exists
+     * or the certificate cannot be downloaded from the URL, then an empty list is returned.
+     */
+    protected Collection<X509Certificate> getIntermediateCertsByAIA(X509Certificate certificate)
+    {
+    	final Collection<X509Certificate> retVal = new ArrayList<X509Certificate>();
+    
+    	// check to see if there are extensions
+    	final AuthorityInfoAccessExtentionField aiaField = new AuthorityInfoAccessExtentionField(false);
+    	
+    	try
+    	{
+    		// we can get all names from the AuthorityInfoAccessExtentionField objects
+    		aiaField.injectReferenceValue(certificate);
+    		
+    		final Collection<String> urlPairs = aiaField.getPolicyValue().getPolicyValue();
+    		
+    		// look through all of the values (if they exist) for caIssuers
+    		for (String urlPair : urlPairs)
+    		{
+    			if (urlPair.startsWith(CA_ISSUER_CHECK_STRING))
+    			{
+    				// the url pair is in the format of caIssuer:URL... need to break it 
+    				// apart to get the url
+    				final String url = urlPair.substring(CA_ISSUER_CHECK_STRING.length());
+    				
+    				// now pull the certificate from the URL
+    				try
+    				{
+    					final X509Certificate intermCert = downloadCertFromAIA(url);
+    					retVal.add(intermCert);
+    				}
+    				catch (NHINDException e)
+    				{
+    					LOGGER.warn("Intermediate cert cannot be resolved from AIA extension.", e);
+    				}
+    			}
+    		}
+    	}
+    	///CLOVER:OFF
+    	catch (PolicyProcessException e)
+    	{
+    		LOGGER.warn("Intermediate cert cannot be resolved from AIA extension.", e);
+    	}
+    	///CLOVER:ON
+    	
+    	return retVal;
+    }
+    
+	/**
+	 * Downloads a cert from the AIA URL and returns the result as certificate.
+	 * @param bundle The bundle that will be downloaded.
+	 * @return The certificate downloaded from the AIA extension URL
+	 */
+	protected X509Certificate downloadCertFromAIA(String url) throws NHINDException
+	{
+		InputStream inputStream = null;
+
+		X509Certificate retVal = null;
+		
+		try
+		{
+			// in this case the cert is a binary representation
+			// of the CERT URL... transform to a string
+			final URL certURL = new URL(url);
+			
+			final URLConnection connection = certURL.openConnection();
+			
+			// the connection is not actually made until the input stream
+			// is open, so set the timeouts before getting the stream
+			connection.setConnectTimeout(DEFAULT_URL_CONNECTION_TIMEOUT);
+			connection.setReadTimeout(DEFAULT_URL_READ_TIMEOUT);
+			
+			// open the URL as in input stream
+			inputStream = connection.getInputStream();
+			
+			
+			retVal = (X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(inputStream);
+		}
+		catch (Exception e)
+		{
+			throw new NHINDException("Failed to download certificate from AIA extension.", e);
+		}
+		finally
+		{
+			IOUtils.closeQuietly(inputStream);
+		}
+		
+		return retVal;
+	}
     
     
     private String getIssuerAddress(X509Certificate certificate)
