@@ -1,0 +1,255 @@
+<processing>
+  <job name="set java home windows" condition="!isJavaHomeDefined">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/setJavaHomeWindows.bat">
+      <arg>$JAVA_HOME</arg>
+    </executefile>
+  </job>
+  <job name="set java home mac" condition="!isJavaHomeDefined">
+    <os family="mac" />
+    <executefile name="$INSTALL_PATH/scripts/setJavaHomeMac.sh">
+      <arg>$JAVA_HOME</arg>
+    </executefile>
+  </job>  
+  <job name="set java home unix" condition="!isJavaHomeDefined">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/setJavaHomeUnix.sh">
+      <arg>$JAVA_HOME</arg>
+    </executefile>
+  </job>
+  <job name="set james 2 domain unix">
+    <executeForPack name="Apache James 2.3.2" />  
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/runSetDomain.sh">
+      <arg>$INSTALL_PATH</arg>
+      <arg>$email.domain.name</arg>   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.AntExecutor</arg>          
+      <arg>$INSTALL_PATH/james-2.3.2/bin/set-domain.xml</arg>      
+    </executefile>
+  </job>  
+  <job name="set james 2 domain windows">
+    <executeForPack name="Apache James 2.3.2" />  
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/runSetDomainWindows.bat">
+      <arg>$INSTALL_PATH</arg>
+      <arg>$email.domain.name</arg>   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.AntExecutor</arg>          
+      <arg>$INSTALL_PATH\james-2.3.2\bin\set-domain.xml</arg>
+    </executefile>
+  </job>    
+  <job name="set james 3 domain unix" condition="izpack.selected.Apace James 3">
+    <executeForPack name="Apache James 3" />  
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/runSetDomain.sh">
+      <arg>$INSTALL_PATH</arg>
+      <arg>$email.domain.name</arg>   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.AntExecutor</arg>          
+      <arg>$INSTALL_PATH/apache-james-3.0-beta4/bin/set-domain.xml</arg>    
+    </executefile>
+  </job> 
+  <job name="set james 3 domain windows">
+    <executeForPack name="Apache James 3" />  
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/runSetDomainWindows.bat">
+      <arg>$INSTALL_PATH</arg>
+      <arg>$email.domain.name</arg>  
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.AntExecutor</arg>     
+      <arg>$INSTALL_PATH\apache-james-3.0-beta4\bin\set-domain.xml</arg>
+    </executefile>
+  </job>     
+  <job name="launch tomcat unix">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/launchTomcatUnix.sh" workingDir="$INSTALL_PATH/apache-tomcat-7.0.37/bin">
+      <arg>$INSTALL_PATH</arg>
+    </executefile>
+  </job> 
+  <job name="launch tomcat windows">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/launchTomcatWindows.bat" workingDir="$INSTALL_PATH\apache-tomcat-7.0.37\bin">
+      <arg>$INSTALL_PATH/apache-tomcat-7.0.41/bin</arg>   
+    </executefile>
+  </job> 
+
+  <job name="create ca unix">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerUnix.sh">   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.CACreator</arg>
+      <arg>$ca.commonname</arg>     
+      <arg>$ca.expiration</arg>  
+      <arg>$ca.keysize</arg>        
+      <arg>$ca.privkey.passphrase</arg>                
+    </executefile>
+  </job> 
+  
+  <job name="create ca windows">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerWindows.bat">   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.CACreator</arg>d
+      <arg>$ca.commonname</arg>     
+      <arg>$ca.expiration</arg>  
+      <arg>$ca.keysize</arg>        
+      <arg>$ca.privkey.passphrase</arg>                
+    </executefile>
+  </job>    
+  
+  <job name="create subcriber cert unix">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerUnix.sh" workingDir="$INSTALL_PATH">   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.SubscriberCertCreator</arg>
+      <arg>$cert.expiration</arg>  
+      <arg>$cert.keysize</arg>        
+      <arg>$cert.privkey.passphrase</arg>  
+      <arg>$cert.email</arg>    
+      <arg>$ca.commonname</arg>  
+      <arg>$ca.privkey.passphrase</arg>                                  
+    </executefile>
+  </job> 
+  
+  <job name="create subcriber cert windows">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerWindows.bat">   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.SubscriberCertCreator</arg>
+      <arg>$cert.expiration</arg>  
+      <arg>$cert.keysize</arg>        
+      <arg>$cert.privkey.passphrase</arg>  
+      <arg>$cert.email</arg>    
+      <arg>$ca.commonname</arg>  
+      <arg>$ca.privkey.passphrase</arg>                                  
+    </executefile>
+  </job>   
+  
+  <job name="validate tomcat running unix">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerUnix.sh">   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.ValidateConfigServiceRunning</arg>
+      <arg>$config.service.url</arg>                                     
+    </executefile>
+  </job>  
+  <job name="validate tomcat running windows">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerWindows.bat">   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.ValidateConfigServiceRunning</arg>
+      <arg>$config.service.url</arg>                                     
+    </executefile>
+  </job>     
+  <job name="create domain and import certs unix">
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerUnix.sh" workingDir="$INSTALL_PATH" >   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.AddDomainCAAndPrivCert</arg>
+      <arg>$config.service.url</arg>    
+      <arg>$email.domain.name</arg>        
+      <arg>$ca.commonname</arg>    
+      <arg>$cert.email</arg>                                              
+    </executefile>
+  </job> 
+  <job name="create domain and import certs windows">
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerWindows.bat" workingDir="$INSTALL_PATH" >   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.AddDomainCAAndPrivCert</arg>
+      <arg>$config.service.url</arg>    
+      <arg>$email.domain.name</arg>        
+      <arg>$ca.commonname</arg>    
+      <arg>$cert.email</arg>                                              
+    </executefile>
+  </job>               
+  <job name="launch james 2 service unix">
+    <executeForPack name="Apache James 2.3.2"/>
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/launchJames2.sh" workingDir="$INSTALL_PATH/james-2.3.2/bin" >
+      <arg>$JAVA_HOME</arg>       
+      <arg>$INSTALL_PATH</arg>
+      <arg>james-2.3.2</arg>
+    </executefile>
+  </job> 
+  <job name="launch james 2 service windows">
+    <executeForPack name="Apache James 2.3.2"/>
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/launchJames2Windows.bat" workingDir="$INSTALL_PATH/james-2.3.2/bin" >
+      <arg>$JAVA_HOME</arg>       
+      <arg>$INSTALL_PATH/james-2.3.2/bin</arg>
+    </executefile>
+  </job>  
+  <job name="launch james 3 services unix">
+    <executeForPack name="Apache James 3" />  
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/launchJames3.sh"  workingDir="$INSTALL_PATH/apache-james-3.0-beta4/bin">
+      <arg>$JAVA_HOME</arg>    
+      <arg>$INSTALL_PATH</arg>
+      <arg>apache-james-3.0-beta4</arg>
+    </executefile>
+  </job> 
+  <job name="launch james 3 services windows">
+    <executeForPack name="Apache James 3" />  
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/launchJames3Windows.bat"  workingDir="$INSTALL_PATH/apache-james-3.0-beta4/bin">
+      <arg>$JAVA_HOME</arg>    
+      <arg>$INSTALL_PATH/apache-james-3.0-beta4/bin</arg>
+    </executefile>
+  </job>   
+  <job name="validate james running unix">
+    <os family="unix" />  
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerUnix.sh">   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.ValidateJamesRunning</arg>                                          
+    </executefile>
+  </job> 
+  <job name="validate james running windows">
+    <os family="windows" />  
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerWindows.bat">   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.ValidateJamesRunning</arg>                                          
+    </executefile>
+  </job>     
+  <job name="add james 2 user unix">
+    <executeForPack name="Apache James 2.3.2" />
+    <os family="unix" />  
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerUnix.sh">   
+      <arg>.:$INSTALL_PATH/tools/lib/*</arg>
+      <arg>org.nhindirect.install.AddUserTelnet</arg>  
+      <arg>$email.username</arg>    
+      <arg>$email.password</arg>                                                  
+    </executefile>
+  </job> 
+  <job name="add james 2 user windows">
+    <executeForPack name="Apache James 2.3.2" />
+    <os family="windows" />  
+    <executefile name="$INSTALL_PATH/scripts/toolRunnerWindows.bat">   
+      <arg>.;$INSTALL_PATH\tools\lib\*</arg>
+      <arg>org.nhindirect.install.AddUserTelnet</arg>  
+      <arg>$email.username</arg>    
+      <arg>$email.password</arg>                                                  
+    </executefile>
+  </job>        
+  <job name="add james 3 user unix">
+    <executeForPack name="Apache James 3" />  
+    <os family="unix" />
+    <executefile name="$INSTALL_PATH/scripts/addUserJames3Unix.sh">  
+      <arg>$JAVA_HOME</arg>    
+      <arg>$INSTALL_PATH</arg>
+      <arg>apache-james-3.0-beta4</arg>
+      <arg>$email.address</arg>    
+      <arg>$email.password</arg>         
+    </executefile> 
+  </job>  
+  <job name="add james 3 user windows">
+    <executeForPack name="Apache James 3" />  
+    <os family="windows" />
+    <executefile name="$INSTALL_PATH/scripts/addUserJames3Windows.bat">  
+      <arg>$INSTALL_PATH/apache-james-3.0-beta4/bin</arg>
+      <arg>$email.address</arg>    
+      <arg>$email.password</arg>         
+    </executefile> 
+  </job>                    
+</processing>
