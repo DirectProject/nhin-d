@@ -65,6 +65,7 @@
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
 	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
 	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
+	<property name="dnsservices.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices"></property>
 	<property name="dnsserver.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DirectDNSServer"></property>
 	<property name="dnsmgmt.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DNSMgmtConsole"></property>
 	<property name="configmgmr.stage.dir" value="${env.DIRECT_INSTALL_DIR}/ConfigTools/ConfigMgmtConsole"></property>
@@ -149,6 +150,10 @@
 	<!-- Stylesheet to edit server.xml for tomcat configuration -->
 	<property name="edit.tomcat.stylesheet" value="${src}/scripts/edit-tomcat.xsl"></property>
 
+	<!-- FreeBSD Wrappers-->
+	<property name="wrapper.freebsd.32" value="${src}/libs/wrapper-freebsd-x86-32"></property>
+	<property name="wrapper.freebsd.64" value="${src}/libs/wrapper-freebsd-x86-64"></property>
+	
 	<target name="windows-specific" if="is.windows">
 		<echo message="src is ${src}"></echo>
 		<property name="wget.command.path" value="${resources.dir}/wget.exe"></property>
@@ -373,7 +378,7 @@
 	</target>	
 	
 	<target name="configure-tomcat">
-		<property name="config.service.orig.war" value="config-service-1.5-SNAPSHOT.war"></property>
+		<property name="config.service.orig.war" value="config-service-1.5.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
@@ -398,6 +403,13 @@
 		<copy file="${tomcat.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
 		<copy file="${tomcat.stage.config.new}" tofile="${tomcat.stage.config}" overwrite="true"></copy>
 		<delete file="${tomcat.stage.config.new}" />
+		
+		<!-- Copy FreeBSD wrappers -->
+		<copy file="${wrapper.freebsd.32}" tofile="${dnsserver.stage.dir}/bin/wrapper-freebsd-x86-32" overwrite="true"></copy>
+		<copy file="${wrapper.freebsd.64}" tofile="${dnsserver.stage.dir}/bin/wrapper-freebsd-x86-64" overwrite="true"></copy>
+		<copy file="${wrapper.freebsd.32}" tofile="${james3.stage.dir}/bin/wrapper-freebsd-x86-32" overwrite="true"></copy>
+		<copy file="${wrapper.freebsd.64}" tofile="${james3.stage.dir}/bin/wrapper-freebsd-x86-64" overwrite="true"></copy>
+		
 	</target>
 
 	<!-- make shell files executable -->
@@ -427,17 +439,25 @@
 			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-solaris-x86-32'"></arg>
 		</exec>		
 		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-freebsd-x86-32'"></arg>
+		</exec>	
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-freebsd-x86-64'"></arg>
+		</exec>				
+		<exec executable="sh">
 			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x DirectDNSServer'"></arg>
 		</exec>		
 		<exec executable="sh">
-			<arg line="-c 'cd ${dnsmgmt.stage.dir}/bin; chmod a+x DNSMgmtConsole'"></arg>
-		</exec>
-		<exec executable="sh">
 			<arg line="-c 'cd ${configmgmr.stage.dir}/bin; chmod a+x ConfigMgmtConsole'"></arg>
 		</exec>				
-
+		<!-- DNS Management Console is replaced by ConfigMgmtConsole... Removed it -->
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsservices.stage.dir}; rm -r DNSMgmtConsole'"></arg>
+		</exec>
 	</target>
 
+	
+	
 	<!-- clean up -->
 	<target name="clean" depends="init" description="clean up">
 	    <!-- Delete the ${build} directory tree -->

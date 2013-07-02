@@ -16,6 +16,12 @@ If you installing 2.0 and later from scratch, the appropriate changes have alrea
 
 *NOTE:* James 3 support is only experimental.  There are no guarantees that it will work with all configurations, and the final release of James 3 may change significantly from the current beta-4 release.
 
+h2. Major Updates in Version 3.0+
+
+Version 3.0 of the Bare Metal assembly added the policy enablement module as an optional component.  
+
+From a deployment perspective, there are no differences between 2.x and 3.x when installing the required components other than updated versions of components.  Configuration of the policy enable module is described in the direct-policy library users [guide|http://api.nhindirect.org/java/site/direct-policy/1.0/users-guide/dev-sta.html].
+
 h2. Assumptions
 
 * User is running one of the following software platforms.  Other platforms are supported and may only required slight variations of the instructions listed this section, but the Bare Metal install has only been validated on the following platforms:
@@ -28,6 +34,8 @@ h2. Assumptions
 *** 11.10 (Oneiric Ocelot)
 *** 12.04 (Precise Pangolin)
 *** 12.10 (Quantal Quetzal)
+*** 13.04 (Raring Ringtail)
+** FreeBSD 9.1
 ** CentOS 5+
 ** RHEL 5.5+
 * Assumed that the install has administrative privileges on the install box.
@@ -94,6 +102,14 @@ _CentOS/RHEL_
 
 TDB
 
+_FreeBSD_
+
+Install ant using the following command (should run as root or with elevated privileges):
+
+{code}
+ pkg_add -r apache-ant
+{code}
+
 h3. Java 6 SE
 
 The Java 6 SE platform provides the runtime environment that all of the Bare Metal components will run in.
@@ -132,38 +148,21 @@ Install Sun Java 6 JDK. By default it is not included in the shipped repository,
 
 *Note:* It is okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
 
-_Ubuntu 12.04_
+_Ubuntu 12.04 - 13.04_
 
-The Sun JDK 6 has been moved to a Personal Package Archive (PPA) starting with Ubuntu 12.04.  You will need to add Flexiondotorg repository to install the Sun JDK.
+The Oracle JREs are supported in the [WebUpdt8|https://launchpad.net/~webupd8team/+archive/java] Personal Package Archive (PPA) which automatically downloads and installs the JRE.
 
-Similar to previous versions of Ubuntu, you need to update java-alternatives to use the newly installed Java version instead of shipped version.
+To install the Java 6 JRE, follow the commands below:
 
 *Note:* The add-apt-repository command may not be available.  Adding the python-software-properties package should resolve this issue.  It is also okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
 
 {code}
  sudo apt-get install python-software-properties
- sudo add-apt-repository ppa:flexiondotorg/java 
+ sudo add-apt-repository ppa:webupd8team/java
  sudo apt-get update
- sudo apt-get install sun-java6-jdk
- sudo update-java-alternatives -s java-6-sun
- export JAVA_HOME=/usr/lib/jvm/java-6-sun
- echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
-{code}
-
-_Ubuntu 12.10_
-
-As of this writing, the Flexiondotorg does yet have a distribution for the 12.10 Quantal Quetzal release.  Until then, an alternate [method|http://www.techytalk.info/latest-oracle-sun-java-jdk-and-jre-6-on-ubuntu-operating-systems] exists using a BASH script and other work from Martin Wimpress and Janusz Dziemidowicz available on GitHub.
-
-Again, you need to update java-alternatives to use the newly installed Java version instead of default shipped version.
-
-{code}
- cd ~/
- wget https://raw.github.com/flexiondotorg/oab-java6/master/oab-java.sh -O oab-java6.sh
- chmod +x oab-java6.sh
- sudo ./oab-java6.sh
- sudo apt-get install sun-java6-jdk
- sudo update-java-alternatives -s java-6-sun
- export JAVA_HOME=/usr/lib/jvm/java-6-sun
+ sudo apt-get install oracle-java6-installer 
+ sudo update-java-alternatives -s java-6-oracle
+ export JAVA_HOME=/usr/lib/jvm/java-6-oracle
  echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
 {code}
 
@@ -214,6 +213,17 @@ Finally set the JAVA_HOME environment variable for the new JDK using the followi
   echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
 {code}
 
+_FreeBSD_
+
+Obtain/downlaod the JDK 6 using the pkg_add command if you do not already have Java 6 installed.  This step uses the openjdk6 implementation as the Oracle installtation generally requires building the distribution from the _ports_ and is a much more involved process (should run as root or with elevated privileges). 
+
+{code}
+  pkg_add -r openjdk6
+  set JAVA_HOME=/usr/local/openjdk6
+  sed -i .bak 's/setenv=/setenv=JAVA_HOME=\/usr\/local\/openjdk6,/g' /etc/login.conf
+  cap_mkdb /etc/login.conf
+{code}
+
 h3. Java Cryptographic Extensions
 
 The Sun JRE/JDK requires the JCE policy jars to be updated to allow for unlimited strength encryption.  The policy files must be downloaded separately and copied in the JRE library.
@@ -224,7 +234,7 @@ _Windows_
 
 Unzip the downloaded file and copy the jar files from the jce directory to the JAVA_HOME/jre/lib/security folder (Example: C:\Program Files\java\jre6\lib\security).  Overwrite the existing files.
 
-_All Linux/Unix_
+_All Linux/Unix/FreeBSD_
 
 From the directory where you downloaded and placed the jce zip file, run the following commands:
 
@@ -237,14 +247,15 @@ From the directory where you downloaded and placed the jce zip file, run the fol
 
 h2. Obtain Reference Implementation Stock Assembly
 
-The stock assembly contains all of the pre-assembled and configured components of the Bare Metal deployment.  Download the latest version of the stock assembly from the maven central [repository|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] or the Sonatype [repository|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/].  
+The stock assembly contains all of the pre-assembled and configured components of the Bare Metal deployment.  Download the latest version of the stock assembly from the maven central [repository|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] or the Sonatype [repository|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/].  
 
 *Note:* The maven central repository may black list some IP ranges such as virutal machines running in the Amazon EC2 cloud.  Use the Sonatype repository if you are blocked from the maven central repository.
 
 The assembly contains a root directly named _direct_ and has the following folders under the root.
 
-* apache-tomcat-7.0.37
+* apache-tomcat-7.0.41
 * DirectDNSServices
+* ConfigTools
 * james-2.3.2
 * apache-james-3.0-beta4
 * tools
@@ -253,42 +264,73 @@ _Windows_
 
 From a browser, download the desired version of the assembly from one the repositories above.  
 
-Example: Download version 2.1.1 - [direct-project-stock-2.1.1.tar.gz|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/2.1.1/direct-project-stock-2.1.1.tar.gz].  After downloading, unzip the contents to appropriate installation location.
+Example: Download version 3.0 - [direct-project-stock-3.0.tar.gz|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130626.200839-1.tar.gz].  After downloading, unzip the contents to appropriate installation location.
 
 _All Linux/Unix_
 
-Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-2.1.1.tar.gz from maven central, use the following commands:
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands:
 {code}
  cd /opt
- sudo wget http://repo2.maven.org/maven2/org/nhind/direct-project-stock/2.1.1/direct-project-stock-2.1.1.tar.gz
+ sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
 {code}
 
 If you are denied access to the location above, try the Sonatype repostitory using the following command.
 {code}
  cd /opt
- sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/2.1.1/direct-project-stock-2.1.1.tar.gz
+ sudo wget https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130626.200839-1.tar.gz
 {code}
 
 Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
 
 {code}
- sudo tar xvfz direct-project-stock-2.1.1.tar.gz
+ sudo tar xvfz direct-project-stock-3.0-20130626.200839-1.tar.gz
  export DIRECT_HOME=`pwd`/direct
  echo "export DIRECT_HOME=$DIRECT_HOME" | sudo tee -a /etc/environment
+{code}
+
+_FreeBSD_
+
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  You may need to initially create the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands:
+
+{code}
+ cd /
+ mkdir opt
+ cd /opt
+ sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
+{code}
+
+If you are denied access to the location above, try the Sonatype repostitory using the following command.
+{code}
+ cd /opt
+ sudo wget https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130626.200839-1.tar.gz
+{code}
+
+Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
+
+{code}
+ sudo tar xvfz direct-project-stock-3.0-20130626.200839-1.tar.gz
+ sed -i .bak 's/setenv=/setenv=DIRECT_HOME=\/opt\/direct,/g' /etc/login.conf
+ cap_mkdb /etc/login.conf
+{code}
+
+You will need to reboot at this point in order for the global DIRECT_HOME variable to take affect.  Failing to reboot will cause the setdomain script to fail in later steps.
+
+{code}
+ reboot
 {code}
 
 h2. Launch Tomcat
 
 Before running the James mail servier, the configuration and message monitiroing services must be running and some minimum configuration completed.  All of these services run inside the Tomcat web server.
 
-To start the tomcat server, run the following command from the DIRECT HOME/apache-tomcat-7.0.37/bin directory.
+To start the tomcat server, run the following command from the DIRECT HOME/apache-tomcat-7.0.41/bin directory.
 
 _Windows_
 {code}
  startup
 {code}
 
-_All Unix/Linux_
+_All Unix/Linux/FreeBSD_
 {code}
  sudo ./startup.sh
 {code}
@@ -324,7 +366,7 @@ _Windows_
  certGen
 {code}
 
-_All Unix/Linux_
+_All Unix/Linux/FreeBSD_
 {code}
  ./certGen.sh
 {code}
@@ -396,7 +438,7 @@ Manually edit the file mailetcontainer.conf under DIRECT HOME/apache-james-3.0-b
 * <postmaster>postmaster@localhost</postmaster> to <postmaster>postmaster@<your domain name></postmaster>
 * match="org.nhindirect.gateway.smtp.james.matcher.RecipAndSenderIsNotLocal=mydomain.com" to match="org.nhindirect.gateway.smtp.james.matcher.RecipAndSenderIsNotLocal=your domain name"
 
-_All Unix/Linux_
+_All Unix/Linux/FreeBSD_
 
 Run the following commands:
 
@@ -433,7 +475,7 @@ From the DIRECT HOME/james-2.3.2/bin or DIRECT HOME/apache-james-3.0-beta4/bin d
  james start
 {code}
 
-_All Unix/Linux_
+_All Unix/Linux/FreeBSD_
 
 *James 2.3.2*
 
@@ -509,24 +551,24 @@ To further protect the configuration service, or if port 8081 must remain public
 
 _Windows_ 
 
-Manuall edit the config-servlet.xml file under DIRECT HOME/apache-tomcat-7.0.37/webapps/config-ui/WEB-INF and change the following setting to your new password:
+Manuall edit the config-servlet.xml file under DIRECT HOME/apache-tomcat-7.0.41/webapps/config-ui/WEB-INF and change the following setting to your new password:
 
 {code}
  <security:user name="admin" password="adm1nD1r3ct" authorities="ROLE_ADMIN"/>
 {code}
 
-Restart the tomcat server by running the following commands from the DIRECT HOME/apache-tomcat-7.0.37/bin directory.
+Restart the tomcat server by running the following commands from the DIRECT HOME/apache-tomcat-7.0.41/bin directory.
 
 {code}
  shutdown
  startup
 {code}
 
-_All Unix/Linux_
+_All Unix/Linux/FreeBSD_
 
 {code}
- cp $DIRECT_HOME/apache-tomcat-7.07/webapps/config-ui/WEB-INF/config-servlet.xml $DIRECT_HOME/apache-tomcat-7.0.37/webapps/config-ui/WEB-INF/config-servlet.xml.orig
- sed -i "s/adm1nD1r3ct/your_new_password/g" $DIRECT_HOME/apache-tomcat-7.0.37/webapps/config-ui/WEB-INF/config-servlet.xml
+ cp $DIRECT_HOME/apache-tomcat-7.07/webapps/config-ui/WEB-INF/config-servlet.xml $DIRECT_HOME/apache-tomcat-7.0.41/webapps/config-ui/WEB-INF/config-servlet.xml.orig
+ sed -i "s/adm1nD1r3ct/your_new_password/g" $DIRECT_HOME/apache-tomcat-7.0.41/webapps/config-ui/WEB-INF/config-servlet.xml
  sh bin/shutdown.sh
  sh bin/startup.sh
 {code}
@@ -534,3 +576,7 @@ _All Unix/Linux_
 _Tweak Message Monitoring Service Settings_
 
 The message monitoring service is preconfigured with common settings, but can be tweaked to your specific requirements.  See the monitoring deployment [guide|http://api.nhindirect.org/java/site/direct-msg-monitor/1.1.3/users-guide/deployment.html] for more details.
+
+_Define Policy Definitions_
+
+Starting with version 3.0, an optional module is available for defining X509 certificate policies.  See the policy enablement module (direct-policy) users [guide|http://api.nhindirect.org/java/site/direct-policy/1.0/users-guide/] for full details.
