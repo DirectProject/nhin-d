@@ -14,7 +14,7 @@ public class OptionsManager_loadParamsFromPropertiesFileTest extends TestCase
 	@Override
 	public void setUp()
 	{
-		OptionsManager.INSTANCE = null;
+		OptionsManager.destroyInstance();
 	}
 	
 	@Override

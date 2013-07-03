@@ -128,6 +128,14 @@ public class OptionsManager
 	}
 	
 	/**
+	 * Destroys the current manager instance.  This is mainly intended for testing purposes.
+	 */
+	public static synchronized void destroyInstance()
+	{
+		INSTANCE = null;
+	}
+	
+	/**
 	 * Gets the instance of the operations manager.
 	 * @return Instance of the operations manager.
 	 */
