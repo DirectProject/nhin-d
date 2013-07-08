@@ -14,6 +14,7 @@ import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.NHINDException;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertStoreCachePolicy;
 import org.nhindirect.stagent.cert.CertificateStore;
 
@@ -64,7 +65,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
         	}
         	
         	removeTestFiles();
-        	
+			// flush the caches
+			CertCacheFactory.getInstance().flushAll();
         } 	
         
         protected void removeTestFiles()
@@ -83,7 +85,8 @@ public class ConfigServiceCertificateStore_CRUD_Test extends TestCase
         protected void removeFile(String filename)
         {
             File delete = new File(filename);
-            delete.delete();
+            if (delete.exists())
+            	assertTrue(delete.delete());
         }   
         
         protected void addPublicCertificates() throws Exception

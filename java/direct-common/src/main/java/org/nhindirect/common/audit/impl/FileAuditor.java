@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -86,7 +87,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 	private static final String CONTEXT_TAG_DELIMITER = "====\r\n";
 	
 	private final RandomAccessFile auditFile;
-	private int recordCount = 0;
+	private AtomicInteger recordCount = new AtomicInteger();
 	
 	private CompositeType eventType;
 	private String[] itemNames;
@@ -147,7 +148,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 			if (auditFile.length() == 0)
 			{
 				// new file
-				recordCount = 0;
+				recordCount.set(0);
 				auditFile.seek(0);			
 			}
 			else
@@ -178,7 +179,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 				// if we could not find a valid record, then just start over
 				if (!foundValidRecord)
 				{
-					recordCount = 0;
+					recordCount.set(0);
 					auditFile.seek(0);
 				}
 			}
@@ -242,7 +243,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 		// verify the last record is legit
 		int start = auditFile.readInt();
 		int size = auditFile.readInt();
-		recordCount = auditFile.readInt(); 
+		recordCount.set(auditFile.readInt()); 
 		
 		byte[] sha1 = new byte[20];
 		auditFile.read(sha1);
@@ -322,7 +323,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 			auditFile.write(messageBytes);
 			auditFile.writeInt(RECORD_META_WRAPPER);
 			auditFile.writeInt(messageBytes.length);
-			auditFile.writeInt(++recordCount);
+			auditFile.writeInt(recordCount.incrementAndGet());
 			auditFile.write(sha1);
 			auditFile.writeInt(RECORD_META_WRAPPER);
 		}
@@ -365,7 +366,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 	@Override
 	public synchronized Integer getEventCount() 
 	{
-		return recordCount;
+		return recordCount.get();
 	}
 
 	/**
@@ -477,7 +478,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 		try
 		{
 			long currentPosition = position;
-			if (recordCount > 0 && currentPosition >= RECORD_METADATA_SIZE)
+			if (getEventCount() > 0 && currentPosition >= RECORD_METADATA_SIZE)
 			{
 				auditFile.seek(currentPosition - RECORD_METADATA_SIZE);
 				
@@ -509,7 +510,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 		try
 		{
 			long currentPosition = position;
-			if (recordCount > 0 && currentPosition >= RECORD_METADATA_SIZE)
+			if (getEventCount() > 0 && currentPosition >= RECORD_METADATA_SIZE)
 			{
 				int size = this.getRecordSize(position);
 				
@@ -622,7 +623,7 @@ public class FileAuditor extends AbstractAuditor implements AuditorMBean
 		{
 			auditFile.setLength(0);
 			auditFile.seek(0);
-			recordCount = 0;
+			recordCount.set(0);
 		}
 		catch (IOException e) {/*no-op */}
 	}

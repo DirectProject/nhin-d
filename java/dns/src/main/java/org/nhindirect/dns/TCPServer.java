@@ -88,6 +88,7 @@ public class TCPServer extends DNSSocketServer
 		}
 		catch (IOException e) {/* no-op */}
 	
+		waitForGracefulStop();	
 	}
 	
 	/**
@@ -134,7 +135,7 @@ public class TCPServer extends DNSSocketServer
 	{
 		public void run()
 		{
-			while(running)
+			while(running.get())
 			{
 
 					try
@@ -147,7 +148,7 @@ public class TCPServer extends DNSSocketServer
 					}
 					catch (IOException e)
 					{
-						if (running)
+						if (running.get())
 						{
 							LOGGER.error("DNS TCP server socket dropped:" + e.getMessage());
 							reconnect();						
@@ -169,7 +170,7 @@ public class TCPServer extends DNSSocketServer
 		} catch (IOException e) {/* no-op */}
 		
 		serverSocket = null;
-		while (serverSocket == null && running)
+		while (serverSocket == null && running.get())
 		{	
 			try
 			{
@@ -203,6 +204,7 @@ public class TCPServer extends DNSSocketServer
 			requestSocket = s;
 		}
 		
+		@SuppressWarnings("unused")
 		public void run()
 		{
 			Message response = null;

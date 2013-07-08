@@ -275,6 +275,12 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		{
 			inStream = new ByteArrayInputStream(rawBundle);
 			bundleCerts = CertificateFactory.getInstance("X.509").generateCertificates(inStream);
+			
+			// in Java 7, an invalid bundle may be returned as a null instead of throw an exception
+			// if its null and has no anchors, then try again as a signed bundle
+			if (bundleCerts != null && bundleCerts.size() == 0)
+				bundleCerts = null;
+			
 		}
 		catch (Exception e)
 		{
@@ -397,6 +403,7 @@ public class DefaultBundleRefreshProcessorImpl implements BundleRefreshProcessor
 		}
 		finally
 		{
+			IOUtils.closeQuietly(inputStream);
 			IOUtils.closeQuietly(ouStream);
 		}
 		
