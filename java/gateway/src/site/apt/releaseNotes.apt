@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{3.0.1}
+
+    Changes included with release 3.0.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=218}218}}: Fixed build and test issues with JDK 7.
+
 {3.0}
 
     Changes included with release 3.0
