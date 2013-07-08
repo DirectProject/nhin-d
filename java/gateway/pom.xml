@@ -268,7 +268,7 @@
                 <artifactItem>
                   <groupId>org.nhind</groupId>
                   <artifactId>config-service</artifactId>
-                  <version>1.5.1</version>
+                  <version>1.5</version>
                   <type>war</type>
                   <overWrite>true</overWrite>
                   <destFileName>config-service.war</destFileName>
