@@ -27,6 +27,7 @@ import org.apache.directory.server.unit.AbstractServerTest;
 import org.apache.directory.shared.ldap.ldif.Entry;
 import org.nhindirect.ldap.LDAPResearchTest;
 import org.nhindirect.ldap.PrivkeySchema;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.provider.LdapCertificateStoreProvider;
@@ -140,6 +141,8 @@ public class LdapCertificateStoreTest extends AbstractServerTest
 		LookupFactory.getFactory().addOverrideImplementation(mockLookup);
 		SRVRecord srvRecord = new SRVRecord(new Name("_ldap._tcp.example.com."), DClass.IN, 3600, 0, 1, port, new Name("localhost."));
 		when(mockLookup.run()).thenReturn(new Record[] {srvRecord});
+		
+		CertCacheFactory.getInstance().flushAll();
 	}
 	
 	protected void addCertificatesToLdap(String[] filename) throws Exception {
