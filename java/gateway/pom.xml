@@ -235,7 +235,7 @@
 		<configuration>
 			<fork>true</fork>
 			<optimize>true</optimize>
-			<showDeprecation>true</showDeprecation>
+			<showDeprecation>false</showDeprecation>
 			<encoding>UTF-8</encoding>
 			<source>1.6</source>
 			<target>1.6</target>

@@ -83,7 +83,8 @@ public class UDPServer extends DNSSocketServer
 		super.stop();
 
 		serverSock.close();
-	
+
+		waitForGracefulStop();		
 	}
 	
 	/**
@@ -131,7 +132,7 @@ public class UDPServer extends DNSSocketServer
 		public void run()
 		{
 			
-			while(running)
+			while(running.get())
 			{
 
 					try
@@ -147,7 +148,7 @@ public class UDPServer extends DNSSocketServer
 					{
 						// udp has no state, so we can just call receive again
 						// unless it was closed
-						if (serverSock.isClosed() && running)
+						if (serverSock.isClosed() && running.get())
 						{
 							LOGGER.error("DNS UDP server socket dropped:" + e.getMessage());
 							reconnect();
@@ -167,7 +168,7 @@ public class UDPServer extends DNSSocketServer
 		serverSock.close();
 		
 		serverSock = null;
-		while (serverSock == null && running)
+		while (serverSock == null && running.get())
 		{	
 			try
 			{
@@ -201,6 +202,7 @@ public class UDPServer extends DNSSocketServer
 			this.inPacket = inPacket;
 		}
 		
+		@SuppressWarnings("unused")
 		public void run()
 		{
 			Message query = null;

@@ -4,9 +4,11 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
+import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
+import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 
 public class ConfigServiceCertificateStore_CertBootstrap_Test extends TestCase 
@@ -29,8 +31,11 @@ public class ConfigServiceCertificateStore_CertBootstrap_Test extends TestCase
 				proxy = new ConfigurationServiceProxy();
 				proxy.setEndpoint(ConfigServiceRunner.getConfigServiceURL());
 				
+				cleanConfig();
+				
 				removeTestFiles();
 				
+				CertCacheFactory.getInstance().flushAll();
 			}
 			catch (Exception e)
 			{
@@ -38,7 +43,25 @@ public class ConfigServiceCertificateStore_CertBootstrap_Test extends TestCase
 			}
 		}
 		
-        
+        protected void cleanConfig() throws Exception
+        {
+     	        	             	
+        	// clean certificates
+        	Certificate[] certs = proxy.listCertificates(0, 0x8FFFF, null);
+        	if (certs != null && certs.length > 0)
+        	{
+        		long[] ids = new long[certs.length];
+        		for (int i = 0; i < certs.length; ++i)
+        			ids[i] = certs[i].getId();
+        		
+        		proxy.removeCertificates(ids) ;
+        	}
+        	
+        	removeTestFiles();
+			// flush the caches
+			CertCacheFactory.getInstance().flushAll();
+        } 	
+		
         protected void removeTestFiles()
         {
             removeFile("LDAPPrivateCertStore");
@@ -55,7 +78,8 @@ public class ConfigServiceCertificateStore_CertBootstrap_Test extends TestCase
         protected void removeFile(String filename)
         {
             File delete = new File(filename);
-            delete.delete();
+            if (delete.exists())
+            	assertTrue(delete.delete());
         }   
         
         

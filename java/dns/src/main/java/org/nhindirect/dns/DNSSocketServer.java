@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -52,7 +53,7 @@ public abstract class DNSSocketServer implements DNSSocketServerMBean
 	protected ExecutorService socketAcceptService;
 	protected ThreadPoolExecutor dnsRequestService;
 	
-	protected boolean running = false;  
+	protected final AtomicBoolean running;  
 	
 	private long serverStartTime = Long.MAX_VALUE;
 	private volatile long rejectedCount = 0;
@@ -69,6 +70,8 @@ public abstract class DNSSocketServer implements DNSSocketServerMBean
 	 */
 	public DNSSocketServer(DNSServerSettings settings, DNSResponder responsder) throws DNSException
 	{
+		running = new AtomicBoolean(false);
+		
 		this.settings = settings;		
 		this.responder = responsder;
 		
@@ -102,10 +105,10 @@ public abstract class DNSSocketServer implements DNSSocketServerMBean
 	 */
 	public void start() throws DNSException
 	{
-		if (running != true)
+		if (running.get() != true)
 		{
 			// create the accept thread
-			running = true;
+			running.set(true);
 			
 			dnsRequestService = new ThreadPoolExecutor(0, settings.getMaxActiveRequests(), 
 					120L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
@@ -128,10 +131,27 @@ public abstract class DNSSocketServer implements DNSSocketServerMBean
 	 */
 	public void stop() throws DNSException
 	{
-		running = false;
+		running.set(false);
 		
 		socketAcceptService.shutdown();
+		
 		dnsRequestService.shutdown();
+
+	}
+	
+	protected void waitForGracefulStop()
+	{
+		try
+		{
+			socketAcceptService.awaitTermination(10, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e) {/* no op */}
+		
+		try
+		{
+			dnsRequestService.awaitTermination(10, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e) {/* no op */}
 	}
 	
 	/**
@@ -200,7 +220,7 @@ public abstract class DNSSocketServer implements DNSSocketServerMBean
 	@Override
 	public Long getUptime() 
 	{
-		if (running == false || serverStartTime == Long.MAX_VALUE)
+		if (running.get() == false || serverStartTime == Long.MAX_VALUE)
 			return -1L;
 		else
 			return (System.currentTimeMillis() - serverStartTime);
