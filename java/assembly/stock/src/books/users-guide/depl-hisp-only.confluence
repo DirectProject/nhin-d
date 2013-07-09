@@ -110,6 +110,12 @@ Install ant using the following command (should run as root or with elevated pri
  pkg_add -r apache-ant
 {code}
 
+FreeBSD also does not come with _wget_ by default.  Install wget using the following command:
+
+{code}
+ pkg_add -r wget
+{code}
+
 h3. Java 6 SE
 
 The Java 6 SE platform provides the runtime environment that all of the Bare Metal components will run in.
@@ -215,7 +221,7 @@ Finally set the JAVA_HOME environment variable for the new JDK using the followi
 
 _FreeBSD_
 
-Obtain/downlaod the JDK 6 using the pkg_add command if you do not already have Java 6 installed.  This step uses the openjdk6 implementation as the Oracle installtation generally requires building the distribution from the _ports_ and is a much more involved process (should run as root or with elevated privileges). 
+Obtain/downlaod the JDK 6 using the pkg\_add command if you do not already have Java 6 installed.  This step uses the openjdk6 implementation as the Oracle installtation generally requires building the distribution from the _ports_ and is a much more involved process (should run as root or with elevated privileges). 
 
 {code}
   pkg_add -r openjdk6
@@ -264,11 +270,11 @@ _Windows_
 
 From a browser, download the desired version of the assembly from one the repositories above.  
 
-Example: Download version 3.0 - [direct-project-stock-3.0.tar.gz|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130626.200839-1.tar.gz].  After downloading, unzip the contents to appropriate installation location.
+Example: Download version 3.0 - [direct-project-stock-3.0.tar.gz|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130702.005838-2.tar.gz].  After downloading, unzip the contents to appropriate installation location.
 
 _All Linux/Unix_
 
-Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands:
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands (*not yet available, use the sonatype repository until the release is complete*):
 {code}
  cd /opt
  sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
@@ -277,20 +283,20 @@ Obtain the URL for appropriate version of the assembly and download it the /opt 
 If you are denied access to the location above, try the Sonatype repostitory using the following command.
 {code}
  cd /opt
- sudo wget https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130626.200839-1.tar.gz
+ sudo wget https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130702.005838-2.tar.gz
 {code}
 
 Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
 
 {code}
- sudo tar xvfz direct-project-stock-3.0-20130626.200839-1.tar.gz
+ sudo tar xvfz direct-project-stock-3.0-20130702.005838-2.tar.gz
  export DIRECT_HOME=`pwd`/direct
  echo "export DIRECT_HOME=$DIRECT_HOME" | sudo tee -a /etc/environment
 {code}
 
 _FreeBSD_
 
-Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  You may need to initially create the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands:
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  You may need to initially create the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands (*not yet available, use the sonatype repository until the release is complete*):
 
 {code}
  cd /
@@ -302,18 +308,18 @@ Obtain the URL for appropriate version of the assembly and download it the /opt 
 If you are denied access to the location above, try the Sonatype repostitory using the following command.
 {code}
  cd /opt
- sudo wget https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130626.200839-1.tar.gz
+ sudo wget https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/3.0-SNAPSHOT/direct-project-stock-3.0-20130702.005838-2.tar.gz
 {code}
 
 Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
 
 {code}
- sudo tar xvfz direct-project-stock-3.0-20130626.200839-1.tar.gz
+ sudo tar xvfz direct-project-stock-3.0-20130702.005838-2.tar.gz
  sed -i .bak 's/setenv=/setenv=DIRECT_HOME=\/opt\/direct,/g' /etc/login.conf
  cap_mkdb /etc/login.conf
 {code}
 
-You will need to reboot at this point in order for the global DIRECT_HOME variable to take affect.  Failing to reboot will cause the setdomain script to fail in later steps.
+You will need to logout or possiblly reboot at this point in order for the global DIRECT_HOME variable to take affect.  Failing to reboot will cause the setdomain script to fail in later steps.
 
 {code}
  reboot
@@ -533,7 +539,7 @@ The prefered distribution mechanism for distributing your HISP's org certificate
  netstat -anp | grep 53
 {code}
 
-Another alternative is LDAP.  The default settings in the security and trust agent will attempt to use the Direct LDAP specication if SRV records can be found.  The LDAP standards can be found on the S&I framework's Certificate Discovery for Direct Project workgroup [page|https://docs.google.com/document/d/1igDpIizm7CTfV-fUw_1EnrCUGIljFEgLPRHpgK5iaec/edit].
+Another alternative is LDAP.  The default settings in the security and trust agent will attempt to use the Direct LDAP specication if SRV records can be found.  The LDAP standards can be found on the S&I framework's Certificate Discovery for Direct Project workgroup [page|https://docs.google.com/document/d/1igDpIizm7CTfV-fUw\_1EnrCUGIljFEgLPRHpgK5iaec/edit].
 
 A fall back alternative is manually distributing your org certificate to the HISPs that you will communicate.  This is an out of band process that will require you to determine how to get your certificate to the HISP.  Likewise another HISP may need to manually give you their certificate(s) if they do not support DNS or LDAP discovery.  To add another HISPs certificate (not anchor) to you HISP, import the certificate file into the Certificates section of the configuration ui tool.
 

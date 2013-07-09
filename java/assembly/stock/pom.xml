@@ -70,7 +70,7 @@
 	      <groupId>org.nhind</groupId>
 	      <artifactId>config-service</artifactId>
 	      <type>war</type>
-	      <version>1.5</version>
+	      <version>1.5.1</version>
 	   </dependency>  
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -98,22 +98,22 @@
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>agent</artifactId>
-	      <version>2.0</version>
+	      <version>2.0.1</version>
 	   </dependency>  	
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>gateway</artifactId>
-	      <version>3.0</version>
+	      <version>3.0.1</version>
        </dependency>
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>direct-common</artifactId>
-	      <version>1.2</version>
+	      <version>1.2.1</version>
        </dependency>       
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>dns</artifactId>
-	      <version>1.2.2</version>
+	      <version>1.2.3</version>
        </dependency>  
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -196,7 +196,7 @@
 	                   <artifactItem>
 	                     <groupId>org.nhind</groupId>
 	                     <artifactId>dns</artifactId>
-	                     <version>1.2.1</version>
+	                     <version>1.2.3</version>
 	                     <type>tar.gz</type>
 	                     <overWrite>true</overWrite>		                    		                   
 	                   </artifactItem>
