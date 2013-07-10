@@ -77,7 +77,7 @@
     <Compile Include="ConfigService.cs" />
     <Compile Include="DomainServiceResolver.cs" />
     <Compile Include="DomainServiceResolverSettings.cs" />
-    <Compile Include="MessageRoute.cs" />
+    <Compile Include="FolderRoute.cs" />
     <Compile Include="InternalMessageSettings.cs" />
     <Compile Include="ISmtpMessage.cs" />
     <Compile Include="MonitorService.cs" />
