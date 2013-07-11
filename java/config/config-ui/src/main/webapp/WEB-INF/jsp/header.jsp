@@ -14,6 +14,7 @@
         <li><a href="<c:url value="/config/main/search?domainName=&submitType=gotocertificates"/>">Certificates</a></li>
         <li><a href="<c:url value="/config/main/search?domainName=&submitType=gotodns"/>">DNS Entries</a></li>
         <li><a href="<c:url value="/config/main/search?domainName=&submitType=ManageTrustBundles"/>">Trust Bundles</a></li>
+        <li><a href="<c:url value="/config/main/search?domainName=&submitType=ManagePolicies"/>">Policies</a></li>
     </ul>
 
     <div style="float:right;line-height: 38px;padding-right:10px;">
