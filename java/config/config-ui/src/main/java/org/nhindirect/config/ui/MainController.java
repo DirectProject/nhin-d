@@ -56,6 +56,12 @@ import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.nhindirect.config.ui.DNSController.CertContainer;
+import org.nhindirect.config.service.CertificatePolicyService;
+import org.nhind.config.CertPolicy;
+
+import java.net.URL;
+import java.net.MalformedURLException;
+
 import org.nhindirect.config.ui.flash.FlashMap.Message;
 import org.nhindirect.config.ui.flash.FlashMap.MessageType;
 import org.nhindirect.config.ui.form.AddressForm;
@@ -63,6 +69,8 @@ import org.nhindirect.config.ui.form.AnchorForm;
 import org.nhindirect.config.ui.form.CertificateForm;
 import org.nhindirect.config.ui.form.DNSEntryForm;
 import org.nhindirect.config.ui.form.DNSForm;
+import org.nhindirect.config.ui.form.PolicyForm;
+import org.nhindirect.config.ui.form.BundleForm;
 import org.nhindirect.config.ui.form.DNSType;
 import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
@@ -92,6 +100,7 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
+import org.nhind.config.ConfigurationServiceProxy;
 
 @Controller
 @RequestMapping("/main")
@@ -99,6 +108,7 @@ public class MainController {
 	
     private final Log log = LogFactory.getLog(getClass());
     private ConfigurationService configSvc;
+    
 	
     @Inject
     public void setConfigurationService(ConfigurationService service)
@@ -324,26 +334,50 @@ public class MainController {
 
                 model.addAttribute("simpleForm",new SimpleForm());            
             }
-            else if (actionPath.equalsIgnoreCase("ManageTrustBundles") || actionPath.equalsIgnoreCase("Trust Bundles"))
+            
+            else if (actionPath.equalsIgnoreCase("ManagePolicies") || actionPath.equalsIgnoreCase("Policies"))
             {
                 if (log.isDebugEnabled())  {
-                    log.debug("trying to go to the Trust Bundles page");
+                    log.debug("trying to go to the Policies page");
                 }
 
 
                 String action = "Update";
                 model.addAttribute("action", action);
 
-                mav.setViewName("bundles");
-                mav.addObject("actionPath", "gotobundles");
+                mav.setViewName("policies");
+                mav.addObject("actionPath", "gotopolicies");
 
-                BundleForm form = (BundleForm) session.getAttribute("bundleForm");
+                PolicyForm form = (PolicyForm) session.getAttribute("policyForm");
                 if (form == null) {
-                    form = new BundleForm();
+                    form = new PolicyForm();
                 }
 
-                model.addAttribute("bundleForm", form);
-
+                model.addAttribute("policyForm", form);
+                
+                String urlString = "http://localhost:8081/config-service/ConfigurationService";
+                ConfigurationServiceProxy proxy = new ConfigurationServiceProxy(urlString);
+                
+                CertPolicy[] policies = null;
+                
+                try {
+                    policies = proxy.getPolicies();
+                } catch (Exception e) {
+                    System.out.println("Failed to lookup policies: " + e.getMessage());
+                }
+                
+                //log.error(policies);
+                
+                
+                if(policies != null) {
+                    model.addAttribute("policies", policies);
+                } else {                    
+                    model.addAttribute("policies", "");
+                }
+                
+                
+                
+                /*
                 // retrieve list of settings for settingsResults
                 List<Certificate> results = null;
                 if (configSvc != null) {
@@ -399,12 +433,102 @@ public class MainController {
                             e1.printStackTrace();
                     }								
                 }
-                model.addAttribute("simpleForm",new SimpleForm());
-                //model.addAttribute("bundlesResults", results);
+                */ 
+                
+                model.addAttribute("simpleForm",new SimpleForm());            
 
 
 
-            } else
+            } 
+            
+            
+            else if (actionPath.equalsIgnoreCase("ManageTrustBundles") || actionPath.equalsIgnoreCase("Bundles"))
+            {
+                if (log.isDebugEnabled())  {
+                    log.debug("trying to go to the Bundles page");
+                }
+
+
+                String action = "Update";
+                model.addAttribute("action", action);
+
+                mav.setViewName("bundles");
+                mav.addObject("actionPath", "gotobundles");
+
+                BundleForm form = (BundleForm) session.getAttribute("BundleForm");
+                if (form == null) {
+                    form = new BundleForm();
+                }
+
+                model.addAttribute("bundleForm", form);
+
+                // retrieve list of settings for settingsResults
+                List<Certificate> results = null;
+                if (configSvc != null) {
+                    // Process data for Trust Bundle View
+                    try {
+
+                        // Get Trust Bundles
+                        Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(true); 
+                        
+                        if (trustBundles == null) {
+                        	trustBundles = Collections.emptyList();
+                        }
+                                
+                        Map<String, Object> bundleMap = new HashMap<String, Object>(trustBundles.size());                                                                                                            
+                                    
+                        Collection<TrustBundleAnchor> tbAnchors;    // Store anchors for each bundle   
+
+
+
+                        for(TrustBundle bundle : trustBundles) 
+                        {                                        
+                            tbAnchors = bundle.getTrustBundleAnchors();    
+                            Map<TrustBundleAnchor, String> anchorMap = new HashMap<TrustBundleAnchor, String>(tbAnchors.size());                                                                                
+
+                            //String[] anchorDNs = new String[tbAnchors.size()];  // String array for storing anchor DNs
+                            int curAnchor = 0;  // Counter as we iterate through anchor list
+
+                            // Loop through anchors to collect some information about the certificates
+                            for(TrustBundleAnchor anchor : tbAnchors) {
+
+                                try {
+                                    X509Certificate cert = anchor.toCertificate();                                            
+
+                                    String subjectDN = cert.getSubjectDN().toString();
+                                    anchorMap.put(anchor, subjectDN);
+
+                                } catch (org.nhindirect.config.store.CertificateException ex) {                                                
+                                }
+
+                                curAnchor++;
+                            }
+
+                            bundleMap.put(bundle.getBundleName(), anchorMap);
+
+                        }
+
+                        model.addAttribute("bundleMap", bundleMap);  
+                        
+                        
+                        
+                        model.addAttribute("trustBundles", trustBundles);                                
+
+                    } catch (ConfigurationServiceException e1) {
+                            e1.printStackTrace();
+                    }								
+                }
+                
+                
+                model.addAttribute("simpleForm",new SimpleForm());            
+
+
+
+            } 
+            
+            
+            
+            else
             {
 
                 SearchDomainForm form = (SearchDomainForm) session.getAttribute("searchDomainForm");
