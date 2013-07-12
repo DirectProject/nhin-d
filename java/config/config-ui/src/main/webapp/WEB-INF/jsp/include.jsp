@@ -21,4 +21,10 @@
 <script type="text/javascript" src="<c:url value="/resources/jqueryui/1.8/jquery-ui-1.8.4.custom.js"/>" ></script>
 <script type="text/javascript" src="<c:url value="/resources/jqueryform/2.47/jquery.form.js"/>" ></script>
 
+
+<link rel="stylesheet" href="<c:url value="/resources/reveal.css"/>">
+
+<script src="<c:url value="/resources/jquery.reveal.js"/>" type="text/javascript"></script>
+
+
 <!-- include.jsp -->
