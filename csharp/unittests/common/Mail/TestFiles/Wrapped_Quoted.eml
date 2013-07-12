@@ -1,0 +1,95 @@
+MIME-Version: 1.0
+Content-Type: multipart/signed;
+ protocol="application/pkcs7-signature";
+ boundary="----=_NextPart_36463612.222761064091";
+ micalg="SHA1"
+Subject: SES Secure Message
+Message-ID: <c7ac6e24-fb14-44c9-b996-885a3a1786a0@directaddress.net>
+Date: Fri, 15 Mar 2013 00:10:13 +0000
+From: "vtest@directaddress.net" <vtest@directaddress.net>
+To: <vses_test@direct.healthvault.com>
+Cc: <vtest1@directaddress.net>
+
+------=_NextPart_36463612.222761064091
+Content-Type: message/rfc822;
+ charset="utf-8";
+ name="Html Content.eml"
+Content-Transfer-Encoding: quoted-printable
+
+x-ses-message-id: 59dc9670=
+-6e1c-404d-ada7-89972c742778@directaddress.net
+Content-Type: multipart/alternative;
+ boundary=3D"----=3D_NextPart_51415223.066511374841"
+MIME-Version: 1.0
+Subject: Html Content
+Message-ID: <59dc9670-6e1c=
+-404d-ada7-89972c742778@directaddress.net>
+Date: Fri, 15 Mar 2013 00:10:13 +0000
+From: "vtest@directaddress.net" =
+<vtest@directaddress.net>
+To: "vses_test@direct.=
+healthvault.com" <=
+vses_test@direct.healthvault.com>=
+,<toby@direct.healthvault=
+.com>
+Cc: "vtest1=
+@directaddress.net" <vtest1@directaddress.net>
+
+------=3D_NextPart_51415223.066511374841
+Content-Type: text/plain;
+charset=3D"utf-8"
+
+Hello 
+
+------=3D_NextPart_51415223.066511374841
+Content-Type: text/html;
+ charset=3D"utf-8"
+
+<html><body>Hello</body></html>
+
+------=3D_NextPart_51415223.066511374841--
+
+------=_NextPart_36463612.222761064091
+Content-Type: application/pkcs7-signature;
+ name="smime.p7s"
+Content-Disposition: attachment;
+ filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIIHzAYJKoZIhvcNAQcCoIIHvTCCB7kCAQExCzAJBgUrDgMCGgUAMAsGCSqGSIb3DQEHAaCCBVsw
+ggKEMIIB8aADAgECAhCcFzeIj16Zk0k9I7X7r3F6MAkGBSsOAwIdBQAwRjEkMCIGCSqGSIb3DQEJ
+ARYVc2VjdXJlZXhzb2x1dGlvbnMuY29tMR4wHAYDVQQDExVzZWN1cmVleHNvbHV0aW9ucy5jb20w
+HhcNMTEwNDE5MTkyMjE5WhcNMzkxMjMxMjM1OTU5WjBGMSQwIgYJKoZIhvcNAQkBFhVzZWN1cmVl
+eHNvbHV0aW9ucy5jb20xHjAcBgNVBAMTFXNlY3VyZWV4c29sdXRpb25zLmNvbTCBnzANBgkqhkiG
+9w0BAQEFAAOBjQAwgYkCgYEAyrzYk9qmCoYM/hABQWq0jh/3jzPLKHnPAQwVcgHZGXlDVpQP7C6u
+B0ij8m61NnV26t8NhMP3dDw3XubplEWnZ4CLzCqDxeDmEgA8YIOkPcH/ryyIm3qhnBHqqPbvJe9B
+SBhUDdXnzaRuwnnusTdaQbOM6ZYzG4gVUZhD5UALH2kCAwEAAaN7MHkwdwYDVR0BBHAwboAQ+7fQ
+wrsi+e576JeDW8eIPaFIMEYxJDAiBgkqhkiG9w0BCQEWFXNlY3VyZWV4c29sdXRpb25zLmNvbTEe
+MBwGA1UEAxMVc2VjdXJlZXhzb2x1dGlvbnMuY29tghCcFzeIj16Zk0k9I7X7r3F6MAkGBSsOAwId
+BQADgYEAlX8saE2V3pXPI7/xo97V+8cPepHd3TTUtgRsP20FwGnT3Q9SQwKfgYrZt1NAU7cg5jt7
+A1sjEQVUsxB1lYENBx8KZa9biQMG8BBlg/eAf/LpgFl890Aj+zylgjgWuvWRY4WTVm/mNxFBN8um
+DYwJs8Gk/Z1TmdgfgMtkVU6upVUwggLPMIICOKADAgECAhCWjH0gK3f6pv1nNX2AXzQmMA0GCSqG
+SIb3DQEBBQUAMEYxJDAiBgkqhkiG9w0BCQEWFXNlY3VyZWV4c29sdXRpb25zLmNvbTEeMBwGA1UE
+AxMVc2VjdXJlZXhzb2x1dGlvbnMuY29tMB4XDTEyMDgyODE0MzQzMVoXDTEzMDkyNzE0MzQzMVow
+PjEUMBIGA1UEAxMLVmVua2F0IFRlc3QxJjAkBgkqhkiG9w0BCQEWF3Z0ZXN0QGRpcmVjdGFkZHJl
+c3MubmV0MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDaRLCXCCtCfZMFYjK/S2PwTxNqCb/U
+kt4zAfIdt/8HGDQJJFEgUOK5WzU4AHBmZdBGBgvqu3+2Pp/ApWk9OSoCiQO20Ip7AZAkl70D7T/U
+gb1qdLn6V+ZeAa8S3ogD8L8c+jWhwskf0gaL2FW6nvnrZBAZmYl7wjVP316mUdHxQQIDAQABo4HF
+MIHCMH0GA1UdIwR2MHSAFCOo6g0SQcLPFIs4PQLdUeHDzVDUoUqkSDBGMSQwIgYJKoZIhvcNAQkB
+FhVzZWN1cmVleHNvbHV0aW9ucy5jb20xHjAcBgNVBAMTFXNlY3VyZWV4c29sdXRpb25zLmNvbYIQ
+nBc3iI9emZNJPSO1+69xejAdBgNVHQ4EFgQULaB9cTMleOxf7rkIHhUykSxYmyAwIgYDVR0RBBsw
+GYEXdnRlc3RAZGlyZWN0YWRkcmVzcy5uZXQwDQYJKoZIhvcNAQEFBQADgYEAV0i+bunbMoMeRrBv
+Dz2TJzxCZqrIi+SPTjGwdFGpx4kyj2CPEOnaOf8p9X5fBs/yAH8jliFydiux3/47QXpfCn4TgAZv
+OLV3FxUTD8rj38sEU0u+HxhHLiS2+AZvkC4dqnwoC159k2z7DOjD3gLH+sfMyx23pCEL7oJw6xMm
+21IxggI5MIICNQIBATBaMEYxJDAiBgkqhkiG9w0BCQEWFXNlY3VyZWV4c29sdXRpb25zLmNvbTEe
+MBwGA1UEAxMVc2VjdXJlZXhzb2x1dGlvbnMuY29tAhCWjH0gK3f6pv1nNX2AXzQmMAkGBSsOAwIa
+BQCgggE1MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEzMDMxNTAw
+MTAxM1owIwYJKoZIhvcNAQkEMRYEFL2+r55u+0hxg+KeYzH4S0+flqDBMGkGCSsGAQQBgjcQBDFc
+MFowRjEkMCIGCSqGSIb3DQEJARYVc2VjdXJlZXhzb2x1dGlvbnMuY29tMR4wHAYDVQQDExVzZWN1
+cmVleHNvbHV0aW9ucy5jb20CEJaMfSArd/qm/Wc1fYBfNCYwawYLKoZIhvcNAQkQAgsxXDBaMEYx
+JDAiBgkqhkiG9w0BCQEWFXNlY3VyZWV4c29sdXRpb25zLmNvbTEeMBwGA1UEAxMVc2VjdXJlZXhz
+b2x1dGlvbnMuY29tAhCWjH0gK3f6pv1nNX2AXzQmMA0GCSqGSIb3DQEBAQUABIGAhbDq0007ksgI
+pnAxYY5O+ywjUMBWQno0hIVjLNgR9klUwcjjo+TAupY5o8IPeUb/KzffkFvf7Z2NmumiwjmOTIHL
+lE+LI+Yp00RVNW51UdqDeQHTh/wmoqxn1r3ToLtacprnC29Nvie5/xUeOY9C3GVvt4xUxVZWN7eJ
+z3uoCsA=
+------=_NextPart_36463612.222761064091--

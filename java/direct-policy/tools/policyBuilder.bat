@@ -1,0 +1,1 @@
+java -classpath ../target/classes;../target/lib/* org.nhindirect.policy.tools.policybuild.SimpleTextPolicyBuilder

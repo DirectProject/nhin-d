@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
+    <groupId>org.nhind</groupId>    
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>NHIN Direct reference implementation components</name>
+    <description>NHIN Direct parent project for java reference implementation components.</description>
+	<scm>
+		<url>https://nhin-d.googlecode.com/hg/java</url>
+		<connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java</connection>
+	</scm>	
+    <licenses>
+       <license>
+          <name>New BSD License</name>
+          <url>http://nhindirect.org/BSDLicense</url>
+       </license>
+    </licenses>   
+	<issueManagement>
+		<system>Google Code</system>
+		<url>http://code.google.com/p/nhin-d/issues/list</url>
+	</issueManagement>  	    
+    <modules>
+        <module>./config</module>
+        <module>./agent</module>
+        <module>./gateway</module>
+  </modules>
+    <developers>
+        <developer>
+            <name>Greg Meyer</name>
+            <id>GM2552</id>
+            <email>gm2552@cerner.com</email>
+            <roles>
+                <role>owner</role>
+            </roles>
+        </developer>
+     </developers>
+	 <prerequisites>
+	     <maven>2.0.4</maven>
+	 </prerequisites>
+    <build>	
+        <pluginManagement>
+           <plugins>
+              <plugin>
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-release-plugin</artifactId>
+                 <version>2.0</version>
+                 <configuration>
+                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+                 </configuration>
+              </plugin>
+           </plugins>
+        </pluginManagement>
+    </build>	
+	<distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-snapshot</id>
+            <name>Sonatype OSS Maven SNAPSHOT Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </snapshotRepository>
+         <repository>
+            <id>sonatype-release</id>
+            <name>Sonatype OSS Maven Release Repositor</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <uniqueVersion>false</uniqueVersion>
+         </repository>		
+	</distributionManagement>    	 
+</project>
