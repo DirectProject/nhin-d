@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.2.0.3
+AppVerName=Direct Project .NET Gateway 1.2.0.5
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.2.0.4-NET35
+OutputBaseFilename=Direct-1.2.0.5-NET35
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.2.0.4
+VersionInfoVersion=1.2.0.5
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -88,7 +88,6 @@ Name: "{app}\Log"
 ;run from command line
 ;example:
 ;"C:\Program Files (x86)\inno setup 5\iscc.exe"  .\Direct.iss /DConfiguration=Release
-Source: "..\bin\{#Configuration}\*.dll"; Excludes: "..\bin\{#Configuration}\Health.Direct.ModSpec3.ResolverPlugins.dll";  DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\{#Configuration}\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway;                            
 Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config,DirectDnsResponderSvc.exe.config"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
@@ -548,7 +547,6 @@ end;
 
 
 
-
 procedure WriteConfigItem(wizardPage : TWizardPage; configFile, xpath, objectName : String);
 var
   xpathTools: Variant;     
@@ -587,6 +585,56 @@ begin
     xpathTools.SetSingleAttribute(xpath, value);
     
 end;
+
+
+
+
+
+
+
+
+procedure WriteOrDeleteConfigItem(wizardPage : TWizardPage; configFile, nodexPath, xpath, objectName : String);
+var
+  xpathTools: Variant;     
+  textBox: TCustomEdit; 
+  labelText: TNewStaticText;
+  value : String;
+  existingValue : String;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    textBox := TCustomEdit(wizardPage.FindComponent(objectName));   
+    labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
+    if not (textBox = nil) then
+    begin
+      value := Trim(textBox.text);
+    end;
+    
+    if ( Length(value) > 0) then
+    begin
+      // Write data
+      WriteConfigItem(wizardPage, configFile, xpath, objectName);
+    end
+    else
+    begin
+      // Remove node
+      xpathTools.XmlFilePath := configFile;          
+      existingValue := xpathTools.SelectSingleAttribute(nodexPath);
+    
+      if ( Length(existingValue) > 0) then
+      begin
+        xpathTools.DeleteFragment(nodexPath);
+      end;      
+    end; 
+end;
+
+
+
+
+
 
 procedure WriteXmlFragment(configFile, xpath, fragement : String);
 var
@@ -687,7 +735,7 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/AddressManager/Url', 'AddressManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');                           
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText'); 
+  WriteOrDeleteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor', '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText'); 
   
   BundleText := TNewEdit(Sender.FindComponent('BundleText'));
 
@@ -747,8 +795,8 @@ begin
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/CertificateManager/Url', 'PrivateCertsText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/AnchorManager/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/DnsRecordManager/Url', 'DnsRecordManagerText');
-  WriteConfigItem(Sender, configFile, '/ConsoleSettings/MdnMonitor/Url', 'MdnMonitorText');
-  WriteConfigItem(Sender, configFile, '/ConsoleSettings/BundleManager/Url', 'BundleText');
+  WriteOrDeleteConfigItem(Sender, configFile, '/ConsoleSettings/MdnMonitor', '/ConsoleSettings/MdnMonitor/Url', 'MdnMonitorText'); 
+  WriteOrDeleteConfigItem(Sender, configFile, '/ConsoleSettings/BundleManager', '/ConsoleSettings/BundleManager/Url', 'BundleText'); 
 
   Result := True;
 
@@ -763,8 +811,8 @@ begin
   // Setting ConfigConsoleSettings.xml
   configFile := ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
          
-  WriteConfigItem(Sender, configFile, '/ConsoleSettings/PropertyManager/Url', 'PropertyText');
-  WriteConfigItem(Sender, configFile, '/ConsoleSettings/BlobManager/Url', 'BlobText');
+  WriteOrDeleteConfigItem(Sender, configFile, '/ConsoleSettings/PropertyManager', '/ConsoleSettings/PropertyManager/Url', 'PropertyText');
+  WriteOrDeleteConfigItem(Sender, configFile, '/ConsoleSettings/BlobManager', '/ConsoleSettings/BlobManager/Url', 'BlobText');
   
   Result := True;
 

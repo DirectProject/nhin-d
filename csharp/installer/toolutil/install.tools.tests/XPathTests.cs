@@ -123,6 +123,29 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal(expected, actual);
         }
 
+
+        [Fact]
+        public void DeletingNodes_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            XPath editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            editor.CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
+
+            editor.SetSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url", @"http://localhost/ConfigService/MonitorService.svc/Dispositions");
+
+            var actual = editor.SelectSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url");
+            var expected = @"http://localhost/ConfigService/MonitorService.svc/Dispositions";
+            Assert.Equal(expected, actual);
+
+            editor.DeleteFragment("/SmtpAgentConfig/MdnMonitor");
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/MdnMonitor");
+            Assert.Null(actual);
+        }
+
+
         [Fact]
         public void ReplaceFragment_Test()
         {

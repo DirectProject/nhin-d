@@ -25,7 +25,7 @@ namespace Health.Direct.Install.Tools.tests
         public void SmtpConnectTest()
         {
             Smtp smtp = new Smtp();
-            Assert.Throws<SocketException>(() => smtp.TestConnection("localhost", 25));
+            Assert.Throws<SocketException>(() => smtp.TestConnection("localhostx", 25));
 
         }
 
