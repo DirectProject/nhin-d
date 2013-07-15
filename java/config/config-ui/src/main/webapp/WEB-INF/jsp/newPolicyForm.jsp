@@ -6,7 +6,7 @@
 
 
 
-<div style="float:right"><a class="modal_close" href="#">Close</a></div>
+<div style="float:right"><a class="close-reveal-modal" href="#">Close</a></div>
 <br clear="both"/>
 <h3>Add New Policy</h3>
 

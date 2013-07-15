@@ -15,9 +15,12 @@ $(document).ready(function() {
     // Set up modals
      $('a[class=revealLink]').click(function(e) {
         e.preventDefault();   
-console.log(e+'test');   
-        $('#myModal').load($(this).attr('href'));
-	$('#myModal').reveal();
+  
+        $('#myModal').load($(this).attr('href'), function() {
+            $('#myModal').reveal({ animation: 'fadeAndPop',                   //fade, fadeAndPop, none
+     animationspeed: 300,    dismissmodalclass: 'close-reveal-modal' });
+        });
+	
      });
 
 
@@ -52,8 +55,8 @@ $(function() {
 });
 
 function openUpdatePolicyForm(id) {
-    console.log(id);    
-    $('#updatePolicy').load('/config-ui/config/policies/updatePolicy');
+    
+$('#updatePolicy').load('config');
 }
 
 
@@ -65,15 +68,12 @@ function openUpdatePolicyForm(id) {
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
 
     <h2>Manage Security Policies</h2>
-<div id="myModal" class="reveal-modal">test</div>
-<a href="/config-ui" class="revealLink" data-reveal-ajax="true">
-    Click Me For A Modal
-</a>
+<div id="myModal" class="reveal-modal">Loading...</div>
+
   
 
     <div id="newGroupPolicy" class="roundedCorners" style="display:none;background:white;padding:10px;width:400px;height:auto;"></div>
     <div id="newPolicy" class="roundedCorners" style="display:none;background:white;padding:10px;width:400px;height:auto;"></div>
-
     <div id="updatePolicy" class="roundedCorners" style="display:none;background:white;padding:10px;width:400px;height:auto;"></div>
 
     <ul class="tabs" style="width:100%">
@@ -86,7 +86,9 @@ function openUpdatePolicyForm(id) {
                     <div id="tab1" class="tab_content">
 
                        
-                        <div style="padding:10px 0;"><a rel="leanModal" name="newPolicy" href="#newPolicy">Add New Policy </a></div>
+                        <!--<div style="padding:10px 0;"><a rel="leanModal" name="newPolicy" href="#newPolicy">Add New Policy </a></div>-->
+                        <a href="/config-ui/config/policies/newPolicyForm" class="revealLink" data-reveal-ajax="true">Add New Policy</a>
+
                            <c:choose>
                             <c:when test="${not empty policies}">
 	
