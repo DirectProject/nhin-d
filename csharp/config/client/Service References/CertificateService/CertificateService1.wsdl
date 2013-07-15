@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="urn:directproject:config/store/082010" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="urn:directproject:config/store/082010/Imports">
+      <xsd:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd0" namespace="urn:directproject:config/store/082010" />
+      <xsd:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+      <xsd:import schemaLocation="http://localhost:6692/CertificateService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="ICertificateStore_AddCertificate_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddCertificate" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddCertificateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificate_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificates_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddCertificates" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificates_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddCertificatesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddCertificates_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificate_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertificate" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertificateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificate_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificates_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertificates" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificates_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertificatesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificates_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificatesForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertificatesForOwner" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificatesForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertificatesForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_GetCertificatesForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_SetCertificateStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetCertificateStatus" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_SetCertificateStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetCertificateStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_SetCertificateStatus_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_SetCertificateStatusForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetCertificateStatusForOwner" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_SetCertificateStatusForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetCertificateStatusForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_SetCertificateStatusForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_RemoveCertificates_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveCertificates" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_RemoveCertificates_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveCertificatesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_RemoveCertificates_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_RemoveCertificatesForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveCertificatesForOwner" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_RemoveCertificatesForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveCertificatesForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_RemoveCertificatesForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_EnumerateCertificates_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateCertificates" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_EnumerateCertificates_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateCertificatesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_EnumerateCertificates_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchor_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnchor" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchor_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnchorResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchor_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchors_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnchors" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchors_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAnchorsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_AddAnchors_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchor_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchor" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchor_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchorResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchor_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchors_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchors" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchors_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchorsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchors_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchorsForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchorsForOwner" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchorsForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAnchorsForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetAnchorsForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetIncomingAnchors_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingAnchors" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetIncomingAnchors_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingAnchorsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetIncomingAnchors_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetOutgoingAnchors_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingAnchors" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetOutgoingAnchors_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingAnchorsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_GetOutgoingAnchors_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetAnchorStatus" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetAnchorStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatus_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatusForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetAnchorStatusForOwner" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatusForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetAnchorStatusForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_SetAnchorStatusForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_EnumerateAnchors_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateAnchors" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_EnumerateAnchors_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateAnchorsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_EnumerateAnchors_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_RemoveAnchors_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAnchors" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_RemoveAnchors_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAnchorsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_RemoveAnchors_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_RemoveAnchorsForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAnchorsForOwner" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_RemoveAnchorsForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAnchorsForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAnchorStore_RemoveAnchorsForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_AddBundle_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddBundle" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_AddBundle_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddBundleResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_AddBundle_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_AddBundles_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddBundles" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_AddBundles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddBundlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_AddBundles_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundle_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBundle" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundle_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBundleResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundle_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundles_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBundles" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBundlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundles_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundlesForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetBundlesForOwner" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundlesForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetBundlesForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetBundlesForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetIncomingBundles_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingBundles" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetIncomingBundles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingBundlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetIncomingBundles_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetOutgoingBundles_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingBundles" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetOutgoingBundles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingBundlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_GetOutgoingBundles_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_SetBundleStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetBundleStatus" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_SetBundleStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetBundleStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_SetBundleStatus_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_SetBundleStatusForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetBundleStatusForOwner" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_SetBundleStatusForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetBundleStatusForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_SetBundleStatusForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_EnumerateBundles_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateBundles" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_EnumerateBundles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateBundlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_EnumerateBundles_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_RemoveBundles_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveBundles" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_RemoveBundles_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveBundlesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_RemoveBundles_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_RemoveBundlesForOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveBundlesForOwner" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_RemoveBundlesForOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveBundlesForOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBundleStore_RemoveBundlesForOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:portType name="ICertificateStore">
+    <wsdl:operation name="AddCertificate">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificate" message="tns:ICertificateStore_AddCertificate_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificateResponse" message="tns:ICertificateStore_AddCertificate_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_AddCertificate_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddCertificates">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificates" message="tns:ICertificateStore_AddCertificates_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificatesResponse" message="tns:ICertificateStore_AddCertificates_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificatesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_AddCertificates_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificate">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificate" message="tns:ICertificateStore_GetCertificate_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificateResponse" message="tns:ICertificateStore_GetCertificate_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_GetCertificate_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificates">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificates" message="tns:ICertificateStore_GetCertificates_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesResponse" message="tns:ICertificateStore_GetCertificates_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_GetCertificates_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertificatesForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwner" message="tns:ICertificateStore_GetCertificatesForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwnerResponse" message="tns:ICertificateStore_GetCertificatesForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/GetCertificatesForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_GetCertificatesForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetCertificateStatus">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatus" message="tns:ICertificateStore_SetCertificateStatus_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusResponse" message="tns:ICertificateStore_SetCertificateStatus_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_SetCertificateStatus_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetCertificateStatusForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOwner" message="tns:ICertificateStore_SetCertificateStatusForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOwnerResponse" message="tns:ICertificateStore_SetCertificateStatusForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/SetCertificateStatusForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_SetCertificateStatusForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveCertificates">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificates" message="tns:ICertificateStore_RemoveCertificates_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesResponse" message="tns:ICertificateStore_RemoveCertificates_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_RemoveCertificates_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveCertificatesForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwner" message="tns:ICertificateStore_RemoveCertificatesForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwnerResponse" message="tns:ICertificateStore_RemoveCertificatesForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/RemoveCertificatesForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_RemoveCertificatesForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateCertificates">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificates" message="tns:ICertificateStore_EnumerateCertificates_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificatesResponse" message="tns:ICertificateStore_EnumerateCertificates_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/EnumerateCertificatesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_EnumerateCertificates_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IAnchorStore">
+    <wsdl:operation name="AddAnchor">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchor" message="tns:IAnchorStore_AddAnchor_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchorResponse" message="tns:IAnchorStore_AddAnchor_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchorConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_AddAnchor_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAnchors">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchors" message="tns:IAnchorStore_AddAnchors_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchorsResponse" message="tns:IAnchorStore_AddAnchors_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/AddAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_AddAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAnchor">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchor" message="tns:IAnchorStore_GetAnchor_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorResponse" message="tns:IAnchorStore_GetAnchor_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetAnchor_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAnchors">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchors" message="tns:IAnchorStore_GetAnchors_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsResponse" message="tns:IAnchorStore_GetAnchors_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAnchorsForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwner" message="tns:IAnchorStore_GetAnchorsForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwnerResponse" message="tns:IAnchorStore_GetAnchorsForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetAnchorsForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetAnchorsForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingAnchors">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchors" message="tns:IAnchorStore_GetIncomingAnchors_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchorsResponse" message="tns:IAnchorStore_GetIncomingAnchors_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetIncomingAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetIncomingAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingAnchors">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchors" message="tns:IAnchorStore_GetOutgoingAnchors_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchorsResponse" message="tns:IAnchorStore_GetOutgoingAnchors_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/GetOutgoingAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_GetOutgoingAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetAnchorStatus">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatus" message="tns:IAnchorStore_SetAnchorStatus_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusResponse" message="tns:IAnchorStore_SetAnchorStatus_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_SetAnchorStatus_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetAnchorStatusForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwner" message="tns:IAnchorStore_SetAnchorStatusForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwnerResponse" message="tns:IAnchorStore_SetAnchorStatusForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/SetAnchorStatusForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_SetAnchorStatusForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateAnchors">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchors" message="tns:IAnchorStore_EnumerateAnchors_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchorsResponse" message="tns:IAnchorStore_EnumerateAnchors_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/EnumerateAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_EnumerateAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAnchors">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchors" message="tns:IAnchorStore_RemoveAnchors_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsResponse" message="tns:IAnchorStore_RemoveAnchors_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_RemoveAnchors_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAnchorsForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwner" message="tns:IAnchorStore_RemoveAnchorsForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwnerResponse" message="tns:IAnchorStore_RemoveAnchorsForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAnchorStore/RemoveAnchorsForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAnchorStore_RemoveAnchorsForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IBundleStore">
+    <wsdl:operation name="AddBundle">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/AddBundle" message="tns:IBundleStore_AddBundle_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/AddBundleResponse" message="tns:IBundleStore_AddBundle_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/AddBundleConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_AddBundle_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddBundles">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/AddBundles" message="tns:IBundleStore_AddBundles_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/AddBundlesResponse" message="tns:IBundleStore_AddBundles_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/AddBundlesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_AddBundles_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBundle">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundle" message="tns:IBundleStore_GetBundle_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundleResponse" message="tns:IBundleStore_GetBundle_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundleConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_GetBundle_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBundles">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundles" message="tns:IBundleStore_GetBundles_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundlesResponse" message="tns:IBundleStore_GetBundles_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundlesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_GetBundles_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetBundlesForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundlesForOwner" message="tns:IBundleStore_GetBundlesForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundlesForOwnerResponse" message="tns:IBundleStore_GetBundlesForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetBundlesForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_GetBundlesForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingBundles">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetIncomingBundles" message="tns:IBundleStore_GetIncomingBundles_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetIncomingBundlesResponse" message="tns:IBundleStore_GetIncomingBundles_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetIncomingBundlesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_GetIncomingBundles_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingBundles">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetOutgoingBundles" message="tns:IBundleStore_GetOutgoingBundles_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetOutgoingBundlesResponse" message="tns:IBundleStore_GetOutgoingBundles_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/GetOutgoingBundlesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_GetOutgoingBundles_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetBundleStatus">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/SetBundleStatus" message="tns:IBundleStore_SetBundleStatus_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/SetBundleStatusResponse" message="tns:IBundleStore_SetBundleStatus_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/SetBundleStatusConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_SetBundleStatus_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetBundleStatusForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/SetBundleStatusForOwner" message="tns:IBundleStore_SetBundleStatusForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/SetBundleStatusForOwnerResponse" message="tns:IBundleStore_SetBundleStatusForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/SetBundleStatusForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_SetBundleStatusForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateBundles">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/EnumerateBundles" message="tns:IBundleStore_EnumerateBundles_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/EnumerateBundlesResponse" message="tns:IBundleStore_EnumerateBundles_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/EnumerateBundlesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_EnumerateBundles_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveBundles">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/RemoveBundles" message="tns:IBundleStore_RemoveBundles_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/RemoveBundlesResponse" message="tns:IBundleStore_RemoveBundles_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/RemoveBundlesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_RemoveBundles_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveBundlesForOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IBundleStore/RemoveBundlesForOwner" message="tns:IBundleStore_RemoveBundlesForOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IBundleStore/RemoveBundlesForOwnerResponse" message="tns:IBundleStore_RemoveBundlesForOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IBundleStore/RemoveBundlesForOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IBundleStore_RemoveBundlesForOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
