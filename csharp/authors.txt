@@ -1,0 +1,8 @@
+Umesh Madan	umeshma@microsoft.com
+Sean Nolan	seannol@microsoft.com
+John Theisen    jtheisen@kryptiq.com
+Arien Malec	arien.malec@nhindirect.org
+Chris Lomonico  chris.lomonico@surescripts.com
+Claudio Sanchez claudio.sanchez@feisystems.com
+Vassil Peytchev	vassil@epic.com
+Ron Cordell	ron.cordell@relayhealth.com
