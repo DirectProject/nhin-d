@@ -15,7 +15,7 @@ $(document).ready(function() {
     // Set up modals
      $('a[class=revealLink]').click(function(e) {
         e.preventDefault();   
-  
+        $('#myModal').html('Loading...');
         $('#myModal').load($(this).attr('href'), function() {
             $('#myModal').reveal({ animation: 'fadeAndPop',                   //fade, fadeAndPop, none
      animationspeed: 300,    dismissmodalclass: 'close-reveal-modal' });
@@ -92,7 +92,7 @@ $('#updatePolicy').load('config');
                            <c:choose>
                             <c:when test="${not empty policies}">
 	
-                                <spring:url value="/config/policies/removePolicy" var="formURLRemovePolicies" />                                
+                                <spring:url value="/config/policies/removePolicies" var="formURLRemovePolicies" />                                
                                 
                                 <form:form modelAttribute="policyForm" action="${fn:escapeXml(formURLRemovePolicies)}" cssClass="cleanform" method="POST">
                                 
