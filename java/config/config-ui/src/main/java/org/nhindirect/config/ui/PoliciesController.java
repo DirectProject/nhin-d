@@ -327,83 +327,62 @@ public class PoliciesController {
     }			
 	
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/removebundle", method = RequestMethod.POST)
-    public ModelAndView removeCertificates (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+    @RequestMapping(value="/removePolicies", method = RequestMethod.POST)
+    public ModelAndView removePolicies (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
                                                     HttpSession session,
-                                                    @ModelAttribute BundleForm simpleForm,
+                                                    @ModelAttribute PolicyForm policyForm,
                                                     Model model)  { 		
 
         ModelAndView mav = new ModelAndView(); 
 
         if (log.isDebugEnabled()) 
         {
-            log.debug("Enter bundles/removebundle");
+            log.debug("Enter remove policies method");
         }
         
-        if(simpleForm.getBundlesSelected() != null)
+        if(policyForm.getPoliciesSelected() != null)
         {
             if (log.isDebugEnabled()) 
             {
-                log.debug("Bundles marked for removal: "+simpleForm.getBundlesSelected().toString());
+                log.debug("Policies marked for removal: "+policyForm.getPoliciesSelected().toString());
             }
         }
 
         if (configSvc != null 
-                && simpleForm != null 
-                && simpleForm.getBundlesSelected() != null) 
+                && policyForm != null 
+                && policyForm.getPoliciesSelected() != null) 
         {
             
-            int bundleCount = simpleForm.getBundlesSelected().size();
-            long[] bundlesSelected = new long[bundleCount];
+            int policyCount = policyForm.getPoliciesSelected().size();
+            long[] policiesSelected = new long[policyCount];
 
             if (log.isDebugEnabled()) 
             {
-                log.debug("Removing Bundles");
+                log.debug("Removing Policies");
             }
             
-            for(int i=0; i<bundleCount; i++) 
+            for(int i=0; i<policyCount; i++) 
             {
-                String bundleId = simpleForm.getBundlesSelected().get(i);
+                String bundleId = policyForm.getPoliciesSelected().get(i);
                 log.error(bundleId);
                 
-                bundlesSelected[i] = Long.parseLong(bundleId);
+                policiesSelected[i] = Long.parseLong(bundleId);
                 
             }
             
             // Delete Trust Bundle(s)
             try 
             {
-                configSvc.deleteTrustBundles(bundlesSelected);
+                configSvc.deletePolicies(policiesSelected);
             } catch (ConfigurationServiceException cse) 
             {
-                log.error("Problem removing bundles");
+                log.error("Problem removing policies");
             }
             
-        }
+        }        
         
-        model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
-        
-        BundleForm bform = new BundleForm();
-        bform.setId(0);
-        model.addAttribute("bundleForm", bform);
-        mav.setViewName("bundles"); 
-        
-        // Process data for Trust Bundle View
-        try {
-
-            // Get Trust Bundles
-            Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
-
-            if(trustBundles != null) {
-                model.addAttribute("trustBundles", trustBundles);
-            }
-
-
-        } catch (ConfigurationServiceException e1) {
-
-        }                            
-
-        return mav;
+        // Just redirect to Manage Policies page for now
+        return new ModelAndView("redirect:/config/main/search?domainName=&submitType=ManagePolicies");
     }		
 
     
