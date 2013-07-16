@@ -1,10 +1,9 @@
 package org.nhindirect.config.ui.form;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
-import org.nhind.config.PolicyLexicon;
+import org.nhindirect.policy.PolicyLexicon;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 public class PolicyForm {

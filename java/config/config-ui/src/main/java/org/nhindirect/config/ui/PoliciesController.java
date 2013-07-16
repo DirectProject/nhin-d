@@ -67,7 +67,6 @@ import java.util.Map;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.policy.PolicyLexicon;
 import java.util.Random;
-import org.nhind.config.ConfigurationServiceProxy;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Controller
@@ -146,8 +145,7 @@ public class PoliciesController {
 
             }
 
-            String urlString = "http://localhost:8081/config-service/ConfigurationService";
-            ConfigurationServiceProxy proxy = new ConfigurationServiceProxy(urlString);
+            
 
             model.addAttribute("badPolicyNameError", false);
             model.addAttribute("badPolicyFileError", false);
@@ -156,12 +154,12 @@ public class PoliciesController {
             
             newPolicy.setPolicyName(policyForm.getPolicyName());
             
-            log.error("Lexicon:"+policyForm.getPolicyLexicon().toString());
-            
+            //log.error("Lexicon:"+policyForm.getPolicyLexicon().toString());
+                        
             
             // Set policy lexicon type
             
-            String lexiconName = policyForm.getPolicyLexicon().toString();
+            String lexiconName = "XML";//policyForm.getPolicyLexicon().toString();
             
             if(lexiconName.equalsIgnoreCase("XML")) {
                 newPolicy.setLexicon(PolicyLexicon.XML);
@@ -185,10 +183,10 @@ public class PoliciesController {
             
             
             
-            org.nhind.config.CertPolicy[] policies = null;
+            Collection policies = null;
                 
             try {
-                policies = proxy.getPolicies();
+                policies = configSvc.getPolicies();
             } catch (Exception e) {
                 System.out.println("Failed to lookup policies: " + e.getMessage());
             }

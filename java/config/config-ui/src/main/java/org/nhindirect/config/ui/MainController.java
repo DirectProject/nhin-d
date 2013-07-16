@@ -57,7 +57,7 @@ import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.config.store.util.DNSRecordUtils;
 import org.nhindirect.config.ui.DNSController.CertContainer;
 import org.nhindirect.config.service.CertificatePolicyService;
-import org.nhind.config.CertPolicy;
+
 
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -100,7 +100,7 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.TextParseException;
-import org.nhind.config.ConfigurationServiceProxy;
+
 
 @Controller
 @RequestMapping("/main")
@@ -355,13 +355,14 @@ public class MainController {
 
                 model.addAttribute("policyForm", form);
                 
-                String urlString = "http://localhost:8081/config-service/ConfigurationService";
-                ConfigurationServiceProxy proxy = new ConfigurationServiceProxy(urlString);
+                                              
                 
-                CertPolicy[] policies = null;
+                Collection policies = null;
+                
                 
                 try {
-                    policies = proxy.getPolicies();
+                    policies = configSvc.getPolicies();
+                    
                 } catch (Exception e) {
                     System.out.println("Failed to lookup policies: " + e.getMessage());
                 }
