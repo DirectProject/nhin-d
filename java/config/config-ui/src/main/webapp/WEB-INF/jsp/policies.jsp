@@ -105,12 +105,13 @@ $('#updatePolicy').load('config');
                                     
                                     <div class="content no-padding">
                                         
-                                        <table cellpadding="1px" cellspacing="1px" id="policiesTable" class="table" style="width:100%;margin-bottom:0;font-size:10px;">	
+                                        <table cellpadding="1px" cellspacing="1px" id="policiesTable" class="table" style="width:100%;margin-bottom:0;font-size:12px;">	
 			
                                             <thead>
                                                 <tr>
                                                     <th><input type="checkbox" onclick="var checkBoxes = $(':checkbox[name=policiesSelected]');checkBoxes.attr('checked', !checkBoxes.attr('checked'));"/></th>
                                                     <th>Policy Name</th> 
+                                                    <th width="100">Lexicon</th>
                                                     <th width="120">Created</th>
 
                                                     <!--
@@ -136,6 +137,7 @@ $('#updatePolicy').load('config');
                                                         </c:choose>
                                                             <td width=20><form:checkbox path="policiesSelected" value="${policy.id}" /></td>
                                                             <td><a rel="leanModal" name="updatePolicy" href="#updatePolicy" onclick="openUpdatePolicyForm(<c:out value="${policy.id}"/>);"><c:out value="${policy.policyName}"/></a></td>
+                                                            <td><c:out value="${policy.lexicon}"/></td>
                                                             <td><fmt:formatDate value="${policy.createTime.time}" pattern="MM/dd/yyyy hh:mm" /></td>
 
 
@@ -177,7 +179,7 @@ $('#updatePolicy').load('config');
             </c:when>
             <c:otherwise>
 
-                                No policies configured yet.
+                                <br/>No policies configured yet.
 
                             </c:otherwise>
                             </c:choose>
