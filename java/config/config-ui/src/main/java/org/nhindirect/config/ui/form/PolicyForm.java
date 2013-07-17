@@ -17,6 +17,7 @@ public class PolicyForm {
 	private byte[] data;
 	private List<String> policiesSelected;
         private String allSelected;
+        private String policyContent;
         
         private Map<String,String> lexiconNames;
         
@@ -107,6 +108,12 @@ public class PolicyForm {
             return allSelected;
         }
         
-	
+        public String getPolicyContent() {
+            return policyContent;            
+        }
+        
+        public void setPolicyContent(String policyContent) {
+            this.policyContent = policyContent;
+        }
 
 }

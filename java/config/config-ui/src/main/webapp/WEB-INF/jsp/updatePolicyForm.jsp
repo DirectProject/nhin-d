@@ -57,6 +57,16 @@
             
         </div>
 
+        
+        <div>
+            <Label>Policy Content:</Label>
+            <form:textarea path="policyContent" cols="200" rows="10"/>
+        </div>
+        
+
+
+
+
 <div class="form-submit-area">
         <button name="submitType" class="submit" id="submitType" type="submit" value="newpolicy">Update Policy</button>
 </div>

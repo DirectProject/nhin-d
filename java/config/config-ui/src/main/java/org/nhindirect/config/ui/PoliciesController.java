@@ -20,6 +20,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -67,7 +68,9 @@ import java.util.Map;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.policy.PolicyLexicon;
 import java.util.Random;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/policies")
@@ -387,29 +390,42 @@ public class PoliciesController {
 
     
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/refreshBundles", method = RequestMethod.POST)
-    public ModelAndView refreshBundles (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+    @RequestMapping(value="/updatePolicyForm", method = RequestMethod.GET)        
+    public ModelAndView updatePolicyForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+                                            @RequestParam("id") String id,
                                                     HttpSession session,
-                                                    @ModelAttribute BundleForm simpleForm,
+                                                    @ModelAttribute PolicyForm policyForm,
                                                     Model model)  { 		
-
+        CertPolicy policy = null;
         ModelAndView mav = new ModelAndView(); 
 
         if (log.isDebugEnabled()) 
         {
-            log.debug("Enter bundles/refreshbundles");
+            log.debug("Enter policies update form for policy #"+id);
         }
         
-        
-        
-        if(simpleForm.getBundlesSelected() != null)
-        {
-            if (log.isDebugEnabled()) 
-            {
-                log.debug("Bundles marked for refresh: "+simpleForm.getBundlesSelected().toString());
-            }
+        try {
+            policy = configSvc.getPolicyById(Long.parseLong(id));
+        } catch (ConfigurationServiceException cse){
+            cse.printStackTrace();
+            return new ModelAndView("redirect:/");                    
         }
-
+        
+        PolicyForm pform = new PolicyForm();
+                
+        pform.setId(policy.getId());
+        pform.setPolicyName(policy.getPolicyName());
+        pform.setPolicyLexicon(policy.getLexicon());
+        try {
+            pform.setPolicyContent(new String(policy.getPolicyData(), "UTF-8"));
+        } catch (UnsupportedEncodingException ie) {
+            ie.printStackTrace();
+        }
+        model.addAttribute("policyForm", pform);
+        mav.setViewName("updatePolicyForm"); 
+        
+        
+        /*
         if (configSvc != null 
                 && simpleForm != null 
                 && simpleForm.getBundlesSelected() != null) 
@@ -461,28 +477,36 @@ public class PoliciesController {
 
         }                            
         return new ModelAndView("redirect:/config/main/search?domainName=&submitType=ManageTrustBundles");        
+        */
+        return mav;     
     }		
 
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/updatePolicy", method = RequestMethod.GET)
-    public ModelAndView updatePolicy (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
-                                                    HttpSession session,
-                                                    @ModelAttribute PolicyForm policyForm,
-                                                    Model model)  { 		
-
-        ModelAndView mav = new ModelAndView(); 
+    @RequestMapping(value="/updatePolicy", method = RequestMethod.POST)
+    @ResponseBody
+    public String updatePolicy (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+                                      @ModelAttribute PolicyForm policyForm,
+                                        HttpSession session,                                                    
+                                        Model model)  { 		
+        String jsonResponse = null;
 
         if (log.isDebugEnabled()) 
         {
-            log.debug("Enter bundles/assignBundles");
+            log.debug("Enter update policy #"+policyForm.getId());
         }    
-                                              
         
-        //PolicyForm policyForm = new PolicyForm();        
-        model.addAttribute("policyForm", policyForm);
-        mav.setViewName("updatePolicyForm");
+        // Convert policy data to byte array
+        byte[] policyData = policyForm.getFileData().getBytes();
         
-        return mav;
+        try {
+            configSvc.updatePolicyAttributes(policyForm.getId(), policyForm.getPolicyName(), policyForm.getPolicyLexicon(), policyData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
+        
+        
+        return jsonResponse;
     }
 		
     @PreAuthorize("hasRole('ROLE_ADMIN')") 

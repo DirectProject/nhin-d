@@ -84,9 +84,7 @@ $('#updatePolicy').load('config');
                 <div class="tab_container">
                     
                     <div id="tab1" class="tab_content">
-
-                       
-                        <!--<div style="padding:10px 0;"><a rel="leanModal" name="newPolicy" href="#newPolicy">Add New Policy </a></div>-->
+                                               
                         <a href="/config-ui/config/policies/newPolicyForm" class="revealLink" data-reveal-ajax="true">Add New Policy</a>
 
                            <c:choose>
@@ -136,7 +134,7 @@ $('#updatePolicy').load('config');
                                                             </c:otherwise>
                                                         </c:choose>
                                                             <td width=20><form:checkbox path="policiesSelected" value="${policy.id}" /></td>
-                                                            <td><a rel="leanModal" name="updatePolicy" href="#updatePolicy" onclick="openUpdatePolicyForm(<c:out value="${policy.id}"/>);"><c:out value="${policy.policyName}"/></a></td>
+                                                            <td><a href="/config-ui/config/policies/updatePolicyForm?id=<c:out value="${policy.id}"/>" class="revealLink" data-reveal-ajax="true"><c:out value="${policy.policyName}"/></a></td>
                                                             <td><c:out value="${policy.lexicon}"/></td>
                                                             <td><fmt:formatDate value="${policy.createTime.time}" pattern="MM/dd/yyyy hh:mm" /></td>
 
