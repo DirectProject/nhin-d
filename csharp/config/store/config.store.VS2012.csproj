@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Health.Direct.Config.Store</RootNamespace>
+    <AssemblyName>Health.Direct.Config.Store</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AddressManager.cs" />
+    <Compile Include="AddressQueries.cs" />
+    <Compile Include="Administrator.cs" />
+    <Compile Include="AdministratorManager.cs" />
+    <Compile Include="AdministratorQueries.cs" />
+    <Compile Include="AnchorManager.cs" />
+    <Compile Include="AnchorQueries.cs" />
+    <Compile Include="AnchorResolver.cs" />
+    <Compile Include="Bundle.cs" />
+    <Compile Include="BundleManager.cs" />
+    <Compile Include="BundleQueries.cs" />
+    <Compile Include="CertificateManager.cs" />
+    <Compile Include="Address.cs" />
+    <Compile Include="Anchor.cs" />
+    <Compile Include="Certificate.cs" />
+    <Compile Include="CertificateQueries.cs" />
+    <Compile Include="ConfigStore.cs" />
+    <Compile Include="ConfigDatabase.cs" />
+    <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="Mdn.cs" />
+    <Compile Include="MdnQueries.cs" />
+    <Compile Include="MdnStatus.cs" />
+    <Compile Include="MdnManager.cs" />
+    <Compile Include="PropertyManager.cs" />
+    <Compile Include="DateTimeHelper.cs" />
+    <Compile Include="DnsRecord.cs" />
+    <Compile Include="DnsRecordManager.cs" />
+    <Compile Include="DnsRecordQueries.cs" />
+    <Compile Include="Domain.cs" />
+    <Compile Include="DomainManager.cs" />
+    <Compile Include="DomainQueries.cs" />
+    <Compile Include="EntityStatus.cs" />
+    <Compile Include="PasswordHash.cs" />
+    <Compile Include="Property.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NamedBlobManager.cs" />
+    <Compile Include="PropertyQueries.cs" />
+    <Compile Include="Queries.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NamedBlob.cs" />
+    <Compile Include="NamedBlobQueries.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Schema.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\common.VS2012.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(TargetDir)*.*" "$(SolutionDir)..\bin\$(ConfigurationName)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

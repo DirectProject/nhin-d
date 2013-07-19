@@ -1,0 +1,160 @@
+<Project DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
+	
+	<!-- Tigris - external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
+	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
+	<!-- ON 64-bit machines you may need to change line 6 in the MSBuild.Community.Tasks.Targets 
+			 to $(MSBuildExtensionsPath32)\MSBuildCommunityTasks -->
+	<!-- <Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /> -->
+	
+	<!-- this imports the xunit and xunitproject tasks -->
+	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
+
+	<!-- place any strings/properties here that are likely to be used more than once -->
+	<PropertyGroup>
+	    <Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
+		<agent_solution>.\build\agent.VS2012.sln</agent_solution>
+		<gateway_solution>.\build\gateway.VS2012.sln</gateway_solution>
+		<smtpEventHandler_solution>.\build\smtpEventHandler.sln</smtpEventHandler_solution>
+		<xd_solution>.\build\xd.VS2012.sln</xd_solution>
+		<configui_solution>.\admin\AdminUI.sln</configui_solution>
+	</PropertyGroup>
+
+	<!-- Aliases -->
+	<Target Name="build" DependsOnTargets="build-all" />
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xd;build-configui" />
+
+	<Target Name="clean" DependsOnTargets="clean-all" />
+	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
+
+	<Target Name="test" DependsOnTargets="test-all" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd" />
+
+	<Target Name="build-agent">
+		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<Target Name="clean-agent">
+		<MSBuild Projects="$(agent_solution)" Targets="Clean" />
+	</Target>
+
+	<Target Name="build-agent-help" DependsOnTargets="build-agent">
+		<Exec Command="build\sc_help.bat bin\debug\Health.Direct.Agent.dll" />
+	</Target>
+
+	<Target Name="build-gateway">
+		<CallTarget Targets="build-gateway32" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'x86' " />
+		<CallTarget Targets="build-gateway64" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'AMD64' " />
+	</Target>
+
+	<Target Name="build-smtpEventHandler" DependsOnTargets="Clean">
+		<CallTarget Targets="build-smtpEventHandler32"  />
+		<CallTarget Targets="build-smtpEventHandler64"  />
+	</Target>	
+	
+	<Target Name="build-gateway32" DependsOnTargets="get-smtpEventHandlerBin">
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
+	</Target>
+	
+	<Target Name="build-gateway64" DependsOnTargets="get-smtpEventHandlerBin">
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
+	</Target>
+		
+	<Target Name="build-smtpEventHandler32" DependsOnTargets="build-gateway32">
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
+	</Target>
+	
+	<Target Name="build-smtpEventHandler64" DependsOnTargets="build-gateway64">
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
+	</Target>
+
+	<Target Name="clean-gateway">
+		<!-- common files may have been removed, so... ugly but rebuild them and then clean them! The pain of a
+		     shared bin folder. -->
+		<!-- <MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=$(Configuration);Architecture=Any CPU" /> -->
+		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=$(Configuration);Architecture=Any CPU" />
+	</Target>
+	
+	<Target Name="build-configui">
+		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
+	</Target>
+	
+	<Target Name="clean-configui">
+		<MSBuild Projects="$(configui_solution)" Targets="Clean" />
+	</Target>
+	
+	<Target Name="clean-xd">
+		<MSBuild Projects="$(xd_solution)" Targets="Clean" />
+	</Target>
+	
+	<Target Name="build-xd">
+		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
+	<Target Name="test-agent" DependsOnTargets="build-agent">
+		<xunitproject ProjectFile="unittests\agent.xunit" />
+	</Target>
+	
+	<Target Name="test-gateway" DependsOnTargets="build-gateway">
+		<xunitproject ProjectFile="unittests\gateway.xunit" />
+	</Target>
+
+	<Target Name="test-xd" DependsOnTargets="build-xd">
+		<xunitproject ProjectFile="unittests\xd.xunit" />
+	</Target>
+
+	<Target Name="test-store" DependsOnTargets="build-xd">
+		<xunitproject ProjectFile="unittests\store.xunit" />
+	</Target>
+
+	<Target Name="publish-configui">
+		<MSBuild Targets="clean-configui-install" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
+		<CallTarget Targets="build-configui" />
+		
+		<AspNetCompiler
+				VirtualPath="/ConfigUI"
+				PhysicalPath="admin\adminmvc\"
+				TargetPath=".\installer\configui\"
+				Clean="true"
+				Force="true"
+				Updateable="true"
+				/>
+				
+		<!-- Clean up after ourselves -->
+		<ItemGroup>
+			<FilesToDelete Include=".\installer\configui\AdminMvc.*" />
+		</ItemGroup>
+		<RemoveDir Directories=".\installer\configui\common;.\installer\configui\controllers;.\installer\configui\models;.\installer\configui\obj;.\installer\configui\properties" />
+		<Delete Files="@(FilesToDelete)" /> 
+	</Target>
+
+	<Target Name="clean-configui-install">
+		<RemoveDir Directories=".\installer\configui" />
+	</Target>
+
+	
+	<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway32;build-gateway64;publish-configui" />
+
+	<Target Name="get-smtpEventHandlerBin" >
+		<ItemGroup>
+			<smtpEventHandler32 Include="$(MSBuildProjectDirectory)\gateway\smtpEventHandler\bin\$(Configuration)\Win32\**\*.*"/>
+			<smtpEventHandler64 Include="$(MSBuildProjectDirectory)\gateway\smtpEventHandler\bin\$(Configuration)\x64\**\*.*"/>
+		</ItemGroup>
+		
+		<Copy
+            SourceFiles="@(smtpEventHandler32)"
+            DestinationFiles="@(smtpEventHandler32->'$(MSBuildProjectDirectory)\bin\$(Configuration)\Win32\%(Filename)%(Extension)')"
+        />
+		<Copy
+            SourceFiles="@(smtpEventHandler64)"
+            DestinationFiles="@(smtpEventHandler64->'$(MSBuildProjectDirectory)\bin\$(Configuration)\x64\%(Filename)%(Extension)')"
+        />
+	</Target>
+	
+	<Target Name="build-installer">
+		<Error Text="Use the build-installer.bat script found in the installer directory." />
+	</Target>
+	
+</Project>

@@ -1,0 +1,424 @@
+h1. Simple Text Lexicon Version I
+
+The [SimpleTextV1Lexicon|../apidocs/org/nhindirect/policy/impl/SimpleTextV1LexiconPolicyParser.html] goal is to allow policy definitions to be written in a simple syntax similar to writing an "if" statement.  The lexicon defines a small set of reserved tokens consisting of binary and unary operators as well as literals that represent attributes/extensions within an X509 certificate.  Definitions can range from trivial statement to very complex compound, grouped, and ternary expressions.  
+
+Expression are evaluated from left to right executing each operator in the order that it is encountered. Although there is no precedence of operations in the policy engine, this lexicon allows for expressions to be prioritized and grouped by placing them in parentheses.  
+
+Although some operators evaluate to integer values, the final evaluation of a policy definition MUST evaluate to a boolean value.  For example the following is syntactically correct, but would fail in the engine because it only evaluated to an integer.
+
+{code}
+  X509.TBS.EXTENSION.KeyUsage & 32
+{code}
+
+This example is intended to check if the keyEncipherment bit of the key usage extension is set by performing a logic and operation, but the result is an integer value.  A valid statement may look like the following:
+
+{code}
+  (X509.TBS.EXTENSION.KeyUsage & 32) > 0
+{code}
+
+Note the parentheses.  Technically they are not necessary because the operations are executed from left to right with no precedence.  However it is good practice to group operations this way to provide clarity.  Take for instance if we reversed the operations:
+
+{code}
+  0 < X509.TBS.EXTENSION.KeyUsage & 32 
+{code}
+
+This statement would actually fail because the first statement results in a boolean value and the second operation attempts to perform a logical and against a boolean and an integer.  A simple adding of parentheses is needed to force the logical and to be performed first.
+
+{code}
+  0 < (X509.TBS.EXTENSION.KeyUsage & 32)
+{code}
+
+h2. Formal Syntax Definition
+
+The following is an EBNF definition of the Simple Text Version 1 lexicon:
+
+{code}
+ letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+      | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+      | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+      | "V" | "W" | "X" | "Y" | "Z" 
+      | "a" | "b" | "c" | "d" | "e" | "f" | "g"
+      | "h" | "i" | "j" | "k" | "l" | "m" | "n"
+      | "o" | "p" | "q" | "r" | "s" | "t" | "u" 
+      | "v" | "w" | "x" | "y" | "z" ;
+      
+ digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+ 
+ symbol = "[" | "]" |  "." | "#" | "%" | "+" ;
+ 
+ unaryOperator = "^" | "{}" | "{}!" | "!" | "@@" ;
+ 
+ binaryOperator = "=" | "!=" |  ">" | "<" | "$" | "{?}" | "{?}!" | "{}$" 
+      | "{}&" |  "||" | "&&"  | "&" | "|" ;
+      
+ operator = unaryOperator | binaryOperator
+      
+ literalExpression = { letter | digit | symbol | white space} ;
+ 
+ rdnAttributeName = "CN" | "C" | "O" | "OU" | "ST" | "L" | "E" | "DC"
+      | "DNQUALIFIER" | "SERIALNUMBER" | "SN" | "TITLE" | "GIVENNAME"
+      | "INITIALS" | "PSEUDONYM" | "GERNERAL_QUALIFIER" | "DN" ;
+      
+ x509Expression = "X509.Algorithm" | "X509.Signature" ;
+ 
+ tbsExpression = "X509.TBS.Version" | "X509.TBS.SerialNumber" 
+      | "X509.TBS.Signature" | "X509.TBS.Issuer.", rdnAttributeName
+      | "X509.TBS.Validity.ValidFrom" | "X509.TBS.Validity.ValidTo"
+      | "X509.TBS.Subject.", rdnAttributeName | "X509.TBS.IssuerUniqueID"
+      | "X509.TBS.SubjectUniqueID" | "X509.TBS.SubjectPublicKeyInfo.Algorithm"
+      | "X509.TBS.SubjectPublicKeyInfo.Size" ;
+      
+ extensionExpression = "X509.TBS.EXTENSION.KeyUsage" | "X509.TBS.EXTENSION.SubjectAltName"
+      | "X509.TBS.EXTENSION.SubjectDirectoryAttributes" 
+      | "X509.TBS.EXTENSION.SubjectKeyIdentifier" | "X509.TBS.EXTENSION.IssuerAltName"
+      | "X509.TBS.EXTENSION.AuthorityKeyIdentifier.KeyId" 
+      | "X509.TBS.EXTENSION.AuthorityKeyIdentifier.CertIssuers"
+      | "X509.TBS.EXTENSION.AuthorityKeyIdentifier.SerialNumber"
+      | "X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs"
+      | "X509.TBS.EXTENSION.CertificatePolicies.CPSUrls"
+      | "X509.TBS.EXTENSION.PolicyMappings" | "X509.TBS.EXTENSION.BasicConstraints.CA"
+      | "X509.TBS.EXTENSION.BasicConstraints.MaxPathLength"
+      | "X509.TBS.EXTENSION.NameConstraints" | "X509.TBS.EXTENSION.PolicyConstraints"
+      | "X509.TBS.EXTENSION.ExtKeyUsageSyntax" | "X509.TBS.EXTENSION.InhibitAnyPolicy"
+      | "X509.TBS.EXTENSION.CRLDistributionPoints.FullName" 
+      | "X509.TBS.EXTENSION.CRLDistributionPoints.RelativeToIssuer" 
+      | "X509.TBS.EXTENSION.CRLDistributionPoints.Reasons"
+      | "X509.TBS.EXTENSION.CRLDistributionPoints.CRLIssuer"
+      | "X509.TBS.EXTENSION.FreshestCRL.FullName"
+      | "X509.TBS.EXTENSION.FreshestCRL.RelativeToIssuer"
+      | "X509.TBS.EXTENSION.FreshestCRL.Reasons" 
+      | "X509.TBS.EXTENSION.FreshestCRL.CRLIssuer"
+      | "X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.Url"
+      | "X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.OCSPLocation"
+      | "X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.AccessMethod"
+      | "X509.TBS.EXTENSION.SubjectInfoAccessSyntax.Url"
+      | "X509.TBS.EXTENSION.SubjectInfoAccessSyntax.AccessMethod"
+      | "X509.TBS.EXTENSION.SubjectInfoAccessSyntax.OCSPLocation" ;
+      
+  requiredExpression =  tbsExpression, "+" | extensionExpression, "+" ;
+  
+  certificateReferenceExpression = x509Expression | tbsExpression | 
+      | extensionExpression | requiredExpression ;
+      
+  operatorExpression = [{(}] unaryOperator, [{white space}],  (literalExpression | certificateReferenceExpression | operatorExpression) , [{)}] |
+      [{(}], (literalExpression | certificateReferenceExpression | operatorExpression) ,  [{white space}] , binaryOperator , [{white space}]
+      (literalExpression | certificateReferenceExpression | operatorExpression) , [{)}] ;
+      
+  policyExpression = {operatorExpression} 
+{code}
+
+h3. Literals
+
+Literals are just simply strings (including white space) and numbers that are used as operands to operations.  There is no special syntax to discern between strings and numbers (although collections a delimited by the comma "," character) as the engine automatically makes the appropriate conversions.  Boolean literals are simply represented by the strings "true" and "false".  
+
+h3. Operators
+
+A highly functional but select set of operators exist for the evaluation of X509 certificate attribute and extension values.  The set is divided into unary and binary operations, however operations may immediately follow each other to form ternary expressions.  The full list of supported operations is enumerated in the [PolicyOperator|../apidocs/org/nhindirect/policy/PolicyOperator.html] class.
+
+h4. Unary Operators
+
+Unary operators precede their single operand, however there may be white space between the operator and the operand.  The following is a description of each unary operator:
+
+*SIZE: "^"*
+
+The size operator is expressed with the "^" token and its single parameter is a collection object.  It returns an integer value indicating the number of elements within the collection.
+
+*EMPTY: "\{\}"*
+
+The empty operator is expressed with the "{}" token and its single parameter is a collection object.  It returns a boolean value indicating if the collection is empty.  Empty is defined by the collection containing 0 elements.
+
+*NOT EMPTY: "\{\}!"*
+
+The not empty operator is expressed with the "{}!" token and its single parameter is a collection object.  It returns a boolean value indicating if the collection is not empty.  Not empty is defined by the collection containing 1 or more elements.
+
+*LOGICAL NOT: "!"*
+
+The logical not operator is expressed with the "!" token and its single parameter is a boolean value.  It returns a opposite value of the boolean operand: i.e. if the single parameter is true then false is returned and vice versa.
+
+*URI VALIDATE: "&&"*
+
+The URI validate operator is expressed with the "&&" token and its single parameter is string representing a fully qualified URI.  It returns an boolean value indicating if the URL syntactically correct and that the URI resource exists and is accessible from the calling application.
+
+h4. Binary Operators
+
+Binary operators consist of two operands, one on each side of the operator and are evaluated from left to right.  The following is a description of each binary operator:
+
+*EQUALS: "="*
+
+The equals operator is expressed with the "=" token and each parameter can be of any type.  It returns a boolean value indicating if the two operands are equal to each other.  The semantics of equality may be subject to parameter type.  If a parameters is not a string or number, then the engine attempts to use the parameter object's equals operator to determine equality.
+
+*NOT_EQUALS: "!="*
+
+The equals operator is expressed with the "!=" token and each parameter can be of any type.  It returns a boolean value indicating if the two operands are not equal to each other.  Identical to the EQUALS operator, the semantics of equality may be subject to parameter type.  If a parameters is not a string or number, then the engine attempts to use the parameter object's equals operator to determine equality.
+
+*GREATER THAN: ">"*
+
+The greater than operator is expressed with the ">" token and each parameter must be a number.  It returns an boolean value indicating if the first operand is larger than the second operand.
+
+*LESS THAN: ">"*
+
+The less than operator is expressed with the "<" token and each parameter must be a number.  It returns an boolean value indicating if the first operand is less than the second operand.
+
+*REGEX: "$"*
+
+The regular expression operator is expressed with the "$" token and each parameter must be an string (numbers are interpreted as strings).  It returns an boolean value indicating if the first operand is a regular expression match in the second operand.  I.e. the first operand is the expression to search for and the second operand is the string that is searched.
+
+*CONTAINS: "\{?\}"*
+
+The contains operator is expressed with the "{?}" token and the first parameter is an object of any type and the second parameter is a collection of objects of any type.  It returns a boolean value indicating if the first parameter exists inside the collection.  Checking for the existence of an object within a collection explicitly uses the Java Collection's contains() method.
+
+*NOT CONTINAS: "\{?\}!"*
+
+The not contains operator is expressed with the "{?}!" token and the first parameter is an object of any type and the second parameter is a collection of objects of any type.  It returns a boolean value indicating if the first parameter does not exists inside the collection.  Identical to the contains operator, checking for the existence of an object within a collection explicitly uses the Java Collection's contains() method.
+
+*CONTAINS REGEX: "\{\}$"*
+
+The contains regular expression is expressed with the "{}$" token and the first parameter is a string the second parameter is a collection of objects of any type.  It returns a boolean value indicating if the first operand is a regular expression match to any object in the collection.  If objects in the collection are not string, the operator uses the Java Object toString method to obtain a string representation of the object for regular expression matching.
+
+*INTERSECTION: "\{\}&"*
+
+The intersection operator is expressed with the "{}$" token and both parameters can be either a comma delimited set of strings or collections of objects of any type.  It returns a collection of elements by performing an intersection of sets operation on both collections.  The intersection is process by the using the Java Collection retainAll method.  If the intersection results in an empty set, then an empty collection is returned.  Comma delimited string are automatically converted into a collection of strings.
+
+*LOGICAL OR: "||"*
+
+The logical or operator is expressed with the "||" token and each parameter must be a boolean value.  It returns a boolean value indicating if at least one operand evaluates to true.
+
+*LOGICAL AND: "&&"*
+
+The logical and operator is expressed with the "&&" token and each parameter must be a boolean value.  It returns a boolean value indicating that both operands evaluate to true.
+
+*BITWISE OR: "|"*
+
+The bitwise or operator is expressed with the "|" token and each parameter must be an number.  It returns a numeric value by performing a bit wise or operation on each bit of the provided numbers.
+
+*BITWISE AND: "&"*
+
+The bitwise and operator is expressed with the "&" token and each parameter must be an number.  It returns a numeric value by performing a bit wise and operation on each bit of the provided numbers.
+
+h3. Certificate Reference Expressions
+
+Certificate reference expressions are tokens that extract attribute or extension value from an X509 certificate.  They are broken into three categories corresponding to sections of certificates as defined by [RFC5280|http://www.ietf.org/rfc/rfc5280.txt]:
+
+* Certificate Attributes
+* To Be Signed (TBS) Attributes
+* V3 Extensions
+
+Although the lexicon lists (but not an exhaustive list) several attributes and extensions, they engine does not yet support each one.  Those attributes deemed to be most likely used for policy checking have been include, however, subsequent versions of the engine will support additional attributes and extensions.
+
+The following sections provide full detail of support for each attribute and extension.
+
+h4. Certificate Attributes
+
+The following attributes are top level attributes of all X509 certificates.
+
+*X509.Algorithm*
+
+The X509.Algorithm token extracts the algorithm used to sign the certificates.  It returns a string value of the signature algorithm OID.  A list of commonly used OIDs are enumerated in the [SignatureAlgorithmIdentifier|../apidocs/org/nhindirect/policy/x509/SignatureAlgorithmIdentifier.html] class.
+
+*X509.Signature*
+
+Not yet supported.
+
+h4. To Be Signed Attributes
+
+The following attributes make up the _to be signed_ (TBSCertificate) structure of all X509 certificates.  Some attributes may be designated as required attributes by appending the "+" token to the end of the attribute token.
+
+*X509.TBS.Version*
+
+Not yet supported.  Most current X509 certificates use a value of 2 indicating version 3.
+
+*X509.TBS.SerialNumber*
+
+The X509.TBS.SerialNumber token extracts the certificate's serial number.  It returns a string value of the serial number in hexadecimal form with no white between any of the digits.  All digits represented by alpha character are lowercase, and leading 0s are truncated.
+
+*X509.TBS.Signature*
+
+Not yet supported.  This is always the same value as the X509.Algorithm as defined by section 4.1.2.3 for [RFC5280|http://www.ietf.org/rfc/rfc5280.txt]
+
+*X509.TBS.Issuer.*
+
+The X509.TBS.Issuer. token extracts a specific relative distinguished name (RDN) attribute from the Issuer field of the certificate.  It returns a string that is the value of the requested attributed.  If the attribute is not found, then an empty string is returned.  The RDN attribute name must be appended to the end of this token.  A list of commonly used RDN names is enumerated in the [RDNAttributeIdentifier|../apidocs/org/nhindirect/policy/x509/RDNAttributeIdentifier.html] class.
+
+The following example token would extract the common name attribute from the Issuer field:
+
+{code}
+ X509.TBS.Issuer.CN
+{code}
+
+If the CN had a value of "Test CN", then only the value of "Test CN" would be returned (i.e. the returned value would not be "CN=TestCN").  The exception is the DN or distinguished name attribute which returns the entire relative distinguished name in [RFC2253|http://www.ietf.org/rfc/rfc2253.txt] format. Example:
+
+{code}
+ X509.TBS.Issuer.DN
+{code}
+
+may result in something similar to the following:
+
+{code}
+ O=Cerner,L=Kansas City,ST=MO,C=US,CN=test.email.com
+{code}
+
+*X509.TBS.Subject.*
+
+The X509.TBS.Subject. token is identical in nature to the X509.TBS.Issuer. field except that attributes are extracted from the Subject field instead of the Issuer field.
+
+*X509.TBS.Validity.ValidTo*
+
+Not yet supported.
+
+*X509.TBS.Validity.ValidFrom*
+
+Not yet supported.
+
+*X509.TBS.IssuerUniqueID*
+
+Not yet supported.
+
+*X509.TBS.SubjectPublicKeyInfo.Algorithm*
+
+The X509.TBS.SubjectPublicKeyInfo.Algorithm token extracts the algorithm of the subject's public key.  It returns a string value of the public key algorithm OID.  A list of commonly used OIDs are enumerated in the [SignatureAlgorithmIdentifier|../apidocs/org/nhindirect/policy/x509/PublicKeyAlgorithmIdentifier.html] class.
+
+*X509.TBS.SubjectPublicKeyInfo.Size*
+
+The X509.TBS.SubjectPublicKeyInfo.Size token extracts the subjejct's public key size.  It returns a numeric value of the public key's size in bits.
+
+h4. V3 Extensions
+
+The following are V3 certificate extensions that are part of the Extensions sequence of the X509 Certificate TBS structure.  All extension values may be designated as required attributes by appending the "+" token to the end of the extension token.
+
+*X509.TBS.EXTENSION.KeyUsage*
+
+The X509.TBS.EXTENSION.KeyUsage token extracts the certificate's key usage extension.  It returns a numeric value that is a bitwise OR of the certificate's allowed key usage.   If the extension is not found, then 0 is returned.  A list of all key usage bits is enumerated in the [KeyUsageBit|../apidocs/org/nhindirect/policy/x509/KeyUsageBit.html] class.
+
+*X509.TBS.EXTENSION.SubjectAltName*
+
+The X509.TBS.EXTENSION.SubjectAltName token extracts the certificate's subject alternative name extension.  It returns a collection of strings that concatenates name type and the actual name delimited by the ":" character.  If the extension is not found, then an empty collection is returned.  A list of all name types is enumerated in the [GeneralNameType|../apidocs/org/nhindirect/policy/x509/GeneralNameType.html] class.
+
+Example name entry for a domain/organizational bound certificate:
+
+{code}
+  dns:direct.secureehealthemail.com
+{code}
+
+Example name entry for an address bound certificate:
+
+{code}
+  rfc822:gm2552@direct.secureehealthemail.com
+{code}
+
+*X509.TBS.EXTENSION.IssuerAltName*
+
+The X509.TBS.EXTENSION.IssuerAltName token is identical in nature to the X509.TBS.EXTENSION.SubjectAltName. field except that attributes are extracted from the issuer alternative name extension instead of the subject alternative name extension.
+
+*X509.TBS.EXTENSION.SubjectDirectoryAttributes*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.SubjectKeyIdentifier*
+
+The X509.TBS.EXTENSION.SubjectKeyIdentifier token extracts the certificate's subject key identifier extension.  It returns a string value of the key identifier.  If the extension is not found, then an empty string is returned.
+
+*X509.TBS.EXTENSION.AuthorityKeyIdentifier.KeyId*
+
+The X509.TBS.EXTENSION.AuthorityKeyIdentifier.KeyId token extracts the keyId field from the certificate authority key identifier extension.  It returns a string value of the key identifier.  If the extension is not found or the field is not populated in the extension, then an empty string is returned.
+
+*X509.TBS.EXTENSION.AuthorityKeyIdentifier.CertIssuers*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.AuthorityKeyIdentifier.SerialNumber*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs*
+
+The X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs token extracts the certificate's certificate policy extension.  It returns a collection of strings of the policy OIDs in the extension.  If the extension is not found, then an empty collection is returned.
+
+*X509.TBS.EXTENSION.CertificatePolicies.CPSUrls*
+
+The X509.TBS.EXTENSION.CertificatePolicies.CPSUrls token extracts the CPS (certificate practice statement) URL field of the certificate's certificate policy extension.  It returns a collection of strings of the URL of each policy OID that publishes a CPS.  If the extension is not found or no policy OID populates the CPS URL field, then an empty collection is returned.
+
+*X509.TBS.EXTENSION.PolicyMappings*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.BasicConstraints.CA*
+
+The X509.TBS.EXTENSION.BasicConstraints token extracts CA indicator field from certificate's basic constraint extension.  It returns a boolean value indicating if the certificate is a CA or end entity certificate. A value of true indicates that the certificate is a CA, and false indicates that the certificate is an end entity certificate.  If the extension is not found or the field is not populated in the extension, then false is returned.
+
+*X509.TBS.EXTENSION.BasicConstraints.MaxPathLength*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.NameConstraints*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.PolicyConstraints*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.ExtKeyUsageSyntax*
+
+The X509.TBS.EXTENSION.ExtKeyUsageSyntax token extracts the certificate's extended key usage extension.  It returns a collection of strings of the OIDs representing the supported extended usages.  If the extension is not found, then an empty collection is returned.  A list of commonly used extension OIDs is enumerated in the [ExtendedKeyUsageIdentifier|../apidocs/org/nhindirect/policy/x509/ExtendedKeyUsageIdentifier.html] class.
+
+*X509.TBS.EXTENSION.InhibitAnyPolicy*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.CRLDistributionPoints.FullName*
+
+The X509.TBS.EXTENSION.CRLDistributionPoints.FullName token extracts the full name field of the certificate's CRL distribution point extension.  It returns a collection of strings of the location of the CRLs supported by the certificate.  If the extension is not found or the FullName field is not populated, then an empty collection is returned.
+
+Generally this is a URI of the CRL distribution points such as an HTTP(S) URL.
+
+*X509.TBS.EXTENSION.CRLDistributionPoints.RelativeToIssuer*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.CRLDistributionPoints.Reasons*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.CRLDistributionPoints.CRLIssuer*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.FreshestCRL.FullName*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.FreshestCRL.RelativeToIssuer*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.FreshestCRL.Reasons*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.FreshestCRL.CRLIssuer*
+
+Not yet supported.
+
+*X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.Url*
+
+The X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.Url token extracts the certificate's authority info access extension.  It returns a collection of strings that concatenates the access method type and the access URL delimited by the ":" character.  If the extension is not found, then an empty collection is returned.  A list of all name types is enumerated in the [AuthorityInfoAccessMethodIdentifier|../apidocs/org/nhindirect/policy/x509/AuthorityInfoAccessMethodIdentifier.html] class.
+
+Example name entry for a CA URL:
+
+{code}
+  caIssuers:http://ca.cerner.com/public/root.der
+{code}
+
+Example name entry for an OCSP URL:
+
+{code}
+  OCSP:http://ca.cerner.com/OCSP
+{code}
+
+*X509.TBS.EXTENSION.SubjectInfoAccessSyntax.AccessMethod*
+
+Not yet supported.  The X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.Url may be utilized instead.
+
+*X509.TBS.EXTENSION.SubjectInfoAccessSyntax.OCSPLocation*
+
+The X509.TBS.EXTENSION.SubjectInfoAccessSyntax.OCSPLocation token extracts the certificate's authority info access extension.  It returns a collection of strings of the URLs of entries that utilize the OCSP access method type.  If the extension is not found or no entries use the OCSP access method type, then an empty collection is returned.
