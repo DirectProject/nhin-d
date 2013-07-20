@@ -3,7 +3,8 @@ Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
 
 Authors:
-   Greg Meyer      gm2552@cerner.com
+   Amulya Misra        Drajer LLC/G3Soft
+   Satyajeet Mahapatra Drajer LLC/G3Soft
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -84,8 +85,8 @@ public class CreateUnSignedPKCS7
 				|| destDir.equalsIgnoreCase("You pressed cancel")){
 			error = "Error: Kindly Provide Trust Bundle Destination Directory";
 			return error;
-		}else if(bundleName.equalsIgnoreCase("") || !bundleName.endsWith("p7c")){
-			error = "Error: Kindly Provide A Proper Trust Bundle Name";
+		}else if(bundleName.equalsIgnoreCase("") || (!bundleName.endsWith(".p7c") && !bundleName.endsWith(".p7b"))){
+			error = "Error: Kindly Provide A Proper Trust Bundle Name with a .p7b or .p7c extension";
 			return error;
 		}else{
 
@@ -111,8 +112,15 @@ public class CreateUnSignedPKCS7
 				return error;
 			}else{
 				if(error != null && !error.equalsIgnoreCase(""))
-				error = "Error: Creation of pkcs7 file failed!";
-				return error;
+				{
+					error = "Error: Creation of pkcs7 file failed!";
+					return error;
+				}
+				else
+				{
+					error = "Bundle Creation Failed. Please verify the inputs.";
+					return error;
+				}
 			}
 		}
 		    
@@ -228,8 +236,10 @@ public class CreateUnSignedPKCS7
 		return pkcs7File;
 	}
 
-	/*
-	 * Creates the output file descriptor and creates the new file on the file system.
+	/**
+	 * This method is responsible for writing the .p7m file into the file system.
+	 * @param createFile
+	 * @returns : File
 	 */
 	private static File getPKCS7OutFile(File crtFile)
 	{
@@ -244,10 +254,12 @@ public class CreateUnSignedPKCS7
 					String filePath = crtFile.getAbsolutePath();
 					//System.out.println("The Unsigned file path is:"+filePath);
 					int index = fileName.lastIndexOf(".");
-					if (index > -1)
-						fileName = fileName.substring(0, index);
-		
-					fileName += ".p7c";
+					if(!fileName.endsWith(".p7b") || !fileName.endsWith(".p7c"))
+					{
+						if (index > -1)
+							fileName = fileName.substring(0, index);
+							 fileName += ".p7c";
+					}		 
 					createFile = new File(filePath);
 					//System.out.println("The Unsigned file created as:"+createFile.getAbsolutePath())
 				}
