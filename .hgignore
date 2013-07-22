@@ -6,6 +6,12 @@ syntax: glob
 # ignore for Mercurial
 *.orig
 
+# ignore lock files
+*.lck
+
+# ignore old school pom.xml 
+java/config/config-service/pom.xml.orig
+
 # ignore for Mac OX
 .DS_Store
 
