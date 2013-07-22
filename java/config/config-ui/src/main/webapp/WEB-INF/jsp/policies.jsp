@@ -47,6 +47,8 @@ $(document).ready(function() {
     });           
            
     $('#newPolicy').load('/config-ui/config/policies/newPolicyForm');
+
+
     
 });
 
@@ -58,6 +60,8 @@ function openUpdatePolicyForm(id) {
     
 $('#updatePolicy').load('config');
 }
+
+
 
 
 </script>

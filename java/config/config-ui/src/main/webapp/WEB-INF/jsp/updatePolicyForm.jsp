@@ -4,17 +4,50 @@
 
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 
+<script src="<c:url value="/resources/swfupload.js" />"></script>
+<script src="<c:url value="/resources/jquery-asyncUpload-0.1.js" />"></script>
+
+<script type="text/javascript">
+$('#updatePolicyForm').submit(function(evt){
+        evt.preventDefault();        
+        
+        formData = $('#updatePolicyForm').serialize();       
+
+        $.ajax({
+            url: $('#updatePolicyForm').attr('action'), type: 'POST',
+            data: formData,
+            success: function(html) {
+                //resultTable = $('#update', html);
+                //$('#bookSearchResults').html(resultTable);
+            }
+        }); 
+    });
+
+// Set up async upload feature
+$(function() {
+
+    $("#fileData").makeAsyncUploader({
+        upload_url: "<c:url value="/config/policies/checkLexiconFile"/>", 
+        flash_url: '<c:url value="/resources/swfupload.swf"/>',
+        button_image_url: '<c:url value="/resources/blankButton.png"/>',
+        post_params: {
+            "lexicon": $('#policyLexicon').val()
+        }
+    });
+});
 
 
-<div style="float:right"><a class="modal_close" href="#">Close</a></div>
+</script>
+
+<div style="float:right"><a class="close-reveal-modal" href="#">Close</a></div>
 <br clear="both"/>
 <h3>Update Policy</h3>
 
-<div class="baseForm" style="margin:0 auto;margin-top:5px;text-align:center;width:400px;">
+<div class="baseForm" style="margin:0 auto;margin-top:5px;text-align:center;width:100%;">
 
-<div style="text-align:left;width:400px;">
+<div style="text-align:left;width:100%;">
 <spring:url value="/config/policies/updatePolicy" var="formURLupdatePolicy" />
-<form:form modelAttribute="policyForm" action="${fn:escapeXml(formURLupdatePolicy)}" cssClass="cleanform" method="POST" enctype="multipart/form-data">
+<form:form id="updatePolicyForm" modelAttribute="policyForm" action="${fn:escapeXml(formURLupdatePolicy)}"  cssClass="cleanform" method="POST" enctype="multipart/form-data">
 
         <form:hidden path="id" />
 
@@ -38,13 +71,7 @@
         <label>Name:</label><br/>
         <form:input path="policyName" cssStyle="width:360px"/>
         </div>
-								
-
-        <div>
-            <label>Policy File:</label><br/>
-            <form:input path="fileData" id="fileData" type="file"/>
-        </div>
-
+	
         <div>
             <label>Lexicon:</label><br/>
             
@@ -55,12 +82,26 @@
 
    
             
+        </div>	
+
+
+        <div>
+
+            <label>Policy:</label><br/>
+            <input type="radio" checked="checked" name="updateType" value="file" onclick="$('#newPolicyFileInput').show();$('#editExistingPolicyInput').hide();"/> Load New File
+            <input type="radio" name="updateType" value="edit" onclick="$('#newPolicyFileInput').hide();$('#editExistingPolicyInput').show();"/> Edit Existing Policy
+        </div>
+						
+
+        <div id="newPolicyFileInput" style="padding:10px;">            
+            <form:input path="fileData" id="fileData" type="file"/>
         </div>
 
         
-        <div>
-            <Label>Policy Content:</Label>
-            <form:textarea path="policyContent" cols="200" rows="10"/>
+
+        
+        <div id="editExistingPolicyInput" style="display:none;padding:10px;">            
+           <form:textarea path="policyContent" cols="60" rows="30"/>
         </div>
         
 
