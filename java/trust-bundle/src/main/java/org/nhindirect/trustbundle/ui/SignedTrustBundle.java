@@ -3,7 +3,8 @@ Copyright (c) 2013, NHIN Direct Project
 All rights reserved.
 
 Authors:
-   amulya kumar mishra     amulya@g3softtech.com
+   Amulya Misra        Drajer LLC/G3Soft
+   Satyajeet Mahapatra Drajer LLC/G3Soft
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -76,7 +77,7 @@ public class SignedTrustBundle extends JFrame {
 	creation.createComponent("LABEL", "  Optional Meta Data File",false,c, pane,null, 0, 2);
 	creation.createBrowseFile("FILE", "Select Meta Data File",c, pane, 1, 2);
 	creation.createComponent("LABEL", "  Signing Certificate",false,c, pane,null, 0, 3);
-	creation.createBrowseFile("FILE", "Select Certificate File",c, pane, 1, 3);
+	creation.createBrowseFile("FILE", "Select Certificate File (.p12)",c, pane, 1, 3);
 	creation.createComponent("LABEL", "  Signing Certificate Password Key",false,c, pane,null, 0, 4);
 	c.fill = GridBagConstraints.HORIZONTAL;
 	creation.createComponent("PASSWORD", "",false,c, pane,null, 1, 4);	

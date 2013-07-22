@@ -3,7 +3,8 @@ Copyright (c) 2010, NHIN Direct Project
 All rights reserved.
 
 Authors:
-
+   Amulya Misra        Drajer LLC/G3Soft
+   Satyajeet Mahapatra Drajer LLC/G3Soft
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -90,7 +91,7 @@ public class ViewTrustBundlePKCS7
 			
 			certiFile = new File(trustDir);
 			
-			if(!trustDir.endsWith(".p7c") && !trustDir.endsWith(".p7m"))
+			if(!trustDir.endsWith(".p7c") && !trustDir.endsWith(".p7m") && !trustDir.endsWith(".p7b"))
 			{
 				error = "Error:Please provide a valid file!";
 				return error;
@@ -222,10 +223,12 @@ public class ViewTrustBundlePKCS7
 			fileBytes = FileUtils.readFileToByteArray(file);
 		}
 		catch (IOException io) {
-			io.printStackTrace(System.err);
+			//io.printStackTrace(System.err);
+			return null;
 		}
 		catch (Exception e) {
-			e.printStackTrace(System.err);
+			//e.printStackTrace(System.err);
+			return null;
 		}
 		return fileBytes;
 	}	

@@ -3,7 +3,8 @@ Copyright (c) 2013, NHIN Direct Project
 All rights reserved.
 
 Authors:
-   amulya kumar mishra     amulya@g3softtech.com
+   Amulya Misra        Drajer LLC/G3Soft
+   Satyajeet Mahapatra Drajer LLC/G3Soft
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -27,10 +28,10 @@ import javax.swing.JFrame;
 
 
 /**
- * The UnSignedTrustBundle is the UI class for Trust Bundle Publisher. This class is the entry point for the Trust Bundle Publisher tool
+ * The TrustBundlePublisher is the UI class for Trust Bundle Publisher. This class is the entry point for the Trust Bundle Publisher tool
  * Where user can provide details of anchor, Meta data files, trust bundle name and can create the trust bundle.
  * This screen also has an option to traverse to the other two screen where user can create signed bundles and view bundles.
- * @author Amulya Kumar Mishra
+ * @author Satyajeet
  *
  */
 public class TrustBundlePublisher implements ActionListener {
@@ -48,31 +49,33 @@ public class TrustBundlePublisher implements ActionListener {
 	
     }
 
-
+	/*
+	 * Control The Flow of the Screen for Different Type of Trust Bundle and Viewing the same
+	 * (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		//System.out.println("The action Event is:::"+e.getActionCommand());
-		
+				
 		if(e.getActionCommand().trim().equalsIgnoreCase("Create Unsigned Trust Bundle"))
 		{
-			//System.out.println("The action Event inside if:::"+e.getActionCommand());
+			
 			controlFrame.dispose();
 			controlFrame = UnSignedTrustBundle.createAndShowGUI();
-			//controlFrame.repaint();
+			
 		}
 		else if (e.getActionCommand().trim().equalsIgnoreCase("Create Signed Trust Bundle"))
 		{
-			//System.out.println("The action Event inside else if1:::"+e.getActionCommand());
+			
 			controlFrame.dispose();
 			controlFrame = SignedTrustBundle.createAndShowGUI();
-			//controlFrame.repaint();
+			
 		}
 		else if (e.getActionCommand().trim().equalsIgnoreCase("View Trust Bundle"))
 		{
-			//System.out.println("The action Event inside else if2:::"+e.getActionCommand());
+			
 			controlFrame.dispose();
 			controlFrame = ViewTrustBundle.createAndShowGUI();
-			//controlFrame.repaint();
+			
 		}
 	}
 	
