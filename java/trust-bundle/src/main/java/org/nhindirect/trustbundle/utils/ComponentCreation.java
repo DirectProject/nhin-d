@@ -3,7 +3,8 @@ Copyright (c) 2013, NHIN Direct Project
 All rights reserved.
 
 Authors:
-   amulya kumar mishra     amulya@g3softtech.com
+   Amulya Misra        Drajer LLC/G3Soft
+   Satyajeet Mahapatra Drajer LLC/G3Soft
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
