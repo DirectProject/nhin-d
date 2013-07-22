@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.stagent.cert;
 
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -251,10 +253,24 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         		cert.checkValidity(new GregorianCalendar().getTime());
         		
         		// Search CRLs to determine if this certificate has been revoked
-        		RevocationManager revocationManager = CRLRevocationManager.getInstance();
+        		final RevocationManager revocationManager = CRLRevocationManager.getInstance();
         		if (!revocationManager.isRevoked(cert))
                     filteredCerts.add(cert);
         	} 
+        	catch (CertificateExpiredException e)
+        	{
+        		final StringBuilder builder = new StringBuilder("Certificate has expired.\r\n\tExpiration: ").append(cert.getNotAfter());
+        		builder.append("\r\n\tDN: ").append(cert.getSubjectDN());
+        		builder.append("\r\n\tSerial Number: ").append(cert.getSerialNumber().toString(16));
+        		LOGGER.warn(builder.toString());
+        	}
+        	catch (CertificateNotYetValidException e)
+        	{
+        		final StringBuilder builder = new StringBuilder("Certificate is not yet valid.\r\n\nNot Before: ").append(cert.getNotBefore());
+        		builder.append("\r\n\tDN: ").append(cert.getSubjectDN());
+        		builder.append("\r\n\tSerial Number: ").append(cert.getSerialNumber().toString(16));
+        		LOGGER.warn(builder.toString());
+        	}        	
             catch (Exception e) 
             {
             	LOGGER.warn("filterUsable(Collection<X509Certificate> certs) - Certificate with DN " + cert.getSubjectDN() + " is not valid.", e);
@@ -264,5 +280,4 @@ public abstract class CertificateStore implements X509Store, CertificateResolver
         return filteredCerts.size() == 0 ? null : filteredCerts;
     }
     
-
 }

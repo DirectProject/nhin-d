@@ -31,6 +31,9 @@ public class DefaultNHINDAgent_bindAddressesIncomingMessageTest extends TestCase
 		return new IncomingMessage(incoming);
 	}
 	
+	// PUBLIC CERTS ARE NO LONGER RESOLVED FOR INCOMING MESSAGES
+	// THEY ARE ALWAYS EXTRACTED FROM THE CERTIFICATE, SO PULBIC RESOLUTION IS REDUNDANT
+	/*
 	public void testBindAddresses_noPublicCerts_assertNoBoundPublicCerts() throws Exception
 	{
 
@@ -101,7 +104,7 @@ public class DefaultNHINDAgent_bindAddressesIncomingMessageTest extends TestCase
 		
 		assertEquals(0, message.getSender().getCertificates().size());
 	}
-	
+	*/
 	public void testBindAddresses_noPrivateCerts_assertNoBoundPrivateCerts() throws Exception
 	{		
 		final CertificateResolver publicCertResolver = mock(CertificateResolver.class);
