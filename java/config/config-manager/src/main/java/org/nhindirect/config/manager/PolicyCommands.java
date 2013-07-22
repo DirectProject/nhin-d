@@ -379,7 +379,7 @@ public class PolicyCommands
 		final String groupName = StringArrayUtil.getRequiredValue(args, 1);
 		final String policyUse = StringArrayUtil.getRequiredValue(args, 2);
 		final boolean incoming = Boolean.parseBoolean(StringArrayUtil.getRequiredValue(args, 3));
-		final boolean outgoing = Boolean.parseBoolean(StringArrayUtil.getRequiredValue(args, 3));
+		final boolean outgoing = Boolean.parseBoolean(StringArrayUtil.getRequiredValue(args, 4));
 		
 		// make sure the policy exists
 		org.nhind.config.CertPolicy policy = null;
