@@ -37,15 +37,13 @@
 	.reveal-modal.large 		{ width: 600px; margin-left: -340px;}
 	.reveal-modal.xlarge 		{ width: 800px; margin-left: -440px;}
 	
-	.reveal-modal .close-reveal-modal {
-		//font-size: 22px;
+	.reveal-modal .close-reveal-modal {		
 		line-height: .5;
+                font-size:14px;
 		position: absolute;
-		top: 8px;
-		right: 11px;
-		color: #aaa;
-		text-shadow: 0 -1px 1px rbga(0,0,0,.6);
-		font-weight: bold;
+		top: 16px;
+		right: 16px;
+		color: #000;		
 		cursor: pointer;
 		} 
 	/*

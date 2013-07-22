@@ -75,7 +75,7 @@ public class JavaSerializedObjectLexiconPolicyParser implements PolicyLexiconPar
 		}
 		catch (Exception e)
 		{
-			throw new PolicyParseException("Could not deseriale policy expression from serialized POJO.", e);
+			throw new PolicyParseException("Could not deserialize policy expression from serialized POJO.", e);
 		}		
 	}
 

@@ -18,6 +18,7 @@ public class PolicyForm {
 	private List<String> policiesSelected;
         private String allSelected;
         private String policyContent;
+        private String updateType; // file or edit
         
         private Map<String,String> lexiconNames;
         
@@ -114,6 +115,14 @@ public class PolicyForm {
         
         public void setPolicyContent(String policyContent) {
             this.policyContent = policyContent;
+        }
+        
+        public void setUpdateType(String updateType) {
+            this.updateType = updateType;
+        }
+        
+        public String getUpdateType() {
+            return updateType;
         }
 
 }

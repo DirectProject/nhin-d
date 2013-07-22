@@ -5,9 +5,45 @@
     <groupId>org.nhind</groupId>
     <version>1.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.nhind</groupId>
+  <groupId>org.nhind.trust-bundle</groupId>
   <artifactId>trust-bundle</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.0</version>
+  <developers>
+        <developer>
+            <name>Nagesh Bashyam (Dragon)</name>
+            <id>Dragon</id>
+            <email>nagesh.bashyam@drajer.com</email>
+            <roles>
+                <role>SME</role>
+            </roles>              
+        </developer>   
+        <developer>
+            <name>Satyajeet Mahapatra</name>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Amulya Kumar Misra</name>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+  <scm>
+     <url>http://code.google.com/p/nhin-d/source/browse/#hg/java/trust-bundle</url>  
+     <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/trust-bundle</connection>
+  </scm> 
+  <issueManagement>
+     <system>Google Code</system>
+     <url>http://code.google.com/p/nhin-d/issues/list</url>
+  </issueManagement>	
+  <licenses>
+     <license>
+        <name>New BSD License</name>
+        <url>http://nhindirect.org/BSDLicense</url>
+     </license>
+  </licenses>
   <dependencies>
   	<dependency>
   		<groupId>commons-io</groupId>
@@ -37,5 +73,39 @@
   		<type>jar</type>
   		<scope>runtime</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.4</version>
+  		<scope>test</scope>
+  	</dependency>
   </dependencies>
+  <build>
+      <plugins>
+          <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <version>2.4</version>
+              <configuration>
+                 <descriptorRefs>
+                     <descriptorRef>jar-with-dependencies</descriptorRef>
+                 </descriptorRefs>
+                 <archive>
+                     <manifest>
+                         <addClasspath>true</addClasspath>
+                         <mainClass>org.nhindirect.trustbundle.ui.TrustBundlePublisher</mainClass>
+                     </manifest>
+                 </archive>
+              </configuration>
+              <executions>
+                  <execution>
+                      <id>make-assembly</id>
+                      <phase>package</phase>
+                      <goals>
+                         <goal>attached</goal>
+                      </goals>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
+  </build>
 </project>

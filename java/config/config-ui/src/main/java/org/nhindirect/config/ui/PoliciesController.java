@@ -19,7 +19,10 @@ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWE
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
 THE POSSIBILITY OF SUCH DAMAGE.
 */
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,13 +67,27 @@ import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.nhindirect.config.store.TrustBundleAnchor;
 import org.nhindirect.policy.PolicyLexicon;
 import java.util.Random;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nhindirect.policy.PolicyLexiconParser;
+import org.nhindirect.policy.PolicyLexiconParserFactory;
+import org.nhindirect.policy.PolicyParseException;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 @Controller
 @RequestMapping("/policies")
@@ -78,6 +95,7 @@ public class PoliciesController {
     private final Log log = LogFactory.getLog(getClass());
 
     private ConfigurationService configSvc;
+    private String imagesWebPath;
 
     @Inject
     public void setConfigurationService(ConfigurationService certService)
@@ -421,6 +439,9 @@ public class PoliciesController {
         } catch (UnsupportedEncodingException ie) {
             ie.printStackTrace();
         }
+        
+        
+        
         model.addAttribute("policyForm", pform);
         mav.setViewName("updatePolicyForm"); 
         
@@ -482,9 +503,10 @@ public class PoliciesController {
     }		
 
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/updatePolicy", method = RequestMethod.POST)
+    @RequestMapping(value="/updatePolicy", method = RequestMethod.POST)    
     @ResponseBody
     public String updatePolicy (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
+                                @RequestParam("updateType") String updateType,
                                       @ModelAttribute PolicyForm policyForm,
                                         HttpSession session,                                                    
                                         Model model)  { 		
@@ -495,7 +517,10 @@ public class PoliciesController {
             log.debug("Enter update policy #"+policyForm.getId());
         }    
         
+        log.error(policyForm.getPolicyName());
+        
         // Convert policy data to byte array
+        
         byte[] policyData = policyForm.getFileData().getBytes();
         
         try {
@@ -503,8 +528,90 @@ public class PoliciesController {
         } catch (Exception e) {
             e.printStackTrace();
             return "fail";
+        }                
+        
+        return jsonResponse;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/checkLexiconFile", method = {RequestMethod.GET, RequestMethod.POST } )    
+    @ResponseBody
+    public String checkLexiconFile (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,
+        HttpServletResponse response, 
+        Object command, 
+        MultipartHttpServletRequest request) throws FileUploadException, IOException, Exception 
+    { 		        
+
+        String jsonResponse = null;
+        UploadedFile ufile = new UploadedFile();
+        Iterator<String> itr =  request.getFileNames();
+        MultipartFile mpf = request.getFile(itr.next());        
+
+        try {                   
+            ufile.length = mpf.getBytes().length;
+            ufile.bytes= mpf.getBytes();
+            ufile.type = mpf.getContentType();
+            ufile.name = mpf.getOriginalFilename();
+        } catch (IOException e) {            
+            e.printStackTrace();
         }
         
+        String lexicon = request.getParameter("lexicon");
+        org.nhind.config.PolicyLexicon lex = null;
+        
+        // Check the file for three types of policies
+        if (lexicon.isEmpty()) {
+            lex = org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1;
+        }
+        else
+        {
+                try
+                {
+                        lex = org.nhind.config.PolicyLexicon.fromString(lexicon);
+                }
+                catch (Exception e)
+                {
+                        System.out.println("Invalid lexicon name.");				
+                }
+        }
+		
+		// validate the policy syntax
+		final org.nhindirect.policy.PolicyLexicon parseLexicon;
+                
+		if (lex.equals(org.nhind.config.PolicyLexicon.JAVA_SER))
+			parseLexicon = org.nhindirect.policy.PolicyLexicon.JAVA_SER;
+		else if (lex.equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1))
+			parseLexicon = org.nhindirect.policy.PolicyLexicon.SIMPLE_TEXT_V1;
+		else
+			parseLexicon = org.nhindirect.policy.PolicyLexicon.XML;		
+		
+		InputStream inStr = null;
+		try
+		{			
+			inStr = new ByteArrayInputStream(ufile.bytes);
+			
+			final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(parseLexicon);
+			parser.parse(inStr);
+		}
+		catch (PolicyParseException e)
+		{
+			log.error("Syntax error in policy file " + " : " + e.getMessage());			
+                        jsonResponse = "failed";
+		}
+		finally
+		{
+			IOUtils.closeQuietly(inStr);
+		}
+		
+        
+
+        
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Checking uploaded lexicon file for format and validation");
+        }                    
+        
+        jsonResponse = "success";             
         
         return jsonResponse;
     }
@@ -642,11 +749,11 @@ public class PoliciesController {
         pform.setId(0);
         model.addAttribute("policyForm", pform);
         
-        log.error("test" + pform.getLexiconNames().toString());
+        //log.error("test" + pform.getLexiconNames().toString());
         
         model.addAttribute("lexiconNames", pform.getLexiconNames());
         
-        log.error("test"+model.toString());
+        //log.error("test"+model.toString());
                 
         mav.setViewName("newPolicyForm");
         
