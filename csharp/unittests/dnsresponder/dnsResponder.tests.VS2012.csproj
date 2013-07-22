@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{032D3352-7B6C-48D1-866C-986AED4E5E69}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Health.Direct.DnsResponder.Tests</RootNamespace>
+    <AssemblyName>Health.Direct.DnsResponder.Tests</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\xunit\xunit.dll</HintPath>
+    </Reference>
+    <Reference Include="xunit.extensions, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\xunit\xunit.extensions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AuthoritativeRecordResolverTest.cs" />
+    <Compile Include="BadClient.cs" />
+    <Compile Include="BadClientTests.cs" />
+    <Compile Include="BasicTest.cs" />
+    <Compile Include="DnsRecordStoreageServiceTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RetryTester.cs" />
+    <Compile Include="TestTCPClient.cs" />
+    <Compile Include="TestBase.cs" />
+    <Compile Include="Tester.cs" />
+    <Compile Include="TestServer.cs" />
+    <Compile Include="TestStore.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\common.VS2012.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\config\client\config.client.VS2012.csproj">
+      <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
+      <Name>config.client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\config\store\config.store.VS2012.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>config.store</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\dnsResponder\dnsResponder.VS2012.csproj">
+      <Project>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</Project>
+      <Name>dnsResponder</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="metadata\Certificates\redmond.cer">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="metadata\DnsRecords\aname.apple.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.bing.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.cerner.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.epic.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.google.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.ibm.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.microsoft.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.nhindirect.org.bin">
+    </None>
+    <None Include="metadata\DnsRecords\aname.yahoo.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.apple.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.bing.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.cerner.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.epic.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.google.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.ibm.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.microsoft.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.nhindirect.org.bin">
+    </None>
+    <None Include="metadata\DnsRecords\mx.yahoo.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.apple.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.bing.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.cerner.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.epic.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.google.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.ibm.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.microsoft.com.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.nhindirect.org.bin">
+    </None>
+    <None Include="metadata\DnsRecords\soa.yahoo.com.bin">
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
