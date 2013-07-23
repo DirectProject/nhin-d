@@ -25,6 +25,9 @@ address_add biff@nhind.hsgincubator.com
 address_add throw@nhind.hsgincubator.com Throw
 address_add throw@redmond.hsgincubator.com Throw
 
+//Address only.  Resolvers will find org level cert
+address_add toto@nhind.hsgincubator.com
+
 //Post Masters for AutoDSN
 address_add PostMaster@redmond.hsgincubator.com
 address_add PostMaster@nhind.hsgincubator.com

@@ -27,9 +27,13 @@ using Health.Direct.Config.Client;
 using Health.Direct.Config.Store;
 using Xunit;
 
-
-namespace Health.Direct.SmtpAgent.Tests
+namespace Health.Direct.SmtpAgent.Integration.Tests
 {
+    /// <summary>
+    /// run   ...\csharp\setenv.bat
+    /// then  ...\csharp\msb.bat
+    /// then  ...\csharp\gateway\devInstall\install_withservice.bat
+    /// </summary>
     public class TestSmtpAgentMDNs : SmtpAgentTester
     {
         SmtpAgent m_agent;
@@ -56,7 +60,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Gateway not set up to be the final destination.
         ///      Settings.Notifications.GatewayIsDestination = false
         /// </summary>
-        [Fact(Skip = "Requires Config Service to be installed")]
+        [Fact]
         public void TestEndToEndStartMdnMonitor()
         {
             CleanMessages(m_agent.Settings);
@@ -128,10 +132,10 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Requesting delivery notification.
         ///      Disposition-Notification-Options: X-DIRECT-FINAL-DESTINATION-DEeLIVERY=optional,true
         /// Gateway not set up to be the final destination.  So test will manufacture dipatched MDNS representing
-        /// the uptimate destination.
+        /// the ultimate destination.
         ///      Settings.Notifications.GatewayIsDestination = false
         /// </summary>
-        [Fact(Skip = "Requires Config Service to be installed")]
+        [Fact]
         public void TestEndToEndTimelyAndReliableStartMdnMonitor()
         {
             CleanMessages(m_agent.Settings);
@@ -146,7 +150,7 @@ namespace Health.Direct.SmtpAgent.Tests
             // Go ahead and pick them up and Process them as if they where being handled
             // by the SmtpAgent by way of (IIS)SMTP hand off.
 
-            string textMessage = string.Format(TestMessageTimelyAndReliable, Guid.NewGuid());
+            string textMessage = string.Format(TestMessageTimelyAndReliableMissingTo, Guid.NewGuid());
 
 
             var sendingMessage = LoadMessage(textMessage);
@@ -235,9 +239,12 @@ namespace Health.Direct.SmtpAgent.Tests
         ///      Disposition-Notification-Options: X-DIRECT-FINAL-DESTINATION-DEeLIVERY=optional,true
         /// Gateway is set up to be the final destination.  So Gatway is the final destination.
         ///      Settings.Notifications.GatewayIsDestination = true
+        /// 
+        /// Note: the message is missing the Disposition-Notification-To header.  But we accept it
+        /// and respond to the sender.
         /// </summary>
-        [Fact(Skip = "Requires Config Service to be installed")]
-        public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_Requestd()
+        [Fact]
+        public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_Requested_No_DispositionNotificationToHeader()
         {
             CleanMessages(m_agent.Settings);
             m_agent.Settings.InternalMessage.EnableRelay = true;
@@ -253,8 +260,11 @@ namespace Health.Direct.SmtpAgent.Tests
             // Go ahead and pick them up and Process them as if they where being handled
             // by the SmtpAgent by way of (IIS)SMTP hand off.
             //
-            string textMessage = string.Format(TestMessageTimelyAndReliable, Guid.NewGuid());
+            string textMessage = string.Format(TestMessageTimelyAndReliableMissingTo, Guid.NewGuid());
             var sendingMessage = LoadMessage(textMessage);
+            var startEnvelope = new CDOSmtpMessage(sendingMessage).GetEnvelope();
+
+            Assert.Null(startEnvelope.Message.Headers[MDNStandard.Headers.DispositionNotificationTo]);
             Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
 
             //
@@ -317,6 +327,102 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
+
+        /// <summary>
+        /// Ensure Mdns start process and dispatch if requesting delivery notification (TimelyAndReliable)
+        /// Requesting delivery notification.
+        ///      Disposition-Notification-Options: X-DIRECT-FINAL-DESTINATION-DEeLIVERY=optional,true
+        /// Gateway is set up to be the final destination.  So Gatway is the final destination.
+        ///      Settings.Notifications.GatewayIsDestination = true
+        /// 
+        /// Note: the message is missing the Disposition-Notification-To header.  But we accept it
+        /// and respond to the sender.
+        /// </summary>
+        [Fact]
+        public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_Requested()
+        {
+            CleanMessages(m_agent.Settings);
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            m_agent.Settings.Outgoing.EnableRelay = true;
+            m_agent.Settings.Notifications.AutoResponse = true;
+            m_agent.Settings.Notifications.AlwaysAck = true;
+            m_agent.Settings.Notifications.GatewayIsDestination = true;
+            m_agent.Settings.MdnMonitor = new ClientSettings();
+            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+
+            //
+            // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
+            // Go ahead and pick them up and Process them as if they where being handled
+            // by the SmtpAgent by way of (IIS)SMTP hand off.
+            //
+            string textMessage = string.Format(TestMessageTimelyAndReliable, Guid.NewGuid());
+            var sendingMessage = LoadMessage(textMessage);
+            var startEnvelope = new CDOSmtpMessage(sendingMessage).GetEnvelope();
+            Assert.NotNull(startEnvelope.Message.Headers[MDNStandard.Headers.DispositionNotificationTo]);
+            var notify = startEnvelope.Message.Headers[MDNStandard.Headers.DispositionNotificationTo].Value;
+            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+
+            //
+            // grab the clear text mdns and delete others.
+            //
+            foreach (var pickupMessage in PickupMessages())
+            {
+                string messageText = File.ReadAllText(pickupMessage);
+                if (messageText.Contains("report-type=disposition-notification"))
+                {
+                    Assert.Contains("To:"+notify, messageText);
+                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                }
+            }
+
+            //
+            // Now the messages are encrypted and can be handled
+            // Processed Mdn's will be recorded by the MdnMonitorService
+            //
+            foreach (var pickupMessage in PickupMessages())
+            {
+                string messageText = File.ReadAllText(pickupMessage);
+                CDO.Message message = LoadMessage(messageText);
+
+                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                var envelope = new CDOSmtpMessage(message).GetEnvelope();
+                var mdn = MDNParser.Parse(envelope.Message);
+                if (mdn.Disposition.Notification == MDNStandard.NotificationType.Processed)
+                {
+                    TestMdnTimelyAndReliableExtensionField(mdn, false);
+                }
+                else if (mdn.Disposition.Notification == MDNStandard.NotificationType.Dispatched)
+                {
+                    TestMdnTimelyAndReliableExtensionField(mdn, true);
+                }
+                else
+                {
+                    Assert.True(false, "Unexpected Notification Type: " + mdn.Disposition.Notification);
+                }
+            }
+
+            //
+            // Test Mdn data is dispatched
+            // Remember above (Settings.Notifications.GatewayIsDestination = true)
+            //
+            var messageEnvelope = new CDOSmtpMessage(sendingMessage).GetEnvelope();
+            foreach (var recipient in messageEnvelope.Recipients)
+            {
+                var queryMdn = new Mdn(messageEnvelope.Message.IDValue
+                        , recipient.Address
+                        , messageEnvelope.Message.FromValue);
+
+                var mdnManager = CreateConfigStore().Mdns;
+                var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+                Assert.NotNull(mdn);
+                Assert.Equal("dispatched", mdn.Status, StringComparer.OrdinalIgnoreCase);
+                Assert.Equal(true, mdn.NotifyDispatched);
+                Assert.NotNull(mdn.MdnProcessedDate);
+            }
+
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+        }
+
         /// <summary>
         /// Ensure Mdns start process and dispatch if requesting delivery notification (TimelyAndReliable)
         /// Requesting delivery notification.
@@ -324,8 +430,8 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Gateway is set up to be the final destination.  So Gatway is the final destination.
         ///      Settings.Notifications.GatewayIsDestination = true
         /// </summary>
-        [Fact(Skip = "Requires Config Service to be installed")]
-        public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_NOT_Requestd()
+        [Fact]
+        public void TestEndToEnd_GatewayIsDestination_Is_True_And_TimelyAndReliable_Not_Requestd()
         {
             CleanMessages(m_agent.Settings);
             m_agent.Settings.InternalMessage.EnableRelay = true;
@@ -405,7 +511,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// Absorb uncorrelated (missing) MDN's of type processed, dispatched and failed
         /// and unkown types.
         /// </summary>
-        [Fact(Skip = "Requires Config Service to be installed")]
+        [Fact]
         public void TestMissingMdn()
         {
             CleanMessages(m_agent.Settings);
@@ -415,7 +521,7 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.MdnMonitor = new ClientSettings();
             m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
 
-            string textMessage = string.Format(TestMessageTimelyAndReliable, Guid.NewGuid());
+            string textMessage = string.Format(TestMessageTimelyAndReliableMissingTo, Guid.NewGuid());
             //
             // RequestNotification needed to use the CreateNotificationMessages
             //
@@ -507,6 +613,7 @@ namespace Health.Direct.SmtpAgent.Tests
 
             if (m_agent.Settings.InternalMessage.EnableRelay)
             {
+                var smtpMessage = new CDOSmtpMessage(message).GetEnvelope();
                 VerifyIncomingMessage(message);
             }
             else
