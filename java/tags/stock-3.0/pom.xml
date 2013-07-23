@@ -5,7 +5,7 @@
     <artifactId>direct-project-stock</artifactId>    
     <packaging>pom</packaging>
     <name>The direct project stock assembly.</name>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.0</version>
     <description>Stock assembly for the direct project using the Apache James mail server and the Apache Jetty web container.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-project-stock/${project.version}</url> 
