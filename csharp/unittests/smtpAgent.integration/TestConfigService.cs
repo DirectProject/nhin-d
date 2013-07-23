@@ -33,26 +33,23 @@ namespace Health.Direct.SmtpAgent.Tests
     /// </summary>
     public class TestConfigService
     {                
-        [Theory(Skip="Requires Config Service to be installed")]
-        /*
+        
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-         */
         public void TestResolverInSecure(bool validateAddress)
         {
             this.RunTest(validateAddress, false);
         }
 
-        [Theory(Skip="Requires Config Service, HTTPS and Windows Security to be enabled")]
-        /*
+        
+        
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-         */
         public void TestResolverSecure(bool validateAddress)
         {
-            this.RunTest(validateAddress, false);
+            this.RunTest(validateAddress, true);
         }
         
         void RunTest(bool validateAddress, bool secure)
