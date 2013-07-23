@@ -48,14 +48,7 @@ namespace Health.Direct.SmtpAgent.Tests
             }
         }
 
-        [Theory(Skip = "Requires Config Service to be running on the local server")]
-        [PropertyData("ConfigFileNames")]
-        public void TestWithService(string fileName)
-        {
-            m_handler.InitFromConfigFile(Fullpath(fileName));
-        }
-
-        [Theory]//(Skip = "Requires Config Service to be running on the local server")]
+        [Theory]
         [PropertyData("DirectTenancConfigFiles")]
         public void TestDirectTenantWithService(string fileName)
         {
