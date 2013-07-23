@@ -20,6 +20,7 @@ using System.Linq;
 using System.Net.Mail;
 using Health.Direct.Agent;
 using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.Common.Mime;
 using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Store;
 
@@ -51,12 +52,12 @@ namespace Health.Direct.SmtpAgent
             return message.Recipients.Select(
                 recipient => new Mdn(message.Message.IDValue
                     , new MailAddress(recipient.Address).Address
-                    , new MailAddress(message.Message.FromValue).Address
+                    , new MailAddress(message.NotifyTo.ToString()).Address
                     , message.IsTimelyAndReliable.GetValueOrDefault(false))
                 ).ToList();
         }
 
-        
+
         internal void UpdateMdn(IncomingMessage message)
         {
             Debug.Assert(m_settings.HasMdnManager);
@@ -76,8 +77,10 @@ namespace Health.Direct.SmtpAgent
                             Recipient = originalRecipient,
                             Sender = originalSender,
                             Status = disposition.Notification.ToString()
-                    });
+                        });
             }
         }
+
+        
     }
 }
