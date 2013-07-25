@@ -1,0 +1,86 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.2.1}
+
+    Changes included with release 1.2.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=218}218}}: Fixed build and test issues with JDK 7.
+
+{1.2}
+
+    Changes included with release 1.2
+    
+    []
+    
+ 	* Added common configuration tooling classes.
+
+{1.1.2}
+
+    Changes included with release 1.1.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=193}193}}: Fixed issue where DSN messages did not have a date field.
+
+{1.1.1}
+
+    Changes included with release 1.1.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=191}191}}: Fixed issue where timely and reliable extension was not being properly parsed for MDN messages.
+
+{1.1}
+
+    Changes included with release 1.1
+    
+    []
+    
+ 	* Added new mail standards classes.
+ 	
+ 	* Added DSN mail generators
+ 	
+ 	* Added REST client base and abstract classes.
+    
+    [] 
+     
+    Enhancements
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=187}187}}: Added message monitoring data structures and client.
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	
