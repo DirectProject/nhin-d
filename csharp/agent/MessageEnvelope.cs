@@ -33,6 +33,7 @@ namespace Health.Direct.Agent
         readonly DirectAgent m_agent;
         Message m_message;
         DirectAddress m_sender;
+        DirectAddress m_notifyTo;
         DirectAddressCollection m_to;
         DirectAddressCollection m_cc;
         DirectAddressCollection m_bcc;
@@ -58,6 +59,17 @@ namespace Health.Direct.Agent
                 }
             }
             this.Sender = new DirectAddress(from.Value);
+            this.NotifyTo = GetDispostionNotifyTo(message);
+        }
+
+        private static DirectAddress GetDispostionNotifyTo(Message message)
+        {
+            string notify = message.Headers.GetValue(MDNStandard.Headers.DispositionNotificationTo);
+            if (string.IsNullOrEmpty(notify))
+            {
+                notify = message.FromValue;
+            }
+            return new DirectAddress(notify);
         }
         
         /// <summary>
@@ -139,6 +151,7 @@ namespace Health.Direct.Agent
             }
             
             m_sender = envelope.m_sender;
+            m_notifyTo = envelope.m_notifyTo;
         }
         
         /// <summary>
@@ -180,7 +193,24 @@ namespace Health.Direct.Agent
                 m_sender = value;
             }
         }
-        
+
+
+        /// <summary>
+        /// Disposition-Notification-To header value
+        /// </summary>
+        public DirectAddress NotifyTo
+        {
+            get
+            {
+                return m_notifyTo;
+            }
+            internal set
+            {
+                m_notifyTo = value;
+            }
+        }
+
+
         /// <summary>
         /// The recipients of the message. Will generally reflect the <c>To:</c> header unless there are any <c>RejectedRecipients</c>
         /// </summary>

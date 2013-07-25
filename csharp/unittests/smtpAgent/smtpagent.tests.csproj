@@ -62,14 +62,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SmtpAgentTester.cs" />
     <Compile Include="TestAgentInit.cs" />
-    <Compile Include="TestConfigService.cs" />
     <Compile Include="TestDomainServiceResolver.cs" />
     <Compile Include="TestHandler.cs" />
     <Compile Include="TestNotifications.cs" />
     <Compile Include="TestRouter.cs" />
     <Compile Include="TestSmtpAgent.cs" />
-    <Compile Include="TestSmtpAgentDSNs.cs" />
-    <Compile Include="TestSmtpAgentMDNs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SmtpAgentTestFiles\TestDomainTenancyConfig.xml">

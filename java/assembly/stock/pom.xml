@@ -5,7 +5,7 @@
     <artifactId>direct-project-stock</artifactId>    
     <packaging>pom</packaging>
     <name>The direct project stock assembly.</name>
-    <version>3.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <description>Stock assembly for the direct project using the Apache James mail server and the Apache Jetty web container.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-project-stock/${project.version}</url> 
@@ -98,7 +98,7 @@
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>agent</artifactId>
-	      <version>2.0.1</version>
+	      <version>2.0.2</version>
 	   </dependency>  	
 	   <dependency>
 	      <groupId>org.nhind</groupId>
@@ -118,7 +118,7 @@
 	   <dependency>
 	      <groupId>org.nhind</groupId>
 	      <artifactId>config-manager</artifactId>
-	      <version>1.0</version>
+	      <version>1.0.1</version>
        </dependency>           
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -214,7 +214,7 @@
 	                   <artifactItem>
 	                     <groupId>org.nhind</groupId>
 	                     <artifactId>config-manager</artifactId>
-	                     <version>1.0</version>
+	                     <version>1.0.1</version>
 	                     <type>tar.gz</type>
 	                     <overWrite>true</overWrite>		                    		                   
 	                   </artifactItem>

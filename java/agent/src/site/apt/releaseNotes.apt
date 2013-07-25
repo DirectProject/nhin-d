@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{2.0.2}
+
+    Changes included with release 2.0.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Resolved issue with certificates for incoming messages being reused for outgoing messages.  This was affecting interop with systems using separate certificates for signing and encryption.
+    
+    * Cleaned up logs when encountering expired certificates, revoked certificates, and certificates with no CRLs.
+
 {2.0.1}
 
     Changes included with release 2.0.1
