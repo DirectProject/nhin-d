@@ -1,15 +1,16 @@
 ﻿/// jQuery plugin to add support for SwfUpload
 /// (c) 2008 Steven Sanderson
 
+
 (function($) {
     $.fn.makeAsyncUploader = function(options) {
         return this.each(function() {
             // Put in place a new container with a unique ID
-            var id = $(this).attr("id");
+            var id = $(this).attr("id");            
             var container = $("<span class='asyncUploader'/>");
             container.append($("<div class='ProgressBar'> <div>&nbsp;</div> </div>"));
             container.append($("<span id='" + id + "_completedMessage'/>"));
-            container.append($("<span id='" + id + "_uploading'>Uploading... <input type='button' value='Cancel'/></span>"));
+            container.append($("<span id='" + id + "_uploading'>Analyzing... <input type='button' value='Cancel'/></span>"));
             container.append($("<span id='" + id + "_swf'/>"));
             container.append($("<input type='hidden' name='" + id + "_filename'/>"));
             container.append($("<input type='hidden' name='" + id + "_guid'/>"));
@@ -19,7 +20,7 @@
 
 
             // Instantiate the uploader SWF
-            var swfu;
+            
             var width = 109, height = 22;
             if (options) {
                 width = options.width || width;
@@ -51,7 +52,11 @@
                 upload_error_handler: function(file, code, msg) { alert("Sorry, your file wasn't uploaded: " + msg); },
 
                 // Called when upload is beginning (switches controls to uploading state)
-                upload_start_handler: function() {
+                upload_start_handler: function() {                    
+                    
+                    // Set custom post params
+                    swfu.setPostParams({ "lexicon": $('#policyLexicon').val() });
+                    
                     swfu.setButtonDimensions(0, height);
                     $("input[name$=_filename]", container).val("");
                     $("input[name$=_guid]", container).val("");
@@ -68,7 +73,7 @@
                 upload_success_handler: function(file, response) {
                     $("input[name$=_filename]", container).val(file.name);
                     $("input[name$=_guid]", container).val(response);
-                    $("span[id$=_completedMessage]", container).html("Uploaded <b>{0}</b> ({1} KB)"
+                    $("span[id$=_completedMessage]", container).html("Analyzed <b>{0}</b> ({1} KB)"
                                 .replace("{0}", file.name)
                                 .replace("{1}", Math.round(file.size / 1024))
                             );
@@ -89,6 +94,10 @@
 
                     if (options.disableDuringUpload)
                         $(options.disableDuringUpload).removeAttr("disabled");
+                    
+                    
+                    
+                    
                 },
 
                 // Called periodically during upload (moves the progess bar along)
@@ -98,6 +107,9 @@
                 }
             };
             swfu = new SWFUpload($.extend(defaults, options || {}));
+            
+            
+            
 
             // Called when user clicks "cancel" (forces the upload to end, and eliminates progress bar immediately)
             $("span[id$=_uploading] input[type='button']", container).click(function() {
@@ -106,7 +118,7 @@
 
             // Give the effect of preserving state, if requested
             if (options.existingFilename || "" != "") {
-                $("span[id$=_completedMessage]", container).html("Uploaded <b>{0}</b> ({1} KB)"
+                $("span[id$=_completedMessage]", container).html("Analyzed <b>{0}</b> ({1} KB)"
                                 .replace("{0}", options.existingFilename)
                                 .replace("{1}", options.existingFileSize ? Math.round(options.existingFileSize / 1024) : "?")
                             ).show();

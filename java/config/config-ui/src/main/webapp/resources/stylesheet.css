@@ -796,5 +796,5 @@ textarea#policyContent { width: 500px; }
 
 <!-- File Upload CSS -->
 DIV.ProgressBar { width: 100px; padding: 0; border: 1px solid black; margin-right: 1em; height:.75em; margin-left:1em; display:-moz-inline-stack; display:inline-block; zoom:1; *display:inline; }
-DIV.ProgressBar DIV { background-color: Green; font-size: 1pt; height:100%; float:left; }
+DIV.ProgressBar DIV { background-color: Green; font-size: 3pt; height:100%; float:left; }
 SPAN.asyncUploader OBJECT { position: relative; top: 5px; left: 10px; }

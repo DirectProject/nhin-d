@@ -8,6 +8,8 @@
 <script src="<c:url value="/resources/jquery-asyncUpload-0.1.js" />"></script>
 
 <script type="text/javascript">
+
+
 $('#updatePolicyForm').submit(function(evt){
         evt.preventDefault();        
         
@@ -17,11 +19,17 @@ $('#updatePolicyForm').submit(function(evt){
             url: $('#updatePolicyForm').attr('action'), type: 'POST',
             data: formData,
             success: function(html) {
+                alert('test');
                 //resultTable = $('#update', html);
                 //$('#bookSearchResults').html(resultTable);
             }
         }); 
     });
+
+
+
+
+
 
 // Set up async upload feature
 $(function() {
@@ -31,7 +39,7 @@ $(function() {
         flash_url: '<c:url value="/resources/swfupload.swf"/>',
         button_image_url: '<c:url value="/resources/blankButton.png"/>',
         post_params: {
-            "lexicon": $('#policyLexicon').val()
+            //"lexicon": $('#policyLexicon').val()
         }
     });
 });
@@ -49,68 +57,47 @@ $(function() {
 <spring:url value="/config/policies/updatePolicy" var="formURLupdatePolicy" />
 <form:form id="updatePolicyForm" modelAttribute="policyForm" action="${fn:escapeXml(formURLupdatePolicy)}"  cssClass="cleanform" method="POST" enctype="multipart/form-data">
 
-        <form:hidden path="id" />
+    <form:hidden path="id" />
 
-        <c:if test="${EmptyPolicyNameError == true}">
-            <p style="color:red;">Please enter a policy name</p>
-        </c:if>
+    <c:if test="${EmptyPolicyNameError == true}">
+        <p style="color:red;">Please enter a policy name</p>
+    </c:if>
 
-        <c:if test="${DupePolicyError == true}">
-            <p style="color:red;">This policy name has been taken</p>
-        </c:if>
+    <c:if test="${DupePolicyError == true}">
+        <p style="color:red;">This policy name has been taken</p>
+    </c:if>
 
-        <c:if test="${invalidSyntaxError == true}">
-            <p style="color:red;">Please upload a policy with a valid syntax</p>
-        </c:if>
+    <c:if test="${invalidSyntaxError == true}">
+        <p style="color:red;">Please upload a policy with a valid syntax</p>
+    </c:if>
 
-        <c:if test="${InvalidLexiconError == true}">
-            <p style="color:red;">Please enter a valid lexicon</p>
-        </c:if>                                
+    <c:if test="${InvalidLexiconError == true}">
+        <p style="color:red;">Please enter a valid lexicon</p>
+    </c:if>                                
 
-        <div>
-        <label>Name:</label><br/>
-        <form:input path="policyName" cssStyle="width:360px"/>
-        </div>
+    <div>
+    <label>Name:</label><br/>
+    <form:input path="policyName" cssStyle="width:360px"/>
+    </div>
 	
-        <div>
-            <label>Lexicon:</label><br/>
-            
+    <div>
+        <label>Lexicon:</label><br/>
+        <form:select path="policyLexicon">
+            <form:options items="${lexiconNames}"/>
+        </form:select>
+    </div>	  
 
-            <form:select path="policyLexicon">
-                <form:options items="${lexiconNames}"/>
-            </form:select>
+    <div id="newPolicyFileInput" style="padding:10px;">            
+        <form:input path="fileData" id="fileData" type="file"/>
+    </div>       
 
-   
-            
-        </div>	
+    <div id="editExistingPolicyInput" style="padding:10px;">            
+       <form:textarea path="policyContent" cols="60" rows="30"/>
+    </div>
 
-
-        <div>
-
-            <label>Policy:</label><br/>
-            <input type="radio" checked="checked" name="updateType" value="file" onclick="$('#newPolicyFileInput').show();$('#editExistingPolicyInput').hide();"/> Load New File
-            <input type="radio" name="updateType" value="edit" onclick="$('#newPolicyFileInput').hide();$('#editExistingPolicyInput').show();"/> Edit Existing Policy
-        </div>
-						
-
-        <div id="newPolicyFileInput" style="padding:10px;">            
-            <form:input path="fileData" id="fileData" type="file"/>
-        </div>
-
-        
-
-        
-        <div id="editExistingPolicyInput" style="display:none;padding:10px;">            
-           <form:textarea path="policyContent" cols="60" rows="30"/>
-        </div>
-        
-
-
-
-
-<div class="form-submit-area">
+    <div class="form-submit-area">
         <button name="submitType" class="submit" id="submitType" type="submit" value="newpolicy">Update Policy</button>
-</div>
+    </div>
 
 </form:form>
 </div>
