@@ -16,9 +16,11 @@ $(document).ready(function() {
      $('a[class=revealLink]').click(function(e) {
         e.preventDefault();   
         $('#myModal').html('Loading...');
+        
         $('#myModal').load($(this).attr('href'), function() {
-            $('#myModal').reveal({ animation: 'fadeAndPop',                   //fade, fadeAndPop, none
-     animationspeed: 300,    dismissmodalclass: 'close-reveal-modal' });
+            $('#myModal').reveal({ animation: 'fadeAndPop',                   
+                            animationspeed: 300,    
+                            dismissmodalclass: 'close-reveal-modal' });
         });
 	
      });

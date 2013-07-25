@@ -10,11 +10,7 @@ public class PolicyForm {
 
 	private long id;
 	private String policyName;
-	private PolicyLexicon policyLexicon;
-	private String signingCertificate;
-	private int refreshInterval; // In seconds
-	private String thumbprint;
-	private byte[] data;
+	private PolicyLexicon policyLexicon;	
 	private List<String> policiesSelected;
         private String allSelected;
         private String policyContent;
@@ -61,29 +57,7 @@ public class PolicyForm {
             
             return this.lexiconNames;
             
-        }
-        
-	public void setSigningCertificate(String signingCertificate) {
-		this.signingCertificate = signingCertificate;
-	}
-	public String getSigningCertificate() {
-		return signingCertificate;
-	}
-	
-	public void setRefreshInterval(int refreshInterval) {
-		this.refreshInterval = refreshInterval;
-	}
-	public int getRefreshInterval() {
-		return refreshInterval;
-	}
-	
-	public void setThumbprint(String thumbprint) {
-		this.thumbprint = thumbprint;
-	}
-	public String getThumbprint() {
-		return thumbprint;
-	}
-	
+        }	
 	public void setFileData(CommonsMultipartFile fileData) {
 		this.fileData = fileData;
 	}
