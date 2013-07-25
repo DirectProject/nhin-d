@@ -541,8 +541,16 @@ public class PoliciesController {
         Object command, 
         MultipartHttpServletRequest request) throws FileUploadException, IOException, Exception 
     { 		        
-
-        String jsonResponse = null;
+        
+        final org.nhindirect.policy.PolicyLexicon parseLexicon;
+        String jsonResponse = "";
+        
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Checking uploaded lexicon file for format and validation");
+        }                  
+        
+        // Grab uploaded file from the post submission
         UploadedFile ufile = new UploadedFile();
         Iterator<String> itr =  request.getFileNames();
         MultipartFile mpf = request.getFile(itr.next());        
@@ -553,7 +561,6 @@ public class PoliciesController {
             ufile.type = mpf.getContentType();
             ufile.name = mpf.getOriginalFilename();
         } catch (IOException e) {            
-            e.printStackTrace();
         }
         
         String lexicon = request.getParameter("lexicon");
@@ -565,56 +572,54 @@ public class PoliciesController {
         }
         else
         {
-                try
-                {
-                        lex = org.nhind.config.PolicyLexicon.fromString(lexicon);
-                }
-                catch (Exception e)
-                {
-                        System.out.println("Invalid lexicon name.");				
-                }
-        }
-		
-		// validate the policy syntax
-		final org.nhindirect.policy.PolicyLexicon parseLexicon;
-                
-		if (lex.equals(org.nhind.config.PolicyLexicon.JAVA_SER))
-			parseLexicon = org.nhindirect.policy.PolicyLexicon.JAVA_SER;
-		else if (lex.equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1))
-			parseLexicon = org.nhindirect.policy.PolicyLexicon.SIMPLE_TEXT_V1;
-		else
-			parseLexicon = org.nhindirect.policy.PolicyLexicon.XML;		
-		
-		InputStream inStr = null;
-		try
-		{			
-			inStr = new ByteArrayInputStream(ufile.bytes);
-			
-			final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(parseLexicon);
-			parser.parse(inStr);
-		}
-		catch (PolicyParseException e)
-		{
-			log.error("Syntax error in policy file " + " : " + e.getMessage());			
-                        jsonResponse = "failed";
-		}
-		finally
-		{
-			IOUtils.closeQuietly(inStr);
-		}
-		
-        
+            try {
+                // Convert string of file contents to lexicon object
+                lex = org.nhind.config.PolicyLexicon.fromString(lexicon);
+            }
+            catch (Exception e)
+            {
+                log.error("Invalid lexicon name.");				
+            }
+        }		                
 
-        
-        if (log.isDebugEnabled()) 
+        // Determine lexicon type
+        if (lex.equals(org.nhind.config.PolicyLexicon.JAVA_SER)) {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.JAVA_SER;
+        } else if (lex.equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1)) {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.SIMPLE_TEXT_V1;
+        } else {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.XML;		
+        }
+
+        InputStream inStr = null;
+        try
+        {			
+            // Convert policy file upload to byte stream
+            inStr = new ByteArrayInputStream(ufile.bytes);
+
+            // Initialize parser engine
+            final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(parseLexicon);
+            
+            // Attempt to parse the lexicon file for validity
+            parser.parse(inStr);
+        }
+        catch (PolicyParseException e)
         {
-            log.debug("Checking uploaded lexicon file for format and validation");
-        }                    
+            log.error("Syntax error in policy file " + " : " + e.getMessage());			
+            jsonResponse = "File was not a valid file.";
+        }
+        finally
+        {
+            IOUtils.closeQuietly(inStr);
+        }		                                          
         
-        jsonResponse = "success";             
+        if(jsonResponse.isEmpty()) {
+            jsonResponse = "success";                     
+        }
         
         return jsonResponse;
     }
+    
 		
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/assignBundlesForm", method = RequestMethod.GET)
