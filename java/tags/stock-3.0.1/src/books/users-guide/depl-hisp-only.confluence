@@ -1,0 +1,588 @@
+h1. HISP Only Deployment (no source)
+
+This section outlines step by step instructions on installing and deploying a Bare Metal instance of the Java reference implementation.  The instructions contains steps for a select list of software platforms such as Windows, Ubuntu, CentOS, and RedHat Enterprise linux.
+
+h2. Major Updates in Version 2.0+
+
+Version 2.0 of the Bare Metal assembly added three major functional enhancements from the previous 1.x releases:
+
+* Support of the delivery notification implementation [guide|http://wiki.directproject.org/file/detail/Implementation+Guide+for+Delivery+Notification+in+Direct+v1.0.pdf] for timely and reliable delivery.
+* Support for common message failure scenarios including common bounce messages with context appropriate failure information.
+* Experimental support for the Apache James server 3.0-beta4 release.
+
+From a deployment and configuration perspective, the key differences are the addition of the message monitoring service deployed in Tomcat and changes to the James config.xml file for support of the delivery notification guide and other failure scenarios.  If you are upgrading from version 1.x, be aware of the addition of the new monitoring service and the config.xml changes.  Also note that the Tomcat startup file (catalina.sh) increases the max perm gen size.  
+
+If you installing 2.0 and later from scratch, the appropriate changes have already been included in the assembly.
+
+*NOTE:* James 3 support is only experimental.  There are no guarantees that it will work with all configurations, and the final release of James 3 may change significantly from the current beta-4 release.
+
+h2. Major Updates in Version 3.0+
+
+Version 3.0 of the Bare Metal assembly added the policy enablement module as an optional component.  
+
+From a deployment perspective, there are no differences between 2.x and 3.x when installing the required components other than updated versions of components.  Configuration of the policy enable module is described in the direct-policy library users [guide|http://api.nhindirect.org/java/site/direct-policy/1.0/users-guide/dev-sta.html].
+
+h2. Assumptions
+
+* User is running one of the following software platforms.  Other platforms are supported and may only required slight variations of the instructions listed this section, but the Bare Metal install has only been validated on the following platforms:
+** Windows
+*** Server 2003 or later
+*** XP SP2 or later
+** Ubuntu Linux
+*** 10.10 (Maverick Meerkat)
+*** 11.04 (Natty Narwhal)
+*** 11.10 (Oneiric Ocelot)
+*** 12.04 (Precise Pangolin)
+*** 12.10 (Quantal Quetzal)
+*** 13.04 (Raring Ringtail)
+** FreeBSD 9.1
+** CentOS 5+
+** RHEL 5.5+
+* Assumed that the install has administrative privileges on the install box.
+** Root or sudo access for linux/unix based platforms
+** Administrator privileges for Windows based platforms
+* Assumed user has registered a domain with an accredited domain registrar such as [GoDaddy|http://www.godaddy.com/]
+
+h2. General Tools and Runtimes
+
+The reference implementation requires some tools to be available on the platform to install and run the Bare Metal components.
+
+* Unzip
+* Ant
+* Java SE 6
+
+h3. Unzip
+
+An unzip tool is required to unpack the stock assembly.  Recommended tools and installation locations are listed below:
+
+_Windows_
+
+Any one of the following will work for Windows:
+
+* [Winzip|www.winzip.com]
+* [WinRar|http://www.win-rar.com/download.html] 
+ 
+_Ubuntu_
+
+Install unzip using the following command:
+
+{code}
+ sudo apt-get install unzip
+{code} 
+
+_CentOS/RHEL_
+
+Unzip tools should already be installed, but if not execute the following commands with root or sudo privileges:
+
+{code}
+ yum install unzip
+ yum install gzip
+ yum install tar
+{code}
+
+h3. Ant
+
+The Ant tool is used for setting the domain name in the Apache James server.
+
+_Windows_
+
+Download Apache Ant from the following location and follow in the install instructions under Documentation/Manual located on the upper left side of the site below
+
+* [Apache Ant|http://ant.apache.org/bindownload.cgi]
+
+_Ubuntu_
+
+Install ant using the following command:
+
+{code}
+ sudo apt-get install ant
+{code}
+
+_CentOS/RHEL_
+
+TDB
+
+_FreeBSD_
+
+Install ant using the following command (should run as root or with elevated privileges):
+
+{code}
+ pkg_add -r apache-ant
+{code}
+
+FreeBSD also does not come with _wget_ by default.  Install wget using the following command:
+
+{code}
+ pkg_add -r wget
+{code}
+
+h3. Java 6 SE
+
+The Java 6 SE platform provides the runtime environment that all of the Bare Metal components will run in.
+
+_Windows_
+
+Download and install the Java 6 JRE from Oracle's download web [site|http://www.oracle.com/technetwork/java/javase/downloads/jre-6u29-download-513650.html].  After installing the JRE, set the JAVA_HOME environment variable by following the instructions below:
+
+* Right click on "My Computer" (may be in different locations depending on the Windows version) and select Properties
+* If running later versions of Windows, you may be presented "Control\System" panel.  If so, click Advanced system settings on the left side of the window.
+* In the System Properties Dialog, click the Advanced tab and then click Environment Variables.
+* Under System Variables click New.
+* Use the following setting:
+
+{code}
+ Variable Name: JAVA_HOME
+ Variable Value: C:\Program Files\java\jre6
+{code}
+
+* Click OK on all screens.
+
+_Ubuntu 10.10 - 11.10_
+
+Install Sun Java 6 JDK. By default it is not included in the shipped repository, and needs to be added manually. After installing, you need to update java-alternatives to use the newly installed Java version instead of shipped version.
+
+*Note:* For Ubuntu 10.10 Maverick, the add-apt-repository command may not be not available. Instead, uncomment or add the canonical repository "_http://archive.canonical.com/ lucid partner_" in the /etc/apt/sources.list and follow the remainder of the steps.
+
+{code}
+ sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
+ sudo apt-get update
+ sudo apt-get install sun-java6-jdk
+ sudo update-java-alternatives -s java-6-sun
+ export JAVA_HOME=/usr/lib/jvm/java-6-sun
+ echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+{code}
+
+*Note:* It is okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
+
+_Ubuntu 12.04 - 13.04_
+
+The Oracle JREs are supported in the [WebUpdt8|https://launchpad.net/~webupd8team/+archive/java] Personal Package Archive (PPA) which automatically downloads and installs the JRE.
+
+To install the Java 6 JRE, follow the commands below:
+
+*Note:* The add-apt-repository command may not be available.  Adding the python-software-properties package should resolve this issue.  It is also okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
+
+{code}
+ sudo apt-get install python-software-properties
+ sudo add-apt-repository ppa:webupd8team/java
+ sudo apt-get update
+ sudo apt-get install oracle-java6-installer 
+ sudo update-java-alternatives -s java-6-oracle
+ export JAVA_HOME=/usr/lib/jvm/java-6-oracle
+ echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+{code}
+
+_CentOS/RHEL_
+
+Obtain/downlaod the JDK 6 Update 29 package using the following command for the appropriate processor architecture:
+
+x86 (32 bit)
+{code}
+ wget http://download.oracle.com/otn-pub/java/jdk/6u29-b11/jdk-6u29-linux-i586-rpm.bin
+{code}
+
+x64 (64 bit)
+{code}
+ wget http://download.oracle.com/otn-pub/java/jdk/6u29-b11/jdk-6u29-linux-x64-rpm.bin
+{code}
+
+After downloading, execute the following commands to install the JDK for the appropriate processor architecture:
+
+x86 (32 bit)
+{code}
+ chmod 755 jdk-6u29-linux-i586-rpm.bin
+ sudo ./jdk-6u29-linux-i586-rpm.bin
+{code}
+
+x64 (64 bit)
+{code}
+ chmod 755 jdk-6u29-linux-x64-rpm.bin
+ sudo ./jdk-6u29-linux-x64-rpm.bin
+{code}
+
+After installing, you need to update java alternatives to use the newly installed Java version instead of shipped version. Start by creating alternatives for the new java commands installed above.  Execute the following commands to set the Sun JDK:
+
+{code}
+ sudo alternatives --install /usr/bin/java java /usr/java/jdk1.6.0_22/bin/java 100
+ sudo alternatives --install /usr/bin/jar jar /usr/java/jdk1.6.0_22/bin/jar 100
+ sudo alternatives --install /usr/bin/javac javac /usr/java/jdk1.6.0_22/bin/javac 100
+ 
+ sudo alternatives --config java
+ sudo alternatives --config jar
+ sudo alternatives --config javac 
+{code}
+
+Finally set the JAVA_HOME environment variable for the new JDK using the following commands:
+
+{code}
+  export JAVA_HOME=/usr/java/jdk1.6.0_22
+  echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+{code}
+
+_FreeBSD_
+
+Obtain/downlaod the JDK 6 using the pkg\_add command if you do not already have Java 6 installed.  This step uses the openjdk6 implementation as the Oracle installtation generally requires building the distribution from the _ports_ and is a much more involved process (should run as root or with elevated privileges). 
+
+{code}
+  pkg_add -r openjdk6
+  set JAVA_HOME=/usr/local/openjdk6
+  sed -i .bak 's/setenv=/setenv=JAVA_HOME=\/usr\/local\/openjdk6,/g' /etc/login.conf
+  cap_mkdb /etc/login.conf
+{code}
+
+h3. Java Cryptographic Extensions
+
+The Sun JRE/JDK requires the JCE policy jars to be updated to allow for unlimited strength encryption.  The policy files must be downloaded separately and copied in the JRE library.
+
+For all platforms, download the jce policy [file|http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html] using a web browser.  For Unix/Linux systems, it may be necessary to manually copy or FTP the file from a system with a UI to the Unix/Linux node. 
+
+_Windows_
+
+Unzip the downloaded file and copy the jar files from the jce directory to the JAVA_HOME/jre/lib/security folder (Example: C:\Program Files\java\jre6\lib\security).  Overwrite the existing files.
+
+_All Linux/Unix/FreeBSD_
+
+From the directory where you downloaded and placed the jce zip file, run the following commands:
+
+{code}
+ unzip jce_policy-6.zip
+ sudo cp jce/local_policy.jar $JAVA_HOME/jre/lib/security
+ sudo cp jce/US_export_policy.jar $JAVA_HOME/jre/lib/security
+{code}
+
+
+h2. Obtain Reference Implementation Stock Assembly
+
+The stock assembly contains all of the pre-assembled and configured components of the Bare Metal deployment.  Download the latest version of the stock assembly from the maven central [repository|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] or the Sonatype [repository|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock/].  
+
+*Note:* The maven central repository may black list some IP ranges such as virutal machines running in the Amazon EC2 cloud.  Use the Sonatype repository if you are blocked from the maven central repository.
+
+The assembly contains a root directly named _direct_ and has the following folders under the root.
+
+* apache-tomcat-7.0.41
+* DirectDNSServices
+* ConfigTools
+* james-2.3.2
+* apache-james-3.0-beta4
+* tools
+
+_Windows_
+
+From a browser, download the desired version of the assembly from one the repositories above.  
+
+Example: Download version 3.0.1 - [direct-project-stock-3.0.1.tar.gz|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/3.0.1/direct-project-stock-3.0.1.tar.gz].  After downloading, unzip the contents to appropriate installation location.
+
+_All Linux/Unix_
+
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-3.0.1.tar.gz from maven central, use the following commands:
+{code}
+ cd /opt
+ sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0.1/direct-project-stock-3.0.1.tar.gz
+{code}
+
+If you are denied access to the location above, try the Sonatype repostitory using the following command.
+{code}
+ cd /opt
+ sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/3.0.1/direct-project-stock-3.0.1.tar.gz
+{code}
+
+Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
+
+{code}
+ sudo tar xvfz direct-project-stock-3.0.1.tar.gz
+ export DIRECT_HOME=`pwd`/direct
+ echo "export DIRECT_HOME=$DIRECT_HOME" | sudo tee -a /etc/environment
+{code}
+
+_FreeBSD_
+
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  You may need to initially create the /opt directory.  For example, to download version direct-project-stock-3.0.1.tar.gz from maven central, use the following commands:
+
+{code}
+ cd /
+ mkdir opt
+ cd /opt
+ sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0.1/direct-project-stock-3.0.1.tar.gz
+{code}
+
+If you are denied access to the location above, try the Sonatype repostitory using the following command.
+{code}
+ cd /opt
+ sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/3.0.1/direct-project-stock-3.0.1.tar.gz
+{code}
+
+Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
+
+{code}
+ sudo tar xvfz direct-project-stock-3.0.1.tar.gz
+ sed -i .bak 's/setenv=/setenv=DIRECT_HOME=\/opt\/direct,/g' /etc/login.conf
+ cap_mkdb /etc/login.conf
+{code}
+
+You will need to logout or possiblly reboot at this point in order for the global DIRECT_HOME variable to take affect.  Failing to reboot will cause the setdomain script to fail in later steps.
+
+{code}
+ reboot
+{code}
+
+h2. Launch Tomcat
+
+Before running the James mail servier, the configuration and message monitiroing services must be running and some minimum configuration completed.  All of these services run inside the Tomcat web server.
+
+To start the tomcat server, run the following command from the DIRECT HOME/apache-tomcat-7.0.41/bin directory.
+
+_Windows_
+{code}
+ startup
+{code}
+
+_All Unix/Linux/FreeBSD_
+{code}
+ sudo ./startup.sh
+{code}
+
+*Note:* It may take a few minutes for the web server to finish loading as it must initially deploy all of the services when run for the first time.
+
+To validate that Tomcat and the configuration services loaded successfully, launch a browser window against the server node with the following URL:
+
+{code}
+ http://<server>:8081/config-ui
+{code}
+
+You should be presented with the configuration ui login [screen|http://api.nhindirect.org/java/site/gateway/2.1/users-guide/smtp-depl-wsconfig.html]
+
+h2. Domain Name and Certificate Generation
+
+The first step in running your mail server is configuring the domain and a loading a trust anchor and certificate into the configuration ui.
+
+First determine your HISPs domain name.  Depending on the type of certificate resolution services you wish to host, your domain nameing convention may slightly differ.  Regardless of the certificate hosting model, you will need to have to have registered domain.  For this document, we will assume you have a domain registered called example.com.
+
+*Note:* Refer to the Direct Project DNS Configuration [Guide|http://wiki.directproject.org/DNS+Configuration+Guide] as a starting point for determining your DNS naming convention.
+
+Now that we have our registered domain, we will host our HISP Direct messaging under the domain direct.example.com.
+
+The next step is create a root certificate (anchor) for our domain and an X509 certificate for encrypting/decrypting and signing message.  There are many different options for getting these certiicates such as using openssl or obtaining a certificate from a comercial third party such as Entrust or VeriSign.  However the Direct Project reference implementation assembly ships a tool called certGen for generating root CAs and certificates for the purpose of pilots and interop testing.
+
+Full documentation for the certGen tool can be found [here|http://api.nhindirect.org/java/site/agent/1.5.1/users-guide/dev-cert-gen.html].  The documentation in the certGen link runs the certGen tool from the reference implemntation source tree.  In the Bare Metal assembly, the certGen tool is found under the /direct/tools directory that was extracted from the tar.gz file.
+
+Run the certGen tool from tools directory using the following command:
+
+_Windows_
+{code}
+ certGen
+{code}
+
+_All Unix/Linux/FreeBSD_
+{code}
+ ./certGen.sh
+{code}
+
+h3. Certificate Generation
+
+Now create a CA for your domain.  In the certGen tool, enter a common name (CN:) for your new CA.  For our domain direct.example.com, we might use something like _Direct.Example.Com Root CA_.  Fill the other fields as needed.  It is recommended you set the expiration to 1 year, the key strenth to at least 2048 bytes, and provide a password for your CA's private key.
+
+After creating the CA, create a leaf cert and using your domain name as the CN: field and fill in all other fields as needed.  It is recommended you set the expiration to 1 year, the key strength to at least 1024 bytes, and provide a password for your private key.  Also make sure the _Add Email To Al Subject Names_ is checked.  After creating your CA and certificate, you should have to following similarly named files in your /tools directory (assuming the direct.example.com domain and no email address entered in the CA dialog.  If an email address is entered, then the CA files will have the eamil address in the file name instead of the CN field).
+
+* Direct.Example.com Root CA.der = Root CA file (trust anchor for you HISP)
+* Direct.Example.com Root CAKey.der - Root CA private key file
+* direct.example.com.der - Org certificate file
+* direct.example.comKey.der - Org certificate private key file
+* direct.example.com.p12 - Org certificate PKCS12 file
+
+h2. Import Anchors and Certificates
+
+Before the James mail server can be run, you must create you domain in the configuration ui tool and import anchors and certificates.  Follow the steps below to create your domain and import your trust anchor and certificate.  A full description of the config ui and operations can be found [here|http://api.nhindirect.org/java/site/gateway/2.1/users-guide/smtp-depl-wsconfig.html].
+
+# Log into http://<server>:8081/config-ui with username: admin and password: adm1nD1r3ct
+## Click Create New Domain.
+## Enter the Domain Name and Postmaster E-Mail Address for the domain this HISP will be handling.  Typical postmaster address is postmaster@<domain name>.
+## Choose ENABLED as the status.
+## Click Add
+# Click the Anchors tab.
+## Click *Browse...* and browse to the location of your trust anchor, and select it.
+## Check Incoming and Outgoing
+## Choose ENABLED as the status.
+## Click add anchor
+# Click Certificate at the top of the screen
+## Click *Browse...* and browse to the location of you org certificate PKCS12 file, and select it
+## Choose ENABLED as the status.
+## Click Add Crtificate
+
+*Note:* You do not have to enter any additional agent setting in version 1.2 and higher of the Bare Metal assembly.  The agent automatically defaults to standard settings for optimal interoperability.
+
+Before your HISP can communicate with other HISP, you must import anchors from other HISPs to estabilish trusted communication.  You must also provide your trust anchor to the HISP(s) you are communicating with.  There are a few options of HISPs that exist for interop testing that can be easily accessed.  Anchors of these HISP can be found and downloaded from the Direct Project google code source [page|http://code.google.com/p/nhin-d/source/browse/certs/anchors/]. 
+
+* securehealth.email.com
+** Testing HISP running the latest version of the Java Bare Metal assembly.  Contact gm2552@cerner.com to establish a trust relationship.
+** Anchor File Name: Direct Securehealthemail CA.der
+* Health Value Stage
+** Microsoft Health Vault staging environment.  Anchors are exchange by sending an email with you are and your anchor to hvbd@microsoft.com.  More details can be found in this [blog|http://blogs.msdn.com/b/familyhealthguy/archive/2011/02/12/start-sharing-information-with-patients-today.aspx]
+** Anchor File Name: HealthVault_Staging CA.cer
+
+h2. Configure and Run James Mail Server
+
+First, configure james with your domain name.  Depending on the version of James you choose to use, the configuration will differ slightly.
+
+_Windows_
+
+*James 2.3.2*
+
+Manually edit the file config.xml under DIRECT HOME/james-2.3.2/apps/james/SAR-INF and change the following settings:
+* <postmaster>postmaster@localhost</postmaster> to <postmaster>postmaster@<your domain name></postmaster>
+* <servername>localhost</servername> to <servername>your domain name</servername>
+* match="RecipAndSenderIsNotLocal=mydomain.com" to match="RecipAndSenderIsNotLocal=your domain name"
+
+*James 3*
+
+Manually edit the file domainlist.conf under DIRECT HOME/apache-james-3.0-beta4/conf and change the following settings under the XML based configuration (not the JPA configuration settings):  
+
+*NOTE:* James3 has better support of multiple domains hosted in a single mail server.  You may add multiple domains to this list, but you must list only one default domain. 
+* <domainname>localhost</domainname> to <domainname>your domain name</domainname>
+* <defaultDomain>localhost</defaultDomain> to <defaultDomain>your domain name</defaultDomain>
+
+Manually edit the file mailetcontainer.conf under DIRECT HOME/apache-james-3.0-beta4/conf and change the following settings: 
+* <postmaster>postmaster@localhost</postmaster> to <postmaster>postmaster@<your domain name></postmaster>
+* match="org.nhindirect.gateway.smtp.james.matcher.RecipAndSenderIsNotLocal=mydomain.com" to match="org.nhindirect.gateway.smtp.james.matcher.RecipAndSenderIsNotLocal=your domain name"
+
+_All Unix/Linux/FreeBSD_
+
+Run the following commands:
+
+*James 2.3.2*
+
+{code}
+ cd $DIRECT_HOME/james-2.3.2
+ sh bin/setdomain.sh <your domain name>
+{code}
+
+*James 3*
+
+{code}
+ cd $DIRECT_HOME/apache-james-3.0-beta4
+ sh bin/setdomain.sh <your domain name>
+{code}
+
+Now start the Apache James mail server with security and trust agent with the following commands:
+
+_Windows_ 
+
+From the DIRECT HOME/james-2.3.2/bin or DIRECT HOME/apache-james-3.0-beta4/bin directory (depending on your James version) run:
+
+*James 2.3.2*
+
+{code}
+ run.bat
+{code}
+
+*James 3*
+
+{code}
+ james install
+ james start
+{code}
+
+_All Unix/Linux/FreeBSD_
+
+*James 2.3.2*
+
+{code}
+ cd $DIRECT_HOME/james-2.3.2
+ sudo -E sh bin/run.sh > james.log 2>&1 &
+{code}
+
+*James 3*
+
+{code}
+ cd $DIRECT_HOME/apache-james-3.0-beta4/bin
+ sudo james startup
+{code}
+
+Now add your first user.  The differs betweeen James versions as James 2.3.2 uses a telnet client and James 3 uses a JMX based command line interface.
+
+
+*James 2.3.2*
+
+*Note For Windows Users:*  You will need to open a separate command window from the previous step.  Later versions of Windows do not come with the Telnet client installed.  You have to manually install this using the server manager console.
+
+{code}
+ telnet localhost 4555
+ > root
+ > root
+ > adduser username password
+ > quit
+{code}
+
+*Note:* The username should not contain _@domainname_.  This is required for James 3+, but should not be used for James 2.3.2.
+
+*James 3*
+
+{code}
+ cd $DIRECT_HOME/apache-james-3.0-beta4/bin
+ ./james-cli.sh -h localhost adduser username password
+{code}
+
+*Note:* The username *should* contain _@domainname_.  This is required for James 3+.
+
+h2. DNS Records
+
+Now that your HISP is running, you need to make it available to the public internet.  If you intend to make your HISP's certificate available via DNS CERT records, you will need to install and configure the Direct DNS Server.  Instructions can be found in the DNS Servers users/deployment [guide|http://api.nhindirect.org/java/site/dns/1.2.1/users-guide/deploy.html].  This guide includes directions on integrating with GoDaddy.
+
+If you are not using DNS to distribute your certificates, you may use your registrar's DNS configuration tooling to setup MX records for you HISP.
+
+h2. Distributing Certificates
+
+The prefered distribution mechanism for distributing your HISP's org certificate is DNS CERT records.  Instructions for setting up the Direct DNS server are found in the DNS server deploymenet [guide|http://api.nhindirect.org/java/site/dns/1.2.1/users-guide/deploy.html].
+
+*NOTE* Some OS distributions such as Ubuntu may already be running their own DNS server process.  If the OS is already running a DNS server bound to the DNS ports (TCP and UDP ports 53), then you will need to stop these services before running the Direct DNS server.  For example, to determine if Ubuntu already has a DNS running, run the following command and check for a process listening on port.
+
+{code}
+ netstat -anp | grep 53
+{code}
+
+Another alternative is LDAP.  The default settings in the security and trust agent will attempt to use the Direct LDAP specication if SRV records can be found.  The LDAP standards can be found on the S&I framework's Certificate Discovery for Direct Project workgroup [page|https://docs.google.com/document/d/1igDpIizm7CTfV-fUw\_1EnrCUGIljFEgLPRHpgK5iaec/edit].
+
+A fall back alternative is manually distributing your org certificate to the HISPs that you will communicate.  This is an out of band process that will require you to determine how to get your certificate to the HISP.  Likewise another HISP may need to manually give you their certificate(s) if they do not support DNS or LDAP discovery.  To add another HISPs certificate (not anchor) to you HISP, import the certificate file into the Certificates section of the configuration ui tool.
+
+h2. Recommended Next Steps
+
+Following are optional, but recommended, next steps to secure your environment.
+
+_Secure Configuration Service Port (8081)_
+
+To secure the configuration service, it is recommended to limit access to port 8081 to localhost and/or a local subnet.
+
+_Secure Configuration Service Password_
+
+To further protect the configuration service, or if port 8081 must remain public, it is recommended to change the default password.
+
+_Windows_ 
+
+Manuall edit the config-servlet.xml file under DIRECT HOME/apache-tomcat-7.0.41/webapps/config-ui/WEB-INF and change the following setting to your new password:
+
+{code}
+ <security:user name="admin" password="adm1nD1r3ct" authorities="ROLE_ADMIN"/>
+{code}
+
+Restart the tomcat server by running the following commands from the DIRECT HOME/apache-tomcat-7.0.41/bin directory.
+
+{code}
+ shutdown
+ startup
+{code}
+
+_All Unix/Linux/FreeBSD_
+
+{code}
+ cp $DIRECT_HOME/apache-tomcat-7.07/webapps/config-ui/WEB-INF/config-servlet.xml $DIRECT_HOME/apache-tomcat-7.0.41/webapps/config-ui/WEB-INF/config-servlet.xml.orig
+ sed -i "s/adm1nD1r3ct/your_new_password/g" $DIRECT_HOME/apache-tomcat-7.0.41/webapps/config-ui/WEB-INF/config-servlet.xml
+ sh bin/shutdown.sh
+ sh bin/startup.sh
+{code}
+
+_Tweak Message Monitoring Service Settings_
+
+The message monitoring service is preconfigured with common settings, but can be tweaked to your specific requirements.  See the monitoring deployment [guide|http://api.nhindirect.org/java/site/direct-msg-monitor/1.1.3/users-guide/deployment.html] for more details.
+
+_Define Policy Definitions_
+
+Starting with version 3.0, an optional module is available for defining X509 certificate policies.  See the policy enablement module (direct-policy) users [guide|http://api.nhindirect.org/java/site/direct-policy/1.0/users-guide/] for full details.
