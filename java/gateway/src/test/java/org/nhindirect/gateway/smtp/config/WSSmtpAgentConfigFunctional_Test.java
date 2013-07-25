@@ -1786,9 +1786,14 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	assertEquals(1, recips.getCertificates().size());
             	assertEquals(policyFilteredCert, recips.getCertificates().iterator().next());
             	
-            	final NHINDAddress sender = incomingMessage.getSender();           	
-            	assertEquals(1, sender.getCertificates().size());
-            	assertEquals(policyFilteredCert, sender.getCertificates().iterator().next());
+            	/*
+            	 * Sender public certificates are no longer resolved on incoming messages 
+            	 * as the are retrieved from the message signature
+            	 */
+            	
+            	//final NHINDAddress sender = incomingMessage.getSender();           	
+            	//assertEquals(1, sender.getCertificates().size());
+            	//assertEquals(policyFilteredCert, sender.getCertificates().iterator().next());
             }
         }.perform();
     }
@@ -1972,9 +1977,13 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	assertEquals(1, recips.getCertificates().size());
             	assertEquals(keyEncCert, recips.getCertificates().iterator().next());
             	
-            	final NHINDAddress sender = incomingMessage.getSender();           	
-            	assertEquals(1, sender.getCertificates().size());
-            	assertEquals(digSigCert, sender.getCertificates().iterator().next());
+            	/*
+            	 * Sender public certificates are no longer resolved on incoming messages 
+            	 * as the are retrieved from the message signature
+            	 */
+            	//final NHINDAddress sender = incomingMessage.getSender();           	
+            	//assertEquals(1, sender.getCertificates().size());
+            	//assertEquals(digSigCert, sender.getCertificates().iterator().next());
             }
         }.perform();
     }
