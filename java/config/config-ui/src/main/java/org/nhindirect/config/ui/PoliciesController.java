@@ -217,129 +217,8 @@ public class PoliciesController {
                 log.error(policies);
             } else {                    
                 model.addAttribute("policies", "");
-            }
-            
-            //TrustBundle trustBundle = new TrustBundle();
-            
-            /*
-            
-            String bundleName = policyForm.getBundleName();
-
-            trustBundle.setBundleName(bundleName);
-            trustBundle.setRefreshInterval(bundleForm.getRefreshInterval()*3600);	// Convert Hours to Seconds for backend
-
-            
-            // Check if signing certificate is uploaded
-            if (!bundleForm.getFileData().isEmpty()) 
-            {
-                
-                byte[] bytes = bundleForm.getFileData().getBytes();
-
-                String fileType = bundleForm.getFileData().getContentType();
-
-                if(!fileType.matches("application/x-x509-ca-cert") && 
-                    !fileType.matches("application/x-x509-user-cert") &&
-                    !fileType.matches("application/pkix-cert"))
-                {		
-                    model.addAttribute("signingCertError", true);	
-                    formValidated = false;
-                } else {                        
-                    try {
-                        trustBundle.setSigningCertificateData(bytes);
-                    } catch (Exception ce) {
-
-                    }	
-                } 	                    
-            } else {
-                if (log.isDebugEnabled()) log.debug("DO NOT store the bundle into database BECAUSE THERE IS NO FILE");
-            }
-            
-            // Check for empty bundle name
-            if(bundleName.isEmpty()) 
-            {
-                model.addAttribute("EmptyBundleError", true);
-                formValidated = false;
-            } else 
-            {
-                // Check if trust bundle name is already used
-                TrustBundle dupeBundle = null;
-                try 
-                {
-                    dupeBundle = configSvc.getTrustBundleByName(bundleName);
-                } catch (ConfigurationServiceException cse) 
-                {
-                    log.error("Could not get bundle information from config service");
-                }                        
-
-                if(dupeBundle != null) 
-                {
-                    model.addAttribute("DupeBundleError", true);
-                    formValidated = false;
-                }
-            }
-
-            // Check for valid URL
-            URL u = null;
-            String trustURL = bundleForm.getTrustURL();
+            }            
                         
-            try {                
-                u = new URL(trustURL);
-            } catch (MalformedURLException mu) {
-                model.addAttribute("URLError", true);
-                formValidated = false;
-            }                        
-            
-            
-            
-            
-            if(formValidated) 
-            {            
-            
-                trustBundle.setBundleURL(trustURL);
-
-                try {
-
-                    trustBundle.setCheckSum("");
-
-                    configSvc.addTrustBundle(trustBundle);                
-
-                    if (log.isDebugEnabled())
-                    {
-                        log.debug("Add Trust Bundle to Database");
-                    }
-
-                } catch (Exception e) {
-                        if (log.isDebugEnabled()) log.error(e);
-                        e.printStackTrace();
-                }
-
-                
-
-                BundleForm bform = new BundleForm();
-
-                model.addAttribute("bundleForm",bform);
-            }
-            
-            // Process data for Trust Bundle View
-            try {
-                    
-                // Get Trust Bundles
-                Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
-
-                if(trustBundles != null) {
-                    
-                                                                                                                       
-                    model.addAttribute("trustBundles", trustBundles);
-                }
-
-
-            } catch (ConfigurationServiceException e1) {
-                
-            } 
-             
-            */
-            
-            //model.addAttribute("bundlesSelected");
             model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));            
             mav.setViewName("policies");                         
         }
@@ -347,6 +226,12 @@ public class PoliciesController {
         return mav;
     }			
 	
+    
+    /*********************************
+     *
+     * Remove Policies Method
+     *
+     *********************************/
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/removePolicies", method = RequestMethod.POST)
     public ModelAndView removePolicies (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -407,6 +292,11 @@ public class PoliciesController {
     }		
 
     
+    /*********************************
+     *
+     * Update Policy Form Method
+     *
+     *********************************/
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/updatePolicyForm", method = RequestMethod.GET)        
     public ModelAndView updatePolicyForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
@@ -502,6 +392,12 @@ public class PoliciesController {
         return mav;     
     }		
 
+    
+    /*********************************
+     *
+     * Update Policy Method
+     *
+     *********************************/
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/updatePolicy", method = RequestMethod.POST)    
     @ResponseBody
@@ -533,6 +429,12 @@ public class PoliciesController {
         return jsonResponse;
     }
     
+    
+    /*********************************
+     *
+     * Check Lexicon File Method
+     *
+     *********************************/
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/checkLexiconFile", method = {RequestMethod.GET, RequestMethod.POST } )    
     @ResponseBody
@@ -606,7 +508,7 @@ public class PoliciesController {
         catch (PolicyParseException e)
         {
             log.error("Syntax error in policy file " + " : " + e.getMessage());			
-            jsonResponse = "File was not a valid file.";
+            jsonResponse = "{\"Status\":\"File was not a valid file.\"}";
         }
         finally
         {
@@ -614,128 +516,19 @@ public class PoliciesController {
         }		                                          
         
         if(jsonResponse.isEmpty()) {
-            jsonResponse = "success";                     
+            jsonResponse = "{\"Status\":\"Success\"}";                     
         }
         
         return jsonResponse;
     }
     
-		
+		    
+    /*********************************
+     *
+     * New Policy Form Method
+     *
+     *********************************/
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/assignBundlesForm", method = RequestMethod.GET)
-    public ModelAndView assignBundlesForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
-                                                    HttpSession session,
-                                                    @ModelAttribute BundleForm simpleForm,
-                                                    Model model)  { 		
-
-        ModelAndView mav = new ModelAndView(); 
-
-        if (log.isDebugEnabled()) 
-        {
-            log.debug("Enter bundles/assignBundles");
-        }    
-        
-        // Process data for Trust Bundle View
-        try {
-
-            // Get Trust Bundles
-            Collection<TrustBundle> trustBundles = configSvc.getTrustBundles(false);
-            
-            if(trustBundles != null) {
-                model.addAttribute("trustBundles", trustBundles);
-            }
-
-
-        } catch (ConfigurationServiceException e1) {
-
-        }                                        
-        
-        BundleForm bform = new BundleForm();
-        bform.setId(0);
-        model.addAttribute("bundleForm", bform);
-        mav.setViewName("assignBundlesForm");
-        
-        return mav;
-    }
-    
-    @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/addMoreBundlesForm", method = RequestMethod.GET)
-    public ModelAndView addMoreBundlesForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
-                                                    HttpSession session,
-                                                    @ModelAttribute BundleForm simpleForm,
-                                                    @RequestParam(value="domainId") String domainId,
-                                                    Model model)  { 		
-
-        ModelAndView mav = new ModelAndView(); 
-
-        if (log.isDebugEnabled()) 
-        {
-            log.debug("Enter bundles/addMoreBundlesForm");
-        }    
-        
-        // Process data for Trust Bundle View
-        try {
-
-            // Get Trust Bundles
-            Collection<TrustBundle> trustBundles = new ArrayList();  
-            Collection<TrustBundle> newBundles = new ArrayList();  
-            Collection<TrustBundleDomainReltn> bundleRelationships = configSvc.getTrustBundlesByDomain(Long.parseLong(domainId), false);
-            Collection<TrustBundle> allBundles = configSvc.getTrustBundles(false);
-            boolean bundleMatch = false;
-            TrustBundle tempBundle;
-            
-            if( bundleRelationships != null ) {
-                
-                
-                
-               
- 
-                for(TrustBundleDomainReltn relationship : bundleRelationships) {                                   
-                    
-                    trustBundles.add(relationship.getTrustBundle());                                                                         
-
-                }
-                
-                for(TrustBundle bundle : allBundles) {
-                    bundleMatch = false;
-                
-                    for(TrustBundle subBundle : trustBundles) {
-                        if(subBundle.getId() == bundle.getId()) {
-                            bundleMatch = true;
-                        }
-                    }
-                    if(!bundleMatch) {
-                        newBundles.add(bundle);
-                    }
-                }
-                
-                
-            } else { 
-                
-                newBundles = configSvc.getTrustBundles(false);
-                
-            }
-                       
-            //if(trustBundles != null) {
-                model.addAttribute("trustBundles", newBundles);
-            //}
-
-
-        } catch (ConfigurationServiceException e1) {
-
-        }                               
-        
-        model.addAttribute("domainId", domainId);
-        
-        BundleForm bform = new BundleForm();
-        bform.setId(0);
-        model.addAttribute("bundleForm", bform);
-        mav.setViewName("addMoreBundlesForm");
-        
-        return mav;
-    }
-    
-        @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/newPolicyForm", method = RequestMethod.GET)
     public ModelAndView newPolicyForm (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,                                                     
                                                     HttpSession session,
@@ -748,32 +541,26 @@ public class PoliciesController {
         {
             log.debug("Enter policies");
         }    
-        
-        
+                
         PolicyForm pform = new PolicyForm();
         pform.setId(0);
-        model.addAttribute("policyForm", pform);
-        
-        //log.error("test" + pform.getLexiconNames().toString());
-        
+        model.addAttribute("policyForm", pform);                        
         model.addAttribute("lexiconNames", pform.getLexiconNames());
         
-        //log.error("test"+model.toString());
-                
         mav.setViewName("newPolicyForm");
         
         return mav;
     }
     
 	
-	/**
-	 * Handle exceptions as gracefully as possible
-	 * @param ex
-	 * @param request
-	 * @return
-	 */
-	@ExceptionHandler(IOException.class) 
-	public String handleIOException(IOException ex, HttpServletRequest request) {
-		return ClassUtils.getShortName(ex.getClass() + ":" + ex.getMessage());
-	}
+    /**
+     * Handle exceptions as gracefully as possible
+     * @param ex
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(IOException.class) 
+    public String handleIOException(IOException ex, HttpServletRequest request) {
+            return ClassUtils.getShortName(ex.getClass() + ":" + ex.getMessage());
+    }
 }
