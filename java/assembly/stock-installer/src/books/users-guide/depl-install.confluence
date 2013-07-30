@@ -22,6 +22,8 @@ h2. Assumptions
 *** 11.10 (Oneiric Ocelot)
 *** 12.04 (Precise Pangolin)
 *** 12.10 (Quantal Quetzal)
+*** 13.04 (Raring Ringtail)
+** FreeBSD 9.1
 ** MAC OS 10.7 (Lion)
 * Assumed that the install has administrative privileges on the install box.
 ** Root or sudo access for linux/unix based platforms
@@ -38,7 +40,20 @@ The Java 6 SE platform provides the runtime environment that all of the Bare Met
 
 _Windows_
 
-Download and install the Java 6 JRE from Oracle's download web [site|http://www.oracle.com/technetwork/java/javasebusiness/downloads/java-archive-downloads-javase6-419409.html#jre-6u45-oth-JPR].  
+Download and install the Java 6 JRE from Oracle's download web [site|http://www.oracle.com/technetwork/java/javase/downloads/jre-6u29-download-513650.html].  After installing the JRE, set the JAVA_HOME environment variable by following the instructions below:
+
+* Right click on "My Computer" (may be in different locations depending on the Windows version) and select Properties
+* If running later versions of Windows, you may be presented "Control\System" panel.  If so, click Advanced system settings on the left side of the window.
+* In the System Properties Dialog, click the Advanced tab and then click Environment Variables.
+* Under System Variables click New.
+* Use the following setting:
+
+{code}
+ Variable Name: JAVA_HOME
+ Variable Value: C:\Program Files\java\jre6
+{code}
+
+* Click OK on all screens.
 
 _Ubuntu 10.10 - 11.10_
 
@@ -57,44 +72,54 @@ Install Sun Java 6 JDK. By default it is not included in the shipped repository,
 
 *Note:* It is okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
 
-_Ubuntu 12.04_
+_Ubuntu 12.04 - 13.04_
 
-The Sun JDK 6 has been moved to a Personal Package Archive (PPA) starting with Ubuntu 12.04.  You will need to add Flexiondotorg repository to install the Sun JDK.
+The Oracle JREs are supported in the [WebUpdt8|https://launchpad.net/~webupd8team/+archive/java] Personal Package Archive (PPA) which automatically downloads and installs the JRE.
 
-Similar to previous versions of Ubuntu, you need to update java-alternatives to use the newly installed Java version instead of shipped version.
+To install the Java 6 JRE, follow the commands below:
 
 *Note:* The add-apt-repository command may not be available.  Adding the python-software-properties package should resolve this issue.  It is also okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
 
 {code}
  sudo apt-get install python-software-properties
- sudo add-apt-repository ppa:flexiondotorg/java 
+ sudo add-apt-repository ppa:webupd8team/java
  sudo apt-get update
- sudo apt-get install sun-java6-jdk
- sudo update-java-alternatives -s java-6-sun
- export JAVA_HOME=/usr/lib/jvm/java-6-sun
+ sudo apt-get install oracle-java6-installer 
+ sudo update-java-alternatives -s java-6-oracle
+ export JAVA_HOME=/usr/lib/jvm/java-6-oracle
  echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
 {code}
 
-_Ubuntu 12.10_
+_FreeBSD_
 
-As of this writing, the Flexiondotorg does yet have a distribution for the 12.10 Quantal Quetzal release.  Until then, an alternate [method|http://www.techytalk.info/latest-oracle-sun-java-jdk-and-jre-6-on-ubuntu-operating-systems] exists using a BASH script and other work from Martin Wimpress and Janusz Dziemidowicz available on GitHub.
-
-Again, you need to update java-alternatives to use the newly installed Java version instead of default shipped version.
+Obtain/downlaod the JDK 6 using the pkg\_add command if you do not already have Java 6 installed.  This step uses the openjdk6 implementation as the Oracle installtation generally requires building the distribution from the _ports_ and is a much more involved process (should run as root or with elevated privileges). 
 
 {code}
- cd ~/
- wget https://raw.github.com/flexiondotorg/oab-java6/master/oab-java.sh -O oab-java6.sh
- chmod +x oab-java6.sh
- sudo ./oab-java6.sh
- sudo apt-get install sun-java6-jdk
- sudo update-java-alternatives -s java-6-sun
- export JAVA_HOME=/usr/lib/jvm/java-6-sun
- echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+  pkg_add -r openjdk6
+  set JAVA_HOME=/usr/local/openjdk6
+  sed -i .bak 's/setenv=/setenv=JAVA_HOME=\/usr\/local\/openjdk6,/g' /etc/login.conf
+  cap_mkdb /etc/login.conf
 {code}
 
-_MAC OS_
+h3. Java Cryptographic Extensions
 
-Download and install the Java 7 JRE for MAC from Oracle's download web [site|http://www.java.com/en/download/mac_download.jsp?locale=en].  
+The Sun JRE/JDK requires the JCE policy jars to be updated to allow for unlimited strength encryption.  The policy files must be downloaded separately and copied in the JRE library.
+
+For all platforms, download the jce policy [file|http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html] using a web browser.  For Unix/Linux systems, it may be necessary to manually copy or FTP the file from a system with a UI to the Unix/Linux node. 
+
+_Windows_
+
+Unzip the downloaded file and copy the jar files from the jce directory to the JAVA_HOME/jre/lib/security folder (Example: C:\Program Files\java\jre6\lib\security).  Overwrite the existing files.
+
+_All Linux/Unix/FreeBSD_
+
+From the directory where you downloaded and placed the jce zip file, run the following commands:
+
+{code}
+ unzip jce_policy-6.zip
+ sudo cp jce/local_policy.jar $JAVA_HOME/jre/lib/security
+ sudo cp jce/US_export_policy.jar $JAVA_HOME/jre/lib/security
+{code}
 
 h3. Java Cryptographic Extensions
 
@@ -119,14 +144,23 @@ From the directory where you downloaded and placed the jce zip file, run the fol
 
 h2. Obtain Reference Implementation Installer
 
-The installer contains all of the pre-assembled and configured components of the Bare Metal deployment.  Download the latest installer jar from the Sonatype [repository|https://oss.sonatype.org/content/repositories/snapshots/org/nhind/direct-project-stock-installer/3.0-SNAPSHOT/direct-project-stock-installer-3.0-20130628.151248-1.jar] and save it to your file system.
+The installer contains all of the pre-assembled and configured components of the Bare Metal deployment.  Download the latest installer jar from the Sonatype [repository|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock-installer/3.0.1/direct-project-stock-installer-3.0.1-standard.jar] or from the maven central [repository|http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock-installer/3.0.1/direct-project-stock-installer-3.0.1-standard.jar] and save it to your file system.
+
+h3. Existing E-mail Server
+
+Some linux based installation already come preconfigured with an email server running.  For instance, FreeBSD auto enables a sendmail SMTP server listening on port 25.  You may need to disable this server and restart the server before performing the installation.  Add the following lines to the /etc/rc.conf file to disable the default sendmail SMTP server.
+
+{code}
+ sendmail_enable="NONE"
+ sendmail_outbound_enable="NO"
+{code}
 
 h3. Run the Installer
 
 The installer is packaged a single jar file.  Depending your OS, you may be able to just double click the jar file and auto launch it.  For unix/linux and MAC based systems, you should run the installer from the command line with the follwoing command:
 
 {code}
- sudo java -jar direct-project-stock-installer-3.0-SNAPSHOT-standard.jar
+ sudo java -jar direct-project-stock-installer-3.0.1-standard.jar
 {code}  
 
 This will launch the installer and you will be presented with the welcome screen.
