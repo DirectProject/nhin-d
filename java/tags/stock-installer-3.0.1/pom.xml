@@ -5,7 +5,7 @@
     <artifactId>direct-project-stock-installer</artifactId>    
     <packaging>jar</packaging>
     <name>The direct project stock assembly installer UI.</name>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.0.1</version>
     <description>Installer for the DirectProject Java RI stock assembly.</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-project-stock-installer/${project.version}</url> 
