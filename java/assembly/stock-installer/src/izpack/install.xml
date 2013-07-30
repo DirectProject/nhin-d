@@ -110,14 +110,20 @@
             <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-macosx-universal-32" />    
             <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-sparc-32" /> 
             <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-sparc-64" />    
-            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-x86-32" />                                                                                                                                                       
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-x86-32" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-freebsd-x86-32" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-freebsd-x86-64" />                                                                                                                                                                            
         </pack>
         <pack name="DNS" required="no" preselected="yes" installGroups="James 3,James 2">
             <description>Direct Project DNS Services</description>>
             <fileset dir="@{project.build.directory}/direct/DirectDNSServices" targetdir="$INSTALL_PATH/DirectDNSServices"/>
             <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/DirectDNSServer" />              
             <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-linux-x86-32" /> 
-            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-linux-x86-64" />                              
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-linux-x86-64" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-freebsd-x86-32" /> 
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-freebsd-x86-64" />                           
+            <fileset dir="@{project.build.directory}/direct/ConfigTools" targetdir="$INSTALL_PATH/ConfigTools"/>    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/ConfigTools/ConfigMgmtConsole/bin/ConfigMgmtConsole" />                         
         </pack>       
         <pack name="Tools" required="no" preselected="yes" installGroups="James 3,James 2">
             <description>Tools</description>>
