@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,6 +82,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.json.simple.JSONObject;
 import org.nhindirect.policy.PolicyLexiconParser;
 import org.nhindirect.policy.PolicyLexiconParserFactory;
 import org.nhindirect.policy.PolicyParseException;
@@ -331,6 +333,8 @@ public class PoliciesController {
         }
         
         
+        model.addAttribute("sessionId", session.getId());
+        
         
         model.addAttribute("policyForm", pform);
         mav.setViewName("updatePolicyForm"); 
@@ -441,11 +445,16 @@ public class PoliciesController {
     public String checkLexiconFile (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,
         HttpServletResponse response, 
         Object command, 
+        @RequestHeader(value="lexicon", required=false) String lexicon,
         MultipartHttpServletRequest request) throws FileUploadException, IOException, Exception 
     { 		        
+
+        
         
         final org.nhindirect.policy.PolicyLexicon parseLexicon;
         String jsonResponse = "";
+        String uploadToString = "";
+        
         
         if (log.isDebugEnabled()) 
         {
@@ -465,7 +474,92 @@ public class PoliciesController {
         } catch (IOException e) {            
         }
         
-        String lexicon = request.getParameter("lexicon");
+        // Convert upload content to string
+        uploadToString = new String(ufile.bytes);
+        uploadToString = JSONObject.escape(uploadToString);
+              
+        lexicon = request.getParameter("lexicon");
+        org.nhind.config.PolicyLexicon lex = null;
+        
+        // Check the file for three types of policies
+        if (lexicon.isEmpty()) {
+            lex = org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1;
+        }
+        else
+        {
+            try {
+                // Convert string of file contents to lexicon object
+                lex = org.nhind.config.PolicyLexicon.fromString(lexicon);
+            }
+            catch (Exception e)
+            {
+                log.error("Invalid lexicon name.");				
+            }
+        }		                
+
+        // Determine lexicon type
+        if (lex.equals(org.nhind.config.PolicyLexicon.JAVA_SER)) {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.JAVA_SER;
+        } else if (lex.equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1)) {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.SIMPLE_TEXT_V1;
+        } else {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.XML;		
+        }
+
+        
+        
+        InputStream inStr = null;
+        try
+        {			
+            // Convert policy file upload to byte stream
+            inStr = new ByteArrayInputStream(ufile.bytes);
+
+            // Initialize parser engine
+            final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(parseLexicon);
+            
+            // Attempt to parse the lexicon file for validity
+            parser.parse(inStr);                        
+            
+            
+        }                                
+        catch (PolicyParseException e)
+        {
+            log.error("Syntax error in policy file " + " : " + e.getMessage());			
+            jsonResponse = "{\"Status\":\"File was not a valid file.\",\"Content\":\""+ uploadToString +"\"}";
+        }
+        finally
+        {
+            IOUtils.closeQuietly(inStr);
+        }		                                          
+        
+        if(jsonResponse.isEmpty()) {
+            jsonResponse = "{\"Status\":\"Success\",\"Content\":\""+ uploadToString  +"\"}";                     
+        }
+        
+        return jsonResponse;
+    }
+    
+    @PreAuthorize("hasRole('ROLE_ADMIN')") 
+    @RequestMapping(value="/checkPolicyContent", method = {RequestMethod.GET, RequestMethod.POST } )    
+    @ResponseBody
+    public String checkPolicyContent (@RequestHeader(value="X-Requested-With", required=false) String requestedWith,
+        HttpServletResponse response, 
+        HttpServletRequest request,
+        Object command)
+            throws Exception 
+    { 		        
+                
+        final org.nhindirect.policy.PolicyLexicon parseLexicon;
+        String jsonResponse = "";
+        String content = request.getParameter("content");
+        String lexicon = "";
+        
+        if (log.isDebugEnabled()) 
+        {
+            log.debug("Checking policy content for format and validation");
+        }                                  
+              
+        lexicon = request.getParameter("lexicon");
         org.nhind.config.PolicyLexicon lex = null;
         
         // Check the file for three types of policies
@@ -497,18 +591,20 @@ public class PoliciesController {
         try
         {			
             // Convert policy file upload to byte stream
-            inStr = new ByteArrayInputStream(ufile.bytes);
+            inStr = new ByteArrayInputStream(content.getBytes());
 
             // Initialize parser engine
             final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(parseLexicon);
             
             // Attempt to parse the lexicon file for validity
-            parser.parse(inStr);
-        }
+            parser.parse(inStr);                        
+            
+            
+        }                                
         catch (PolicyParseException e)
         {
-            log.error("Syntax error in policy file " + " : " + e.getMessage());			
-            jsonResponse = "{\"Status\":\"File was not a valid file.\"}";
+            log.error("Syntax error in policy content " + " : " + e.getMessage());			
+            jsonResponse = "{\"Status\":\"Policy content was not valid.\"}";
         }
         finally
         {
@@ -516,7 +612,7 @@ public class PoliciesController {
         }		                                          
         
         if(jsonResponse.isEmpty()) {
-            jsonResponse = "{\"Status\":\"Success\"}";                     
+            jsonResponse = "{\"Status\":\"Success\"}";
         }
         
         return jsonResponse;
