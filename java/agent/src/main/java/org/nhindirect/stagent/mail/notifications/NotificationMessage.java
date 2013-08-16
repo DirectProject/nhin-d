@@ -138,6 +138,7 @@ public class NotificationMessage extends Message
 
 	        final String subjectPrefix = NotificationHelper.asString(notification.getDisposition().getNotification(), true);
 	        notificationMessage.setHeader(MailStandard.Headers.Subject, subjectPrefix + ": " + subject);
+	        notificationMessage.saveChanges();
         }
         catch (MessagingException e) {/* no-op */}
         

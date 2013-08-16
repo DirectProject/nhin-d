@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{2.0.3}
+
+    Changes included with release 2.0.3
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=223}223}}: Fixed issue in message id format of auto generated MDN messages.
+
 {2.0.2}
 
     Changes included with release 2.0.2
