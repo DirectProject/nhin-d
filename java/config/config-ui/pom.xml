@@ -338,7 +338,7 @@
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-jar</artifactId>
-	  <version>1.5-SNAPSHOT</version>
+	  <version>1.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.nhind</groupId>
@@ -361,7 +361,7 @@
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-store</artifactId>
-	  <version>1.4-SNAPSHOT</version>
+	  <version>1.4</version>
             <exclusions> 
                 <exclusion>
                     <groupId>org.hibernate</groupId>
@@ -376,7 +376,7 @@
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-client</artifactId>
-	  <version>1.5-SNAPSHOT</version>
+	  <version>1.4</version>
 	  <exclusions>
 				<exclusion>
 					<groupId>org.apache.geronimo.specs</groupId>
