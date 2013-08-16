@@ -117,8 +117,8 @@ public class TestTimedOutMonitorRoute extends CamelSpringTestSupport
 		assertEquals(2, messages.size());
 		
 		assertEquals("timeout", exchange.getProperty(Exchange.AGGREGATED_COMPLETED_BY));
-		// make sure the aggregated timeout decayed properly... it should now be < 500 ms
-		assertTrue((Long)exchange.getProperty(Exchange.AGGREGATED_TIMEOUT) < 500);
+		// make sure the aggregated timeout decayed properly... it should now be <= 500 ms
+		assertTrue((Long)exchange.getProperty(Exchange.AGGREGATED_TIMEOUT) <= 500);
 	}
 	
 	
