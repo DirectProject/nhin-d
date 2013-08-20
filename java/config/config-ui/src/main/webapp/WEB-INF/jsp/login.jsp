@@ -59,7 +59,7 @@ background-image: linear-gradient(to top, #184B84 0%, #366FAC 100%);">
                     </tr>
                     <tr>
                         <td width=75>Password: </td>
-                        <td><input type="password" name="j_password"/></td>
+                        <td align=left><input type="password" name="j_password"/></td>
                     </tr>
                     <tr>
                         <td colspan="2" align="right"><button type="submit">Login</button></td>
