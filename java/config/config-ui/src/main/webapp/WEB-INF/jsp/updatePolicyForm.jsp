@@ -129,7 +129,9 @@ $('#updatePolicyForm').submit(function(evt){
         url: $('#updatePolicyForm').attr('action'), type: 'POST',
         data: formData,
         success: function(html) {
-
+            if(html == "") {
+                document.location.href = 'search?domainName=&submitType=ManagePolicies';
+            }
         }
     }); 
 });
