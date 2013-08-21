@@ -405,30 +405,60 @@ public class PoliciesController {
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
     @RequestMapping(value="/updatePolicy", method = RequestMethod.POST)    
     @ResponseBody
-    public String updatePolicy (@RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
-                                @RequestParam("updateType") String updateType,
-                                      @ModelAttribute PolicyForm policyForm,
-                                        HttpSession session,                                                    
-                                        Model model)  { 		
-        String jsonResponse = null;
-
+    public String updatePolicy (@RequestParam("id") String id,
+        @RequestParam("policyContent") String policyContent,
+        @RequestParam("policyLexicon") String policyLexicon,
+        @RequestParam("policyName") String policyName)  { 		
+        
+        String jsonResponse = "";
+        final org.nhindirect.policy.PolicyLexicon parseLexicon;
+        
         if (log.isDebugEnabled()) 
         {
-            log.debug("Enter update policy #"+policyForm.getId());
+            log.debug("Enter update policy #"+id);
         }    
         
-        log.error(policyForm.getPolicyName());
+        log.error(policyName);
         
-        // Convert policy data to byte array
+        org.nhind.config.PolicyLexicon lex = null;
         
-        byte[] policyData = policyForm.getFileData().getBytes();
+        // Check the file for three types of policies
+        if (policyLexicon.isEmpty()) {
+            lex = org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1;
+        }
+        else
+        {
+            try {
+                // Convert string of file contents to lexicon object
+                lex = org.nhind.config.PolicyLexicon.fromString(policyLexicon);
+            }
+            catch (Exception e)
+            {
+                log.error("Invalid lexicon name.");				
+            }
+        }
+        
+        // Determine lexicon type
+        if (lex.equals(org.nhind.config.PolicyLexicon.JAVA_SER)) {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.JAVA_SER;
+        } else if (lex.equals(org.nhind.config.PolicyLexicon.SIMPLE_TEXT_V1)) {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.SIMPLE_TEXT_V1;
+        } else {
+            parseLexicon = org.nhindirect.policy.PolicyLexicon.XML;		
+        }
+        
+        // Convert policy content string to byte array
+        byte[] policyContentByteArray = policyContent.getBytes(); 
+        
+        
         
         try {
-            configSvc.updatePolicyAttributes(policyForm.getId(), policyForm.getPolicyName(), policyForm.getPolicyLexicon(), policyData);
+            configSvc.updatePolicyAttributes(Long.parseLong(id), policyName, parseLexicon, policyContentByteArray);
         } catch (Exception e) {
             e.printStackTrace();
             return "fail";
-        }                
+        }
+                 
         
         return jsonResponse;
     }
