@@ -47,10 +47,7 @@ $(document).ready(function() {
         $(activeTab).fadeIn(); //Fade in the active content
         return false;
     });           
-           
-    $('#newPolicy').load('/config-ui/config/policies/newPolicyForm');
-
-
+               
     
 });
 

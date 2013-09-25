@@ -117,22 +117,22 @@ public class PoliciesController {
      *
      *********************************/
     @PreAuthorize("hasRole('ROLE_ADMIN')") 
-    @RequestMapping(value="/addpolicy", method = RequestMethod.POST)
-    public ModelAndView addPolicy (
-            @RequestHeader(value="X-Requested-With", required=false) String requestedWith, 
-            HttpSession session,
-            @ModelAttribute PolicyForm policyForm,
-            Model model,
-            @RequestParam(value="submitType") String actionPath
-    ) 
+    @RequestMapping(value="/addPolicy", method = RequestMethod.POST)
+    @ResponseBody
+    public String addPolicy (
+            @RequestParam("id") String id,
+            @RequestParam("policyName") String policyName,
+            @RequestParam("policyContent") String policyContent,
+            @RequestParam("policyLexicon") String policyLexicon            
+    )  
     { 		
-
-        ModelAndView mav = new ModelAndView();        
-
+        
         // Debug Statement
-        if (log.isDebugEnabled()) log.debug("Enter Add Policy");
+        if (log.isDebugEnabled()) {
+            log.debug("Adding New Policy");
+        }
 
-        if(actionPath.equalsIgnoreCase("cancel"))
+        /*if(actionPath.equalsIgnoreCase("cancel"))
         {
                 if (log.isDebugEnabled()) 
                 {
@@ -148,13 +148,10 @@ public class PoliciesController {
                 mav.setViewName("main");
                 mav.addObject("statusList", EntityStatus.getEntityStatusList());
                 return mav;
-        }
+        }*/
 
         
-
-        if(actionPath.equalsIgnoreCase("newpolicy") || actionPath.equalsIgnoreCase("add policy"))
-        {
-            
+           
             Boolean formValidated = true;
 
             if (log.isDebugEnabled()) 
@@ -169,19 +166,11 @@ public class PoliciesController {
             }
 
             
-
-            model.addAttribute("badPolicyNameError", false);
-            model.addAttribute("badPolicyFileError", false);
-
             CertPolicy newPolicy = new CertPolicy();
             
-            newPolicy.setPolicyName(policyForm.getPolicyName());
+            newPolicy.setPolicyName(policyName);                         
             
-            //log.error("Lexicon:"+policyForm.getPolicyLexicon().toString());
-                        
-            
-            // Set policy lexicon type
-            
+            // Set policy lexicon type           
             String lexiconName = "XML";//policyForm.getPolicyLexicon().toString();
             
             if(lexiconName.equalsIgnoreCase("XML")) {
@@ -192,9 +181,11 @@ public class PoliciesController {
                 newPolicy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
             }                   
             
+            
+            
             // Get lexicon file from form
-            CommonsMultipartFile lexiconFile = policyForm.getFileData();            
-            newPolicy.setPolicyData(lexiconFile.getBytes());
+            //CommonsMultipartFile lexiconFile = policyForm.getFileData();            
+            newPolicy.setPolicyData(policyContent.getBytes());
 
             log.error(newPolicy); // Debug
            
@@ -205,27 +196,11 @@ public class PoliciesController {
             }
             
             
+           
+       
             
-            Collection policies = null;
-                
-            try {
-                policies = configSvc.getPolicies();
-            } catch (Exception e) {
-                System.out.println("Failed to lookup policies: " + e.getMessage());
-            }
+            return "test";
             
-            if(policies != null) {
-                model.addAttribute("policies", policies);
-                log.error(policies);
-            } else {                    
-                model.addAttribute("policies", "");
-            }            
-                        
-            model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));            
-            mav.setViewName("policies");                         
-        }
-        
-        return mav;
     }			
 	
     
@@ -634,7 +609,7 @@ public class PoliciesController {
         catch (PolicyParseException e)
         {
             log.error("Syntax error in policy content " + " : " + e.getMessage());			
-            jsonResponse = "{\"Status\":\"Policy content was not valid.\"}";
+            jsonResponse = "{\"Status\":\"Policy content was not valid.\",\"Error\":\""+e.getMessage()+"\"}";
         }
         finally
         {
@@ -677,6 +652,8 @@ public class PoliciesController {
         
         return mav;
     }
+    
+    
     
 	
     /**

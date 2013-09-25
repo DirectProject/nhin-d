@@ -96,7 +96,15 @@ $( document ).ready(function() {
 
 // Detect change to policy input and validate real-time
 $('#policyContent').bind('input propertychange', function() {
+    validatePolicyContent();
+});
 
+// Detect change to policy type and validate real-time
+$('#policyLexicon').change(function() { 
+    validatePolicyContent();
+});
+
+function validatePolicyContent() {
     policyContent = $('#policyContent').val();
 
     request = $.ajax({
@@ -114,23 +122,20 @@ $('#policyContent').bind('input propertychange', function() {
         }
         
     });
-
-    
-
-});
+}
 
 
 
 $('#newPolicyForm').submit(function(evt){
     evt.preventDefault();        
 
-    formData = $('#newPolicyForm').serialize();       
+    formData = $('#newPolicyForm').serialize();
 
     $.ajax({
         url: $('#newPolicyForm').attr('action'), type: 'POST',
         data: formData,
         success: function(html) {
-
+            console.log(html);
         }
     }); 
 });
@@ -146,7 +151,7 @@ $('#newPolicyForm').submit(function(evt){
 <div class="baseForm" style="margin:0 auto;margin-top:5px;text-align:center;width:100%;">
 
 <div style="text-align:left;width:400px;">
-<spring:url value="/config/policies/addpolicy" var="formURLaddPolicy" />
+<spring:url value="/config/policies/addPolicy" var="formURLaddPolicy" />
 <form:form id="newPolicyForm" modelAttribute="policyForm" action="${fn:escapeXml(formURLaddPolicy)}" cssClass="cleanform" method="POST" enctype="multipart/form-data">
 
         <form:hidden path="id" />
