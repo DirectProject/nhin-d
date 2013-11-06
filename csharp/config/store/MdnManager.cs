@@ -112,20 +112,24 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
             }
-
-            
-            var update = new Mdn();
-            update.CopyTimeoutFixed(mdn);
-            db.Mdns.Attach(update);
-            update.ApplyTimeoutChanges(mdn);
+            mdn.Status = MdnStatus.TimedOut;
+            db.Mdns.InsertOnSubmit(mdn);
         }
 
         public void Update(Mdn mdn)
         {
             using (ConfigDatabase db = Store.CreateContext())
             {
-                Update(db, mdn);
-                db.SubmitChanges();
+                try
+                {
+                    Update(db, mdn);
+                    db.SubmitChanges();
+                }
+                catch
+                {
+                    ThrowMdnFaultException(mdn);
+                    throw;
+                }
             }
         }
                
@@ -153,43 +157,19 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
             }
 
-            Mdn original = Get(db, mdn.MdnIdentifier);
-            
-            ValidateUpdate(mdn, original);
-
-            var update = new Mdn();
-            update.CopyFixed(mdn);
-            db.Mdns.Attach(update);
-            
-            update.ApplyChanges(mdn, original);
+            db.Mdns.InsertOnSubmit(mdn);
+           
         }
 
-        private static void ValidateUpdate(Mdn mdn, Mdn original)
+        private static void ThrowMdnFaultException(Mdn mdn)
         {
-            if (original == null)
+           
+            if (mdn.Status == null)
             {
-                //
-                // It is normal to not find the original.
-                // Delayed processed, dispatched or faild mdns that have completed via timeouts
-                // and cleaned up will not be correlated.  Nonetheless the pattern is to throw a ConfigStoreException
-                //
-                throw new ConfigStoreException(ConfigStoreError.MdnUncorrelated);
+                throw new ConfigStoreException(ConfigStoreError.DuplicateMdnStart);
             }
 
-            if (original.Timedout)
-            {
-                //
-                // Message failed MDN previously sent
-                //
-                throw new ConfigStoreException(ConfigStoreError.MdnPreviouslyFailed);
-            }
-
-            if(original.Status == null)
-            {
-                return;
-            }
-
-            if(original.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase) && mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
+            if (mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
             {
                 //
                 // Duplicate processed MDN
@@ -197,7 +177,7 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.DuplicateProcessedMdn);
             }
 
-            if (original.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase) && mdn.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase))
+            if (mdn.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase))
             {
                 //
                 // Duplicate failed MDN
@@ -205,7 +185,7 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.DuplicateFailedMdn);
             }
 
-            if (original.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) && mdn.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase))
+            if (mdn.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase))
             {
                 //
                 // Duplicate Dispatched MDN
@@ -213,9 +193,7 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.DuplicateDispatchedMdn);
             }
 
-            if (original.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) 
-                && mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase)
-                && mdn.MdnProcessedDate != null)  //Processed can arrive late and update its time stamp unless we are timed out..
+            if (mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
             {
                 //
                 // Dispatched MDN already sent
@@ -223,7 +201,6 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.MdnPreviouslyProcessed);
             }
 
-            
         }
 
 
@@ -347,41 +324,41 @@ namespace Health.Direct.Config.Store
             db.Mdns.ExecDelete(mdn);
         }
 
-        public void RemoveTimedOut(TimeSpan limitTime)
+        public void RemoveTimedOut(TimeSpan limitTime, int bulkCount)
         {
             using (ConfigDatabase db = Store.CreateContext())
             {
-                RemoveTimedOut(db, limitTime);
+                RemoveTimedOut(db, limitTime, bulkCount);
             }
 
         }
 
-        public void RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime)
+        public void RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
 
-            db.Mdns.ExecDeleteTimedOut(limitTime);
+            db.Mdns.ExecDeleteTimedOut(limitTime, bulkCount);
         }
 
-        public void RemoveDispositions(TimeSpan limitTime)
+        public void RemoveDispositions(TimeSpan limitTime, int bulkCount)
         {
             using (ConfigDatabase db = Store.CreateContext())
             {
-                RemoveDispositions(db, limitTime);
+                RemoveDispositions(db, limitTime, bulkCount);
             }
         }
 
-        public void RemoveDispositions(ConfigDatabase db, TimeSpan limitTime)
+        public void RemoveDispositions(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
 
-            db.Mdns.ExecDeleteDispositions(limitTime);
+            db.Mdns.ExecDeleteDispositions(limitTime, bulkCount);
         }
 
         public void RemoveAll(ConfigDatabase db)

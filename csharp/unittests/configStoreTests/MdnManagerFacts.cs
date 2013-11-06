@@ -48,11 +48,11 @@ namespace Health.Direct.Config.Store.Tests
             target.RemoveAll();
             Assert.Equal(0, target.Count());
             string messageId = Guid.NewGuid().ToString();
-            var mdn = BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", null);
+            var mdn = BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
 
             target.Start(new Mdn[]{mdn});
             mdn = target.Get(mdn.MdnIdentifier);
-            Assert.NotNull(mdn);
+            Assert.Equal(MdnStatus.Started, mdn.Status);
             Assert.Equal("To dispatch or not dispatch", mdn.SubjectValue);
         }
 
@@ -65,7 +65,7 @@ namespace Health.Direct.Config.Store.Tests
             MdnManager target = CreateManager();
             InitMdnRecords();
             string messageId = Guid.NewGuid().ToString();
-            Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", null);
+            Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
             Assert.Contains("Cannot insert duplicate key"
                 , Assert.Throws<SqlException>(() => target.Start(new Mdn[] { mdn })).Message);
         }
@@ -78,8 +78,8 @@ namespace Health.Direct.Config.Store.Tests
         {
             MdnManager target = CreateManager();
             InitMdnRecords();
-            Assert.Equal(41, target.Count());
-            Assert.NotNull(target.Get("5F2C321259195D4A04E494FEAA15B4BD"));
+            Assert.Equal(61, target.Count());
+            Assert.NotNull(target.Get("9C2458C2370E2C00E2E8701EE3064B6B"));
         }
 
         /// <summary>
@@ -90,16 +90,16 @@ namespace Health.Direct.Config.Store.Tests
         {
             MdnManager target = CreateManager();
             InitMdnRecords();
-            var mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
-            Assert.Null(mdn.Status);
+            var mdn = target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
+            Assert.Equal(MdnStatus.Started, mdn.Status);
 
             mdn.Status = MdnStatus.Processed;
             target.Update(mdn);
-            mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
+            mdn = target.Get("0335BF2715F5607DE9FC5BF249BEF7F9");
             Assert.Equal(MdnStatus.Processed, mdn.Status);
             mdn.Status = MdnStatus.Dispatched;
             target.Update(mdn);
-            mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
+            mdn = target.Get("543AE91DFFDE40754BCB0A11CEEED059");
             Assert.Equal(MdnStatus.Dispatched, mdn.Status);
 
         }
@@ -112,8 +112,8 @@ namespace Health.Direct.Config.Store.Tests
         {
             MdnManager target = CreateManager();
             InitMdnRecords();
-            var mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
-            Assert.Null(mdn.Status);
+            var mdn = target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
+            Assert.Equal(MdnStatus.Started, mdn.Status);
 
             //
             // Skip processed step is allowed.
@@ -121,7 +121,7 @@ namespace Health.Direct.Config.Store.Tests
             //
             mdn.Status = MdnStatus.Dispatched;
             target.Update(mdn);
-            mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
+            mdn = target.Get("543AE91DFFDE40754BCB0A11CEEED059");
             Assert.Equal(MdnStatus.Dispatched, mdn.Status);
 
         }
@@ -135,18 +135,18 @@ namespace Health.Direct.Config.Store.Tests
         {
             MdnManager target = CreateManager();
             InitMdnRecords();
-            var mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
-            Assert.Null(mdn.Status);
-            Assert.False(mdn.Timedout);
+            var mdn = target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
+            Assert.Equal(MdnStatus.Started, mdn.Status);
+            
 
             //
             // Skip processed step is allowed.
             // An external timer will move to Timed out
             //
+            
             target.TimeOut(mdn);
-            mdn = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
-            Assert.True(mdn.Timedout);
-            Assert.Equal(MdnStatus.Failed, mdn.Status);
+            mdn = target.Get("68167934227A8EBF247E6AC345CC02D1");
+           Assert.Equal(MdnStatus.TimedOut, mdn.Status);
         }
 
         
@@ -201,21 +201,10 @@ namespace Health.Direct.Config.Store.Tests
             //timespan and max records set
             var mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
-
-            foreach (var mdn in mdns)
-            {
-                target.TimeOut(mdns);
-            }
-            
-
+            target.TimeOut(mdns);
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
             Assert.Equal(18, mdns.Count());
-
-            foreach (var mdn in mdns)
-            {
-                target.TimeOut(mdns);
-            }
-
+            target.TimeOut(mdns);
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
             Assert.Equal(0, mdns.Count());
         }
@@ -267,19 +256,11 @@ namespace Health.Direct.Config.Store.Tests
             var mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
 
-            foreach (var mdn in mdns)
-            {
-                mdn.Timedout = true; 
-            }
             target.TimeOut(mdns);
 
             mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 20);
             Assert.Equal(8, mdns.Count());
 
-            foreach (var mdn in mdns)
-            {
-                mdn.Timedout = true;
-            }
             target.TimeOut(mdns);
 
             mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 10);
@@ -304,15 +285,13 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
 
-            foreach (var mdn in mdns)
-            {
-                target.TimeOut(mdns);
-            }
+            target.TimeOut(mdns);
+            
 
             mdns = target.GetTimedOut();
             Assert.Equal(2, mdns.Count());
 
-            target.RemoveTimedOut(TimeSpan.FromSeconds(1));
+            target.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
             mdns = target.GetTimedOut();
             Assert.Equal(0, mdns.Count());
 
@@ -325,25 +304,22 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
 
-            foreach (var mdn in mdns)
-            {
-                target.TimeOut(mdns);
-            }
+            
+            target.TimeOut(mdns);
+            
 
             //update thread two
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
 
-            foreach (var mdn in mdns)
-            {
-                target.TimeOut(mdns);
-            }
+            target.TimeOut(mdns);
+            
             
 
             mdns = target.GetTimedOut();
             Assert.Equal(4, mdns.Count());
 
-            target.RemoveTimedOut(TimeSpan.FromSeconds(1));
+            target.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
             mdns = target.GetTimedOut();
             Assert.Equal(0, mdns.Count());
         }
@@ -361,7 +337,7 @@ namespace Health.Direct.Config.Store.Tests
             // Ensure all test data is procesed or dispatched 
             //
             {
-                var mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(1), 100);
+                var mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100);
                 foreach (var mdn in mdns)
                 {
                     mdn.Status = MdnStatus.Processed;
@@ -374,15 +350,13 @@ namespace Health.Direct.Config.Store.Tests
                     mdn.Status = MdnStatus.Dispatched;
                     target.Update(mdn);
                 }
-
-                Mdn mdnx = target.Get("5F2C321259195D4A04E494FEAA15B4BD");
-                mdnx.Status = MdnStatus.Processed;
-                target.Update(mdnx);
             }
-            target = CreateManager();
-            Assert.Equal(41, target.Count());
+            Assert.Equal(0,  target.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100).Count());
+            Assert.Equal(0, target.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100).Count());
+            
+
             System.Threading.Thread.Sleep(1000);
-            target.RemoveDispositions(TimeSpan.FromSeconds(.001));
+            target.RemoveDispositions(TimeSpan.FromSeconds(.001), 100);
             Assert.Equal(0, target.Count());
         }
 
@@ -390,7 +364,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
-        [Fact]
+        //[Fact ] May want this check to go into the timeout job.
         public void DuplicateMdnTest()
         {
             MdnManager target = CreateManager();
@@ -430,7 +404,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
-        [Fact]
+        //[Fact ] May want this check to go into the timeout job.
         public void MissingAggregateMdnTest()
         {
             MdnManager target = CreateManager();

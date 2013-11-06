@@ -40,7 +40,7 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void SweepTimouts(TimeSpan expiredLimit);
+        void SweepTimouts(TimeSpan expiredLimit, int bulkCount);
 
 
     }

@@ -366,9 +366,9 @@ namespace Health.Direct.Config.Store.Tests
             get
             {
                 yield return
-                    BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, null);
+                    BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, MdnStatus.Started);
 
-                // Processed expired dispatch not requested
+                // Processed expired.  Dispatch not requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
                     yield return
@@ -376,13 +376,13 @@ namespace Health.Direct.Config.Store.Tests
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
                         , "ProcessExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
-                        , null
+                        , MdnStatus.Started
                         , false
-                        , null
                         , DateTimeHelper.Now.AddMinutes(-10));
+
                 }
 
-                // Processed expired dispatch requested
+                // Processed expired. Dispatch requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
                     yield return
@@ -390,38 +390,55 @@ namespace Health.Direct.Config.Store.Tests
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
                         , "ProcessExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
-                        , null
+                        , MdnStatus.Started
                         , true
-                        , null
                         , DateTimeHelper.Now.AddMinutes(-10));
                 }
 
                 // Processed but no dispatch requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
+                         string msgId = Guid.NewGuid().ToString();
                         yield return
-                        BuildMdn(Guid.NewGuid().ToString()
+                        BuildMdn(msgId
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
-                        , "ProcessExpired@domain2.test.com"
+                        , "Processed@domain2.test.com"
+                        , "To dispatch or not dispatch"
+                        , MdnStatus.Started
+                        , false
+                        , DateTimeHelper.Now.AddMinutes(-20));  //created start message
+
+                        yield return
+                        BuildMdn(msgId
+                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , "Processed@domain2.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Processed
                         , false
-                        , DateTimeHelper.Now.AddMinutes(-10)    //Processed 10 minutes ago
-                        , DateTimeHelper.Now.AddMinutes(-20));  //Original message 20 minute ago
+                        , DateTimeHelper.Now.AddMinutes(-10));  //Original message 20 minute ago
                 }
 
                 // Processed and dispatch requested, 
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
+                    string msgId = Guid.NewGuid().ToString();
                     yield return
-                    BuildMdn(Guid.NewGuid().ToString()
+                    BuildMdn(msgId
                     , string.Format("Name{0}@nhind.hsgincubator.com", i)
-                    , "ProcessExpired@domain2.test.com"
+                    , "ProcessedAndDispatchRequested@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.Started
+                    , true
+                    , DateTimeHelper.Now.AddMinutes(-20).AddSeconds(-10));  //created start message
+
+                    yield return
+                    BuildMdn(msgId
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "ProcessedAndDispatchRequested@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Processed
                     , true
-                    , DateTimeHelper.Now.AddMinutes(-10)    //Processed 10 minutes ago
-                    , DateTimeHelper.Now.AddMinutes(-20));  //Original message 20 minute ago
+                    , DateTimeHelper.Now.AddMinutes(-10));  //Original message 20 minute ago
                 }
             }
         }
@@ -439,69 +456,113 @@ namespace Health.Direct.Config.Store.Tests
                 string messageId = "945cc145-431c-4119-a8c6-7f557e52fd7d";
 
                 yield return
-                    BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, null);
+                    BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, MdnStatus.Started);
 
                 // Dispatched 10 days ago.
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
+                    //First record is started
+                    string msgId = Guid.NewGuid().ToString();
                     yield return
-                        BuildMdn(Guid.NewGuid().ToString()
+                        BuildMdn(msgId
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
-                        , "ProcessExpired@domain1.test.com"
+                        , "DispatchedExpired@domain1.test.com"
+                        , "To dispatch or not dispatch"
+                        , MdnStatus.Started
+                        , true
+                        , DateTimeHelper.Now.AddDays(-10).AddSeconds(-10));
+
+                    //sedond record is dispatched
+                    yield return
+                        BuildMdn(msgId
+                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , "DispatchedExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Dispatched
                         , true
-                        , DateTimeHelper.Now.AddDays(-10)
                         , DateTimeHelper.Now.AddDays(-10));
                 }
 
                 // Processed 10 days ago
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
+                    //First record is started
+                    string msgId = Guid.NewGuid().ToString();
                     yield return
-                        BuildMdn(Guid.NewGuid().ToString()
+                        BuildMdn(msgId
                         , string.Format("Name{0}@nhind.hsgincubator.com", i)
                         , "ProcessExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
-                        , MdnStatus.Processed
+                        , MdnStatus.Started
                         , false
-                        , DateTimeHelper.Now.AddDays(-10)
-                        , DateTimeHelper.Now.AddDays(-10));
+                        , DateTimeHelper.Now.AddDays(-10).AddSeconds(-10));
+
+                    //sedond record is dispatched
+                    yield return
+                       BuildMdn(msgId
+                       , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                       , "ProcessExpired@domain1.test.com"
+                       , "To dispatch or not dispatch"
+                       , MdnStatus.Processed
+                       , false
+                       , DateTimeHelper.Now.AddDays(-10));
                 }
 
 
-                // Processed but no times out for dispatch
+                // Processed but now times out for dispatch
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
-                    var mdn =
-                    BuildMdn(Guid.NewGuid().ToString()
+                    string msgId = Guid.NewGuid().ToString();
+
+                    yield return BuildMdn(msgId
                     , string.Format("Name{0}@nhind.hsgincubator.com", i)
-                    , "ProcessExpired@domain2.test.com"
+                    , "ProcessedThenTimeoutDispatch@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.Started
+                    , true
+                    , DateTimeHelper.Now.AddDays(-20).AddSeconds(-10));  //Original message 20 days ago
+                    
+                    yield return BuildMdn(msgId
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "ProcessedThenTimeoutDispatch@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Processed
                     , true
-                    , DateTimeHelper.Now.AddDays(-10)    //Processed 10 days ago
-                    , DateTimeHelper.Now.AddDays(-10));  //Original message 20 days ago
-                    mdn.Timedout = true;
+                    , DateTimeHelper.Now.AddDays(-10));  
 
-                    yield return mdn;
+                    yield return BuildMdn(msgId
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "ProcessedThenTimeoutDispatch@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.TimedOut
+                    , true
+                    , DateTimeHelper.Now.AddDays(-11)); 
+                   
+
                 }
 
                 // Timed out for Process
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
-                    var mdn =
-                    BuildMdn(Guid.NewGuid().ToString()
+                    string msgId = Guid.NewGuid().ToString();
+
+                    yield return BuildMdn(msgId
                     , string.Format("Name{0}@nhind.hsgincubator.com", i)
                     , "ProcessExpired@domain2.test.com"
                     , "To dispatch or not dispatch"
-                    , null
-                    , true
-                    , DateTimeHelper.Now.AddDays(-10)    //Processed 10 days ago
-                    , DateTimeHelper.Now.AddDays(-10));  //Original message 20 days ago
-                    mdn.Timedout = true;
+                    , MdnStatus.Started
+                    , true 
+                    , DateTimeHelper.Now.AddDays(-20));  //Original message 20 days ago
 
-                    yield return mdn;
+
+                    yield return BuildMdn(msgId
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "ProcessExpired@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.TimedOut
+                    , true
+                    , DateTimeHelper.Now.AddDays(-10));  //Original message 20 days ago
+                    
                 }
             }
         }
@@ -518,7 +579,7 @@ namespace Health.Direct.Config.Store.Tests
                        };
         }
 
-        protected static Mdn BuildMdn(string messageId, string sender, string receiver, string subject, string status, bool notifyDispatched, DateTime? processedDate, DateTime createdDate)
+        protected static Mdn BuildMdn(string messageId, string sender, string receiver, string subject, string status, bool notifyDispatched, DateTime createdDate)
         {
             return new Mdn()
                        {
@@ -528,7 +589,6 @@ namespace Health.Direct.Config.Store.Tests
                            Status = status,
                            SubjectValue = subject,
                            NotifyDispatched = notifyDispatched,
-                           MdnProcessedDate = processedDate,
                            CreateDate = createdDate
             };
         }

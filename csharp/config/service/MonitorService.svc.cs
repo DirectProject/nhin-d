@@ -70,11 +70,11 @@ namespace Health.Direct.Config.Service
            }
        }
 
-       public void SweepTimouts(TimeSpan expiredLimit)
+       public void SweepTimouts(TimeSpan expiredLimit, int bulkCount)
        {
            try
            {
-               Store.Mdns.RemoveTimedOut(expiredLimit);
+               Store.Mdns.RemoveTimedOut(expiredLimit, bulkCount);
            }
            catch (Exception ex)
            {
