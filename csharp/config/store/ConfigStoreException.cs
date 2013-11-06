@@ -75,7 +75,8 @@ namespace Health.Direct.Config.Store
         MdnPreviouslyFailed,
         InvalidUrl,
         UrlLength,
-        InvalidBundle
+        InvalidBundle,
+        DuplicateMdnStart
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>
