@@ -67,7 +67,7 @@ namespace Health.Direct.Config.Store
         /// Hash key as primary key to over come the SQL server key length limit of 900 bytes.
         /// MessageId, Reciever, and Status make up the composit key.
         /// </summary>
-        [Column(Name = "MdnIdentifier", AutoSync = AutoSync.Always, CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
+        [Column(Name = "MdnIdentifier", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string MdnIdentifier
         {
@@ -115,7 +115,7 @@ namespace Health.Direct.Config.Store
         public string Recipient { get; set; }
 
 
-        [Column(Name = "MdnId", IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
+        [Column(Name = "MdnId", IsDbGenerated = true, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public long Id
         {
@@ -123,7 +123,7 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "SenderAddress", CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
+        [Column(Name = "SenderAddress", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Sender
         {
@@ -172,7 +172,7 @@ namespace Health.Direct.Config.Store
 
         internal void CopyTimeoutFixed(Mdn source)
         {
-            Id = source.Id;
+           // Id = source.Id;
             MessageId = source.MessageId;
             Recipient = source.Recipient;
             Sender = source.Sender;

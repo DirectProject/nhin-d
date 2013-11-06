@@ -20,15 +20,12 @@
       <xs:element name="CreateDate" type="xs:dateTime" />
       <xs:element name="Id" type="xs:long" />
       <xs:element name="MdnIdentifier" nillable="true" type="xs:string" />
-      <xs:element name="MdnProcessedDate" nillable="true" type="xs:dateTime" />
       <xs:element name="MessageId" nillable="true" type="xs:string" />
       <xs:element name="NotifyDispatched" type="xs:boolean" />
       <xs:element name="Recipient" nillable="true" type="xs:string" />
       <xs:element name="Sender" nillable="true" type="xs:string" />
       <xs:element name="Status" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="SubjectValue" nillable="true" type="xs:string" />
-      <xs:element name="Timedout" type="xs:boolean" />
-      <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="Mdn" nillable="true" type="tns:Mdn" />
@@ -90,6 +87,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element xmlns:q4="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="expiredLimit" type="q4:duration" />
+        <xs:element minOccurs="0" name="bulkCount" type="xs:int" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
