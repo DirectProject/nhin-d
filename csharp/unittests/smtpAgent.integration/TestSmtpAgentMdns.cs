@@ -314,14 +314,16 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             {
                 var queryMdn = new Mdn(messageEnvelope.Message.IDValue
                         , recipient.Address
-                        , messageEnvelope.Message.FromValue);
+                        , messageEnvelope.Message.FromValue
+                        , MdnStatus.Dispatched);
+
 
                 var mdnManager = CreateConfigStore().Mdns;
                 var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                 Assert.NotNull(mdn);
                 Assert.Equal("dispatched", mdn.Status, StringComparer.OrdinalIgnoreCase);
                 Assert.Equal(true, mdn.NotifyDispatched);
-                Assert.NotNull(mdn.MdnProcessedDate);
+                
             }
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
@@ -410,14 +412,14 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             {
                 var queryMdn = new Mdn(messageEnvelope.Message.IDValue
                         , recipient.Address
-                        , messageEnvelope.Message.FromValue);
+                        , messageEnvelope.Message.FromValue
+                        , MdnStatus.Dispatched);
 
                 var mdnManager = CreateConfigStore().Mdns;
                 var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                 Assert.NotNull(mdn);
                 Assert.Equal("dispatched", mdn.Status, StringComparer.OrdinalIgnoreCase);
                 Assert.Equal(true, mdn.NotifyDispatched);
-                Assert.NotNull(mdn.MdnProcessedDate);
             }
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
@@ -493,14 +495,14 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             {
                 var queryMdn = new Mdn(messageEnvelope.Message.IDValue
                         , recipient.Address
-                        , messageEnvelope.Message.FromValue);
+                        , messageEnvelope.Message.FromValue
+                        , MdnStatus.Processed);
 
                 var mdnManager = CreateConfigStore().Mdns;
                 var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                 Assert.NotNull(mdn);
                 Assert.Equal("processed", mdn.Status, StringComparer.OrdinalIgnoreCase);
                 Assert.Equal(false, mdn.NotifyDispatched);
-                Assert.NotNull(mdn.MdnProcessedDate);
             }
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
@@ -508,8 +510,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
 
         /// <summary>
-        /// Absorb uncorrelated (missing) MDN's of type processed, dispatched and failed
-        /// and unkown types.
+        /// Even if a MDN was not recorded outgoing it can still be returned. 
         /// </summary>
         [Fact]
         public void TestMissingMdn()
@@ -532,23 +533,23 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
             List<NotificationMessage> notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Processed);
             Assert.True(notificationMessages.Count == 2);
-            RunMdnProcessing(notificationMessages);
+            RunMdnProcessingForMissingStart(notificationMessages);
 
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Dispatched);
             Assert.True(notificationMessages.Count == 2);
-            RunMdnProcessing(notificationMessages);
+            RunMdnProcessingForMissingStart(notificationMessages);
             
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Failed);
             Assert.True(notificationMessages.Count == 2);
-            RunMdnProcessing(notificationMessages);
+            RunMdnProcessingForMissingStart(notificationMessages);
 
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Displayed); //No currently using.
             Assert.True(notificationMessages.Count == 2);
-            RunMdnProcessing(notificationMessages);
+            RunMdnProcessingForMissingStart(notificationMessages);
 
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Deleted); //No currently using.
             Assert.True(notificationMessages.Count == 2);
-            RunMdnProcessing(notificationMessages);
+            RunMdnProcessingForMissingStart(notificationMessages);
 
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
@@ -556,7 +557,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
         
         
-        private void RunMdnProcessing(IEnumerable<NotificationMessage> notificationMessages)
+        private void RunMdnProcessingForMissingStart(IEnumerable<NotificationMessage> notificationMessages)
         {
             foreach (var notification in notificationMessages)
             {
@@ -566,10 +567,9 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 message = LoadMessage(message);
                 VerifyOutgoingMessage(message);  //Encrypted
                 m_agent.ProcessMessage(message);
-                message = LoadMessage(message);  //
-                //This proves we could not process the message because it is still encrypted
-                //Could possibly check to see if it was dropped.  This integration test is getting ugly...
-                VerifyOutgoingMessage(message);         //Encryted Message
+                message = LoadMessage(message);  //Dycrpted
+                
+                VerifyIncomingMessage(message);        
 
 
                 //Can't ensure message is deleted in this test because IIS SMTP is not hosting SmtpAgent.
@@ -579,6 +579,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 // assert not in the monitor store.
                 //
                 var queryMdn = BuildMdnQueryFromMdn(LoadMessage(mdnText));
+                queryMdn.Status = MdnStatus.Started;
                 var mdnManager = CreateConfigStore().Mdns;
                 var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                 Assert.Null(mdn);
@@ -640,12 +641,11 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         static void TestMdnsInProcessedStatus(CDO.Message message, bool timelyAndReliable)
         {
             var queryMdn = BuildMdnQueryFromMdn(message);
-
+            queryMdn.Status = MdnStatus.Processed;
             var mdnManager = CreateConfigStore().Mdns;
             var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
             Assert.NotNull(mdn);
             Assert.Equal("processed", mdn.Status, StringComparer.OrdinalIgnoreCase);
-            Assert.NotNull(mdn.MdnProcessedDate);
             Assert.Equal(timelyAndReliable, mdn.NotifyDispatched);
         }
 

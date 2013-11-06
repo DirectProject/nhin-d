@@ -26,6 +26,7 @@ using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Config.Client;
+using Health.Direct.Config.Store;
 using Xunit;
 using Xunit.Extensions;
 
@@ -98,6 +99,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
+                    queryMdn.Status = MdnStatus.Started;
                     var mdnManager = CreateConfigStore().Mdns;
                     var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
@@ -189,6 +191,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
+                    queryMdn.Status = MdnStatus.Started;
                     var mdnManager = CreateConfigStore().Mdns;
                     var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
@@ -338,6 +341,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
+                    queryMdn.Status = MdnStatus.Started;
                     var mdnManager = CreateConfigStore().Mdns;
                     var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                     Assert.Null(mdn);

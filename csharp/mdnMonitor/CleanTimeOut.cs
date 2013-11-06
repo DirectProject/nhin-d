@@ -20,7 +20,7 @@ namespace Health.Direct.MdnMonitor
 
             try
             {
-                Store.Mdns.RemoveTimedOut(TimeSpan.FromDays(settings.Days));
+                Store.Mdns.RemoveTimedOut(TimeSpan.FromDays(settings.Days), settings.BulkCount);
             }
             catch(Exception e)
             {

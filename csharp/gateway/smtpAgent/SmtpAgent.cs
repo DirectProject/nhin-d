@@ -387,7 +387,8 @@ namespace Health.Direct.SmtpAgent
                    || fe.Detail.Error == ConfigStoreError.MdnUncorrelated 
                    || fe.Detail.Error == ConfigStoreError.DuplicateDispatchedMdn
                    || fe.Detail.Error == ConfigStoreError.DuplicateProcessedMdn
-                   || fe.Detail.Error == ConfigStoreError.DuplicateFailedMdn;
+                   || fe.Detail.Error == ConfigStoreError.DuplicateFailedMdn
+                   || fe.Detail.Error == ConfigStoreError.DuplicateMdnStart;
         }
 
         protected virtual void PreProcessMessage(ISmtpMessage message)

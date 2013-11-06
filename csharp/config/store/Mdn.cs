@@ -36,6 +36,7 @@ namespace Health.Direct.Config.Store
             Recipient = recipient;
             Sender = sender;
             NotifyDispatched = notifyDispatched;
+            Status = MdnStatus.Started;
         }
 
         public Mdn(string messageId, string recipient, string sender)
@@ -46,15 +47,25 @@ namespace Health.Direct.Config.Store
             Sender = sender;
             NotifyDispatched = false;
         }
+
+        public Mdn(string messageId, string recipient, string sender, string status)
+            : this()
+        {
+            MessageId = messageId;
+            Recipient = recipient;
+            Sender = sender;
+            NotifyDispatched = false;
+            Status = status;
+        }
+
         public Mdn()
         {
             CreateDate = DateTimeHelper.Now;
-            UpdateDate = CreateDate;
         }
 
         /// <summary>
         /// Hash key as primary key to over come the SQL server key length limit of 900 bytes.
-        /// MessageId and Reciever make up the composit key.
+        /// MessageId, Reciever, and Status make up the composit key.
         /// </summary>
         [Column(Name = "MdnIdentifier", AutoSync = AutoSync.Always, CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -67,7 +78,7 @@ namespace Health.Direct.Config.Store
                     return null;
                 }
                 var fieldsSb = new StringBuilder();
-                fieldsSb.Append(MessageId.ToLower()).Append(Recipient.ToLower());
+                fieldsSb.Append(MessageId.ToLower()).Append(Recipient.ToLower()).Append(Status.ToLower());
 
                 var md5 = MD5.Create();
                 var inputBytes = Encoding.ASCII.GetBytes(fieldsSb.ToString());
@@ -130,7 +141,7 @@ namespace Health.Direct.Config.Store
         [DataMember(IsRequired = false)]
         public string SubjectValue { get; set; }
 
-        [Column(Name = "Status", DbType = "varchar(9)", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
+        [Column(Name = "Status", DbType = "varchar(15)", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Status
         {
@@ -138,23 +149,8 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "Timedout", DbType = "bit", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = true)]
-        public bool Timedout
-        {
-            get;
-            set;
-        }
 
-
-        [Column(Name = "MdnProcessedDate", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = true)]
-        public DateTime? MdnProcessedDate
-        {
-            get;
-            set;
-        }
-
+       
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public DateTime CreateDate
@@ -163,13 +159,7 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = true)]
-        public DateTime UpdateDate
-        {
-            get;
-            set;
-        }
+       
 
         [Column(Name = "NotifyDispatched", DbType = "bit", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -188,61 +178,8 @@ namespace Health.Direct.Config.Store
             Sender = source.Sender;
             NotifyDispatched = source.NotifyDispatched;
             Status = source.Status;
-            MdnProcessedDate = source.MdnProcessedDate;
             CreateDate = source.CreateDate;
-            UpdateDate = source.UpdateDate;
         }
-        /// <summary>
-        /// Only copy those fields that are allowed to change in updates
-        /// </summary>
-        internal void ApplyTimeoutChanges(Mdn source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            Timedout = true;
-            Status = MdnStatus.Failed;
-        }
-
-
-        internal void CopyFixed(Mdn source)
-        {
-            Id = source.Id;
-            MessageId = source.MessageId;
-            Recipient = source.Recipient;
-            SubjectValue = source.SubjectValue;
-            Sender = source.Sender;
-            NotifyDispatched = source.NotifyDispatched;
-            CreateDate = source.CreateDate;
-            UpdateDate = source.UpdateDate;
-        }
-
-        /// <summary>
-        /// Only copy those fields that are allowed to change in updates
-        /// </summary>
-        internal void ApplyChanges(Mdn source, Mdn original)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-
-
-            if (string.Compare(original.Status, MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase) != 0) //dispatched cannot be undone.
-            {
-                Status = source.Status == null ? null : source.Status.ToLower();
-            }
-
-            MdnProcessedDate = source.MdnProcessedDate;
-            UpdateDate = DateTimeHelper.Now;
-
-            //Workflow from monitor started to dispostition-type is processed
-            if (string.Compare(source.Status, MdnStatus.Processed, StringComparison.OrdinalIgnoreCase) == 0
-                && original.Status != MdnStatus.Processed)
-            {
-                MdnProcessedDate = DateTimeHelper.Now;
-            }
-        }
+        
     }
 }

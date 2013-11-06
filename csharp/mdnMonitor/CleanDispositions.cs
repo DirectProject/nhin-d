@@ -21,7 +21,7 @@ namespace Health.Direct.MdnMonitor
 
             try
             {
-                Store.Mdns.RemoveDispositions(TimeSpan.FromDays(settings.Days));
+                Store.Mdns.RemoveDispositions(TimeSpan.FromDays(settings.Days), settings.BulkCount);
             }
             catch (Exception e)
             {

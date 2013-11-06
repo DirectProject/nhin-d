@@ -18,12 +18,14 @@ namespace Health.Direct.Config.Store
     /// <summary>
     /// Known/Expected disposition-type values
     /// </summary>
-    public static class MdnStatus 
+    public static class MdnStatus
     {
+        public const string Started = "started";
         public const string Processed = "processed";
         public const string Dispatched = "dispatched";
         public const string Deleted = "deleted";
         public const string Displayed = "displayed";
+        public const string TimedOut = "timedout";
         public const string Failed = "failed";
     }
 }

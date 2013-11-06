@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
-using System.Text;
+
 
 namespace Health.Direct.Config.Store
 {
@@ -32,95 +32,170 @@ namespace Health.Direct.Config.Store
               COMMIT TRAN ";
 
         private const string Sql_DeleteTimedOutMdns =
-            @"  BEGIN TRAN 
-                    DELETE From Mdns 
-                    Where 
-                        Timedout = 1 
-                    AND     
-                        CreateDate < {0}
-                COMMIT TRAN ";
+            @"  --CTE Common table expression
+                ;With Candidates as (
+	                Select top ({1})
+		                  MessageId
+		                , RecipientAddress
+	                From
+		                Mdns
+	                Where
+	                ( 
+		                Status = 'timedout' 
+	                )
+	                AND
+		                CreateDate < {0}
+	                Order by CreateDate desc
+                )
+
+                Delete Mdns
+                Where
+	                MessageId in (select MessageId from Candidates)
+	                and
+	                RecipientAddress in (select RecipientAddress from Candidates)
+            ";
 
         private const string Sql_DeleteCompletedMdns =
-            @"  BEGIN TRAN 
-                    DELETE From Mdns 
-                    Where
-                    ( 
-                        Status = 'processed' AND NotifyDispatched = 0
-                    OR
-                        Status = 'dispatched'
-                    )
-                    AND
-                        CreateDate < {0}
-                COMMIT TRAN 
+            @"  --CTE Common table expression
+                ;With Candidates as (
+	                Select top ({1})
+		                  MessageId
+		                , RecipientAddress
+	                From
+		                Mdns
+	                Where
+	                ( 
+		                Status = 'processed' AND NotifyDispatched = 0
+	                OR
+		                Status = 'dispatched'
+	                )
+	                AND
+		                CreateDate < {0}
+	                Order by CreateDate desc
+                )
+
+                Delete Mdns
+                Where
+	                MessageId in (select MessageId from Candidates)
+	                and
+	                RecipientAddress in (select RecipientAddress from Candidates)
             ";
-            
-        private static readonly Func<ConfigDatabase, string, IQueryable<Mdn>> Mdn = CompiledQuery.Compile(
-            (ConfigDatabase db, string mdnIdentifier) =>
-            from mdn in db.Mdns
-            where mdn.MdnIdentifier == mdnIdentifier
-            select mdn
-            );
+
+        private const string Sql_ExpiredProcessedMdns =
+
+            @"  ;With timeOuts as (
+	                Select MessageId
+	                From Mdns	
+	                Where status = 'timedout'
+                    Or status = 'processed'
+                    Or status = 'dispatched'
+                )
+                Select 
+	                top({1}) *
+                From Mdns
+                Where
+	                MessageId not in (select MessageId from timeOuts)
+                And
+	                CreateDate <  {0}
+                Order by CreateDate desc
+            ";
+
+        private const string Sql_ExpiredDispatchedMdns =
+
+           @"  ;With timeOuts as (
+	                Select MessageId
+	                From Mdns	
+	                Where status = 'timedout'
+                    Or status = 'dispatched'
+                ),
+                dispatchRequests as (
+	                Select max(MdnId) MdnId
+	                From Mdns
+	                Where NotifyDispatched = 1
+	                group by MessageId		                
+                )  
+
+                Select 
+	                top({1}) *
+                From Mdns
+                Where
+	                MessageId not in (select MessageId from timeOuts)
+                And
+                    Status = 'Processed'
+                And
+					MdnId in (select MdnId from dispatchRequests)
+                And
+	                CreateDate <  {0}
+                Order by CreateDate desc
+            ";
+
+        private const string Sql_GetMdn =
+            @"
+                Declare @notifyRequest tinyint;
+                set @notifyRequest =
+                (   select max(Cast(m2.NotifyDispatched as tinyint))
+                    FROM Mdns m1
+                    Join Mdns m2 
+                    on m1.MessageId = m2.MessageId
+                    where m1.MdnIdentifier= {0}
+                    group by m2.MessageId
+                );
+
+                select 
+	                 [MdnIdentifier]
+	                ,[MdnId]
+	                ,[MessageId]
+	                ,[RecipientAddress]
+	                ,[SenderAddress]
+	                ,[Subject]
+	                ,[Status]
+	                ,Cast(@notifyRequest as bit) as NotifyDispatched    
+	                ,[CreateDate]
+                From Mdns
+                Where MdnIdentifier= {0}
+                ";
 
 
-        private static readonly Func<ConfigDatabase, DateTime, int, IQueryable<Mdn>> ExpiredProcessedMdns = CompiledQuery.Compile(
-            (ConfigDatabase db, DateTime expiredLimit, int maxResults) =>
-            (from mdn in db.Mdns
-             where mdn.CreateDate < expiredLimit
-             && mdn.Status == null 
-             && mdn.Timedout == false
-             orderby mdn.CreateDate descending 
-             select mdn).Take(maxResults)
-            );
-
-        private static readonly Func<ConfigDatabase, DateTime, int, IQueryable<Mdn>> ExpiredDispatchededMdns = CompiledQuery.Compile(
-            (ConfigDatabase db, DateTime expiredLimit, int maxResults) =>
-            (from mdn in db.Mdns
-             where mdn.MdnProcessedDate < expiredLimit
-             && mdn.Status == MdnStatus.Processed
-             && mdn.NotifyDispatched       //timely and reliable must have been requestd (X-DIRECT-FINAL-DESTINATION-DELIVERY)
-             && mdn.Timedout == false
-             orderby mdn.CreateDate descending 
-             select mdn).Take(maxResults)
-            );
-
-        private static readonly Func<ConfigDatabase, IQueryable<Mdn>> TimedOutMdns = CompiledQuery.Compile(
+        
+        static readonly Func<ConfigDatabase, IQueryable<Mdn>> TimedOutMdns = CompiledQuery.Compile(
             (ConfigDatabase db) =>
             (from mdn in db.Mdns
-             where mdn.Timedout
+             where mdn.Status == MdnStatus.TimedOut
              select mdn)
             );
 
-        public static ConfigDatabase GetDb(this Table<Mdn> table)
+        
+        public static ConfigDatabase GetDB(this Table<Mdn> table)
         {
-            var dbContext = (ConfigDatabase) table.Context;
-            return dbContext;
+            return (ConfigDatabase)table.Context;
         }
+
 
         public static Mdn Get(this Table<Mdn> table, string mdnIdentifier)
         {
-            return Mdn(table.GetDb(), mdnIdentifier).SingleOrDefault();
+            return table.GetDB().ExecuteQuery<Mdn>(Sql_GetMdn, mdnIdentifier).FirstOrDefault();
         }
 
         public static IEnumerable<Mdn> GetTimedOut(this Table<Mdn> table)
         {
-            return TimedOutMdns(table.GetDb());
+            return TimedOutMdns(table.GetDB());
         }
 
         public static IEnumerable<Mdn> GetExpiredProcessed(this Table<Mdn> table, TimeSpan expiredLimit, int maxResults)
         {
             DateTime lookBackTime = DateTimeHelper.Now.Subtract(expiredLimit);
-            return ExpiredProcessedMdns(table.GetDb(), lookBackTime, maxResults);
+            return table.GetDB().ExecuteQuery<Mdn>(Sql_ExpiredProcessedMdns, lookBackTime, maxResults);
         }
 
         public static IEnumerable<Mdn> GetExpiredDispatched(this Table<Mdn> table, TimeSpan expiredLimit, int maxResults)
         {
             DateTime lookBackTime = DateTimeHelper.Now.Subtract(expiredLimit);
-            return ExpiredDispatchededMdns(table.GetDb(), lookBackTime, maxResults);
+            return table.GetDB().ExecuteQuery<Mdn>(Sql_ExpiredDispatchedMdns, lookBackTime, maxResults);
         }
 
         public static int GetCount(this Table<Mdn> table)
         {
-            return (from mdn in table.GetDb().Mdns
+            return (from mdn in table.GetDB().Mdns
                     select "0").Count();
         }
 
@@ -129,16 +204,16 @@ namespace Health.Direct.Config.Store
             table.Context.ExecuteCommand(Sql_DeleteMdn, mdn);
         }
 
-        public static void ExecDeleteTimedOut(this Table<Mdn> table, TimeSpan limitTime)
+        public static void ExecDeleteTimedOut(this Table<Mdn> table, TimeSpan limitTime, int bulkCount)
         {
             DateTime lookBackTime = DateTimeHelper.Now.Subtract(limitTime);
-            table.Context.ExecuteCommand(Sql_DeleteTimedOutMdns, lookBackTime.ToString());
+            table.Context.ExecuteCommand(Sql_DeleteTimedOutMdns, lookBackTime.ToString(), bulkCount);
         }
 
-        public static void ExecDeleteDispositions(this Table<Mdn> table, TimeSpan limitTime)
+        public static void ExecDeleteDispositions(this Table<Mdn> table, TimeSpan limitTime, int bulkCount)
         {
             DateTime lookBackTime = DateTimeHelper.Now.Subtract(limitTime);
-            table.Context.ExecuteCommand(Sql_DeleteCompletedMdns, lookBackTime.ToString());
+            table.Context.ExecuteCommand(Sql_DeleteCompletedMdns, lookBackTime.ToString(), bulkCount);
         }
 
         public static void ExecDeleteAll(this Table<Mdn> table)
