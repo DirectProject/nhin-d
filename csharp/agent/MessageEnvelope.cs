@@ -95,6 +95,7 @@ namespace Health.Direct.Agent
             this.Message = message;
             this.Recipients = recipients;
             this.Sender = sender;
+            this.NotifyTo = GetDispostionNotifyTo(message);
         }
 
         /// <summary>
@@ -111,6 +112,7 @@ namespace Health.Direct.Agent
             this.Recipients = recipients;
             m_rejectedRecipients = rejecteRecipients;
             this.Sender = sender;
+            this.NotifyTo = GetDispostionNotifyTo(message);
         }
 
         /// <summary>
