@@ -61,6 +61,8 @@ namespace Health.Direct.Config.Store
 	                Select top ({1})
 		                  MessageId
 		                , RecipientAddress
+                        , SenderAddress
+                        , Status
 	                From
 		                Mdns
 	                Where
@@ -68,6 +70,8 @@ namespace Health.Direct.Config.Store
 		                Status = 'processed' AND NotifyDispatched = 0
 	                OR
 		                Status = 'dispatched'
+                    OR
+                        Status = 'Failed'
 	                )
 	                AND
 		                CreateDate < {0}
@@ -76,9 +80,15 @@ namespace Health.Direct.Config.Store
 
                 Delete Mdns
                 Where
-	                MessageId in (select MessageId from Candidates)
-	                and
-	                RecipientAddress in (select RecipientAddress from Candidates)
+	                   MessageId in (select MessageId from Candidates)
+	                   and
+	                   (
+                            RecipientAddress in (select RecipientAddress from Candidates)
+                            or
+                            RecipientAddress in (select SenderAddress from Candidates where Status = 'Failed')                 
+                       )
+                    
+               
             ";
 
         private const string Sql_ExpiredProcessedMdns =
@@ -89,6 +99,7 @@ namespace Health.Direct.Config.Store
 	                Where status = 'timedout'
                     Or status = 'processed'
                     Or status = 'dispatched'
+                    Or status = 'Failed'
                 )
                 Select 
 	                top({1}) *
@@ -107,12 +118,13 @@ namespace Health.Direct.Config.Store
 	                From Mdns	
 	                Where status = 'timedout'
                     Or status = 'dispatched'
+                    Or status = 'Failed'
                 ),
                 dispatchRequests as (
 	                Select max(MdnId) MdnId
 	                From Mdns
-	                Where NotifyDispatched = 1
-	                group by MessageId		                
+	                Group by MessageId		
+                    Having max(Cast(NotifyDispatched as tinyint)) = 1                       
                 )  
 
                 Select 
@@ -121,7 +133,7 @@ namespace Health.Direct.Config.Store
                 Where
 	                MessageId not in (select MessageId from timeOuts)
                 And
-                    Status = 'Processed'
+                    Status = 'processed'
                 And
 					MdnId in (select MdnId from dispatchRequests)
                 And

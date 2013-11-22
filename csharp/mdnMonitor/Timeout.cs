@@ -46,7 +46,7 @@ namespace Health.Direct.MdnMonitor
         
 
         /// <summary>
-        /// Get queued mdns that are considered expired based on type of <c>TimeoutBase</c>
+        /// Get queued mdns that are considered expired based on type of <c>Timeout</c>
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>

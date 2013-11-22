@@ -364,7 +364,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
-        //[Fact ] May want this check to go into the timeout job.
+        [Fact]
         public void DuplicateMdnTest()
         {
             MdnManager target = CreateManager();
@@ -378,27 +378,28 @@ namespace Health.Direct.Config.Store.Tests
 
             //Throw duplicate processed
             Assert.Equal(ConfigStoreError.DuplicateProcessedMdn
-                , Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
+                , Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
 
             //Record first dispatched.
             mdn.Status = "disPatched";
-            Assert.DoesNotThrow(() => target.Update(new Mdn[] { mdn }));
+            Assert.DoesNotThrow(() => target.Update(mdn));
 
 
             //Throw duplicate dispached
             Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn
-                , Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
+                , Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
 
-            
+
 
             mdn = BuildMdn(Guid.NewGuid().ToString(), "Name1@nhind.hsgincubator.com", "FailedTest@domain1.test.com", "To dispatch or not dispatch", "fAiled");
             target.Start(new Mdn[] { mdn });
 
             Assert.Equal(ConfigStoreError.DuplicateFailedMdn
-                , Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
+                , Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
 
 
         }
+
 
 
         /// <summary>

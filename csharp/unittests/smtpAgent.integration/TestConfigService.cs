@@ -44,7 +44,7 @@ namespace Health.Direct.SmtpAgent.Tests
 
         
         
-        [Theory]
+        //[Theory]
         [InlineData(false)]
         [InlineData(true)]
         public void TestResolverSecure(bool validateAddress)

@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using Health.Direct.Common.Mail;
@@ -23,7 +22,6 @@ using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Store.Tests;
 using Quartz;
-using Quartz.Job;
 using Quartz.Spi;
 using Xunit;
 
@@ -204,6 +202,11 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
             {
                 File.Delete(file);
             }
+        }
+
+        private static MdnManager CreateManager()
+        {
+            return new MdnManager(CreateConfigStore());
         }
     }
 }
