@@ -203,10 +203,5 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
                 File.Delete(file);
             }
         }
-
-        private static MdnManager CreateManager()
-        {
-            return new MdnManager(CreateConfigStore());
-        }
     }
 }

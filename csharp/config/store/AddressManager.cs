@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 
@@ -28,10 +29,12 @@ namespace Health.Direct.Config.Store
     public class AddressManager : IEnumerable<Address>
     {
         readonly ConfigStore m_store;
-        
+        readonly bool m_enabledAllDomainAddresses;
+
         internal AddressManager(ConfigStore store)
         {
             m_store = store;
+            m_enabledAllDomainAddresses = Convert.ToBoolean(ConfigurationManager.AppSettings["EnabledAllDomainAddresses"]) ;
         }
         
         internal ConfigStore Store
@@ -290,9 +293,38 @@ namespace Health.Direct.Config.Store
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.Get(db, emailAddresses, status).ToArray();
+                Address[] addresses = this.Get(db, emailAddresses, status).ToArray();
+                if (m_enabledAllDomainAddresses)
+                {
+                    List<Address> addressList = new List<Address>();
+                    foreach (var emailAddress in emailAddresses)
+                    {
+                        string enclosureEmailAddress = emailAddress;
+                        Address existingAddress = addresses.SingleOrDefault(a => a.EmailAddress == enclosureEmailAddress);
+                        if (existingAddress != null)
+                        {
+                            addressList.Add(existingAddress);
+                            continue;
+                        }
+                        AutoMapDomains(enclosureEmailAddress, addressList);
+                    }
+                    return addressList.ToArray();
+                }
+                return addresses;
             }
         }
+
+
+        private void AutoMapDomains(string enclosureEmailAddress, List<Address> addressList)
+        {
+            MailAddress mailAddress = new MailAddress(enclosureEmailAddress);
+            Domain domain = Store.Domains.Get(mailAddress.Host);
+            var address = new Address(domain.ID, mailAddress);
+            address.Type = "SMTP";
+            address.Status = EntityStatus.Enabled;
+            addressList.Add(address);
+        }
+
 
         public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses, EntityStatus? status)
         {

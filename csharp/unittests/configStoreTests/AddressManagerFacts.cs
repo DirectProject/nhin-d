@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 
 using Xunit;
@@ -23,6 +24,11 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class AddressManagerFacts : ConfigStoreTestBase
     {
+        public AddressManagerFacts()
+        {
+            ConfigurationManager.AppSettings["EnabledAllDomainAddresses"] = null;
+        }
+
         private static new AddressManager CreateManager()
         {
             return new AddressManager(CreateConfigStore());
@@ -327,6 +333,44 @@ namespace Health.Direct.Config.Store.Tests
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
             }
             
+        }
+
+
+        /// <summary>
+        ///A test for where any email address is enabled when the domain is enabled and the AppSetting of EnabledAllDomainAddresses is set to true
+        ///</summary>
+        [Fact]
+        public void Get_EnabledAllDomainAddressesTest()
+        {              
+            InitAddressRecords();
+            
+            DomainManager dMgr = new DomainManager(CreateConfigStore());
+            Domain domain = new Domain("address1.domain1.com");
+            domain.Status = EntityStatus.Enabled;
+            dMgr.Add(domain);
+            
+            AddressManager mgr = CreateManager();
+
+            string[] emailAddresses = new[] { "NewGuy@address1.domain1.com", "AnotherNewGuy@address1.domain1.com" };
+            
+            IEnumerable<Address> actual = mgr.Get(emailAddresses, EntityStatus.New);
+            Assert.Equal(0, actual.Count());
+
+            //
+            // Now enabled all domain addresses
+            //
+            ConfigurationManager.AppSettings["EnabledAllDomainAddresses"] = "true";
+            mgr = CreateManager();
+
+            actual = mgr.Get(emailAddresses, EntityStatus.New);
+            Assert.Equal(emailAddresses.Length, actual.Count());
+
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
+                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+            }
+
         }
 
         /// <summary>
