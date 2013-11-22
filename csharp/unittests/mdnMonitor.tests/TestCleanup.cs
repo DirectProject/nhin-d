@@ -104,5 +104,10 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
             return bundle;
         }
 
+
+        private static MdnManager CreateManager()
+        {
+            return new MdnManager(CreateConfigStore());
+        }
     }
 }

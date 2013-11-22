@@ -46,6 +46,7 @@ namespace Health.Direct.Config.Store
             Recipient = recipient;
             Sender = sender;
             NotifyDispatched = false;
+            Status = MdnStatus.Started;
         }
 
         public Mdn(string messageId, string recipient, string sender, string status)
@@ -169,17 +170,5 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-
-        internal void CopyTimeoutFixed(Mdn source)
-        {
-           // Id = source.Id;
-            MessageId = source.MessageId;
-            Recipient = source.Recipient;
-            Sender = source.Sender;
-            NotifyDispatched = source.NotifyDispatched;
-            Status = source.Status;
-            CreateDate = source.CreateDate;
-        }
-        
     }
 }
