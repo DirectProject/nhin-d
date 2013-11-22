@@ -103,11 +103,5 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
                 jobDetail, trigger, null, false, null, null, null, null);
             return bundle;
         }
-
-
-        private static MdnManager CreateManager()
-        {
-            return new MdnManager(CreateConfigStore());
-        }
     }
 }
