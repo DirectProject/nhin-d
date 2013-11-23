@@ -1,0 +1,15 @@
+    -----
+    Introduction
+    -----
+    Greg Meyer
+    -----
+
+About this Document
+
+  This document describes the Direct Project message monitor service for timely and reliable delivery, architecture and developers guide, and deployment models and options.
+  
+  * {{{./overview.html}Overview}} - This section describes the purpose of the monitoring service and how it fits with the rest of the timely and reliable delivery implementation. 
+  
+  * {{{./dev-intro.html}Development Guide}} - This section describes the architecture and components of the monitoring service and how to develop your own custom components.
+  
+  * {{{./dep-intro.html}Deployment Guide}} - This section describes the deployment model of the messaging service, and how it can be customized with stock properties or using your own custom components.
