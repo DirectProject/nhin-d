@@ -77,7 +77,7 @@
 	</Target>
 	
 	<Target Name="build-configui">
-		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
+		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 	
 	<Target Name="clean-configui">
@@ -89,7 +89,7 @@
 	</Target>
 	
 	<Target Name="build-xd">
-		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration)" />
+		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
