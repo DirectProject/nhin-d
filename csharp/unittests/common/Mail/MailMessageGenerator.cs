@@ -107,7 +107,9 @@ namespace Health.Direct.Common.Tests.Mail
             string innerText = inner.Serialize();
             wrapped.Body = innerText;
             
-            wrapped.Headers.Add(MailStandard.ContentTypeHeader, MailStandard.MediaType.WrappedMessage);
+            // this does not stick since upgrading to 4.5.  The headers collection seems to be read only.
+            // BodyEncoding is setting Content-type when serialized.            
+            //wrapped.Headers.Add(MailStandard.ContentTypeHeader, MailStandard.MediaType.WrappedMessage);
 
             return wrapped;
         }        

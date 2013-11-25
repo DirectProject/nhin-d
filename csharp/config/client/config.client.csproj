@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Health.Direct.Config.Client</RootNamespace>
     <AssemblyName>Health.Direct.Config.Client</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -32,6 +32,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,6 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -143,6 +146,12 @@
     <WCFMetadataStorage Include="Service References\SettingsManager\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Address1.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Administrator1.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Certificate1.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.DnsRecord1.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Mdn1.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.Property1.datasource" />
     <None Include="Service References\CertificateService\CertificateService.wsdl" />
     <None Include="Service References\CertificateService\CertificateService.xsd" />
     <None Include="Service References\CertificateService\CertificateService1.wsdl" />

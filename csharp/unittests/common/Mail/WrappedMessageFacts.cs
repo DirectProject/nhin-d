@@ -58,8 +58,10 @@ namespace Health.Direct.Common.Tests.Mail
             MailMessage wrappedMessage = MailMessageGenerator.WrappedMailMessage(mail); 
             string wrappedMessageText = wrappedMessage.Serialize();
             
+
             Message parsedMessage = null;
             Assert.DoesNotThrow(() => parsedMessage = Message.Load(wrappedMessageText));
+            parsedMessage.ContentType = MailStandard.MediaType.WrappedMessage;
             Message extracted = null;
             Assert.DoesNotThrow(() => extracted = WrappedMessage.ExtractInner(parsedMessage));
             
@@ -69,7 +71,7 @@ namespace Health.Direct.Common.Tests.Mail
                 extractedBody = QuotedPrintableDecoder.Decode(new StringSegment(extractedBody));
                 extractedBody = extractedBody.TrimEnd();
             }
-            Assert.True(extractedBody == mail.Body);
+            Assert.Equal(extractedBody, mail.Body);
         }
         
         [Theory]
