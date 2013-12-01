@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.client", "..\config\client\config.client.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.store", "..\config\store\config.store.csproj", "{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}"
@@ -12,6 +12,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminMvc", "AdminMvc\AdminMvc.csproj", "{8E284E54-B6E7-4F16-B362-719C34E95762}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminMvc.Tests", "AdminMvc.Tests\AdminMvc.Tests.csproj", "{D51D75C3-9DB1-4663-A868-457D7D6D8B73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{096D98D0-0B39-4527-85F7-7AC8302BB68B}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\packages.config = .nuget\packages.config
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
