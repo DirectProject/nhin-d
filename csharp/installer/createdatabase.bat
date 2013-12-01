@@ -4,7 +4,8 @@ title Create Database for the Configuration Service
 
 set schemafile=%~3
 set userfile=%~4
-set dbuser="IIS AppPool\DefaultAppPool"
+set dbuser="IIS APPPOOL\ASP.NET v4.0"
+set dbserviceuser="NT AUTHORITY\NETWORK SERVICE"
 
 call :initialize %~1 %~2
 call :create_database
@@ -37,6 +38,7 @@ sqlcmd -S "%server%" %credentials% -Q "CREATE DATABASE [%databasename%]"
 sqlcmd -S "%server%" %credentials% -i %databasename%.sql -v DBName = %databasename%
 @if ERRORLEVEL 1 goto :error
 sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser% -v DBName = %databasename%
+sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbserviceuser% -v DBName = %databasename%
 @if ERRORLEVEL 1 goto :error
 @echo off
 goto :eof

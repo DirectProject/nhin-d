@@ -81,11 +81,11 @@
 	</Target>
 	
 	<Target Name="clean-configui">
-		<MSBuild Projects="$(configui_solution)" Targets="Clean" />
+		<MSBuild Projects="$(configui_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 	
 	<Target Name="clean-xd">
-		<MSBuild Projects="$(xd_solution)" Targets="Clean" />
+		<MSBuild Projects="$(xd_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 	
 	<Target Name="build-xd">
@@ -120,6 +120,7 @@
 				Clean="true"
 				Force="true"
 				Updateable="true"
+				ToolPath="C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
 				/>
 				
 		<!-- Clean up after ourselves -->
