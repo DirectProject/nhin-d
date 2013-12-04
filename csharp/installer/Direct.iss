@@ -94,7 +94,7 @@ Source: "..\bin\{#Configuration}\x64\smtpEventHandler.dll"; DestDir: "{app}"; Fl
 Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config,DirectDnsResponderSvc.exe.config"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
-Source: "..\bin\{#Configuration}\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
+Source: "ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
 Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
 Source: "..\bin\{#Configuration}\DirectDnsResponderSvc.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnswebservice developergateway;
            
@@ -1245,6 +1245,7 @@ procedure ConfigConsolePageOneOnActivate(Sender: TWizardPage);
 var
   DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText, BundleText: TNewEdit;
   configFile : String;
+  bundleString : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
 
@@ -1267,7 +1268,14 @@ begin
   MdnMonitorText.Text := GetConfigSetting(configFile, '/ConsoleSettings/MdnMonitor/Url');
 
   BundleText := TNewEdit(Sender.FindComponent('BundleText'));
-  BundleText.Text := GetConfigSetting(configFile, '/ConsoleSettings/BundleManager/Url');
+  bundleString  := GetConfigSetting(configFile, '/ConsoleSettings/BundleManager/Url');
+ 
+  if (length(bundleString) = 0) then
+  begin
+    bundleString := 'http://localhost/ConfigService/CertificateService.svc/Bundles';
+  end
+  BundleText.Text := bundleString;
+
 end;
 
 
