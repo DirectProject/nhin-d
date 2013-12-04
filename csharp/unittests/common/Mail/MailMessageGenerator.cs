@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Net.Mail;
 using Health.Direct.Common.Mail;
@@ -75,9 +76,17 @@ namespace Health.Direct.Common.Tests.Mail
         {
             Random rand = new Random();
             StringBuilder builder = new StringBuilder(length);
-            for (int i = 0; i < length; ++i)
+
+            while (builder.Length < length)
             {
                 char ch = (char)rand.Next(1, 127);
+
+                if (ch == '.')
+                {
+                    // Prevent "Dot stuffing". 
+                    continue;
+                }
+
                 if (ch == MimeStandard.CR || ch == MimeStandard.LF)
                 {
                     builder.Append(MimeStandard.CRLF);
@@ -88,7 +97,8 @@ namespace Health.Direct.Common.Tests.Mail
                 }
             }
 
-            return builder.ToString();
+            string sz = builder.ToString();
+            return sz.TrimEnd();
         }
 
         public static MailMessage WrappedMailMessage(MailMessage inner)
@@ -105,14 +115,13 @@ namespace Health.Direct.Common.Tests.Mail
             }
 
             string innerText = inner.Serialize();
-            wrapped.Body = innerText;
-            
-            // this does not stick since upgrading to 4.5.  The headers collection seems to be read only.
-            // BodyEncoding is setting Content-type when serialized.            
-            //wrapped.Headers.Add(MailStandard.ContentTypeHeader, MailStandard.MediaType.WrappedMessage);
+            ContentType mimeType = new ContentType(MailStandard.MediaType.WrappedMessage);
+            AlternateView alternate = AlternateView.CreateAlternateViewFromString(innerText, mimeType);
+            wrapped.AlternateViews.Add(alternate);
 
             return wrapped;
-        }        
+        }
+   
 
     }
 }

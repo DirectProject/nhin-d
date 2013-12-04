@@ -55,23 +55,21 @@ namespace Health.Direct.Common.Tests.Mail
         {
             // Manually wrap the mail...
             MailMessage mail = MailMessageGenerator.GenerateRandomMail(toCount, ccCount, bodyLength);
-            MailMessage wrappedMessage = MailMessageGenerator.WrappedMailMessage(mail); 
+            MailMessage wrappedMessage = MailMessageGenerator.WrappedMailMessage(mail);
             string wrappedMessageText = wrappedMessage.Serialize();
-            
 
             Message parsedMessage = null;
             Assert.DoesNotThrow(() => parsedMessage = Message.Load(wrappedMessageText));
-            parsedMessage.ContentType = MailStandard.MediaType.WrappedMessage;
             Message extracted = null;
             Assert.DoesNotThrow(() => extracted = WrappedMessage.ExtractInner(parsedMessage));
-            
+
             string extractedBody = extracted.Body.Text;
             if (extracted.GetTransferEncoding() == TransferEncoding.QuotedPrintable)
             {
                 extractedBody = QuotedPrintableDecoder.Decode(new StringSegment(extractedBody));
                 extractedBody = extractedBody.TrimEnd();
             }
-            Assert.Equal(extractedBody, mail.Body);
+            Assert.True(extractedBody == mail.Body);
         }
         
         [Theory]
