@@ -4,7 +4,9 @@ title Create Database for the Configuration Service
 
 set schemafile=%~3
 set userfile=%~4
+set userReadOnlyfile=%~5
 set dbuser="IIS AppPool\DefaultAppPool"
+set dbMonitorUser="NT AUTHORITY\NETWORK SERVICE"
 
 call :initialize %~1 %~2
 call :create_database
@@ -33,10 +35,13 @@ goto :eof
 del /F/Q %databasename%.tmp %databasename%.sql
 echo USE [%databasename%] > %databasename%.tmp
 type %databasename%.tmp > %databasename%.sql & type "%schemafile%" >> %databasename%.sql
-sqlcmd -S "%server%" %credentials% -Q "CREATE DATABASE [%databasename%]"
-sqlcmd -S "%server%" %credentials% -i %databasename%.sql -v DBName = %databasename%
+sqlcmd -S "%server%" %credentials% -Q "CREATE DATABASE [%databasename%]" -o ".\log\createDatabase.log"
+sqlcmd -S "%server%" %credentials% -i %databasename%.sql -v DBName = %databasename% -o ".\log\databaseSchema.log"
 @if ERRORLEVEL 1 goto :error
-sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser% -v DBName = %databasename%
+sqlcmd -S "%server%" %credentials% -i "%userfile%" -v DBUSER = %dbuser% -v DBName = %databasename% -o ".\log\createDbUsers.log"
+@if "%userReadOnlyfile%" EQU "" goto :eof
+sqlcmd -S "%server%" %credentials% -i "%userReadOnlyFile%" -v DBUSER = %dbMonitorUser% -v DBName = %databasename% -o ".\log\createDbUsers.log"
+
 @if ERRORLEVEL 1 goto :error
 @echo off
 goto :eof
