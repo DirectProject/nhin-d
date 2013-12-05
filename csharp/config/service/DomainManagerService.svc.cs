@@ -192,6 +192,19 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public Address[] GetAddressesOrDomain(string[] emailAddresses, EntityStatus? status)
+        {
+            try
+            {
+                return Store.Addresses.Get(emailAddresses, true, status);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetAddressesOrDomain", ex);
+            }
+        }
+        
+
         public Address[] GetAddressesByID(long[] addressIDs, EntityStatus? status)
         {
             try

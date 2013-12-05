@@ -337,15 +337,18 @@ namespace Health.Direct.Config.Store.Tests
 
 
         /// <summary>
-        ///A test for where any email address is enabled when the domain is enabled and the AppSetting of EnabledAllDomainAddresses is set to true
+        /// Test the ability to validate an address based on the address or domain existing
         ///</summary>
         [Fact]
-        public void Get_EnabledAllDomainAddressesTest()
+        public void Get_AddressOrDomainTest()
         {              
             InitAddressRecords();
             
             DomainManager dMgr = new DomainManager(CreateConfigStore());
             Domain domain = new Domain("address1.domain1.com");
+            domain.Status = EntityStatus.New;
+            dMgr.Add(domain);
+            domain = new Domain("address2.domain2.com");
             domain.Status = EntityStatus.Enabled;
             dMgr.Add(domain);
             
@@ -357,21 +360,74 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(0, actual.Count());
 
             //
-            // Now enabled all domain addresses
+            // Now search with domainSearchEnabled = true
             //
-            ConfigurationManager.AppSettings["EnabledAllDomainAddresses"] = "true";
-            mgr = CreateManager();
+            actual = mgr.Get(emailAddresses, true, EntityStatus.Enabled);
+            Assert.Equal(0, actual.Count());
 
-            actual = mgr.Get(emailAddresses, EntityStatus.New);
+            actual = mgr.Get(emailAddresses, true, EntityStatus.New);
             Assert.Equal(emailAddresses.Length, actual.Count());
+
 
             for (int t = 0; t < actual.Count(); t++)
             {
                 Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
-                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+                Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
+            }
+
+            emailAddresses = new[] { "NewGuy@address2.domain2.com", "AnotherNewGuy@address2.domain2.com" };
+            actual = mgr.Get(emailAddresses, true, EntityStatus.Enabled);
+            Assert.Equal(emailAddresses.Length, actual.Count());
+
+            //
+            // domainSearchEnabled and not status.
+            //
+            actual = mgr.Get(emailAddresses, true);
+            Assert.Equal(emailAddresses.Length, actual.Count());
+        }
+
+
+        /// <summary>
+        /// Test the ability to validate an address based on the address and domain existing
+        ///</summary>
+        [Fact]
+        public void Get_AddressAndDomainTest()
+        {
+            InitAddressRecords();
+            DomainManager dMgr = new DomainManager(CreateConfigStore());
+            Domain domain = new Domain("address1.domain1.com");
+            domain.Status = EntityStatus.New;
+            dMgr.Add(domain);
+
+            //
+            // test@address1.domain10.com aready exists
+            //
+
+            AddressManager mgr = CreateManager();
+
+            string[] emailAddresses = new[] { "NewGuy@domain1.test.com", "AnotherNewGuy@address1.domain1.com", "test@address1.domain10.com" };
+
+            IEnumerable<Address> actual = mgr.Get(emailAddresses, EntityStatus.New);
+            Assert.Equal(1, actual.Count());
+
+            //
+            // Now search with domainSearchEnabled = true
+            //
+            actual = mgr.Get(emailAddresses, true, EntityStatus.Enabled);
+            Assert.Equal(0, actual.Count());
+
+            actual = mgr.Get(emailAddresses, true, EntityStatus.New);
+            Assert.Equal(emailAddresses.Length, actual.Count());
+
+
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
+                Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
             }
 
         }
+
 
         /// <summary>
         ///A test for Get

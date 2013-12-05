@@ -29,12 +29,10 @@ namespace Health.Direct.Config.Store
     public class AddressManager : IEnumerable<Address>
     {
         readonly ConfigStore m_store;
-        readonly bool m_enabledAllDomainAddresses;
 
         internal AddressManager(ConfigStore store)
         {
             m_store = store;
-            m_enabledAllDomainAddresses = Convert.ToBoolean(ConfigurationManager.AppSettings["EnabledAllDomainAddresses"]) ;
         }
         
         internal ConfigStore Store
@@ -281,7 +279,12 @@ namespace Health.Direct.Config.Store
 
         public Address[] Get(string[] emailAddresses)
         {
-            return this.Get(emailAddresses, null);
+            return this.Get(emailAddresses, false, null);
+        }
+
+        public Address[] Get(string[] emailAddresses, bool domainSearchEnabled)
+        {
+            return this.Get(emailAddresses, domainSearchEnabled, null);
         }
 
         public IEnumerable<Address> Get(ConfigDatabase db, string[] emailAddresses)
@@ -291,10 +294,15 @@ namespace Health.Direct.Config.Store
 
         public Address[] Get(string[] emailAddresses, EntityStatus? status)
         {
+            return Get(emailAddresses, false, status);
+        }
+
+        public Address[] Get(string[] emailAddresses, bool domainSearchEnabled, EntityStatus? status)
+        {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 Address[] addresses = this.Get(db, emailAddresses, status).ToArray();
-                if (m_enabledAllDomainAddresses)
+                if (domainSearchEnabled)
                 {
                     List<Address> addressList = new List<Address>();
                     foreach (var emailAddress in emailAddresses)
@@ -306,7 +314,7 @@ namespace Health.Direct.Config.Store
                             addressList.Add(existingAddress);
                             continue;
                         }
-                        AutoMapDomains(enclosureEmailAddress, addressList);
+                        AutoMapDomains(enclosureEmailAddress, addressList, status);
                     }
                     return addressList.ToArray();
                 }
@@ -315,13 +323,16 @@ namespace Health.Direct.Config.Store
         }
 
 
-        private void AutoMapDomains(string enclosureEmailAddress, List<Address> addressList)
+        private void AutoMapDomains(string enclosureEmailAddress, List<Address> addressList, EntityStatus? status)
         {
             MailAddress mailAddress = new MailAddress(enclosureEmailAddress);
             Domain domain = Store.Domains.Get(mailAddress.Host);
+            if (domain == null || 
+                (status.HasValue && domain.Status != status)
+                ) return;
             var address = new Address(domain.ID, mailAddress);
             address.Type = "SMTP";
-            address.Status = EntityStatus.Enabled;
+            address.Status = domain.Status;
             addressList.Add(address);
         }
 
