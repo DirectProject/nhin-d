@@ -827,7 +827,7 @@ namespace Health.Direct.Config.Store.Tests
             {
                 //----------------------------------------------------------------------------------------------------
                 //---create new address entry with the domain id (kp.key) and the address 
-                mgr.Add(db, new Address(kp.Key, kp.Value.Value, BuildEmailAddressDisplayName(kp.Key, kp.Value.Key)));
+                mgr.Add(db, new Address(kp.Key, kp.Value.Value, BuildEmailAddressDisplayName(kp.Key, kp.Value.Key)) { Type = "SMTP" });
             }
 
             //----------------------------------------------------------------------------------------------------
