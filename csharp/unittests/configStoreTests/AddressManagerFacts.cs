@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-
+using System.Net.Mail;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
@@ -343,7 +343,8 @@ namespace Health.Direct.Config.Store.Tests
         public void Get_AddressOrDomainTest()
         {              
             InitAddressRecords();
-            
+            string addressType = "SMTP";
+
             DomainManager dMgr = new DomainManager(CreateConfigStore());
             Domain domain = new Domain("address1.domain1.com");
             domain.Status = EntityStatus.New;
@@ -373,6 +374,7 @@ namespace Health.Direct.Config.Store.Tests
             {
                 Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
 
             emailAddresses = new[] { "NewGuy@address2.domain2.com", "AnotherNewGuy@address2.domain2.com" };
@@ -380,10 +382,16 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(emailAddresses.Length, actual.Count());
 
             //
-            // domainSearchEnabled and not status.
+            // domainSearchEnabled and no status.
             //
             actual = mgr.Get(emailAddresses, true);
             Assert.Equal(emailAddresses.Length, actual.Count());
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
+                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
+            }
         }
 
 
@@ -394,6 +402,8 @@ namespace Health.Direct.Config.Store.Tests
         public void Get_AddressAndDomainTest()
         {
             InitAddressRecords();
+            string addressType = "SMTP";
+
             DomainManager dMgr = new DomainManager(CreateConfigStore());
             Domain domain = new Domain("address1.domain1.com");
             domain.Status = EntityStatus.New;
@@ -405,7 +415,7 @@ namespace Health.Direct.Config.Store.Tests
 
             AddressManager mgr = CreateManager();
 
-            string[] emailAddresses = new[] { "NewGuy@domain1.test.com", "AnotherNewGuy@address1.domain1.com", "test@address1.domain10.com" };
+            string[] emailAddresses = new[] { "NewGuy@Domain1.test.com", "AnotherNewGuy@address1.domain1.com", "test@Address1.domain10.com" };
 
             IEnumerable<Address> actual = mgr.Get(emailAddresses, EntityStatus.New);
             Assert.Equal(1, actual.Count());
@@ -422,9 +432,93 @@ namespace Health.Direct.Config.Store.Tests
 
             for (int t = 0; t < actual.Count(); t++)
             {
-                Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
+                Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
+
+        }
+
+
+        /// <summary>
+        /// Test the ability to validate an address based on the address and domain existing
+        ///</summary>
+        [Fact]
+        public void Get_RoutedAddress()
+        {
+            InitAddressRecords();
+            DomainManager dMgr = new DomainManager(CreateConfigStore());
+            Domain domain = new Domain("address1.domain1.com");
+            domain.Status = EntityStatus.Enabled;
+            dMgr.Add(domain);
+
+            string addressType = "Undeliverable";
+            AddressManager aMgr = new AddressManager(CreateConfigStore());
+            MailAddress address = new MailAddress("badinbox1@address1.domain1.com");
+            aMgr.Add(address, EntityStatus.Enabled, addressType);
+            //
+            // test@address1.domain10.com aready exists
+            //
+
+            AddressManager mgr = CreateManager();
+
+            string[] emailAddresses = new[] { "BadInbox1@address1.domain1.com" };
+
+            IEnumerable<Address> actual = mgr.Get(emailAddresses, true, EntityStatus.Enabled);
+            Assert.Equal(1, actual.Count());
+
+
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
+                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
+            }
+
+
+
+
+
+            actual = mgr.Get(emailAddresses, EntityStatus.Enabled);
+            Assert.Equal(1, actual.Count());
+
+
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
+                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
+            }
+
+
+
+
+            actual = mgr.Get(emailAddresses, true);
+            Assert.Equal(1, actual.Count());
+
+
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
+                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
+            }
+
+
+
+
+            actual = mgr.Get(emailAddresses);
+            Assert.Equal(1, actual.Count());
+
+
+            for (int t = 0; t < actual.Count(); t++)
+            {
+                Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
+                Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
+                Assert.Equal(addressType, actual.ToArray()[t].Type);
+            }
+
+
 
         }
 

@@ -308,7 +308,7 @@ namespace Health.Direct.Config.Store
                     foreach (var emailAddress in emailAddresses)
                     {
                         string enclosureEmailAddress = emailAddress;
-                        Address existingAddress = addresses.SingleOrDefault(a => a.EmailAddress == enclosureEmailAddress);
+                        Address existingAddress = addresses.SingleOrDefault(a => a.EmailAddress.Equals(enclosureEmailAddress, StringComparison.OrdinalIgnoreCase));
                         if (existingAddress != null)
                         {
                             addressList.Add(existingAddress);
