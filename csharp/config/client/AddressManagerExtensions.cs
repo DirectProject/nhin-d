@@ -50,7 +50,36 @@ namespace Health.Direct.Config.Client
 
             client.UpdateAddresses(new Address[] { address });
         }
+
+        public static Address GetAddressesOrDomain(this AddressManagerClient client, MailAddress address, EntityStatus? status)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException("address");
+            }
+
+            return client.GetAddressesOrDomain(address.Address, status);
+        }
+
+
+        public static Address GetAddressesOrDomain(this AddressManagerClient client, string emailAddress, EntityStatus? status)
+        {
+            if (string.IsNullOrEmpty(emailAddress))
+            {
+                throw new ArgumentException("value was null or empty", "emailAddress");
+            }
+
+            Address[] addresses = client.GetAddressesOrDomain(new string[] { emailAddress }, status);
+            if (addresses.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            return addresses[0];
+        }
         
+
+
         public static Address GetAddress(this AddressManagerClient client, MailAddress address)
         {
             return client.GetAddress(address.Address, null);

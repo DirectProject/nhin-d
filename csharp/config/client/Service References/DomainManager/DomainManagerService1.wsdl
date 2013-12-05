@@ -45,6 +45,15 @@
   <wsdl:message name="IAddressManager_GetAddresses_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesOrDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesOrDomain" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesOrDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesOrDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesOrDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="IAddressManager_GetAddressesByID_InputMessage">
     <wsdl:part name="parameters" element="tns:GetAddressesByID" />
   </wsdl:message>
@@ -326,6 +335,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddresses" message="tns:IAddressManager_GetAddresses_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesResponse" message="tns:IAddressManager_GetAddresses_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_GetAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddressesOrDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomain" message="tns:IAddressManager_GetAddressesOrDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomainResponse" message="tns:IAddressManager_GetAddressesOrDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_GetAddressesOrDomain_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetAddressesByID">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByID" message="tns:IAddressManager_GetAddressesByID_InputMessage" />

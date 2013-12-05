@@ -89,6 +89,8 @@ Name: "{app}\Log"
 ;example:
 ;"C:\Program Files (x86)\inno setup 5\iscc.exe"  .\Direct.iss /DConfiguration=Release
 Source: "..\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+Source: "..\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+
 Source: "..\bin\{#Configuration}\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\{#Configuration}\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway;                            
 Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config,DirectDnsResponderSvc.exe.config"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
@@ -229,6 +231,11 @@ end;
 function IsX86: Boolean;
 begin
   Result := (ProcessorArchitecture = paX86);
+end;
+
+function IsDebug: Boolean;
+begin
+	Result := ('{#Configuration}' = 'Debug');
 end;
 
 //included script to test for VC redistributable

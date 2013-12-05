@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Xml;
 using System.Xml.Serialization;
 using System.ServiceModel;
 using Health.Direct.Config.Client.CertificateService;
@@ -140,6 +141,28 @@ namespace Health.Direct.Config.Client
             {
                 this.EnsureBinding();
                 return m_binding;
+            }
+        }
+
+        /// <summary>
+        /// Optional settings
+        /// </summary>
+        [XmlAnyElement]
+        public XmlNode Settings
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Are optional settings specified?
+        /// </summary>
+        [XmlIgnore]
+        public bool HasSettings
+        {
+            get
+            {
+                return (this.Settings != null);
             }
         }
 
