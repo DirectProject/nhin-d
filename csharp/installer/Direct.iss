@@ -89,23 +89,25 @@ Name: "{app}\Log"
 ;example:
 ;"C:\Program Files (x86)\inno setup 5\iscc.exe"  .\Direct.iss /DConfiguration=Release
 Source: "..\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+Source: "..\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+
 Source: "..\bin\{#Configuration}\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
 Source: "..\bin\{#Configuration}\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway;                            
 Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config,DirectDnsResponderSvc.exe.config"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
 Source: "..\bin\{#Configuration}\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
-Source: "..\bin\{#Configuration}\ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
+Source: "ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
 Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
 Source: "..\bin\{#Configuration}\DirectDnsResponderSvc.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnswebservice developergateway;
            
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
-Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: onlyifdoesntexist; Components: configwebservice developergateway; 
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice developergateway; 
 
 Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
 Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
-Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: onlyifdoesntexist; Components: dnswebservice developergateway; 
 Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice developergateway; 
 
 Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway;
@@ -143,7 +145,8 @@ Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
-                        
+Source: "createReadOnlyUser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
+
 Source: "toolutil\install.tools\bin\{#Configuration}\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
 
                                  
@@ -167,10 +170,10 @@ Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}"
 
 
 [Run]
-Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway; Check: not IsVCRT
+Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway; 
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
-Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
+Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"" ""{app}\SQL\createReadOnlyuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
 Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver and not developergateway;
@@ -228,6 +231,11 @@ end;
 function IsX86: Boolean;
 begin
   Result := (ProcessorArchitecture = paX86);
+end;
+
+function IsDebug: Boolean;
+begin
+	Result := ('{#Configuration}' = 'Debug');
 end;
 
 //included script to test for VC redistributable
@@ -1245,6 +1253,7 @@ procedure ConfigConsolePageOneOnActivate(Sender: TWizardPage);
 var
   DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText, BundleText: TNewEdit;
   configFile : String;
+  bundleString : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
 
@@ -1267,7 +1276,14 @@ begin
   MdnMonitorText.Text := GetConfigSetting(configFile, '/ConsoleSettings/MdnMonitor/Url');
 
   BundleText := TNewEdit(Sender.FindComponent('BundleText'));
-  BundleText.Text := GetConfigSetting(configFile, '/ConsoleSettings/BundleManager/Url');
+  bundleString  := GetConfigSetting(configFile, '/ConsoleSettings/BundleManager/Url');
+ 
+  if (length(bundleString) = 0) then
+  begin
+    bundleString := 'http://localhost/ConfigService/CertificateService.svc/Bundles';
+  end
+  BundleText.Text := bundleString;
+
 end;
 
 

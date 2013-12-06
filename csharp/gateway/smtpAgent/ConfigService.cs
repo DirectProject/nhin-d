@@ -16,6 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.Diagnostics;
 using System.Linq;
+using System.Xml;
+using System.Xml.Serialization;
 using Health.Direct.Agent;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
@@ -52,6 +54,10 @@ namespace Health.Direct.SmtpAgent
 
             using (AddressManagerClient client = CreateAddressManagerClient())
             {
+                if (AddressDomainSearchEnabled(m_settings.AddressManager))
+                {
+                    return client.GetAddressesOrDomain(address, EntityStatus.Enabled);
+                }
                 return client.GetAddress(address, EntityStatus.Enabled);
             }
         }
@@ -67,9 +73,15 @@ namespace Health.Direct.SmtpAgent
 
             using (AddressManagerClient client = CreateAddressManagerClient())
             {
+                if (AddressDomainSearchEnabled(m_settings.AddressManager))
+                {
+                    return client.GetAddressesOrDomain(emailAddresses, EntityStatus.Enabled);
+                }
                 return client.GetAddresses(emailAddresses, EntityStatus.Enabled);
             }
         }
+
+
 
         internal Address[] GetAddresses(long[] addressIDs)
         {
@@ -84,6 +96,20 @@ namespace Health.Direct.SmtpAgent
         private AddressManagerClient CreateAddressManagerClient()
         {
             return m_settings.AddressManager.CreateAddressManagerClient();
+        }
+
+        private bool AddressDomainSearchEnabled(ClientSettings addressManager)
+        {
+            if (addressManager.HasSettings)
+            {
+                using (XmlNodeReader reader = new XmlNodeReader(addressManager.Settings))
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(AddressManagerSettings), new XmlRootAttribute(addressManager.Settings.LocalName));
+                    AddressManagerSettings addressManagerSettings = (AddressManagerSettings)serializer.Deserialize(reader);
+                    return addressManagerSettings.EnableDomainSearch;
+                }
+            }
+            return false;
         }
     }
 }

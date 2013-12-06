@@ -13,6 +13,9 @@
   </DomainManager>
   <AddressManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
+    <Settings>
+      <EnableDomainSearch>true</EnableDomainSearch>
+    </Settings>
   </AddressManager>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>

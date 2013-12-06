@@ -117,6 +117,10 @@ namespace Health.Direct.Config.Client.DomainManager {
             return base.Channel.GetAddresses(emailAddresses, status);
         }
         
+        public Health.Direct.Config.Store.Address[] GetAddressesOrDomain(string[] emailAddresses, System.Nullable<Health.Direct.Config.Store.EntityStatus> status) {
+            return base.Channel.GetAddressesOrDomain(emailAddresses, status);
+        }
+        
         public Health.Direct.Config.Store.Address[] GetAddressesByID(long[] addressIDs, System.Nullable<Health.Direct.Config.Store.EntityStatus> status) {
             return base.Channel.GetAddressesByID(addressIDs, status);
         }

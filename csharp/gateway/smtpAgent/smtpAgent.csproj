@@ -98,6 +98,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AddressManagerSettings.cs" />
     <Compile Include="AgentDiagnostics.cs" />
     <Compile Include="AgentSetup.cs" />
     <Compile Include="CDOSmtpMessage.cs" />

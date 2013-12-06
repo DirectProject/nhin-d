@@ -40,6 +40,10 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        Address[] GetAddressesOrDomain(string[] emailAddresses, EntityStatus? status);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         Address[] GetAddressesByID(long[] addressIDs, EntityStatus? status);
 
         [OperationContract]
