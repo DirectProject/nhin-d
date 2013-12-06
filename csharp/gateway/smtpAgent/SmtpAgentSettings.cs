@@ -30,6 +30,7 @@ namespace Health.Direct.SmtpAgent
     public class SmtpAgentSettings : AgentSettings
     {
         public const int DefaultMaxDomainRecipients = 10;
+        public const int DefaultServicePointConnectionLimit = 100;
 
         RawMessageSettings m_rawMessageSettings;
         ProcessIncomingSettings m_incomingSettings;
@@ -39,8 +40,20 @@ namespace Health.Direct.SmtpAgent
         NotificationSettings m_notificationSettings;
         Route[] m_incomingRoutes;
         int m_maxDomainRecipients = DefaultMaxDomainRecipients;
-
+        int m_servicePointConnectionLimit = DefaultServicePointConnectionLimit;
         
+        /// <summary>
+        /// Max number of .NET connections opened to the middle tier.
+        /// </summary>
+        [XmlElement("ServicePointConnectionLimit")]
+        public int ServicePointConnectionLimit
+        {
+            get { return m_servicePointConnectionLimit; }
+            set { m_servicePointConnectionLimit = value; }
+        }
+
+
+
         //--------------------------------------------------------
         //
         // Log Settings
