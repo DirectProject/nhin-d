@@ -164,6 +164,7 @@ namespace Health.Direct.SmtpAgent
                     //
                     this.InitAgent();
                     this.SubscribeToAgentEvents();
+                    this.ConfigureServicePoints();
                 }
                 catch (Exception ex)
                 {
@@ -268,7 +269,14 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        
+        void ConfigureServicePoints()
+        {
+            if (m_settings.ServicePointConnectionLimit > 0)
+            {
+                System.Net.ServicePointManager.DefaultConnectionLimit = m_settings.ServicePointConnectionLimit;
+            }
+        }
+
 
         
         void SubscribeToResolverEvents(ICertificateResolver resolver)
