@@ -35,6 +35,12 @@ namespace Health.Direct.Config.Client.DomainManager {
             "tFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.Address[] GetAddresses(string[] emailAddresses, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomain", ReplyAction="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomainRespons" +
+            "e")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomainConfigS" +
+            "toreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.Address[] GetAddressesOrDomain(string[] emailAddresses, System.Nullable<Health.Direct.Config.Store.EntityStatus> status);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByID", ReplyAction="urn:directproject:config/store/082010/IAddressManager/GetAddressesByIDResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByIDConfigStore" +
             "FaultFault", Name="ConfigStoreFault")]
