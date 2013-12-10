@@ -342,8 +342,6 @@ namespace Health.Direct.ResolverPlugins.Tests
 
 
         /// <summary>
-        /// Works on both DnsResolver and Modphase3...
-        /// 
         /// Target Certificate: 
         ///A valid address-bound certificate that is larger than 512 bytes in a DNS CERT record for the Direct address.
         /// </summary>
