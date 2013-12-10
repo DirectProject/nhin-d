@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
+  <xs:element name="AddAddress">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="address" nillable="true" type="tns:Address" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Address">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="DisplayName" nillable="true" type="xs:string" />
+      <xs:element name="DomainID" type="xs:long" />
+      <xs:element name="EmailAddress" nillable="true" type="xs:string" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q1:EntityStatus" />
+      <xs:element minOccurs="0" name="Type" nillable="true" type="xs:string" />
+      <xs:element name="UpdateDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Address" nillable="true" type="tns:Address" />
+  <xs:element name="AddAddressResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddAddressResult" nillable="true" type="tns:Address" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ConfigStoreFault">
+    <xs:sequence>
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q2:ConfigStoreError" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="AddAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="addresses" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfAddress">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Address" nillable="true" type="tns:Address" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfAddress" nillable="true" type="tns:ArrayOfAddress" />
+  <xs:element name="AddAddressesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="address" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateAddressesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="emailAddresses" nillable="true" type="q3:ArrayOfstring" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q4:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAddressesResult" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressesOrDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="emailAddresses" nillable="true" type="q5:ArrayOfstring" />
+        <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q6:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressesOrDomainResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAddressesOrDomainResult" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressesByID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q7="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="addressIDs" nillable="true" type="q7:ArrayOflong" />
+        <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q8:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressesByIDResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAddressesByIDResult" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q9="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="emailAddresses" nillable="true" type="q9:ArrayOfstring" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveAddressesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDomainAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainID" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDomainAddressesResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetDomainAddressesStatus">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainID" type="xs:long" />
+        <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" type="q10:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetDomainAddressesStatusResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressCount">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAddressCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAddressCountResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDomainAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="lastAddress" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDomainAddressesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateDomainAddressesResult" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateAddresses">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastAddress" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateAddressesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateAddressesResult" nillable="true" type="tns:ArrayOfAddress" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domain" nillable="true" type="tns:Domain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Domain">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="AgentName" nillable="true" type="xs:string" />
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Name" nillable="true" type="xs:string" />
+      <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q11:EntityStatus" />
+      <xs:element name="UpdateDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Domain" nillable="true" type="tns:Domain" />
+  <xs:element name="AddDomainResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddDomainResult" nillable="true" type="tns:Domain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domain" nillable="true" type="tns:Domain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDomainResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="id" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomainResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDomainResult" nillable="true" type="tns:Domain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomainCount">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomainCountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDomainCountResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomains">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="domainNames" nillable="true" type="q12:ArrayOfstring" />
+        <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q13:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDomainsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDomainsResult" nillable="true" type="tns:ArrayOfDomain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfDomain">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Domain" nillable="true" type="tns:Domain" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDomain" nillable="true" type="tns:ArrayOfDomain" />
+  <xs:element name="GetAgentDomains">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="agentName" nillable="true" type="xs:string" />
+        <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="status" nillable="true" type="q14:EntityStatus" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetAgentDomainsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetAgentDomainsResult" nillable="true" type="tns:ArrayOfDomain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDomainResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDomains">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastDomainName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDomainsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateDomainsResult" nillable="true" type="tns:ArrayOfDomain" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecords" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfDnsRecord">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="DnsRecord" nillable="true" type="tns:DnsRecord" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfDnsRecord" nillable="true" type="tns:ArrayOfDnsRecord" />
+  <xs:complexType name="DnsRecord">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="DomainName" nillable="true" type="xs:string" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
+      <xs:element name="RecordData" nillable="true" type="xs:base64Binary" />
+      <xs:element name="TypeID" type="xs:int" />
+      <xs:element name="UpdateDate" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="DnsRecord" nillable="true" type="tns:DnsRecord" />
+  <xs:element name="AddDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="record" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddDnsRecordResult" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Count">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="recordType" nillable="true" type="q15:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="CountResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="CountResult" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastRecordID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q16:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetLastDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetLastDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="recordID" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDnsRecordResult" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q17="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="recordIDs" nillable="true" type="q17:ArrayOflong" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMatchingDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMatchingDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMatchingDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMatchingDnsRecordsByType">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+        <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="typeID" type="q18:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMatchingDnsRecordsByTypeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetMatchingDnsRecordsByTypeResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecord" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecordByID">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="recordID" type="xs:long" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemoveDnsRecordByIDResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecord">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecord" nillable="true" type="tns:DnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecordResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="dnsRecords" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="UpdateDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecords">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecordsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateDnsRecordsResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecordsByType">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+        <xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" minOccurs="0" name="type" type="q19:DnsStandard.RecordType" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateDnsRecordsByTypeResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateDnsRecordsByTypeResult" nillable="true" type="tns:ArrayOfDnsRecord" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

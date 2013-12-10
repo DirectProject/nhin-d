@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="urn:directproject:config/store/082010" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="urn:directproject:config/store/082010/Imports">
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd0" namespace="urn:directproject:config/store/082010" />
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IAddressManager_AddAddress_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAddress" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddress_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddress_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_AddAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_UpdateAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_UpdateAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_UpdateAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesOrDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesOrDomain" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesOrDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesOrDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesOrDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesByID" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressesByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressesByID_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_RemoveAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_RemoveAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_RemoveAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_RemoveDomainAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDomainAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_RemoveDomainAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDomainAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_RemoveDomainAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_SetDomainAddressesStatus_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetDomainAddressesStatus" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_SetDomainAddressesStatus_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetDomainAddressesStatusResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_SetDomainAddressesStatus_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressCount" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAddressCountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_GetAddressCount_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_EnumerateDomainAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDomainAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_EnumerateDomainAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDomainAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_EnumerateDomainAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_EnumerateAddresses_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateAddresses" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_EnumerateAddresses_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateAddressesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IAddressManager_EnumerateAddresses_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_AddDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDomain" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_AddDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_AddDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_UpdateDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDomain" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_UpdateDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_UpdateDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomain" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomainCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomainCount" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomainCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomainCountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomainCount_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomains_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomains" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomains_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDomainsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetDomains_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetAgentDomains_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAgentDomains" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetAgentDomains_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAgentDomainsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_GetAgentDomains_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_RemoveDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDomain" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_RemoveDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_RemoveDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_EnumerateDomains_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDomains" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_EnumerateDomains_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDomainsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDomainManager_EnumerateDomains_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_AddDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_Count_InputMessage">
+    <wsdl:part name="parameters" element="tns:Count" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_Count_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CountResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_Count_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetLastDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLastDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetLastDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLastDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetLastDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetMatchingDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMatchingDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetMatchingDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMatchingDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetMatchingDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetMatchingDnsRecordsByType_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMatchingDnsRecordsByType" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetMatchingDnsRecordsByType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMatchingDnsRecordsByTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_GetMatchingDnsRecordsByType_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecordByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecordByID" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecordByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemoveDnsRecordByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_RemoveDnsRecordByID_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecord_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecord" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecord_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecord_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_UpdateDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecords" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecords_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecordsByType" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateDnsRecordsByTypeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:portType name="IAddressManager">
+    <wsdl:operation name="AddAddress">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddress" message="tns:IAddressManager_AddAddress_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddressResponse" message="tns:IAddressManager_AddAddress_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddressConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_AddAddress_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddresses" message="tns:IAddressManager_AddAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddressesResponse" message="tns:IAddressManager_AddAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_AddAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/UpdateAddresses" message="tns:IAddressManager_UpdateAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/UpdateAddressesResponse" message="tns:IAddressManager_UpdateAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/UpdateAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_UpdateAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddresses" message="tns:IAddressManager_GetAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesResponse" message="tns:IAddressManager_GetAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_GetAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddressesOrDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomain" message="tns:IAddressManager_GetAddressesOrDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomainResponse" message="tns:IAddressManager_GetAddressesOrDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesOrDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_GetAddressesOrDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddressesByID">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByID" message="tns:IAddressManager_GetAddressesByID_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByIDResponse" message="tns:IAddressManager_GetAddressesByID_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressesByIDConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_GetAddressesByID_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/RemoveAddresses" message="tns:IAddressManager_RemoveAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/RemoveAddressesResponse" message="tns:IAddressManager_RemoveAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/RemoveAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_RemoveAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDomainAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddresses" message="tns:IAddressManager_RemoveDomainAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddressesResponse" message="tns:IAddressManager_RemoveDomainAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/RemoveDomainAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_RemoveDomainAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetDomainAddressesStatus">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatus" message="tns:IAddressManager_SetDomainAddressesStatus_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatusResponse" message="tns:IAddressManager_SetDomainAddressesStatus_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/SetDomainAddressesStatusConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_SetDomainAddressesStatus_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAddressCount">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressCount" message="tns:IAddressManager_GetAddressCount_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressCountResponse" message="tns:IAddressManager_GetAddressCount_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/GetAddressCountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_GetAddressCount_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateDomainAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddresses" message="tns:IAddressManager_EnumerateDomainAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddressesResponse" message="tns:IAddressManager_EnumerateDomainAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/EnumerateDomainAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_EnumerateDomainAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateAddresses">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/EnumerateAddresses" message="tns:IAddressManager_EnumerateAddresses_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IAddressManager/EnumerateAddressesResponse" message="tns:IAddressManager_EnumerateAddresses_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IAddressManager/EnumerateAddressesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IAddressManager_EnumerateAddresses_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IDomainManager">
+    <wsdl:operation name="AddDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/AddDomain" message="tns:IDomainManager_AddDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/AddDomainResponse" message="tns:IDomainManager_AddDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/AddDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_AddDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/UpdateDomain" message="tns:IDomainManager_UpdateDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/UpdateDomainResponse" message="tns:IDomainManager_UpdateDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/UpdateDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_UpdateDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomain" message="tns:IDomainManager_GetDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainResponse" message="tns:IDomainManager_GetDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDomainCount">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainCount" message="tns:IDomainManager_GetDomainCount_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainCountResponse" message="tns:IDomainManager_GetDomainCount_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainCountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomainCount_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDomains">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomains" message="tns:IDomainManager_GetDomains_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainsResponse" message="tns:IDomainManager_GetDomains_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetDomains_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAgentDomains">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetAgentDomains" message="tns:IDomainManager_GetAgentDomains_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetAgentDomainsResponse" message="tns:IDomainManager_GetAgentDomains_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/GetAgentDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_GetAgentDomains_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/RemoveDomain" message="tns:IDomainManager_RemoveDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/RemoveDomainResponse" message="tns:IDomainManager_RemoveDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/RemoveDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_RemoveDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateDomains">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDomainManager/EnumerateDomains" message="tns:IDomainManager_EnumerateDomains_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDomainManager/EnumerateDomainsResponse" message="tns:IDomainManager_EnumerateDomains_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDomainManager/EnumerateDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDomainManager_EnumerateDomains_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="IDnsRecordManager">
+    <wsdl:operation name="AddDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecords" message="tns:IDnsRecordManager_AddDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordsResponse" message="tns:IDnsRecordManager_AddDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_AddDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddDnsRecord">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecord" message="tns:IDnsRecordManager_AddDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordResponse" message="tns:IDnsRecordManager_AddDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/AddDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_AddDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Count">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/Count" message="tns:IDnsRecordManager_Count_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/CountResponse" message="tns:IDnsRecordManager_Count_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/CountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_Count_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLastDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecords" message="tns:IDnsRecordManager_GetLastDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecordsResponse" message="tns:IDnsRecordManager_GetLastDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetLastDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetLastDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDnsRecord">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecord" message="tns:IDnsRecordManager_GetDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordResponse" message="tns:IDnsRecordManager_GetDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecords" message="tns:IDnsRecordManager_GetDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordsResponse" message="tns:IDnsRecordManager_GetDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMatchingDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecords" message="tns:IDnsRecordManager_GetMatchingDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsResponse" message="tns:IDnsRecordManager_GetMatchingDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetMatchingDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMatchingDnsRecordsByType">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByType" message="tns:IDnsRecordManager_GetMatchingDnsRecordsByType_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByTypeResponse" message="tns:IDnsRecordManager_GetMatchingDnsRecordsByType_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/GetMatchingDnsRecordsByTypeConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_GetMatchingDnsRecordsByType_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDnsRecord">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecord" message="tns:IDnsRecordManager_RemoveDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordResponse" message="tns:IDnsRecordManager_RemoveDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_RemoveDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemoveDnsRecordByID">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByID" message="tns:IDnsRecordManager_RemoveDnsRecordByID_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByIDResponse" message="tns:IDnsRecordManager_RemoveDnsRecordByID_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/RemoveDnsRecordByIDConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_RemoveDnsRecordByID_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateDnsRecord">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecord" message="tns:IDnsRecordManager_UpdateDnsRecord_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordResponse" message="tns:IDnsRecordManager_UpdateDnsRecord_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_UpdateDnsRecord_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecords" message="tns:IDnsRecordManager_UpdateDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsResponse" message="tns:IDnsRecordManager_UpdateDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/UpdateDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_UpdateDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateDnsRecords">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecords" message="tns:IDnsRecordManager_EnumerateDnsRecords_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsResponse" message="tns:IDnsRecordManager_EnumerateDnsRecords_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_EnumerateDnsRecords_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateDnsRecordsByType">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByType" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByTypeResponse" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByTypeConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
