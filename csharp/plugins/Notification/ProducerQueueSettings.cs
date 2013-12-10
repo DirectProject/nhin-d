@@ -1,10 +1,10 @@
-﻿/* 
- Copyright (c) 2010, Direct Project
+/* 
+ Copyright (c) 2013, Direct Project
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
-  
+    Joseph Shook    jshook@kryptiq.com
+ 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -13,40 +13,36 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System.IO;
-using System.Runtime.InteropServices;
 
-using Health.Direct.Common.Certificates;
-using Health.Direct.SmtpAgent.Config;
 
-namespace Health.Direct.SmtpAgent
+using System.Xml.Serialization;
+using Health.Direct.Config.Client;
+
+namespace Health.Direct.Plugins.Notification
 {
-    /// <summary>
-    /// COM object used by scripting components. Aids in Agent setup
-    /// </summary>
-    [ComVisible(true)]
-    [Guid("A1F86888-959C-49e1-B786-C17465668972")]
-    [ClassInterface(ClassInterfaceType.AutoDispatch)]
-    public class AgentSetup
+    [XmlType("ProducerQueue")]
+    public class ProducerQueueSettings
     {
-        public AgentSetup()
-        {
-        }
-        
-        public void EnsureStandardMachineStores()
-        {
-            SystemX509Store.CreateAll();
-        }
-        
-        public void ValidateConfig(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
-                throw new FileNotFoundException();
-            }
-            
-            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(filePath);
-            settings.Validate();
-        }
+        /// <summary>
+        /// Creates an instance. Normally called through XML deserialization.
+        /// </summary>
+        public ProducerQueueSettings(){}
+
+        /// <summary>
+        /// Using the EnrichManager from config service
+        /// </summary>
+        /// <remarks>
+        /// A custom plugin may choose to talk to a message queue or object database.
+        /// </remarks>
+        [XmlElement("RetryClientSettings")]
+        public ClientSettings RetryClientSettings { get; set; }
+
+        /// <summary>
+        /// Consumers use ResourceBase as a root folder or Uri.
+        /// </summary>
+        /// <remarks>
+        /// A custom plugin may use ResourceBase as a base to an object database or connection string.
+        /// </remarks>
+        public string ResourceBase { get; set; }
     }
 }

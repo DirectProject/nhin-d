@@ -1,9 +1,9 @@
-﻿/* 
- Copyright (c) 2010, Direct Project
+/* 
+ Copyright (c) 2012, Direct Project
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
+    Joe Shook     jshook@kryptiq.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -13,55 +13,57 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System.Xml.Serialization;
-using System.IO;
+using Health.Direct.Agent.Config;
+using Health.Direct.Common.Container;
 
-namespace Health.Direct.SmtpAgent
+namespace Health.Direct.SmtpAgent.Config
 {
-    public class InternalMessageSettings
+    /// <summary>
+    /// Settings object allowing the INotificationProducer to be replaced.
+    /// </summary>
+    public class PluginProducerSettings 
     {
-        bool m_enableRelay = true;
+        /// <summary>
+        /// Create new settings
+        /// </summary>
+        public PluginProducerSettings() { }
 
-        [XmlElement("PickupFolder")]
-        public string PickupFolder
+        /// <summary>
+        /// Resolver Type information
+        /// <see cref="PluginDefinition"/>
+        /// </summary>
+        [XmlElement("Definition")]
+        public PluginDefinition ProducerDefinition
         {
             get;
             set;
         }
 
-        [XmlIgnore]
-        internal bool HasPickupFolder
-        {
-            get
-            {
-                return !(string.IsNullOrEmpty(this.PickupFolder));
-            }
-        }
-
-        [XmlElement("EnableRelay")]
-        public bool EnableRelay
-        {
-            get
-            {
-                return m_enableRelay;
-            }
-            set
-            {
-                m_enableRelay = value;
-            }
-        }
-
+        /// <summary>
+        /// Validate settings
+        /// </summary>
         public virtual void Validate()
         {
-            if (!this.HasPickupFolder)
+            if (this.ProducerDefinition == null)
             {
-                return;
+                throw new AgentConfigException(AgentConfigError.MissingPluginProducerDefinition);
             }
-            
-            if (!Directory.Exists(this.PickupFolder))
+
+            if (!this.ProducerDefinition.HasTypeName)
             {
-                throw new SmtpAgentException(SmtpAgentError.MailPickupFolderDoesNotExist);
-            }
+                throw new AgentConfigException(AgentConfigError.MissingPluginProducerType);
+            }  
+        }
+
+        /// <summary>
+        /// Creates a INotificationProducer from the configured settings
+        /// </summary>
+        /// <returns>The INotificationProducer instance corresponding to the settings.</returns>
+        public virtual INotificationProducer CreateProducer(NotificationSettings settings)
+        {
+            return this.ProducerDefinition.Create<INotificationProducer, NotificationSettings>(settings);
         }
     }
 }

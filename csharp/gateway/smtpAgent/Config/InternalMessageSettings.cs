@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
@@ -13,40 +13,56 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 
-using Health.Direct.Common.Certificates;
-using Health.Direct.SmtpAgent.Config;
-
-namespace Health.Direct.SmtpAgent
+namespace Health.Direct.SmtpAgent.Config
 {
-    /// <summary>
-    /// COM object used by scripting components. Aids in Agent setup
-    /// </summary>
-    [ComVisible(true)]
-    [Guid("A1F86888-959C-49e1-B786-C17465668972")]
-    [ClassInterface(ClassInterfaceType.AutoDispatch)]
-    public class AgentSetup
+    public class InternalMessageSettings
     {
-        public AgentSetup()
+        bool m_enableRelay = true;
+
+        [XmlElement("PickupFolder")]
+        public string PickupFolder
         {
+            get;
+            set;
         }
-        
-        public void EnsureStandardMachineStores()
+
+        [XmlIgnore]
+        internal bool HasPickupFolder
         {
-            SystemX509Store.CreateAll();
-        }
-        
-        public void ValidateConfig(string filePath)
-        {
-            if (!File.Exists(filePath))
+            get
             {
-                throw new FileNotFoundException();
+                return !(string.IsNullOrEmpty(this.PickupFolder));
+            }
+        }
+
+        [XmlElement("EnableRelay")]
+        public bool EnableRelay
+        {
+            get
+            {
+                return m_enableRelay;
+            }
+            set
+            {
+                m_enableRelay = value;
+            }
+        }
+
+        public virtual void Validate()
+        {
+            if (!this.HasPickupFolder)
+            {
+                return;
             }
             
-            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(filePath);
-            settings.Validate();
+            if (!Directory.Exists(this.PickupFolder))
+            {
+                throw new SmtpAgentException(SmtpAgentError.MailPickupFolderDoesNotExist);
+            }
         }
     }
 }
