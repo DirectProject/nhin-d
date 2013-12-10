@@ -27,6 +27,7 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 using Health.Direct.Common.Caching;
+using Health.Direct.ResolverPlugins;
 
 namespace Health.Direct.Tools.Agent
 {
@@ -62,7 +63,7 @@ namespace Health.Direct.Tools.Agent
         + Constants.CRLF + "    ipaddress";            
                         
         /// <summary>
-        /// Resolves certificates for a domain or email address using Dns
+        /// Resolves certificates for a domain or email address using Dns and Ldap
         /// </summary>
         /// <param name="args"></param>
         [Command(Name = "Dns_ResolveCert", Usage = ResolveCertUsage)]
@@ -70,7 +71,40 @@ namespace Health.Direct.Tools.Agent
         {
             string domain = args.GetRequiredValue(0);
             string outputFile = args.GetOptionalValue(1, null);
+            if (ResolveCertInDns(domain, outputFile))
+            {
+                return;
+            }
+            if (ResolveCertInLdap(domain, outputFile))
+            {
+                return;
+            }
+
+            Console.WriteLine("No certs found");
+        }
+
+        /// <summary>
+        /// Resolves certificates for a domain or email address using Ldap
+        /// </summary>
+        /// <param name="args"></param>
+        [Command(Name = "LDAP_ResolveCert", Usage = ResolveCertUsage)]
+        public void ResolveLdapCert(string[] args)
+        {
+            string domain = args.GetRequiredValue(0);
+            string outputFile = args.GetOptionalValue(1, null);
+            
+            if (ResolveCertInLdap(domain, outputFile))
+            {
+                return;
+            }
+
+            Console.WriteLine("No certs found");
+        }
+
+        private bool ResolveCertInDns(string domain, string outputFile)
+        {
             DnsCertResolver resolver = new DnsCertResolver(m_dnsServer, TimeSpan.FromSeconds(5));
+            resolver.Error += resolver_Error;
 
             MailAddress address = null;
             try
@@ -83,31 +117,79 @@ namespace Health.Direct.Tools.Agent
             X509Certificate2Collection certs;
             if (address != null)
             {
-                Console.WriteLine("Resolving mail address {0}", domain);
+                Console.WriteLine("Resolving mail address {0} in DNS", domain);
                 certs = resolver.GetCertificates(address);
             }
             else
             {
                 certs = resolver.GetCertificatesForDomain(domain);
             }
-            
+
             if (certs.IsNullOrEmpty())
             {
-                Console.WriteLine("No certs found");
-                return;
+                return false;
             }
 
-            Console.WriteLine("{0} found", certs.Count);
-            foreach(X509Certificate2 cert in certs)
+            Console.WriteLine("{0} found in DNS", certs.Count);
+            foreach (X509Certificate2 cert in certs)
             {
                 Console.WriteLine(cert.SubjectName.Name);
             }
-            
+
             if (!string.IsNullOrEmpty(outputFile))
             {
                 byte[] bytes = certs.Export(X509ContentType.Cert);
-                File.WriteAllBytes(outputFile, bytes);   
+                File.WriteAllBytes(outputFile, bytes);
             }
+            return true;
+        }
+
+        private bool ResolveCertInLdap(string domain, string outputFile)
+        {
+            LdapCertResolver resolver = new LdapCertResolver(m_dnsServer, TimeSpan.FromSeconds(5));
+            resolver.Error += resolver_Error;
+
+            MailAddress address = null;
+            try
+            {
+                address = new MailAddress(domain);
+            }
+            catch
+            {
+            }
+            X509Certificate2Collection certs;
+            if (address != null)
+            {
+                Console.WriteLine("Resolving mail address {0} in LDAP", domain);
+                certs = resolver.GetCertificates(address);
+            }
+            else
+            {
+                certs = resolver.GetCertificatesForDomain(domain);
+            }
+
+            if (certs.IsNullOrEmpty())
+            {
+                return false;
+            }
+
+            Console.WriteLine("{0} found in LDAP", certs.Count);
+            foreach (X509Certificate2 cert in certs)
+            {
+                Console.WriteLine(cert.SubjectName.Name);
+            }
+
+            if (!string.IsNullOrEmpty(outputFile))
+            {
+                byte[] bytes = certs.Export(X509ContentType.Cert);
+                File.WriteAllBytes(outputFile, bytes);
+            }
+            return true;
+        }
+
+        void resolver_Error(ICertificateResolver arg1, Exception arg2)
+        {
+            Console.WriteLine(arg2.Message);
         }
 
         private const string ResolveCertUsage =
@@ -140,7 +222,7 @@ namespace Health.Direct.Tools.Agent
                 Console.WriteLine(ex.ResponseCode);
             }
         }
-
+        
         const string ResolveUsage =
             "Resolve records for the given domain"
             + Constants.CRLF + "    domain recordType"
