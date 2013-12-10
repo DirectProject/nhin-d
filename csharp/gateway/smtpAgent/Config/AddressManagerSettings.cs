@@ -1,6 +1,6 @@
-﻿using System.Xml.Serialization;
+using System.Xml.Serialization;
 
-namespace Health.Direct.SmtpAgent
+namespace Health.Direct.SmtpAgent.Config
 {
     /// <summary>
     /// Extended settings for AddressManager.

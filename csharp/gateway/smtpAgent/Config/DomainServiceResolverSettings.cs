@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
@@ -20,7 +20,7 @@ using Health.Direct.Common.Caching;
 using Health.Direct.Common.Domains;
 using Health.Direct.Config.Client;
 
-namespace Health.Direct.SmtpAgent
+namespace Health.Direct.SmtpAgent.Config
 {
     /// <summary>
     /// Group of domain tenants

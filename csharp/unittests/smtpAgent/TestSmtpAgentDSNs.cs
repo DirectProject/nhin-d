@@ -28,20 +28,18 @@ using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Store;
 using Health.Direct.SmtpAgent.Config;
+using Moq;
 using Xunit;
 using Xunit.Extensions;
 
-namespace Health.Direct.SmtpAgent.Integration.Tests
+namespace Health.Direct.SmtpAgent.Tests
 {
-    /// <summary>
-    /// run   ...\csharp\setenv.bat
-    /// then  ...\csharp\msb.bat
-    /// then  ...\csharp\gateway\devInstall\install_withservice.bat
-    /// </summary>
-    public class TestSmtpAgentDSNs : SmtpAgentTester
+    
+    public class TestSmtpAgentDSNs : SmtpAgentMocks
     {
         SmtpAgent m_agent;
 
+        
 
         static TestSmtpAgentDSNs()
         {
@@ -68,11 +66,13 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AutoResponse = false; //don't care.  This is MDN specific
             m_agent.Settings.Notifications.AlwaysAck = false; //don't care.  This is MDN specific
             m_agent.Settings.Notifications.AutoDsnFailureCreation = 
-                NotificationSettings.AutoDsnOption.Always.ToString(); 
-            //m_agent.Settings.AddressManager = new ClientSettings();
-            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
-            m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+                NotificationSettings.AutoDsnOption.Always.ToString();
+
+            MdnMemoryStore.Clear();
+            Mock<ClientSettings> mockClientSettings = MockMdnClientSettings();
+            m_agent.Settings.MdnMonitor = mockClientSettings.Object;
+            
+
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -100,11 +100,8 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
-                    queryMdn.Status = MdnStatus.Started;
-                    var mdnManager = CreateConfigStore().Mdns;
-                    var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+                    var mdn = MdnMemoryStore.FirstOrDefault(m => m.MdnIdentifier == queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
-
                 }
             }
             Assert.True(foundDsn);
@@ -153,10 +150,10 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AlwaysAck = false; //don't care.  This is MDN specific
             m_agent.Settings.Notifications.AutoDsnFailureCreation =
                 NotificationSettings.AutoDsnOption.Always.ToString();
-            //m_agent.Settings.AddressManager = new ClientSettings();
-            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
-            m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+
+            MdnMemoryStore.Clear();
+            Mock<ClientSettings> mockClientSettings = MockMdnClientSettings();
+            m_agent.Settings.MdnMonitor = mockClientSettings.Object;
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -192,9 +189,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
-                    queryMdn.Status = MdnStatus.Started;
-                    var mdnManager = CreateConfigStore().Mdns;
-                    var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+                    var mdn = MdnMemoryStore.FirstOrDefault(m => m.MdnIdentifier == queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
 
                 }
@@ -228,7 +223,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             Assert.True(foundDsn);
 
             //Ensure no MDNs where created by the DSN.
-            Assert.True(PickupMessages().Count() == 0);
+            Assert.True(!PickupMessages().Any());
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
@@ -250,10 +245,9 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.Notifications.AutoDsnFailureCreation =
                 NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
-            //m_agent.Settings.AddressManager = new ClientSettings();
-            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
-            m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            MdnMemoryStore.Clear();
+            Mock<ClientSettings> mockClientSettings = MockMdnClientSettings();
+            m_agent.Settings.MdnMonitor = mockClientSettings.Object;
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -281,8 +275,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
-                    var mdnManager = CreateConfigStore().Mdns;
-                    var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+                    var mdn = MdnMemoryStore.FirstOrDefault(m => m.MdnIdentifier == queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
 
                 }
@@ -309,12 +302,10 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             //
             // Do not need to set AutoDsnOption to TimelyAndReliable as it is the default setting.
             //
-            //m_agent.Settings.Notifications.AutoDsnFailureCreation =
-            //    NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
-            //m_agent.Settings.AddressManager = new ClientSettings();
-            //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
-            m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+
+            MdnMemoryStore.Clear();
+            Mock<ClientSettings> mockClientSettings = MockMdnClientSettings();
+            m_agent.Settings.MdnMonitor = mockClientSettings.Object;
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -342,9 +333,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     // DSN messages are not monitored.
                     //
                     var queryMdn = BuildQueryFromDSN(LoadMessage(messageText));
-                    queryMdn.Status = MdnStatus.Started;
-                    var mdnManager = CreateConfigStore().Mdns;
-                    var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
+                    var mdn = MdnMemoryStore.FirstOrDefault(m => m.MdnIdentifier == queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
 
                 }
@@ -368,14 +357,13 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             Assert.True(foundDsn);
 
             //Ensure no MDNs where created by the DSN.
-            Assert.True(PickupMessages().Count() == 0);
+            Assert.True(!PickupMessages().Any());
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
         
         /// <summary>
-        /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute.
-        /// Need more research to figure out this scenario.
+        /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute. 
         /// </summary>
         [Theory]
         [PropertyData("UnDeliverableRecipientMessages")]
@@ -391,12 +379,22 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             //
             // Do not need to set AutoDsnOption to TimelyAndReliable as it is the default setting.
             //
-            //m_agent.Settings.Notifications.AutoDsnFailureCreation =
-            //    NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
-            m_agent.Settings.AddressManager = new ClientSettings();
-            m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
-            m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            
+            AddressMemoryStore.Clear();
+            AddressMemoryStore.AddRange(new Address[]
+                {
+                    new Address(){EmailAddress = "toby@redmond.hsgincubator.com", Status = EntityStatus.Enabled},
+                    new Address(){EmailAddress = "throw@nhind.hsgincubator.com", Status = EntityStatus.Enabled, Type = "Throw"},
+                    new Address(){EmailAddress = "throw@redmond.hsgincubator.com", Status = EntityStatus.Enabled, Type = "Throw"}
+                });
+
+            Mock<ClientSettings> mockAddressClientSettings = MockAddressClientSettings();
+            m_agent.Settings.AddressManager = mockAddressClientSettings.Object;
+
+            
+            MdnMemoryStore.Clear();
+            Mock<ClientSettings> mockMdnClientSettings = MockMdnClientSettings();
+            m_agent.Settings.MdnMonitor = mockMdnClientSettings.Object;
 
             foreach (FolderRoute route in m_agent.Settings.IncomingRoutes.Where(route => route.AddressType == "Throw"))
             {
