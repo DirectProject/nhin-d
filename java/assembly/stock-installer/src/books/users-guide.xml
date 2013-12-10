@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<book xmlns="http://maven.apache.org/BOOK/1.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/BOOK/1.0.0 ../../../doxia/doxia-book/target/generated-site/xsd/book-1.0.0.xsd">
+  <id>users-guide</id>
+  <title>Direct Java Reference Implementation Bare Metal GUI Installation Instruction</title>
+  <chapters>
+    <chapter>
+      <id>preface</id>
+      <title>Preface</title>
+      <sections>
+        <section>
+          <id>preface</id>
+        </section>
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>deploy</id>
+      <title>Deploymenet Guide</title>
+      <sections>
+        <section>
+          <id>depl-intro</id>     
+        </section>   
+        <section>
+          <id>depl-install</id>     
+        </section>                                                       
+      </sections>
+    </chapter> 
+  </chapters>
+</book>
