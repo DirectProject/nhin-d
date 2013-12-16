@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -172,11 +173,18 @@ public class AddressDaoImpl implements AddressDao {
 
         Address result = null;
 
-        if (name != null) {
-            Query select = entityManager.createQuery("SELECT DISTINCT a from Address a d WHERE UPPER(a.emailAddress) = ?1");
-            result = (Address) select.setParameter(1, name.toUpperCase(Locale.getDefault())).getSingleResult();
+        try
+        {
+        	if (name != null) {
+        		Query select = entityManager.createQuery("SELECT DISTINCT a from Address a WHERE UPPER(a.emailAddress) = ?1");
+        		result = (Address) select.setParameter(1, name.toUpperCase(Locale.getDefault())).getSingleResult();
+        	}
         }
-
+        catch (NoResultException e)
+        {
+        	return null;
+        }
+        
         if (log.isDebugEnabled())
             log.debug("Exit");
         return result;
