@@ -434,7 +434,7 @@ public class DomainDaoImpl implements DomainDao {
             }
         } else {
             if (status != null) {
-                query.append("SELECT d from Domain d WHERE d.status LIKE ?1");
+                query.append("SELECT d from Domain d WHERE d.status = ?1");
                 select = entityManager.createQuery(query.toString());
                 select.setParameter(1, status);
             } else {
