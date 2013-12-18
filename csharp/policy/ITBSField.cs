@@ -11,9 +11,9 @@ namespace Health.Direct.Policy
     {
         /// <summary>
         /// Get TBS field name.
-        /// <returns><see cref="TBSFieldName{T}"/> of the attribute extracted from the certificate.</returns>
+        /// <returns><see cref="TBSFieldName"/> of the attribute extracted from the certificate.</returns>
         /// </summary>
-        TBSFieldName<T> GetFieldName();
+        TBSFieldName GetFieldName();
     }
 
 }

@@ -44,9 +44,9 @@ namespace Health.Direct.Policy.X509
         }
 
         /// <inheritdoc />
-        public new TBSFieldName<String> GetFieldName()
+        public new TBSFieldName GetFieldName()
         {
-            return TBSFieldName<String>.Subject;
+            return TBSFieldName.Subject;
         }
 
         /// <inheritdoc />

@@ -34,12 +34,12 @@ namespace Health.Direct.Policy.X509
             static Field()
             {
                 Map = new List<Field>();
-                Map.Add(new Version(new List<AttributeReferenceClass<string>>() ));
+                Map.Add(new Version(new List<AttributeReferenceClass>() ));
                 Map.Add(new SerialNumber(new SerialNumberAttributeField() ));
-                Map.Add(new Signature(new List<AttributeReferenceClass<string>>() ));
+                Map.Add(new Signature(new List<AttributeReferenceClass>() ));
                 Map.Add(new Issuer(RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn) )));
                 Map.Add(new Subject(RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn) )));
-                Map.Add(new Extensions(new List<AttributeReferenceClass<string>>() ));
+                Map.Add(new Extensions(new List<AttributeReferenceClass>() ));
             }
         }
 
@@ -54,9 +54,9 @@ namespace Health.Direct.Policy.X509
             ITBSField<string> ReferenceClass { get; set; }
             List<String> GetFieldToken();
         }
-        public interface IComplex<T>: IField
+        public interface IComplex: IField
         {
-             IList<AttributeReferenceClass<T>> SubAttributes { get; set; }
+             IList<AttributeReferenceClass> SubAttributes { get; set; }
              List<String> GetFieldTokens();
         }
 
@@ -76,10 +76,10 @@ namespace Health.Direct.Policy.X509
             }
         }
 
-        public class Complex<T> : Field, IComplex<T>
+        public class Complex : Field, IComplex
         {
 
-            public IList<AttributeReferenceClass<T>> SubAttributes { get; set; }
+            public IList<AttributeReferenceClass> SubAttributes { get; set; }
 
             /// <summary>
             /// Some fields may contain complex structure and multiple value may be extracted from the field or may required
@@ -101,9 +101,9 @@ namespace Health.Direct.Policy.X509
 
 
 
-        public class Version : Complex<string>
+        public class Version : Complex
         {
-            public Version(List<AttributeReferenceClass<string>> subAttributes) 
+            public Version(List<AttributeReferenceClass> subAttributes) 
             {
                 RfcName = "Version";
                 Display = "Version";
@@ -121,9 +121,9 @@ namespace Health.Direct.Policy.X509
             }
         }
 
-        public class Signature : Complex<string>
+        public class Signature : Complex
         {
-            public Signature(List<AttributeReferenceClass<string>> subAttributes) 
+            public Signature(List<AttributeReferenceClass> subAttributes) 
             {
                 RfcName = "Signature";
                 Display = "Signature";
@@ -132,9 +132,9 @@ namespace Health.Direct.Policy.X509
 
         }
 
-        public class Issuer : Complex<IssuerAttributeField>
+        public class Issuer : Complex
         {
-            public Issuer(List<AttributeReferenceClass<IssuerAttributeField>> subAttributes)
+            public Issuer(List<AttributeReferenceClass> subAttributes)
             {
                 RfcName = "Issuer";
                 Display = "Issuer";;
@@ -142,9 +142,9 @@ namespace Health.Direct.Policy.X509
             }
         }
 
-        public class Subject : Complex<SubjectAttributeField>
+        public class Subject : Complex
         {
-            public Subject(List<AttributeReferenceClass<SubjectAttributeField>> subAttributes)
+            public Subject(List<AttributeReferenceClass> subAttributes)
             {
                 RfcName = "Subject";
                 Display = "Subject";;
@@ -152,9 +152,9 @@ namespace Health.Direct.Policy.X509
             }
         }
 
-        public class Extensions : Complex<string>
+        public class Extensions : Complex
         {
-            public Extensions(List<AttributeReferenceClass<string>> subAttributes)
+            public Extensions(List<AttributeReferenceClass> subAttributes)
             {
                 RfcName = "Extensions";
                 Display = "Extensions";;
@@ -163,38 +163,47 @@ namespace Health.Direct.Policy.X509
         }
 
 
-        public class AttributeReferenceClass<T>
+        public class AttributeReferenceClass
         {
             readonly String attribute;
-            readonly Func<string, T> referenceClass;
+            readonly Func<TBSField<string>> referenceClass;
+            private readonly Func<string, TBSField<List<string>>> referenceClassList;
 
-            public AttributeReferenceClass(String attribute, Func<string, T> referenceClass)
+            public AttributeReferenceClass(String attribute, Func<TBSField<string>> referenceClass)
             {
                 this.attribute = attribute;
                 this.referenceClass = referenceClass;
             }
 
-            
+            public AttributeReferenceClass(String attribute, Func<string, TBSField<List<string>>> referenceClass)
+            {
+                this.attribute = attribute;
+                this.referenceClassList = referenceClass;
+            }
 
             public String GetAttribute()
             {
                 return attribute;
             }
-            
-            public T GetReferenceClass(string rdnName)
+            public TBSField<string> GetReferenceClass()
             {
-                return referenceClass(rdnName);
+                return referenceClass();
+            }
+
+            public TBSField<List<string>> GetReferenceClass(string rdnName)
+            {
+                return referenceClassList(rdnName);
             }
             
         }
 
-        public static List<AttributeReferenceClass<T>> RdnsToReferenceClass<T>(Func<string, T> refClass)
+        public static List<AttributeReferenceClass> RdnsToReferenceClass(Func<string, TBSField<List<string>>> refClass)
         {
-            var retVal = new List<AttributeReferenceClass<T>>();
+            var retVal = new List<AttributeReferenceClass>();
 
             foreach (var rdnAtrId in RDNAttributeIdentifier.Values)
             {
-                retVal.Add(new AttributeReferenceClass<T>(rdnAtrId.GetName(), refClass));
+                retVal.Add(new AttributeReferenceClass(rdnAtrId.GetName(), refClass));
             }
 		   
             return retVal;

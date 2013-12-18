@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.X509;
 using Org.BouncyCastle.Asn1;
-using X509Certificate = Org.BouncyCastle.X509.X509Certificate;
 
 namespace Health.Direct.Policy
 {
@@ -18,9 +14,9 @@ namespace Health.Direct.Policy
         {
         }
 
-        public override TBSFieldName<T> GetFieldName()
+        public override TBSFieldName GetFieldName()
         {
-            return TBSFieldName<T>.Extenstions;
+            return TBSFieldName.Extenstions;
         }
 
         public abstract ExtensionIdentifier<T> GetExtentionIdentifier();

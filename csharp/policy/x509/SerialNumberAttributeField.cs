@@ -43,9 +43,9 @@ namespace Health.Direct.Policy.X509
 	}
 	
 	/// <inheritdoc />
-	public new TBSFieldName<string> GetFieldName() 
+	public new TBSFieldName GetFieldName() 
 	{
-		return TBSFieldName<string>.SerialNumber;
+		return TBSFieldName.SerialNumber;
 	}
 }
 }

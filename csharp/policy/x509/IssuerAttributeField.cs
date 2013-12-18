@@ -47,9 +47,9 @@ namespace Health.Direct.Policy.X509
 
 
         /// <inheritdoc />
-        public new TBSFieldName<String> GetFieldName()
+        public new TBSFieldName GetFieldName()
         {
-            return TBSFieldName<String>.Issuer;
+            return TBSFieldName.Issuer;
         }
 
         /// <inheritdoc />
@@ -57,6 +57,7 @@ namespace Health.Direct.Policy.X509
         {
             Certificate = value;
 
+            //todo: not coded ... stubbed
             if (RdnAttributeId.Equals(RDNAttributeIdentifier.DISTINGUISHED_NAME))
             {
                 List<String> str = new List<String> { Certificate.Issuer };

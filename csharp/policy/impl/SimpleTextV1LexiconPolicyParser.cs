@@ -58,9 +58,9 @@ namespace Health.Direct.Policy.Impl
             }
 
             // add the TBS Complex fields
-            foreach (TBSFieldStandard.IComplex<string> field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.IComplex<string>))
+            foreach (TBSFieldStandard.IComplex field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.IComplex))
             {
-                if (field.RfcName != TBSFieldName<string>.Extenstions.GetRfcName())
+                if (field.RfcName != TBSFieldName.Extenstions.GetRfcName())
                     foreach (var rfcName in field.GetFieldTokens())
                     {
                         tokenMap.Add(rfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
@@ -268,7 +268,7 @@ namespace Health.Direct.Policy.Impl
         public ITBSField<String> BuildTBSField(String token) //throws PolicyParseException 
         {
             ITBSField<String> retVal = null;
-            TBSFieldName<String> fieldName = TBSFieldName<String>.FromToken(token);
+            TBSFieldName fieldName = TBSFieldName.FromToken(token);
 
             if (fieldName != null)
             {
