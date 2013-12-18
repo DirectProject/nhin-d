@@ -15,17 +15,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class RegularExpression<TValue, TResult> : OperatorBase
+    public class RegularExpression<TValue, TResult> : BinaryOperator
     {
 
-        public RegularExpression(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode
+        public RegularExpression(Code opCode
             , Func<TValue, TValue, TResult> body)
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }

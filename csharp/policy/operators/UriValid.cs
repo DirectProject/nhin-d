@@ -16,25 +16,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Net;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class UriValid<T> : OperatorBase
+    public class UriValid<T> : UnaryOperator
     {
         private string url;
-        public UriValid(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode)
-            : base(operatorToken, operatorText, opCode)
+        public UriValid(Code opCode)
+            : base(opCode)
         {
             Execute = Stock;
         }
 
-        public UriValid(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode
+        public UriValid(Code opCode
             , Func<T, bool> body)
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }

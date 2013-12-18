@@ -15,17 +15,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class NotEquals<TValue, TResult> : OperatorBase
+    public class NotEquals<TValue, TResult> : BinaryOperator
     {
 
-        public NotEquals(string operatorToken
-                        , string operatorText
-                        , PolicyOpCode opCode
+        public NotEquals(Code opCode
                         , Func<TValue, TValue, TResult> body)
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }

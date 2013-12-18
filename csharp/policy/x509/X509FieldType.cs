@@ -22,28 +22,28 @@ namespace Health.Direct.Policy.X509
 {
     public class X509FieldType
     {
-        public static readonly X509FieldType SIGNATURE = new X509FieldType("Signature", "Signature", null);
-        public static readonly X509FieldType SIGNATURE_ALGORITHM = new X509FieldType("Algorithm", "Algorithm", typeof(SignatureAlgorithmField));
+        public static readonly X509FieldType Signature = new X509FieldType("Signature", "Signature", null);
+        public static readonly X509FieldType SignatureAlgorithm = new X509FieldType("Algorithm", "Algorithm", () => new SignatureAlgorithmField());
         public static readonly X509FieldType TBS = new X509FieldType("TbsCertificate", "To Be Signed Certificate", null);
 
         public static IEnumerable<X509FieldType> Values
         {
             get
             {
-                yield return SIGNATURE;
-                yield return SIGNATURE_ALGORITHM;
+                yield return Signature;
+                yield return SignatureAlgorithm;
                 yield return TBS;
             }
         }
 
         readonly String rfcName;
         readonly String display;
-        readonly object referenceClass;
-        static Dictionary<String, X509FieldType> tokenFieldMap;
+        readonly Func<X509Field<string>> referenceClass;
+        static readonly Dictionary<String, X509FieldType> TokenFieldMap;
 
         private X509FieldType(string rfcName
             , string display
-            , object referenceClass)
+            , Func<X509Field<string>> referenceClass)
         {
             this.rfcName = rfcName;
             this.display = display;
@@ -52,11 +52,11 @@ namespace Health.Direct.Policy.X509
 
         static X509FieldType()
         {
-            tokenFieldMap = new Dictionary<string, X509FieldType>();
+            TokenFieldMap = new Dictionary<string, X509FieldType>();
             foreach (var x509FieldType in Values)
             {
-                tokenFieldMap.Add(x509FieldType.GetFieldToken(), x509FieldType);
-                tokenFieldMap.Add(x509FieldType.GetFieldToken() + "+", x509FieldType);
+                TokenFieldMap.Add(x509FieldType.GetFieldToken(), x509FieldType);
+                TokenFieldMap.Add(x509FieldType.GetFieldToken() + "+", x509FieldType);
             }
         }
 
@@ -80,9 +80,9 @@ namespace Health.Direct.Policy.X509
         /// Gets the class implementing the field type.
         /// </summary>
         /// <returns>The class implementing field type</returns>
-        public object GetReferenceClass()
+        public X509Field<string> GetReferenceClass()
         {
-            return referenceClass;
+            return referenceClass();
         }
 
         /// <summary>
@@ -93,10 +93,21 @@ namespace Health.Direct.Policy.X509
         {
             return "X509." + rfcName;
         }
-    }
 
-    public class SignatureAlgorithmField
-
-    {
+        /// <summary>
+	    /// Gets the field type associated with a specific token string.
+        /// <param name="token">The token used to look up the <see cref="X509FieldType"/>.</param> 
+        /// <returns>The <see cref="X509FieldType"/> associated with the token.  If the token does not represent a known field, then null is returned.</returns>
+        /// </summary>
+        public static X509FieldType FromToken(String token)
+        {
+            X509FieldType x509FieldType;
+            if (TokenFieldMap.TryGetValue(token, out x509FieldType))
+            {
+                return x509FieldType;
+            }
+            return null;
+        }
+	
     }
 }

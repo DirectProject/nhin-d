@@ -5,6 +5,8 @@ using Health.Direct.Policy.Extensions;
 
 namespace Health.Direct.Policy.X509
 {
+
+    //Todo: Compare to technique in X5509FieldType...
     public class ExtensionIdentifier<T>
     {
 
@@ -17,7 +19,7 @@ namespace Health.Direct.Policy.X509
 	     */
 
        public static readonly ExtensionIdentifier<T> KeyUsage
-            = new ExtensionIdentifier<T>("2.5.29.15", "KeyUsage", "Key Usage"
+            = new ExtensionIdentifier<T>(new ExtensionStandard.KeyUsage()
                 , typeof(IExtensionField<T>).Ctor<bool, IExtensionField<T>>());
 
         readonly string m_id;
@@ -27,11 +29,11 @@ namespace Health.Direct.Policy.X509
         Func<bool, IExtensionField<T>> m_referenceClass;
         static Dictionary<String, ExtensionIdentifier<T>> tokenFieldMap; 
 
-        private ExtensionIdentifier(string id, String rfcName, String display, Func<bool, IExtensionField<T>> referenceClass)
+        private ExtensionIdentifier(ExtensionStandard.Field field, Func<bool, IExtensionField<T>> referenceClass)
         {
-            m_id = id;
-		    m_rfcName = rfcName;
-		    m_display = display;
+            m_id = field.Id;
+		    m_rfcName = field.RfcName;
+		    m_display = field.Display;
 		    m_subAttributes = null;
 		    m_referenceClass = referenceClass;		
 	    }
@@ -72,7 +74,7 @@ namespace Health.Direct.Policy.X509
 	    /// The Type implementing the extension.
 	    /// </returns> 
 	    /// </summary>
-	    public IExtensionField<T> GetReferenceClass(String tokenName) 
+	    public IExtensionField<T> GetReferenceClass(String tokenName, bool required) 
 	    {
 		    IExtensionField<T> retVal = null;
 		
@@ -89,7 +91,7 @@ namespace Health.Direct.Policy.X509
 			        {
 					    if (name.Equals(attrRef.GetAttribute()))
 					    {
-						    retVal = attrRef.GetReferenceClass();
+						    retVal = attrRef.GetReferenceClass(required);
 						    break;
 					    }		
 				    }
@@ -116,16 +118,11 @@ namespace Health.Direct.Policy.X509
         public class AttributeReferenceClass<T>
         {
             private readonly String attribute;
-            //protected final Class<? extends TBSField<?>> referenceClass;
-            private IExtensionField<T> referenceClass;
+            private Func<bool, IExtensionField<T>> referenceClass;
 
-            //public AttributeReferenceClass(String attribute, Class<? extends TBSField<?>> referenceClass)
-            //{
-            //    this.attribute = attribute;
-            //    this.referenceClass = referenceClass;
-            //}
 
-            public AttributeReferenceClass(String attribute, IExtensionField<T> referenceClass)
+
+            public AttributeReferenceClass(String attribute, Func<bool, IExtensionField<T>> referenceClass)
             {
                 this.attribute = attribute;
                 this.referenceClass = referenceClass;
@@ -137,15 +134,10 @@ namespace Health.Direct.Policy.X509
                 return attribute;
             }
 
-            //public Class<? extends TBSField<?>> getReferenceClass()
-            //{
-            //    return referenceClass;
-
-            //}
-
-            public IExtensionField<T> GetReferenceClass()
+            
+            public IExtensionField<T> GetReferenceClass(bool required)
             {
-                return referenceClass;
+                return referenceClass(required);
             }
         }
 

@@ -53,9 +53,14 @@
   <ItemGroup>
     <Compile Include="BinaryBooleanPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="BinaryIntegerPolicyOperatorExecutor_executeTest.cs" />
+    <Compile Include="Extensions\StreamExt.cs" />
     <Compile Include="PolicyOperator_getEnumAttributesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleTextV1LexiconPolicyParser_buildExpressionTest.cs" />
+    <Compile Include="SimpleTextV1LexiconPolicyParser_buildTBSFieldTest.cs" />
+    <Compile Include="SimpleTextV1LexiconPolicyParser_buildX509FieldTest.cs" />
+    <Compile Include="SimpleTextV1LexiconPolicyParser_parseTest.cs" />
+    <Compile Include="SimpleTextV1LexiconPolicyParser_parseToTokensTest.cs" />
     <Compile Include="UnaryBooleanPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="UnaryIntegerPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="x509\KeyBitUsage_getAttributesTest.cs" />
@@ -70,30 +75,74 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="resources\certs\certs\AlAnderson%40hospitalA.direct.visionshareinc.com.der" />
-    <None Include="resources\certs\certs\altNameOnly.der" />
-    <None Include="resources\certs\certs\cernerdemos.der" />
-    <None Include="resources\certs\certs\cernerDemosCaCert.der" />
-    <None Include="resources\certs\certs\CernerDirect DevCert Provider CA.der" />
-    <None Include="resources\certs\certs\CernerDirectProviderCA.der" />
-    <None Include="resources\certs\certs\dsa1024.der" />
-    <None Include="resources\certs\certs\ecc.der" />
-    <None Include="resources\certs\certs\msanchor.der" />
-    <None Include="resources\certs\certs\mshost.der" />
-    <None Include="resources\certs\certs\policyMixedQualifier.der" />
-    <None Include="resources\certs\certs\SESTestAccount-DataEncryption.der" />
-    <None Include="resources\certs\certs\SESTestAccount-Signiture.der" />
-    <None Include="resources\certs\certs\SES_Test_Account_Encryption.der" />
-    <None Include="resources\certs\certs\SES_Test_Account_Signing.der" />
-    <None Include="resources\certs\certs\umesh.der" />
+    <None Include="resources\certs\AlAnderson%40hospitalA.direct.visionshareinc.com.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\altNameOnly.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\cernerdemos.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\cernerDemosCaCert.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\CernerDirect DevCert Provider CA.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\CernerDirectProviderCA.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\dsa1024.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\ecc.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\msanchor.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\mshost.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\policyMixedQualifier.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\SESTestAccount-DataEncryption.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\SESTestAccount-Signiture.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\SES_Test_Account_Encryption.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\SES_Test_Account_Signing.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\certs\umesh.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resources\certs\policies\dataEnciphermentOnlyRequired.xml" />
-    <Content Include="resources\certs\policies\lexiconWithCertificateStruct.txt" />
-    <Content Include="resources\certs\policies\lexiconWithKeyUsage.txt" />
-    <Content Include="resources\certs\policies\literalWithSpaces.txt" />
-    <Content Include="resources\certs\policies\logicalAndOperator.txt" />
-    <Content Include="resources\certs\policies\simpleLexiconSamp1.txt" />
+    <Content Include="resources\policies\dataEnciphermentOnlyRequired.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\policies\lexiconWithCertificateStruct.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\policies\lexiconWithKeyUsage.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\policies\literalWithSpaces.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\policies\logicalAndOperator.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\policies\simpleLexiconSamp1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

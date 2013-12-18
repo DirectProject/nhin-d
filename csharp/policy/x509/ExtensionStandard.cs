@@ -14,21 +14,37 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using Health.Direct.Policy.OpCode;
 
-namespace Health.Direct.Policy.Operators
+using System.Collections.Generic;
+
+
+namespace Health.Direct.Policy.X509
 {
-    public class Less<TValue, TResult> : BinaryOperator
+    public class ExtensionStandard
     {
-
-        public Less(Code opCode
-            , Func<TValue, TValue, TResult> body)
-            : base(opCode)
+        public class Field
         {
-            Execute = body;
+            public string Id;
+            public string RfcName;
+            public string Display;
+
+            public static List<Field> Map;
+
+            static Field()
+            {
+                Map = new List<Field>();
+                Map.Add(new KeyUsage());
+            }
         }
 
-        public readonly Func<TValue, TValue, TResult> Execute;
+        public class KeyUsage : Field
+        {
+            public KeyUsage()
+            {
+                Id = "2.5.29.15";
+                RfcName = "KeyUsage";
+                Display = "Key Usage";
+            }
+        }
     }
 }

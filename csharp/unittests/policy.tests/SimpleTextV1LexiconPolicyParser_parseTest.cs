@@ -14,21 +14,47 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using Health.Direct.Policy.OpCode;
 
-namespace Health.Direct.Policy.Operators
+using System.IO;
+using Health.Direct.Policy.Impl;
+using Health.Direct.Policy.Tests.Extensions;
+using Xunit;
+
+namespace Health.Direct.Policy.Tests
 {
-    public class Less<TValue, TResult> : BinaryOperator
+    public class SimpleTextV1LexiconPolicyParser_parseTest
     {
-
-        public Less(Code opCode
-            , Func<TValue, TValue, TResult> body)
-            : base(opCode)
+        [Fact]
+        public void TestParse_UnclosedGroup_AssertGrammarException()
         {
-            Execute = body;
+
+            using (Stream stream = "(1 = 1".ToStream())
+            {
+                var parser = new SimpleTextV1LexiconPolicyParser();
+                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
+            }
         }
 
-        public readonly Func<TValue, TValue, TResult> Execute;
+
+        [Fact]
+        public void TestParse_NoOperator_AssertGrammarException()
+        {
+            using (Stream stream = "(1".ToStream())
+            {
+                var parser = new SimpleTextV1LexiconPolicyParser();
+                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
+            }
+        }
+
+        [Fact]
+        public void testParse_extraniousOperator_assertGrammarException()
+        {
+            using (Stream stream = "1 = 1 =".ToStream())
+            {
+                var parser = new SimpleTextV1LexiconPolicyParser();
+                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
+            }
+        }
     }
+
 }

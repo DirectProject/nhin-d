@@ -16,13 +16,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 
 namespace Health.Direct.Policy.X509
 {
-    public class SubjectAttributeField : IssuerAttributeField
+    public class SubjectAttributeField : TBSField<List<String>>
     {
+        protected RDNAttributeIdentifier RdnAttributeId;
 
         /// <summary>
         /// Constructor
@@ -30,7 +33,21 @@ namespace Health.Direct.Policy.X509
         /// <param name="required">Indicates if the field is required to be present in the certificate to be compliant with the policy.</param>
         /// <param name="rdnAttributeId">Id of the attribute to extract from the subject RDN</param>
         public SubjectAttributeField(bool required, RDNAttributeIdentifier rdnAttributeId)
-            : base(required, rdnAttributeId) { }
+            : base(required)
+        {
+            RdnAttributeId = rdnAttributeId;
+        }
+
+        public SubjectAttributeField(bool requird, string rdnAttribute)
+            : this(requird, RDNAttributeIdentifier.FromName(rdnAttribute))
+        {
+        }
+
+        /// <inheritdoc />
+        public new TBSFieldName<String> GetFieldName()
+        {
+            return TBSFieldName<String>.Subject;
+        }
 
         /// <inheritdoc />
         public override void InjectReferenceValue(X509Certificate2 value)
@@ -44,14 +61,36 @@ namespace Health.Direct.Policy.X509
                 return;
             }
 
-            base.InjectReferenceValue(value);
+            DerObjectIdentifier tbsValue;
+
+            try
+            {
+                tbsValue = GetDERObject(Certificate.GetRawCertData());
+            }
+
+            catch (Exception e)
+            {
+                throw new PolicyProcessException("Exception parsing TBS certificate fields.", e);
+            }
+
+
+            TbsCertificateStructure tbsStruct = TbsCertificateStructure.GetInstance(tbsValue);
+
+            X509Name x509Name = GetX509Name(tbsStruct);
+
+
+            List<String> values = x509Name.GetValueList(new DerObjectIdentifier(GetRDNAttributeFieldId().GetId())).Cast<string>().ToList();
+
+            if (values.Any() && IsRequired())
+                throw new PolicyRequiredException(GetFieldName() + " field attribute " + RdnAttributeId.GetName() + " is marked as required but is not present.");
+
+            List<String> retVal = values;
+
+
+            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(retVal);
         }
 
-        /// <inheritdoc />
-        public new TBSFieldName<String> GetFieldName()
-        {
-            return TBSFieldName<String>.SUBJECT;
-        }
+        
 
         /// <summary>
         /// Gets the subject field as an X509Name from the certificate TBS structure.
@@ -61,6 +100,15 @@ namespace Health.Direct.Policy.X509
         protected X509Name GetX509Name(TbsCertificateStructure tbsStruct)
         {
             return tbsStruct.Subject;
+        }
+
+        /// <summary>
+        /// Gets the requested RDN attribute id.
+        /// </summary>
+        /// <returns>The requested RDN attribute id.</returns>
+        public RDNAttributeIdentifier GetRDNAttributeFieldId()
+        {
+            return RdnAttributeId;
         }
     }
 }

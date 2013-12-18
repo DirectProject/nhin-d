@@ -21,12 +21,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using Health.Direct.Policy.OpCode;
 using Health.Direct.Policy.Operators;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace Health.Direct.Policy
 {
-    
-    public class PolicyOperator<T>
+
+    public class PolicyOperator<T> : PolicyOperator
     {
 
         
@@ -45,52 +47,45 @@ namespace Health.Direct.Policy
             var right = Expression.Parameter(typeof(T), "right");
             var itemList = Expression.Parameter(typeof(IEnumerable<Object>), "itemList");
 
-
-            LOGICAL_AND = new LogicalAnd<T>("&&"
-                , "and"
-                , PolicyOpCode.LOGICAL_AND
+            var logicalAnd = new Logical_And();
+            LOGICAL_AND = new LogicalAnd<T>(logicalAnd
                 , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.AndAlso, left, right));
+            TokenOperatorMap.Add(logicalAnd.Token, LOGICAL_AND);
 
-            LOGICAL_OR = new LogicalOr<T>("||"
-                , "or"
-                , PolicyOpCode.LOGICAL_OR
+            var logicalOr = new LogicalOr();
+            LOGICAL_OR = new LogicalOr<T>(logicalOr
                 , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.OrElse, left, right));
+            TokenOperatorMap.Add(logicalOr.Token, LOGICAL_OR);
 
-            BITWISE_AND = new BitwiseAnd<T>("&"
-                  , "bitand"
-                  , PolicyOpCode.BITWISE_AND
+            var bitwiseAnd = new Bitwise_And();
+            BITWISE_AND = new BitwiseAnd<T>(bitwiseAnd
                   , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.And, left, right));
-   
+            TokenOperatorMap.Add(bitwiseAnd.Token, BITWISE_AND);
 
-            BITWISE_OR = new BitwiseOr<T>("|"
-                  , "bitor"
-                  , PolicyOpCode.BITWISE_OR
+            var bitwiseOr = new Bitwise_Or();
+            BITWISE_OR = new BitwiseOr<T>(bitwiseOr
                   , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.Or, left, right));
+            TokenOperatorMap.Add(bitwiseOr.Token, BITWISE_OR);
 
-            
-            SIZE = new Size<T>(
-                    "^"
-                  , "size"
-                  , PolicyOpCode.SIZE
+            var size = new Size();
+            SIZE = new Size<T>(size
                   , ExpressionTreeUtil.CreateDelegate<T, int>(Expression.ArrayLength, left));
+            TokenOperatorMap.Add(size.Token, SIZE);
 
-
-            LOGICAL_NOT = new Not<T>(
-                "!"
-                , "not"
-                , PolicyOpCode.LOGICAL_NOT
+            var logicalNot = new Logical_Not();
+            LOGICAL_NOT = new Not<T>(logicalNot
                 , ExpressionTreeUtil.CreateDelegate<T, bool>(Expression.Not, left));
+            TokenOperatorMap.Add(logicalNot.Token, LOGICAL_NOT);
 
-            URI_VALIDATE = new UriValid<T>(
-                "@@"
-                , "uri validate"
-                , PolicyOpCode.URI_VALIDATE);
+            var uriValid = new Uri_Valid();
+            URI_VALIDATE = new UriValid<T>(uriValid);
+            TokenOperatorMap.Add(uriValid.Token, URI_VALIDATE);
         }
 
         
     }
 
-    public class PolicyOperator<TValue, TResult>
+    public class PolicyOperator<TValue, TResult> : PolicyOperator
     {
         public static Equals<TValue, TResult> EQUALS;
         public static NotEquals<TValue, TResult> NOT_EQUALS;
@@ -124,37 +119,33 @@ namespace Health.Direct.Policy
             var left = Expression.Parameter(typeof(TValue), "left");
             var right = Expression.Parameter(typeof(TValue), "right");
 
-            EQUALS = new Equals<TValue, TResult>("="
-                 , "equals"
-                 , PolicyOpCode.EQUALS
+            var equals = new Equals();
+            EQUALS = new Equals<TValue, TResult>(equals
                  , ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.Equal, left, right));
+            TokenOperatorMap[equals.Token] = EQUALS;
 
-            NOT_EQUALS = new NotEquals<TValue, TResult>("!="
-                 , "not equals"
-                 , PolicyOpCode.NOT_EQUALS
+            var notEquals = new NotEquals();
+            NOT_EQUALS = new NotEquals<TValue, TResult>(new NotEquals()
                  , ExpressionTreeUtil.CreateDelegate<TValue,TValue, TResult>(Expression.NotEqual, left, right ));
+            TokenOperatorMap[notEquals.Token] =  NOT_EQUALS;
 
-
-            GREATER = new Greater<TValue, TResult>(">"
-                 , "greater than"
-                 , PolicyOpCode.GREATER
+            var greater = new Greater();
+            GREATER = new Greater<TValue, TResult>(greater
                  , ExpressionTreeUtil.CreateDelegate<TValue,TValue, TResult>(Expression.GreaterThan, left, right));
+            TokenOperatorMap[greater.Token] =  GREATER;
 
-
-            LESS = new Less<TValue, TResult>("<"
-                 , "less than"
-                 , PolicyOpCode.LESS
+            var less = new Less();
+            LESS = new Less<TValue, TResult>(less
                  , ExpressionTreeUtil.CreateDelegate<TValue,TValue, TResult>(Expression.LessThan, left, right));
+            TokenOperatorMap[less.Token] = LESS;
 
-
-            REG_EX = new RegularExpression<TValue, TResult>("$"
-                , "not contains"
-                , PolicyOpCode.REG_EX
-                , RegExExists);
+            var regex = new Reg_Ex();
+            REG_EX = new RegularExpression<TValue, TResult>(regex, RegExExists);
+            TokenOperatorMap[regex.Token] = REG_EX;
         }
     }
 
-    public class PolicyOperator<TValue, TList, TResult> where TList : IEnumerable<TValue>
+    public class PolicyOperator<TValue, TList, TResult> : PolicyOperator where TList : IEnumerable<TValue> 
     {
 
         public static Contains<TValue, TList, TResult> CONTAINS;
@@ -201,25 +192,21 @@ namespace Health.Direct.Policy
                 Expression.Call(typeof(Enumerable), "Any", new Type[] { typeof(TValue) }
                                 , itemList
                                 , lambda);
-            CONTAINS = new Contains<TValue, TList, TResult>("{?}"
-                , "contains"
-                , PolicyOpCode.CONTAINS
+            var contains = new Contains();
+            CONTAINS = new Contains<TValue, TList, TResult>(contains
                 , Expression.Lambda<Func<TValue, TList, TResult>>(anyCall, right, itemList).Compile());
-
+            TokenOperatorMap[contains.Token] = CONTAINS;
             
             Expression notAnyCall = Expression.Not(anyCall);
 
-            NOT_CONTAINS = new NotContains<TValue, TList, TResult>("{?}!"
-                , "not contains"
-                , PolicyOpCode.NOT_CONTAINS
+            var notContains = new NotContains();
+            NOT_CONTAINS = new NotContains<TValue, TList, TResult>(notContains
                 , Expression.Lambda<Func<TValue, TList, TResult>>(notAnyCall, right, itemList).Compile());
+            TokenOperatorMap[notContains.Token] = NOT_CONTAINS;
 
-
-            CONTAINS_REG_EX = new ContainsRegEx<TValue, TList, TResult>("{}$"
-                , "contains match"
-                , PolicyOpCode.CONTAINS_REG_EX
-                , RegExExists);
-
+            var containsRegEx = new ContainsRegEx();
+            CONTAINS_REG_EX = new ContainsRegEx<TValue, TList, TResult>(containsRegEx, RegExExists);
+            TokenOperatorMap[containsRegEx.Token] = CONTAINS_REG_EX;
 
             Expression countExpression =
                Expression.Call(typeof(Enumerable), "Count", new Type[] { typeof(TValue) }
@@ -227,23 +214,28 @@ namespace Health.Direct.Policy
 
             Expression emptyExpression = Expression.Equal(Expression.Constant(0), countExpression);
 
-            EMPTY = new Empty<TList, TResult>(
-                    "{}"
-                  , "empty"
-                  , PolicyOpCode.EMPTY
+            var empty = new Empty();
+            EMPTY = new Empty<TList, TResult>(empty
                   , Expression.Lambda<Func<TList, TResult>>(emptyExpression, itemList).Compile());
+            TokenOperatorMap[empty.Token] = EMPTY;
 
             Expression noEmptyExpression = Expression.Not(emptyExpression);
-            NOT_EMPTY = new NotEmpty<TList, TResult>(
-                   "{}!"
-                 , "not empty"
-                 , PolicyOpCode.NOT_EMPTY
+            var notEmpty = new NotEmpty();
+            NOT_EMPTY = new NotEmpty<TList, TResult>(notEmpty
                  , Expression.Lambda<Func<TList, TResult>>(noEmptyExpression, itemList).Compile());
+            TokenOperatorMap[notEmpty.Token] = NOT_EMPTY;
         }
     }
 
     public class PolicyOperator
     {
+        protected static readonly Dictionary<string, OperatorBase> TokenOperatorMap;
+
+        static PolicyOperator()
+        {
+            TokenOperatorMap = new Dictionary<string, OperatorBase>();
+        }
+
         public static Equals<T, T> Equals<T>()
         {
             return PolicyOperator<T, T>.EQUALS;
@@ -259,5 +251,20 @@ namespace Health.Direct.Policy
             return PolicyOperator<T>.BITWISE_OR;
         }
 
+        
+        /// <summary>
+	    /// Gets the policy operator associated with a specific token string.
+	    /// @param token The token used to look up the PolicyOperator.
+	    /// @return The PolicyOperator associated with the token.  If the token does not represent a known operator, then null is returned,.
+        /// </summary>
+        public static OperatorBase FromToken(String token)
+        {
+            OperatorBase operatorBase;
+            if (TokenOperatorMap.TryGetValue(token, out operatorBase))
+            {
+                return operatorBase;
+            }
+            return null;
+        }
     }
 }

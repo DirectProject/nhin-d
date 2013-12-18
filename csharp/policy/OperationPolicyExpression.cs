@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Health.Direct.Policy.Operators;
 
 namespace Health.Direct.Policy
 {
-    [Serializable]
     public class OperationPolicyExpression : IOperationPolicyExpression
     {
-        protected readonly OperatorBase m_operator;
-		protected readonly List<IPolicyExpression> m_operands;
+        protected readonly OperatorBase Operator;
+		protected readonly List<IPolicyExpression> Operands;
 
-        public OperationPolicyExpression()
-        {
-        }
-
+        
         /**
 		 * Constructor
 		 * @param operator The operator that will be executed when the expression is evaluated.
 		 * @param operands The parameters that will be used by the operator when the expression is evaluated.
 		 */
-        public OperationPolicyExpression(OperatorBase pOperator, List<IPolicyExpression> operands)
+        public OperationPolicyExpression(OperatorBase pOperator, IEnumerable<IPolicyExpression> operands)
 		{
-			this.m_operator = pOperator;
-			this.m_operands = new List<IPolicyExpression>(operands);
+			this.Operator = pOperator;
+			this.Operands = new List<IPolicyExpression>(operands);
 		}
 
 		/// <inheritdoc />
@@ -37,29 +31,29 @@ namespace Health.Direct.Policy
 		/// <inheritdoc />
         public OperatorBase GetPolicyOperator() 
 		{
-			return m_operator;
+			return Operator;
 		}
 
 		/// <inheritdoc />
 		public List<IPolicyExpression> GetOperands() 
 		{
-            return m_operands;
+            return Operands;
 		}
 		
 		public override string ToString()
 		{
 
 		    StringBuilder builder = new StringBuilder("Operator: ")
-		        .Append(m_operator);
+		        .Append(Operator);
 			
 			int i = 1;
 
-		    foreach (var operand in m_operands)
+		    foreach (var operand in Operands)
 		    {
 		      
 				try
 				{
-					builder.Append("\r\nOperand ").Append(i++).Append(": ").Append(operand.ToString());
+					builder.Append("\r\nOperand ").Append(i++).Append(": ").Append(operand);
 				}
 				catch (Exception e)
 				{

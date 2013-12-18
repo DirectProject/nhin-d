@@ -57,6 +57,7 @@
     <Compile Include="ITBSField.cs" />
     <Compile Include="IX509Field.cs" />
     <Compile Include="LiteralPolicyExpression.cs" />
+    <Compile Include="OpCode\PolicyOpCode.cs" />
     <Compile Include="OperationPolicyExpression.cs" />
     <Compile Include="Operators\BitwiseAnd.cs" />
     <Compile Include="Operators\BitwiseOr.cs" />
@@ -81,7 +82,6 @@
     <Compile Include="PolicyExpressionReferenceType.cs" />
     <Compile Include="PolicyExpressionType.cs" />
     <Compile Include="IPolicyLexiconParser.cs" />
-    <Compile Include="PolicyOpCode.cs" />
     <Compile Include="PolicyOperator.cs" />
     <Compile Include="PolicyParseException.cs" />
     <Compile Include="PolicyProcessException.cs" />
@@ -91,14 +91,17 @@
     <Compile Include="PolicyValueFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="X509\ExtensionIdentifier.cs" />
+    <Compile Include="X509\ExtensionStandard.cs" />
     <Compile Include="X509\IssuerAttributeField.cs" />
     <Compile Include="X509\KeyUsageBit.cs" />
     <Compile Include="X509\KeyUsageExtensionField.cs" />
     <Compile Include="X509\RDNAttributeIdentifier.cs" />
     <Compile Include="X509\SerialNumberAttributeField.cs" />
+    <Compile Include="X509\SignatureAlgorithmField.cs" />
     <Compile Include="X509\SubjectAttributeField.cs" />
     <Compile Include="X509\TBSField.cs" />
     <Compile Include="X509\TBSFieldName.cs" />
+    <Compile Include="X509\TBSFieldStandard.cs" />
     <Compile Include="X509\X509Field.cs" />
     <Compile Include="X509\X509FieldType.cs" />
     <Compile Include="XMLLexiconPolicyParser.cs" />

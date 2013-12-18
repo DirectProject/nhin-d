@@ -2,15 +2,12 @@
 
 namespace Health.Direct.Policy
 {
-    [Serializable]
+    
     public class LiteralPolicyExpression<T> : ILiteralPolicyExpression<T>
     {
         private readonly IPolicyValue<T> m_policyValue;
 
-        public LiteralPolicyExpression()
-        {
-        }
-
+        
         public LiteralPolicyExpression(IPolicyValue<T> value)
         {
             m_policyValue = value;
