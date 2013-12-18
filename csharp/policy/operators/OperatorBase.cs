@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
@@ -22,17 +23,13 @@ namespace Health.Direct.Policy.Operators
     {
         readonly string m_operatorToken;
         readonly string m_operatorText;
-        readonly PolicyOpCode m_opCode;
 
-        
-        protected OperatorBase(string operatorToken
-                               , string operatorText
-                               , PolicyOpCode opCode)
+
+
+        protected OperatorBase(Code opCode)
         {
-            m_operatorToken = operatorToken;
-            m_operatorText = operatorText;
-            m_opCode = opCode;
-
+            m_operatorToken = opCode.Token;
+            m_operatorText = opCode.Text;
         }
 
         /// <summary>
@@ -53,7 +50,7 @@ namespace Health.Direct.Policy.Operators
             return m_operatorText;
         }
 
-        public virtual PolicyOpCode OpCode { get { return m_opCode; }}
+        
 
         /// <summary> 
         /// Subscribe to this event for notification when the Operator raises a warning.  
@@ -75,4 +72,20 @@ namespace Health.Direct.Policy.Operators
             }
         }
     }
+
+    public abstract class BinaryOperator : OperatorBase
+    {
+        protected BinaryOperator(Code opCode) : base(opCode)
+        {
+        }
+    }
+
+    public abstract class UnaryOperator : OperatorBase
+    {
+        protected UnaryOperator(Code opCode)
+            : base(opCode)
+        {
+        }
+    }
+
 }

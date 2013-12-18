@@ -15,16 +15,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class BitwiseOr<T> : OperatorBase
+    public class BitwiseOr<T> : BinaryOperator
     {
-        public BitwiseOr(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode
+        public BitwiseOr(Code opCode
             , Func<T, T, T> body) 
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }

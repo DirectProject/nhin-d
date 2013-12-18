@@ -18,14 +18,20 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
+using Health.Direct.Policy.OpCode;
+using Health.Direct.Policy.Operators;
 using Health.Direct.Policy.X509;
 
 namespace Health.Direct.Policy.Impl
 {
-    public class SimpleTextV1LexiconPolicyParser
+    public class SimpleTextV1LexiconPolicyParser : XMLLexiconPolicyParser
     {
         protected static readonly IDictionary<string, TokenType> tokenMap;
+
+        protected ThreadLocal<int> buildLevel;
 
         static SimpleTextV1LexiconPolicyParser()
         {
@@ -36,104 +42,335 @@ namespace Health.Direct.Policy.Impl
             tokenMap.Add(")", TokenType.END_LEVEL);
 
             // build the operator tokens
-            foreach (PolicyOpCode opCode in Enum.GetValues(typeof(PolicyOpCode)))
+            foreach (Code opCode in Code.Map)
             {
-                tokenMap.Add(opCode.ToString(), TokenType.OPERATOR_EXPRESSION);
+                tokenMap.Add(opCode.Token, TokenType.OPERATOR_EXPRESSION);
             }
 
             // add the X509Fields
-            tokenMap.Add(X509FieldType.SIGNATURE.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
-            tokenMap.Add(X509FieldType.SIGNATURE_ALGORITHM.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            tokenMap.Add(X509FieldType.Signature.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            tokenMap.Add(X509FieldType.SignatureAlgorithm.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
 
-            // add the TBS fields
+            // add the TBS Single fields
+            foreach (TBSFieldStandard.ISingle field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.ISingle))
+            {
+                tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            }
+
+            // add the TBS Complex fields
+            foreach (TBSFieldStandard.IComplex<string> field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.IComplex<string>))
+            {
+                if (field.RfcName != TBSFieldName<string>.Extenstions.GetRfcName())
+                    foreach (var rfcName in field.GetFieldTokens())
+                    {
+                        tokenMap.Add(rfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+                    }
+            }
+
+            
+		    // add the extension fields
+		    foreach (ExtensionStandard.Field field in ExtensionStandard.Field.Map)
+            {
+                tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            }
 
         }
 
-     //   /**
-     //* Builds a certificate reference expression that is a <
-     //* @param token The token used to build the field.
-     //* @return An {@link TBSField} object that represents the token.  Returns null if the token does not represent an {@link TBSField}.
-     //* @throws PolicyParseException
-     //*/
+        //   /**
+        //* Builds a certificate reference expression that is a <
+        //* @param token The token used to build the field.
+        //* @return An {@link TBSField} object that represents the token.  Returns null if the token does not represent an {@link TBSField}.
+        //* @throws PolicyParseException
+        //*/
 
 
         public SimpleTextV1LexiconPolicyParser()
         {
-            //buildLevel = new ThreadLocal<Integer>();
+            buildLevel = new ThreadLocal<int>();
         }
+        
+        public IPolicyExpression Parse(Stream stream) 
+	    {
+		    IList<TokenTypeAssociation> tokens = ParseToTokens(stream);
+		
+		    ResetLevel();
+		
+		    IPolicyExpression retExpression = BuildExpression(tokens.GetEnumerator());
+			
+		    if (GetLevel() != 0)
+			    throw new PolicyGrammarException("Group not closed.");
+		
+		    if (retExpression.GetExpressionType() != PolicyExpressionType.OPERATION)
+			    throw new PolicyGrammarException("Expression must evaluate to an operation");
+		
+		    return retExpression;
+	    }
+
+        protected IPolicyExpression BuildExpression(IEnumerator<TokenTypeAssociation> tokens) 
+	    {
+            return BuildExpression(tokens, false);
+	    }
 
 
-        //TODO: in java this was an internal accessor.  We would need to subclass to unittest.
+        /**
+	     * Builds an aggregated {@link PolicyExpression} from a parsed list of tokens.
+	     * @param tokens Parsed list of tokens used to build the {@link PolicyExpression}.
+	     * @param level Used for keeping track of depth of operations.
+	     * @return A {@link PolicyExpression} built from the parsed list of tokens.
+	     * @throws PolicyParseException
+	     */
+	    protected IPolicyExpression BuildExpression(IEnumerator<TokenTypeAssociation> tokens, bool operandFrame)
+	    {
+	        if (!tokens.MoveNext())
+	        {
+	            return null;
+	        }
+
+		    IList<IPolicyExpression> builtOperandExpressions = new List<IPolicyExpression>();
+
+	        do
+	        {
+			    TokenTypeAssociation assos = tokens.Current;
+			    switch (assos.GetType())
+			    {
+				    case TokenType.START_LEVEL:
+				    {
+					    IncrementLevel();
+					    IPolicyExpression expression = BuildExpression(tokens);
+					    if (operandFrame)
+						    return expression;
+					
+					    builtOperandExpressions.Add(expression);
+					    break;
+				    }
+				    case TokenType.END_LEVEL:
+					    if (GetLevel() == 0)
+						    throw new PolicyGrammarException("To many \")\" tokens.  Delete this token");
+					
+					    if (builtOperandExpressions.Count == 0)
+						    throw new PolicyGrammarException("Group must contain at least one expression.");
+					
+					    this.decrementLevel();
+					    return builtOperandExpressions[0];
+				    case TokenType.OPERATOR_EXPRESSION:
+				    {
+					    // get the operator for this token
+					    OperatorBase operatorBase =  PolicyOperator.FromToken(assos.GetToken());
+					
+					    // regardless if this is a unary or binary expression, then next set of tokens should consist 
+					    // of a parameter to this operator
+					    IPolicyExpression subExpression = BuildExpression(tokens, true);
+					
+					    if (subExpression == null)
+						    throw new PolicyGrammarException("Missing parameter.  Operator must be followed by an expression.");
+					
+					    builtOperandExpressions.Add(subExpression);
+					
+					    // now add the parameters to the operator
+                        if (builtOperandExpressions.Count == 1 && operatorBase is BinaryOperator)
+						    throw new PolicyGrammarException("Missing parameter.  Binary operators require two parameters.");
+
+                        IPolicyExpression operatorExpression = new OperationPolicyExpression(operatorBase, builtOperandExpressions);
+					
+					    if (operandFrame)
+						    return operatorExpression;
+					
+					    builtOperandExpressions = new List<IPolicyExpression>();
+					    builtOperandExpressions.Add(operatorExpression);
+					
+					    break;
+				    }
+				    case TokenType.LITERAL_EXPRESSION:
+				    {
+					    IPolicyExpression expression = new LiteralPolicyExpression<string>(new PolicyValue<string>(assos.GetToken()));
+					    if (operandFrame)
+						    return expression;  // exit this operand frame
+					
+					    builtOperandExpressions.Add(expression);
+					    break;
+				    }
+				    case TokenType.CERTIFICATE_REFERENCE_EXPRESSION:
+				    {
+                        IPolicyExpression expression = BuildCertificateReferenceField(assos.GetToken());
+					
+					    if (operandFrame)
+						    return expression;  // exit this operand frame
+
+                        builtOperandExpressions.Add(expression);
+					    break;
+				    }
+			    }
+		    } while(tokens.MoveNext());
+	
+		    if (builtOperandExpressions.Count > 1)
+			    throw new PolicyGrammarException("Erroneous expression.");
+			
+		    return builtOperandExpressions[0];
+	    }
+
+        protected IPolicyExpression BuildCertificateReferenceField(String token) //throws PolicyParseException 
+	    {
+		    IPolicyExpression checkObj = BuildX509Field(token);
+		    // check to see if its an X509Field
+		    if (checkObj == null)
+		    {
+			    // check to see if TBSFieldName
+			    checkObj = BuildTBSField(token);
+			    if (checkObj == null)
+			    {
+				    // check for extension field
+				    checkObj = BuildExtensionField(token);
+			    }
+		    }
+		
+		    return checkObj;
+	    }
+
+ 
+        /**
+	     * Builds a certificate reference expression that is an {@link X509Field}.
+	     * @param token The token used to build the field.
+	     * @return An {@link X509Field} object that represents the token.  Returns null if the token does not represent an {@link X509Field}.
+	     * @throws PolicyParseException
+	     */
+        public X509Field<string> BuildX509Field(String token) //throws PolicyParseException 
+	    {
+		    X509Field<string> retVal = null;
+		    X509FieldType fieldType = X509FieldType.FromToken(token);
+
+		    if (fieldType != null)
+		    {
+			    try
+			    {
+                    retVal = fieldType.GetReferenceClass();
+                    if (retVal == null)
+					    throw new PolicyParseException("X509Field with token name " + token + " has not been implemented yet.");
+			    }
+			    catch (PolicyParseException ex)
+			    {
+				    throw;
+			    }
+			    
+			    catch (Exception e)
+			    {
+				    throw new PolicyParseException("Error building X509Field", e);
+			    }
+		    }
+		    return retVal;
+	    }
+
+
         /// <summary>
         /// Builds a certificate reference expression that is a <see cref="ITBSField{T}"/>
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-	public IPolicyExpression buildTBSField(String token) 
-	{
-        ITBSField<String> retVal = null;
-		TBSFieldName<String> fieldName = TBSFieldName<String>.FromToken(token);
+        public ITBSField<String> BuildTBSField(String token) //throws PolicyParseException 
+        {
+            ITBSField<String> retVal = null;
+            TBSFieldName<String> fieldName = TBSFieldName<String>.FromToken(token);
 
-		if (fieldName != null)
-		{
-			try
-			{
-				//Class<? extends TBSField<?>> fieldRefClass = fieldName.GetReferenceClass(token);
-                ITBSField<String> fieldRefClass = fieldName.GetReferenceClass(token);
-				if (fieldRefClass == null)
-					throw new PolicyParseException("TBSField with token name " + token + " has not been implemented yet.");
-				
-                ////Java
-                //if (fieldRefClass.Equals(IssuerAttributeField.class) 
-                //        || fieldRefClass.Equals(SubjectAttributeField.class))
-                //{
-                //    bool required = token.endsWith("+");
-					
-                //    String rdnLookupToken = (required) ? token.substring(0, token.length() - 1) : token;
-					
-                //    RDNAttributeIdentifier identifier = RDNAttributeIdentifier.fromName(rdnLookupToken);
-                //    retVal = fieldRefClass.equals(IssuerAttributeField.class) ? new IssuerAttributeField(required, identifier) :
-                //        new SubjectAttributeField(required, identifier);
-                //}
-                //else
-                //{
-                //    retVal = fieldRefClass.newInstance();
-                //} 
+            if (fieldName != null)
+            {
+                try
+                {
+                    //Class<? extends TBSField<?>> fieldRefClass = fieldName.GetReferenceClass(token);
+                    ITBSField<String> fieldRefClass = fieldName.GetReferenceClass(token);
+                    if (fieldRefClass == null)
+                        throw new PolicyParseException("TBSField with token name " + token + " has not been implemented yet.");
 
-				if (fieldRefClass.GetType() == typeof(IssuerAttributeField)
-                        || fieldRefClass.GetType() == typeof(SubjectAttributeField))
-				{
-					bool required = token.EndsWith("+");
-					String rdnLookupToken = (required) ? token.Substring(0, token.Length - 1) : token;
-					
-					RDNAttributeIdentifier identifier = RDNAttributeIdentifier.FromName(rdnLookupToken);
-                    retVal = fieldRefClass.GetType() == typeof(IssuerAttributeField)
-                        ? new IssuerAttributeField(required, identifier) as ITBSField<String> :
-                        new SubjectAttributeField(required, identifier) as ITBSField<String>;
-				}
-				else
-				{	
-                    //maybe the expression cloning stuff???
-                    //Or just send Types around... This is still a port of java and could change a lot.
-					//retVal = fieldRefClass.newInstance();
-                    retVal = Activator.CreateInstance(fieldRefClass.GetType()) as ITBSField<String>;
-				}
-			}
-			catch (PolicyParseException ex)
-			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				throw new PolicyParseException("Error building TBSField", e);
-			}
-			
-		}
-		
-		return retVal;
-	}
-        //TODO: was projected in JAVA which is like intenal... Revisit
+                    ////Java
+                    //if (fieldRefClass.Equals(IssuerAttributeField.class) 
+                    //        || fieldRefClass.Equals(SubjectAttributeField.class))
+                    //{
+                    //    bool required = token.endsWith("+");
 
+                    //    String rdnLookupToken = (required) ? token.substring(0, token.length() - 1) : token;
+
+                    //    RDNAttributeIdentifier identifier = RDNAttributeIdentifier.fromName(rdnLookupToken);
+                    //    retVal = fieldRefClass.equals(IssuerAttributeField.class) ? new IssuerAttributeField(required, identifier) :
+                    //        new SubjectAttributeField(required, identifier);
+                    //}
+                    //else
+                    //{
+                    //    retVal = fieldRefClass.newInstance();
+                    //} 
+
+                    if (fieldRefClass.GetType() == typeof(IssuerAttributeField)
+                            || fieldRefClass.GetType() == typeof(SubjectAttributeField))
+                    {
+                        bool required = token.EndsWith("+");
+                        String rdnLookupToken = (required) ? token.Substring(0, token.Length - 1) : token;
+
+                        RDNAttributeIdentifier identifier = RDNAttributeIdentifier.FromName(rdnLookupToken);
+                        retVal = fieldRefClass.GetType() == typeof(IssuerAttributeField)
+                            ? new IssuerAttributeField(required, identifier) as ITBSField<String> :
+                            new SubjectAttributeField(required, identifier) as ITBSField<String>;
+                    }
+                    else
+                    {
+                        //maybe the expression cloning stuff???
+                        //Or just send Types around... This is still a port of java and could change a lot.
+                        //retVal = fieldRefClass.newInstance();
+                        retVal = Activator.CreateInstance(fieldRefClass.GetType()) as ITBSField<String>;
+                    }
+                }
+                catch (PolicyParseException ex)
+                {
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    throw new PolicyParseException("Error building TBSField", e);
+                }
+
+            }
+
+            return retVal;
+        }
+
+        /**
+	     * Builds a certificate reference expression that is an {@link ExtensionField}.
+	     * @param token The token used to build the field.
+	     * @return An {@link ExtensionField} object that represents the token.  Returns null if the token does not represent an {@link ExtensionField}.
+	     * @throws PolicyParseException
+	     */
+        protected IExtensionField<string> BuildExtensionField(String token) //throws PolicyParseException 
+	    {
+		    IExtensionField<string> retVal = null;
+		    ExtensionIdentifier<string> fieldType = ExtensionIdentifier<string>.FromToken(token);
+
+		    if (fieldType != null)
+		    {
+			    try
+			    {
+				    bool required = token.EndsWith("+");
+				    retVal = fieldType.GetReferenceClass(token, required);
+				    if (retVal == null)
+					    throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
+			    }
+			    catch (PolicyParseException ex)
+			    {
+				    throw ex;
+			    }
+			    catch (Exception e)
+			    {
+				    throw new PolicyParseException("Error building ExtensionField", e);
+			    }
+		    }
+		    return retVal;
+	    }
+	
+
+
+
+        /// <summary>
+        /// Parses an input stream of the SimpleTextV1 lexicon into a list of tokens.  Tokens are inserted into the list
+        /// as they encountered in the stream.
+        /// <param name="stream">Input stream</param>
+        /// <returns>An ordered list of tokens parsed from the input stream.</returns>
+        /// <exception cref="PolicyParseException"></exception>
+        /// </summary>
         public IList<TokenTypeAssociation> ParseToTokens(Stream stream)
         {
             var tokens = new List<TokenTypeAssociation>();
@@ -141,15 +378,119 @@ namespace Health.Direct.Policy.Impl
             {
                 BinaryReader reader = new BinaryReader(stream);
                 StringWriter writer = new StringWriter();
-                bool holdMode;
-                TokenType holdType;
+                bool holdMode = false;
+                TokenType? holdType = null;
                 while (reader.PeekChar() != -1)
                 {
-                    string checkForToken = reader.ReadChar().ToString(CultureInfo.InvariantCulture);
+                    string inputChar = reader.ReadChar().ToString(CultureInfo.InvariantCulture);
+                    writer.Write(inputChar);
+                    String checkForTokenString = writer.ToString();
+
                     TokenType exactMatchToken;
-                    tokenMap.TryGetValue("hello", out exactMatchToken);
-                }
+                    bool tokenMatch = tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
+
+                    if (tokenMatch)
+                    {
+                        // if the token is an operator, we need to keep looking forward to the next
+                        // character because some operators are made up of the exact same characters.. we
+                        // may have a partial string of an operator with more characters
+                        if (reader.PeekChar() != -1 
+                            &&
+                            (exactMatchToken == TokenType.OPERATOR_EXPRESSION 
+                            || exactMatchToken == TokenType.CERTIFICATE_REFERENCE_EXPRESSION))
+                        {
+                            holdType = exactMatchToken;
+                            // go into hold mode so we can check the next character
+                            holdMode = true;
+                        }
+                        else
+                        {
+                            // not an operator, so go ahead and mark it as a complete token
+                            tokens.Add(new TokenTypeAssociation(checkForTokenString, exactMatchToken));
+                            writer = new StringWriter();
+                        }
+                    }
+                    else if (holdMode)
+					{
+						// we know that the checkForTokenString is comprised of an exact match at the beginning of the string
+						// up to the last character in the string
+						// break the string into the known token and the start of the next token
+						String operatorToken = checkForTokenString.Substring(0, (checkForTokenString.Length - 1));
+						String nextToken = checkForTokenString.Substring((checkForTokenString.Length - 1));
+						
+						// add the token to the token list
+						tokens.Add(new TokenTypeAssociation(operatorToken, holdType));
+						
+						// reset the writer
+						writer = new StringWriter();
+						
+						// check if the nextToken string matches a string
+
+						tokenMatch = tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
+						if (tokenMatch)
+						{		
+							tokens.Add(new TokenTypeAssociation(nextToken, exactMatchToken));
+						}
+						else
+							writer.Write(nextToken); // not a reserved token, so queue up the nextToken to continue on with the parsing
+						
+						holdMode = false;
+						holdType = null;
+					}
+					else
+					{
+						// we didn't hit an exact match, but the new character we hit may be a reserved token
+						// check to see if the checkForTokenString now contains a reserved token
+					    foreach (var key in tokenMap.Keys)
+					    {
+					        int idx = checkForTokenString.IndexOf(key);
+							if (idx >= 0)
+							{
+								// found one... need to break the string into a literal and the new token
+								String firstToken = checkForTokenString.Substring(0, idx).Trim();
+								String secondToken = checkForTokenString.Substring(idx).Trim(); 
+								
+								// if the first token is all white space, don't add it as a token
+								if (!String.IsNullOrEmpty(firstToken))
+									tokens.Add(new TokenTypeAssociation(firstToken, TokenType.LITERAL_EXPRESSION));
+
+								// reset the writer
+								writer = new StringWriter();
+								
+								// check if the second token (which we know is a reserved token)
+								// is an operator... 
+                                tokenMatch = tokenMap.TryGetValue(secondToken, out exactMatchToken);
+								
+								if (tokenMatch &&
+                                    (exactMatchToken == TokenType.OPERATOR_EXPRESSION 
+                                    || exactMatchToken == TokenType.CERTIFICATE_REFERENCE_EXPRESSION))
+								{
+									// go into hold mode
+									holdMode = true;
+									holdType = exactMatchToken;
+									writer.Write(secondToken);
+								}
+								else
+								{
+									// the token is not an operator, so add it the token list
+									tokens.Add(new TokenTypeAssociation(secondToken, exactMatchToken));
+								}
+								break;
+							}
+						}
+					}
+				}
                 
+                // now that we have completed traversing the expression lexicon, if there is anything left over in the writer
+			    // add it as a token
+			    String remainingString = writer.ToString().Trim();
+			    if (!string.IsNullOrEmpty(remainingString))
+			    {
+                    TokenType exactMatchToken;
+                    bool tokenMatch = tokenMap.TryGetValue(remainingString, out exactMatchToken);
+                    TokenType addTokenType = (tokenMatch) ? exactMatchToken : TokenType.LITERAL_EXPRESSION;
+				    tokens.Add(new TokenTypeAssociation(remainingString, addTokenType));
+			    }
             }
             catch (IOException e)
             {
@@ -158,20 +499,44 @@ namespace Health.Direct.Policy.Impl
             return tokens;
         }
 
+        protected int ResetLevel()
+        {
+            buildLevel.Value = 0;
+            return buildLevel.Value;
+        }
+
+        protected int GetLevel()
+        {
+            return buildLevel.Value;
+        }
+
+        protected int IncrementLevel()
+        {
+            buildLevel.Value++;
+            return buildLevel.Value;
+        }
+
+        protected int decrementLevel()
+        {
+            buildLevel.Value--;
+            return buildLevel.Value;
+        }
+	
+
         /// <summary>
         /// Association of a token to a <see cref="TokenType"/>
         /// </summary>
         public class TokenTypeAssociation
         {
             private readonly String token;
-            private readonly TokenType type;
+            private readonly TokenType? type;
 
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="token">The token</param>
             /// <param name="type">The token type</param>
-            public TokenTypeAssociation(String token, TokenType type)
+            public TokenTypeAssociation(String token, TokenType? type)
             {
                 this.token = token;
                 this.type = type;
@@ -181,7 +546,7 @@ namespace Health.Direct.Policy.Impl
             /// Gets the token
             /// </summary>
             /// <returns>The token</returns>
-            public String getToken()
+            public String GetToken()
             {
                 return token;
             }
@@ -191,13 +556,13 @@ namespace Health.Direct.Policy.Impl
             /// @return The token type
             /// </summary>
             /// <returns>The token type</returns>
-            public TokenType getType()
+            public TokenType? GetType()
             {
                 return type;
             }
 
             /// <inheritdoc />
-            public String toString()
+            public override String ToString()
             {
                 StringBuilder builder = new StringBuilder("");
                 builder.Append("Token Type: ").Append(type.ToString())
@@ -206,5 +571,16 @@ namespace Health.Direct.Policy.Impl
                 return builder.ToString();
             }
         }
+    }
+
+    public class PolicyGrammarException : Exception
+    {
+        public PolicyGrammarException()
+        {
+        }
+
+        public PolicyGrammarException(String msg):base(msg){}
+
+        public PolicyGrammarException(string msg, Exception ex) : base(msg, ex) { }
     }
 }

@@ -25,23 +25,23 @@ namespace Health.Direct.Policy.Tests.x509
         [Fact]
         public void testGetAttributes_rfcName()
         {
-            Assert.Equal("Signature", X509FieldType.SIGNATURE.GetRfcName());
-            Assert.Equal("Algorithm", X509FieldType.SIGNATURE_ALGORITHM.GetRfcName());
+            Assert.Equal("Signature", X509FieldType.Signature.GetRfcName());
+            Assert.Equal("Algorithm", X509FieldType.SignatureAlgorithm.GetRfcName());
             Assert.Equal("TbsCertificate", X509FieldType.TBS.GetRfcName());
         }
         [Fact]
         public void testGetAttributes_getDisplay()
         {
-            Assert.Equal("Signature", X509FieldType.SIGNATURE.GetDisplay());
-            Assert.Equal("Algorithm", X509FieldType.SIGNATURE_ALGORITHM.GetDisplay());
+            Assert.Equal("Signature", X509FieldType.Signature.GetDisplay());
+            Assert.Equal("Algorithm", X509FieldType.SignatureAlgorithm.GetDisplay());
             Assert.Equal("To Be Signed Certificate", X509FieldType.TBS.GetDisplay());
 
         }
         [Fact]
         public void testGetAttributes_toString()
         {
-            Assert.Equal("X509.Signature", X509FieldType.SIGNATURE.ToString());
-            Assert.Equal("X509.Algorithm", X509FieldType.SIGNATURE_ALGORITHM.ToString());
+            Assert.Equal("X509.Signature", X509FieldType.Signature.ToString());
+            Assert.Equal("X509.Algorithm", X509FieldType.SignatureAlgorithm.ToString());
             Assert.Equal("X509.TbsCertificate", X509FieldType.TBS.ToString());
         }
     }

@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace Health.Direct.Policy.X509
 {
     public class TBSFieldName<T>
@@ -26,17 +27,20 @@ namespace Health.Direct.Policy.X509
         /// <summary>
         /// Certificate version
         /// </summary>
-        public static readonly TBSFieldName<T> VERSION = new TBSFieldName<T>("Version", "Version",
-                                                                       new List<AttributeReferenceClass<T>>());
+        public static readonly TBSFieldName<T> Version = new TBSFieldName<T>(
+            new TBSFieldStandard.Version(new List<TBSFieldStandard.AttributeReferenceClass<string>>()) as TBSFieldStandard.Complex<T>);
+                                                                       
         /// <summary>
         /// Certificate serial number
         /// </summary>
-        public static readonly TBSFieldName<T> SERIAL_NUMBER = new TBSFieldName<T>("SerialNumber", "Serial Number", new SerialNumberAttributeField() as ITBSField<T>);
+        public static readonly TBSFieldName<T> SerialNumber = new TBSFieldName<T>(
+            new TBSFieldStandard.SerialNumber(new SerialNumberAttributeField()));
         
         /// <summary>
         /// Certificate signature algorithm
         /// </summary>
-        public static readonly TBSFieldName<T> SIGNATURE = new TBSFieldName<T>("Signature", "Signature", new List<AttributeReferenceClass<T>>());
+        public static readonly TBSFieldName<T> Signature = new TBSFieldName<T>(
+            new TBSFieldStandard.Signature(new List<TBSFieldStandard.AttributeReferenceClass<string>>()) as TBSFieldStandard.Complex<T>);
 
 
         //TODO: need delegates to insert the constructor params at run time. For both Issuer and Subject
@@ -47,83 +51,104 @@ namespace Health.Direct.Policy.X509
         /// Distinguished name of certificate signer
         /// </summary>
         /// <param name="?"></param>
-        public static readonly TBSFieldName<T> ISSUER = new TBSFieldName<T>("Issuer", "Issuer",
-                                                                           rdnsToReferenceClass(new IssuerAttributeField(false, null) as ITBSField<T>));
+        public static readonly TBSFieldName<T> Issuer = new TBSFieldName<T>(
+            new TBSFieldStandard.Issuer(TBSFieldStandard.RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn))) as TBSFieldStandard.Complex<T>);
 
 
         /// <summary>
         /// Distinguished name of certificate signer
         /// </summary>
         /// <param name="?"></param>
-        public static readonly TBSFieldName<T> SUBJECT = new TBSFieldName<T>("Subject", "Subject",
-                                                                            rdnsToReferenceClass(new SubjectAttributeField(false, null) as ITBSField<T>));
+        public static readonly TBSFieldName<T> Subject = new TBSFieldName<T>(
+            new TBSFieldStandard.Subject(TBSFieldStandard.RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn))) as TBSFieldStandard.Complex<T>);
 
 
         /// <summary>
         /// Certificate extension fields
         /// </summary>
-        public static readonly TBSFieldName<T> Extenstions = new TBSFieldName<T>("Extensions", "Extensions",
-            new List<AttributeReferenceClass<T>>());
+        public static readonly TBSFieldName<T> Extenstions = new TBSFieldName<T>(
+            new TBSFieldStandard.Extensions(new List<TBSFieldStandard.AttributeReferenceClass<string>>()) as TBSFieldStandard.Complex<T>);
 
 
-
-        static List<AttributeReferenceClass<T>> rdnsToReferenceClass(ITBSField<T> refClass)
-	    {
-		     List<AttributeReferenceClass<T>> retVal = new List<AttributeReferenceClass<T>>();
-
-            foreach (var rdnAtrId in RDNAttributeIdentifier.Values)
+        public static IEnumerable<TBSFieldName<T>> Values
+        {
+            get
             {
-                retVal.Add(new AttributeReferenceClass<T>(rdnAtrId.GetName(), refClass));
+                yield return Version;
+                yield return SerialNumber;
+                yield return Signature;
+                yield return Issuer;
+                yield return Subject;
+                yield return Extenstions;
             }
-		   
-		    return retVal;
-	    }
+        }
 
-        readonly String m_rfcName;
-	    readonly String m_display;
-	    readonly IList<AttributeReferenceClass<T>> m_subAttributes;
+
+        readonly TBSFieldStandard.IField tbsField;
+        readonly ITBSField<string> m_referenceClass;
+        readonly IList<TBSFieldStandard.AttributeReferenceClass<T>> m_subAttributes;
+
 	    //Class<? extends TBSField<?>> referenceClass;
-        ITBSField<T> m_referenceClass;
         //ITBSField<Object> m_referenceClass;
         //Type m_referenceClass;
 
-	    static Dictionary<String, TBSFieldName<T>> tokenFieldMap; 
+	    static readonly Dictionary<String, TBSFieldName<T>> TokenFieldMap;
 
-        private TBSFieldName(String rfcName, String display, IList<AttributeReferenceClass<T>> subAttributes) 
+        private TBSFieldName(TBSFieldStandard.ISingle field)
         {
-            m_rfcName = rfcName;
-	        m_display = display;
-            m_subAttributes = subAttributes;
-	        m_referenceClass = null;
-
-            //add required flag option to each sub attribute
-		    if (m_subAttributes.Count > 0)
-		    {
-                for (int i = 0; i < this.m_subAttributes.Count; i++ )
-                {
-                    var attRefClass = this.m_subAttributes[0];
-                    m_subAttributes[0] = new AttributeReferenceClass<T>(attRefClass.GetAttribute() + "+",
-                                                                        attRefClass.GetReferenceClass());
-                }
-		    }
+            tbsField = field;
+            m_referenceClass = field.ReferenceClass;
         }
 
-        private TBSFieldName(String rfcName, String display, ITBSField<T> referenceClass)
+        private TBSFieldName(TBSFieldStandard.Complex<T> field)
 	    {
-		    m_rfcName = rfcName;
-		    m_display = display;
-		    m_subAttributes = null;
-		    m_referenceClass = referenceClass;		
+            tbsField = field;
+            m_subAttributes = field.SubAttributes;
 	    }
 
+       
+
+        static TBSFieldName()
+        {
+            TokenFieldMap = new Dictionary<String, TBSFieldName<T>>();
+
+            foreach (var tbsFieldName in Values)
+            {
+                foreach (string fieldToken in tbsFieldName.GetFieldTokens())
+                {
+                    TokenFieldMap.Add(fieldToken, tbsFieldName); 
+                }
+            }
+        } 
     
+        /// <summary>
+	    /// Some fields may contain complex structure and multiple value may be extracted from the field or may require
+	    /// additional qualifiers to identify a specific value.  This method
+	    /// get a list of attribute token names or qualifiers that can be access from the field.  If the field does not support sub attributes
+	    /// or qualifiers, then this method returns a single entry with the field name.
+        /// <returns>A list of attribute token names or qualifiers that can be access from the field.</returns> 
+        /// </summary>
+	    public IList<String> GetFieldTokens()
+	    {
+		    if (m_subAttributes == null || ! m_subAttributes.Any())
+			    return new List<string>{"X509.TBS." + tbsField.RfcName, "X509.TBS." + tbsField.RfcName + "+"};
+		
+		    IList<String> names = new List<string>();
+            foreach (var attributeReferenceClass in m_subAttributes)
+            {
+                names.Add("X509.TBS." + tbsField.RfcName + "." + attributeReferenceClass.GetAttribute());
+            }
+		    return names;
+	    }
+
+
         /// <summary>
         /// Gets the name of the field as defined by RFC5280.
         /// </summary>
         /// <returns>The name of the field as defined by RFC5280.</returns>
         public String GetRfcName()
         {
-            return m_rfcName;
+            return tbsField.RfcName;
         }
 
         
@@ -133,32 +158,13 @@ namespace Health.Direct.Policy.X509
         /// <returns>A human readable display name of the field.</returns>
         public String GetDisplay()
         {
-            return m_display;
+            return tbsField.Display;
         }
 
 
 
   
-        /// <summary>
-        /// Some fields may contain complex structure and multiple value may be extracted from the field or may required
-        /// additional qualifiers to identify a specific value.  This method
-        /// get a list of attribute token names or qualifiers that can be access from the field.  If the field does not support sub attributes
-        /// or qualifiers, then this method returns a single entry with the field name. 
-        /// </summary>
-        /// <returns>A list of attribute token names or qualifiers that can be access from the field.</returns>
-	    public List<String> GetFieldTokens()
-	    {
-		    if (m_subAttributes == null || !m_subAttributes.Any())
-			    return new List<String>{"X509.TBS." + m_rfcName, "X509.TBS." + m_rfcName + "+"};
-    		
-		    List<String> names = new List<String>();
-	        foreach (var attRefClass in m_subAttributes)
-	        {
-	            names.Add("X509.TBS." + m_rfcName + "." + attRefClass.GetAttribute());
-	        }
-    		
-		    return names;
-	    }
+        
 	
     
         
@@ -169,32 +175,32 @@ namespace Health.Direct.Policy.X509
         /// </summary>
         /// <param name="tokenName">Field name</param>
         /// <returns>The class implementing the field name.</returns>
-        public ITBSField<T> GetReferenceClass(String tokenName)
-	{
-		//Class<? extends TBSField<?>> retVal = null;
-        ITBSField<T> retVal = null;
+        public ITBSField<string> GetReferenceClass(String tokenName)
+	    {
+		    //Class<? extends TBSField<?>> retVal = null;
+            ITBSField<string> retVal = null;
 
-		if (m_referenceClass != null)
-		{
-		    return m_referenceClass;
-		}
-        int idx = tokenName.LastIndexOf(".", StringComparison.CurrentCulture);
-        if (idx >= 0)
-        {
-            String name = tokenName.Substring(idx + 1);
-
-            foreach (var attRefClass in m_subAttributes)
+		    if (m_referenceClass != null)
+		    {
+		        return m_referenceClass;
+		    }
+            int idx = tokenName.LastIndexOf(".", StringComparison.CurrentCulture);
+            if (idx >= 0)
             {
-                if (name.Equals(attRefClass.GetAttribute()))
-                {
-                    retVal = attRefClass.GetReferenceClass();
-                    break;
-                }		
-            }
-        }
+                String name = tokenName.Substring(idx + 1);
 
-            return retVal;
-	}
+                foreach (var attRefClass in m_subAttributes)
+                {
+                    if (name.Equals(attRefClass.GetAttribute()))
+                    {
+                        retVal = attRefClass.GetReferenceClass(name) as ITBSField<string>;
+                        break;
+                    }		
+                }
+            }
+
+                return retVal;
+	    }
 
 
 
@@ -206,50 +212,8 @@ namespace Health.Direct.Policy.X509
         public static TBSFieldName<T> FromToken(String token)
         {
             TBSFieldName<T> tbsFieldName;
-            tokenFieldMap.TryGetValue(token, out tbsFieldName);
+            TokenFieldMap.TryGetValue(token, out tbsFieldName);
             return tbsFieldName;
         }
-
-
-
-
-
-        //Todo: combine with ExtensionIdentifier.AttributeReferenceClass ???
-        public class AttributeReferenceClass<T>
-        {
-            private readonly String attribute;
-            //protected final Class<? extends TBSField<?>> referenceClass;
-            private ITBSField<T> referenceClass;
-
-            //public AttributeReferenceClass(String attribute, Class<? extends TBSField<?>> referenceClass)
-            //{
-            //    this.attribute = attribute;
-            //    this.referenceClass = referenceClass;
-            //}
-
-            public AttributeReferenceClass(String attribute, ITBSField<T> referenceClass)
-            {
-                this.attribute = attribute;
-                this.referenceClass = referenceClass;
-            }
-
-
-            public String GetAttribute()
-            {
-                return attribute;
-            }
-
-            //public Class<? extends TBSField<?>> getReferenceClass()
-            //{
-            //    return referenceClass;
-
-            //}
-
-            public ITBSField<T> GetReferenceClass()
-            {
-                return referenceClass;
-            }
-        }
-
     }
 }

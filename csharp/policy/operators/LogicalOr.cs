@@ -15,17 +15,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class LogicalOr<T> : OperatorBase
+    public class LogicalOr<T> : BinaryOperator
     {
 
-        public LogicalOr(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode
+        public LogicalOr(Code opCode
             , Func<T, T, T> body)
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }

@@ -15,17 +15,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class NotContains<TValue, TList, TResult> : OperatorBase
+    public class NotContains<TValue, TList, TResult> : BinaryOperator
     {
 
-        public NotContains(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode
+        public NotContains(Code opCode
             , Func<TValue, TList, TResult> body)
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }

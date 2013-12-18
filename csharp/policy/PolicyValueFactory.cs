@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections.Generic;
 
 namespace Health.Direct.Policy
 {
@@ -36,6 +35,7 @@ namespace Health.Direct.Policy
         {
             return new PolicyValueImpl(value);
         }
+
 
         public static IPolicyValue<int> GetInstance(int value)
         {
@@ -101,7 +101,61 @@ namespace Health.Direct.Policy
             }
         }
     }
-    
+
+    [Serializable]
+    public class PolicyValueStringImpl : IPolicyValue<string>
+    {
+        protected readonly string Value;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value">The value contained within the <see cref="IPolicyValue{T}"/> instance.</param>
+        internal PolicyValueStringImpl(string value)
+        {
+            Value = value;
+        }
+
+        /// <inheritdoc />
+        public string GetPolicyValue()
+        {
+            return Value;
+        }
+
+        /// <summary>
+        /// Returns the ToString representation of the internal policy value.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Value;
+        }
+
+
+        /// <summary>
+        /// Returns the Equals representation of the internal policy value.
+        /// </summary>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            var value = obj as IPolicyValue<int>;
+            if (value != null)
+                return Value.Equals(value.GetPolicyValue());
+
+            return Value.Equals(obj);
+        }
+
+        /// <summary>
+        /// Returns the GetHashCode representation of the internal policy value.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+    }
 
     [Serializable]
     public class PolicyValueIntImpl : IPolicyValue<int>

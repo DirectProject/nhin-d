@@ -26,6 +26,10 @@ namespace Health.Direct.Policy
     {
         IPolicyExpression m_policyExpression;
 
+        public XMLLexiconPolicyParser()
+        {
+        }
+
         /// <summary>
         /// Create a new XMLLexiconPolicyParser
         /// </summary>

@@ -15,17 +15,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class Size<T> : OperatorBase
+    public class Size<T> : UnaryOperator
     {
 
-        public Size(string operatorToken
-            , string operatorText
-            , PolicyOpCode opCode
+        public Size(Code opCode
             , Func<T, int> body)
-            : base(operatorToken, operatorText, opCode)
+            : base(opCode)
         {
             Execute = body;
         }
