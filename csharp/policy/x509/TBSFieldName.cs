@@ -52,7 +52,7 @@ namespace Health.Direct.Policy.X509
         /// </summary>
         /// <param name="?"></param>
         public static readonly TBSFieldName Issuer = new TBSFieldName(
-            new TBSFieldStandard.Issuer(TBSFieldStandard.RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn))) );
+            new TBSFieldStandard.Issuer(TBSFieldStandard.RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn))));
 
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Health.Direct.Policy.X509
         /// </summary>
         /// <param name="?"></param>
         public static readonly TBSFieldName Subject = new TBSFieldName(
-            new TBSFieldStandard.Subject(TBSFieldStandard.RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn))) );
+            new TBSFieldStandard.Subject(TBSFieldStandard.RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn))));
 
 
         /// <summary>
@@ -176,10 +176,10 @@ namespace Health.Direct.Policy.X509
         /// </summary>
         /// <param name="tokenName">Field name</param>
         /// <returns>The class implementing the field name.</returns>
-        public ITBSField<string> GetReferenceClass(String tokenName)
+        public dynamic GetReferenceClass(String tokenName)
 	    {
 		    //Class<? extends TBSField<?>> retVal = null;
-            ITBSField<string> retVal = null;
+            dynamic retVal = null;
 
 		    if (m_referenceClass != null)
 		    {
@@ -194,7 +194,7 @@ namespace Health.Direct.Policy.X509
                 {
                     if (name.Equals(attRefClass.GetAttribute()))
                     {
-                        retVal = attRefClass.GetReferenceClass(name) as ITBSField<string>;
+                        retVal = attRefClass.GetReferenceClass(name) ;
                         break;
                     }		
                 }

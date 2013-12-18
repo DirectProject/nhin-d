@@ -50,9 +50,9 @@ namespace Health.Direct.Policy.X509
 	    }
 
         /// <inheritdoc />
-	    public override ExtensionIdentifier<int> GetExtentionIdentifier() 
+	    public override ExtensionIdentifier GetExtentionIdentifier() 
 	    {
-		    return ExtensionIdentifier<int>.KeyUsage;
+		    return ExtensionIdentifier.KeyUsage;
 	    }	
     }
 }

@@ -265,36 +265,19 @@ namespace Health.Direct.Policy.Impl
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        public ITBSField<String> BuildTBSField(String token) //throws PolicyParseException 
+        public IPolicyExpression BuildTBSField(String token) //throws PolicyParseException 
         {
-            ITBSField<String> retVal = null;
+            dynamic retVal = null;
             TBSFieldName fieldName = TBSFieldName.FromToken(token);
 
             if (fieldName != null)
             {
                 try
                 {
-                    //Class<? extends TBSField<?>> fieldRefClass = fieldName.GetReferenceClass(token);
-                    ITBSField<String> fieldRefClass = fieldName.GetReferenceClass(token);
+                    dynamic  fieldRefClass = fieldName.GetReferenceClass(token);
                     if (fieldRefClass == null)
                         throw new PolicyParseException("TBSField with token name " + token + " has not been implemented yet.");
-
-                    ////Java
-                    //if (fieldRefClass.Equals(IssuerAttributeField.class) 
-                    //        || fieldRefClass.Equals(SubjectAttributeField.class))
-                    //{
-                    //    bool required = token.endsWith("+");
-
-                    //    String rdnLookupToken = (required) ? token.substring(0, token.length() - 1) : token;
-
-                    //    RDNAttributeIdentifier identifier = RDNAttributeIdentifier.fromName(rdnLookupToken);
-                    //    retVal = fieldRefClass.equals(IssuerAttributeField.class) ? new IssuerAttributeField(required, identifier) :
-                    //        new SubjectAttributeField(required, identifier);
-                    //}
-                    //else
-                    //{
-                    //    retVal = fieldRefClass.newInstance();
-                    //} 
+                    
 
                     if (fieldRefClass.GetType() == typeof(IssuerAttributeField)
                             || fieldRefClass.GetType() == typeof(SubjectAttributeField))
@@ -304,8 +287,8 @@ namespace Health.Direct.Policy.Impl
 
                         RDNAttributeIdentifier identifier = RDNAttributeIdentifier.FromName(rdnLookupToken);
                         retVal = fieldRefClass.GetType() == typeof(IssuerAttributeField)
-                            ? new IssuerAttributeField(required, identifier) as ITBSField<String> :
-                            new SubjectAttributeField(required, identifier) as ITBSField<String>;
+                            ? new IssuerAttributeField(required, identifier)  :
+                            new SubjectAttributeField(required, identifier) ;
                     }
                     else
                     {
@@ -335,19 +318,20 @@ namespace Health.Direct.Policy.Impl
 	     * @return An {@link ExtensionField} object that represents the token.  Returns null if the token does not represent an {@link ExtensionField}.
 	     * @throws PolicyParseException
 	     */
-        protected IExtensionField<string> BuildExtensionField(String token) //throws PolicyParseException 
+        public dynamic BuildExtensionField(String token) //throws PolicyParseException 
 	    {
-		    IExtensionField<string> retVal = null;
-		    ExtensionIdentifier<string> fieldType = ExtensionIdentifier<string>.FromToken(token);
-
+		    dynamic retVal = null;
+		    ExtensionIdentifier fieldType = ExtensionIdentifier.FromToken(token);
+            bool required = token.EndsWith("+");
 		    if (fieldType != null)
 		    {
 			    try
 			    {
-				    bool required = token.EndsWith("+");
 				    retVal = fieldType.GetReferenceClass(token, required);
-				    if (retVal == null)
-					    throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
+			        if (retVal == null)
+			        {
+			            throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
+			        }
 			    }
 			    catch (PolicyParseException ex)
 			    {
@@ -358,7 +342,11 @@ namespace Health.Direct.Policy.Impl
 				    throw new PolicyParseException("Error building ExtensionField", e);
 			    }
 		    }
-		    return retVal;
+            if (retVal == null)
+            {
+                throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
+            }
+            return retVal(required);
 	    }
 	
 

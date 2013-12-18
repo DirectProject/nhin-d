@@ -19,7 +19,7 @@ namespace Health.Direct.Policy
             return TBSFieldName.Extenstions;
         }
 
-        public abstract ExtensionIdentifier<T> GetExtentionIdentifier();
+        public abstract ExtensionIdentifier GetExtentionIdentifier();
         
 
         virtual public bool IsCritical()

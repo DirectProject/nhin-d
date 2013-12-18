@@ -98,12 +98,14 @@
     <Compile Include="X509\RDNAttributeIdentifier.cs" />
     <Compile Include="X509\SerialNumberAttributeField.cs" />
     <Compile Include="X509\SignatureAlgorithmField.cs" />
+    <Compile Include="X509\SubjectAltNameExtensionField.cs" />
     <Compile Include="X509\SubjectAttributeField.cs" />
     <Compile Include="X509\TBSField.cs" />
     <Compile Include="X509\TBSFieldName.cs" />
     <Compile Include="X509\TBSFieldStandard.cs" />
     <Compile Include="X509\X509Field.cs" />
     <Compile Include="X509\X509FieldType.cs" />
+    <Compile Include="X509\X509Standard.cs" />
     <Compile Include="XMLLexiconPolicyParser.cs" />
   </ItemGroup>
   <ItemGroup>

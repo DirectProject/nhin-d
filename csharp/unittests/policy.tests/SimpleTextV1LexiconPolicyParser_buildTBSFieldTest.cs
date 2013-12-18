@@ -23,10 +23,10 @@ namespace Health.Direct.Policy.Tests
         public void TestBuildTBSField_SerialNumber_AssertBuilt()
         {
             var parser = new SimpleTextV1LexiconPolicyParser();
-            var tbsField = parser.BuildTBSField("X509.TBS.SerialNumber");
-            tbsField.Should().NotBeNull();
-            tbsField.GetType().Should().Be(typeof(SerialNumberAttributeField));
-            tbsField.IsRequired().Should().Be(true);
+            dynamic tbsField = parser.BuildTBSField("X509.TBS.SerialNumber");
+            Assert.NotNull(tbsField);
+            Assert.Equal(tbsField.GetType(), typeof(SerialNumberAttributeField));
+            Assert.True(tbsField.IsRequired());
         }
 
 
@@ -42,9 +42,9 @@ namespace Health.Direct.Policy.Tests
         public void TestBuildTBSField_Issuer_AssertBuilt()
         {
             var parser = new SimpleTextV1LexiconPolicyParser();
-            var tbsField = parser.BuildTBSField("X509.TBS.Issuer.CN");
+            var tbsField = parser.BuildTBSField("X509.TBS.Issuer.CN") as IssuerAttributeField;
             tbsField.Should().NotBeNull();
-            tbsField.GetType().Should().BeAssignableTo<IssuerAttributeField>();
+            tbsField.GetType().Should().Be(typeof (IssuerAttributeField));
             ((IssuerAttributeField) tbsField).GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.COMMON_NAME);
             tbsField.IsRequired().Should().Be(false);
         }

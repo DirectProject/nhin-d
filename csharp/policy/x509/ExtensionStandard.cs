@@ -24,12 +24,25 @@ namespace Health.Direct.Policy.X509
     {
         public class Field
         {
-            public string Id;
+            public readonly string Id;
             public string RfcName;
             public string Display;
 
             public static List<Field> Map;
 
+            /// <summary>
+            /// Lookup data for object identifiers (OIDs) supported in X509 certificate extension fields.
+            /// </summary>
+            /// <param name="id"></param>
+            /// <param name="rfcName"></param>
+            /// <param name="display"></param>
+            public Field(string id, string rfcName, string display)
+            {
+                Id = id;
+                RfcName = rfcName;
+                Display = display;
+                
+            }
             static Field()
             {
                 Map = new List<Field>();
@@ -37,14 +50,94 @@ namespace Health.Direct.Policy.X509
             }
         }
 
+        /// <inheritdoc />
         public class KeyUsage : Field
         {
-            public KeyUsage()
-            {
-                Id = "2.5.29.15";
-                RfcName = "KeyUsage";
-                Display = "Key Usage";
-            }
+            public KeyUsage() : base("2.5.29.15", "KeyUsage", "Key Usage"){}
+        }
+
+        /// <inheritdoc />
+        public class SubjectAltName : Field
+        {
+            public SubjectAltName() : base("2.5.29.17", "SubjectAltName", "Subject Alternative Name") { }
+        }
+
+        /// <inheritdoc />
+        public class SubjectDirectoryAttributes : Field
+        {
+            public SubjectDirectoryAttributes() : base("2.5.29.9", "SubjectDirectoryAttributes", "Subject Key Attributes") { }
+        }
+
+        /// <inheritdoc />
+        public class SubjectKeyIdentifier : Field
+        {
+            public SubjectKeyIdentifier() : base("2.5.29.9", "SubjectKeyIdentifier", "Subject Key Identifier") { }
+        }
+
+        /// <inheritdoc />
+        public class IssuerAltName : Field
+        {
+            public IssuerAltName() : base("2.5.29.18", "IssuerAltName", "Issuer Alternative Name") { }
+        }
+
+        /// <inheritdoc />
+        public class CertificatePolicies : Field
+        {
+            public CertificatePolicies() : base("2.5.29.32", "CertificatePolicies", "Certificate Policies") { }
+        }
+
+        /// <inheritdoc />
+        public class PolicyMappings : Field
+        {
+            public PolicyMappings() : base("2.5.29.33", "PolicyMappings", "Policy Mappings") { }
+        }
+
+        /// <inheritdoc />
+        public class NameConstraints : Field
+        {
+            public NameConstraints() : base("2.5.29.30", "NameConstraints", "Name Constraints") { }
+        }
+
+        /// <inheritdoc />
+        public class PolicyConstraints : Field
+        {
+            public PolicyConstraints() : base("2.5.29.36", "PolicyConstraints", "Policy Constraints") { }
+        }
+
+        /// <inheritdoc />
+        public class ExtKeyUsageSyntax : Field
+        {
+            public ExtKeyUsageSyntax() : base("2.5.29.37", "ExtKeyUsageSyntax", "Extended Key Usage") { }
+        }
+
+        /// <inheritdoc />
+        public class CRLDistributionPoints : Field
+        {
+            public CRLDistributionPoints() : base("2.5.29.31", "CRLDistributionPoints", "CRL Distribution Points") { }
+        }
+
+        /// <inheritdoc />
+        public class InhibitAnyPolicy : Field
+        {
+            public InhibitAnyPolicy() : base("2.5.29.54", "InhibitAnyPolicy", "Inhibit Any Policy") { }
+        }
+
+        /// <inheritdoc />
+        public class FreshestCRL : Field
+        {
+            public FreshestCRL() : base("2.5.29.46", "FreshestCRL", "Freshest CRL") { }
+        }
+
+        /// <inheritdoc />
+        public class AuthorityInfoAccessSyntax : Field
+        {
+            public AuthorityInfoAccessSyntax() : base("1.3.6.1.5.5.7.1.1", "AuthorityInfoAccessSyntax", "Authority Information Access") { }
+        
+        }
+            /// <inheritdoc />
+        public class SubjectInfoAccessSyntax : Field
+        {
+            public SubjectInfoAccessSyntax() : base("1.3.6.1.5.5.7.1.11", "SubjectInfoAccessSyntax", "Subject Information Access") { }
         }
     }
 }
