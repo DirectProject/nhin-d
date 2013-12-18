@@ -23,19 +23,16 @@ using Org.BouncyCastle.Asn1.X509;
 
 namespace Health.Direct.Policy.X509
 {
-    public class SubjectAttributeField : TBSField<List<String>>
+    public class SubjectAttributeField : IssuerAttributeField
     {
-        protected RDNAttributeIdentifier RdnAttributeId;
-
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="required">Indicates if the field is required to be present in the certificate to be compliant with the policy.</param>
         /// <param name="rdnAttributeId">Id of the attribute to extract from the subject RDN</param>
         public SubjectAttributeField(bool required, RDNAttributeIdentifier rdnAttributeId)
-            : base(required)
+            : base(required, rdnAttributeId)
         {
-            RdnAttributeId = rdnAttributeId;
         }
 
         public SubjectAttributeField(bool requird, string rdnAttribute)
