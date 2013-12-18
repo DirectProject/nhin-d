@@ -22,25 +22,25 @@ using System.Linq;
 
 namespace Health.Direct.Policy.X509
 {
-    public class TBSFieldName<T>
+    public class TBSFieldName
     {
         /// <summary>
         /// Certificate version
         /// </summary>
-        public static readonly TBSFieldName<T> Version = new TBSFieldName<T>(
-            new TBSFieldStandard.Version(new List<TBSFieldStandard.AttributeReferenceClass<string>>()) as TBSFieldStandard.Complex<T>);
+        public static readonly TBSFieldName Version = new TBSFieldName(
+            new TBSFieldStandard.Version(new List<TBSFieldStandard.AttributeReferenceClass>()));
                                                                        
         /// <summary>
         /// Certificate serial number
         /// </summary>
-        public static readonly TBSFieldName<T> SerialNumber = new TBSFieldName<T>(
+        public static readonly TBSFieldName SerialNumber = new TBSFieldName (
             new TBSFieldStandard.SerialNumber(new SerialNumberAttributeField()));
         
         /// <summary>
         /// Certificate signature algorithm
         /// </summary>
-        public static readonly TBSFieldName<T> Signature = new TBSFieldName<T>(
-            new TBSFieldStandard.Signature(new List<TBSFieldStandard.AttributeReferenceClass<string>>()) as TBSFieldStandard.Complex<T>);
+        public static readonly TBSFieldName Signature = new TBSFieldName(
+            new TBSFieldStandard.Signature(new List<TBSFieldStandard.AttributeReferenceClass>()));
 
 
         //TODO: need delegates to insert the constructor params at run time. For both Issuer and Subject
@@ -51,33 +51,33 @@ namespace Health.Direct.Policy.X509
         /// Distinguished name of certificate signer
         /// </summary>
         /// <param name="?"></param>
-        public static readonly TBSFieldName<T> Issuer = new TBSFieldName<T>(
-            new TBSFieldStandard.Issuer(TBSFieldStandard.RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn))) as TBSFieldStandard.Complex<T>);
+        public static readonly TBSFieldName Issuer = new TBSFieldName(
+            new TBSFieldStandard.Issuer(TBSFieldStandard.RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn))) );
 
 
         /// <summary>
         /// Distinguished name of certificate signer
         /// </summary>
         /// <param name="?"></param>
-        public static readonly TBSFieldName<T> Subject = new TBSFieldName<T>(
-            new TBSFieldStandard.Subject(TBSFieldStandard.RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn))) as TBSFieldStandard.Complex<T>);
+        public static readonly TBSFieldName Subject = new TBSFieldName(
+            new TBSFieldStandard.Subject(TBSFieldStandard.RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn))) );
 
 
         /// <summary>
         /// Certificate extension fields
         /// </summary>
-        public static readonly TBSFieldName<T> Extenstions = new TBSFieldName<T>(
-            new TBSFieldStandard.Extensions(new List<TBSFieldStandard.AttributeReferenceClass<string>>()) as TBSFieldStandard.Complex<T>);
+        public static readonly TBSFieldName Extenstions = new TBSFieldName(
+            new TBSFieldStandard.Extensions(new List<TBSFieldStandard.AttributeReferenceClass>()) );
 
 
-        public static IEnumerable<TBSFieldName<T>> Values
+        public static IEnumerable<TBSFieldName> Values
         {
             get
             {
                 yield return Version;
                 yield return SerialNumber;
                 yield return Signature;
-                yield return Issuer;
+                yield return Issuer ;
                 yield return Subject;
                 yield return Extenstions;
             }
@@ -86,13 +86,13 @@ namespace Health.Direct.Policy.X509
 
         readonly TBSFieldStandard.IField tbsField;
         readonly ITBSField<string> m_referenceClass;
-        readonly IList<TBSFieldStandard.AttributeReferenceClass<T>> m_subAttributes;
+        readonly IList<TBSFieldStandard.AttributeReferenceClass> m_subAttributes;
 
 	    //Class<? extends TBSField<?>> referenceClass;
         //ITBSField<Object> m_referenceClass;
         //Type m_referenceClass;
 
-	    static readonly Dictionary<String, TBSFieldName<T>> TokenFieldMap;
+	    static readonly Dictionary<String, TBSFieldName> TokenFieldMap;
 
         private TBSFieldName(TBSFieldStandard.ISingle field)
         {
@@ -100,7 +100,7 @@ namespace Health.Direct.Policy.X509
             m_referenceClass = field.ReferenceClass;
         }
 
-        private TBSFieldName(TBSFieldStandard.Complex<T> field)
+        private TBSFieldName(TBSFieldStandard.Complex field)
 	    {
             tbsField = field;
             m_subAttributes = field.SubAttributes;
@@ -110,7 +110,8 @@ namespace Health.Direct.Policy.X509
 
         static TBSFieldName()
         {
-            TokenFieldMap = new Dictionary<String, TBSFieldName<T>>();
+            Console.WriteLine("hello:: " );
+            TokenFieldMap = new Dictionary<String, TBSFieldName>();
 
             foreach (var tbsFieldName in Values)
             {
@@ -209,9 +210,9 @@ namespace Health.Direct.Policy.X509
         /// </summary>
         /// <param name="token">The token used to look up the TBSFieldName.</param>
         /// <returns>The TBSFieldName associated with the token.  If the token does not represent a known field, then null is returned.</returns>
-        public static TBSFieldName<T> FromToken(String token)
+        public static TBSFieldName FromToken(String token)
         {
-            TBSFieldName<T> tbsFieldName;
+            TBSFieldName tbsFieldName;
             TokenFieldMap.TryGetValue(token, out tbsFieldName);
             return tbsFieldName;
         }

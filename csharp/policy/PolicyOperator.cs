@@ -16,14 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Health.Direct.Policy.OpCode;
 using Health.Direct.Policy.Operators;
-using Org.BouncyCastle.Crypto.Prng;
 
 namespace Health.Direct.Policy
 {
@@ -41,47 +39,79 @@ namespace Health.Direct.Policy
         public static UriValid<T> URI_VALIDATE;
                
         
+
         static PolicyOperator()
         {
-            var left = Expression.Parameter(typeof(T), "left");
-            var right = Expression.Parameter(typeof(T), "right");
-            var itemList = Expression.Parameter(typeof(IEnumerable<Object>), "itemList");
-
             var logicalAnd = new Logical_And();
-            LOGICAL_AND = new LogicalAnd<T>(logicalAnd
-                , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.AndAlso, left, right));
-            TokenOperatorMap.Add(logicalAnd.Token, LOGICAL_AND);
+            LOGICAL_AND = new LogicalAnd<T>(logicalAnd, LogicalAndDelegate());
+            TokenOperatorMap[logicalAnd.Token] = LOGICAL_AND;
 
             var logicalOr = new LogicalOr();
-            LOGICAL_OR = new LogicalOr<T>(logicalOr
-                , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.OrElse, left, right));
-            TokenOperatorMap.Add(logicalOr.Token, LOGICAL_OR);
+            LOGICAL_OR = new LogicalOr<T>(logicalOr, LogicalOrDelegate());
+            TokenOperatorMap[logicalOr.Token] = LOGICAL_OR;
 
             var bitwiseAnd = new Bitwise_And();
-            BITWISE_AND = new BitwiseAnd<T>(bitwiseAnd
-                  , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.And, left, right));
-            TokenOperatorMap.Add(bitwiseAnd.Token, BITWISE_AND);
+            BITWISE_AND = new BitwiseAnd<T>(bitwiseAnd, BitwiseAndDelegate());
+            TokenOperatorMap[bitwiseAnd.Token] = BITWISE_AND;
 
             var bitwiseOr = new Bitwise_Or();
-            BITWISE_OR = new BitwiseOr<T>(bitwiseOr
-                  , ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.Or, left, right));
-            TokenOperatorMap.Add(bitwiseOr.Token, BITWISE_OR);
+            BITWISE_OR = new BitwiseOr<T>(bitwiseOr, BitwiseOrDelegate());
+            TokenOperatorMap[bitwiseOr.Token] = BITWISE_OR;
 
             var size = new Size();
-            SIZE = new Size<T>(size
-                  , ExpressionTreeUtil.CreateDelegate<T, int>(Expression.ArrayLength, left));
-            TokenOperatorMap.Add(size.Token, SIZE);
+            SIZE = new Size<T>(size, SizeDelegate());
+            TokenOperatorMap[size.Token] = SIZE;
 
             var logicalNot = new Logical_Not();
-            LOGICAL_NOT = new Not<T>(logicalNot
-                , ExpressionTreeUtil.CreateDelegate<T, bool>(Expression.Not, left));
-            TokenOperatorMap.Add(logicalNot.Token, LOGICAL_NOT);
+            LOGICAL_NOT = new Not<T>(logicalNot, LogicalNotDelegate());
+            TokenOperatorMap[logicalNot.Token] = LOGICAL_NOT;
 
             var uriValid = new Uri_Valid();
             URI_VALIDATE = new UriValid<T>(uriValid);
-            TokenOperatorMap.Add(uriValid.Token, URI_VALIDATE);
+            TokenOperatorMap[uriValid.Token] = URI_VALIDATE;
         }
 
+        private static ParameterExpression Left
+        {
+            get
+            {
+                var left = Expression.Parameter(typeof(T), "left");
+                return left;
+            }
+        }
+        private static ParameterExpression Right
+        {
+            get
+            {
+                var left = Expression.Parameter(typeof (T), "left");
+                return left;
+            }
+        }
+
+        private static Func<T, T, T> LogicalAndDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.AndAlso, Left, Right);
+        }
+        private static Func<T, T, T> LogicalOrDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.OrElse, Left, Right);
+        }
+        private static Func<T, T, T> BitwiseAndDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.And, Left, Right);
+        }
+        private static Func<T, T, T> BitwiseOrDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.Or, Left, Right);
+        }
+        private static Func<T, int> SizeDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T, int>(Expression.ArrayLength, Left);
+        }
+        private static Func<T, bool> LogicalNotDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T, bool>(Expression.Not, Left);
+        }
         
     }
 
@@ -116,32 +146,62 @@ namespace Health.Direct.Policy
 
         static PolicyOperator()
         {
-            var left = Expression.Parameter(typeof(TValue), "left");
-            var right = Expression.Parameter(typeof(TValue), "right");
-
             var equals = new Equals();
-            EQUALS = new Equals<TValue, TResult>(equals
-                 , ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.Equal, left, right));
+            EQUALS = new Equals<TValue, TResult>(equals, EqualDelegate());
             TokenOperatorMap[equals.Token] = EQUALS;
 
             var notEquals = new NotEquals();
-            NOT_EQUALS = new NotEquals<TValue, TResult>(new NotEquals()
-                 , ExpressionTreeUtil.CreateDelegate<TValue,TValue, TResult>(Expression.NotEqual, left, right ));
-            TokenOperatorMap[notEquals.Token] =  NOT_EQUALS;
+            NOT_EQUALS = new NotEquals<TValue, TResult>(new NotEquals(), NotEqualDelegate());
+            TokenOperatorMap[notEquals.Token] = NOT_EQUALS;
 
             var greater = new Greater();
-            GREATER = new Greater<TValue, TResult>(greater
-                 , ExpressionTreeUtil.CreateDelegate<TValue,TValue, TResult>(Expression.GreaterThan, left, right));
-            TokenOperatorMap[greater.Token] =  GREATER;
+            GREATER = new Greater<TValue, TResult>(greater, GreaterThanDelegate());
+            TokenOperatorMap[greater.Token] = GREATER;
 
             var less = new Less();
-            LESS = new Less<TValue, TResult>(less
-                 , ExpressionTreeUtil.CreateDelegate<TValue,TValue, TResult>(Expression.LessThan, left, right));
+            LESS = new Less<TValue, TResult>(less, LessThanDelegate());
             TokenOperatorMap[less.Token] = LESS;
 
             var regex = new Reg_Ex();
             REG_EX = new RegularExpression<TValue, TResult>(regex, RegExExists);
             TokenOperatorMap[regex.Token] = REG_EX;
+        }
+
+        private static ParameterExpression Left
+        {
+            get
+            {
+                var left = Expression.Parameter(typeof(TValue), "left");
+                return left;
+            }
+        }
+        private static ParameterExpression Right
+        {
+            get
+            {
+                var left = Expression.Parameter(typeof(TValue), "left");
+                return left;
+            }
+        }
+        private static Func<TValue, TValue, TResult> EqualDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.Equal, Left, Right);
+        }
+        private static Func<TValue, TValue, TResult> NotEqualDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.NotEqual, Left, Right);
+        }
+        private static Func<TValue, TValue, TResult> GreaterThanDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.GreaterThan, Left, Right);
+        }
+        private static Func<TValue, TValue, TResult> LessThanDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.LessThan, Left, Right);
+        }
+        private static Func<TValue, TResult> RegExExistsDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<TValue, TResult>(Expression.LessThan, Left, Right);
         }
     }
 
@@ -229,11 +289,14 @@ namespace Health.Direct.Policy
 
     public class PolicyOperator
     {
+        
         protected static readonly Dictionary<string, OperatorBase> TokenOperatorMap;
 
         static PolicyOperator()
         {
+            Console.WriteLine("hello:: PolicyOperator");
             TokenOperatorMap = new Dictionary<string, OperatorBase>();
+
         }
 
         public static Equals<T, T> Equals<T>()

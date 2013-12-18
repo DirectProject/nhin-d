@@ -20,7 +20,7 @@ namespace Health.Direct.Policy.X509
             return X509FieldType.TBS;
         }
 
-        virtual public TBSFieldName<T> GetFieldName()
+        virtual public TBSFieldName GetFieldName()
         {
             return null;
         }

@@ -36,10 +36,7 @@ namespace Health.Direct.Policy.Operators
             Execute = body;
         }
 
-        /// <summary>
-        /// Get the size of a single dimensional array.
-        /// </summary>
-        /// <remarks>T must be an array</remarks>
+        
         public readonly Func<T, bool> Execute;
 
 
