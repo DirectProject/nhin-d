@@ -81,9 +81,21 @@ namespace Health.Direct.Policy.X509
         }
 
         /// <inheritdoc />
+        public class AuthorityKeyIdentifier : Field
+        {
+            public AuthorityKeyIdentifier() : base("2.5.29.35", "AuthorityKeyIdentifier", "Authority Key Identifier") { }
+        }
+        
+        /// <inheritdoc />
         public class CertificatePolicies : Field
         {
             public CertificatePolicies() : base("2.5.29.32", "CertificatePolicies", "Certificate Policies") { }
+        }
+
+        /// <inheritdoc />
+        public class BasicConstraints : Field
+        {
+            public BasicConstraints() : base("2.5.29.19", "BasicConstraints", "Policy Mappings") { }
         }
 
         /// <inheritdoc />

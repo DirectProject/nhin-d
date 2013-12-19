@@ -21,6 +21,7 @@ using System.IO;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.OpCode;
 using Health.Direct.Policy.Operators;
 using Health.Direct.Policy.X509;
@@ -318,20 +319,22 @@ namespace Health.Direct.Policy.Impl
 	     * @return An {@link ExtensionField} object that represents the token.  Returns null if the token does not represent an {@link ExtensionField}.
 	     * @throws PolicyParseException
 	     */
-        public dynamic BuildExtensionField(String token) //throws PolicyParseException 
+        public IPolicyExpression BuildExtensionField(String token) //throws PolicyParseException 
 	    {
-		    dynamic retVal = null;
+            IPolicyExpression retVal = null;
 		    ExtensionIdentifier fieldType = ExtensionIdentifier.FromToken(token);
             bool required = token.EndsWith("+");
 		    if (fieldType != null)
 		    {
 			    try
 			    {
-				    retVal = fieldType.GetReferenceClass(token, required);
-			        if (retVal == null)
+				    Type retType = fieldType.GetReferenceClass(token, required);
+                    if (retType == null)
 			        {
 			            throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
 			        }
+                    var ctor = retType.Ctor<bool, IPolicyExpression>();
+			        retVal = ctor(required);
 			    }
 			    catch (PolicyParseException ex)
 			    {
@@ -342,11 +345,7 @@ namespace Health.Direct.Policy.Impl
 				    throw new PolicyParseException("Error building ExtensionField", e);
 			    }
 		    }
-            if (retVal == null)
-            {
-                throw new PolicyParseException("ExtensionField with token name " + token + " has not been implemented yet.");
-            }
-            return retVal(required);
+            return retVal;
 	    }
 	
 
