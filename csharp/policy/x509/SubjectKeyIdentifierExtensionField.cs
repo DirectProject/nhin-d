@@ -14,62 +14,58 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+
 using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 
 namespace Health.Direct.Policy.X509
 {
-
-    /// <summary>
-    /// Key usage extension field. 
+    ///<summary>
+    /// Subject key identifier (SKI) extension field.
     /// <para>
-    /// The policy value of this extension is returned as an integer that is a "logical or" combination of all key usage bits.
+    /// The policy value of this extension is returned as string representation of the subject key identifier.
     /// </para>
     /// <para>
-    /// If the extension does not exist, the policy value returned by this class evaluates to 0.
+    /// If the extension does not exist in the certificate, the policy value returned by this class evaluates to an empty string.
     /// </para>
     /// </summary>
-    public class KeyUsageExtensionField : ExtensionField<int>
+    public class SubjectKeyIdentifierExtensionField : ExtensionField<string>
     {
         /// <summary>
-	    /// Create new instance
-	    /// <param name="required">
-	    /// Indicates if the field is required to be present in the certificate to be compliant with the policy.
-	    /// </param>
-	    /// </summary>
-	    public KeyUsageExtensionField(bool required) : base(required)
-	    {
-	    }
-
-	    /// <inheritdoc />
-	    public override void InjectReferenceValue(X509Certificate2 value) 
-	    {
-		    Certificate = value;
-
-            DerObjectIdentifier exValue = GetExtensionValue(value);
-		
-		    if (exValue == null)
-		    {
-			    if (IsRequired())
-				    throw new PolicyRequiredException("Extention " + GetExtentionIdentifier().GetDisplay() + " is marked as required by is not present.");
-		        PolicyValue = new PolicyValue<int>(0);
-		        return;
-		    }
-		
-		    var derBitString = new DerBitString(exValue);
-		    var keyUsage = new KeyUsage(derBitString.IntValue);
-		    byte[] data = keyUsage.GetBytes();
-		
-		    int intValue = (data.Length == 1) ? data[0] & 0xff : (data[1] & 0xff) << 8 | (data[0] & 0xff);
-		
-		    PolicyValue = new PolicyValue<int>(intValue);
-	    }
+        /// Create new instance
+        /// <param name="required">
+        /// Indicates if the field is required to be present in the certificate to be compliant with the policy.
+        /// </param>
+        /// </summary>
+        public SubjectKeyIdentifierExtensionField(bool required)
+            : base(required)
+        {
+        }
 
         /// <inheritdoc />
-	    public override ExtensionIdentifier GetExtentionIdentifier() 
-	    {
-		    return ExtensionIdentifier.KeyUsage;
-	    }	
+        public override void InjectReferenceValue(X509Certificate2 value)
+        {
+            Certificate = value;
+
+            DerObjectIdentifier exValue = GetExtensionValue(value);
+
+            if (exValue == null)
+            {
+                if (IsRequired())
+                    throw new PolicyRequiredException("Extention " + GetExtentionIdentifier().GetDisplay() + " is marked as required by is not present.");
+                PolicyValue = new PolicyValue<string>(string.Empty);
+                return;
+            }
+
+            SubjectKeyIdentifier keyId = SubjectKeyIdentifier.GetInstance(exValue);
+            PolicyValue = new PolicyValue<string>(PolicyUtils.CreateByteStringRep(keyId.GetKeyIdentifier()));
+        }
+
+        /// <inheritdoc />
+        public override ExtensionIdentifier GetExtentionIdentifier()
+        {
+            return ExtensionIdentifier.KeyUsage;
+        }
     }
 }

@@ -87,9 +87,18 @@
     <Compile Include="PolicyProcessException.cs" />
     <Compile Include="PolicyRequiredException.cs" />
     <Compile Include="PolicySerializer.cs" />
+    <Compile Include="PolicyUtils.cs" />
     <Compile Include="PolicyValue.cs" />
     <Compile Include="PolicyValueFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="X509\AuthorityInfoAccessExtentionField.cs" />
+    <Compile Include="X509\AuthorityInfoAccessOCSPLocExtentionField.cs" />
+    <Compile Include="X509\AuthorityKeyIdentifierKeyIdExtensionField.cs" />
+    <Compile Include="X509\BasicContraintsExtensionField.cs" />
+    <Compile Include="X509\CertificatePolicyCpsUriExtensionField.cs" />
+    <Compile Include="X509\CertificatePolicyIndentifierExtensionField.cs" />
+    <Compile Include="X509\CRLDistributionPointNameExtentionField.cs" />
+    <Compile Include="X509\ExtendedKeyUsageExtensionField.cs" />
     <Compile Include="X509\ExtensionIdentifier.cs" />
     <Compile Include="X509\ExtensionStandard.cs" />
     <Compile Include="X509\IssuerAttributeField.cs" />
@@ -100,12 +109,13 @@
     <Compile Include="X509\SignatureAlgorithmField.cs" />
     <Compile Include="X509\SubjectAltNameExtensionField.cs" />
     <Compile Include="X509\SubjectAttributeField.cs" />
+    <Compile Include="X509\SubjectKeyIdentifierExtensionField.cs" />
     <Compile Include="X509\TBSField.cs" />
     <Compile Include="X509\TBSFieldName.cs" />
     <Compile Include="X509\TBSFieldStandard.cs" />
     <Compile Include="X509\X509Field.cs" />
     <Compile Include="X509\X509FieldType.cs" />
-    <Compile Include="X509\X509Standard.cs" />
+    <Compile Include="X509\Standard.cs" />
     <Compile Include="XMLLexiconPolicyParser.cs" />
   </ItemGroup>
   <ItemGroup>

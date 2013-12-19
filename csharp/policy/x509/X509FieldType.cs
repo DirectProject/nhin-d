@@ -108,6 +108,10 @@ namespace Health.Direct.Policy.X509
             }
             return null;
         }
-	
+
+        public override string ToString()
+        {
+            return GetFieldToken();
+        }
     }
 }

@@ -14,23 +14,24 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 
 namespace Health.Direct.Policy.X509
 {
-
     /// <summary>
-    /// Key usage extension field. 
+    /// Basic constraint extension field.
     /// <para>
-    /// The policy value of this extension is returned as an integer that is a "logical or" combination of all key usage bits.
+    /// The policy value of this extension is returned boolean value indicating if the certificate is a CA or not.  It does not return the maximum path length.
     /// </para>
     /// <para>
-    /// If the extension does not exist, the policy value returned by this class evaluates to 0.
+    /// If the extension does not exist in the certificate, the policy value returned by this class evaluates to false.
     /// </para>
     /// </summary>
-    public class KeyUsageExtensionField : ExtensionField<int>
+    public class BasicContraintsExtensionField : ExtensionField<bool>
     {
         /// <summary>
 	    /// Create new instance
@@ -38,38 +39,34 @@ namespace Health.Direct.Policy.X509
 	    /// Indicates if the field is required to be present in the certificate to be compliant with the policy.
 	    /// </param>
 	    /// </summary>
-	    public KeyUsageExtensionField(bool required) : base(required)
+        public BasicContraintsExtensionField(bool required)
+            : base(required)
 	    {
 	    }
 
-	    /// <inheritdoc />
+        /// <inheritdoc />
 	    public override void InjectReferenceValue(X509Certificate2 value) 
 	    {
 		    Certificate = value;
-
+		
             DerObjectIdentifier exValue = GetExtensionValue(value);
 		
 		    if (exValue == null)
 		    {
 			    if (IsRequired())
 				    throw new PolicyRequiredException("Extention " + GetExtentionIdentifier().GetDisplay() + " is marked as required by is not present.");
-		        PolicyValue = new PolicyValue<int>(0);
+		        PolicyValue = new PolicyValue<bool>(false);
 		        return;
 		    }
-		
-		    var derBitString = new DerBitString(exValue);
-		    var keyUsage = new KeyUsage(derBitString.IntValue);
-		    byte[] data = keyUsage.GetBytes();
-		
-		    int intValue = (data.Length == 1) ? data[0] & 0xff : (data[1] & 0xff) << 8 | (data[0] & 0xff);
-		
-		    PolicyValue = new PolicyValue<int>(intValue);
+
+            BasicConstraints constraints = BasicConstraints.GetInstance(exValue);
+            PolicyValue = new PolicyValue<bool>(constraints.IsCA());
 	    }
 
         /// <inheritdoc />
 	    public override ExtensionIdentifier GetExtentionIdentifier() 
 	    {
-		    return ExtensionIdentifier.KeyUsage;
+		    return ExtensionIdentifier.BasicConstraints;
 	    }	
     }
 }
