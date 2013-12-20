@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -25,11 +26,9 @@ using Health.Direct.Policy.Operators;
 
 namespace Health.Direct.Policy
 {
-
     public class PolicyOperator<T> : PolicyOperator
     {
 
-        
         public static LogicalAnd<T> LOGICAL_AND;
         public static LogicalOr<T> LOGICAL_OR;
         public static BitwiseAnd<T> BITWISE_AND;
@@ -88,6 +87,7 @@ namespace Health.Direct.Policy
             }
         }
 
+        
         private static Func<T, T, T> LogicalAndDelegate()
         {
             return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.AndAlso, Left, Right);
@@ -112,7 +112,6 @@ namespace Health.Direct.Policy
         {
             return ExpressionTreeUtil.CreateDelegate<T, bool>(Expression.Not, Left);
         }
-        
     }
 
     public class PolicyOperator<TValue, TResult> : PolicyOperator
@@ -122,30 +121,12 @@ namespace Health.Direct.Policy
         public static Greater<TValue, TResult> GREATER;
         public static Less<TValue, TResult> LESS;
         public static RegularExpression<TValue, TResult> REG_EX;
-
-        
-
-        //TODO: Rethink this, don't like the conversion...
-        /// <summary>
-        /// Performs a regular expression match on a string.  This operation returns true if the regular expression is found in 
-	    /// the given string.
-        /// </summary>
-        /// <param name="pattern">Regular expression pattern</param>
-        /// <param name="value">Source string to search</param>
-        /// <returns></returns>
-        public static TResult RegExExists(TValue pattern, TValue value) 
-        {
-            string v = value as string;
-            string p = pattern as string;
-
-            Regex regex = new Regex(p);
-            var match = regex.Match(v);
-            return (TResult)Convert.ChangeType(match.Success, typeof(TResult));
-        }
-
+        public static Empty<TValue, TResult> EMPTY;
+        public static NotEmpty<TValue, TResult> NOT_EMPTY;
 
         static PolicyOperator()
         {
+            
             var equals = new Equals();
             EQUALS = new Equals<TValue, TResult>(equals, EqualDelegate());
             TokenOperatorMap[equals.Token] = EQUALS;
@@ -162,9 +143,52 @@ namespace Health.Direct.Policy
             LESS = new Less<TValue, TResult>(less, LessThanDelegate());
             TokenOperatorMap[less.Token] = LESS;
 
+            //
+            // See RegExExist Func below
+            //
             var regex = new Reg_Ex();
             REG_EX = new RegularExpression<TValue, TResult>(regex, RegExExists);
             TokenOperatorMap[regex.Token] = REG_EX;
+
+
+
+
+            //
+            // Build an expression for Empty
+            //
+
+            Type itemType = null;
+            Type typeList = typeof (TValue);
+            if(typeList.IsGenericType && typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            {
+                itemType = typeList.GetGenericArguments()[0];
+            
+
+                var itemList = Expression.Parameter(typeList, "itemList");
+
+                Expression countExpression =
+                   Expression.Call(typeof(Enumerable), "Count", new Type[] { itemType }
+                                   , itemList);
+
+                Expression emptyExpression = Expression.Equal(Expression.Constant(0), countExpression);
+
+                var empty = new Empty();
+                EMPTY = new Empty<TValue, TResult>(empty
+                      , Expression.Lambda<Func<TValue, TResult>>(emptyExpression, itemList).Compile());
+                TokenOperatorMap[empty.Token] = EMPTY;
+
+
+                //
+                // Build an expression for not Empty
+                //
+                Expression noEmptyExpression = Expression.Not(emptyExpression);
+                var notEmpty = new NotEmpty();
+                NOT_EMPTY = new NotEmpty<TValue, TResult>(notEmpty
+                     , Expression.Lambda<Func<TValue, TResult>>(noEmptyExpression, itemList).Compile());
+                TokenOperatorMap[notEmpty.Token] = NOT_EMPTY;
+
+            }
+
         }
 
         private static ParameterExpression Left
@@ -199,20 +223,8 @@ namespace Health.Direct.Policy
         {
             return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.LessThan, Left, Right);
         }
-        private static Func<TValue, TResult> RegExExistsDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<TValue, TResult>(Expression.LessThan, Left, Right);
-        }
-    }
+        
 
-    public class PolicyOperator<TValue, TList, TResult> : PolicyOperator where TList : IEnumerable<TValue> 
-    {
-
-        public static Contains<TValue, TList, TResult> CONTAINS;
-        public static NotContains<TValue, TList, TResult> NOT_CONTAINS;
-        public static ContainsRegEx<TValue, TList, TResult>  CONTAINS_REG_EX;
-        public static Empty<TList, TResult> EMPTY;
-        public static NotEmpty<TList, TResult> NOT_EMPTY;
 
         //TODO: Rethink this, don't like the conversion...
         /// <summary>
@@ -222,7 +234,127 @@ namespace Health.Direct.Policy
         /// <param name="pattern">Regular expression pattern</param>
         /// <param name="value">Source string to search</param>
         /// <returns></returns>
-        public static TResult RegExExists(TValue pattern, TList value)
+        public static TResult RegExExists(TValue pattern, TValue value)
+        {
+            string v = value as string;
+            string p = pattern as string;
+
+            Regex regex = new Regex(p);
+            var match = regex.Match(v);
+            return (TResult)Convert.ChangeType(match.Success, typeof(TResult));
+        }
+
+    }
+
+    public class PolicyOperator<T1, T2, TResult> : PolicyOperator  
+    {
+        public static Intersect<T1, T2, TResult> INTERSECT;
+        public static Contains<T1, T2, TResult> CONTAINS;
+        public static NotContains<T1, T2, TResult> NOT_CONTAINS;
+        public static ContainsRegEx<T1, List<T1>, TResult>  CONTAINS_REG_EX;
+        
+
+        private static Func<T1, T2, TResult> IntersectDelegate()
+        {
+            //
+            // Do not handle strings but handle all other IEnumerable types
+            // Todo: Convert strings to IEnumerable and split on comma...
+            //
+            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T1)) || typeof(string).IsAssignableFrom(typeof(T1))) return null;
+            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)) || typeof(string).IsAssignableFrom(typeof(T2))) return null;
+
+            Type itemType = null;
+            Type typeList = typeof (T1);
+            Type typeList2 = typeof(T2);
+            if (typeList.IsGenericType && typeList2.IsGenericType &&
+                typeof (IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            {
+                itemType = typeList.GetGenericArguments()[0];
+            }
+            
+            var itemList = Expression.Parameter(typeList, "itemList");
+            var itemList2 = Expression.Parameter(typeList2, "itemList2");
+
+            
+            Expression intersectExpression =
+              Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
+                              , itemList, itemList2);
+
+            return Expression.Lambda<Func<T1, T2, TResult>>(intersectExpression, itemList, itemList2).Compile();
+        }
+
+        static PolicyOperator()
+        {
+            var left = Expression.Parameter(typeof (T1), "itemType");
+            var right = Expression.Parameter(typeof(T1), "item");
+            var itemList = Expression.Parameter(typeof(IEnumerable<T1>), "itemList");
+            
+
+            var intersection = new Intersection();
+            var intersectDelegate = IntersectDelegate();
+            if (intersectDelegate != null)
+            {
+                INTERSECT = new Intersect<T1, T2, TResult>(intersection, intersectDelegate);
+                TokenOperatorMap[intersection.Token] = INTERSECT;
+            }
+            
+
+
+            // list.Any(a => a = "joe")
+            if (typeof(IEnumerable).IsAssignableFrom(typeof(T2))
+                && ! typeof(string).IsAssignableFrom(typeof(T2))
+                && (
+                    !typeof(IEnumerable).IsAssignableFrom(typeof(T1))
+                    ||  typeof(string).IsAssignableFrom(typeof(T1)))
+                )
+            {
+                var body = Expression.Equal(left, right);
+                var lambda = Expression.Lambda(body, left);
+
+                Expression anyCall =
+                    Expression.Call(typeof(Enumerable), "Any", new Type[] { typeof(T1) }
+                                    , itemList
+                                    , lambda);
+
+
+                var contains = new Contains();
+                CONTAINS = new Contains<T1, T2, TResult>(contains
+                    , Expression.Lambda<Func<T1, T2, TResult>>(anyCall, right, itemList).Compile());
+                TokenOperatorMap[contains.Token] = CONTAINS;
+
+            
+                Expression notAnyCall = Expression.Not(anyCall);
+
+                var notContains = new NotContains();
+                NOT_CONTAINS = new NotContains<T1, T2, TResult>(notContains
+                    , Expression.Lambda<Func<T1, T2, TResult>>(notAnyCall, right, itemList).Compile());
+                TokenOperatorMap[notContains.Token] = NOT_CONTAINS;
+            }
+
+
+
+
+
+            //
+            // See ContainsRegEx Func below
+            //
+            var containsRegEx = new ContainsRegEx();
+            CONTAINS_REG_EX = new ContainsRegEx<T1, List<T1>, TResult>(containsRegEx, RegExContains) ;
+            TokenOperatorMap[containsRegEx.Token] = CONTAINS_REG_EX;
+
+
+        }
+
+
+        //TODO: Rethink this, don't like the conversion...
+        /// <summary>
+        /// Performs a regular expression match on a string.  This operation returns true if the regular expression is found in 
+        /// the given string.
+        /// </summary>
+        /// <param name="pattern">Regular expression pattern</param>
+        /// <param name="value">Source string to search</param>
+        /// <returns></returns>
+        public static TResult RegExContains(T1 pattern, List<T1> value) 
         {
             bool success = false;
             foreach (var item in value)
@@ -238,53 +370,6 @@ namespace Health.Direct.Policy
             return (TResult)Convert.ChangeType(success, typeof(TResult));
         }
 
-        static PolicyOperator()
-        {
-            var left = Expression.Parameter(typeof (TValue), "itemType");
-            var right = Expression.Parameter(typeof(TValue), "item");
-            var itemList = Expression.Parameter(typeof(IEnumerable<TValue>), "itemList");
-
-            // list.Any(a => a = "joe")
-            var body = Expression.Equal(left, right);
-            var lambda = Expression.Lambda(body, left);
-            
-            Expression anyCall =
-                Expression.Call(typeof(Enumerable), "Any", new Type[] { typeof(TValue) }
-                                , itemList
-                                , lambda);
-            var contains = new Contains();
-            CONTAINS = new Contains<TValue, TList, TResult>(contains
-                , Expression.Lambda<Func<TValue, TList, TResult>>(anyCall, right, itemList).Compile());
-            TokenOperatorMap[contains.Token] = CONTAINS;
-            
-            Expression notAnyCall = Expression.Not(anyCall);
-
-            var notContains = new NotContains();
-            NOT_CONTAINS = new NotContains<TValue, TList, TResult>(notContains
-                , Expression.Lambda<Func<TValue, TList, TResult>>(notAnyCall, right, itemList).Compile());
-            TokenOperatorMap[notContains.Token] = NOT_CONTAINS;
-
-            var containsRegEx = new ContainsRegEx();
-            CONTAINS_REG_EX = new ContainsRegEx<TValue, TList, TResult>(containsRegEx, RegExExists);
-            TokenOperatorMap[containsRegEx.Token] = CONTAINS_REG_EX;
-
-            Expression countExpression =
-               Expression.Call(typeof(Enumerable), "Count", new Type[] { typeof(TValue) }
-                               , itemList);
-
-            Expression emptyExpression = Expression.Equal(Expression.Constant(0), countExpression);
-
-            var empty = new Empty();
-            EMPTY = new Empty<TList, TResult>(empty
-                  , Expression.Lambda<Func<TList, TResult>>(emptyExpression, itemList).Compile());
-            TokenOperatorMap[empty.Token] = EMPTY;
-
-            Expression noEmptyExpression = Expression.Not(emptyExpression);
-            var notEmpty = new NotEmpty();
-            NOT_EMPTY = new NotEmpty<TList, TResult>(notEmpty
-                 , Expression.Lambda<Func<TList, TResult>>(noEmptyExpression, itemList).Compile());
-            TokenOperatorMap[notEmpty.Token] = NOT_EMPTY;
-        }
     }
 
     public class PolicyOperator

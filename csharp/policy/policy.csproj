@@ -66,6 +66,7 @@
     <Compile Include="Operators\Empty.cs" />
     <Compile Include="Operators\Equals.cs" />
     <Compile Include="Operators\Greater.cs" />
+    <Compile Include="Operators\Intersect.cs" />
     <Compile Include="Operators\Less.cs" />
     <Compile Include="Operators\LogicalAnd.cs" />
     <Compile Include="Operators\LogicalOr.cs" />
