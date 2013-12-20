@@ -34,18 +34,18 @@ namespace Health.Direct.Policy.Tests
         public void testExecute_empty_assertResults()
         {
             var op1 = new List<string> {"A"};
-            Assert.False(PolicyOperator<string, IList<string>, bool>.EMPTY.Execute(op1));
+            Assert.False(PolicyOperator<IList<string>, bool>.EMPTY.Execute(op1));
             op1 = new List<string>();
-            Assert.True(PolicyOperator<string, IList<string>, bool>.EMPTY.Execute(op1));
+            Assert.True(PolicyOperator<IList<string>, bool>.EMPTY.Execute(op1));
         }
 
         [Fact]
         public void testExecute_notEmpty_assertResults()
         {
             var op1 = new List<string> {"A"};
-            Assert.True(PolicyOperator<string, IList<string>, bool>.NOT_EMPTY.Execute(op1));
+            Assert.True(PolicyOperator<IList<string>, bool>.NOT_EMPTY.Execute(op1));
             op1 = new List<string>();
-            Assert.False(PolicyOperator<string, IList<string>, bool>.NOT_EMPTY.Execute(op1));
+            Assert.False(PolicyOperator<IList<string>, bool>.NOT_EMPTY.Execute(op1));
         }
 
         [Fact]

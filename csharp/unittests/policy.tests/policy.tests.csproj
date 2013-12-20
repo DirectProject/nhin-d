@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryBooleanPolicyOperatorExecutor_executeTest.cs" />
+    <Compile Include="BinaryCollectionPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="BinaryIntegerPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="Extensions\StreamExt.cs" />
     <Compile Include="PolicyOperator_getEnumAttributesTest.cs" />

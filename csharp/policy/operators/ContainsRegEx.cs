@@ -15,11 +15,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Collections.Generic;
 using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class ContainsRegEx<TValue, TList, TResult> : BinaryOperator
+    public class ContainsRegEx<TValue, TList, TResult> : BinaryOperator where TList : List<TValue>
     {
 
         public ContainsRegEx(Code opCode

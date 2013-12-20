@@ -15,27 +15,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Collections.Generic;
-using Xunit;
+using Health.Direct.Policy.OpCode;
 
-namespace Health.Direct.Policy.Tests
+namespace Health.Direct.Policy.Operators
 {
-    public class UnaryIntegerPolicyOperatorExecutor_executeTest
+    public class Intersect<T1, T2, TResult> : BinaryOperator  
     {
-        [Fact]
-        public void TestExecute_Size_AssertResults()
+
+        public Intersect(Code opCode
+            , Func<T1, T2, TResult> body)
+            : base(opCode)
         {
-            // size 1
-            var op1 = new List<string>{"A"};
-            var input = op1.ToArray();
-
-            Assert.Equal(1, PolicyOperator<string[]>.SIZE.Execute(input));
-
-            op1 = new List<string>();
-            input = op1.ToArray();
-
-            Assert.Equal(0, PolicyOperator<string[]>.SIZE.Execute(input));
-
+            Execute = body;
         }
+
+        public readonly Func<T1, T2, TResult> Execute;
     }
 }
+
