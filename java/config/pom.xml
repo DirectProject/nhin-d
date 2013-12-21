@@ -63,6 +63,7 @@
     </build>	    
 	<modules>
 	    <module>config-store</module>
+	    <module>config-model</module>	    
 		<module>config-service-jar</module>
 		<module>config-service</module> 
 		<module>config-ui</module>

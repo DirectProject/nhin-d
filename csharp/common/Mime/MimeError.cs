@@ -88,6 +88,10 @@ namespace Health.Direct.Common.Mime
         /// <summary>
         /// Quotable Printable encoding - Invalid soft line break
         /// </summary>
-        InvalidQuotedPrintableSoftLineBreak
+        InvalidQuotedPrintableSoftLineBreak,
+        /// <summary>
+        /// Invalid field parameter
+        /// </summary>
+        InvalidFieldParameter
     }
 }

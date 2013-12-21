@@ -325,7 +325,7 @@ public class Address {
         return "[ID: " + getId() + 
                " | Address: " + getEmailAddress() + 
                " | For: " + getDisplayName() + 
-               " | Domain: " + getDomain().getDomainName() + 
+               " | Domain: " + ((getDomain() != null) ? getDomain().getDomainName() : "empty") + 
                " | Endpoint: " + getEndpoint() +
                " | Status: " + getStatus() +
                " | Type: " + getType() + 

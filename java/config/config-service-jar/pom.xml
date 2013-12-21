@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-service-jar</artifactId>
-	<version>1.6-SNAPSHOT</version>
+	<version>2.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI config service jar</name>
     <description>NHIN Direct Java RI config service jar.</description>	
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>3.2.3.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -57,11 +57,12 @@
 					</artifactId>
 				</exclusion>
 			</exclusions>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>3.2.3.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -69,11 +70,12 @@
 					</artifactId>
 				</exclusion>
 			</exclusions>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>3.2.3.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -81,6 +83,7 @@
 					</artifactId>
 				</exclusion>
 			</exclusions>
+		    <scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -90,10 +93,17 @@
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>config-store</artifactId>
-			<version>1.4</version>
+			<version>1.5-SNAPSHOT</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.nhind</groupId>
+			<artifactId>config-model</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>		
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>agent</artifactId>
@@ -156,11 +166,66 @@
 		    <groupId>bouncycastle</groupId>
 		    <artifactId>bcprov-jdk15</artifactId>
 		    <version>140</version>    
-		 </dependency>	
+		 </dependency>	     
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <!--  
+	    <dependency>
+	       <groupId>org.glassfish.jersey.ext</groupId>
+	       <artifactId>jersey-spring3</artifactId>
+	       <version>2.4</version>
+	       <scope>compile</scope>
+	        <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+           </exclusions>
+
+           
+	    </dependency>	
+	               -->
+	    <dependency>
+	        <groupId>com.sun.jersey.contribs</groupId>
+	        <artifactId>jersey-spring</artifactId>
+	        <version>1.6</version>
+	        <exclusions>
+	            <exclusion>
+	                <groupId>org.springframework</groupId>
+	                <artifactId>spring</artifactId>
+	            </exclusion>
+	            <exclusion>
+	                <groupId>org.springframework</groupId>
+	                <artifactId>spring-core</artifactId>
+	            </exclusion>
+	            <exclusion>
+	                <groupId>org.springframework</groupId>
+	                <artifactId>spring-web</artifactId>
+	            </exclusion>
+	            <exclusion>
+	                <groupId>org.springframework</groupId>
+	                <artifactId>spring-beans</artifactId>
+	            </exclusion>
+	            <exclusion>
+	                <groupId>org.springframework</groupId>
+	                <artifactId>spring-context</artifactId>
+	            </exclusion>
+	        </exclusions>
+	    </dependency>	    
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.6</version>
+			<scope>test</scope>
+		</dependency>    	    
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
