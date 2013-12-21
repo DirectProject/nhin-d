@@ -49,6 +49,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BlueButton\DocumentSource.cs" />
+    <Compile Include="BlueButton\RequestContext.cs" />
     <Compile Include="Caching\Cache.cs" />
     <Compile Include="Caching\CacheSettings.cs" />
     <Compile Include="Caching\CachingBase.cs" />
@@ -188,6 +190,8 @@
     <Compile Include="Mime\Body.cs" />
     <Compile Include="Mime\CharReader.cs" />
     <Compile Include="Mime\DefaultSerializer.cs" />
+    <Compile Include="Mime\MimeFieldParameter.cs" />
+    <Compile Include="Mime\MimeFields.cs" />
     <Compile Include="Mime\MimeWriter.cs" />
     <Compile Include="Mime\MimeParser.cs" />
     <Compile Include="Mime\Extensions.cs" />

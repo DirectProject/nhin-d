@@ -179,7 +179,7 @@ namespace Health.Direct.Common.Mime
         }
 
         /// <summary>
-        /// Peeks at the current character at <see cref="Position"/> in the buffer, but does not advance
+        /// Peeks at the next character that will be read from the buffer, but does not advance
         /// the <see cref="Position"/>.
         /// </summary>
         /// <returns>Returns the current character or <see cref="EOF"/> if at the end of the buffer.</returns>
@@ -187,7 +187,21 @@ namespace Health.Direct.Common.Mime
         {
             return IsDone ? EOF : m_source[m_position];
         }
-                
+
+        /// <summary>
+        /// Returns the character at <see cref="Position"/> in the buffer - the last character read
+        /// </summary>
+        /// <returns>Returns the current character</returns>
+        public char Current()
+        {
+            int position = this.Position;
+            if (position < 0)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            return m_source[position];
+        }
+                        
         /// <summary>
         /// Returns the specified part of the reader's buffer as a <see cref="StringSegment"/>.
         /// </summary>
@@ -197,6 +211,17 @@ namespace Health.Direct.Common.Mime
         public StringSegment GetSegment(int startIndex, int endIndex)
         {
             return new StringSegment(m_source, startIndex, endIndex);
+        }
+
+        /// <summary>
+        /// Returns the specified part of the reader's buffer as a <see cref="string"/>.
+        /// </summary>
+        /// <param name="startIndex">The first position in the buffer to return.</param>
+        /// <param name="endIndex">The last position in the buffer to return.</param>
+        /// <returns>A new string</returns>
+        public string Substring(int startIndex, int endIndex)
+        {
+            return m_source.Substring(startIndex, endIndex - startIndex + 1);
         }
         
         /// <summary>

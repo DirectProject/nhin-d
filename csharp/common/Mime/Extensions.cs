@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.IO;
 using System.Net.Mime;
 using System.Collections.Generic;
+using System.Net.Mail;
 using Health.Direct.Common.Mail.DSN;
 
 namespace Health.Direct.Common.Mime
@@ -143,6 +144,35 @@ namespace Health.Direct.Common.Mime
             }
             return outputString;
         }
-
+        
+        /// <summary>
+        /// Takes the given text content, and creates a Mail attachment. 
+        /// Gives the attachment the given file name
+        /// </summary>
+        /// <param name="textContent">Body of the attachment</param>
+        /// <param name="fileName">Filename for this attachment</param>
+        /// <returns></returns>
+        public static Attachment CreateMailAttachmentFromString(string textContent, string fileName)
+        {
+            Attachment attachment = Attachment.CreateAttachmentFromString(textContent, fileName);
+            attachment.ContentDisposition.DispositionType = "attachment";
+            attachment.ContentDisposition.FileName = fileName;
+            
+            return attachment;
+        }
+        
+        /// <summary>
+        /// Reads the ContentStream of a <see cref="Attachment"/> as a string.
+        /// Encoding bytemarks are automatically interpreted. 
+        /// </summary>
+        /// <param name="attachment">Attachment to read</param>
+        /// <returns>Content stream decoded into a string</returns>
+        public static string StringContent(this Attachment attachment)
+        {
+            using(StreamReader reader = new StreamReader(attachment.ContentStream))
+            {
+                return reader.ReadToEnd();
+            }
+        }
     }
 }

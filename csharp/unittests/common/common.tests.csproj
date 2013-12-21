@@ -99,6 +99,7 @@
     <Compile Include="Metadata\RecipientFacts.cs" />
     <Compile Include="Mime\BodyFacts.cs" />
     <Compile Include="Mime\CharReaderFacts.cs" />
+    <Compile Include="Mime\MimeFieldsFacts.cs" />
     <Compile Include="Mime\MimeEntityCollectionFacts.cs" />
     <Compile Include="Mime\DefaultSerializerFacts.cs" />
     <Compile Include="Mime\EntityPartFacts.cs" />
