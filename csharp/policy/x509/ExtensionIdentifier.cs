@@ -244,28 +244,28 @@ namespace Health.Direct.Policy.X509
         /// <summary>
         /// Gets the object identifier (OID) of the extension.
         /// </summary>
-        /// <returns>The object identifier (OID) of the extension.</returns>
-        public string GetId()
+        /// <value>The object identifier (OID) of the extension.</value>
+        public string Id
         {
-            return m_id;
+            get { return m_id; }
         }
 
         /// <summary>
         /// Gets the name of the extension as defined by RFC5280.
         /// @return The name of the extension as defined by RFC5280.
         /// </summary>
-        public String GetRfcName()
+        public string RfcName
         {
-            return m_rfcName;
+            get { return m_rfcName; }
         }
 
         /// <summary>
         /// Gets a human readable display name of the extension.
         /// <returns>Human readable display name of the extension.</returns>
         /// </summary>
-        public String GetDisplay()
+        public string Display
         {
-            return m_display;
+            get { return m_display; }
         }
 
         /// <summary>

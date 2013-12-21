@@ -15,7 +15,7 @@ namespace Health.Direct.Policy
         /// Gets the object identifier for the extension field.
         /// <returns>The object identifier for the extension field.</returns>
         /// </summary>
-        ExtensionIdentifier GetExtentionIdentifier();
+        ExtensionIdentifier ExtentionIdentifier { get; }
 
         /// <summary>
         /// Indicates if the extension is marked as critical.

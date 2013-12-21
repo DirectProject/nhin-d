@@ -55,7 +55,7 @@ namespace Health.Direct.Policy.X509
             if (exValue == null)
             {
                 if (IsRequired())
-                    throw new PolicyRequiredException("Extention " + GetExtentionIdentifier().GetDisplay() +
+                    throw new PolicyRequiredException("Extention " + ExtentionIdentifier.Display +
                                                       " is marked as required by is not present.");
                 var emptyList = new List<string>();
                 PolicyValue = new PolicyValue<IList<string>>(emptyList);
@@ -72,16 +72,16 @@ namespace Health.Direct.Policy.X509
             }
 
             if (!retVal.Any() && IsRequired())
-                throw new PolicyRequiredException("Extention " + GetExtentionIdentifier().GetDisplay() +
+                throw new PolicyRequiredException("Extention " + ExtentionIdentifier.Display +
                                                   " is marked as required by is not present.");
 
             PolicyValue = new PolicyValue<IList<string>>(retVal);
         }
 
         /// <inheritdoc />
-        public override ExtensionIdentifier GetExtentionIdentifier()
+        public override ExtensionIdentifier ExtentionIdentifier
         {
-            return ExtensionIdentifier.AuthorityInfoAccessSyntax;
+            get { return ExtensionIdentifier.AuthorityInfoAccessSyntax; }
         }
     }
 }

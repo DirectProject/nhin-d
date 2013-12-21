@@ -76,8 +76,8 @@ namespace Health.Direct.Policy.X509
                 Asn1InputStream aIn;
                 using (aIn = new Asn1InputStream(ext))
                 {
-                    Asn1OctetString octs = (Asn1OctetString) aIn.ReadObject();
-                    using (aIn = new Asn1InputStream(octs.GetOctets()))
+                    Asn1Object octs = aIn.ReadObject();
+                    using (aIn = new Asn1InputStream(octs.GetDerEncoded()))
                     {
                         return aIn.ReadObject() as DerObjectIdentifier;
                     }

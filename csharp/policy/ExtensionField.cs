@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.X509;
@@ -35,8 +36,8 @@ namespace Health.Direct.Policy
             return TBSFieldName.Extenstions;
         }
 
-        public abstract ExtensionIdentifier GetExtentionIdentifier();
-        
+        public abstract ExtensionIdentifier ExtentionIdentifier { get; }
+
 
         virtual public bool IsCritical()
         {
@@ -45,7 +46,7 @@ namespace Health.Direct.Policy
 
             List<string> criticalOIDs = Certificate.GetCriticalExtensionOIDs();
 
-            return criticalOIDs.Contains(GetExtentionIdentifier().GetId());
+            return criticalOIDs.Contains(ExtentionIdentifier.Id);
         }
 
         /// <summary>
@@ -57,11 +58,13 @@ namespace Health.Direct.Policy
 	    /// </summary>
         protected DerObjectIdentifier GetExtensionValue(X509Certificate2 cert)
         {
-    	    string oid = GetExtentionIdentifier().GetId();
-
+            //Todo: Look into coding this with .NET Security Framework code.
+    	    string oid = ExtentionIdentifier.Id;
+            
             X509Extension x509Extension = cert.Extensions[oid];
             if (x509Extension != null)
             {
+                var asn = new AsnEncodedData(oid, x509Extension.RawData);
                 byte[] bytes = x509Extension.RawData;
                 if (bytes == null)
                 {

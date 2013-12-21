@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy.Extensions;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 
@@ -48,25 +49,23 @@ namespace Health.Direct.Policy.X509
 	    public override void InjectReferenceValue(X509Certificate2 value) 
 	    {
 		    Certificate = value;
-		
-            DerObjectIdentifier exValue = GetExtensionValue(value);
-		
-		    if (exValue == null)
+
+            var extensionIdentifier = Certificate.GetExtensionIdentifier<X509BasicConstraintsExtension>(ExtentionIdentifier.Id);
+            if (extensionIdentifier == null)
 		    {
 			    if (IsRequired())
-				    throw new PolicyRequiredException("Extention " + GetExtentionIdentifier().GetDisplay() + " is marked as required by is not present.");
+				    throw new PolicyRequiredException("Extention " + ExtentionIdentifier.Display + " is marked as required by is not present.");
 		        PolicyValue = new PolicyValue<bool>(false);
 		        return;
 		    }
-
-            BasicConstraints constraints = BasicConstraints.GetInstance(exValue);
-            PolicyValue = new PolicyValue<bool>(constraints.IsCA());
+            
+            PolicyValue = new PolicyValue<bool>(extensionIdentifier.CertificateAuthority);
 	    }
 
         /// <inheritdoc />
-	    public override ExtensionIdentifier GetExtentionIdentifier() 
-	    {
-		    return ExtensionIdentifier.BasicConstraints;
-	    }	
+        public override ExtensionIdentifier ExtentionIdentifier
+        {
+            get { return ExtensionIdentifier.BasicConstraints; }
+        }
     }
 }
