@@ -27,6 +27,7 @@ using Health.Direct.Common.Mime;
 using CDO;
 using ADODB;
 using Health.Direct.Config.Store;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent
 {
