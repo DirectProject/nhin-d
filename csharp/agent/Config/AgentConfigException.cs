@@ -97,7 +97,15 @@ namespace Health.Direct.Agent.Config
         /// <summary>
         /// No typename for Plugin Anchor resolver
         /// </summary>
-        MissingPluginAnchorResolverType
+        MissingPluginAnchorResolverType,
+        /// <summary>
+        /// Missing Plugin Producer
+        /// </summary>
+        MissingPluginProducerDefinition,
+        /// <summary>
+        /// No typename for Plugin Producer
+        /// </summary>
+        MissingPluginProducerType
     }
 
     /// <summary>

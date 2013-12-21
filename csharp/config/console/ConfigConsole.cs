@@ -74,7 +74,7 @@ namespace Health.Direct.Config.Console
         void CreateClients()
         {
             m_domainClient = m_settings.DomainManager.CreateDomainManagerClient();
-            m_addressClient = m_settings.AddressManager.CreateAddressManagerClient();
+            m_addressClient = m_settings.AddressManager.CreateAddressManagerClient() as AddressManagerClient;
             m_certificateClient = m_settings.CertificateManager.CreateCertificateStoreClient();
             m_dnsRecordClient = m_settings.DnsRecordManager.CreateDnsRecordManagerClient();
             m_anchorClient = m_settings.AnchorManager.CreateAnchorStoreClient();
