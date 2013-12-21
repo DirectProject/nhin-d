@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<SmtpAgentConfig>
+  <Domain>Direct.North.Hobo.Lab</Domain>  
+  <DomainManager>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
+  </DomainManager>
+  <AddressManager>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
+  </AddressManager>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>redmondGateway</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Trace</Level>
+  </Log>
+  <InternalMessage>
+    <PickupFolder>C:\inetpub\mailroot\pickup</PickupFolder>
+    <EnableRelay>false</EnableRelay>
+  </InternalMessage> 
+  <Notifications>
+    <AutoResponse>false</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+  
+  <PrivateCerts>
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Certificates</Url>
+      </ClientSettings>
+    </ServiceResolver>    
+  </PrivateCerts>
+
+  <PublicCerts>
+    <DnsResolver>
+      <ServerIP>0.0.0.0</ServerIP>
+      <Timeout>5000</Timeout>
+    </DnsResolver>
+    <!--
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+    -->
+  </PublicCerts>
+  <Anchors>
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
+      </ClientSettings>
+    </ServiceResolver>
+  </Anchors>
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\incoming</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\outgoing</CopyFolder>
+    <EnableRelay>true</EnableRelay>
+  </ProcessOutgoing>
+</SmtpAgentConfig>

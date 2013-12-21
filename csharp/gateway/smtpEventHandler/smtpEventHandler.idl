@@ -1,0 +1,35 @@
+// smtpEventHandler.idl : IDL source for smtpEventHandler
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (smtpEventHandler.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(95A1CB95-712E-4104-91C4-0FAE0901244F),
+	nonextensible,
+	helpstring("IMessageArrivalSink Interface"),
+	pointer_default(unique)
+]
+interface IMessageArrivalSink : IUnknown {
+};
+[
+	uuid(1A8FBB2B-D117-467B-8E69-43625E38347E),
+	version(1.0),
+	helpstring("smtpEventHandler 1.0 Type Library")
+]
+library smtpEventHandlerLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(537AE5ED-458B-439D-A4E8-4B2224051B9D),
+		helpstring("MessageArrivalSink Class")
+	]
+	coclass MessageArrivalSink
+	{
+		[default] interface IMessageArrivalSink;
+	};
+};

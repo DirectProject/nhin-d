@@ -1,0 +1,429 @@
+<project name="install" default="assemble" basedir=".">
+	<description>
+	    Install the apache-james mail server for use with the Direct Project
+	</description>
+	
+	<!-- check the os -->
+	<condition property="is.windows">
+		<os family="windows"></os>
+	</condition>
+	<condition property="is.unix">
+		<and>
+			<os family="unix"></os>
+			<not>
+				<os family="mac"></os>
+			</not>
+		</and>
+	</condition>
+	<condition property="is.mac">
+		<and>
+			<os family="unix"></os>
+			<os family="mac"></os>
+		</and>
+	</condition>
+	<condition property="is.someunix">
+		<os family="unix"></os>
+	</condition>
+	
+	<!-- set global properties for this build -->
+	
+	<property environment="env"></property>
+	<property name="install.root.dir" value="${env.DIRECT_INSTALL_CD}"></property>
+	
+	<property name="src" value="${install.root.dir}/src"></property>
+	<property name="resources.dir" value="${src}/main/resources"></property>
+	<property name="build.dir" value="${install.root.dir}/build"></property>
+	<property name="build.download.dir" value="${build.dir}/download"></property>
+	<property name="apache.james.binary.url" value="http://www.gtlib.gatech.edu/pub/apache/james/server/apache-james-2.3.2.zip"></property>
+	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
+
+	<property name="apache.james3.binary.url" value="http://apache.claz.org//james/apache-james/3.0beta4/apache-james-3.0-beta4-app.tar.gz"></property>
+	<property name="apache.james3.binary.tar.gz" value="${build.download.dir}/apache-james-3.0-beta4-app.tar.gz"></property>	
+	
+	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
+	<property name="james.stage.apps.dir" value="${james.stage.dir}/apps/james"></property>
+	<property name="james.stage.config" value="${james.stage.apps.dir}/SAR-INF/config.xml"></property>
+	<property name="james.stage.config.save" value="${james.stage.apps.dir}/SAR-INF/config.xml.save"></property>
+	<property name="james.stage.config.new" value="${james.stage.apps.dir}/SAR-INF/config-new.xml"></property>
+	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib"></property>
+	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
+
+	<property name="james3.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-james-3.0-beta4"></property>
+	<property name="james3.stage.conf.dir" value="${james3.stage.dir}/conf"></property>
+	<property name="james3.stage.domainlist" value="${james3.stage.conf.dir}/domainlist.conf"></property>
+	<property name="james3.stage.mailetcontainer" value="${james3.stage.conf.dir}/mailetcontainer.conf"></property>
+	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
+	
+	<!-- tomcat properties -->
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.34/bin/apache-tomcat-7.0.34.tar.gz"></property>
+	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.34.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.34"></property>
+	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
+	<property name="tomcat.bin.dir" value="${tomcat.stage.dir}/bin"></property>	
+	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
+	<property name="tomcat.stage.config.save" value="${tomcat.stage.config}.save"></property>
+	<property name="tomcat.stage.config.new" value="${tomcat.stage.config}.new"></property>
+	<property name="dnsserver.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DirectDNSServer"></property>
+	<property name="dnsmgmt.stage.dir" value="${env.DIRECT_INSTALL_DIR}/DirectDNSServices/DNSMgmtConsole"></property>
+	
+	<property name="maven.repo" value="${env.HOME}/.m2/repository"></property>
+	
+	<!-- Config server files -->
+	<property name="config.root" value="${config.root}/../config"></property>
+	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
+	<property name="config.service.orig.war" value="config-service-1.2.1.war"></property>
+	<property name="config.service.dest.war" value="config-service.war"></property>
+	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
+	<property name="config.ui.orig.war" value="config-ui-1.2.war"></property>
+	<property name="config.ui.dest.war" value="config-ui.war"></property>
+
+	<!-- xd server files -->
+	<property name="xd.root" value="${config.root}/../xd"></property>
+	<property name="xd.service.dir" value="${config.root}/xd/target"></property>
+	<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
+	<property name="xd.service.dest.war" value="xd.war"></property>
+	
+	
+	<!-- message monitor server files -->
+	<property name="msg-monitor.root" value="${config.root}/../msg-monitor"></property>
+	<property name="msg-monitor.service.dir" value="${config.root}/msg-monitor/target"></property>
+	<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.1.3.war"></property>
+	<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>
+	
+	
+	<!-- Support libraries -->
+	<property name="lib.activation" value="${install.root.dir}/lib/activation-1.1.1.jar"></property>
+	<property name="lib.aopalliance" value="${install.root.dir}/lib/aopalliance-1.0.jar"></property>
+	<property name="lib.apache-mailet" value="${install.root.dir}/lib/apache-mailet-2.4.jar"></property>
+	<property name="lib.apache-mailet-base" value="${install.root.dir}/lib/apache-mailet-base-1.1.jar"></property>
+	<property name="lib.bcmail-jdk15" value="${install.root.dir}/lib/bcmail-jdk15-140.jar"></property>
+	<property name="lib.bcprov-jdk15" value="${install.root.dir}/lib/bcprov-jdk15-140.jar"></property>
+	<property name="lib.commons-codec" value="${install.root.dir}/lib/commons-codec-1.4.jar"></property>
+	<property name="lib.commons-io" value="${install.root.dir}/lib/commons-io-1.4.jar"></property>
+	<property name="lib.commons-logging" value="${install.root.dir}/lib/commons-logging-1.1.1.jar"></property>
+	<property name="lib.commons-lang" value="${install.root.dir}/lib/commons-lang-2.5.jar"></property>
+	<property name="lib.mail" value="${install.root.dir}/lib/mail-1.4.3.jar"></property>
+	<property name="lib.dsn" value="${install.root.dir}/lib/dsn-1.4.3.jar"></property>	
+	<property name="lib.guice" value="${install.root.dir}/lib/guice-2.0.jar"></property>
+	<property name="lib.apache-jsieve" value="${install.root.dir}/lib/apache-jsieve-0.4.jar"></property>	
+	<property name="lib.apache-jsieve-mailet" value="${install.root.dir}/lib/apache-jsieve-mailet-0.4.jar"></property>		
+	<property name="lib.httpclient" value="${install.root.dir}/lib/httpclient-4.1.1.jar"></property>		
+	<property name="lib.httpcore" value="${install.root.dir}/lib/httpcore-4.1.jar"></property>	
+	<property name="lib.jackson-core-asl" value="${install.root.dir}/lib/jackson-core-asl-1.7.5.jar"></property>	
+	<property name="lib.jackson-jaxrs" value="${install.root.dir}/lib/jackson-jaxrs-1.7.5.jar"></property>		
+	<property name="lib.jackson-mapper-asl" value="${install.root.dir}/lib/jackson-mapper-asl-1.7.5.jar"></property>		
+	<property name="lib.jdom" value="${install.root.dir}/lib/jdom-1.1.jar"></property>		
+	
+	<!-- Support libraries (DNS) -->
+	<property name="lib.jcs" value="${install.root.dir}/lib/jcs-1.3.jar"></property>
+	<property name="lib.concurrent" value="${install.root.dir}/lib/concurrent-1.0.jar"></property>
+
+	<!-- Support libraries (config-service) -->
+	<property name="lib.wsdl4j" value="${install.root.dir}/lib/wsdl4j-1.6.2.jar"></property>
+	<property name="lib.saaj-api" value="${install.root.dir}/lib/saaj-api-1.3.jar"></property>
+	<property name="lib.jaxrpc-api" value="${install.root.dir}/lib/jaxrpc-api-1.1.jar"></property>
+	<property name="lib.commons-discovery" value="${install.root.dir}/lib/commons-discovery-0.4.jar"></property>
+	<property name="lib.axis" value="${install.root.dir}/lib/axis-1.4.jar"></property>
+	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-1.1.jar"></property>
+
+	<!-- Package libraries -->
+	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
+	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
+	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
+	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
+	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-1.5.4.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-2.0.2.jar"></property>
+	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.1.2.jar"></property>	
+	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.3.jar"></property>
+	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
+	
+	<!-- Stylesheet to edit the config file -->
+	<property name="edit.config.stylesheet" value="${src}/scripts/edit-config.xsl"></property>
+
+	<!-- Stylesheet to edit server.xml for tomcat configuration -->
+	<property name="edit.tomcat.stylesheet" value="${src}/scripts/edit-tomcat.xsl"></property>
+
+	<target name="windows-specific" if="is.windows">
+		<echo message="src is ${src}"></echo>
+		<property name="wget.command.path" value="${resources.dir}/wget.exe"></property>
+	</target>
+	
+	<target name="unix-specific" if="is.unix">
+		<property name="wget.command.path" value="/usr/bin/wget"></property>
+	</target>
+	
+	<target name="mac-specific" if="is.mac">
+		<!--
+		<exec executable="which" outputproperty="wget.command.path" resultproperty="which.wget.result">
+			<arg line="wget" />
+		</exec>
+		-->
+		<property name="which.wget.result" value="1"></property>
+		
+		<exec executable="which" outputproperty="curl.command.path" resultproperty="which.curl.result" failonerror="false">
+			<arg line="curl"></arg>
+		</exec>
+		
+		<!-- do we have a downloader? -->
+		<condition property="no.downloader">
+			<and>
+				<not>
+					<equals arg1="${which.wget.result}" arg2="0"></equals>
+				</not>
+				<not>
+					<equals arg1="${which.curl.result}" arg2="0"></equals>
+				</not>
+			</and>
+		</condition>
+	</target>
+	
+	<!-- Fail if we can't find a downloader command -->
+	<target name="fail-if-no-downloader" if="no.downloader">
+		<echo message="which.curl.result = ${which.curl.result}"></echo>
+		<echo message="which.wget.result = ${which.wget.result}"></echo>
+		<fail message="No downloader available - install wget or curl"></fail>
+	</target>
+	
+	<target name="init" depends="windows-specific,unix-specific,mac-specific,fail-if-no-downloader">
+		<!-- Create the time stamp -->
+	    <tstamp></tstamp>
+ 	</target>
+
+	<target name="assemble" depends="init" description="assemble the apache james mail server">
+	    
+		<!-- Create the build directory structure -->
+
+		<mkdir dir="${build.dir}"></mkdir>
+		<mkdir dir="${build.download.dir}"></mkdir>
+		<fail unless="env.DIRECT_INSTALL_DIR" message="Environment variable DIRECT_INSTALL_DIR is not set"></fail>
+
+		<!-- get the apache james binary install package -->
+		<available file="${apache.james.binary.zip}" property="apache.james.download.exists"></available>
+		<antcall target="get-james"></antcall>
+
+		<!-- get the apache james binary install package -->
+		<available file="${apache.james3.binary.tar.gz}" property="apache.james3.download.exists"></available>
+		<antcall target="get-james3"></antcall>		
+		
+		
+		<!-- get the tomcat binary install package -->
+		<available file="${tomcat.binary.zip}" property="tomcat.download.exists"></available>
+		<antcall target="get-tomcat"></antcall>
+		
+		<!-- unpack -->
+		<delete dir="${james.stage.dir}"></delete>
+		<delete dir="${james.stage3.dir}"></delete>		
+		<delete dir="${tomcat.stage.dir}"></delete>
+		<unzip dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james.binary.zip}"></unzip>
+		<untar compression="gzip" dest="${env.DIRECT_INSTALL_DIR}" src="${tomcat.binary.zip}"></untar>
+		<untar compression="gzip" dest="${env.DIRECT_INSTALL_DIR}" src="${apache.james3.binary.tar.gz}"></untar>
+				
+		<!-- configure james -->
+		<antcall target="configure"></antcall>
+		<antcall target="make-shell-files-executable"></antcall>
+		<antcall target="clean"></antcall>
+	</target>
+
+	<!-- get apache-james -->
+	<target name="get-james" depends="get-james-get" unless="apache.james.download.exists"></target>
+	
+	
+	<!-- get james get -->
+	<target name="get-james-get" unless="apache.james.download.exists">
+        <echo>downloading ${apache.james.binary.url}</echo>
+        <mkdir dir="${build.download.dir}"/>
+        <get src="${apache.james.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
+	</target>
+
+	<!-- get apache-james3 -->
+	<target name="get-james3" depends="get-james3-get" unless="apache.james3.download.exists"></target>
+	
+	
+	<!-- get james3 get -->
+	<target name="get-james3-get" unless="apache.james3.download.exists">
+        <echo>downloading ${apache.james3.binary.url}</echo>
+        <mkdir dir="${build.download.dir}"/>
+        <get src="${apache.james3.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
+	</target>	
+	
+	<!-- get tomcat -->
+	<target name="get-tomcat" depends="get-tomcat-get" unless="tomcat.download.exists"></target>
+	
+	<!-- get tomcat get -->
+	<target name="get-tomcat-get" unless="tomcat.download.exists">
+        <echo>downloading ${tomcat.binary.url}</echo>
+        <mkdir dir="${build.download.dir}"/>
+        <get src="${tomcat.binary.url}" dest="${build.download.dir}" ignoreerrors="false" retries="5"/>
+
+	</target>
+
+	<target name="configure" depends="configure-james,configure-james3,configure-tomcat"></target>
+
+	<target name="configure-james">
+		<!-- expand the sar file in apps -->
+		<unzip dest="${james.stage.apps.dir}" src="${james.stage.apps.james.sar.path}"></unzip>
+		
+		<!-- trim the expanded sar -->
+		<delete dir="${james.stage.apps.dir}/META-INF"></delete>
+		<delete dir="${james.stage.apps.SAR-INF.lib.dir}"></delete>
+		<mkdir dir="${james.stage.apps.SAR-INF.lib.dir}"></mkdir>
+
+		<!-- populate new libraries -->
+		<copy file="${lib.activation}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.aopalliance}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.apache-mailet}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.apache-mailet-base}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.bcmail-jdk15}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.bcprov-jdk15}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.commons-codec}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.commons-io}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.commons-lang}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.dsn}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.direct-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.xd-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+		<copy file="${lib.jcs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.concurrent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.wsdl4j}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.saaj-api}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.jaxrpc-api}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.commons-discovery}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.axis}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+	    <copy file="${lib.config.proxy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+	    <copy file="${lib.apache-jsieve}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+	    <copy file="${lib.apache-jsieve-mailet}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+	    <copy file="${lib.httpclient}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
+	    <copy file="${lib.httpcore}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+	    <copy file="${lib.jackson-core-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+	    <copy file="${lib.jackson-jaxrs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
+	    <copy file="${lib.jackson-mapper-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+	    <copy file="${lib.jdom}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		
+		<!-- edit the config.xml file -->
+		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
+		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
+
+		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
+
+		<!-- clean up work files -->
+		<delete file="${james.stage.config.new}" failonerror="false"></delete>
+		
+	</target>
+
+	<target name="configure-james3">
+		
+		<!-- delete the template files that aren't needed -->
+		<delete file="${james3.stage.conf.dir}/domainlist-template.conf"></delete>
+		<delete file="${james3.stage.conf.dir}/mailetcontainer-template.conf"></delete>
+		
+		<!-- populate new libraries -->
+		<copy file="${lib.activation}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.bcmail-jdk15}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.bcprov-jdk15}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.guice}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.dsn}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.agent}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.gateway}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.direct-common}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.xdmail}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.xd-common}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.jcs}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.concurrent}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.wsdl4j}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.saaj-api}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.jaxrpc-api}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.commons-discovery}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.axis}" todir="${james3.stage.lib.dir}"></copy>
+	    <copy file="${lib.config.proxy}" todir="${james3.stage.lib.dir}"></copy>
+	    <copy file="${lib.httpclient}" todir="${james3.stage.lib.dir}"></copy>			
+	    <copy file="${lib.httpcore}" todir="${james3.stage.lib.dir}"></copy>		
+	    <copy file="${lib.jackson-core-asl}" todir="${james3.stage.lib.dir}"></copy>	
+	    <copy file="${lib.jackson-jaxrs}" todir="${james3.stage.lib.dir}"></copy>			
+	    <copy file="${lib.jackson-mapper-asl}" todir="${james3.stage.lib.dir}"></copy>		
+	    <copy file="${lib.jdom}" todir="${james3.stage.lib.dir}"></copy>	
+		
+		<!-- copy the new config files -->
+		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/mailetcontainer.conf" tofile="${james3.stage.mailetcontainer}" overwrite="true"></copy>
+
+		<copy file="${src}/scripts/james3/setdomain.sh" todir="${james3.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/set-domain.xml" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/james3/set-domain-domainlist.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
+		<copy file="${src}/scripts/james3/set-domain-mailetcontainer.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
+
+		
+	</target>	
+	
+	<target name="configure-tomcat">
+		<property name="config.service.orig.war" value="config-service-1.2.1.war"></property>
+		<property name="config.service.dest.war" value="config-service.war"></property>
+		<property name="config.ui.orig.war" value="config-ui.war"></property>
+		<property name="config.ui.dest.war" value="config-ui.war"></property>
+		<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
+		<property name="xd.service.dest.war" value="xd.war"></property>
+		<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.1.3.war"></property>
+		<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>		
+		
+		<!-- Copy war files -->
+		<copy file="${install.root.dir}/lib/${config.service.orig.war}" tofile="${tomcat.webapp.dir}/${config.service.dest.war}"></copy>
+		<copy file="${install.root.dir}/lib/${config.ui.orig.war}" tofile="${tomcat.webapp.dir}/${config.ui.dest.war}"></copy>
+		<copy file="${install.root.dir}/lib/${xd.service.orig.war}" tofile="${tomcat.webapp.dir}/${xd.service.dest.war}"></copy>
+		<copy file="${install.root.dir}/lib/${msg-monitor.service.orig.war}" tofile="${tomcat.webapp.dir}/${msg-monitor.service.dest.war}"></copy>
+		
+		<!-- Copy catalina.sh file -->
+		<copy file="${src}/scripts/catalina.sh" tofile="${tomcat.bin.dir}/catalina.sh"></copy>
+		
+		<xslt style="${edit.tomcat.stylesheet}" in="${tomcat.stage.config}" out="${tomcat.stage.config.new}">
+		    <param name="port" expression="8081"></param>
+		</xslt>
+		<copy file="${tomcat.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
+		<copy file="${tomcat.stage.config.new}" tofile="${tomcat.stage.config}" overwrite="true"></copy>
+		<delete file="${tomcat.stage.config.new}" />
+	</target>
+
+	<!-- make shell files executable -->
+	<target name="make-shell-files-executable" if="is.someunix">
+		<exec executable="sh">
+			<arg line="-c 'cd ${james.stage.dir}/bin; chmod a+x *.sh'"></arg>
+		</exec>
+		<exec executable="sh">
+			<arg line="-c 'cd ${james3.stage.dir}/bin; chmod a+x *.sh'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${james3.stage.dir}/bin; chmod a+x wrapper*'"></arg>
+		</exec>				
+		<exec executable="sh">
+			<arg line="-c 'cd ${tomcat.stage.dir}/bin; chmod a+x *.sh'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-linux-x86-32'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-linux-x86-64'"></arg>
+		</exec>				
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x wrapper-solaris-x86-32'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsserver.stage.dir}/bin; chmod a+x DirectDNSServer'"></arg>
+		</exec>		
+		<exec executable="sh">
+			<arg line="-c 'cd ${dnsmgmt.stage.dir}/bin; chmod a+x DNSMgmtConsole'"></arg>
+		</exec>				
+	</target>
+
+	<!-- clean up -->
+	<target name="clean" depends="init" description="clean up">
+	    <!-- Delete the ${build} directory tree -->
+	    <delete dir="${build.dir}/download"></delete>
+	</target>
+	
+</project>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Message Monitoring</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Message Monitoring</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+               The message monitoring module is aggregating tracked message in a HISP and determining
+               if failure notification messages need to be sent to a message originator based on specific
+               conditions.  The default implementation of this module implements a generic condition algorithm for
+               messages that do not conform to the reliable and timely messaging implementation guidance of the Direct Project.
+               It also implements the monitoring conditions as specified by the the reliable and timely 
+               messaging implementation guidance of the Direct Project.
+            </p>
+            <p>
+               For more details on deployment and configuration, refer to the
+               <a href="users-guide/index.html">users guide.</a>    
+            </p>
+        </section>
+    </body>
+</document>
