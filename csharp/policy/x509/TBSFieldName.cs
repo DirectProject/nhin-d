@@ -54,6 +54,15 @@ namespace Health.Direct.Policy.X509
         public static readonly TBSFieldName Issuer = new TBSFieldName(
             new TBSFieldStandard.Issuer(TBSFieldStandard.RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn))));
 
+        /// <summary>
+        /// Certificate valid to and valid from dates
+        /// </summary>
+        public static readonly TBSFieldName Validity = new TBSFieldName(
+            new TBSFieldStandard.Validity(new List<TBSFieldStandard.AttributeReferenceClass>
+            {
+                new TBSFieldStandard.AttributeReferenceClass("ValidFrom", () => null),
+                new TBSFieldStandard.AttributeReferenceClass("ValidTo", () => null)
+            }));
 
         /// <summary>
         /// Distinguished name of certificate signer
@@ -69,6 +78,14 @@ namespace Health.Direct.Policy.X509
         public static readonly TBSFieldName Extenstions = new TBSFieldName(
             new TBSFieldStandard.Extensions(new List<TBSFieldStandard.AttributeReferenceClass>()) );
 
+
+        public static readonly TBSFieldName SubjectPublicKeyInfo = new TBSFieldName(
+            new TBSFieldStandard.SubjectPublicKeyInfo(
+                new List<TBSFieldStandard.AttributeReferenceClass>
+            {
+                new TBSFieldStandard.AttributeReferenceClass(Algorithm", () => null),
+                new TBSFieldStandard.AttributeReferenceClass("Size", () => null)
+            }));
 
         public static IEnumerable<TBSFieldName> Values
         {

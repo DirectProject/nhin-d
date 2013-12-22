@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 
 namespace Health.Direct.Policy.X509
@@ -137,8 +138,18 @@ namespace Health.Direct.Policy.X509
             public Issuer(List<AttributeReferenceClass> subAttributes)
             {
                 RfcName = "Issuer";
-                Display = "Issuer";;
+                Display = "Issuer";
                 SubAttributes = subAttributes;
+            }
+        }
+
+        public class Validity : Complex
+        {
+            public Validity(List<AttributeReferenceClass> subattribues)
+            {
+                RfcName = "Validity";
+                Display = "Validity";
+                SubAttributes = subattribues;
             }
         }
 

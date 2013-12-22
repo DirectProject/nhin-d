@@ -113,6 +113,7 @@
     <Compile Include="X509\SubjectAltNameExtensionField.cs" />
     <Compile Include="X509\SubjectAttributeField.cs" />
     <Compile Include="X509\SubjectKeyIdentifierExtensionField.cs" />
+    <Compile Include="X509\SubjectPublicKeySizeField.cs" />
     <Compile Include="X509\TBSField.cs" />
     <Compile Include="X509\TBSFieldName.cs" />
     <Compile Include="X509\TBSFieldStandard.cs" />
