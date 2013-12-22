@@ -68,6 +68,7 @@
     <Compile Include="UnaryBooleanPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="UnaryIntegerPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="x509\ExtensionField_getFieldNameTest.cs" />
+    <Compile Include="x509\ExtensionField_isCriticalTest.cs" />
     <Compile Include="x509\KeyBitUsage_getAttributesTest.cs" />
     <Compile Include="x509\X509FieldType_getAttributesTest.cs" />
     <Compile Include="XMLLexiconPolicyParser_serializeTest.cs" />

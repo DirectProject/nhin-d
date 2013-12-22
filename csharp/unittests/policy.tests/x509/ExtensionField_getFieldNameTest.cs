@@ -14,10 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
-using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.X509;
 using Xunit;
 
@@ -33,49 +30,10 @@ namespace Health.Direct.Policy.Tests.x509
         }
     }
 
-    public class ExtensionField_isCriticalTest
+    public class TBSField_getX509FieldTypeTest
     {
-        [Fact]
-        public void TestIsCritical_ExtensionNotPresent_AssertFalse()
-        {
-            var cert = new X509Certificate2(@"resources/certs/umesh.der");
-            cert.GetCriticalExtensionOIDs().Should().NotContain(ExtensionIdentifier.ExtKeyUsageSyntax.Id);
-		    var field = new ExtendedKeyUsageExtensionField(false);
-		    field.InjectReferenceValue(cert);
-            field.IsCritical().Should().BeFalse();
-        }
-
-        [Fact]
-        public void TestIsCritical_ExtensionPresent_NotCritical_AssertFalse()
-        {
-            var cert = new X509Certificate2(@"resources/certs/umesh.der");
-            cert.GetCriticalExtensionOIDs().Should().NotContain(ExtensionIdentifier.SubjectKeyIdentifier.Id);
-            var field = new SubjectKeyIdentifierExtensionField(false);
-            field.InjectReferenceValue(cert);
-            field.IsCritical().Should().BeFalse();
-        }
-
-        [Fact]
-        public void TestIsCritical_ExtensionPresent_IsCritical_AssertTrue()
-        {
-            var cert = new X509Certificate2(@"resources/certs/CernerDirect DevCert Provider CA.der");
-            cert.GetCriticalExtensionOIDs().Should().Contain(ExtensionIdentifier.BasicConstraints.Id);
-            var field = new BasicContraintsExtensionField(false);
-            field.InjectReferenceValue(cert);
-            field.IsCritical().Should().BeTrue();
-        }
-
-        [Fact]
-        public void TestIsCritical_CertMission_AssertException()
-	    {
-
-		    var field = new BasicContraintsExtensionField(false);
-		    bool exceptionOccured = false;
-
-            Action action = () => field.IsCritical();
-            action.ShouldThrow<InvalidOperationException>();
-		    
-	    }	
-
+        // SubjectPublicKeySizeField field = new SubjectPublicKeySizeField();
+        
+        //assertEquals(X509FieldType.TBS, field.getX509FieldType());
     }
 }
