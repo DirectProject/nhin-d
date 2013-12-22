@@ -184,48 +184,7 @@ namespace Health.Direct.Tools.Agent
             return true;
         }
 
-        private bool ResolveCertInLdap(string domain, string outputFile)
-        {
-            LdapCertResolver resolver = new LdapCertResolver(m_dnsServer, TimeSpan.FromSeconds(5));
-            resolver.Error += resolver_Error;
-
-            MailAddress address = null;
-            try
-            {
-                address = new MailAddress(domain);
-            }
-            catch
-            {
-            }
-            X509Certificate2Collection certs;
-            if (address != null)
-            {
-                Console.WriteLine("Resolving mail address {0} in LDAP", domain);
-                certs = resolver.GetCertificates(address);
-            }
-            else
-            {
-                certs = resolver.GetCertificatesForDomain(domain);
-            }
-
-            if (certs.IsNullOrEmpty())
-            {
-                return false;
-            }
-
-            Console.WriteLine("{0} found in LDAP", certs.Count);
-            foreach (X509Certificate2 cert in certs)
-            {
-                Console.WriteLine(cert.SubjectName.Name);
-            }
-
-            if (!string.IsNullOrEmpty(outputFile))
-            {
-                byte[] bytes = certs.Export(X509ContentType.Cert);
-                File.WriteAllBytes(outputFile, bytes);
-            }
-            return true;
-        }
+      
 
         void resolver_Error(ICertificateResolver arg1, Exception arg2)
         {
