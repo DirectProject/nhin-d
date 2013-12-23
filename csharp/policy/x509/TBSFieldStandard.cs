@@ -173,6 +173,16 @@ namespace Health.Direct.Policy.X509
             }
         }
 
+        public class SubjectPublicKeyInfo : Complex
+        {
+            public SubjectPublicKeyInfo(List<AttributeReferenceClass> subAttributes)
+            {
+                RfcName = "SubjectPublicKeyInfo";
+                Display = "Subject Public Key Info"; ;
+                SubAttributes = subAttributes;
+            }
+        }
+        
 
         public class AttributeReferenceClass
         {

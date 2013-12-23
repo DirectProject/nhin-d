@@ -18,8 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Asn1.X509;
+using Health.Direct.Policy.Extensions;
 
 namespace Health.Direct.Policy.X509
 {
@@ -57,55 +56,23 @@ namespace Health.Direct.Policy.X509
         {
             Certificate = value;
 
-            //todo: not coded ... stubbed
             if (RdnAttributeId.Equals(RDNAttributeIdentifier.DISTINGUISHED_NAME))
             {
-                List<String> str = new List<String> { Certificate.Issuer };
+                var str = new List<String> { Certificate.IssuerName.RemoveSpaces()};
                 PolicyValue = PolicyValueFactory<List<String>>.GetInstance(str);
                 return;
             }
 
-            DerObjectIdentifier tbsValue;
-
-            try
-            {
-                tbsValue = GetDERObject(Certificate.GetRawCertData());
-            }
-
-            catch (Exception e)
-            {
-                throw new PolicyProcessException("Exception parsing TBS certificate fields.", e);
-            }
+            X500DistinguishedName distinguishedName = Certificate.IssuerName;
+            var values = distinguishedName.GetRdns(GetRDNAttributeFieldId().GetName());
 
 
-            TbsCertificateStructure tbsStruct = TbsCertificateStructure.GetInstance(tbsValue);
-
-            X509Name x509Name = GetX509Name(tbsStruct);
-
-
-            List<String> values = x509Name.GetValueList(new DerObjectIdentifier(GetRDNAttributeFieldId().GetId())).Cast<string>().ToList();
-
-            if (values.Any() && IsRequired())
+            if (! values.Any() && IsRequired())
                 throw new PolicyRequiredException(GetFieldName() + " field attribute " + RdnAttributeId.GetName() + " is marked as required but is not present.");
-
-            List<String> retVal = values;
-
-
-            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(retVal);
+            
+            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(values);
         }
 
-
-
-
-        /// <summary>
-        /// Gets the issuer field as an X509Name from the certificate TBS structure.
-        /// </summary>
-        /// <param name="tbsStruct">The TBS structure of the certificate</param>
-        /// <returns>The issuer field as an X509Name from the certificate TBS structure.</returns>
-        protected X509Name GetX509Name(TbsCertificateStructure tbsStruct)
-        {
-            return tbsStruct.Issuer;
-        }
 
 
         /// <summary>

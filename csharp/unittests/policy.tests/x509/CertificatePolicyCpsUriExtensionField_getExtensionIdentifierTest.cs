@@ -14,19 +14,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+
 using FluentAssertions;
 using Health.Direct.Policy.X509;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class ExtensionField_getFieldNameTest
+    public class CertificatePolicyCpsUriExtensionField_getExtensionIdentifierTest
     {
         [Fact]
-        public void TestGetFieldName()
+        public void TestGetExtenstionIdentifier()
         {
-            var field = new CertificatePolicyIndentifierExtensionField(true);
-            field.GetFieldName().Should().Be(TBSFieldName.Extenstions);
+            var field = new CertificatePolicyCpsUriExtensionField(true);
+            field.ExtentionIdentifier.Should().Be(ExtensionIdentifier.CertificatePolicies);
         }
     }
 }

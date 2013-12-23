@@ -56,15 +56,13 @@ namespace Health.Direct.Policy
         /// <returns>The extension field as DerObjectIdentifier.  If the extension does not exist in the certificate, then null is returned. </returns>
         /// <exception cref="PolicyProcessException">TODO:</exception>
 	    /// </summary>
-        protected DerObjectIdentifier GetExtensionValue(X509Certificate2 cert)
+        protected Asn1Object GetExtensionValue(X509Certificate2 cert)
         {
-            //Todo: Look into coding this with .NET Security Framework code.
     	    string oid = ExtentionIdentifier.Id;
             
             X509Extension x509Extension = cert.Extensions[oid];
             if (x509Extension != null)
             {
-                var asn = new AsnEncodedData(oid, x509Extension.RawData);
                 byte[] bytes = x509Extension.RawData;
                 if (bytes == null)
                 {

@@ -83,8 +83,8 @@ namespace Health.Direct.Policy.X509
             new TBSFieldStandard.SubjectPublicKeyInfo(
                 new List<TBSFieldStandard.AttributeReferenceClass>
             {
-                new TBSFieldStandard.AttributeReferenceClass(Algorithm", () => null),
-                new TBSFieldStandard.AttributeReferenceClass("Size", () => null)
+                new TBSFieldStandard.AttributeReferenceClass("Algorithm", rdn => new SubjectAttributeField(false, rdn)),
+                new TBSFieldStandard.AttributeReferenceClass("Size",rdn => new SubjectAttributeField(false, rdn))
             }));
 
         public static IEnumerable<TBSFieldName> Values

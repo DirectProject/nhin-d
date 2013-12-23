@@ -26,10 +26,11 @@ namespace Health.Direct.Policy.X509
     /// <summary>
     /// Authority info access (AIA) extension field.
     /// <para>
-    /// The policy value of this extension is returned as a collection of strings.  The AIA field is combination of two attributes: the access method and access location.  The string returned in the collection is a concatenation of the access method and the access location delimited by the : character.
+    /// The policy value of this extension is returned as a collection of strings.  The AIA field is combination of two attributes: the access method and access location.  
+    /// The string returned in the collection is a concatenation of the access method and the access location delimited by the : character.
     /// </para>
     /// <para>
-    /// Access methods are enumerated by the {@link AuthorityInfoAccessMethodIdentifier} class.  The concatenated string uses the string literals "OCSP" and "caIssuers" as the access method.
+    /// Access methods are enumerated by the <see cref="Standard.AuthorityInfoAccessMethodIdentifier" /> class.  The concatenated string uses the string literals "OCSP" and "caIssuers" as the access method.
     /// </para>
     /// <para>
     /// If the extension does not exist in the certificate, the policy value returned by this class evaluates to an empty collection. 
@@ -53,7 +54,7 @@ namespace Health.Direct.Policy.X509
         {
             Certificate = value;
 
-            DerObjectIdentifier exValue = GetExtensionValue(value);
+            Asn1Object exValue = GetExtensionValue(value);
 
             if (exValue == null)
             {
