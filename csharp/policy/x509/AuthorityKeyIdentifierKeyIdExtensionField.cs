@@ -50,7 +50,7 @@ namespace Health.Direct.Policy.X509
         {
             Certificate = value;
 
-            DerObjectIdentifier exValue = GetExtensionValue(value);
+            Asn1Object exValue = GetExtensionValue(value);
 
             if (exValue == null)
             {
@@ -72,6 +72,7 @@ namespace Health.Direct.Policy.X509
                 }
                 PolicyValue = new PolicyValue<string>(String.Empty);
             }
+            PolicyValue = new PolicyValue<string>(PolicyUtils.CreateByteStringRep(keyId));
         }
 
         /// <inheritdoc />
