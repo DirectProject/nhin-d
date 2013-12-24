@@ -47,9 +47,9 @@ namespace Health.Direct.Policy.X509
 	    {
 		    Certificate = value;
 
-            Asn1Object exValue = GetExtensionValue(value);
-		
-		    if (exValue == null)
+            DerBitString derBitString = GetExtensionValue(value) as DerBitString;
+
+            if (derBitString == null)
 		    {
 			    if (IsRequired())
 				    throw new PolicyRequiredException("Extention " + ExtentionIdentifier.Display + " is marked as required by is not present.");
@@ -57,7 +57,6 @@ namespace Health.Direct.Policy.X509
 		        return;
 		    }
 		
-		    var derBitString = new DerBitString(exValue);
 		    var keyUsage = new KeyUsage(derBitString.IntValue);
 		    byte[] data = keyUsage.GetBytes();
 		

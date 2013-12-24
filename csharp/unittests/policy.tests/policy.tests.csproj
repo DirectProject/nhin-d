@@ -74,10 +74,17 @@
     <Compile Include="x509\BasicContraintsExtensionField_injectReferenceValueTest.cs" />
     <Compile Include="x509\CertificatePolicyCpsUriExtensionField_getExtensionIdentifierTest.cs" />
     <Compile Include="x509\CertificatePolicyCpsUriExtensionField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\CertificatePolicyIndentifierExtensionField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\CRLDistributionPointNameExtentionField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\ExtendedKeyUsageExtensionField_injectReferenceValueTest.cs" />
     <Compile Include="x509\ExtensionField_getFieldNameTest.cs" />
     <Compile Include="x509\ExtensionField_isCriticalTest.cs" />
+    <Compile Include="x509\ExtentionIdentifier_getAttributesTest.cs" />
     <Compile Include="x509\IssuerAttributeField_injectReferenceValueTest.cs" />
     <Compile Include="x509\KeyBitUsage_getAttributesTest.cs" />
+    <Compile Include="x509\KeyUsageExtensionField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\PublicKeyAlgorithmIdentifier_getAttributesTest.cs" />
+    <Compile Include="x509\RDNAttributeIdentifier_getAttributesTest.cs" />
     <Compile Include="x509\SubjectAttributeField_injectReferenceValueTest.cs" />
     <Compile Include="x509\SubjectPublicKeyAlgorithmField_getFieldNameTest.cs" />
     <Compile Include="x509\TBSField_getX509FieldTypeTest.cs" />

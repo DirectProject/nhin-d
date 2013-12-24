@@ -26,6 +26,7 @@ namespace Health.Direct.Policy.X509
         // From RFC5280 section 4.1.2.4 and RFC4519
         //
 
+        
         /// <summary>
         /// <para>Common name attribute</para> 
         /// RDN Name: CN 
@@ -164,7 +165,7 @@ namespace Health.Direct.Policy.X509
 
             foreach (var rdnAtrId in Values)
             {
-                m_nameFieldMap.Add(rdnAtrId.GetName(), rdnAtrId);
+                m_nameFieldMap.Add(rdnAtrId.Name, rdnAtrId);
             }
         }
 
@@ -177,19 +178,19 @@ namespace Health.Direct.Policy.X509
         /// <summary>
         /// Gets the object identifier (OID) of the RDN attribute.
         /// </summary>
-        /// <returns></returns>
-        public String GetId()
+        /// <value></value>
+        public string OID
         {
-            return m_id;
+            get { return m_id; }
         }
 
         /// <summary>
         /// Gets the name of the attribute as it is commonly displayed in an X509 certificate viewer
         /// </summary>
-        /// <returns>The name of the attribute as it is commonly displayed in an X509 certificate viewer</returns>
-        public String GetName()
+        /// <value>The name of the attribute as it is commonly displayed in an X509 certificate viewer</value>
+        public string Name
         {
-            return m_name;
+            get { return m_name; }
         }
 
         /// <inheritdoc />

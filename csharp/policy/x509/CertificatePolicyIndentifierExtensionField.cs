@@ -71,9 +71,11 @@ namespace Health.Direct.Policy.X509
                     retVal.Add(pol.PolicyIdentifier.Id);
                 }
             }
-
+            //TODO: PolicyInformation is only storing the ID.  There other intersting info items in here that we may want
+            //maybe not for rules but for when things go wrong... logging info.
             PolicyValue = new PolicyValue<IList<String>>(retVal);
         }
+
 
         /// <inheritdoc />
         public override ExtensionIdentifier ExtentionIdentifier

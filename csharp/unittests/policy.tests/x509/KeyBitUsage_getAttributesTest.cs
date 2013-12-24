@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using FluentAssertions;
 using Health.Direct.Policy.X509;
+using Health.Direct.Policy.X509.Standard;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
@@ -26,7 +27,7 @@ namespace Health.Direct.Policy.Tests.x509
         public void testGetAttributes_assertAttributes()
         {
             (1 << 7).Should().Be((int)KeyUsageBit.DigitalSignature);
-           
+            KeyUsageBit.DigitalSignature.Name().Should().Be("digitalSignature");
         }
     }
 }

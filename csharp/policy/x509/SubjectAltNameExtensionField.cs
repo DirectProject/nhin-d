@@ -60,11 +60,8 @@ namespace Health.Direct.Policy.X509
 	
             foreach (var name in generalNames.GetNames())
             {
-                var type = Standard.FromTag<Standard.GeneralNameType>(name.TagNo);
-			    if (type != null)
-			    {
-                    names.Add(Standard.ToString(type) + ":" + name.Name);
-			    }
+                var type = StandardExt.FromTag<Standard.GeneralNameType>(name.TagNo);
+                names.Add(type.Name() + ":" + name.Name);
 		    }
             PolicyValue = PolicyValueFactory<List<string>>.GetInstance(names);
         }

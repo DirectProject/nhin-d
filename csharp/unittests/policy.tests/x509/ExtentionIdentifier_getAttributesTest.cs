@@ -16,20 +16,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using FluentAssertions;
-using Health.Direct.Policy.X509.Standard;
+using Health.Direct.Policy.X509;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class AuthorityInfoAccessMethodIdentifier_getAttributesTest
+    public class ExtentionIdentifier_GetAttributesTest
     {
         [Fact]
-        public void TestGetAttributes()
+        public void testGetAttributes()
         {
-            AuthorityInfoAccessMethodIdentifier.OCSP.Id.Should().Be("1.3.6.1.5.5.7.48.1");
-            AuthorityInfoAccessMethodIdentifier.OCSP.Name.Should().Be("OCSP");
-            AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Id.Should().Be("1.3.6.1.5.5.7.48.2");
-            AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Name.Should().Be("caIssuers");
+            new ExtensionStandard.KeyUsage().Id.Should().Be("2.5.29.15");
+            new ExtensionStandard.SubjectAltName().Display.Should().Be("Subject Alternative Name");
+            new ExtensionStandard.SubjectAltName().RfcName.Should().Be("SubjectAltName");
         }
     }
 }

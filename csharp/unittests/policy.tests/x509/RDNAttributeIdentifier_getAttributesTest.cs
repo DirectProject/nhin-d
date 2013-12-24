@@ -15,21 +15,31 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
+using Health.Direct.Policy.X509;
 using Health.Direct.Policy.X509.Standard;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class AuthorityInfoAccessMethodIdentifier_getAttributesTest
+    public class RdnAttributeIdentifier_GetAttributesTest
     {
         [Fact]
-        public void TestGetAttributes()
+        public void testGetAttributes_toString()
         {
-            AuthorityInfoAccessMethodIdentifier.OCSP.Id.Should().Be("1.3.6.1.5.5.7.48.1");
-            AuthorityInfoAccessMethodIdentifier.OCSP.Name.Should().Be("OCSP");
-            AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Id.Should().Be("1.3.6.1.5.5.7.48.2");
-            AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Name.Should().Be("caIssuers");
+            RDNAttributeIdentifier.COMMON_NAME.Name.Should().Be("CN");
+            RDNAttributeIdentifier.COUNTRY.Name.Should().Be("C");
+        }
+
+        [Fact]
+        public void testGetAttributes_fromName()
+        {
+            RDNAttributeIdentifier.COMMON_NAME.Name.Should().Be(RDNAttributeIdentifier.FromName("CN").Name);
+            RDNAttributeIdentifier.COMMON_NAME.OID.Should().Be(RDNAttributeIdentifier.FromName("CN").OID);
+            RDNAttributeIdentifier.FromName("CN.").Should().BeNull();
+            RDNAttributeIdentifier.COUNTRY.Name.Should().Be("C");
         }
     }
 }
