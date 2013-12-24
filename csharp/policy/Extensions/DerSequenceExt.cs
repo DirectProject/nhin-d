@@ -14,19 +14,28 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using FluentAssertions;
-using Health.Direct.Policy.X509;
-using Xunit;
+using Org.BouncyCastle.Asn1;
 
-namespace Health.Direct.Policy.Tests.x509
+namespace Health.Direct.Policy.Extensions
 {
-    public class ExtensionField_getFieldNameTest
+    public static class DerSequenceExt
     {
-        [Fact]
-        public void TestGetFieldName()
+        public static Asn1Encodable Id(this DerSequence derSequence)
         {
-            var field = new CertificatePolicyIndentifierExtensionField(true);
-            field.GetFieldName().Should().Be(TBSFieldName.Extenstions);
+            if (derSequence != null && derSequence.Count > 0)
+            {
+                return derSequence[0];
+            }
+            return null;
+        }
+
+        public static string Value(this DerSequence derSequence)
+        {
+            if (derSequence != null && derSequence.Count > 1)
+            {
+                return derSequence[1].ToString();
+            }
+            return null; 
         }
     }
 }

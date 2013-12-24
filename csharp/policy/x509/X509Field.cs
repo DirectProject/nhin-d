@@ -69,7 +69,7 @@ namespace Health.Direct.Policy.X509
         /// </summary>
         /// <param name="ext">The encoded octet string as a byte array</param>
         /// <returns>The converted DerObjectIdentifier</returns>
-        protected DerObjectIdentifier GetObject(byte[] ext)
+        protected Asn1Object GetObject(byte[] ext)
         {
             try
             {
@@ -77,9 +77,10 @@ namespace Health.Direct.Policy.X509
                 using (aIn = new Asn1InputStream(ext))
                 {
                     Asn1Object octs = aIn.ReadObject();
-                    using (aIn = new Asn1InputStream(octs.GetDerEncoded()))
+                    Asn1InputStream aInDerEncoded;
+                    using (aInDerEncoded = new Asn1InputStream(octs.GetDerEncoded()))
                     {
-                        return aIn.ReadObject() as DerObjectIdentifier;
+                        return aInDerEncoded.ReadObject();
                     }
                 }
             }
@@ -89,33 +90,6 @@ namespace Health.Direct.Policy.X509
             }
         }
 
-
-        /// <summary>
-        /// Converts an encoded internal sequence object to a DERObject
-        /// </summary>
-        /// <param name="ext">The encoded sequence as a byte array</param>
-        /// <returns>The converted DERObjectIdentifier</returns>
-        protected DerObjectIdentifier GetDERObject(byte[] ext)
-        {
-
-            try
-            {
-                Asn1InputStream aIn;
-                using (aIn = new Asn1InputStream(ext))
-                {
-                    DerSequence seq = (DerSequence) aIn.ReadObject();
-                    using (aIn = new Asn1InputStream(seq.GetDerEncoded()))
-                    {
-                        return aIn.ReadObject() as DerObjectIdentifier;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new PolicyProcessException("Exception processing data ", e);
-            }
-
-        }
 
         //TODO: this feels wrong.  Had to do this to compile during the Java port.
         public abstract X509FieldType GetX509FieldType();

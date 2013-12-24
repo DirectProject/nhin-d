@@ -14,19 +14,47 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using FluentAssertions;
-using Health.Direct.Policy.X509;
-using Xunit;
 
-namespace Health.Direct.Policy.Tests.x509
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+
+
+namespace Health.Direct.Policy.Extensions
 {
-    public class ExtensionField_getFieldNameTest
+    public static class X500Ext
     {
-        [Fact]
-        public void TestGetFieldName()
+        public static List<string> GetRdns(this X500DistinguishedName distinguishedName, string rdn)
         {
-            var field = new CertificatePolicyIndentifierExtensionField(true);
-            field.GetFieldName().Should().Be(TBSFieldName.Extenstions);
+            var decodedString = distinguishedName.Decode(X500DistinguishedNameFlags.UseNewLines | X500DistinguishedNameFlags.Reversed);
+            if (decodedString != null)
+            {
+                List<string> values = new List<string>();
+                IList<string> parts =
+                    decodedString.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    if (part.StartsWith(rdn, StringComparison.OrdinalIgnoreCase))
+                    {
+                        values.Add(part.Split('=').LastOrDefault());
+                    }
+                }
+                return values;
+            }
+            return null;
+        }
+
+        public static string RemoveSpaces(this X500DistinguishedName distinguishedName)
+        {
+            var decodedString = distinguishedName.Decode(X500DistinguishedNameFlags.UseNewLines | X500DistinguishedNameFlags.Reversed);
+            if (decodedString != null)
+            {
+                var decode = decodedString.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                return String.Join(",", decode);
+            }
+            return null;
         }
     }
 }
