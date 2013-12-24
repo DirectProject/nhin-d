@@ -16,8 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Health.Direct.Policy.X509;
+using Health.Direct.Policy.X509.Standard;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests

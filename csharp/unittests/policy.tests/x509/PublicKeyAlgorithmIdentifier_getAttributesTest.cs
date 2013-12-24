@@ -16,20 +16,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using FluentAssertions;
-using Health.Direct.Policy.X509.Standard;
-using Xunit;
+using Health.Direct.Policy.x509.Standard;
+
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class AuthorityInfoAccessMethodIdentifier_getAttributesTest
+    public class PublicKeyAlgorithmIdentifier_GetAttributesTest
     {
-        [Fact]
         public void TestGetAttributes()
         {
-            AuthorityInfoAccessMethodIdentifier.OCSP.Id.Should().Be("1.3.6.1.5.5.7.48.1");
-            AuthorityInfoAccessMethodIdentifier.OCSP.Name.Should().Be("OCSP");
-            AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Id.Should().Be("1.3.6.1.5.5.7.48.2");
-            AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Name.Should().Be("caIssuers");
+
+            PublicKeyAlgorithmIdentifier.Rsa.OID.Should().Be("1.2.840.113549.1.1.1");
+            PublicKeyAlgorithmIdentifier.Rsa.Name.Should().Be("RSA");
+
+            PublicKeyAlgorithmIdentifier.Dsa.OID.Should().Be("1.2.840.10040.4.1");
+            PublicKeyAlgorithmIdentifier.Dsa.Name.Should().Be("DSA");
         }
     }
 }

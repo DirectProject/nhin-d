@@ -41,7 +41,7 @@ namespace Health.Direct.Policy.X509
                 Id = id;
                 RfcName = rfcName;
                 Display = display;
-                
+
             }
             static Field()
             {
@@ -50,10 +50,16 @@ namespace Health.Direct.Policy.X509
             }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// From RFC 5280 section 4.2.1.3
+        /// The key usage extension defines the purpose (e.g., encipherment,
+        ///signature, certificate signing) of the key contained in the
+        /// certificate. 
+        /// <see cref="KeyUsage"/> for possible possible bit string
+        /// </summary>
         public class KeyUsage : Field
         {
-            public KeyUsage() : base("2.5.29.15", "KeyUsage", "Key Usage"){}
+            public KeyUsage() : base("2.5.29.15", "KeyUsage", "Key Usage") { }
         }
 
         /// <inheritdoc />
@@ -85,7 +91,7 @@ namespace Health.Direct.Policy.X509
         {
             public AuthorityKeyIdentifier() : base("2.5.29.35", "AuthorityKeyIdentifier", "Authority Key Identifier") { }
         }
-        
+
         /// <inheritdoc />
         public class CertificatePolicies : Field
         {
@@ -144,9 +150,9 @@ namespace Health.Direct.Policy.X509
         public class AuthorityInfoAccessSyntax : Field
         {
             public AuthorityInfoAccessSyntax() : base("1.3.6.1.5.5.7.1.1", "AuthorityInfoAccessSyntax", "Authority Information Access") { }
-        
+
         }
-            /// <inheritdoc />
+        /// <inheritdoc />
         public class SubjectInfoAccessSyntax : Field
         {
             public SubjectInfoAccessSyntax() : base("1.3.6.1.5.5.7.1.11", "SubjectInfoAccessSyntax", "Subject Information Access") { }

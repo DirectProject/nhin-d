@@ -16,58 +16,53 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Health.Direct.Policy.X509;
 using Health.Direct.Policy.X509.Standard;
 using Xunit;
 
+
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class AuthorityInfoAccessExtentionField_injectReferenceValueTest
+    public class KeyUsageExtensionField_InjectReferenceValueTest
     {
-
         [Fact]
-        public void TestInjectRefereneValue_AiaDoesNotExist_NotRequired_AssertValueEmpty()
+        public void testInjectRefereneValue_keyUsageDoesNotExist_notRequired_assertValue0()
         {
-
             var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new AuthorityInfoAccessExtentionField(false);
+            var field = new KeyUsageExtensionField(false);
             field.InjectReferenceValue(cert);
-            field.GetPolicyValue().GetPolicyValue().Should().BeEmpty();
+            field.GetPolicyValue().GetPolicyValue().Should().Be(0);
         }
 
         [Fact]
-        public void TestInjectRefereneValue_AiaDoesNotExist_Required_AssertException()
+        public void testInjectRefereneValue_keyUsageDoesNotExist_required_assertException()
         {
 
             var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new AuthorityInfoAccessExtentionField(true);
+            var field = new KeyUsageExtensionField(true);
             Action action = () => field.InjectReferenceValue(cert);
             action.ShouldThrow<PolicyRequiredException>();
         }
 
         [Fact]
-        public void TestInjectRefereneValue_AiaExists_AssertValue()
+        public void testInjectRefereneValue_keyUsageExists_assertValue()
         {
-
-            var cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
-            var field = new AuthorityInfoAccessExtentionField(false);
+            var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
+            var field = new KeyUsageExtensionField(false);
             field.InjectReferenceValue(cert);
-            field.GetPolicyValue().GetPolicyValue().Should().NotBeEmpty();
+            var value = field.GetPolicyValue().GetPolicyValue();
 
-            IList<String> usages = field.GetPolicyValue().GetPolicyValue();
-            usages.Should()
-                .Contain(AuthorityInfoAccessMethodIdentifier.OCSP.Name + ":" + "http://ca.cerner.com/OCSP");
-            usages.Should().Contain(AuthorityInfoAccessMethodIdentifier.CA_ISSUERS.Name + ":" + "http://ca.cerner.com/public/root.der");
-
+            (value & (int)KeyUsageBit.KeyEncipherment).Should().NotBe(0);
+            (value & (int)KeyUsageBit.NonRepudiation).Should().NotBe(0);
+            (value & (int)KeyUsageBit.DigitalSignature).Should().NotBe(0);
         }
 
         [Fact]
         public void TestInjectRefereneValue_NoInjection_GetPolicyValue_AssertException()
         {
-            var field = new AuthorityInfoAccessExtentionField(true);
+            var field = new KeyUsageExtensionField(true);
             Action action = () => field.GetPolicyValue();
             action.ShouldThrow<InvalidOperationException>();
         }

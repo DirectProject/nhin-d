@@ -64,11 +64,11 @@ namespace Health.Direct.Policy.X509
             }
 
             X500DistinguishedName distinguishedName = Certificate.IssuerName;
-            var values = distinguishedName.GetRdns(GetRDNAttributeFieldId().GetName());
+            var values = distinguishedName.GetRdns(GetRDNAttributeFieldId().Name);
 
 
             if (! values.Any() && IsRequired())
-                throw new PolicyRequiredException(GetFieldName() + " field attribute " + RdnAttributeId.GetName() + " is marked as required but is not present.");
+                throw new PolicyRequiredException(GetFieldName() + " field attribute " + RdnAttributeId.Name + " is marked as required but is not present.");
             
             PolicyValue = PolicyValueFactory<List<String>>.GetInstance(values);
         }

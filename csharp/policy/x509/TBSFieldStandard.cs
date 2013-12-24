@@ -224,7 +224,7 @@ namespace Health.Direct.Policy.X509
 
             foreach (var rdnAtrId in RDNAttributeIdentifier.Values)
             {
-                retVal.Add(new AttributeReferenceClass(rdnAtrId.GetName(), refClass));
+                retVal.Add(new AttributeReferenceClass(rdnAtrId.Name, refClass));
             }
 		   
             return retVal;
