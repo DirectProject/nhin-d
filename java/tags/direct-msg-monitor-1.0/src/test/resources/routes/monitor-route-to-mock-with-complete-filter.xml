@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <bean id="generalTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="1000"/>
+  </bean>
+
+  <bean id="reliableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="1000"/>
+  </bean>
+
+  <bean id="varaiableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.VariableTimeoutCondition">
+		<constructor-arg ref="generalTimeoutCondition" />
+		<constructor-arg ref="reliableTimeoutCondition" />
+  </bean>
+
+  <bean id="generalCompletionCondition" class="org.nhindirect.monitor.condition.impl.GeneralCompletionCondition" />
+
+  <bean id="reliableCompletionCondition" class="org.nhindirect.monitor.condition.impl.TimelyAndReliableCompletionCondition" />
+
+  <bean id="variableCompletionCondition" class="org.nhindirect.monitor.condition.impl.VariableCompletionCondition">
+		<constructor-arg ref="reliableCompletionCondition" />
+		<constructor-arg ref="generalCompletionCondition" />
+  </bean>
+
+  <bean id="aggregationStrategy" class="org.nhindirect.monitor.aggregator.BasicTxAggregator">
+		<constructor-arg ref="variableCompletionCondition" />  
+		<constructor-arg ref="varaiableTimeoutCondition" />  		
+  </bean>
+
+  <bean id="msgIdCorrelator" class="org.nhindirect.monitor.expression.MessageIdCorrelationExpression" />
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">  
+    
+    <route id="direct-reliable">
+      <from uri="direct:start"/>
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true">
+        <correlationExpression>
+            <ref>msgIdCorrelator</ref>
+        </correlationExpression>
+        <completionPredicate>
+          <method bean="aggregationStrategy" method="isAggregationComplete"/>
+        </completionPredicate>     
+        <completionTimeout>
+          <method bean="aggregationStrategy" method="getAggregationTime"/>
+        </completionTimeout>  
+        <filter>
+           <method bean="aggregationStrategy" method="isAggregationComplete"/>
+           <to uri="mock:result"/>
+        </filter>       
+      </aggregate>
+    </route>
+ 
+</camelContext>
+
+</beans>

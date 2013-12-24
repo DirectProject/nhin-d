@@ -1,0 +1,254 @@
+h1. Installation
+
+This section outlines step by step instructions on installing and deploying a Bare Metal instance of the Java reference implementation using the installer tool.  The instructions contains steps for a select list of software platforms such as Windows, Ubuntu, CentOS, and RedHat Enterprise linux.
+
+The installer automates many of the manual operations performed by the Bare Metal no-source options.  Specifially it performs the following operations:
+
+* Install Tomcat
+* Install Apache James (2.3.x or 3.x)
+* Creates and configures email domain in Tomcat and James
+* Creates and installs CA and org/users level certificates
+* Creates initial James email user account.
+
+h2. Assumptions
+
+* User is running one of the following software platforms.  Other platforms are supported and may only required slight variations of the instructions listed this section, but the Bare Metal install has only been validated on the following platforms:
+** Windows
+*** Server 2003 or later
+*** XP SP2 or later
+** Ubuntu Linux
+*** 10.10 (Maverick Meerkat)
+*** 11.04 (Natty Narwhal)
+*** 11.10 (Oneiric Ocelot)
+*** 12.04 (Precise Pangolin)
+*** 12.10 (Quantal Quetzal)
+*** 13.04 (Raring Ringtail)
+** FreeBSD 9.1
+** MAC OS 10.7 (Lion)
+* Assumed that the install has administrative privileges on the install box.
+** Root or sudo access for linux/unix based platforms
+** Administrator privileges for Windows based platforms
+* Assumed user has registered a domain with an accredited domain registrar such as [GoDaddy|http://www.godaddy.com/]
+
+h2. Runtimes
+
+The reference implementation requires that a JRE be installed on the install machine.  The installation has been validated against Java 6.
+
+h3. Java 6 SE Intall
+
+The Java 6 SE platform provides the runtime environment that all of the Bare Metal components will run in.
+
+_Windows_
+
+Download and install the Java 6 JRE from Oracle's download web [site|http://www.oracle.com/technetwork/java/javase/downloads/jre-6u29-download-513650.html].  After installing the JRE, set the JAVA_HOME environment variable by following the instructions below:
+
+* Right click on "My Computer" (may be in different locations depending on the Windows version) and select Properties
+* If running later versions of Windows, you may be presented "Control\System" panel.  If so, click Advanced system settings on the left side of the window.
+* In the System Properties Dialog, click the Advanced tab and then click Environment Variables.
+* Under System Variables click New.
+* Use the following setting:
+
+{code}
+ Variable Name: JAVA_HOME
+ Variable Value: C:\Program Files\java\jre6
+{code}
+
+* Click OK on all screens.
+
+_Ubuntu 10.10 - 11.10_
+
+Install Sun Java 6 JDK. By default it is not included in the shipped repository, and needs to be added manually. After installing, you need to update java-alternatives to use the newly installed Java version instead of shipped version.
+
+*Note:* For Ubuntu 10.10 Maverick, the add-apt-repository command may not be not available. Instead, uncomment or add the canonical repository "_http://archive.canonical.com/ lucid partner_" in the /etc/apt/sources.list and follow the remainder of the steps.
+
+{code}
+ sudo add-apt-repository "deb http://archive.canonical.com/ lucid partner"
+ sudo apt-get update
+ sudo apt-get install sun-java6-jdk
+ sudo update-java-alternatives -s java-6-sun
+ export JAVA_HOME=/usr/lib/jvm/java-6-sun
+ echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+{code}
+
+*Note:* It is okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
+
+_Ubuntu 12.04 - 13.04_
+
+The Oracle JREs are supported in the [WebUpdt8|https://launchpad.net/~webupd8team/+archive/java] Personal Package Archive (PPA) which automatically downloads and installs the JRE.
+
+To install the Java 6 JRE, follow the commands below:
+
+*Note:* The add-apt-repository command may not be available.  Adding the python-software-properties package should resolve this issue.  It is also okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
+
+{code}
+ sudo apt-get install python-software-properties
+ sudo add-apt-repository ppa:webupd8team/java
+ sudo apt-get update
+ sudo apt-get install oracle-java6-installer 
+ sudo update-java-alternatives -s java-6-oracle
+ export JAVA_HOME=/usr/lib/jvm/java-6-oracle
+ echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+{code}
+
+_FreeBSD_
+
+Obtain/downlaod the JDK 6 using the pkg\_add command if you do not already have Java 6 installed.  This step uses the openjdk6 implementation as the Oracle installtation generally requires building the distribution from the _ports_ and is a much more involved process (should run as root or with elevated privileges). 
+
+{code}
+  pkg_add -r openjdk6
+  set JAVA_HOME=/usr/local/openjdk6
+  sed -i .bak 's/setenv=/setenv=JAVA_HOME=\/usr\/local\/openjdk6,/g' /etc/login.conf
+  cap_mkdb /etc/login.conf
+{code}
+
+h3. Java Cryptographic Extensions
+
+The Sun JRE/JDK requires the JCE policy jars to be updated to allow for unlimited strength encryption.  The policy files must be downloaded separately and copied in the JRE library.
+
+For all platforms, download the jce policy [file|http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html] using a web browser.  For Unix/Linux systems, it may be necessary to manually copy or FTP the file from a system with a UI to the Unix/Linux node. 
+
+_Windows_
+
+Unzip the downloaded file and copy the jar files from the jce directory to the JAVA_HOME/jre/lib/security folder (Example: C:\Program Files\java\jre6\lib\security).  Overwrite the existing files.
+
+_All Linux/Unix/FreeBSD_
+
+From the directory where you downloaded and placed the jce zip file, run the following commands:
+
+{code}
+ unzip jce_policy-6.zip
+ sudo cp jce/local_policy.jar $JAVA_HOME/jre/lib/security
+ sudo cp jce/US_export_policy.jar $JAVA_HOME/jre/lib/security
+{code}
+
+h3. Java Cryptographic Extensions
+
+The Sun JRE/JDK for Windows and Linxu requires the JCE policy jars to be updated to allow for unlimited strength encryption.  The policy files must be downloaded separately and copied in the JRE library.
+
+Download the jce policy [file|http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html] using a web browser.  For Unix/Linux systems, it may be necessary to manually copy or FTP the file from a system with a UI to the Unix/Linux node. 
+
+_Windows_
+
+Unzip the downloaded file and copy the jar files from the jce directory to the JAVA_HOME/jre/lib/security folder (Example: C:\Program Files\java\jre6\lib\security).  Overwrite the existing files.
+
+_All Linux/Unix_
+
+From the directory where you downloaded and placed the jce zip file, run the following commands:
+
+{code}
+ unzip jce_policy-6.zip
+ sudo cp jce/local_policy.jar $JAVA_HOME/jre/lib/security
+ sudo cp jce/US_export_policy.jar $JAVA_HOME/jre/lib/security
+{code}
+
+
+h2. Obtain Reference Implementation Installer
+
+The installer contains all of the pre-assembled and configured components of the Bare Metal deployment.  Download the latest installer jar from the Sonatype [repository|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock-installer/3.0.1/direct-project-stock-installer-3.0.1-standard.jar] or from the maven central [repository|http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock-installer/3.0.1/direct-project-stock-installer-3.0.1-standard.jar] and save it to your file system.
+
+h3. Existing E-mail Server
+
+Some linux based installation already come preconfigured with an email server running.  For instance, FreeBSD auto enables a sendmail SMTP server listening on port 25.  You may need to disable this server and restart the server before performing the installation.  Add the following lines to the /etc/rc.conf file to disable the default sendmail SMTP server.
+
+{code}
+ sendmail_enable="NONE"
+ sendmail_outbound_enable="NO"
+{code}
+
+h3. Run the Installer
+
+The installer is packaged a single jar file.  Depending your OS, you may be able to just double click the jar file and auto launch it.  For unix/linux and MAC based systems, you should run the installer from the command line with the follwoing command:
+
+{code}
+ sudo java -jar direct-project-stock-installer-3.0.1-standard.jar
+{code}  
+
+This will launch the installer and you will be presented with the welcome screen.
+
+!images/welcome.PNG!
+
+Click the _Next_ button.
+
+h4. Accept License Agreement
+
+Next you be presented with the license agreement.  If you accept, click the _accept_ radio button and click next.
+
+!images/acceptLicense.PNG!
+
+h4. Select Install Path
+
+Next you will be asked to provide the install path.  The installer will select a default location based on OS.  If the location does not already exist, you be asked if you want to create the directory.  Once you specify where to install, click next.
+
+!images/installLocation.PNG!
+
+h4. Select Apache James Version
+
+Next you will select what version of Apache James you wish to use as your SMTP server and STA container.  James 2 is selected by default as is it the officially supported version.  James 3 is still in exerimental stage, but does support additional functionality such as IMAP support.  Once you specify your desired version of James, click next.
+
+!images/jamesVersion.PNG!
+
+h4. Select Packages
+
+Next you will select the packages you want to be installed.  Some packages are required while others are optional.  It is recommended that you install the _Tools_ and _DNS_ packages.  Once you specify your desired install packages, click next.  
+
+!images/packages.PNG!
+
+h4. Configuration Service URL
+
+Next you you will specific the URL of the DirectProject configuration service.  The tool defaults the URL to the default Tomcat URL installed with the tool.  Unless you have another Tomcat server that you wish to utilize, you should not change this value.  Once you specify where the URL. click next.
+
+!images/configURL.PNG!
+
+h4. Email Domain and Initial User
+
+Next you will specify the name of your email domain and create an intial user account.  
+
+In the domain name field, simply provide the the name of you email domain.
+
+In the intial user fields provide the following information:
+
+* Email Address: The Direct email address of the user.
+* Username: User of the of the initial user.  *NOTE* For James 3 installations, the user name MUST include the email domain name.  For James 2 installation, the user name MUST NOT include the email domain name.
+* Password: The user account password.
+* Retype Password: The user account password again.
+
+Once you specify the email domain and initial user, click next.
+
+!images/domainSetup.PNG!
+
+h4. Certificate Authority
+
+Next you will need to specify the common name field of the the certificate authrotiy that will auto generated.  You use what ever name you wish, but a suggested convention is to use the domain name follow be "CA".  You will also need to provied a password/passhprase that protects the private key of your certificate authority.  Lastly you may change validity time and key strength, but it suggested that these not be changed.  Once you specify your certificate authority information, click next.
+
+!images/caSetup.PNG!
+
+h4. End Entity Certificate
+
+Next you will need to specify the domain name or email address for your end entity certificate.  If you wish to use a single org/domain level certificate, then enter your domain name from the *Email Domain and Initial User* step.  If you want to create a user level certificate, then enter the email address of the intial user created from the *Email Domain and Initial User* step.  You will also need to provied a password/passhprase that protects the private key of your end entity certificate.  Lastly you may change validity time and key strength, but it suggested that these not be changed.  Once you specify your end enitity certificate information, click next.
+
+!images/endEntityCertSetup.PNG!
+
+h4. File Installtion
+
+Next the system will install the reference implementation files to your selected location.  Once all files have been installed, click next.
+
+!images/fileInstall.PNG!
+
+h4. Service Installation
+
+Next the system will install and configue the Tomcat and James services.  This is bulk of processing by the installer and may take a few minutes.  Durning the process, the install window will display output from the configuration.  Depending on the OS you are installing on, service windows (such as Tomcat and James) may popup on your desktop.  This is  typical for Windows installations.  You will generally not see this windows on MAC and unix/linux based installs.  After all steps have completed, click next.
+
+!images/processing.PNG!
+
+h4. Completion
+
+Finally the system will display the completion screen.  At this point you may optionall generate an auto install script for later installs.  Lastly, click done.
+
+!images/complete.PNG!
+
+By this point you should have a base installation of the Java reference implementation up and running.  If you shutdown Tomcat and/or James, you may need to relauch them using the command line scripts found in their respective directories.  You can find a full description of launching these applications manually in the Bare Metal no source installation [guide|http://api.nhindirect.org/java/site/assembly/stock/2.1.1/users-guide/depl-hisp-only.html]
+
+
+h2. Next Steps
+
+Now that your implemtation is up and running, you need to make it publically available to the internet.  Instructions from this point can be found on the in the Bare Metal no source installation guide starting from the DNS record section of the [guide|http://api.nhindirect.org/java/site/assembly/stock/2.1.1/users-guide/depl-hisp-only.html].
