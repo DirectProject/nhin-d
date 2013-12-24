@@ -14,19 +14,23 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using FluentAssertions;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Health.Direct.Policy.X509;
-using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class ExtensionField_getFieldNameTest
+    public class SubjectPublicKeyAlgorithmField_getFieldNameTest
     {
-        [Fact]
         public void TestGetFieldName()
-        {
-            var field = new CertificatePolicyIndentifierExtensionField(true);
-            field.GetFieldName().Should().Be(TBSFieldName.Extenstions);
-        }
+	{
+		//SubjectPublicKeyAlgorithmField field = new SubjectPublicKeyAlgorithmField();
+        //assertEquals(X509FieldType.TBS, field.getX509FieldType());
+        //assertEquals(TBSFieldName.SUBJECT_PUBLIC_KEY_INFO, field.getFieldName());
+	}
     }
 }

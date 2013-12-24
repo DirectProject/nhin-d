@@ -14,12 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Collections.Generic;
+
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Policy.Extensions;
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Asn1.X509;
+
 
 namespace Health.Direct.Policy.X509
 {

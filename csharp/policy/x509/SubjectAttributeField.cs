@@ -17,7 +17,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy.Extensions;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 
@@ -53,59 +55,13 @@ namespace Health.Direct.Policy.X509
 
             if (RdnAttributeId.Equals(RDNAttributeIdentifier.DISTINGUISHED_NAME))
             {
-                List<String> str = new List<String> { Certificate.Issuer };
+                var str = new List<String> { Certificate.SubjectName.RemoveSpaces() };
                 PolicyValue = PolicyValueFactory<List<String>>.GetInstance(str);
                 return;
             }
 
-            DerObjectIdentifier tbsValue;
-
-            try
-            {
-                tbsValue = GetDERObject(Certificate.GetRawCertData());
-            }
-
-            catch (Exception e)
-            {
-                throw new PolicyProcessException("Exception parsing TBS certificate fields.", e);
-            }
-
-
-            TbsCertificateStructure tbsStruct = TbsCertificateStructure.GetInstance(tbsValue);
-
-            X509Name x509Name = GetX509Name(tbsStruct);
-
-
-            List<String> values = x509Name.GetValueList(new DerObjectIdentifier(GetRDNAttributeFieldId().GetId())).Cast<string>().ToList();
-
-            if (values.Any() && IsRequired())
-                throw new PolicyRequiredException(GetFieldName() + " field attribute " + RdnAttributeId.GetName() + " is marked as required but is not present.");
-
-            List<String> retVal = values;
-
-
-            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(retVal);
-        }
-
-        
-
-        /// <summary>
-        /// Gets the subject field as an X509Name from the certificate TBS structure.
-        /// </summary>
-        /// <param name="tbsStruct">The TBS structure of the certificate</param>
-        /// <returns>The subject field as an X509Name from the certificate TBS structure.</returns>
-        protected X509Name GetX509Name(TbsCertificateStructure tbsStruct)
-        {
-            return tbsStruct.Subject;
-        }
-
-        /// <summary>
-        /// Gets the requested RDN attribute id.
-        /// </summary>
-        /// <returns>The requested RDN attribute id.</returns>
-        public RDNAttributeIdentifier GetRDNAttributeFieldId()
-        {
-            return RdnAttributeId;
+            base.InjectReferenceValue(value);
+            
         }
     }
 }

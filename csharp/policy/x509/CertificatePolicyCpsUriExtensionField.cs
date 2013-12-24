@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy.Extensions;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 
@@ -49,7 +50,7 @@ namespace Health.Direct.Policy.X509
         {
             Certificate = value;
 
-            DerObjectIdentifier exValue = GetExtensionValue(value);
+            Asn1Object exValue = GetExtensionValue(value);
 
             if (exValue == null)
             {
@@ -73,14 +74,14 @@ namespace Health.Direct.Policy.X509
                         var polInfos = pol.PolicyQualifiers.GetEnumerator();
                         while (polInfos.MoveNext())
                         {
-                            PolicyQualifierInfo polInfo = PolicyQualifierInfo.GetInstance(polInfos.Current);
-
-                            if (DerObjectIdentifier.GetInstance(seq[0]).Equals(PolicyQualifierID.IdQtCps))
+                            // The PolicyQualifier object is not exposed nicely in the BouncyCastle API where Java is.
+                            var derseq = polInfos.Current as DerSequence;
+                            
+                            if (derseq.Id().Equals(PolicyQualifierID.IdQtCps))
                             {
-                                retVal.Add(polInfo.GetDerEncoded().ToString());
+                                retVal.Add(derseq.Value());
                             }
                         }
-                             
                     }
                 }
             }
