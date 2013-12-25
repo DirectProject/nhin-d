@@ -14,19 +14,33 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+
+using System;
+using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Health.Direct.Policy.X509;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class ExtensionField_getFieldNameTest
+    public class SerialNumberAttributeField_InjectReferenceValueTest
     {
         [Fact]
-        public void TestGetFieldName()
+        public void testInjectRefereneValue_keyUsageDoesNotExist_notRequired_assertValue0()
         {
-            var field = new CertificatePolicyIndentifierExtensionField(true);
-            field.Name.Should().Be(TBSFieldName.Extenstions);
+            var cert = new X509Certificate2(@"resources/certs/umesh.der");
+            var field = new SerialNumberAttributeField();
+            field.InjectReferenceValue(cert);
+            field.GetPolicyValue().GetPolicyValue().Should().BeEquivalentTo("00f74f1c4fe4e1762e");
         }
+
+        [Fact]
+        public void testInjectRefereneValue_keyUsageDoesNotExist_required_assertException()
+        {
+            var field = new SerialNumberAttributeField();
+            Action action = () => field.GetPolicyValue();
+            action.ShouldThrow<InvalidOperationException>();
+        }
+
     }
 }

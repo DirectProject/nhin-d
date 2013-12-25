@@ -85,6 +85,8 @@
     <Compile Include="x509\KeyUsageExtensionField_injectReferenceValueTest.cs" />
     <Compile Include="x509\PublicKeyAlgorithmIdentifier_getAttributesTest.cs" />
     <Compile Include="x509\RDNAttributeIdentifier_getAttributesTest.cs" />
+    <Compile Include="x509\SerialNumberAttributeField_getTBSFieldNameTest.cs" />
+    <Compile Include="x509\SerialNumberAttributeField_injectReferenceValueTest.cs" />
     <Compile Include="x509\SubjectAttributeField_injectReferenceValueTest.cs" />
     <Compile Include="x509\SubjectPublicKeyAlgorithmField_getFieldNameTest.cs" />
     <Compile Include="x509\TBSField_getX509FieldTypeTest.cs" />

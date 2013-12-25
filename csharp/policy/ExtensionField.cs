@@ -31,9 +31,9 @@ namespace Health.Direct.Policy
         {
         }
 
-        public override TBSFieldName GetFieldName()
+        public override TBSFieldName Name
         {
-            return TBSFieldName.Extenstions;
+            get { return TBSFieldName.Extenstions; }
         }
 
         public abstract ExtensionIdentifier ExtentionIdentifier { get; }

@@ -37,9 +37,9 @@ namespace Health.Direct.Policy.X509
 
 
         /// <inheritdoc />
-        public override TBSFieldName GetFieldName()
+        public override TBSFieldName Name
         {
-            return TBSFieldName.SubjectPublicKeyInfo;
+            get { return TBSFieldName.SubjectPublicKeyInfo; }
         }
 
         /// <inheritdoc />

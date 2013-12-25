@@ -14,19 +14,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+
 using FluentAssertions;
 using Health.Direct.Policy.X509;
 using Xunit;
 
+
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class ExtensionField_getFieldNameTest
+    public class SerialNumberAttributeField_GetTBSFieldNameTest
     {
         [Fact]
-        public void TestGetFieldName()
+        public void testGetFieldName_assertName()
         {
-            var field = new CertificatePolicyIndentifierExtensionField(true);
-            field.Name.Should().Be(TBSFieldName.Extenstions);
+            var field = new SerialNumberAttributeField();
+            field.ToString().Should().Be(TBSFieldName.SerialNumber.RfcName);
         }
     }
 }
