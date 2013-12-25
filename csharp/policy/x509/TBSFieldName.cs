@@ -127,7 +127,6 @@ namespace Health.Direct.Policy.X509
 
         static TBSFieldName()
         {
-            Console.WriteLine("hello:: " );
             TokenFieldMap = new Dictionary<String, TBSFieldName>();
 
             foreach (var tbsFieldName in Values)
@@ -163,30 +162,24 @@ namespace Health.Direct.Policy.X509
         /// <summary>
         /// Gets the name of the field as defined by RFC5280.
         /// </summary>
-        /// <returns>The name of the field as defined by RFC5280.</returns>
-        public String GetRfcName()
+        /// <value>The name of the field as defined by RFC5280.</value>
+        public string RfcName
         {
-            return tbsField.RfcName;
+            get { return tbsField.RfcName; }
         }
 
-        
+
         /// <summary>
         /// Gets a human readable display name of the field.
         /// </summary>
-        /// <returns>A human readable display name of the field.</returns>
-        public String GetDisplay()
+        /// <value>A human readable display name of the field.</value>
+        public string Display
         {
-            return tbsField.Display;
+            get { return tbsField.Display; }
         }
 
 
-
-  
-        
-	
-    
-        
-	//public Class<? extends TBSField<?>> getReferenceClass(String tokenName)
+        //public Class<? extends TBSField<?>> getReferenceClass(String tokenName)
         
         /// <summary>
         /// Gets the class implementing the field name.

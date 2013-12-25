@@ -61,7 +61,7 @@ namespace Health.Direct.Policy.Impl
             // add the TBS Complex fields
             foreach (TBSFieldStandard.IComplex field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.IComplex))
             {
-                if (field.RfcName != TBSFieldName.Extenstions.GetRfcName())
+                if (field.RfcName != TBSFieldName.Extenstions.RfcName)
                     foreach (var rfcName in field.GetFieldTokens())
                     {
                         tokenMap.Add(rfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);

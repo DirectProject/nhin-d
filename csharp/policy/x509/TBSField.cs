@@ -20,18 +20,18 @@ namespace Health.Direct.Policy.X509
             return X509FieldType.TBS;
         }
 
-        virtual public TBSFieldName GetFieldName()
+        public virtual TBSFieldName Name
         {
-            return null;
+            get { return null; }
         }
-   
+
 
         /// <inheritdoc />
         public override String ToString()
         {
             if (PolicyValue == null)
             {
-                return "Unevaluated TBS field: " + GetFieldName();
+                return "Unevaluated TBS field: " + Name;
             }
             return PolicyValue.ToString();
         }

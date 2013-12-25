@@ -26,26 +26,26 @@ namespace Health.Direct.Policy.X509
     /// The policy value of this field is returned as a string containing an hexadecimal representation of the certificate serial number.  All alpha based digits are
     /// represented with lower case characters.  Leading 0s and/or spaced are not included in the serial number. 
     /// </summary>
-    public class SerialNumberAttributeField : TBSField<string>, ITBSField<string> 
-{
+    public class SerialNumberAttributeField : TBSField<string>, ITBSField<string>
+    {
 
-	/// <summary>
-	/// Default constructor
-	/// </summary>
-	public SerialNumberAttributeField():base(true){}
-	
-	/// <inheritdoc />
-	public override void InjectReferenceValue(X509Certificate2 value) 
-	{
-		Certificate = value;
-	    PolicyValue = PolicyValueFactory<string>.GetInstance(value.GetSerialNumber().ToString());
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public SerialNumberAttributeField() : base(true) { }
 
-	}
-	
-	/// <inheritdoc />
-	public new TBSFieldName GetFieldName() 
-	{
-		return TBSFieldName.SerialNumber;
-	}
-}
+        /// <inheritdoc />
+        public override void InjectReferenceValue(X509Certificate2 value)
+        {
+            Certificate = value;
+            PolicyValue = PolicyValueFactory<string>.GetInstance(value.SerialNumber);
+
+        }
+
+        public override string ToString()
+        {
+            return TBSFieldName.SerialNumber.RfcName;
+        }
+
+    }
 }
