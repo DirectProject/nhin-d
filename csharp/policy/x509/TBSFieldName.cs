@@ -158,6 +158,14 @@ namespace Health.Direct.Policy.X509
 		    return names;
 	    }
 
+        /// <summary>
+        /// Gets the name of the field as defined by RFC5280.
+        /// </summary>
+        /// <value>The name of the field as defined by RFC5280.</value>
+        public override string ToString()
+        {
+            return RfcName;
+        }
 
         /// <summary>
         /// Gets the name of the field as defined by RFC5280.

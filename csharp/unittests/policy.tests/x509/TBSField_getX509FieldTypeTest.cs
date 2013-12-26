@@ -21,13 +21,13 @@ using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class TBSField_getX509FieldTypeTest
+    public class TBSField_GetX509FieldTypeTest
     {
         [Fact]
         public void TestGetFieldType()
         {
-            SubjectPublicKeySizeField field = new SubjectPublicKeySizeField();
-            field.GetX509FieldType().Should().Be(X509FieldType.TBS);
+            var field = new SubjectPublicKeySizeField();
+            field.X509FieldType.Should().Be(X509FieldType.TBS);
         }
     }
 }

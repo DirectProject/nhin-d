@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Health.Direct.Policy.X509.Standard;
 
 
 namespace Health.Direct.Policy.X509

@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
@@ -49,10 +50,17 @@ namespace Health.Direct.Policy.X509
 
             Certificate = value;
 
-            PublicKey pubKey = Certificate.PublicKey;
-            if (pubKey.Key is RSACryptoServiceProvider || pubKey.Key is DSACryptoServiceProvider)
+            try
             {
-                retVal = pubKey.Key.KeySize;
+                PublicKey pubKey = Certificate.PublicKey;
+                if (pubKey.Key is RSACryptoServiceProvider || pubKey.Key is DSACryptoServiceProvider)
+                {
+                    retVal = pubKey.Key.KeySize;
+                }
+            }
+            catch (NotSupportedException ex)
+            {
+                retVal = 0;
             }
 
             PolicyValue = new PolicyValue<int>(retVal);

@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.X509;
+using Health.Direct.Policy.X509.Standard;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests

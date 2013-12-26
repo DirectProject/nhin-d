@@ -109,7 +109,6 @@
     <Compile Include="X509\ExtensionStandard.cs" />
     <Compile Include="X509\IssuerAttributeField.cs" />
     <Compile Include="X509\KeyUsageExtensionField.cs" />
-    <Compile Include="X509\RDNAttributeIdentifier.cs" />
     <Compile Include="X509\SerialNumberAttributeField.cs" />
     <Compile Include="X509\SignatureAlgorithmField.cs" />
     <Compile Include="X509\Standard.cs" />
@@ -117,9 +116,12 @@
     <Compile Include="X509\Standard\GeneralNameType.cs" />
     <Compile Include="X509\Standard\KeyUsageBit.cs" />
     <Compile Include="X509\Standard\PublicKeyAlgorithmIdentifier.cs" />
+    <Compile Include="X509\Standard\RDNAttributeIdentifier.cs" />
+    <Compile Include="X509\Standard\SignatureAlgorithmIdentifier.cs" />
     <Compile Include="X509\SubjectAltNameExtensionField.cs" />
     <Compile Include="X509\SubjectAttributeField.cs" />
     <Compile Include="X509\SubjectKeyIdentifierExtensionField.cs" />
+    <Compile Include="X509\SubjectPublicKeyAlgorithmField.cs" />
     <Compile Include="X509\SubjectPublicKeySizeField.cs" />
     <Compile Include="X509\TBSField.cs" />
     <Compile Include="X509\TBSFieldName.cs" />

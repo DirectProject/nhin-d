@@ -17,11 +17,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Policy.Extensions;
-using Org.BouncyCastle.Asn1;
-using Org.BouncyCastle.Asn1.X509;
+using Health.Direct.Policy.X509.Standard;
 
 namespace Health.Direct.Policy.X509
 {
@@ -42,11 +40,13 @@ namespace Health.Direct.Policy.X509
         {
         }
 
+       
         /// <inheritdoc />
-        public new TBSFieldName GetFieldName()
+        public override TBSFieldName Name
         {
-            return TBSFieldName.Subject;
+            get { return TBSFieldName.Subject; }
         }
+
 
         /// <inheritdoc />
         public override void InjectReferenceValue(X509Certificate2 value)
@@ -60,7 +60,14 @@ namespace Health.Direct.Policy.X509
                 return;
             }
 
-            base.InjectReferenceValue(value);
+            X500DistinguishedName distinguishedName = Certificate.SubjectName;
+            var values = distinguishedName.GetRdns(GetRDNAttributeFieldId().Name);
+
+
+            if (!values.Any() && IsRequired())
+                throw new PolicyRequiredException(Name + " field attribute " + RdnAttributeId.Name + " is marked as required but is not present.");
+
+            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(values);
             
         }
     }

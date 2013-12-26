@@ -19,7 +19,7 @@ namespace Health.Direct.Policy
         /// The field type of the certificate.
         /// </returns> 
         /// </summary>
-        X509FieldType GetX509FieldType();
+        X509FieldType X509FieldType { get; }
 
         /// <summary>
         /// Indicates if the field or extension must exist in the certificate to be compliant with the policy.

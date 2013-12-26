@@ -25,6 +25,15 @@ namespace Health.Direct.Policy.X509
     public static class StandardExt
     {
         internal static string GeneralNameOtherName = "otherName";
+        internal static string RFC822Name = "rfc822";
+        internal static string DNSName = "dns";
+        internal static string X400Address = "x400Address";
+        internal static string DirectoryName = "directory";
+        internal static string EdiPartyName = "ediParty";
+        internal static string UniformResourceIdentifier = "uniformResourceIdentifier";
+        internal static string IPAddress = "ipaddress";
+        internal static string RegisteredId = "registeredId";
+
 
         public static string Name(this GeneralNameType type)
         {
@@ -35,6 +44,22 @@ namespace Health.Direct.Policy.X509
 
                 case GeneralNameType.OtherName:
                     return GeneralNameOtherName;
+                case GeneralNameType.RFC822Name:
+                    return RFC822Name;
+                case GeneralNameType.DNSName:
+                    return DNSName;
+                case GeneralNameType.X400Address:
+                    return X400Address;
+                case GeneralNameType.DirectoryName:
+                    return DirectoryName;
+                case GeneralNameType.EdiPartyName:
+                    return EdiPartyName;
+                case GeneralNameType.UniformResourceIdentifier:
+                    return UniformResourceIdentifier;
+                case GeneralNameType.IPAddress:
+                    return IPAddress;
+                case GeneralNameType.RegisteredId:
+                    return RegisteredId;
             }
         }
 
@@ -89,7 +114,7 @@ namespace Health.Direct.Policy.X509
 
         public static TEnum FromTag<TEnum>(int tagNo)
         {
-            return (TEnum)Enum.ToObject(typeof(Enum), tagNo);
+            return (TEnum)Enum.ToObject(typeof(TEnum), tagNo);
         }
     }
 }

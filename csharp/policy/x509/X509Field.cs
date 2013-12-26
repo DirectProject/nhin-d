@@ -68,7 +68,7 @@ namespace Health.Direct.Policy.X509
         /// Converts an encoded internal octet string object to a DERObject
         /// </summary>
         /// <param name="ext">The encoded octet string as a byte array</param>
-        /// <returns>The converted DerObjectIdentifier</returns>
+        /// <returns>The converted Asn1Object (DERObject)</returns>
         protected Asn1Object GetObject(byte[] ext)
         {
             try
@@ -76,7 +76,7 @@ namespace Health.Direct.Policy.X509
                 Asn1InputStream aIn;
                 using (aIn = new Asn1InputStream(ext))
                 {
-                    Asn1Object octs = aIn.ReadObject();
+                    var octs = aIn.ReadObject();
                     Asn1InputStream aInDerEncoded;
                     using (aInDerEncoded = new Asn1InputStream(octs.GetDerEncoded()))
                     {
@@ -90,9 +90,37 @@ namespace Health.Direct.Policy.X509
             }
         }
 
+        /// <summary>
+        /// Converts an encoded internal sequence object to a DERObject
+        /// </summary>
+        /// <param name="ext">The encoded sequence as a byte array</param>
+        /// <returns>The converted Asn1Object (DERObject)</returns>
+        protected Asn1Object GetDERObject(byte[] ext)
+        {
+            try
+            {
+                Asn1InputStream aIn;
+                using (aIn = new Asn1InputStream(ext))
+                {
+                    var seq = (DerSequence)aIn.ReadObject();
+                    Asn1InputStream aInDerEncoded;
+                    using (aInDerEncoded = new Asn1InputStream(seq.GetDerEncoded()))
+                    {
+                        return aInDerEncoded.ReadObject();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new PolicyProcessException("Exception processing data ", e);
+            }
+        }
+
+
+
 
         //TODO: this feels wrong.  Had to do this to compile during the Java port.
-        public abstract X509FieldType GetX509FieldType();
+        public abstract X509FieldType X509FieldType { get; }
         public abstract void InjectReferenceValue(X509Certificate2 value);
 
         /// <inheritdoc />
@@ -100,7 +128,7 @@ namespace Health.Direct.Policy.X509
         {
             if (PolicyValue == null)
             {
-                return "Unevaluated X509 field: " + GetX509FieldType();
+                return "Unevaluated X509 field: " + X509FieldType;
             }
             return PolicyValue.ToString();
         }
