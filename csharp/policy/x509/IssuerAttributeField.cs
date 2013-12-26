@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Policy.Extensions;
+using Health.Direct.Policy.X509.Standard;
 
 namespace Health.Direct.Policy.X509
 {
@@ -44,11 +45,10 @@ namespace Health.Direct.Policy.X509
         {
         }
 
-
         /// <inheritdoc />
-        public new TBSFieldName GetFieldName()
+        public override TBSFieldName Name
         {
-            return TBSFieldName.Issuer;
+            get { return  TBSFieldName.Issuer; }
         }
 
         /// <inheritdoc />
@@ -68,7 +68,7 @@ namespace Health.Direct.Policy.X509
 
 
             if (! values.Any() && IsRequired())
-                throw new PolicyRequiredException(GetFieldName() + " field attribute " + RdnAttributeId.Name + " is marked as required but is not present.");
+                throw new PolicyRequiredException(Name + " field attribute " + RdnAttributeId.Name + " is marked as required but is not present.");
             
             PolicyValue = PolicyValueFactory<List<String>>.GetInstance(values);
         }

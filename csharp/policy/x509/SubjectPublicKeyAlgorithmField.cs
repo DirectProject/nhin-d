@@ -16,26 +16,38 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System.Security.Cryptography.X509Certificates;
+using Org.BouncyCastle.Asn1;
+
 
 namespace Health.Direct.Policy.X509
 {
-    public class SignatureAlgorithmField : X509Field<string>
+    /// <summary>
+    /// Subject public key info field of TBS section of certificate
+    /// <para>
+    /// The policy value of this extension is returned as a string containing the object identifier (OID) of the key algorithm of the subject's public key.
+    /// </para>
+    /// </summary>
+    public class SubjectPublicKeyAlgorithmField : TBSField<string>
     {
-        public SignatureAlgorithmField()
+        /// <summary>
+        /// Constructor 
+        /// </summary>
+        public SubjectPublicKeyAlgorithmField()
+            : base(true)
         {
-
         }
 
-        public override void InjectReferenceValue(X509Certificate2 value) //throws PolicyProcessException
+        /// <inheritdoc />
+        public override TBSFieldName Name
+        {
+            get { return TBSFieldName.SubjectPublicKeyInfo; }
+        }
+
+        /// <inheritdoc />
+        public override void InjectReferenceValue(X509Certificate2 value)
         {
             Certificate = value;
-            PolicyValue = PolicyValueFactory<string>.GetInstance(value.SignatureAlgorithm.Value); 
-        }
-
-
-        public override X509FieldType X509FieldType
-        {
-            get { return X509FieldType.SignatureAlgorithm; }
+            PolicyValue = PolicyValueFactory<string>.GetInstance(value.GetKeyAlgorithm()); 
         }
     }
 }

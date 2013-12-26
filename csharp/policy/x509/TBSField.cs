@@ -13,11 +13,11 @@ namespace Health.Direct.Policy.X509
         {
             Required = required;
         }
-	
+
         /// <inheritdoc />
-        public override X509FieldType GetX509FieldType()
+        public override X509FieldType X509FieldType
         {
-            return X509FieldType.TBS;
+            get { return X509FieldType.TBS; }
         }
 
         public virtual TBSFieldName Name

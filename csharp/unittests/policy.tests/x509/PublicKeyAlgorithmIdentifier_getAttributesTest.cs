@@ -26,11 +26,11 @@ namespace Health.Direct.Policy.Tests.x509
         public void TestGetAttributes()
         {
 
-            PublicKeyAlgorithmIdentifier.Rsa.OID.Should().Be("1.2.840.113549.1.1.1");
-            PublicKeyAlgorithmIdentifier.Rsa.Name.Should().Be("RSA");
+            PublicKeyAlgorithmIdentifier.RSA.OID.Should().Be("1.2.840.113549.1.1.1");
+            PublicKeyAlgorithmIdentifier.RSA.Name.Should().Be("RSA");
 
-            PublicKeyAlgorithmIdentifier.Dsa.OID.Should().Be("1.2.840.10040.4.1");
-            PublicKeyAlgorithmIdentifier.Dsa.Name.Should().Be("DSA");
+            PublicKeyAlgorithmIdentifier.DSA.OID.Should().Be("1.2.840.10040.4.1");
+            PublicKeyAlgorithmIdentifier.DSA.Name.Should().Be("DSA");
         }
     }
 }

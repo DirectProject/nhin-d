@@ -65,7 +65,7 @@ namespace Health.Direct.Policy.X509
         /// <inheritdoc />
         public override ExtensionIdentifier ExtentionIdentifier
         {
-            get { return ExtensionIdentifier.KeyUsage; }
+            get { return ExtensionIdentifier.SubjectKeyIdentifier; }
         }
     }
 }

@@ -15,22 +15,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FluentAssertions;
 using Health.Direct.Policy.X509;
+using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class SubjectPublicKeyAlgorithmField_getFieldNameTest
+    public class SubjectPublicKeyAlgorithmField_GetFieldNameTest
     {
+        [Fact]
         public void TestGetFieldName()
-	{
-		//SubjectPublicKeyAlgorithmField field = new SubjectPublicKeyAlgorithmField();
-        //assertEquals(X509FieldType.TBS, field.getX509FieldType());
-        //assertEquals(TBSFieldName.SUBJECT_PUBLIC_KEY_INFO, field.getFieldName());
-	}
+        {
+            var field = new SubjectPublicKeyAlgorithmField();
+            field.X509FieldType.Should().Be(X509FieldType.TBS);
+            field.Name.Should().Be(TBSFieldName.SubjectPublicKeyInfo);
+        }
     }
 }

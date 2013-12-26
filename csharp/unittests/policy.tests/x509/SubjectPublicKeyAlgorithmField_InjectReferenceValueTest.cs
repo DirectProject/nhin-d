@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  Copyright (c) 2013, Direct Project
  All rights reserved.
 
@@ -16,71 +16,38 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Health.Direct.Policy.X509;
-using Health.Direct.Policy.X509.Standard;
+using Health.Direct.Policy.x509.Standard;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public partial class SubjectAttributeField_InjectReferenceValueTest
+    public class SubjectPublicKeyAlgorithmField_InjectReferenceValueTest
     {
         [Fact]
-        public void testInjectRefereneValue_rdnAttributeDoesNotExist_notRequired_assertValueCollection()
+        public void testInjectRefereneValue_rsaAlg_assertValue()
         {
             var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(false, RDNAttributeIdentifier.INITIALS);
+            var field = new SubjectPublicKeyAlgorithmField();
             field.InjectReferenceValue(cert);
-            field.GetPolicyValue().GetPolicyValue().Count.Should().Be(0);
+            field.GetPolicyValue().GetPolicyValue().Should().Be(PublicKeyAlgorithmIdentifier.RSA.OID);
         }
 
         [Fact]
-        public void testInjectRefereneValue_subjectAltNameDoesNotExist_required_assertException()
+        public void testInjectRefereneValue_dsaAlg_assertValue()
         {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.INITIALS);
-
-            Action action = () => field.InjectReferenceValue(cert);
-            action.ShouldThrow<PolicyRequiredException>();
-        }
-
-        [Fact]
-        public void testInjectRefereneValue_rdnSingleAttributeExists_assertValue()
-        {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.COMMON_NAME);
-
+            var cert = new X509Certificate2(@"resources/certs/dsa1024.der");
+            var field = new SubjectPublicKeyAlgorithmField();
             field.InjectReferenceValue(cert);
-            field.GetPolicyValue().GetPolicyValue().Count.Should().Be(1);
-            field.GetPolicyValue()
-                .GetPolicyValue()
-                .FirstOrDefault()
-                .Should()
-                .Be("altNameOnly");
-        }
-
-        [Fact]
-        public void testInjectRefereneValue_distinguishedName_assertValue()
-        {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.DISTINGUISHED_NAME);
-
-            field.InjectReferenceValue(cert);
-            field.GetPolicyValue().GetPolicyValue().Count.Should().Be(1);
-            field.GetPolicyValue()
-                .GetPolicyValue()
-                .FirstOrDefault()
-                .Should()
-                .Be("O=Cerner,L=Kansas City,S=MO,C=US,CN=altNameOnly");
+            field.GetPolicyValue().GetPolicyValue().Should().Be(PublicKeyAlgorithmIdentifier.DSA.OID);
         }
 
         [Fact]
         public void testInjectRefereneValue_noInjection_getPolicyValue_assertException()
         {
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.COMMON_NAME);
+            var field = new SubjectPublicKeyAlgorithmField();
             Action action = () => field.GetPolicyValue();
             action.ShouldThrow<InvalidOperationException>();
         }

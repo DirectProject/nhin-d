@@ -87,8 +87,17 @@
     <Compile Include="x509\RDNAttributeIdentifier_getAttributesTest.cs" />
     <Compile Include="x509\SerialNumberAttributeField_getTBSFieldNameTest.cs" />
     <Compile Include="x509\SerialNumberAttributeField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\SignatureAlgorithmField_getX509FieldTypeTest.cs" />
+    <Compile Include="x509\SignatureAlgorithmField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\SignatureAlgorithmIdentifier_GetAttributestTest.cs" />
+    <Compile Include="x509\SubjectAltNameExtensionField_InjectReferenceValueTest.cs" />
     <Compile Include="x509\SubjectAttributeField_injectReferenceValueTest.cs" />
+    <Compile Include="x509\SubjectKeyIdentifierExtensionField_InjectReferenceValueTest.cs" />
     <Compile Include="x509\SubjectPublicKeyAlgorithmField_getFieldNameTest.cs" />
+    <Compile Include="x509\SubjectPublicKeyAlgorithmField_InjectReferenceValueTest.cs" />
+    <Compile Include="x509\SubjectPublicKeySizeField_getFieldNameTest.cs" />
+    <Compile Include="x509\SubjectPublicKeySizeField_InjectReferenceValueTest.cs" />
+    <Compile Include="x509\TBSFieldName_getAttributesTest.cs" />
     <Compile Include="x509\TBSField_getX509FieldTypeTest.cs" />
     <Compile Include="x509\X509FieldType_getAttributesTest.cs" />
     <Compile Include="XMLLexiconPolicyParser_serializeTest.cs" />

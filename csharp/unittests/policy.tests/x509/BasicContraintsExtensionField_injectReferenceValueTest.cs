@@ -23,7 +23,7 @@ using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public class BasicContraintsExtensionField_injectReferenceValueTest
+    public class BasicContraintsExtensionField_InjectReferenceValueTest
     {
         [Fact]
         public void TestInjectRefereneValue_AiaDoesNotExist_NotRequired_AssertValueEmpty()

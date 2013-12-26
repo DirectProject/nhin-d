@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
@@ -26,13 +25,13 @@ using Xunit;
 
 namespace Health.Direct.Policy.Tests.x509
 {
-    public partial class SubjectAttributeField_InjectReferenceValueTest
+    public class SubjectAltNameExtensionField_InjectReferenceValueTest
     {
         [Fact]
-        public void testInjectRefereneValue_rdnAttributeDoesNotExist_notRequired_assertValueCollection()
+        public void testInjectRefereneValue_subjectAltNameDoesNotExist_notRequired_assertEmptyCollection()
         {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(false, RDNAttributeIdentifier.INITIALS);
+            var cert = new X509Certificate2(@"resources/certs/dsa1024.der");
+            var field = new SubjectAltNameExtensionField(false);
             field.InjectReferenceValue(cert);
             field.GetPolicyValue().GetPolicyValue().Count.Should().Be(0);
         }
@@ -40,49 +39,48 @@ namespace Health.Direct.Policy.Tests.x509
         [Fact]
         public void testInjectRefereneValue_subjectAltNameDoesNotExist_required_assertException()
         {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.INITIALS);
+            var cert = new X509Certificate2(@"resources/certs/dsa1024.der");
+            var field = new SubjectAltNameExtensionField(true);
 
             Action action = () => field.InjectReferenceValue(cert);
             action.ShouldThrow<PolicyRequiredException>();
         }
 
         [Fact]
-        public void testInjectRefereneValue_rdnSingleAttributeExists_assertValue()
+        public void testInjectRefereneValue_subjectAltNameExists_rfc822Name_assertValue()
         {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.COMMON_NAME);
-
+            var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
+            var field = new SubjectAltNameExtensionField(false);
             field.InjectReferenceValue(cert);
             field.GetPolicyValue().GetPolicyValue().Count.Should().Be(1);
             field.GetPolicyValue()
                 .GetPolicyValue()
                 .FirstOrDefault()
                 .Should()
-                .Be("altNameOnly");
+                .Be("rfc822:AlAnderson@hospitalA.direct.visionshareinc.com");
         }
 
         [Fact]
-        public void testInjectRefereneValue_distinguishedName_assertValue()
+        public void testInjectRefereneValue_subjectAltNameExists_dnsName_assertValue()
         {
-            var cert = new X509Certificate2(@"resources/certs/altNameOnly.der");
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.DISTINGUISHED_NAME);
-
+            var cert = new X509Certificate2(@"resources/certs/cernerdemos.der");
+            var field = new SubjectAltNameExtensionField(false);
             field.InjectReferenceValue(cert);
             field.GetPolicyValue().GetPolicyValue().Count.Should().Be(1);
             field.GetPolicyValue()
                 .GetPolicyValue()
                 .FirstOrDefault()
                 .Should()
-                .Be("O=Cerner,L=Kansas City,S=MO,C=US,CN=altNameOnly");
+                .Be("dns:messaging.cernerdemos.com");
         }
 
         [Fact]
         public void testInjectRefereneValue_noInjection_getPolicyValue_assertException()
         {
-            var field = new SubjectAttributeField(true, RDNAttributeIdentifier.COMMON_NAME);
+            var field = new SubjectAltNameExtensionField(true);
             Action action = () => field.GetPolicyValue();
             action.ShouldThrow<InvalidOperationException>();
         }
     }
+
 }

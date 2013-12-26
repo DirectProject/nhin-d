@@ -77,7 +77,7 @@ namespace Health.Direct.Policy.X509
         /// <inheritdoc />
         public class SubjectKeyIdentifier : Field
         {
-            public SubjectKeyIdentifier() : base("2.5.29.9", "SubjectKeyIdentifier", "Subject Key Identifier") { }
+            public SubjectKeyIdentifier() : base("2.5.29.14", "SubjectKeyIdentifier", "Subject Key Identifier") { }
         }
 
         /// <inheritdoc />

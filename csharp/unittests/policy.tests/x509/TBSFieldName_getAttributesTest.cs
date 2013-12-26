@@ -15,27 +15,37 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-using System.Security.Cryptography.X509Certificates;
 
-namespace Health.Direct.Policy.X509
+using FluentAssertions;
+using Health.Direct.Policy.X509;
+using Xunit;
+
+
+namespace Health.Direct.Policy.Tests.x509
 {
-    public class SignatureAlgorithmField : X509Field<string>
+    public class TBSFieldName_GetAttributesTest
     {
-        public SignatureAlgorithmField()
+       
+        [Fact]
+        public void testGetAttributes_getRFCName()
         {
-
+            TBSFieldName.Version.RfcName.Should().Be("Version");
+            TBSFieldName.SerialNumber.RfcName.Should().Be("SerialNumber");
         }
 
-        public override void InjectReferenceValue(X509Certificate2 value) //throws PolicyProcessException
+        [Fact]
+        public void testGetAttributes_getDisplay()
         {
-            Certificate = value;
-            PolicyValue = PolicyValueFactory<string>.GetInstance(value.SignatureAlgorithm.Value); 
+            TBSFieldName.Version.Display.Should().Be("Version");
+            TBSFieldName.SerialNumber.Display.Should().Be("Serial Number");
         }
 
 
-        public override X509FieldType X509FieldType
+        [Fact]
+        public void testGetAttributes_toString()
         {
-            get { return X509FieldType.SignatureAlgorithm; }
+            TBSFieldName.Version.ToString().Should().Be("Version");
+            TBSFieldName.SerialNumber.ToString().Should().Be("SerialNumber");
         }
     }
 }

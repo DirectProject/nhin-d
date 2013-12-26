@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  Copyright (c) 2013, Direct Project
  All rights reserved.
 
@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 
-namespace Health.Direct.Policy.X509
+namespace Health.Direct.Policy.X509.Standard
 {
     public class RDNAttributeIdentifier
     {

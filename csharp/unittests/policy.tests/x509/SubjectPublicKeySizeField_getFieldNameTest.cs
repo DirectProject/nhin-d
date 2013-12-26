@@ -15,27 +15,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-using System.Security.Cryptography.X509Certificates;
+using FluentAssertions;
+using Health.Direct.Policy.X509;
+using Xunit;
 
-namespace Health.Direct.Policy.X509
+namespace Health.Direct.Policy.Tests.x509
 {
-    public class SignatureAlgorithmField : X509Field<string>
+    public class SubjectPublicKeySizeField_GetFieldNameTest
     {
-        public SignatureAlgorithmField()
+        [Fact]
+        public void TestGetFielName()
         {
-
-        }
-
-        public override void InjectReferenceValue(X509Certificate2 value) //throws PolicyProcessException
-        {
-            Certificate = value;
-            PolicyValue = PolicyValueFactory<string>.GetInstance(value.SignatureAlgorithm.Value); 
-        }
-
-
-        public override X509FieldType X509FieldType
-        {
-            get { return X509FieldType.SignatureAlgorithm; }
+            var field = new SubjectPublicKeySizeField();
+            field.Name.Should().Be(TBSFieldName.SubjectPublicKeyInfo);
         }
     }
 }
