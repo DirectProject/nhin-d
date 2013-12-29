@@ -36,38 +36,38 @@ namespace Health.Direct.Policy
         public static Size<T> SIZE;
         public static Not<T> LOGICAL_NOT;
         public static UriValid<T> URI_VALIDATE;
-               
-        
+
+
 
         static PolicyOperator()
         {
             var logicalAnd = new Logical_And();
             LOGICAL_AND = new LogicalAnd<T>(logicalAnd, LogicalAndDelegate());
-            TokenOperatorMap[logicalAnd.Token] = LOGICAL_AND;
+            TokenOperatorMap[LOGICAL_AND.GetHashCode()] = LOGICAL_AND;
 
             var logicalOr = new LogicalOr();
             LOGICAL_OR = new LogicalOr<T>(logicalOr, LogicalOrDelegate());
-            TokenOperatorMap[logicalOr.Token] = LOGICAL_OR;
+            TokenOperatorMap[LOGICAL_OR.GetHashCode()] = LOGICAL_OR;
 
             var bitwiseAnd = new Bitwise_And();
             BITWISE_AND = new BitwiseAnd<T>(bitwiseAnd, BitwiseAndDelegate());
-            TokenOperatorMap[bitwiseAnd.Token] = BITWISE_AND;
+            TokenOperatorMap[BITWISE_AND.GetHashCode()] = BITWISE_AND;
 
             var bitwiseOr = new Bitwise_Or();
             BITWISE_OR = new BitwiseOr<T>(bitwiseOr, BitwiseOrDelegate());
-            TokenOperatorMap[bitwiseOr.Token] = BITWISE_OR;
+            TokenOperatorMap[BITWISE_OR.GetHashCode()] = BITWISE_OR;
 
             var size = new Size();
             SIZE = new Size<T>(size, SizeDelegate());
-            TokenOperatorMap[size.Token] = SIZE;
+            TokenOperatorMap[SIZE.GetHashCode()] = SIZE;
 
             var logicalNot = new Logical_Not();
             LOGICAL_NOT = new Not<T>(logicalNot, LogicalNotDelegate());
-            TokenOperatorMap[logicalNot.Token] = LOGICAL_NOT;
+            TokenOperatorMap[LOGICAL_NOT.GetHashCode()] = LOGICAL_NOT;
 
             var uriValid = new Uri_Valid();
             URI_VALIDATE = new UriValid<T>(uriValid);
-            TokenOperatorMap[uriValid.Token] = URI_VALIDATE;
+            TokenOperatorMap[URI_VALIDATE.GetHashCode()] = URI_VALIDATE;
         }
 
         private static ParameterExpression Left
@@ -82,12 +82,12 @@ namespace Health.Direct.Policy
         {
             get
             {
-                var left = Expression.Parameter(typeof (T), "left");
+                var left = Expression.Parameter(typeof(T), "left");
                 return left;
             }
         }
 
-        
+
         private static Func<T, T, T> LogicalAndDelegate()
         {
             return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.AndAlso, Left, Right);
@@ -108,9 +108,9 @@ namespace Health.Direct.Policy
         {
             return ExpressionTreeUtil.CreateDelegate<T, int>(Expression.ArrayLength, Left);
         }
-        private static Func<T, bool> LogicalNotDelegate()
+        private static Func<T, Boolean> LogicalNotDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T, bool>(Expression.Not, Left);
+            return ExpressionTreeUtil.CreateDelegate<T, Boolean>(Expression.Not, Left);
         }
     }
 
@@ -126,29 +126,29 @@ namespace Health.Direct.Policy
 
         static PolicyOperator()
         {
-            
+
             var equals = new Equals();
             EQUALS = new Equals<TValue, TResult>(equals, EqualDelegate());
-            TokenOperatorMap[equals.Token] = EQUALS;
+            TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
 
             var notEquals = new NotEquals();
             NOT_EQUALS = new NotEquals<TValue, TResult>(new NotEquals(), NotEqualDelegate());
-            TokenOperatorMap[notEquals.Token] = NOT_EQUALS;
+            TokenOperatorMap[NOT_EQUALS.GetHashCode()] = NOT_EQUALS;
 
             var greater = new Greater();
             GREATER = new Greater<TValue, TResult>(greater, GreaterThanDelegate());
-            TokenOperatorMap[greater.Token] = GREATER;
+            TokenOperatorMap[GREATER.GetHashCode()] = GREATER;
 
             var less = new Less();
             LESS = new Less<TValue, TResult>(less, LessThanDelegate());
-            TokenOperatorMap[less.Token] = LESS;
+            TokenOperatorMap[LESS.GetHashCode()] = LESS;
 
             //
             // See RegExExist Func below
             //
             var regex = new Reg_Ex();
             REG_EX = new RegularExpression<TValue, TResult>(regex, RegExExists);
-            TokenOperatorMap[regex.Token] = REG_EX;
+            TokenOperatorMap[REG_EX.GetHashCode()] = REG_EX;
 
 
 
@@ -158,11 +158,11 @@ namespace Health.Direct.Policy
             //
 
             Type itemType = null;
-            Type typeList = typeof (TValue);
-            if(typeList.IsGenericType && typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            Type typeList = typeof(TValue);
+            if (typeList.IsGenericType && typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
             {
                 itemType = typeList.GetGenericArguments()[0];
-            
+
 
                 var itemList = Expression.Parameter(typeList, "itemList");
 
@@ -175,7 +175,7 @@ namespace Health.Direct.Policy
                 var empty = new Empty();
                 EMPTY = new Empty<TValue, TResult>(empty
                       , Expression.Lambda<Func<TValue, TResult>>(emptyExpression, itemList).Compile());
-                TokenOperatorMap[empty.Token] = EMPTY;
+                TokenOperatorMap[EMPTY.GetHashCode()] = EMPTY;
 
 
                 //
@@ -185,7 +185,7 @@ namespace Health.Direct.Policy
                 var notEmpty = new NotEmpty();
                 NOT_EMPTY = new NotEmpty<TValue, TResult>(notEmpty
                      , Expression.Lambda<Func<TValue, TResult>>(noEmptyExpression, itemList).Compile());
-                TokenOperatorMap[notEmpty.Token] = NOT_EMPTY;
+                TokenOperatorMap[NOT_EMPTY.GetHashCode()] = NOT_EMPTY;
 
             }
 
@@ -223,7 +223,7 @@ namespace Health.Direct.Policy
         {
             return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.LessThan, Left, Right);
         }
-        
+
 
 
         //TODO: Rethink this, don't like the conversion...
@@ -246,13 +246,13 @@ namespace Health.Direct.Policy
 
     }
 
-    public class PolicyOperator<T1, T2, TResult> : PolicyOperator  
+    public class PolicyOperator<T1, T2, TResult> : PolicyOperator
     {
         public static Intersect<T1, T2, TResult> INTERSECT;
         public static Contains<T1, T2, TResult> CONTAINS;
         public static NotContains<T1, T2, TResult> NOT_CONTAINS;
-        public static ContainsRegEx<T1, List<T1>, TResult>  CONTAINS_REG_EX;
-        
+        public static ContainsRegEx<T1, List<T1>, TResult> CONTAINS_REG_EX;
+
 
         private static Func<T1, T2, TResult> IntersectDelegate()
         {
@@ -264,18 +264,18 @@ namespace Health.Direct.Policy
             if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)) || typeof(string).IsAssignableFrom(typeof(T2))) return null;
 
             Type itemType = null;
-            Type typeList = typeof (T1);
+            Type typeList = typeof(T1);
             Type typeList2 = typeof(T2);
             if (typeList.IsGenericType && typeList2.IsGenericType &&
-                typeof (IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+                typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
             {
                 itemType = typeList.GetGenericArguments()[0];
             }
-            
+
             var itemList = Expression.Parameter(typeList, "itemList");
             var itemList2 = Expression.Parameter(typeList2, "itemList2");
 
-            
+
             Expression intersectExpression =
               Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
                               , itemList, itemList2);
@@ -285,27 +285,27 @@ namespace Health.Direct.Policy
 
         static PolicyOperator()
         {
-            var left = Expression.Parameter(typeof (T1), "itemType");
+            var left = Expression.Parameter(typeof(T1), "itemType");
             var right = Expression.Parameter(typeof(T1), "item");
             var itemList = Expression.Parameter(typeof(IEnumerable<T1>), "itemList");
-            
+
 
             var intersection = new Intersection();
             var intersectDelegate = IntersectDelegate();
             if (intersectDelegate != null)
             {
                 INTERSECT = new Intersect<T1, T2, TResult>(intersection, intersectDelegate);
-                TokenOperatorMap[intersection.Token] = INTERSECT;
+                TokenOperatorMap[INTERSECT.GetHashCode()] = INTERSECT;
             }
-            
+
 
 
             // list.Any(a => a = "joe")
             if (typeof(IEnumerable).IsAssignableFrom(typeof(T2))
-                && ! typeof(string).IsAssignableFrom(typeof(T2))
+                && !typeof(string).IsAssignableFrom(typeof(T2))
                 && (
                     !typeof(IEnumerable).IsAssignableFrom(typeof(T1))
-                    ||  typeof(string).IsAssignableFrom(typeof(T1)))
+                    || typeof(string).IsAssignableFrom(typeof(T1)))
                 )
             {
                 var body = Expression.Equal(left, right);
@@ -320,15 +320,15 @@ namespace Health.Direct.Policy
                 var contains = new Contains();
                 CONTAINS = new Contains<T1, T2, TResult>(contains
                     , Expression.Lambda<Func<T1, T2, TResult>>(anyCall, right, itemList).Compile());
-                TokenOperatorMap[contains.Token] = CONTAINS;
+                TokenOperatorMap[CONTAINS.GetHashCode()] = CONTAINS;
 
-            
+
                 Expression notAnyCall = Expression.Not(anyCall);
 
                 var notContains = new NotContains();
                 NOT_CONTAINS = new NotContains<T1, T2, TResult>(notContains
                     , Expression.Lambda<Func<T1, T2, TResult>>(notAnyCall, right, itemList).Compile());
-                TokenOperatorMap[notContains.Token] = NOT_CONTAINS;
+                TokenOperatorMap[NOT_CONTAINS.GetHashCode()] = NOT_CONTAINS;
             }
 
 
@@ -339,8 +339,8 @@ namespace Health.Direct.Policy
             // See ContainsRegEx Func below
             //
             var containsRegEx = new ContainsRegEx();
-            CONTAINS_REG_EX = new ContainsRegEx<T1, List<T1>, TResult>(containsRegEx, RegExContains) ;
-            TokenOperatorMap[containsRegEx.Token] = CONTAINS_REG_EX;
+            CONTAINS_REG_EX = new ContainsRegEx<T1, List<T1>, TResult>(containsRegEx, RegExContains);
+            TokenOperatorMap[CONTAINS_REG_EX.GetHashCode()] = CONTAINS_REG_EX;
 
 
         }
@@ -354,9 +354,9 @@ namespace Health.Direct.Policy
         /// <param name="pattern">Regular expression pattern</param>
         /// <param name="value">Source string to search</param>
         /// <returns></returns>
-        public static TResult RegExContains(T1 pattern, List<T1> value) 
+        public static TResult RegExContains(T1 pattern, List<T1> value)
         {
-            bool success = false;
+            Boolean success = false;
             foreach (var item in value)
             {
                 string v = item as string;
@@ -374,14 +374,15 @@ namespace Health.Direct.Policy
 
     public class PolicyOperator
     {
-        
-        protected static readonly Dictionary<string, OperatorBase> TokenOperatorMap;
+
+        public static readonly Dictionary<int, OperatorBase> TokenOperatorMap;
 
         static PolicyOperator()
         {
-            Console.WriteLine("hello:: PolicyOperator");
-            TokenOperatorMap = new Dictionary<string, OperatorBase>();
-
+            TokenOperatorMap = new Dictionary<int, OperatorBase>();
+            new PolicyOperator<Boolean, Boolean>();
+            new PolicyOperator<int, Boolean>();
+            new PolicyOperator<string, Boolean>();
         }
 
         public static Equals<T, T> Equals<T>()
@@ -399,16 +400,27 @@ namespace Health.Direct.Policy
             return PolicyOperator<T>.BITWISE_OR;
         }
 
+        public static T BitwiseAnd<T> (T value1, T value2)
+        {
+            return PolicyOperator<T>.BITWISE_AND.Execute(value1, value2);
+        }
+
+        public static BitwiseAnd<T> BitwiseAnd<T>()
+        {
+            return PolicyOperator<T>.BITWISE_AND;
+        }
         
+
         /// <summary>
-	    /// Gets the policy operator associated with a specific token string.
-	    /// @param token The token used to look up the PolicyOperator.
-	    /// @return The PolicyOperator associated with the token.  If the token does not represent a known operator, then null is returned,.
+        /// Gets the policy operator associated with a specific token string.
+        /// @param token The token used to look up the PolicyOperator.
+        /// @return The PolicyOperator associated with the token.  If the token does not represent a known operator, then null is returned,.
         /// </summary>
-        public static OperatorBase FromToken(String token)
+        public static OperatorBase FromToken(int tokenHashCode)
         {
             OperatorBase operatorBase;
-            if (TokenOperatorMap.TryGetValue(token, out operatorBase))
+
+            if (TokenOperatorMap.TryGetValue(tokenHashCode, out operatorBase))
             {
                 return operatorBase;
             }

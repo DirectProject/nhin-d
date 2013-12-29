@@ -14,62 +14,49 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Health.Direct.Policy
 {
-    
-    public class LiteralPolicyExpression<T> : ILiteralPolicyExpression<T>
+    public class DefaultPolicyFilter : IPolicyFilter
     {
-        private readonly IPolicyValue<T> m_policyValue;
+        readonly ICompiler m_compiler;
+        readonly IExecutionEngine m_executionEngine;
+        private readonly IPolicyLexiconParser m_parser;
 
-        
-        public LiteralPolicyExpression(IPolicyValue<T> value)
+        public DefaultPolicyFilter(ICompiler compiler, IExecutionEngine engine, IPolicyLexiconParser parser)
         {
-            m_policyValue = value;
+            m_compiler = compiler;
+            m_executionEngine = engine;
+            m_parser = parser;
         }
 
-        public LiteralPolicyExpression(T value)
+        public DefaultPolicyFilter(ICompiler compiler, IExecutionEngine engine)
         {
-            m_policyValue = new PolicyValue<T>(value);
+            m_compiler = compiler;
+            m_executionEngine = engine;
         }
 
-
-        public T Policy
+        public bool IsCompliant(X509Certificate2 cert, Stream policyStream)
         {
-            get { return m_policyValue.GetPolicyValue(); }
-            set{}
+            IPolicyExpression expression = m_parser.Parse(policyStream);
+
+            return IsCompliant(cert, expression);
         }
 
-        public IPolicyValue<T> GetPolicyValue()
+        public bool IsCompliant(X509Certificate2 cert, IPolicyExpression expression)
         {
-            return m_policyValue;
-        }
+            if (m_compiler == null)
+                throw new InvalidOperationException("Compiler cannot be null");
 
-        public PolicyExpressionType GetExpressionType()
-        {
-            return PolicyExpressionType.LITERAL;
-        }
+            if (m_executionEngine == null)
+                throw new InvalidOperationException("Execution engine cannot be null");
 
-        //Todo: Do I need this?
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-
-            if (obj.GetType() == typeof(ILiteralPolicyExpression<T>))
-            {
-                return m_policyValue.Equals(((ILiteralPolicyExpression<T>)obj).GetPolicyValue());
-            }
-            return m_policyValue.Equals(obj);
-        }
-
-        protected bool Equals(LiteralPolicyExpression<T> other)
-        {
-            return Equals(m_policyValue, other.m_policyValue);
-        }
-
-        public override int GetHashCode()
-        {
-            return (m_policyValue != null ? m_policyValue.GetHashCode() : 0);
+            IList<IOpCode> opcodes = m_compiler.Compile(cert, expression);
+            return m_executionEngine.Evaluate(opcodes);
         }
     }
 }

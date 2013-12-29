@@ -14,10 +14,16 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using FluentAssertions;
+using Health.Direct.Policy.Operators;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests
 {
+    /// <summary>
+    /// test name carry over from Java port
+    /// todo: rename
+    /// </summary>
     public class PolicyOperator_getEnumAttributesTest
     {
         [Fact]
@@ -35,6 +41,19 @@ namespace Health.Direct.Policy.Tests
             var boolEquals = PolicyOperator<bool, bool>.EQUALS;
             Assert.Equal("=", boolEquals.GetOperatorToken());
             Assert.Equal("equals", boolEquals.GetOperatorText());
+        }
+
+        [Fact]
+        public void TestEqualsFindTokenOperators()
+        {
+            OperatorBase equalsOperator = PolicyOperator.FromToken(("=_" + "Boolean").GetHashCode());
+            equalsOperator.Should().NotBeNull();
+
+            equalsOperator = PolicyOperator.FromToken(("=_" + "Int32").GetHashCode());
+            equalsOperator.Should().NotBeNull();
+
+            equalsOperator = PolicyOperator.FromToken(("=_" + "String").GetHashCode());
+            equalsOperator.Should().NotBeNull();
         }
     }
 }

@@ -34,5 +34,10 @@ namespace Health.Direct.Policy.Operators
         /// </summary>
         /// <remarks>T must be an array</remarks>
         public readonly Func<T, int> Execute;
+
+        public override Delegate ExecuteRef
+        {
+            get { return Execute; }
+        }
     }
 }

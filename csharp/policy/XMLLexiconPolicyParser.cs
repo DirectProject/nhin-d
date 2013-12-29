@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.IO;
 using System.Xml.Serialization;
-using Org.BouncyCastle.Bcpg;
 
 namespace Health.Direct.Policy
 {
@@ -39,9 +38,10 @@ namespace Health.Direct.Policy
 
         }
 
-        public T Parse<T>(Stream stream)
+        public virtual IPolicyExpression Parse(Stream stream)
         {
-            return Deserialize<T>(stream);
+            m_policyExpression = Deserialize<IPolicyExpression>(stream);
+            return m_policyExpression;
         }
 
         public T Deserialize<T>(Stream stream)
