@@ -30,5 +30,10 @@ namespace Health.Direct.Policy.Operators
         }
 
         public readonly Func<TValue, TValue, TResult> Execute;
+
+        public override Delegate ExecuteRef
+        {
+            get { return Execute; }
+        }
     }
 }

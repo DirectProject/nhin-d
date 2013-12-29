@@ -19,7 +19,7 @@ namespace Health.Direct.Policy
         public OperationPolicyExpression(OperatorBase pOperator, IEnumerable<IPolicyExpression> operands)
 		{
 			this.Operator = pOperator;
-			this.Operands = new List<IPolicyExpression>(operands);
+            this.Operands = new List<IPolicyExpression>(operands);
 		}
 
 		/// <inheritdoc />
@@ -35,7 +35,7 @@ namespace Health.Direct.Policy
 		}
 
 		/// <inheritdoc />
-		public List<IPolicyExpression> GetOperands() 
+        public List<IPolicyExpression> GetOperands() 
 		{
             return Operands;
 		}

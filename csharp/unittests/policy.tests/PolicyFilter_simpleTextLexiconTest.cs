@@ -15,61 +15,39 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-namespace Health.Direct.Policy
+using System;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+using FluentAssertions;
+using Health.Direct.Policy.Impl;
+using Health.Direct.Policy.Machine;
+using Health.Direct.Policy.Tests.Extensions;
+using Xunit;
+
+namespace Health.Direct.Policy.Tests
 {
-    
-    public class LiteralPolicyExpression<T> : ILiteralPolicyExpression<T>
+    public class PolicyFilter_SimpleTextLexiconTest
     {
-        private readonly IPolicyValue<T> m_policyValue;
-
-        
-        public LiteralPolicyExpression(IPolicyValue<T> value)
+        [Fact]
+        public void testX509SignatureAlgorithm_equals_assertTrue()
         {
-            m_policyValue = value;
-        }
-
-        public LiteralPolicyExpression(T value)
-        {
-            m_policyValue = new PolicyValue<T>(value);
-        }
-
-
-        public T Policy
-        {
-            get { return m_policyValue.GetPolicyValue(); }
-            set{}
-        }
-
-        public IPolicyValue<T> GetPolicyValue()
-        {
-            return m_policyValue;
-        }
-
-        public PolicyExpressionType GetExpressionType()
-        {
-            return PolicyExpressionType.LITERAL;
-        }
-
-        //Todo: Do I need this?
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-
-            if (obj.GetType() == typeof(ILiteralPolicyExpression<T>))
+            using (Stream stream = "X509.Algorithm = 1.2.840.113549.1.1.5".ToStream())
             {
-                return m_policyValue.Equals(((ILiteralPolicyExpression<T>)obj).GetPolicyValue());
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
+                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                filter.IsCompliant(cert, stream).Should().BeTrue();
             }
-            return m_policyValue.Equals(obj);
         }
 
-        protected bool Equals(LiteralPolicyExpression<T> other)
+        [Fact]
+        public void testTBSSerialNumber_assertTrue()
         {
-            return Equals(m_policyValue, other.m_policyValue);
-        }
-
-        public override int GetHashCode()
-        {
-            return (m_policyValue != null ? m_policyValue.GetHashCode() : 0);
+            using (Stream stream = "X509.TBS.SerialNumber = f74f1c4fe4e1762e".ToStream())
+            {
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
+                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                filter.IsCompliant(cert, stream).Should().BeTrue();
+            }
         }
     }
 }

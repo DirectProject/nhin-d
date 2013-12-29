@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections.Generic;
 using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
@@ -32,6 +31,11 @@ namespace Health.Direct.Policy.Operators
         }
 
         public readonly Func<T1, T2, TResult> Execute;
+
+        public override Delegate ExecuteRef
+        {
+            get { return Execute; }
+        }
     }
 }
 

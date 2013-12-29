@@ -33,7 +33,7 @@ namespace Health.Direct.Policy.Impl
     {
         protected static readonly IDictionary<string, TokenType> tokenMap;
 
-        protected ThreadLocal<int> buildLevel;
+        readonly ThreadLocal<int> buildLevel;
 
         static SimpleTextV1LexiconPolicyParser()
         {
@@ -53,11 +53,11 @@ namespace Health.Direct.Policy.Impl
             tokenMap.Add(X509FieldType.Signature.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
             tokenMap.Add(X509FieldType.SignatureAlgorithm.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
 
-            // add the TBS Single fields
-            foreach (TBSFieldStandard.ISingle field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.ISingle))
-            {
-                tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
-            }
+            //// add the TBS Single fields
+            //foreach (TBSFieldStandard.ISingle field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.ISingle))
+            //{
+            //    tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            //}
 
             // add the TBS Complex fields
             foreach (TBSFieldStandard.IComplex field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.IComplex))
@@ -91,7 +91,7 @@ namespace Health.Direct.Policy.Impl
             buildLevel = new ThreadLocal<int>();
         }
         
-        public IPolicyExpression Parse(Stream stream) 
+        public override IPolicyExpression Parse(Stream stream) 
 	    {
 		    IList<TokenTypeAssociation> tokens = ParseToTokens(stream);
 		
@@ -133,7 +133,7 @@ namespace Health.Direct.Policy.Impl
 	        do
 	        {
 			    TokenTypeAssociation assos = tokens.Current;
-			    switch (assos.GetType())
+			    switch (assos.GetTokenType())
 			    {
 				    case TokenType.START_LEVEL:
 				    {
@@ -156,18 +156,28 @@ namespace Health.Direct.Policy.Impl
 					    return builtOperandExpressions[0];
 				    case TokenType.OPERATOR_EXPRESSION:
 				    {
-					    // get the operator for this token
-					    OperatorBase operatorBase =  PolicyOperator.FromToken(assos.GetToken());
-					
 					    // regardless if this is a unary or binary expression, then next set of tokens should consist 
 					    // of a parameter to this operator
 					    IPolicyExpression subExpression = BuildExpression(tokens, true);
-					
-					    if (subExpression == null)
-						    throw new PolicyGrammarException("Missing parameter.  Operator must be followed by an expression.");
-					
+
+                        int tokenHashCode = 0;
+
+				        if (subExpression is ILiteralPolicyExpression<String>)
+				        {
+                            tokenHashCode = (assos.GetToken()+"_String").GetHashCode();
+				        }
+                        else //(subExpression == null)
+				        {
+                            throw new PolicyGrammarException("Missing parameter.  Operator must be followed by an expression.");
+				        }
+
 					    builtOperandExpressions.Add(subExpression);
-					
+
+				        
+
+                        // get the operator for this token
+                        OperatorBase operatorBase = PolicyOperator.FromToken(tokenHashCode);
+
 					    // now add the parameters to the operator
                         if (builtOperandExpressions.Count == 1 && operatorBase is BinaryOperator)
 						    throw new PolicyGrammarException("Missing parameter.  Binary operators require two parameters.");
@@ -544,7 +554,7 @@ namespace Health.Direct.Policy.Impl
             /// @return The token type
             /// </summary>
             /// <returns>The token type</returns>
-            public TokenType? GetType()
+            public TokenType? GetTokenType()
             {
                 return type;
             }

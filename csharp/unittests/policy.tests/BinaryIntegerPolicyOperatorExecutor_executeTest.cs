@@ -14,12 +14,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests
 {
-    public class BinaryIntegerPolicyOperatorExecutor_executeTest
+    public class BinaryIntegerPolicyOperatorExecutor_ExecuteTest
     {
        
         [Fact]

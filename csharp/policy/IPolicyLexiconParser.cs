@@ -21,6 +21,6 @@ namespace Health.Direct.Policy
 {
     public interface IPolicyLexiconParser
     {
-        T Parse<T>(Stream stream);
+        IPolicyExpression Parse(Stream stream);
     }
 }

@@ -39,6 +39,10 @@ namespace Health.Direct.Policy.Operators
         
         public readonly Func<T, bool> Execute;
 
+        public override Delegate ExecuteRef
+        {
+            get { return Execute; }
+        }
 
         private bool Stock(T uri)
         {

@@ -26,7 +26,7 @@
 //namespace Health.Direct.Policy
 //{
 //    /// <summary>
-//    /// Implements serialization/deserialization for <see cref="IPolicyExpression"/> implementations.
+//    /// Implements serialization/deserialization for <see cref="PolicyExpression"/> implementations.
 //    /// </summary>
 //    public abstract class PolicySerializer
 //    {
@@ -34,11 +34,11 @@
 //        /// <summary>
 //        /// Deserializes and parses text from <paramref name="stream"/>
 //        /// </summary>
-//        /// <typeparam name="T">The <see cref="IPolicyExpression"/> type to which to deserialize.</typeparam>
+//        /// <typeparam name="T">The <see cref="PolicyExpression"/> type to which to deserialize.</typeparam>
 //        /// <param name="stream">The <see cref="Stream"/> providing the source data</param>
-//        /// <returns>The deserialized and parsed <see cref="IPolicyExpression"/></returns>
+//        /// <returns>The deserialized and parsed <see cref="PolicyExpression"/></returns>
 //        public virtual T Deserialize<T>(Stream stream)
-//            where T : IPolicyExpression, new()
+//            where T : PolicyExpression, new()
 //        {
 //            if (stream == null)
 //            {
@@ -54,11 +54,11 @@
 //        ///// <summary>
 //        ///// Deserializes and parses text from <paramref name="reader"/>
 //        ///// </summary>
-//        ///// <typeparam name="T">The <see cref="IPolicyExpression"/> type to which to deserialize.</typeparam>
+//        ///// <typeparam name="T">The <see cref="PolicyExpression"/> type to which to deserialize.</typeparam>
 //        ///// <param name="reader">The <see cref="TextReader"/> providing the source data</param>
-//        ///// <returns>The deserialized and parsed <see cref="IPolicyExpression"/></returns>
+//        ///// <returns>The deserialized and parsed <see cref="PolicyExpression"/></returns>
 //        public virtual T Deserialize<T>(TextReader reader)
-//            where T : IPolicyExpression, new()
+//            where T : PolicyExpression, new()
 //        {
 //            if (reader == null)
 //            {
@@ -71,11 +71,11 @@
 //        ///// <summary>
 //        ///// Deserializes and parses text from <paramref name="messageText"/>
 //        ///// </summary>
-//        ///// <typeparam name="T">The <see cref="IPolicyExpression"/> type to which to deserialize.</typeparam>
+//        ///// <typeparam name="T">The <see cref="PolicyExpression"/> type to which to deserialize.</typeparam>
 //        ///// <param name="policyText">The <see cref="string"/> representing the source text</param>
 //        ///// <returns>The deserialized and parsed entity</returns>
 //        public virtual T Deserialize<T>(string policyText)
-//            where T : IPolicyExpression, new()
+//            where T : PolicyExpression, new()
 //        {
 //            if (string.IsNullOrEmpty(policyText))
 //            {

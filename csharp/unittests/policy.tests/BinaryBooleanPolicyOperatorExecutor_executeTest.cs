@@ -15,12 +15,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Collections.Generic;
+using FluentAssertions;
+using Health.Direct.Policy.Operators;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests
 {
-    public class BinaryBooleanPolicyOperatorExecutor_executeTest
+    public class BinaryBooleanPolicyOperatorExecutor_ExecuteTest
     {
         [Fact]
         public void testExecute_logicalAnd_assertResults()
@@ -40,6 +43,9 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void testExecute_logicalOr_assertResults()
         {
+            OperatorBase equalsOperator = PolicyOperator.FromToken(("=_" + "Boolean_Boolean").GetHashCode());
+            equalsOperator.Should().NotBeNull();
+
             Assert.True(PolicyOperator<bool>.LOGICAL_OR.Execute(true, true));
             Assert.True(PolicyOperator<bool>.LOGICAL_OR.Execute(true, false));
             Assert.True(PolicyOperator<bool>.LOGICAL_OR.Execute(false, true));
@@ -49,10 +55,24 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void testExecute_equals_assertResults()
         {
+            
             Assert.True(PolicyOperator<bool, bool>.EQUALS.Execute(true, true));
             Assert.False(PolicyOperator<bool, bool>.EQUALS.Execute(true, false));
             Assert.True(PolicyOperator<int, bool>.EQUALS.Execute(123, 123));
             Assert.False(PolicyOperator<int, bool>.EQUALS.Execute(123, 456)); 
+        }
+
+        [Fact]
+        public void testExecute_equals_dynamic_assertResults()
+        {
+            Delegate del = PolicyOperator<bool, bool>.EQUALS.ExecuteRef;
+
+            Assert.True((bool)del.DynamicInvoke(new object[] { true, true }));
+            Assert.False((bool)del.DynamicInvoke(new object[] { true, false }));
+
+            del = PolicyOperator<int, bool>.EQUALS.ExecuteRef;
+            Assert.True((bool)del.DynamicInvoke(new object[] { 123, 123 }));
+            Assert.False((bool)del.DynamicInvoke(new object[] { 123, 456 }));
         }
 
         [Fact]

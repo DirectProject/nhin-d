@@ -14,62 +14,26 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using FluentAssertions;
+using System.Collections.Generic;
+using Xunit;
 
-namespace Health.Direct.Policy
+namespace Health.Direct.Policy.Tests
 {
-    
-    public class LiteralPolicyExpression<T> : ILiteralPolicyExpression<T>
+    public class OperationPolicyExpression_GetInstanceTest
     {
-        private readonly IPolicyValue<T> m_policyValue;
-
-        
-        public LiteralPolicyExpression(IPolicyValue<T> value)
+        [Fact]
+        public void testGetInstance_assertExpression()
         {
-            m_policyValue = value;
-        }
-
-        public LiteralPolicyExpression(T value)
-        {
-            m_policyValue = new PolicyValue<T>(value);
-        }
-
-
-        public T Policy
-        {
-            get { return m_policyValue.GetPolicyValue(); }
-            set{}
-        }
-
-        public IPolicyValue<T> GetPolicyValue()
-        {
-            return m_policyValue;
-        }
-
-        public PolicyExpressionType GetExpressionType()
-        {
-            return PolicyExpressionType.LITERAL;
-        }
-
-        //Todo: Do I need this?
-        public override bool Equals(object obj)
-        {
-            if (obj == null) return false;
-
-            if (obj.GetType() == typeof(ILiteralPolicyExpression<T>))
-            {
-                return m_policyValue.Equals(((ILiteralPolicyExpression<T>)obj).GetPolicyValue());
-            }
-            return m_policyValue.Equals(obj);
-        }
-
-        protected bool Equals(LiteralPolicyExpression<T> other)
-        {
-            return Equals(m_policyValue, other.m_policyValue);
-        }
-
-        public override int GetHashCode()
-        {
-            return (m_policyValue != null ? m_policyValue.GetHashCode() : 0);
+            IList<IPolicyExpression> operands = new List<IPolicyExpression>();
+            operands.Add(new LiteralPolicyExpression<bool>(true));
+            operands.Add(new LiteralPolicyExpression<bool>(false));
+           
+            OperationPolicyExpression expression =new OperationPolicyExpression(PolicyOperator.BitwiseAnd<bool>(), operands);
+            expression.Should().NotBeNull();
+            expression.GetPolicyOperator().Should().Be(PolicyOperator.BitwiseAnd<bool>());
+            expression.GetExpressionType().Should().Be(PolicyExpressionType.OPERATION);
+            expression.GetOperands().ShouldBeEquivalentTo(operands);
         }
     }
 }

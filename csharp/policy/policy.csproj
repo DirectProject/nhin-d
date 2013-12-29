@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultPolicyFilter.cs" />
     <Compile Include="ExpressionTreeUtil.cs" />
     <Compile Include="ExtensionField.cs" />
     <Compile Include="Extensions\DerSequenceExt.cs" />
@@ -51,16 +52,23 @@
     <Compile Include="Extensions\x509Ext.cs" />
     <Compile Include="Extensions\RefExt.cs" />
     <Compile Include="Extensions\TypeExt.cs" />
+    <Compile Include="ICompiler.cs" />
+    <Compile Include="IExecutionEngine.cs" />
     <Compile Include="IExtensionField.cs" />
     <Compile Include="ILiteralPolicyExpression.cs" />
     <Compile Include="Impl\SimpleTextV1LexiconPolicyParser.cs" />
     <Compile Include="Impl\TokenType.cs" />
+    <Compile Include="IOpCode.cs" />
     <Compile Include="IOperationPolicyExpression.cs" />
+    <Compile Include="IPolicyFilter.cs" />
     <Compile Include="IPolicyValue.cs" />
     <Compile Include="IReferencePolicyExpression.cs" />
     <Compile Include="ITBSField.cs" />
     <Compile Include="IX509Field.cs" />
     <Compile Include="LiteralPolicyExpression.cs" />
+    <Compile Include="Machine\StackMachine.cs" />
+    <Compile Include="Machine\StackMachineCompiler.cs" />
+    <Compile Include="Machine\StackMachineEntry.cs" />
     <Compile Include="OpCode\PolicyOpCode.cs" />
     <Compile Include="OperationPolicyExpression.cs" />
     <Compile Include="Operators\BitwiseAnd.cs" />
@@ -82,7 +90,7 @@
     <Compile Include="Operators\RegularExpression.cs" />
     <Compile Include="Operators\Size.cs" />
     <Compile Include="Operators\UriValid.cs" />
-    <Compile Include="IPolicyExpression.cs" />
+    <Compile Include="PolicyExpression.cs" />
     <Compile Include="IPolicyExpressionSerializer.cs" />
     <Compile Include="PolicyExpressionReferenceType.cs" />
     <Compile Include="PolicyExpressionType.cs" />

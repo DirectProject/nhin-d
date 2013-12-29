@@ -25,7 +25,6 @@ namespace Health.Direct.Policy.Operators
         readonly string m_operatorText;
 
 
-
         protected OperatorBase(Code opCode)
         {
             m_operatorToken = opCode.Token;
@@ -71,6 +70,8 @@ namespace Health.Direct.Policy.Operators
             {
             }
         }
+
+        public abstract Delegate ExecuteRef { get; }
     }
 
     public abstract class BinaryOperator : OperatorBase
