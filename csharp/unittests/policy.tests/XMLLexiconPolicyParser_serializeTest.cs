@@ -37,7 +37,7 @@ namespace Health.Direct.Policy.Tests
             operands.Add(extensionField);
 
             IOperationPolicyExpression oper = new OperationPolicyExpression(
-                PolicyOperator<int, bool>.EQUALS, operands);
+                PolicyOperator<int, int, bool>.EQUALS, operands);
 
            
             string xml = parser.Serialize(oper);

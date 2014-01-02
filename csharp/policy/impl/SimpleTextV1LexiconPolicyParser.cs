@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Security.Principal;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using Health.Direct.Policy.Extensions;
@@ -31,33 +31,36 @@ namespace Health.Direct.Policy.Impl
 {
     public class SimpleTextV1LexiconPolicyParser : XMLLexiconPolicyParser
     {
-        protected static readonly IDictionary<string, TokenType> tokenMap;
+        static readonly IDictionary<string, TokenType> m_tokenMap;
 
-        readonly ThreadLocal<int> buildLevel;
+        readonly ThreadLocal<int> m_buildLevel;
 
         static SimpleTextV1LexiconPolicyParser()
         {
-            tokenMap = new Dictionary<string, TokenType>();
+            m_tokenMap = new Dictionary<string, TokenType>();
 
             // build the token list
-            tokenMap.Add("(", TokenType.START_LEVEL);
-            tokenMap.Add(")", TokenType.END_LEVEL);
+            m_tokenMap.Add("(", TokenType.START_LEVEL);
+            m_tokenMap.Add(")", TokenType.END_LEVEL);
 
             // build the operator tokens
             foreach (Code opCode in Code.Map)
             {
-                tokenMap.Add(opCode.Token, TokenType.OPERATOR_EXPRESSION);
+                m_tokenMap.Add(opCode.Token, opCode.OpCodeType == OpCodeType.Binary ? TokenType.OPERATOR_BINARY_EXPRESSION :  TokenType.OPERATOR_UNARY_EXPRESSION);
             }
 
             // add the X509Fields
-            tokenMap.Add(X509FieldType.Signature.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
-            tokenMap.Add(X509FieldType.SignatureAlgorithm.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            m_tokenMap.Add(X509FieldType.Signature.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+            m_tokenMap.Add(X509FieldType.SignatureAlgorithm.GetFieldToken(), TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
 
-            //// add the TBS Single fields
-            //foreach (TBSFieldStandard.ISingle field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.ISingle))
-            //{
-            //    tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
-            //}
+            // add the TBS Single fields
+            foreach (TBSFieldStandard.ISingle field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.ISingle))
+            {
+                foreach (var rfcName in field.GetFieldTokens())
+                {
+                    m_tokenMap.Add(rfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+                }
+            }
 
             // add the TBS Complex fields
             foreach (TBSFieldStandard.IComplex field in TBSFieldStandard.Field.Map.FindAll(f => f is TBSFieldStandard.IComplex))
@@ -65,7 +68,7 @@ namespace Health.Direct.Policy.Impl
                 if (field.RfcName != TBSFieldName.Extenstions.RfcName)
                     foreach (var rfcName in field.GetFieldTokens())
                     {
-                        tokenMap.Add(rfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+                        m_tokenMap.Add(rfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
                     }
             }
 
@@ -73,7 +76,7 @@ namespace Health.Direct.Policy.Impl
 		    // add the extension fields
 		    foreach (ExtensionStandard.Field field in ExtensionStandard.Field.Map)
             {
-                tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+                m_tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
             }
 
         }
@@ -88,7 +91,7 @@ namespace Health.Direct.Policy.Impl
 
         public SimpleTextV1LexiconPolicyParser()
         {
-            buildLevel = new ThreadLocal<int>();
+            m_buildLevel = new ThreadLocal<int>();
         }
         
         public override IPolicyExpression Parse(Stream stream) 
@@ -152,9 +155,10 @@ namespace Health.Direct.Policy.Impl
 					    if (builtOperandExpressions.Count == 0)
 						    throw new PolicyGrammarException("Group must contain at least one expression.");
 					
-					    this.decrementLevel();
+					    DecrementLevel();
 					    return builtOperandExpressions[0];
-				    case TokenType.OPERATOR_EXPRESSION:
+				    case TokenType.OPERATOR_BINARY_EXPRESSION:
+                    case TokenType.OPERATOR_UNARY_EXPRESSION:
 				    {
 					    // regardless if this is a unary or binary expression, then next set of tokens should consist 
 					    // of a parameter to this operator
@@ -164,7 +168,18 @@ namespace Health.Direct.Policy.Impl
 
 				        if (subExpression is ILiteralPolicyExpression<String>)
 				        {
-                            tokenHashCode = (assos.GetToken()+"_String").GetHashCode();
+                            //TODO Refactor
+				            if (assos.GetTokenType() == TokenType.OPERATOR_UNARY_EXPRESSION)
+				            {
+				                tokenHashCode = (assos.GetToken()+"_String").GetHashCode();
+				            }
+                            if (assos.GetTokenType() == TokenType.OPERATOR_BINARY_EXPRESSION)
+                            {
+                                //TODO: Reflect for the generic type
+
+                                tokenHashCode = (assos.GetToken() + "_String").GetHashCode();
+                            }
+
 				        }
                         else //(subExpression == null)
 				        {
@@ -304,10 +319,8 @@ namespace Health.Direct.Policy.Impl
                     }
                     else
                     {
-                        //maybe the expression cloning stuff???
-                        //Or just send Types around... This is still a port of java and could change a lot.
-                        //retVal = fieldRefClass.newInstance();
-                        retVal = Activator.CreateInstance(fieldRefClass.GetType()) as ITBSField<String>;
+                        //Todo: seems only SerialNumber passes through here.  How did I end up using reflection here?
+                        retVal = Activator.CreateInstance(fieldRefClass.GetType()) as ITBSField<Int64>;
                     }
                 }
                 catch (PolicyParseException ex)
@@ -385,7 +398,7 @@ namespace Health.Direct.Policy.Impl
                     String checkForTokenString = writer.ToString();
 
                     TokenType exactMatchToken;
-                    bool tokenMatch = tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
+                    bool tokenMatch = m_tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
 
                     if (tokenMatch)
                     {
@@ -394,7 +407,8 @@ namespace Health.Direct.Policy.Impl
                         // may have a partial string of an operator with more characters
                         if (reader.PeekChar() != -1 
                             &&
-                            (exactMatchToken == TokenType.OPERATOR_EXPRESSION 
+                            (exactMatchToken == TokenType.OPERATOR_BINARY_EXPRESSION
+                            || exactMatchToken == TokenType.OPERATOR_UNARY_EXPRESSION
                             || exactMatchToken == TokenType.CERTIFICATE_REFERENCE_EXPRESSION))
                         {
                             holdType = exactMatchToken;
@@ -424,7 +438,7 @@ namespace Health.Direct.Policy.Impl
 						
 						// check if the nextToken string matches a string
 
-						tokenMatch = tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
+						tokenMatch = m_tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
 						if (tokenMatch)
 						{		
 							tokens.Add(new TokenTypeAssociation(nextToken, exactMatchToken));
@@ -439,9 +453,9 @@ namespace Health.Direct.Policy.Impl
 					{
 						// we didn't hit an exact match, but the new character we hit may be a reserved token
 						// check to see if the checkForTokenString now contains a reserved token
-					    foreach (var key in tokenMap.Keys)
+					    foreach (var key in m_tokenMap.Keys)
 					    {
-					        int idx = checkForTokenString.IndexOf(key);
+					        int idx = checkForTokenString.IndexOf(key, StringComparison.Ordinal);
 							if (idx >= 0)
 							{
 								// found one... need to break the string into a literal and the new token
@@ -457,10 +471,11 @@ namespace Health.Direct.Policy.Impl
 								
 								// check if the second token (which we know is a reserved token)
 								// is an operator... 
-                                tokenMatch = tokenMap.TryGetValue(secondToken, out exactMatchToken);
+                                tokenMatch = m_tokenMap.TryGetValue(secondToken, out exactMatchToken);
 								
 								if (tokenMatch &&
-                                    (exactMatchToken == TokenType.OPERATOR_EXPRESSION 
+                                    (exactMatchToken == TokenType.OPERATOR_BINARY_EXPRESSION
+                                    || exactMatchToken == TokenType.OPERATOR_UNARY_EXPRESSION 
                                     || exactMatchToken == TokenType.CERTIFICATE_REFERENCE_EXPRESSION))
 								{
 									// go into hold mode
@@ -485,7 +500,7 @@ namespace Health.Direct.Policy.Impl
 			    if (!string.IsNullOrEmpty(remainingString))
 			    {
                     TokenType exactMatchToken;
-                    bool tokenMatch = tokenMap.TryGetValue(remainingString, out exactMatchToken);
+                    bool tokenMatch = m_tokenMap.TryGetValue(remainingString, out exactMatchToken);
                     TokenType addTokenType = (tokenMatch) ? exactMatchToken : TokenType.LITERAL_EXPRESSION;
 				    tokens.Add(new TokenTypeAssociation(remainingString, addTokenType));
 			    }
@@ -499,25 +514,25 @@ namespace Health.Direct.Policy.Impl
 
         protected int ResetLevel()
         {
-            buildLevel.Value = 0;
-            return buildLevel.Value;
+            m_buildLevel.Value = 0;
+            return m_buildLevel.Value;
         }
 
         protected int GetLevel()
         {
-            return buildLevel.Value;
+            return m_buildLevel.Value;
         }
 
         protected int IncrementLevel()
         {
-            buildLevel.Value++;
-            return buildLevel.Value;
+            m_buildLevel.Value++;
+            return m_buildLevel.Value;
         }
 
-        protected int decrementLevel()
+        protected int DecrementLevel()
         {
-            buildLevel.Value--;
-            return buildLevel.Value;
+            m_buildLevel.Value--;
+            return m_buildLevel.Value;
         }
 	
 
@@ -526,8 +541,8 @@ namespace Health.Direct.Policy.Impl
         /// </summary>
         public class TokenTypeAssociation
         {
-            private readonly String token;
-            private readonly TokenType? type;
+            private readonly String m_token;
+            private readonly TokenType? m_type;
 
             /// <summary>
             /// Constructor
@@ -536,8 +551,8 @@ namespace Health.Direct.Policy.Impl
             /// <param name="type">The token type</param>
             public TokenTypeAssociation(String token, TokenType? type)
             {
-                this.token = token;
-                this.type = type;
+                this.m_token = token;
+                this.m_type = type;
             }
 
             /// <summary>
@@ -546,7 +561,7 @@ namespace Health.Direct.Policy.Impl
             /// <returns>The token</returns>
             public String GetToken()
             {
-                return token;
+                return m_token;
             }
 
             /// <summary>
@@ -556,15 +571,15 @@ namespace Health.Direct.Policy.Impl
             /// <returns>The token type</returns>
             public TokenType? GetTokenType()
             {
-                return type;
+                return m_type;
             }
 
             /// <inheritdoc />
             public override String ToString()
             {
                 StringBuilder builder = new StringBuilder("");
-                builder.Append("Token Type: ").Append(type.ToString())
-                       .Append("\r\nToken Value: ").Append(token);
+                builder.Append("Token Type: ").Append(m_type.ToString())
+                       .Append("\r\nToken Value: ").Append(m_token);
 
                 return builder.ToString();
             }

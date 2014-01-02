@@ -6,7 +6,7 @@ namespace Health.Direct.Policy.OpCode
     {
         public string Text;
         public string Token;
-
+        public OpCodeType OpCodeType;
         
         public static List<Code> Map;
         static Code()
@@ -33,12 +33,19 @@ namespace Health.Direct.Policy.OpCode
         }
     }
 
+    public enum OpCodeType
+    {
+        Unary,
+        Binary
+    }
+
     public class Equals : Code
     {
         public Equals()
         {
             Text = "equals";
             Token = "=";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -48,6 +55,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "not equals";
             Token = "!=";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -57,6 +65,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "greater than";
             Token = ">";
+            OpCodeType = OpCodeType.Binary;
         }
     }
     
@@ -66,6 +75,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "less than";
             Token = "<";
+            OpCodeType = OpCodeType.Binary;
         }
     }
     
@@ -75,6 +85,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "matches";
             Token = "$";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -84,6 +95,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "contains";
             Token = "{?}";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -93,6 +105,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "not contains";
             Token = "{?}!";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -102,6 +115,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "contains match";
             Token = "{}$";
+            OpCodeType = OpCodeType.Binary;
         }
     }
         
@@ -111,6 +125,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "size";
             Token = "^";
+            OpCodeType = OpCodeType.Unary;
         }
     }
 
@@ -120,6 +135,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "empty";
             Token = "{}";
+            OpCodeType = OpCodeType.Unary;
         }
     }
     
@@ -129,6 +145,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "not empty";
             Token = "{}!";
+            OpCodeType = OpCodeType.Unary;
         }
     }
 
@@ -138,6 +155,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "intersection";
             Token = "{}&";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -147,6 +165,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "or";
             Token = "||";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -156,6 +175,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "and";
             Token = "&&";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -165,6 +185,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "not";
             Token = "!";
+            OpCodeType = OpCodeType.Unary;
         }
     }
 
@@ -174,6 +195,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "bitand";
             Token = "&";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -183,6 +205,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "bitor";
             Token = "|";
+            OpCodeType = OpCodeType.Binary;
         }
     }
 
@@ -192,6 +215,7 @@ namespace Health.Direct.Policy.OpCode
         {
             Text = "uri valid";
             Token = "@@";
+            OpCodeType = OpCodeType.Unary;
         }
     }
 

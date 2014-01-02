@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.X509;
 using Xunit;
 
@@ -31,7 +32,11 @@ namespace Health.Direct.Policy.Tests.x509
             var cert = new X509Certificate2(@"resources/certs/umesh.der");
             var field = new SerialNumberAttributeField();
             field.InjectReferenceValue(cert);
-            field.GetPolicyValue().GetPolicyValue().Should().BeEquivalentTo("00f74f1c4fe4e1762e");
+            field.GetPolicyValue().GetPolicyValue().Should().Be("00f74f1c4fe4e1762e".HexAsLong());
+
+            field.GetPolicyValue().GetPolicyValue().Should().Be("f74f1c4fe4e1762e".HexAsLong());
+
+            field.GetPolicyValue().GetPolicyValue().Should().Be("00F74F1C4FE4E1762E".HexAsLong());
         }
 
         [Fact]

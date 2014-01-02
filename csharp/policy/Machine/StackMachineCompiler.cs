@@ -83,6 +83,12 @@ namespace Health.Direct.Policy.Machine
                             EvaluateReferenceExpression(cert, refExpression);
                             entries.Add(Compile(refExpression));
                         }
+                        if (policyExpression is IReferencePolicyExpression<X509Certificate2, long>)
+                        {
+                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, long>;
+                            EvaluateReferenceExpression(cert, refExpression);
+                            entries.Add(Compile(refExpression));
+                        }
                         else if (policyExpression is ILiteralPolicyExpression<string>)
                         {
                             entries.Add(Compile(policyExpression as ILiteralPolicyExpression<string>));
