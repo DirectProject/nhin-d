@@ -55,22 +55,21 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void testExecute_equals_assertResults()
         {
-            
-            Assert.True(PolicyOperator<bool, bool>.EQUALS.Execute(true, true));
-            Assert.False(PolicyOperator<bool, bool>.EQUALS.Execute(true, false));
-            Assert.True(PolicyOperator<int, bool>.EQUALS.Execute(123, 123));
-            Assert.False(PolicyOperator<int, bool>.EQUALS.Execute(123, 456)); 
+            Assert.True(PolicyOperator<bool, bool, bool>.EQUALS.Execute(true, true));
+            Assert.False(PolicyOperator<bool, bool, bool>.EQUALS.Execute(true, false));
+            Assert.True(PolicyOperator<int, int, bool>.EQUALS.Execute(123, 123));
+            Assert.False(PolicyOperator<int, int, bool>.EQUALS.Execute(123, 456)); 
         }
 
         [Fact]
         public void testExecute_equals_dynamic_assertResults()
         {
-            Delegate del = PolicyOperator<bool, bool>.EQUALS.ExecuteRef;
+            Delegate del = PolicyOperator<bool, bool, bool>.EQUALS.ExecuteRef;
 
             Assert.True((bool)del.DynamicInvoke(new object[] { true, true }));
             Assert.False((bool)del.DynamicInvoke(new object[] { true, false }));
 
-            del = PolicyOperator<int, bool>.EQUALS.ExecuteRef;
+            del = PolicyOperator<int, int, bool>.EQUALS.ExecuteRef;
             Assert.True((bool)del.DynamicInvoke(new object[] { 123, 123 }));
             Assert.False((bool)del.DynamicInvoke(new object[] { 123, 456 }));
         }

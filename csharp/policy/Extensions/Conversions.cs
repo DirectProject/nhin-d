@@ -14,46 +14,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using FluentAssertions;
-using Health.Direct.Policy.Operators;
-using Xunit;
 
-namespace Health.Direct.Policy.Tests
+
+using System;
+
+namespace Health.Direct.Policy.Extensions
 {
-    /// <summary>
-    /// test name carry over from Java port
-    /// todo: rename
-    /// </summary>
-    public class PolicyOperator_getEnumAttributesTest
+    public static class Conversions
     {
-        [Fact]
-        public void testGetEnumAttributes_assertAttributeValues()
+        public static Int64 HexAsLong(this string hexValue)
         {
-            var intEquals = PolicyOperator<int, int, bool>.EQUALS;
-            Assert.Equal("=", intEquals.GetOperatorToken());
-            Assert.Equal("equals", intEquals.GetOperatorText());
-
-            var stringEquals = PolicyOperator<string, string, bool>.EQUALS;
-            Assert.Equal("=", stringEquals.GetOperatorToken());
-            Assert.Equal("equals", stringEquals.GetOperatorText());
-
-
-            var boolEquals = PolicyOperator<bool, bool, bool>.EQUALS;
-            Assert.Equal("=", boolEquals.GetOperatorToken());
-            Assert.Equal("equals", boolEquals.GetOperatorText());
-        }
-
-        [Fact]
-        public void TestEqualsFindTokenOperators()
-        {
-            OperatorBase equalsOperator = PolicyOperator.FromToken(("=_" + "Boolean_Boolean").GetHashCode());
-            equalsOperator.Should().NotBeNull();
-
-            equalsOperator = PolicyOperator.FromToken(("=_" + "Int32_Int32").GetHashCode());
-            equalsOperator.Should().NotBeNull();
-
-            equalsOperator = PolicyOperator.FromToken(("=_" + "String_String").GetHashCode());
-            equalsOperator.Should().NotBeNull();
+            long value = Convert.ToInt64(hexValue, 16);
+            return value;
         }
     }
 }

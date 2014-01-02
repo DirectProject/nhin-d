@@ -102,7 +102,7 @@ namespace Health.Direct.Policy.X509
 
 
         readonly TBSFieldStandard.IField tbsField;
-        readonly ITBSField<string> m_referenceClass;
+        readonly ITBSField<Int64> m_referenceClass;
         readonly IList<TBSFieldStandard.AttributeReferenceClass> m_subAttributes;
 
 	    //Class<? extends TBSField<?>> referenceClass;

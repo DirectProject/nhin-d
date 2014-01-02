@@ -16,9 +16,14 @@
         END_LEVEL,
 		
         /// <summary>
-        /// An operator expression
+        /// An unary operator expression
         /// </summary>
-        OPERATOR_EXPRESSION,
+        OPERATOR_UNARY_EXPRESSION,
+
+        /// <summary>
+        /// An binary operator expression
+        /// </summary>
+        OPERATOR_BINARY_EXPRESSION,
 		
         /// <summary>
         /// A literal expression

@@ -116,7 +116,6 @@ namespace Health.Direct.Policy
 
     public class PolicyOperator<TValue, TResult> : PolicyOperator
     {
-        public static Equals<TValue, TResult> EQUALS;
         public static NotEquals<TValue, TResult> NOT_EQUALS;
         public static Greater<TValue, TResult> GREATER;
         public static Less<TValue, TResult> LESS;
@@ -127,12 +126,8 @@ namespace Health.Direct.Policy
         static PolicyOperator()
         {
 
-            var equals = new Equals();
-            EQUALS = new Equals<TValue, TResult>(equals, EqualDelegate());
-            TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
-
             var notEquals = new NotEquals();
-            NOT_EQUALS = new NotEquals<TValue, TResult>(new NotEquals(), NotEqualDelegate());
+            NOT_EQUALS = new NotEquals<TValue, TResult>(notEquals, NotEqualDelegate());
             TokenOperatorMap[NOT_EQUALS.GetHashCode()] = NOT_EQUALS;
 
             var greater = new Greater();
@@ -207,10 +202,6 @@ namespace Health.Direct.Policy
                 return left;
             }
         }
-        private static Func<TValue, TValue, TResult> EqualDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.Equal, Left, Right);
-        }
         private static Func<TValue, TValue, TResult> NotEqualDelegate()
         {
             return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.NotEqual, Left, Right);
@@ -248,6 +239,7 @@ namespace Health.Direct.Policy
 
     public class PolicyOperator<T1, T2, TResult> : PolicyOperator
     {
+        public static Equals<T1, T2, TResult> EQUALS;
         public static Intersect<T1, T2, TResult> INTERSECT;
         public static Contains<T1, T2, TResult> CONTAINS;
         public static NotContains<T1, T2, TResult> NOT_CONTAINS;
@@ -256,13 +248,14 @@ namespace Health.Direct.Policy
 
         private static Func<T1, T2, TResult> IntersectDelegate()
         {
+
             //
             // Do not handle strings but handle all other IEnumerable types
             // Todo: Convert strings to IEnumerable and split on comma...
             //
             if (!typeof(IEnumerable).IsAssignableFrom(typeof(T1)) || typeof(string).IsAssignableFrom(typeof(T1))) return null;
             if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)) || typeof(string).IsAssignableFrom(typeof(T2))) return null;
-
+            
             Type itemType = null;
             Type typeList = typeof(T1);
             Type typeList2 = typeof(T2);
@@ -274,8 +267,7 @@ namespace Health.Direct.Policy
 
             var itemList = Expression.Parameter(typeList, "itemList");
             var itemList2 = Expression.Parameter(typeList2, "itemList2");
-
-
+            
             Expression intersectExpression =
               Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
                               , itemList, itemList2);
@@ -298,7 +290,12 @@ namespace Health.Direct.Policy
                 TokenOperatorMap[INTERSECT.GetHashCode()] = INTERSECT;
             }
 
-
+            if (typeof(Boolean).IsAssignableFrom(typeof(TResult)))  
+            {
+                var equals = new Equals();
+                EQUALS = new Equals<T1, T2, TResult>(equals, EqualDelegate());
+                TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+            }
 
             // list.Any(a => a = "joe")
             if (typeof(IEnumerable).IsAssignableFrom(typeof(T2))
@@ -346,6 +343,32 @@ namespace Health.Direct.Policy
         }
 
 
+        private static ParameterExpression Left
+        {
+            get
+            {
+                var left = Expression.Parameter(typeof(T1), "left");
+                return left;
+            }
+        }
+        private static ParameterExpression Right
+        {
+            get
+            {
+                var right = Expression.Parameter(typeof(T2), "right");
+                return right;
+            }
+        }
+
+        private static Func<T1, T2, TResult> EqualDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T1, T2, TResult>(Expression.Equal, Left, Right);
+        }
+        private static Func<T1, T2, TResult> NotEqualDelegate()
+        {
+            return ExpressionTreeUtil.CreateDelegate<T1, T2, TResult>(Expression.NotEqual, Left, Right);
+        }
+
         //TODO: Rethink this, don't like the conversion...
         /// <summary>
         /// Performs a regular expression match on a string.  This operation returns true if the regular expression is found in 
@@ -379,16 +402,21 @@ namespace Health.Direct.Policy
 
         static PolicyOperator()
         {
-            TokenOperatorMap = new Dictionary<int, OperatorBase>();
+            TokenOperatorMap = new Dictionary<Int32, OperatorBase>();
             new PolicyOperator<Boolean, Boolean>();
-            new PolicyOperator<int, Boolean>();
-            new PolicyOperator<string, Boolean>();
+            new PolicyOperator<Int32, Boolean>();
+            new PolicyOperator<String, Boolean>();
+            new PolicyOperator<Int32, Int32, Boolean>();
+            new PolicyOperator<String, String, Boolean>();
+            new PolicyOperator<Int64, Int64, Boolean>();
+            new PolicyOperator<Boolean, Boolean, Boolean>();
+            new PolicyOperator<IList<string>, IList<string>, IEnumerable<string>> ();
         }
 
-        public static Equals<T, T> Equals<T>()
-        {
-            return PolicyOperator<T, T>.EQUALS;
-        }
+        //public static Equals<T, T> Equals<T>()
+        //{
+        //    return PolicyOperator<T, T>.EQUALS;
+        //}
 
         public static T BitwiseOr<T>(T value1, T value2)
         {

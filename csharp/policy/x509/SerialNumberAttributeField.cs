@@ -15,7 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy.Extensions;
 
 namespace Health.Direct.Policy.X509
 {
@@ -25,7 +27,7 @@ namespace Health.Direct.Policy.X509
     /// The policy value of this field is returned as a string containing an hexadecimal representation of the certificate serial number.  All alpha based digits are
     /// represented with lower case characters.  Leading 0s and/or spaced are not included in the serial number. 
     /// </summary>
-    public class SerialNumberAttributeField : TBSField<string>, ITBSField<string>
+    public class SerialNumberAttributeField : TBSField<Int64>, ITBSField<Int64>
     {
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace Health.Direct.Policy.X509
         public override void InjectReferenceValue(X509Certificate2 value)
         {
             Certificate = value;
-            PolicyValue = PolicyValueFactory<string>.GetInstance(value.SerialNumber);
+            PolicyValue = PolicyValueFactory<Int64>.GetInstance(value.SerialNumber.HexAsLong());
 
         }
 

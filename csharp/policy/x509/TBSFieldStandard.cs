@@ -53,8 +53,8 @@ namespace Health.Direct.Policy.X509
         }
         public interface ISingle: IField
         {
-            ITBSField<string> ReferenceClass { get; set; }
-            List<String> GetFieldToken();
+            ITBSField<Int64> ReferenceClass { get; set; }
+            List<String> GetFieldTokens();
         }
         public interface IComplex: IField
         {
@@ -66,13 +66,13 @@ namespace Health.Direct.Policy.X509
 
         public class Single : Field, ISingle
         {
-            public ITBSField<string> ReferenceClass { get; set; }
+            public ITBSField<Int64> ReferenceClass { get; set; }
 
             /// <summary>
             /// Single entry with the field name. 
             /// </summary>
             /// <returns>Single entry with the field name. </returns>
-            public List<String> GetFieldToken()
+            public List<String> GetFieldTokens()
             {
                 return new List<String> { "X509.TBS." + RfcName, "X509.TBS." + RfcName + "+" };
             }
@@ -115,7 +115,7 @@ namespace Health.Direct.Policy.X509
 
         public class SerialNumber : Single
         {
-            public SerialNumber(ITBSField<string> referenceClass)
+            public SerialNumber(ITBSField<Int64> referenceClass)
             {
                 RfcName = "SerialNumber";
                 Display = "Serial Number";

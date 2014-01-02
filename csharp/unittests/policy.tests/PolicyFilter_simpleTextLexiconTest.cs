@@ -42,6 +42,22 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void testTBSSerialNumber_assertTrue()
         {
+            using (Stream stream = "X509.TBS.SerialNumber = 00F74F1C4FE4E1762E".ToStream())
+            {
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
+                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                filter.IsCompliant(cert, stream).Should().BeTrue();
+            }
+
+
+            using (Stream stream = "X509.TBS.SerialNumber = 00f74f1c4fe4e1762e".ToStream())
+            {
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
+                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                    new SimpleTextV1LexiconPolicyParser());
+                filter.IsCompliant(cert, stream).Should().BeTrue();
+            }
+
             using (Stream stream = "X509.TBS.SerialNumber = f74f1c4fe4e1762e".ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
