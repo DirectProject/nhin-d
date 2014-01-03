@@ -31,7 +31,7 @@ namespace Health.Direct.Policy.X509
             public string RfcName { get; set; }
             public string Display { get; set; }
 
-            public static List<Field> Map;
+            public static readonly List<Field> Map;
 
             static Field()
             {
@@ -40,8 +40,20 @@ namespace Health.Direct.Policy.X509
                 Map.Add(new SerialNumber(new SerialNumberAttributeField() ));
                 Map.Add(new Signature(new List<AttributeReferenceClass>() ));
                 Map.Add(new Issuer(RdnsToReferenceClass(rdn => new IssuerAttributeField(false, rdn) )));
+                Map.Add(new Validity(new List<AttributeReferenceClass>
+                {
+                    new AttributeReferenceClass("ValidFrom", typeof(DateTime)),
+                    new AttributeReferenceClass("ValidTo", typeof(DateTime))
+                }));
                 Map.Add(new Subject(RdnsToReferenceClass(rdn => new SubjectAttributeField(false, rdn) )));
                 Map.Add(new Extensions(new List<AttributeReferenceClass>() ));
+
+                //Todo: revisit this and the SubjectPublicKeyInfo in tBSFieldName
+                Map.Add(new SubjectPublicKeyInfo(new List<TBSFieldStandard.AttributeReferenceClass>
+                {
+                    new AttributeReferenceClass("Algorithm", rdn => new SubjectAttributeField(false, rdn)),
+                    new AttributeReferenceClass("Size",rdn => new SubjectAttributeField(false, rdn))
+                }));
             }
         }
 
@@ -188,15 +200,21 @@ namespace Health.Direct.Policy.X509
         public class AttributeReferenceClass
         {
             readonly String attribute;
-            readonly Func<TBSField<string>> referenceClass;
+            readonly Type referenceClass;
             private readonly Func<string, TBSField<List<string>>> referenceClassList;
 
-            public AttributeReferenceClass(String attribute, Func<TBSField<string>> referenceClass)
+            public AttributeReferenceClass(String attribute, Type referenceClass)
             {
                 this.attribute = attribute;
                 this.referenceClass = referenceClass;
             }
 
+            public AttributeReferenceClass(String attribute)
+            {
+                this.attribute = attribute;
+            }
+
+            
             public AttributeReferenceClass(String attribute, Func<string, TBSField<List<string>>> referenceClass)
             {
                 this.attribute = attribute;
@@ -207,9 +225,10 @@ namespace Health.Direct.Policy.X509
             {
                 return attribute;
             }
-            public TBSField<string> GetReferenceClass()
+
+            public Type GetReferenceClass()
             {
-                return referenceClass();
+                return referenceClass;
             }
 
             public TBSField<List<string>> GetReferenceClass(string rdnName)
@@ -226,6 +245,7 @@ namespace Health.Direct.Policy.X509
             foreach (var rdnAtrId in RDNAttributeIdentifier.Values)
             {
                 retVal.Add(new AttributeReferenceClass(rdnAtrId.Name, refClass));
+                retVal.Add(new AttributeReferenceClass(rdnAtrId.Name + "+", refClass));
             }
 		   
             return retVal;

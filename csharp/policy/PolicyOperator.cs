@@ -21,8 +21,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.OpCode;
 using Health.Direct.Policy.Operators;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 
 namespace Health.Direct.Policy
 {
@@ -104,9 +106,9 @@ namespace Health.Direct.Policy
         {
             return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.Or, Left, Right);
         }
-        private static Func<T, int> SizeDelegate()
+        private static Func<T, Int32> SizeDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T, int>(Expression.ArrayLength, Left);
+            return ExpressionTreeUtil.CreateDelegate<T, Int32>(Expression.ArrayLength, Left);
         }
         private static Func<T, Boolean> LogicalNotDelegate()
         {
@@ -244,60 +246,47 @@ namespace Health.Direct.Policy
         public static Contains<T1, T2, TResult> CONTAINS;
         public static NotContains<T1, T2, TResult> NOT_CONTAINS;
         public static ContainsRegEx<T1, List<T1>, TResult> CONTAINS_REG_EX;
-
-
-        private static Func<T1, T2, TResult> IntersectDelegate()
-        {
-
-            //
-            // Do not handle strings but handle all other IEnumerable types
-            // Todo: Convert strings to IEnumerable and split on comma...
-            //
-            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T1)) || typeof(string).IsAssignableFrom(typeof(T1))) return null;
-            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)) || typeof(string).IsAssignableFrom(typeof(T2))) return null;
-            
-            Type itemType = null;
-            Type typeList = typeof(T1);
-            Type typeList2 = typeof(T2);
-            if (typeList.IsGenericType && typeList2.IsGenericType &&
-                typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
-            {
-                itemType = typeList.GetGenericArguments()[0];
-            }
-
-            var itemList = Expression.Parameter(typeList, "itemList");
-            var itemList2 = Expression.Parameter(typeList2, "itemList2");
-            
-            Expression intersectExpression =
-              Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
-                              , itemList, itemList2);
-
-            return Expression.Lambda<Func<T1, T2, TResult>>(intersectExpression, itemList, itemList2).Compile();
-        }
+        
 
         static PolicyOperator()
         {
-            var left = Expression.Parameter(typeof(T1), "itemType");
-            var right = Expression.Parameter(typeof(T1), "item");
+            var left = Expression.Parameter(typeof(T1), "left");
+            var right = Expression.Parameter(typeof(T1), "right");
             var itemList = Expression.Parameter(typeof(IEnumerable<T1>), "itemList");
 
-
-            var intersection = new Intersection();
-            var intersectDelegate = IntersectDelegate();
-            if (intersectDelegate != null)
+            //
+            // Intersect
+            //
+            var Int32ersection = new Intersection();
+            var Int32ersectDelegate = IntersectDelegate();
+            if (Int32ersectDelegate != null)
             {
-                INTERSECT = new Intersect<T1, T2, TResult>(intersection, intersectDelegate);
+                INTERSECT = new Intersect<T1, T2, TResult>(Int32ersection, Int32ersectDelegate);
                 TokenOperatorMap[INTERSECT.GetHashCode()] = INTERSECT;
             }
 
+            //
+            // Equals
+            //
             if (typeof(Boolean).IsAssignableFrom(typeof(TResult)))  
             {
                 var equals = new Equals();
-                EQUALS = new Equals<T1, T2, TResult>(equals, EqualDelegate());
-                TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                if (typeof (Int64) == typeof (T1) && typeof (String) == typeof (T2))
+                {
+                    EQUALS = new Equals<T1, T2, TResult>(equals, DelegateStringToLong());
+                    TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                }
+                else
+                {
+                    EQUALS = new Equals<T1, T2, TResult>(equals, EqualDelegate());
+                    TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                }
             }
 
+            //
+            // Contains
             // list.Any(a => a = "joe")
+            //
             if (typeof(IEnumerable).IsAssignableFrom(typeof(T2))
                 && !typeof(string).IsAssignableFrom(typeof(T2))
                 && (
@@ -320,6 +309,9 @@ namespace Health.Direct.Policy
                 TokenOperatorMap[CONTAINS.GetHashCode()] = CONTAINS;
 
 
+                //
+                // Not Contains
+                //
                 Expression notAnyCall = Expression.Not(anyCall);
 
                 var notContains = new NotContains();
@@ -342,6 +334,34 @@ namespace Health.Direct.Policy
 
         }
 
+        private static Func<T1, T2, TResult> IntersectDelegate()
+        {
+
+            //
+            // Do not handle strings but handle all other IEnumerable types
+            // Todo: Convert strings to IEnumerable and split on comma...
+            //
+            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T1)) || typeof(string).IsAssignableFrom(typeof(T1))) return null;
+            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)) || typeof(string).IsAssignableFrom(typeof(T2))) return null;
+
+            Type itemType = null;
+            Type typeList = typeof(T1);
+            Type typeList2 = typeof(T2);
+            if (typeList.IsGenericType && typeList2.IsGenericType &&
+                typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            {
+                itemType = typeList.GetGenericArguments()[0];
+            }
+
+            var itemList = Expression.Parameter(typeList, "itemList");
+            var itemList2 = Expression.Parameter(typeList2, "itemList2");
+
+            Expression Int32ersectExpression =
+              Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
+                              , itemList, itemList2);
+
+            return Expression.Lambda<Func<T1, T2, TResult>>(Int32ersectExpression, itemList, itemList2).Compile();
+        }
 
         private static ParameterExpression Left
         {
@@ -358,6 +378,12 @@ namespace Health.Direct.Policy
                 var right = Expression.Parameter(typeof(T2), "right");
                 return right;
             }
+        }
+
+        private static Func<T1, T2, TResult> DelegateStringToLong()
+        {
+            var expression = ExpressionTreeUtil.CreateDelegateStringToLong<T1, T2, TResult>(Expression.Equal, Left, Right);
+            return expression;
         }
 
         private static Func<T1, T2, TResult> EqualDelegate()
@@ -398,7 +424,7 @@ namespace Health.Direct.Policy
     public class PolicyOperator
     {
 
-        public static readonly Dictionary<int, OperatorBase> TokenOperatorMap;
+        public static readonly Dictionary<Int32, OperatorBase> TokenOperatorMap;
 
         static PolicyOperator()
         {
@@ -411,6 +437,8 @@ namespace Health.Direct.Policy
             new PolicyOperator<Int64, Int64, Boolean>();
             new PolicyOperator<Boolean, Boolean, Boolean>();
             new PolicyOperator<IList<string>, IList<string>, IEnumerable<string>> ();
+            new PolicyOperator<Int64, String, Boolean>();
+            new PolicyOperator<Int32, String, Boolean>();
         }
 
         //public static Equals<T, T> Equals<T>()
@@ -444,7 +472,7 @@ namespace Health.Direct.Policy
         /// @param token The token used to look up the PolicyOperator.
         /// @return The PolicyOperator associated with the token.  If the token does not represent a known operator, then null is returned,.
         /// </summary>
-        public static OperatorBase FromToken(int tokenHashCode)
+        public static OperatorBase FromToken(Int32 tokenHashCode)
         {
             OperatorBase operatorBase;
 

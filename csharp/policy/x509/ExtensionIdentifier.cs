@@ -205,7 +205,7 @@ namespace Health.Direct.Policy.X509
         readonly string m_display;
         readonly List<AttributeReferenceClass> m_subAttributes;
         readonly Type m_referenceClass;
-        static readonly Dictionary<String, ExtensionIdentifier> TokenFieldMap;
+        public static readonly Dictionary<String, ExtensionIdentifier> TokenFieldMap;
 
 
 

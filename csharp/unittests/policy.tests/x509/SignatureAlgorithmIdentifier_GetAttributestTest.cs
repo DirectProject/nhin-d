@@ -27,7 +27,7 @@ namespace Health.Direct.Policy.Tests.x509
         public void TestGetAttributes()
         {
             SignatureAlgorithmIdentifier.SHA1RSA.OID.Should().Be("1.2.840.113549.1.1.5");
-            SignatureAlgorithmIdentifier.SHA1RSA.Should().Be("sha1RSA");
+            SignatureAlgorithmIdentifier.SHA1RSA.Name.Should().Be("sha1RSA");
 
         }
     }

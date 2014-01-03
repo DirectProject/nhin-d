@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Linq.Expressions;
 
 namespace Health.Direct.Policy.Extensions
 {
@@ -26,6 +27,15 @@ namespace Health.Direct.Policy.Extensions
         {
             long value = Convert.ToInt64(hexValue, 16);
             return value;
+        }
+
+        public static ParameterExpression HexAsLong(this ParameterExpression stringParamter)
+        {
+            if (stringParamter.Type == typeof (String))
+            {
+                return Expression.Parameter(typeof(Int64), stringParamter.Name);
+            }
+            throw new NotImplementedException("Not implemented for " + stringParamter.Type );
         }
     }
 }
