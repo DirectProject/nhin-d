@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Operators;
 using Xunit;
 
@@ -60,6 +61,29 @@ namespace Health.Direct.Policy.Tests
             Assert.True(PolicyOperator<int, int, bool>.EQUALS.Execute(123, 123));
             Assert.False(PolicyOperator<int, int, bool>.EQUALS.Execute(123, 456)); 
         }
+
+        [Fact]
+        public void testExecute_equals_convertparamspecial_assertResults()
+        {
+            Assert.True(PolicyOperator<Int64, Int64, bool>.EQUALS.Execute("00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e".HexAsLong()));
+            Assert.True(PolicyOperator<Int64, String, bool>.EQUALS.Execute("00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e"));
+
+            Delegate del = PolicyOperator<Int64, String, bool>.EQUALS.ExecuteRef;
+            Assert.True((bool)del.DynamicInvoke(new object[] { "00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e" }));
+
+        }
+
+        [Fact]
+        public void testExecute_equals_convertparam_assertResults()
+        {
+            Assert.True(PolicyOperator<int, int, bool>.EQUALS.Execute(123, 123));
+            Assert.True(PolicyOperator<int, String, bool>.EQUALS.Execute(123, "123"));
+
+            Delegate del = PolicyOperator<int, String, bool>.EQUALS.ExecuteRef;
+            Assert.True((bool)del.DynamicInvoke(new object[] { 123, "123"}));
+
+        }
+
 
         [Fact]
         public void testExecute_equals_dynamic_assertResults()

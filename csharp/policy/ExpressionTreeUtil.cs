@@ -18,18 +18,43 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using Health.Direct.Policy.Extensions;
+using Org.BouncyCastle.Asn1.X509.Qualified;
 
 namespace Health.Direct.Policy
 {
     public static class ExpressionTreeUtil
     {
 
+        //Todo: refactor int CreateDelegate
+        public static Func<TParam1, TParam2, TResult> CreateDelegateStringToLong<TParam1, TParam2, TResult>(
+            Func<Expression, Expression, BinaryExpression> body, ParameterExpression left, ParameterExpression right)
+        {
+            try
+            {
+                MethodInfo methodInfo = typeof(Conversions).GetMethod("HexAsLong", new []{typeof(String)});
+                Expression rightLong = Expression.Convert(right, typeof(Int64), methodInfo);
+                return Expression.Lambda<Func<TParam1, TParam2, TResult>>(body(left, rightLong), left, right).Compile();
+            }
+            catch (InvalidOperationException ex)
+            {
+                var msg = ex.Message;
+                return delegate { throw new InvalidOperationException(msg); };
+            }
+        }
 
         public static Func<TParam1, TParam2, TResult> CreateDelegate<TParam1, TParam2, TResult>(
             Func<Expression, Expression, BinaryExpression> body, ParameterExpression left, ParameterExpression right)
         {
             try
             {
+                if (typeof (TParam1) != typeof (TParam2))
+                {
+                    MethodInfo methodInfo = typeof(ExpressionTreeUtil).GetMethod("ConvertValue");
+                    MethodInfo generic = methodInfo.MakeGenericMethod(typeof(TParam1));
+                    Expression rightConvert = Expression.Convert(right, typeof(TParam1), generic);
+                    return Expression.Lambda<Func<TParam1, TParam2, TResult>>(body(left, rightConvert), left, right).Compile();
+                }
                 return Expression.Lambda<Func<TParam1, TParam2, TResult>>(body(left, right), left, right).Compile();
             }
             catch (InvalidOperationException ex)
@@ -39,6 +64,10 @@ namespace Health.Direct.Policy
             }
         }
 
+        public static T ConvertValue<T>(string value)
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
 
         public static Func<TParam1, TResult> CreateDelegate<TParam1, TResult>(
             Func<Expression, Expression, BinaryExpression> body, ParameterExpression left, ParameterExpression right)

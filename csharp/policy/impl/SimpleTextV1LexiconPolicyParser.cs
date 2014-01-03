@@ -72,11 +72,12 @@ namespace Health.Direct.Policy.Impl
                     }
             }
 
+
             
 		    // add the extension fields
-		    foreach (ExtensionStandard.Field field in ExtensionStandard.Field.Map)
+		    foreach (var identifier in ExtensionIdentifier.TokenFieldMap)
             {
-                m_tokenMap.Add(field.RfcName, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
+                m_tokenMap.Add(identifier.Key, TokenType.CERTIFICATE_REFERENCE_EXPRESSION);
             }
 
         }
@@ -175,9 +176,9 @@ namespace Health.Direct.Policy.Impl
 				            }
                             if (assos.GetTokenType() == TokenType.OPERATOR_BINARY_EXPRESSION)
                             {
-                                //TODO: Reflect for the generic type
-
-                                tokenHashCode = (assos.GetToken() + "_String").GetHashCode();
+                                string leftOperandType = GetOperandType(builtOperandExpressions.First());
+                                string rightOperandType = GetOperandType(subExpression);
+                                tokenHashCode = (assos.GetToken() + "_" + leftOperandType + "_" + rightOperandType).GetHashCode();
                             }
 
 				        }
@@ -234,6 +235,21 @@ namespace Health.Direct.Policy.Impl
 			
 		    return builtOperandExpressions[0];
 	    }
+
+        private string GetOperandType(IPolicyExpression policyExpression)
+        {
+            if (policyExpression is IX509Field<Int64>)
+            {
+                return "Int64";
+            }
+
+            if (policyExpression is IX509Field<Int32>)
+            {
+                return "Int32";
+            }
+
+            return "String";
+        }
 
         protected IPolicyExpression BuildCertificateReferenceField(String token) //throws PolicyParseException 
 	    {

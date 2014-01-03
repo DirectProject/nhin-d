@@ -51,7 +51,9 @@ namespace Health.Direct.Policy.Machine
 
                             OperatorBase policyOperator = PolicyOperator.TokenOperatorMap.Single(t => t.Key == opCode.PolicyOperator.GetHashCode()).Value;
                             executor = policyOperator.ExecuteRef;
-                            args = new[] { machineStack.Pop(), machineStack.Pop() };
+                            var rightArg = machineStack.Pop();
+                            var leftArg = machineStack.Pop();
+                            args = new[] { leftArg, rightArg };
                         }
 
                         if (opCode.PolicyOperator is UnaryOperator)

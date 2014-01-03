@@ -77,21 +77,27 @@ namespace Health.Direct.Policy.Machine
                     OperationPolicyExpression opExpression = (OperationPolicyExpression) expression;
                     foreach (IPolicyExpression policyExpression in opExpression.GetOperands())
                     {
-                        if (policyExpression is IReferencePolicyExpression<X509Certificate2, string>)
+                        if (policyExpression is IReferencePolicyExpression<X509Certificate2, String>)
                         {
-                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, string>;
+                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, String>;
                             EvaluateReferenceExpression(cert, refExpression);
                             entries.Add(Compile(refExpression));
                         }
-                        if (policyExpression is IReferencePolicyExpression<X509Certificate2, long>)
+                        else if (policyExpression is IReferencePolicyExpression<X509Certificate2, Int32>)
                         {
-                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, long>;
+                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, Int32>;
                             EvaluateReferenceExpression(cert, refExpression);
                             entries.Add(Compile(refExpression));
                         }
-                        else if (policyExpression is ILiteralPolicyExpression<string>)
+                        else if (policyExpression is IReferencePolicyExpression<X509Certificate2, Int64>)
                         {
-                            entries.Add(Compile(policyExpression as ILiteralPolicyExpression<string>));
+                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, Int64>;
+                            EvaluateReferenceExpression(cert, refExpression);
+                            entries.Add(Compile(refExpression));
+                        }
+                        else if (policyExpression is ILiteralPolicyExpression<String>)
+                        {
+                            entries.Add(Compile(policyExpression as ILiteralPolicyExpression<String>));
                         }
                         else
                         {

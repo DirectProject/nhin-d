@@ -29,7 +29,7 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void TestParse_SimpleExpression_ValidateTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = File.OpenRead("./resources/policies/simpleLexiconSamp1.txt"))
             {
@@ -41,7 +41,7 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void TestParse_SimpleExpression_PolicyRef_ValidateTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = "X509.Algorithm = 1.2.840.113549.1.1.5".ToStream())
             {
@@ -53,7 +53,7 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void TestParse_LogicalAndOperator_ValidateSingleTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = File.OpenRead("./resources/policies/logicalAndOperator.txt"))
             {
@@ -66,7 +66,7 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void TestParse_CertificateStruct_ValidateTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = File.OpenRead("./resources/policies/lexiconWithCertificateStruct.txt"))
             {
@@ -79,7 +79,7 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void TestParse_LiteralWithSpaces_ValidateTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = File.OpenRead("./resources/policies/literalWithSpaces.txt"))
             {
@@ -92,27 +92,50 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void testParse_requiredCertField_validateTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = "X509.TBS.EXTENSION.SubjectKeyIdentifier+ = 1.3.2.3".ToStream())
             {
                 IList<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.ParseToTokens(stream);
                 tokens.Count.Should().Be(3);
-
             }
         }
 
         [Fact]
         public void testParse_tbs_serialnumber_validateTokens()
         {
-            SimpleTextV1LexiconPolicyParser parser = new SimpleTextV1LexiconPolicyParser();
+            var parser = new SimpleTextV1LexiconPolicyParser();
 
             using (Stream stream = "X509.TBS.SerialNumber = f74f1c4fe4e1762e".ToStream())
             {
                 IList<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.ParseToTokens(stream);
                 tokens.Count.Should().Be(3);
-                
             }
         }
+
+
+        [Fact]
+        public void TestExtensionBasicContraint_CA_AssertTrue()
+        {
+            var parser = new SimpleTextV1LexiconPolicyParser();
+            using (Stream stream = ("X509.TBS.EXTENSION.BasicConstraints.CA = true").ToStream())
+            {
+                IList<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.ParseToTokens(stream);
+                tokens.Count.Should().Be(3);
+            }
+            using (Stream stream = ("X509.TBS.EXTENSION.BasicConstraints.CA = true").ToStream())
+            {
+                IPolicyExpression expression = parser.Parse(stream);
+                expression.Should().BeAssignableTo<OperationPolicyExpression>();
+
+                var operationPolicyExpression = expression as OperationPolicyExpression;
+                operationPolicyExpression.GetOperands().Count.Should().Be(2);
+
+                
+                var result = operationPolicyExpression.GetPolicyOperator()
+                    .ExecuteRef.DynamicInvoke(operationPolicyExpression.GetOperands());
+            }
+        }
+
     }
 }

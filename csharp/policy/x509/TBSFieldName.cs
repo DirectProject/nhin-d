@@ -60,8 +60,10 @@ namespace Health.Direct.Policy.X509
         public static readonly TBSFieldName Validity = new TBSFieldName(
             new TBSFieldStandard.Validity(new List<TBSFieldStandard.AttributeReferenceClass>
             {
-                new TBSFieldStandard.AttributeReferenceClass("ValidFrom", () => null),
-                new TBSFieldStandard.AttributeReferenceClass("ValidTo", () => null)
+                new TBSFieldStandard.AttributeReferenceClass("ValidFrom", typeof(DateTime)),
+                new TBSFieldStandard.AttributeReferenceClass("ValidFrom+", typeof(DateTime)),
+                new TBSFieldStandard.AttributeReferenceClass("ValidTo", typeof(DateTime)),
+                new TBSFieldStandard.AttributeReferenceClass("ValidTo+", typeof(DateTime))
             }));
 
         /// <summary>
@@ -83,8 +85,10 @@ namespace Health.Direct.Policy.X509
             new TBSFieldStandard.SubjectPublicKeyInfo(
                 new List<TBSFieldStandard.AttributeReferenceClass>
             {
-                new TBSFieldStandard.AttributeReferenceClass("Algorithm", rdn => new SubjectAttributeField(false, rdn)),
-                new TBSFieldStandard.AttributeReferenceClass("Size",rdn => new SubjectAttributeField(false, rdn))
+                new TBSFieldStandard.AttributeReferenceClass("Algorithm", typeof(SubjectPublicKeyAlgorithmField) ),
+                new TBSFieldStandard.AttributeReferenceClass("Algorithm+", typeof(SubjectPublicKeyAlgorithmField) ),
+                new TBSFieldStandard.AttributeReferenceClass("Size", typeof(SubjectPublicKeySizeField)),
+                new TBSFieldStandard.AttributeReferenceClass("Size+", typeof(SubjectPublicKeySizeField))
             }));
 
         public static IEnumerable<TBSFieldName> Values
@@ -97,6 +101,8 @@ namespace Health.Direct.Policy.X509
                 yield return Issuer ;
                 yield return Subject;
                 yield return Extenstions;
+                yield return Validity;
+                yield return SubjectPublicKeyInfo;
             }
         }
 
@@ -122,7 +128,7 @@ namespace Health.Direct.Policy.X509
             tbsField = field;
             m_subAttributes = field.SubAttributes;
 	    }
-
+        
        
 
         static TBSFieldName()

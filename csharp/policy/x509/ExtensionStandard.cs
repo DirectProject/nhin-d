@@ -28,8 +28,7 @@ namespace Health.Direct.Policy.X509
             public string RfcName;
             public string Display;
 
-            public static List<Field> Map;
-
+            
             /// <summary>
             /// Lookup data for object identifiers (OIDs) supported in X509 certificate extension fields.
             /// </summary>
@@ -43,11 +42,7 @@ namespace Health.Direct.Policy.X509
                 Display = display;
 
             }
-            static Field()
-            {
-                Map = new List<Field>();
-                Map.Add(new KeyUsage());
-            }
+           
         }
 
         /// <summary>
