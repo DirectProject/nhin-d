@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System.Security.Cryptography.X509Certificates;
-using Org.BouncyCastle.Asn1;
 
 
 namespace Health.Direct.Policy.X509

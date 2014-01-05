@@ -24,19 +24,19 @@ namespace Health.Direct.Policy.Tests
         [Fact]
         public void testExecute_bitwiseAnd_assertResults()
         {
-            Assert.Equal((2 & 4), PolicyOperator<int>.BITWISE_AND.Execute(2, 4));
-            Assert.NotEqual((2 & 4), PolicyOperator<int>.BITWISE_AND.Execute(2, 2));
+            Assert.Equal((2 & 4), PolicyOperator<int, int>.BITWISE_AND.Execute(2, 4));
+            Assert.NotEqual((2 & 4), PolicyOperator<int, int>.BITWISE_AND.Execute(2, 2));
         }
 
         [Fact]
         public void testExecute_bitwiseOr_assertResults()
         {
-            Assert.Equal((2 | 4), PolicyOperator<int>.BITWISE_OR.Execute(2, 4));
-            Assert.NotEqual((2 | 5), PolicyOperator<int>.BITWISE_OR.Execute(2, 4));
+            Assert.Equal((2 | 4), PolicyOperator<int, int>.BITWISE_OR.Execute(2, 4));
+            Assert.NotEqual((2 | 5), PolicyOperator<int, int>.BITWISE_OR.Execute(2, 4));
 
 
             Assert.Equal((2 | 4), PolicyOperator.BitwiseOr(2, 4));
-            Assert.Equal("|", PolicyOperator.BitwiseOr<int>().GetOperatorToken());
+            Assert.Equal("|", PolicyOperator.BitwiseOr<int, int>().GetOperatorToken());
 
         }
     }

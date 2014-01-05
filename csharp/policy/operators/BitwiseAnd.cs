@@ -16,25 +16,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Text;
 using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class BitwiseAnd<T> : BinaryOperator
+    public class BitwiseAnd<TLeft, TRight> : BinaryOperator
     {
 
         public BitwiseAnd(Code opCode
-                            , Func<T, T, T> body)
+                            , Func<TLeft, TRight, TLeft> body)
             : base(opCode)
         {
             Execute = body;
         }
 
-        public readonly Func<T, T, T> Execute;
+        public readonly Func<TLeft, TRight, TLeft> Execute;
 
         public override Delegate ExecuteRef
         {
             get { return Execute; }
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetOperatorToken()).Append("_")
+                .Append(typeof(TLeft).Name).Append("_")
+                .Append(typeof(TRight).Name);
+            return sb.ToString();
         }
     }
 }

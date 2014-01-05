@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Text;
 using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
@@ -34,6 +35,20 @@ namespace Health.Direct.Policy.Operators
         public override Delegate ExecuteRef
         {
             get { return Execute; }
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetOperatorToken()).Append("_")
+                .Append(typeof(T).Name).Append("_")
+                .Append(typeof(T).Name);
+            return sb.ToString();
         }
     }
 }

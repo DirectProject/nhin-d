@@ -15,25 +15,39 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Text;
 using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class Less<TValue, TResult> : BinaryOperator
+    public class Less<TLeft, TRight> : BinaryOperator
     {
-
         public Less(Code opCode
-            , Func<TValue, TValue, TResult> body)
+            , Func<TLeft, TRight, Boolean> body)
             : base(opCode)
         {
             Execute = body;
         }
 
-        public readonly Func<TValue, TValue, TResult> Execute;
+        public readonly Func<TLeft, TRight, Boolean> Execute;
 
         public override Delegate ExecuteRef
         {
             get { return Execute; }
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetOperatorToken()).Append("_")
+                .Append(typeof (TLeft).Name).Append("_")
+                .Append(typeof (TRight).Name);
+            return sb.ToString();
         }
     }
 }

@@ -88,7 +88,7 @@ namespace Health.Direct.Policy.X509
                 new List<AttributeReferenceClass>());
 
         /// <summary>
-        /// Authority key identifier extension.  Defined by RFC5280 section 4.2.1.1 
+        /// Authority key identifier extension.  Defined by RFC5280 section 4.2.1.9
         /// </summary>
         public static readonly ExtensionIdentifier BasicConstraints
             = new ExtensionIdentifier(new ExtensionStandard.BasicConstraints(),
@@ -311,7 +311,7 @@ namespace Health.Direct.Policy.X509
             {
                 if (name.Equals(attrRef.GetAttribute()))
                 {
-                    retVal = attrRef.GetReferenceClass();
+                    retVal = attrRef.GetReferenceClass(name);
                     break;
                 }
             }
@@ -352,6 +352,11 @@ namespace Health.Direct.Policy.X509
 
 
         public Type GetReferenceClass()
+        {
+            return referenceClass;
+        }
+
+        public Type GetReferenceClass(string name)
         {
             return referenceClass;
         }

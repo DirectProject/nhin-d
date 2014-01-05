@@ -49,7 +49,6 @@ namespace Health.Direct.Policy.Tests.x509
         [Fact]
         public void TestInjectRefereneValue_PolicyQualUriExists_AssertValue()
         {
-
             var cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
             var field = new CertificatePolicyCpsUriExtensionField(false);
             field.InjectReferenceValue(cert);

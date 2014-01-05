@@ -43,7 +43,7 @@ namespace Health.Direct.Policy
             }
         }
 
-        public static Func<TParam1, TParam2, TResult> CreateDelegate<TParam1, TParam2, TResult>(
+        public static Func<TParam1, TParam2, TResult> CreateDelegateAutoConvert<TParam1, TParam2, TResult>(
             Func<Expression, Expression, BinaryExpression> body, ParameterExpression left, ParameterExpression right)
         {
             try
@@ -62,6 +62,34 @@ namespace Health.Direct.Policy
                 var msg = ex.Message;
                 return delegate { throw new InvalidOperationException(msg); };
             }
+        }
+
+        public static Func<TParam1, TParam2, TResult> CreateCaseInsensitiveEqualsDelegate<TParam1, TParam2, TResult>(
+            ParameterExpression left, ParameterExpression right)
+        {
+            try
+            {
+                MethodInfo caseInsensitiveMethodInfo = typeof(ExpressionTreeUtil).GetMethod("CaseInsensitiveMethodInfo");
+                Func<Expression, Expression, bool, MethodInfo, BinaryExpression> body = Expression.Equal;
+                if (typeof(TParam1) != typeof(TParam2))
+                {
+                    MethodInfo methodInfo = typeof(ExpressionTreeUtil).GetMethod("ConvertValue");
+                    MethodInfo generic = methodInfo.MakeGenericMethod(typeof(TParam1));
+                    Expression rightConvert = Expression.Convert(right, typeof(TParam1), generic);
+                    return Expression.Lambda<Func<TParam1, TParam2, TResult>>(body(left, rightConvert, false, caseInsensitiveMethodInfo), left, right).Compile();
+                }
+                return Expression.Lambda<Func<TParam1, TParam2, TResult>>(body(left, right, false, caseInsensitiveMethodInfo), left, right).Compile();
+            }
+            catch (InvalidOperationException ex)
+            {
+                var msg = ex.Message;
+                return delegate { throw new InvalidOperationException(msg); };
+            }
+        }
+
+        public static bool CaseInsensitiveMethodInfo(string left, string right)
+        {
+            return string.Compare(left, right, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         public static T ConvertValue<T>(string value)

@@ -123,6 +123,7 @@ namespace Health.Direct.Policy.Tests
                 IList<SimpleTextV1LexiconPolicyParser.TokenTypeAssociation> tokens = parser.ParseToTokens(stream);
                 tokens.Count.Should().Be(3);
             }
+
             using (Stream stream = ("X509.TBS.EXTENSION.BasicConstraints.CA = true").ToStream())
             {
                 IPolicyExpression expression = parser.Parse(stream);
@@ -130,10 +131,7 @@ namespace Health.Direct.Policy.Tests
 
                 var operationPolicyExpression = expression as OperationPolicyExpression;
                 operationPolicyExpression.GetOperands().Count.Should().Be(2);
-
-                
-                var result = operationPolicyExpression.GetPolicyOperator()
-                    .ExecuteRef.DynamicInvoke(operationPolicyExpression.GetOperands());
+               
             }
         }
 

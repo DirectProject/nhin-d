@@ -23,15 +23,15 @@ namespace Health.Direct.Policy.Tests
     public class OperationPolicyExpression_GetInstanceTest
     {
         [Fact]
-        public void testGetInstance_assertExpression()
+        public void TestGetInstance_AssertExpression()
         {
             IList<IPolicyExpression> operands = new List<IPolicyExpression>();
             operands.Add(new LiteralPolicyExpression<bool>(true));
             operands.Add(new LiteralPolicyExpression<bool>(false));
            
-            OperationPolicyExpression expression =new OperationPolicyExpression(PolicyOperator.BitwiseAnd<bool>(), operands);
+            OperationPolicyExpression expression =new OperationPolicyExpression(PolicyOperator.BitwiseAnd<bool, bool>(), operands);
             expression.Should().NotBeNull();
-            expression.GetPolicyOperator().Should().Be(PolicyOperator.BitwiseAnd<bool>());
+            expression.GetPolicyOperator().Should().Be(PolicyOperator.BitwiseAnd<bool, bool>());
             expression.GetExpressionType().Should().Be(PolicyExpressionType.OPERATION);
             expression.GetOperands().ShouldBeEquivalentTo(operands);
         }
