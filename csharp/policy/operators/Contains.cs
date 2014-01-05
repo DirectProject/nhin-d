@@ -20,17 +20,17 @@ using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class Contains<TValue, TList, TResult> : BinaryOperator
+    public class Contains<TList, TValue, TResult> : BinaryOperator
     {
 
         public Contains(Code opCode
-            , Func<TValue, TList, TResult> body)
+            , Func<TList, TValue, TResult> body)
             : base(opCode)
         {
             Execute = body;
         }
 
-        public readonly Func<TValue, TList, TResult> Execute;
+        public readonly Func<TList, TValue, TResult> Execute;
 
         public override Delegate ExecuteRef
         {
@@ -46,8 +46,8 @@ namespace Health.Direct.Policy.Operators
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(GetOperatorToken()).Append("_")
-                .Append(typeof(TValue).Name).Append("_")
-                .Append(typeof(TList).Name);
+                .Append(typeof(TList).Name).Append("_")
+                .Append(typeof(TValue).Name);
             return sb.ToString();
         }
     }

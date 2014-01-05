@@ -18,8 +18,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.OpCode;
@@ -33,8 +36,6 @@ namespace Health.Direct.Policy
 
         public static LogicalAnd<T> LOGICAL_AND;
         public static LogicalOr<T> LOGICAL_OR;
-        public static BitwiseAnd<T> BITWISE_AND;
-        public static BitwiseOr<T> BITWISE_OR;
         public static Size<T> SIZE;
         public static Not<T> LOGICAL_NOT;
         public static UriValid<T> URI_VALIDATE;
@@ -51,14 +52,7 @@ namespace Health.Direct.Policy
             LOGICAL_OR = new LogicalOr<T>(logicalOr, LogicalOrDelegate());
             TokenOperatorMap[LOGICAL_OR.GetHashCode()] = LOGICAL_OR;
 
-            var bitwiseAnd = new Bitwise_And();
-            BITWISE_AND = new BitwiseAnd<T>(bitwiseAnd, BitwiseAndDelegate());
-            TokenOperatorMap[BITWISE_AND.GetHashCode()] = BITWISE_AND;
-
-            var bitwiseOr = new Bitwise_Or();
-            BITWISE_OR = new BitwiseOr<T>(bitwiseOr, BitwiseOrDelegate());
-            TokenOperatorMap[BITWISE_OR.GetHashCode()] = BITWISE_OR;
-
+            
             var size = new Size();
             SIZE = new Size<T>(size, SizeDelegate());
             TokenOperatorMap[SIZE.GetHashCode()] = SIZE;
@@ -92,23 +86,30 @@ namespace Health.Direct.Policy
 
         private static Func<T, T, T> LogicalAndDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.AndAlso, Left, Right);
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T, T, T>(Expression.AndAlso, Left, Right);
         }
         private static Func<T, T, T> LogicalOrDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.OrElse, Left, Right);
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T, T, T>(Expression.OrElse, Left, Right);
         }
-        private static Func<T, T, T> BitwiseAndDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.And, Left, Right);
-        }
-        private static Func<T, T, T> BitwiseOrDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<T, T, T>(Expression.Or, Left, Right);
-        }
+        
         private static Func<T, Int32> SizeDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T, Int32>(Expression.ArrayLength, Left);
+            Type typeList = typeof(T);
+            if (typeList.IsGenericType && typeof (IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            {
+                Type itemType = typeList.GetGenericArguments()[0];
+                var itemList = Expression.Parameter(typeList, "itemList");
+
+                Expression countExpression =
+                    Expression.Call(typeof (Enumerable), "Count", new Type[] {itemType}
+                        , itemList);
+
+                var lambda = Expression.Lambda<Func<T, Int32>>(countExpression, itemList).Compile();
+                return lambda;
+                //return ExpressionTreeUtil.CreateDelegate<T, Int32>(Expression.ArrayLength, Left);
+            }
+            return null;
         }
         private static Func<T, Boolean> LogicalNotDelegate()
         {
@@ -116,35 +117,43 @@ namespace Health.Direct.Policy
         }
     }
 
-    public class PolicyOperator<TValue, TResult> : PolicyOperator
+    public class PolicyOperator<T1, T2> : PolicyOperator
     {
-        public static NotEquals<TValue, TResult> NOT_EQUALS;
-        public static Greater<TValue, TResult> GREATER;
-        public static Less<TValue, TResult> LESS;
-        public static RegularExpression<TValue, TResult> REG_EX;
-        public static Empty<TValue, TResult> EMPTY;
-        public static NotEmpty<TValue, TResult> NOT_EMPTY;
+        public static Greater<T1, T2> GREATER;
+        public static Less<T1, T2> LESS;
+        public static RegularExpression<T1, T2> REG_EX;
+        public static Empty<T1, T2> EMPTY;
+        public static NotEmpty<T1, T2> NOT_EMPTY;
+        public static BitwiseAnd<T1, T2> BITWISE_AND;
+        public static BitwiseOr<T1, T2> BITWISE_OR;
 
         static PolicyOperator()
         {
 
-            var notEquals = new NotEquals();
-            NOT_EQUALS = new NotEquals<TValue, TResult>(notEquals, NotEqualDelegate());
-            TokenOperatorMap[NOT_EQUALS.GetHashCode()] = NOT_EQUALS;
+            if (typeof(T1) == typeof(Int32) && (typeof(T2) == typeof(Int32) || typeof(T2) == typeof(string)))
+            {
+                var greater = new Greater();
+                GREATER = new Greater<T1, T2>(greater, GreaterThanDelegate());
+                TokenOperatorMap[GREATER.GetHashCode()] = GREATER;
 
-            var greater = new Greater();
-            GREATER = new Greater<TValue, TResult>(greater, GreaterThanDelegate());
-            TokenOperatorMap[GREATER.GetHashCode()] = GREATER;
+                var less = new Less();
+                LESS = new Less<T1, T2>(less, LessThanDelegate());
+                TokenOperatorMap[LESS.GetHashCode()] = LESS;
 
-            var less = new Less();
-            LESS = new Less<TValue, TResult>(less, LessThanDelegate());
-            TokenOperatorMap[LESS.GetHashCode()] = LESS;
+                var bitwiseAnd = new Bitwise_And();
+                BITWISE_AND = new BitwiseAnd<T1, T2>(bitwiseAnd, BitwiseAndDelegate());
+                TokenOperatorMap[BITWISE_AND.GetHashCode()] = BITWISE_AND;
+
+                var bitwiseOr = new Bitwise_Or();
+                BITWISE_OR = new BitwiseOr<T1, T2>(bitwiseOr, BitwiseOrDelegate());
+                TokenOperatorMap[BITWISE_OR.GetHashCode()] = BITWISE_OR;
+            }
 
             //
             // See RegExExist Func below
             //
             var regex = new Reg_Ex();
-            REG_EX = new RegularExpression<TValue, TResult>(regex, RegExExists);
+            REG_EX = new RegularExpression<T1, T2>(regex, RegExExists);
             TokenOperatorMap[REG_EX.GetHashCode()] = REG_EX;
 
 
@@ -154,11 +163,10 @@ namespace Health.Direct.Policy
             // Build an expression for Empty
             //
 
-            Type itemType = null;
-            Type typeList = typeof(TValue);
+            Type typeList = typeof(T1);
             if (typeList.IsGenericType && typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
             {
-                itemType = typeList.GetGenericArguments()[0];
+                Type itemType = typeList.GetGenericArguments()[0];
 
 
                 var itemList = Expression.Parameter(typeList, "itemList");
@@ -170,8 +178,8 @@ namespace Health.Direct.Policy
                 Expression emptyExpression = Expression.Equal(Expression.Constant(0), countExpression);
 
                 var empty = new Empty();
-                EMPTY = new Empty<TValue, TResult>(empty
-                      , Expression.Lambda<Func<TValue, TResult>>(emptyExpression, itemList).Compile());
+                EMPTY = new Empty<T1, T2>(empty
+                      , Expression.Lambda<Func<T1, T2>>(emptyExpression, itemList).Compile());
                 TokenOperatorMap[EMPTY.GetHashCode()] = EMPTY;
 
 
@@ -180,43 +188,50 @@ namespace Health.Direct.Policy
                 //
                 Expression noEmptyExpression = Expression.Not(emptyExpression);
                 var notEmpty = new NotEmpty();
-                NOT_EMPTY = new NotEmpty<TValue, TResult>(notEmpty
-                     , Expression.Lambda<Func<TValue, TResult>>(noEmptyExpression, itemList).Compile());
+                NOT_EMPTY = new NotEmpty<T1, T2>(notEmpty
+                     , Expression.Lambda<Func<T1, T2>>(noEmptyExpression, itemList).Compile());
                 TokenOperatorMap[NOT_EMPTY.GetHashCode()] = NOT_EMPTY;
 
             }
-
+            
         }
 
-        private static ParameterExpression Left
+        
+        private static Func<T1, T2, Boolean> GreaterThanDelegate()
         {
-            get
+            var left = Expression.Parameter(typeof(T1), "left");
+            var right = Expression.Parameter(typeof(T2), "right");
+            if (typeof(T1) == typeof(Int32) && typeof(T2) == typeof(String))
             {
-                var left = Expression.Parameter(typeof(TValue), "left");
-                return left;
+                MethodInfo methodInfo = typeof(Int32).GetMethod("Parse", new Type[] { typeof(string) });
+                Expression rightConvert = Expression.Convert(right, typeof(T1), methodInfo);
+                return Expression.Lambda<Func<T1, T2, Boolean>>(Expression.GreaterThan(left, rightConvert), left, right).Compile();
             }
+            //return Expression.Lambda<Func<TParam1, TParam2, TResult>>(body(left, right), left, right).Compile();
+
+
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T1, T2, Boolean>(Expression.GreaterThan, left, right);
         }
-        private static ParameterExpression Right
+        private static Func<T1, T2, Boolean> LessThanDelegate()
         {
-            get
-            {
-                var left = Expression.Parameter(typeof(TValue), "left");
-                return left;
-            }
-        }
-        private static Func<TValue, TValue, TResult> NotEqualDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.NotEqual, Left, Right);
-        }
-        private static Func<TValue, TValue, TResult> GreaterThanDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.GreaterThan, Left, Right);
-        }
-        private static Func<TValue, TValue, TResult> LessThanDelegate()
-        {
-            return ExpressionTreeUtil.CreateDelegate<TValue, TValue, TResult>(Expression.LessThan, Left, Right);
+            var left = Expression.Parameter(typeof(T1), "left");
+            var right = Expression.Parameter(typeof(T2), "right");
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T1, T2, Boolean>(Expression.LessThan, left, right);
         }
 
+
+        private static Func<T1, T2, T1> BitwiseAndDelegate()
+        {
+            var left = Expression.Parameter(typeof(T1), "left");
+            var right = Expression.Parameter(typeof(T2), "right");
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T1, T2, T1>(Expression.And, left, right);
+        }
+        private static Func<T1, T2, T1> BitwiseOrDelegate()
+        {
+            var left = Expression.Parameter(typeof(T1), "left");
+            var right = Expression.Parameter(typeof(T2), "right");
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T1, T2, T1>(Expression.Or, left, right);
+        }
 
 
         //TODO: Rethink this, don't like the conversion...
@@ -227,14 +242,14 @@ namespace Health.Direct.Policy
         /// <param name="pattern">Regular expression pattern</param>
         /// <param name="value">Source string to search</param>
         /// <returns></returns>
-        public static TResult RegExExists(TValue pattern, TValue value)
+        public static T2 RegExExists(T1 pattern, T1 value)
         {
             string v = value as string;
             string p = pattern as string;
 
             Regex regex = new Regex(p);
             var match = regex.Match(v);
-            return (TResult)Convert.ChangeType(match.Success, typeof(TResult));
+            return (T2)Convert.ChangeType(match.Success, typeof(T2));
         }
 
     }
@@ -242,6 +257,7 @@ namespace Health.Direct.Policy
     public class PolicyOperator<T1, T2, TResult> : PolicyOperator
     {
         public static Equals<T1, T2, TResult> EQUALS;
+        public static NotEquals<T1, T2, TResult> NOT_EQUALS;
         public static Intersect<T1, T2, TResult> INTERSECT;
         public static Contains<T1, T2, TResult> CONTAINS;
         public static NotContains<T1, T2, TResult> NOT_CONTAINS;
@@ -250,10 +266,7 @@ namespace Health.Direct.Policy
 
         static PolicyOperator()
         {
-            var left = Expression.Parameter(typeof(T1), "left");
-            var right = Expression.Parameter(typeof(T1), "right");
-            var itemList = Expression.Parameter(typeof(IEnumerable<T1>), "itemList");
-
+            
             //
             // Intersect
             //
@@ -273,7 +286,7 @@ namespace Health.Direct.Policy
                 var equals = new Equals();
                 if (typeof (Int64) == typeof (T1) && typeof (String) == typeof (T2))
                 {
-                    EQUALS = new Equals<T1, T2, TResult>(equals, DelegateStringToLong());
+                    EQUALS = new Equals<T1, T2, TResult>(equals, EqualDelegateStringToLong());
                     TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
                 }
                 else
@@ -284,28 +297,52 @@ namespace Health.Direct.Policy
             }
 
             //
+            // Not Equals
+            //
+            if (typeof(Boolean).IsAssignableFrom(typeof(TResult)))
+            {
+                var notEquals = new NotEquals();
+                if (typeof(Int64) == typeof(T1) && typeof(String) == typeof(T2))
+                {
+                    NOT_EQUALS = new NotEquals<T1, T2, TResult>(notEquals, NotEqualDelegateStringToLong());
+                    TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                }
+                else
+                {
+                    NOT_EQUALS = new NotEquals<T1, T2, TResult>(notEquals, NotEqualDelegate());
+                    TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                }
+            }
+
+
+            //
             // Contains
             // list.Any(a => a = "joe")
             //
-            if (typeof(IEnumerable).IsAssignableFrom(typeof(T2))
-                && !typeof(string).IsAssignableFrom(typeof(T2))
+            if (typeof(IEnumerable).IsAssignableFrom(typeof(T1))
+                && !typeof(string).IsAssignableFrom(typeof(T1))
                 && (
-                    !typeof(IEnumerable).IsAssignableFrom(typeof(T1))
-                    || typeof(string).IsAssignableFrom(typeof(T1)))
+                    !typeof(IEnumerable).IsAssignableFrom(typeof(T2))
+                    || typeof(string).IsAssignableFrom(typeof(T2)))
                 )
             {
+                var left = Expression.Parameter(typeof(T2), "left");
+                var right = Expression.Parameter(typeof(T2), "right");
+                var itemList = Expression.Parameter(typeof(IEnumerable<T2>), "itemList");
+
+
                 var body = Expression.Equal(left, right);
                 var lambda = Expression.Lambda(body, left);
 
                 Expression anyCall =
-                    Expression.Call(typeof(Enumerable), "Any", new Type[] { typeof(T1) }
+                    Expression.Call(typeof(Enumerable), "Any", new Type[] { typeof(T2) }
                                     , itemList
                                     , lambda);
 
 
                 var contains = new Contains();
                 CONTAINS = new Contains<T1, T2, TResult>(contains
-                    , Expression.Lambda<Func<T1, T2, TResult>>(anyCall, right, itemList).Compile());
+                    , Expression.Lambda<Func<T1, T2, TResult>>(anyCall, itemList, right).Compile());
                 TokenOperatorMap[CONTAINS.GetHashCode()] = CONTAINS;
 
 
@@ -316,7 +353,7 @@ namespace Health.Direct.Policy
 
                 var notContains = new NotContains();
                 NOT_CONTAINS = new NotContains<T1, T2, TResult>(notContains
-                    , Expression.Lambda<Func<T1, T2, TResult>>(notAnyCall, right, itemList).Compile());
+                    , Expression.Lambda<Func<T1, T2, TResult>>(notAnyCall, itemList, right).Compile());
                 TokenOperatorMap[NOT_CONTAINS.GetHashCode()] = NOT_CONTAINS;
             }
 
@@ -380,19 +417,33 @@ namespace Health.Direct.Policy
             }
         }
 
-        private static Func<T1, T2, TResult> DelegateStringToLong()
+
+        // TODO: refactor these equal not equal function builders
+        private static Func<T1, T2, TResult> EqualDelegateStringToLong()
         {
             var expression = ExpressionTreeUtil.CreateDelegateStringToLong<T1, T2, TResult>(Expression.Equal, Left, Right);
             return expression;
         }
 
+        private static Func<T1, T2, TResult> NotEqualDelegateStringToLong()
+        {
+            var expression = ExpressionTreeUtil.CreateDelegateStringToLong<T1, T2, TResult>(Expression.NotEqual, Left, Right);
+            return expression;
+        }
+
         private static Func<T1, T2, TResult> EqualDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T1, T2, TResult>(Expression.Equal, Left, Right);
+            Type stringType = typeof (String);
+            if (typeof(T1) == stringType && typeof(T2) == stringType)
+            {
+                return ExpressionTreeUtil.CreateCaseInsensitiveEqualsDelegate<T1, T2, TResult>(Left, Right);
+            }
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T1, T2, TResult>(Expression.Equal, Left, Right);
         }
+
         private static Func<T1, T2, TResult> NotEqualDelegate()
         {
-            return ExpressionTreeUtil.CreateDelegate<T1, T2, TResult>(Expression.NotEqual, Left, Right);
+            return ExpressionTreeUtil.CreateDelegateAutoConvert<T1, T2, TResult>(Expression.NotEqual, Left, Right);
         }
 
         //TODO: Rethink this, don't like the conversion...
@@ -429,16 +480,28 @@ namespace Health.Direct.Policy
         static PolicyOperator()
         {
             TokenOperatorMap = new Dictionary<Int32, OperatorBase>();
+
             new PolicyOperator<Boolean, Boolean>();
             new PolicyOperator<Int32, Boolean>();
+            new PolicyOperator<Int32, String>();
             new PolicyOperator<String, Boolean>();
+
             new PolicyOperator<Int32, Int32, Boolean>();
+            new PolicyOperator<Int32, Int32, Int32>();
+            new PolicyOperator<Int32, String, Int32>();
             new PolicyOperator<String, String, Boolean>();
             new PolicyOperator<Int64, Int64, Boolean>();
             new PolicyOperator<Boolean, Boolean, Boolean>();
-            new PolicyOperator<IList<string>, IList<string>, IEnumerable<string>> ();
+            new PolicyOperator<Boolean, String, Boolean>();
+            new PolicyOperator<IList<String>, IList<String>, IEnumerable<String>>();
             new PolicyOperator<Int64, String, Boolean>();
             new PolicyOperator<Int32, String, Boolean>();
+            new PolicyOperator<IList<String>, String, Boolean>();
+            
+            //Unary
+            //new PolicyOperator<String>();
+            //new PolicyOperator<Int32>();
+            new PolicyOperator<IList<String>>();
         }
 
         //public static Equals<T, T> Equals<T>()
@@ -446,24 +509,24 @@ namespace Health.Direct.Policy
         //    return PolicyOperator<T, T>.EQUALS;
         //}
 
-        public static T BitwiseOr<T>(T value1, T value2)
+        public static TLeft BitwiseOr<TLeft, TRight>(TLeft value1, TRight value2)
         {
-            return PolicyOperator<T>.BITWISE_OR.Execute(value1, value2);
+            return PolicyOperator<TLeft, TRight>.BITWISE_OR.Execute(value1, value2);
         }
 
-        public static BitwiseOr<T> BitwiseOr<T>()
+        public static BitwiseOr<TLeft, TRight> BitwiseOr<TLeft, TRight>()
         {
-            return PolicyOperator<T>.BITWISE_OR;
+            return PolicyOperator<TLeft, TRight>.BITWISE_OR;
         }
 
-        public static T BitwiseAnd<T> (T value1, T value2)
+        public static TLeft BitwiseAnd<TLeft, TRight>(TLeft value1, TRight value2)
         {
-            return PolicyOperator<T>.BITWISE_AND.Execute(value1, value2);
+            return PolicyOperator<TLeft, TRight>.BITWISE_AND.Execute(value1, value2);
         }
 
-        public static BitwiseAnd<T> BitwiseAnd<T>()
+        public static BitwiseAnd<TLeft, TRight> BitwiseAnd<TLeft, TRight>()
         {
-            return PolicyOperator<T>.BITWISE_AND;
+            return PolicyOperator<TLeft, TRight>.BITWISE_AND;
         }
         
 

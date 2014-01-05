@@ -22,7 +22,7 @@ namespace Health.Direct.Policy.X509
     /// If the extension does not exist in the certificate, then the policy value returned by this class
     /// evaluates to an empty collection.
     /// </summary>
-    public class SubjectAltNameExtensionField : ExtensionField<List<String>>
+    public class SubjectAltNameExtensionField : ExtensionField<IList<String>>
     {
         /// <summary>
 	    /// Create new instance
@@ -49,7 +49,7 @@ namespace Health.Direct.Policy.X509
                 else
                 {
                     var emptyList = new List<string>();
-                    PolicyValue = PolicyValueFactory<List<string>>.GetInstance(emptyList);
+                    PolicyValue = PolicyValueFactory<IList<string>>.GetInstance(emptyList);
                     return;
                 }
             }
@@ -63,7 +63,7 @@ namespace Health.Direct.Policy.X509
                 var type = StandardExt.FromTag<Standard.GeneralNameType>(name.TagNo);
                 names.Add(type.Name() + ":" + name.Name);
 		    }
-            PolicyValue = PolicyValueFactory<List<string>>.GetInstance(names);
+            PolicyValue = PolicyValueFactory<IList<string>>.GetInstance(names);
         }
 
         /// <inheritdoc />

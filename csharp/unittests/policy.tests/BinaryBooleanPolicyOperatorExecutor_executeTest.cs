@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Operators;
@@ -27,7 +28,7 @@ namespace Health.Direct.Policy.Tests
     public class BinaryBooleanPolicyOperatorExecutor_ExecuteTest
     {
         [Fact]
-        public void testExecute_logicalAnd_assertResults()
+        public void TestExecute_LogicalAnd_AssertResults()
         {
             Assert.True(PolicyOperator<bool>.LOGICAL_AND.Execute(true, true));
             Assert.False(PolicyOperator<bool>.LOGICAL_AND.Execute(true, false));
@@ -36,13 +37,13 @@ namespace Health.Direct.Policy.Tests
         }
 
         [Fact]
-        public void testExecute_logicalAnd_stringArguments_assertResults()
+        public void TestExecute_LogicalAnd_StringArguments_AssertResults()
         {
             //don't care... maybe...
         }
 
         [Fact]
-        public void testExecute_logicalOr_assertResults()
+        public void TestExecute_LogicalOr_AssertResults()
         {
             OperatorBase equalsOperator = PolicyOperator.FromToken(("=_" + "Boolean_Boolean").GetHashCode());
             equalsOperator.Should().NotBeNull();
@@ -54,7 +55,7 @@ namespace Health.Direct.Policy.Tests
         }
 
         [Fact]
-        public void testExecute_equals_assertResults()
+        public void TestExecute_Equals_AssertResults()
         {
             Assert.True(PolicyOperator<bool, bool, bool>.EQUALS.Execute(true, true));
             Assert.False(PolicyOperator<bool, bool, bool>.EQUALS.Execute(true, false));
@@ -63,7 +64,7 @@ namespace Health.Direct.Policy.Tests
         }
 
         [Fact]
-        public void testExecute_equals_convertparamspecial_assertResults()
+        public void TestExecute_Equals_Convertparamspecial_AssertResults()
         {
             Assert.True(PolicyOperator<Int64, Int64, bool>.EQUALS.Execute("00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e".HexAsLong()));
             Assert.True(PolicyOperator<Int64, String, bool>.EQUALS.Execute("00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e"));
@@ -74,7 +75,7 @@ namespace Health.Direct.Policy.Tests
         }
 
         [Fact]
-        public void testExecute_equals_convertparam_assertResults()
+        public void TestExecute_Equals_Convertparam_AssertResults()
         {
             Assert.True(PolicyOperator<int, int, bool>.EQUALS.Execute(123, 123));
             Assert.True(PolicyOperator<int, String, bool>.EQUALS.Execute(123, "123"));
@@ -86,7 +87,7 @@ namespace Health.Direct.Policy.Tests
 
 
         [Fact]
-        public void testExecute_equals_dynamic_assertResults()
+        public void TestExecute_Equals_Dynamic_AssertResults()
         {
             Delegate del = PolicyOperator<bool, bool, bool>.EQUALS.ExecuteRef;
 
@@ -99,60 +100,100 @@ namespace Health.Direct.Policy.Tests
         }
 
         [Fact]
-        public void testExecute_notEquals_assertResults()
+        public void TestExecute_NotEquals_AssertResults()
         {
-            Assert.False(PolicyOperator<bool, bool>.NOT_EQUALS.Execute(true, true));
-            Assert.True(PolicyOperator<bool, bool>.NOT_EQUALS.Execute(true, false));
-            Assert.False(PolicyOperator<int, bool>.NOT_EQUALS.Execute(123, 123));
-            Assert.True(PolicyOperator<int, bool>.NOT_EQUALS.Execute(123, 456)); 
+            Assert.False(PolicyOperator<bool, bool, bool>.NOT_EQUALS.Execute(true, true));
+            Assert.True(PolicyOperator<bool, bool, bool>.NOT_EQUALS.Execute(true, false));
+            Assert.False(PolicyOperator<int, int, bool>.NOT_EQUALS.Execute(123, 123));
+            Assert.True(PolicyOperator<int, int, bool>.NOT_EQUALS.Execute(123, 456)); 
         }
 
         [Fact]
-        public void testExecute_greater_assertResults()
+        public void TestExecute_NotEquals_Convertparamspecial_AssertResults()
         {
-            Assert.True(PolicyOperator<int, bool>.GREATER.Execute(5, 4));
-            Assert.False(PolicyOperator<int, bool>.GREATER.Execute(4, 5));
+            Assert.False(PolicyOperator<Int64, Int64, bool>.NOT_EQUALS.Execute("00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e".HexAsLong()));
+            Assert.False(PolicyOperator<Int64, String, bool>.NOT_EQUALS.Execute("00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e"));
+            Assert.True(PolicyOperator<Int64, String, bool>.NOT_EQUALS.Execute("00F74F1C4FE4E17600".HexAsLong(), "f74f1c4fe4e1762e"));
+
+            Delegate del = PolicyOperator<Int64, String, bool>.NOT_EQUALS.ExecuteRef;
+            Assert.False((bool) del.DynamicInvoke(new object[] {"00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e"}));
+            Assert.True((bool)del.DynamicInvoke(new object[] { "00F74F1C4FE4E17600".HexAsLong(), "f74f1c4fe4e1762e" }));
+
         }
 
         [Fact]
-        public void testExecute_less_assertResults()
+        public void TestExecute_NotEquals_Convertparam_AssertResults()
         {
-            Assert.True(PolicyOperator<int, bool>.LESS.Execute(4, 5));
-            Assert.False(PolicyOperator<int, bool>.LESS.Execute(5, 4));
+            Assert.False(PolicyOperator<int, int, bool>.NOT_EQUALS.Execute(123, 123));
+            Assert.False(PolicyOperator<int, String, bool>.NOT_EQUALS.Execute(123, "123"));
+
+            Delegate del = PolicyOperator<int, String, bool>.NOT_EQUALS.ExecuteRef;
+            Assert.False((bool)del.DynamicInvoke(new object[] { 123, "123" }));
+
+        }
+
+
+        [Fact]
+        public void TestExecute_NotEquals_Dynamic_AssertResults()
+        {
+            Delegate del = PolicyOperator<bool, bool, bool>.NOT_EQUALS.ExecuteRef;
+
+            Assert.False((bool)del.DynamicInvoke(new object[] { true, true }));
+            Assert.True((bool)del.DynamicInvoke(new object[] { true, false }));
+
+            del = PolicyOperator<int, int, bool>.NOT_EQUALS.ExecuteRef;
+            Assert.False((bool)del.DynamicInvoke(new object[] { 123, 123 }));
+            Assert.True((bool)del.DynamicInvoke(new object[] { 123, 456 }));
+        }
+
+
+        [Fact]
+        public void TestExecute_Greater_AssertResults()
+        {
+            Assert.True(PolicyOperator<int, int>.GREATER.Execute(5, 4));
+            Assert.False(PolicyOperator<int, int>.GREATER.Execute(4, 5));
         }
 
         [Fact]
-        public void testExecute_contains_assertResults()
+        public void TestExecute_Less_AssertResults()
+        {
+            Assert.True(PolicyOperator<int, int>.LESS.Execute(4, 5));
+            Assert.False(PolicyOperator<int, int>.LESS.Execute(5, 4));
+        }
+
+        [Fact]
+        public void TestExecute_Contains_AssertResults()
         {
             var strings = new List<string> {"123", "456", "689"};
-            Assert.True(PolicyOperator<string, IList<string>, bool>.CONTAINS.Execute("689", strings));
-            Assert.True(PolicyOperator<string, IList<string>, bool>.CONTAINS.Execute("456", strings));
-            Assert.False(PolicyOperator<string, IList<string>, bool>.CONTAINS.Execute("777", strings));
+            strings.Any(m => m == "123").Should().BeTrue();
+            Assert.True(PolicyOperator<IList<string>, String, bool>.CONTAINS.Execute(strings, "689"));
+            Assert.True(PolicyOperator<IList<string>, String, bool>.CONTAINS.Execute(strings, "456"));
+            Assert.False(PolicyOperator<IList<string>, String, bool>.CONTAINS.Execute(strings, "777"));
 
             var integers = new List<int> { 123, 456, 689 };
-            Assert.True(PolicyOperator<int, IList<int>, bool>.CONTAINS.Execute(689, integers));
-            Assert.True(PolicyOperator<int, IList<int>, bool>.CONTAINS.Execute(456, integers));
-            Assert.False(PolicyOperator<int, IList<int>, bool>.CONTAINS.Execute(777, integers));
+            Assert.True(PolicyOperator<IList<int>, int, bool>.CONTAINS.Execute(integers, 689));
+            Assert.True(PolicyOperator<IList<int>, int, bool>.CONTAINS.Execute(integers, 456));
+            Assert.False(PolicyOperator<IList<int>, int, bool>.CONTAINS.Execute(integers, 777));
         }
 
 
         [Fact]
-        public void testExecute_notContains_assertResults()
+        public void TestExecute_NotContains_AssertResults()
         {
             var strings = new List<string> { "123", "456", "689" };
-            Assert.False(PolicyOperator<string, IList<string>, bool>.NOT_CONTAINS.Execute("689", strings));
-            Assert.False(PolicyOperator<string, IList<string>, bool>.NOT_CONTAINS.Execute("456", strings));
-            Assert.True(PolicyOperator<string, IList<string>, bool>.NOT_CONTAINS.Execute("777", strings));
+            Assert.False(PolicyOperator<IList<string>, String, bool>.NOT_CONTAINS.Execute(strings, "689"));
+            Assert.False(PolicyOperator<IList<string>, String, bool>.NOT_CONTAINS.Execute(strings, "456"));
+            Assert.True(PolicyOperator<IList<string>, String, bool>.NOT_CONTAINS.Execute(strings, "777"));
 
-            var integers = new List<int> { 123, 456, 689 };
-            Assert.False(PolicyOperator<int, IList<int>, bool>.NOT_CONTAINS.Execute(689, integers));
-            Assert.False(PolicyOperator<int, IList<int>, bool>.NOT_CONTAINS.Execute(456, integers));
-            Assert.True(PolicyOperator<int, IList<int>, bool>.NOT_CONTAINS.Execute(777, integers));
+            var integers  = new List<int> { 123, 456, 689 };
+            Assert.False(PolicyOperator<IList<int>, int, bool>.NOT_CONTAINS.Execute(integers, 689));
+            Assert.False(PolicyOperator<IList<int>, int, bool>.NOT_CONTAINS.Execute(integers, 456));
+            Assert.True(PolicyOperator<IList<int>, int, bool>.NOT_CONTAINS.Execute(integers, 777));
         }
 
 
         [Fact]
-        public void testExecute_containsRegEx_assertResults()
+        public void TestExecute_ContainsRegEx_AssertResults()
         {
             var urls = new List<string> {"http://thisis.aurl.com"};
             Assert.True(PolicyOperator<string, IList<string>, bool>.CONTAINS_REG_EX.Execute("http", urls));
@@ -161,7 +202,7 @@ namespace Health.Direct.Policy.Tests
 
         }
         [Fact]
-        public void testExecute_regEx_assertResults()
+        public void TestExecute_RegEx_AssertResults()
         {
             Assert.True(PolicyOperator<string, bool>
                 .REG_EX.Execute("http", "http://thisis.aurl.com"));

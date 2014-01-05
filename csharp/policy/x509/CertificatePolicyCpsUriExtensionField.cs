@@ -32,7 +32,7 @@ namespace Health.Direct.Policy.X509
     /// If the extension does not exist in the certificate of if none of the certificate policy entries contain a CPS URL, then the policy value returned by this class evaluates to an empty collection.
     /// </para>
     /// </summary>
-    public class CertificatePolicyCpsUriExtensionField : ExtensionField<List<String>>
+    public class CertificatePolicyCpsUriExtensionField : ExtensionField<IList<String>>
     {
         /// <summary>
         /// Create new instance
@@ -57,7 +57,7 @@ namespace Health.Direct.Policy.X509
                 if (IsRequired())
                     throw new PolicyRequiredException("Extention " + ExtentionIdentifier.Display + " is marked as required by is not present.");
                 var emptyList = new List<string>();
-                PolicyValue = new PolicyValue<List<string>>(emptyList);
+                PolicyValue = new PolicyValue<IList<string>>(emptyList);
                 return;
             }
             var retVal = new List<String>();
@@ -86,7 +86,7 @@ namespace Health.Direct.Policy.X509
                 }
             }
 
-            PolicyValue = new PolicyValue<List<string>>(retVal);
+            PolicyValue = new PolicyValue<IList<string>>(retVal);
         }
 
 

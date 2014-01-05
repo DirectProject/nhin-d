@@ -219,6 +219,11 @@ namespace Health.Direct.Policy.X509
                     if (name.Equals(attRefClass.GetAttribute()))
                     {
                         retVal = attRefClass.GetReferenceClass(name) ;
+                        if (retVal == null)
+                        {
+                            Type type = attRefClass.GetReferenceClass();
+                            retVal = Activator.CreateInstance(type);
+                        }
                         break;
                     }		
                 }

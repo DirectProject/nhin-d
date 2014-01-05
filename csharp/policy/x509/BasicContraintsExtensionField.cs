@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Policy.Extensions;
 
@@ -30,7 +31,7 @@ namespace Health.Direct.Policy.X509
     /// If the extension does not exist in the certificate, the policy value returned by this class evaluates to false.
     /// </para>
     /// </summary>
-    public class BasicContraintsExtensionField : ExtensionField<bool>
+    public class BasicContraintsExtensionField : ExtensionField<Boolean>
     {
         /// <summary>
 	    /// Create new instance
@@ -38,11 +39,12 @@ namespace Health.Direct.Policy.X509
 	    /// Indicates if the field is required to be present in the certificate to be compliant with the policy.
 	    /// </param>
 	    /// </summary>
-        public BasicContraintsExtensionField(bool required)
+        public BasicContraintsExtensionField(bool required )
             : base(required)
 	    {
 	    }
 
+         
         /// <inheritdoc />
 	    public override void InjectReferenceValue(X509Certificate2 value) 
 	    {
@@ -56,8 +58,8 @@ namespace Health.Direct.Policy.X509
 		        PolicyValue = new PolicyValue<bool>(false);
 		        return;
 		    }
-            
-            PolicyValue = new PolicyValue<bool>(extensionIdentifier.CertificateAuthority);
+
+            PolicyValue = new PolicyValue<Boolean>(extensionIdentifier.CertificateAuthority);
 	    }
 
         /// <inheritdoc />

@@ -33,7 +33,7 @@ namespace Health.Direct.Policy.X509
     /// evaluates to an empty collection.
     /// </para>
     /// </summary>
-    public class ExtendedKeyUsageExtensionField : ExtensionField<List<string>>
+    public class ExtendedKeyUsageExtensionField : ExtensionField<IList<string>>
     {
         /// <summary>
         /// Create new instance
@@ -58,7 +58,7 @@ namespace Health.Direct.Policy.X509
                 if (IsRequired())
                     throw new PolicyRequiredException("Extention " + ExtentionIdentifier.Display + " is marked as required by is not present.");
                 
-                PolicyValue = new PolicyValue<List<string>>(new List<string>());
+                PolicyValue = new PolicyValue<IList<string>>(new List<string>());
                 return;
             }
 
@@ -71,7 +71,7 @@ namespace Health.Direct.Policy.X509
                 usageList.Add(purpose.Id);
             }
 
-            PolicyValue = new PolicyValue<List<string>>(usageList);
+            PolicyValue = new PolicyValue<IList<string>>(usageList);
         }
 
         /// <inheritdoc />

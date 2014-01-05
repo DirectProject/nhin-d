@@ -167,12 +167,12 @@ namespace Health.Direct.Policy.Impl
 
                         int tokenHashCode = 0;
 
-				        if (subExpression is ILiteralPolicyExpression<String>)
+				        if (subExpression != null)
 				        {
                             //TODO Refactor
 				            if (assos.GetTokenType() == TokenType.OPERATOR_UNARY_EXPRESSION)
 				            {
-				                tokenHashCode = (assos.GetToken()+"_String").GetHashCode();
+                                tokenHashCode = (assos.GetToken() + "_" + GetOperandType(subExpression)).GetHashCode();
 				            }
                             if (assos.GetTokenType() == TokenType.OPERATOR_BINARY_EXPRESSION)
                             {
@@ -238,17 +238,29 @@ namespace Health.Direct.Policy.Impl
 
         private string GetOperandType(IPolicyExpression policyExpression)
         {
-            if (policyExpression is IX509Field<Int64>)
+            try
             {
-                return "Int64";
-            }
+                IEnumerable<Type> genericInterfaces =
+                    policyExpression.GetType().GetInterfaces().Where(i => i.GenericTypeArguments.Any()).ToArray();
 
-            if (policyExpression is IX509Field<Int32>)
+                // IPolicyExpression is a IOperationPolicyExpression
+                if (!genericInterfaces.Any())
+                {
+                    var policyOpertor = policyExpression as IOperationPolicyExpression;
+                    if (policyOpertor == null)
+                    {
+                        return null;
+                    }
+                    var returnName = policyOpertor.GetPolicyOperator().ExecuteRef.Method.ReturnType.Name;
+                    return returnName;
+                }
+                var args = genericInterfaces.First().GetGenericArguments();
+                return args[0].Name;
+            }
+            catch (Exception ex)
             {
-                return "Int32";
+                throw new PolicyParseException("Error getting operand type for: " + policyExpression, ex);
             }
-
-            return "String";
         }
 
         protected IPolicyExpression BuildCertificateReferenceField(String token) //throws PolicyParseException 
@@ -335,8 +347,7 @@ namespace Health.Direct.Policy.Impl
                     }
                     else
                     {
-                        //Todo: seems only SerialNumber passes through here.  How did I end up using reflection here?
-                        retVal = Activator.CreateInstance(fieldRefClass.GetType()) as ITBSField<Int64>;
+                        retVal = fieldRefClass as IPolicyExpression;
                     }
                 }
                 catch (PolicyParseException ex)
@@ -345,7 +356,7 @@ namespace Health.Direct.Policy.Impl
                 }
                 catch (Exception e)
                 {
-                    throw new PolicyParseException("Error building TBSField", e);
+                    throw new PolicyParseException("Error building TBSField: " + token, e);
                 }
 
             }

@@ -233,6 +233,10 @@ namespace Health.Direct.Policy.X509
 
             public TBSField<List<string>> GetReferenceClass(string rdnName)
             {
+                if (referenceClassList == null)
+                {
+                    return null;
+                }
                 return referenceClassList(rdnName);
             }
             

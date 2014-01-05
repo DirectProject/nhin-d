@@ -95,6 +95,18 @@ namespace Health.Direct.Policy.Machine
                             EvaluateReferenceExpression(cert, refExpression);
                             entries.Add(Compile(refExpression));
                         }
+                        else if (policyExpression is IReferencePolicyExpression<X509Certificate2, IList<String>>)
+                        {
+                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, IList<String>>;
+                            EvaluateReferenceExpression(cert, refExpression);
+                            entries.Add(Compile(refExpression));
+                        }
+                        else if (policyExpression is IReferencePolicyExpression<X509Certificate2, Boolean>)
+                        {
+                            var refExpression = policyExpression as IReferencePolicyExpression<X509Certificate2, Boolean>;
+                            EvaluateReferenceExpression(cert, refExpression);
+                            entries.Add(Compile(refExpression));
+                        }
                         else if (policyExpression is ILiteralPolicyExpression<String>)
                         {
                             entries.Add(Compile(policyExpression as ILiteralPolicyExpression<String>));
@@ -112,52 +124,52 @@ namespace Health.Direct.Policy.Machine
             }
         }
 
-        private StackMachineEntry<T> Compile<T>(ILiteralPolicyExpression<T> expression) 
+        private StackMachineEntry<T> Compile<T>(ILiteralPolicyExpression<T> expression)
         {
             return new StackMachineEntry<T>(EntryType.Value, expression.GetPolicyValue().GetPolicyValue());
         }
 
-        private StackMachineEntry<T> Compile<T>(IReferencePolicyExpression<X509Certificate2,T> expression)
+        private StackMachineEntry<T> Compile<T>(IReferencePolicyExpression<X509Certificate2, T> expression)
         {
             return new StackMachineEntry<T>(EntryType.Value, expression.GetPolicyValue().GetPolicyValue());
         }
 
-        
-        protected IPolicyValue<T> EvaluateReferenceExpression<R,T>(X509Certificate2 cert, IReferencePolicyExpression<R,T> expression) 
-	    {
-		    switch(expression.GetPolicyExpressionReferenceType())
-		    {
-			    case PolicyExpressionReferenceType.Struct:
-			    case PolicyExpressionReferenceType.Certificate:
-			    {
-				    return EvaluateX509Field(cert, (X509Field<T>)expression);
-			    }
-			    default:
-				    return null;
-		    }
-	    }
-	
-        protected IPolicyValue<T> EvaluateX509Field<T>(X509Certificate2 cert, X509Field<T> expression) 
-	    {
-		    try
-		    {
-			    expression.InjectReferenceValue(cert);
-			    return expression.GetPolicyValue();
-		    }
-		    catch (PolicyRequiredException e) 
-		    {
-			    // add this to the report and re-evaluate without the required flag
-			    if (m_reportModeEnabled)
-			    {
-				    AddErrorToReport(e);
-				    expression.SetRequired(false);
-				    expression.InjectReferenceValue(cert);
-				    return expression.GetPolicyValue();
-			    }
-			    // re-throw
-		        throw;
-		    }
-	    }
+
+        protected IPolicyValue<T> EvaluateReferenceExpression<R, T>(X509Certificate2 cert, IReferencePolicyExpression<R, T> expression)
+        {
+            switch (expression.GetPolicyExpressionReferenceType())
+            {
+                case PolicyExpressionReferenceType.Struct:
+                case PolicyExpressionReferenceType.Certificate:
+                    {
+                        return EvaluateX509Field(cert, (X509Field<T>)expression);
+                    }
+                default:
+                    return null;
+            }
+        }
+
+        protected IPolicyValue<T> EvaluateX509Field<T>(X509Certificate2 cert, X509Field<T> expression)
+        {
+            try
+            {
+                expression.InjectReferenceValue(cert);
+                return expression.GetPolicyValue();
+            }
+            catch (PolicyRequiredException e)
+            {
+                // add this to the report and re-evaluate without the required flag
+                if (m_reportModeEnabled)
+                {
+                    AddErrorToReport(e);
+                    expression.SetRequired(false);
+                    expression.InjectReferenceValue(cert);
+                    return expression.GetPolicyValue();
+                }
+                // re-throw
+                throw;
+            }
+        }
 
         protected void AddErrorToReport(PolicyProcessException e)
         {
