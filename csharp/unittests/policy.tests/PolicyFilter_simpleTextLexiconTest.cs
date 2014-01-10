@@ -65,8 +65,8 @@ namespace Health.Direct.Policy.Tests
             }
         }
 
-        [Fact]
-        public void TestTBSIssuer_AssertTrue() 
+        [Fact (Skip = "Work on a ST to S substitution")]
+        public void TestTBSIssuer_AssertTrue_WithState_ST() 
 	    {
             using (Stream stream = ("(X509.TBS.Issuer.CN {?} SimpleInterop) && (X509.TBS.Issuer.C {?} US) && (X509.TBS.Issuer.ST {?} Missouri) " +
 				    " && (X509.TBS.Issuer.E {?} cmii@cerner.com) && (X509.TBS.Issuer.OU {?} Medical Informatics)").ToStream())
@@ -79,7 +79,22 @@ namespace Health.Direct.Policy.Tests
 	    }
 
         [Fact]
-        public void TestTBSSubject_AssertTrue()
+        public void TestTBSIssuer_AssertTrue_WithState_S()
+        {
+            using (Stream stream = ("(X509.TBS.Issuer.CN {?} SimpleInterop) && (X509.TBS.Issuer.C {?} US) && (X509.TBS.Issuer.S {?} Missouri) " +
+                    " && (X509.TBS.Issuer.E {?} cmii@cerner.com) && (X509.TBS.Issuer.OU {?} Medical Informatics)").ToStream())
+            {
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
+                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                    new SimpleTextV1LexiconPolicyParser());
+                filter.IsCompliant(cert, stream).Should().BeTrue();
+            }
+        }
+
+
+
+        [Fact(Skip = "Work on a ST to S substitution")]
+        public void TestTBSSubject_AssertTrue_WithState_ST()
         {
             using (Stream stream = ("(X509.TBS.Subject.CN {?} umesh) && (X509.TBS.Subject.C {?} US) && (X509.TBS.Subject.ST {?} Missouri) " +
                 " && (X509.TBS.Subject.E {?} umesh@securehealthemail.com) && (X509.TBS.Subject.OU {?} Medical Informatics)").ToStream())
@@ -90,6 +105,21 @@ namespace Health.Direct.Policy.Tests
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
+
+
+        [Fact]
+        public void TestTBSSubject_AssertTrue_WithState_S()
+        {
+            using (Stream stream = ("(X509.TBS.Subject.CN {?} umesh) && (X509.TBS.Subject.C {?} US) && (X509.TBS.Subject.S {?} Missouri) " +
+                " && (X509.TBS.Subject.E {?} umesh@securehealthemail.com) && (X509.TBS.Subject.OU {?} Medical Informatics)").ToStream())
+            {
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
+                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                    new SimpleTextV1LexiconPolicyParser());
+                filter.IsCompliant(cert, stream).Should().BeTrue();
+            }
+        }
+
 
         [Fact]
         public void TestTBSPublicKeyAlgorithm_AssertTrue()
@@ -181,7 +211,7 @@ namespace Health.Direct.Policy.Tests
         {
             using (Stream stream = ("{}X509.TBS.EXTENSION.SubjectAltName").ToStream())
             {
-                X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
+                X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
                 IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();

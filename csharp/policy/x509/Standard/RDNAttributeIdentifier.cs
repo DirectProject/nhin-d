@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Health.Direct.Policy.X509.Standard
 {
@@ -55,7 +56,13 @@ namespace Health.Direct.Policy.X509.Standard
         /// <paraState>State attribute></para>
         /// RDN Name: ST
         /// </summary>
-        public static readonly RDNAttributeIdentifier STATE = new RDNAttributeIdentifier("2.5.4.8", "ST");
+        public static readonly RDNAttributeIdentifier STATE_ST = new RDNAttributeIdentifier("2.5.4.8", "ST", "S");
+
+        /// <summary>
+        /// <paraState>State attribute></para>
+        /// RDN Name: S
+        /// </summary>
+        public static readonly RDNAttributeIdentifier STATE_S = new RDNAttributeIdentifier("2.5.4.8", "S");
 
         /// <summary>
         /// <para>Locality (city) attribute</para>
@@ -139,7 +146,8 @@ namespace Health.Direct.Policy.X509.Standard
                 yield return COUNTRY;
                 yield return ORGANIZATION;
                 yield return ORGANIZATIONAL_UNIT;
-                yield return STATE;
+                yield return STATE_ST;
+                yield return STATE_S;
                 yield return LOCALITY;
                 yield return EMAIL;
                 yield return DOMAIN_COMPONENT;
@@ -157,6 +165,8 @@ namespace Health.Direct.Policy.X509.Standard
 
         readonly String m_id;
         readonly String m_name;
+        readonly String m_nameSubstitute;
+
         readonly static IDictionary<String, RDNAttributeIdentifier> m_nameFieldMap;
 
         static RDNAttributeIdentifier()
@@ -175,6 +185,13 @@ namespace Health.Direct.Policy.X509.Standard
             m_name = name;
         }
 
+        private RDNAttributeIdentifier(string id, string name, string substitute)
+        {
+            m_id = id;
+            m_name = name;
+            m_nameSubstitute = substitute;
+        }
+
         /// <summary>
         /// Gets the object identifier (OID) of the RDN attribute.
         /// </summary>
@@ -190,7 +207,20 @@ namespace Health.Direct.Policy.X509.Standard
         /// <value>The name of the attribute as it is commonly displayed in an X509 certificate viewer</value>
         public string Name
         {
-            get { return m_name; }
+            get
+            {   
+                return m_name;
+            }
+        }
+
+        public string GetCononicalName()
+        {
+            return string.IsNullOrEmpty(m_nameSubstitute) ? m_name : m_nameSubstitute;
+        }
+
+        public string NameSubstiture
+        {
+            get { return m_nameSubstitute; }
         }
 
         /// <inheritdoc />
@@ -198,6 +228,7 @@ namespace Health.Direct.Policy.X509.Standard
         {
             return m_name;
         }
+
 
         /// <summary>
         /// Gets the RDNAttributeIdentifier associated with the RDN name.  This method also accepts a parsed token ending with the 
@@ -215,6 +246,9 @@ namespace Health.Direct.Policy.X509.Standard
                 lookupName = name;
             RDNAttributeIdentifier rdnAtrId;
             m_nameFieldMap.TryGetValue(lookupName, out rdnAtrId);
+            //rdnAtrId = m_nameFieldMap.FirstOrDefault(n => n.Key.Equals(lookupName, StringComparison.OrdinalIgnoreCase)
+            //    || (n.Value.NameSubstiture != null && n.Value.NameSubstiture.Equals(lookupName, StringComparison.OrdinalIgnoreCase))).Value;
+
             return rdnAtrId;
         }
 

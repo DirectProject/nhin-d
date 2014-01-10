@@ -24,7 +24,7 @@ namespace Health.Direct.Policy.Tests
 {
     public class XMLLexiconPolicyParser_serializeTest
     {
-        [Fact]
+        [Fact (Skip="Xml parser not implemented")]
         public void TestSerialize_SimpleExpression_ValidateExpression()
         {
             LiteralPolicyExpression<int> expr =

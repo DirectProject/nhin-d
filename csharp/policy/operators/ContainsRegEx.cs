@@ -16,25 +16,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Health.Direct.Policy.OpCode;
 
 namespace Health.Direct.Policy.Operators
 {
-    public class ContainsRegEx<TValue, TList, TResult> : BinaryOperator where TList : List<TValue>
+    public class ContainsRegEx<TList, TValue, TResult> : BinaryOperator
     {
 
         public ContainsRegEx(Code opCode
-            , Func<TValue, TList, TResult> body)
+            , Func<TList, TValue, TResult> body)
             : base(opCode)
         {
             Execute = body;
         }
 
-        public readonly Func<TValue, TList, TResult> Execute;
+        public readonly Func<TList, TValue, TResult> Execute;
 
         public override Delegate ExecuteRef
         {
             get { return Execute; }
+        }
+
+        public override int GetHashCode()
+        {
+            return ToString().GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(GetOperatorToken()).Append("_")
+                .Append(typeof(TList).Name).Append("_")
+                .Append(typeof(TValue).Name);
+            return sb.ToString();
         }
     }
 }

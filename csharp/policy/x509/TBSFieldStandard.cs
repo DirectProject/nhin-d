@@ -201,7 +201,7 @@ namespace Health.Direct.Policy.X509
         {
             readonly String attribute;
             readonly Type referenceClass;
-            private readonly Func<string, TBSField<List<string>>> referenceClassList;
+            private readonly Func<string, TBSField<IList<string>>> referenceClassList;
 
             public AttributeReferenceClass(String attribute, Type referenceClass)
             {
@@ -215,7 +215,7 @@ namespace Health.Direct.Policy.X509
             }
 
             
-            public AttributeReferenceClass(String attribute, Func<string, TBSField<List<string>>> referenceClass)
+            public AttributeReferenceClass(String attribute, Func<string, TBSField<IList<string>>> referenceClass)
             {
                 this.attribute = attribute;
                 this.referenceClassList = referenceClass;
@@ -231,7 +231,7 @@ namespace Health.Direct.Policy.X509
                 return referenceClass;
             }
 
-            public TBSField<List<string>> GetReferenceClass(string rdnName)
+            public TBSField<IList<string>> GetReferenceClass(string rdnName)
             {
                 if (referenceClassList == null)
                 {
@@ -242,7 +242,7 @@ namespace Health.Direct.Policy.X509
             
         }
 
-        public static List<AttributeReferenceClass> RdnsToReferenceClass(Func<string, TBSField<List<string>>> refClass)
+        public static List<AttributeReferenceClass> RdnsToReferenceClass(Func<string, TBSField<IList<string>>> refClass)
         {
             var retVal = new List<AttributeReferenceClass>();
 
