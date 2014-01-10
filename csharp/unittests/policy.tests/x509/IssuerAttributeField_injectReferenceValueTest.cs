@@ -35,7 +35,7 @@ namespace Health.Direct.Policy.Tests.x509
             var field = new IssuerAttributeField(false, RDNAttributeIdentifier.INITIALS);
 
             field.InjectReferenceValue(cert);
-            List<String> values = field.GetPolicyValue().GetPolicyValue();
+            IList<String> values = field.GetPolicyValue().GetPolicyValue();
             values.Count.Should().Be(0);
         }
 
@@ -57,7 +57,7 @@ namespace Health.Direct.Policy.Tests.x509
             var field = new IssuerAttributeField(true, RDNAttributeIdentifier.COMMON_NAME);
             field.InjectReferenceValue(cert);
 
-            List<String> values = field.GetPolicyValue().GetPolicyValue();
+            IList<String> values = field.GetPolicyValue().GetPolicyValue();
             values.Count.Should().Be(1);
             values.First().Should().Be("test.email.com");
         }
@@ -69,7 +69,7 @@ namespace Health.Direct.Policy.Tests.x509
             var field = new IssuerAttributeField(true, RDNAttributeIdentifier.DISTINGUISHED_NAME);
             field.InjectReferenceValue(cert);
 
-            List<String> values = field.GetPolicyValue().GetPolicyValue();
+            IList<String> values = field.GetPolicyValue().GetPolicyValue();
             values.Count.Should().Be(1);
             values.First().Should().Be("O=Cerner,L=Kansas City,S=MO,C=US,CN=test.email.com");
         }

@@ -254,6 +254,18 @@ namespace Health.Direct.Policy.Impl
                     var returnName = policyOpertor.GetPolicyOperator().ExecuteRef.Method.ReturnType.Name;
                     return returnName;
                 }
+                //if (genericInterfaces //Looing for ITBSField<IEnumerable<String>>
+                //        .Any(i => i.GetGenericTypeDefinition() == typeof(ITBSField<>) &&  i.GetGenericArguments()
+                //            .Any(a => a.GetInterfaces()
+                //                .Any(ai => ai.IsGenericType && ai.GetGenericTypeDefinition() == typeof(IEnumerable<>)))))
+                //{
+                //    return "String";
+                //}
+                var rdnType = genericInterfaces.FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IRdn<>));
+                if(rdnType != null)
+                {
+                    return rdnType.GetGenericArguments().First().Name;
+                }
                 var args = genericInterfaces.First().GetGenericArguments();
                 return args[0].Name;
             }
@@ -465,7 +477,7 @@ namespace Health.Direct.Policy.Impl
 						
 						// check if the nextToken string matches a string
 
-						tokenMatch = m_tokenMap.TryGetValue(checkForTokenString, out exactMatchToken);
+						tokenMatch = m_tokenMap.TryGetValue(nextToken, out exactMatchToken);
 						if (tokenMatch)
 						{		
 							tokens.Add(new TokenTypeAssociation(nextToken, exactMatchToken));

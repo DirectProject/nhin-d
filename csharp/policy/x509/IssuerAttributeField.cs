@@ -23,7 +23,7 @@ using Health.Direct.Policy.X509.Standard;
 
 namespace Health.Direct.Policy.X509
 {
-    public class IssuerAttributeField : TBSField<List<String>>
+    public class IssuerAttributeField : TBSField<IList<String>>, IRdn<IList<String>>
     {
         protected RDNAttributeIdentifier RdnAttributeId;
 
@@ -59,7 +59,7 @@ namespace Health.Direct.Policy.X509
             if (RdnAttributeId.Equals(RDNAttributeIdentifier.DISTINGUISHED_NAME))
             {
                 var str = new List<String> { Certificate.IssuerName.RemoveSpaces()};
-                PolicyValue = PolicyValueFactory<List<String>>.GetInstance(str);
+                PolicyValue = PolicyValueFactory<IList<String>>.GetInstance(str);
                 return;
             }
 
@@ -70,7 +70,7 @@ namespace Health.Direct.Policy.X509
             if (! values.Any() && IsRequired())
                 throw new PolicyRequiredException(Name + " field attribute " + RdnAttributeId.Name + " is marked as required but is not present.");
             
-            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(values);
+            PolicyValue = PolicyValueFactory<IList<String>>.GetInstance(values);
         }
 
 
@@ -83,5 +83,13 @@ namespace Health.Direct.Policy.X509
         {
             return RdnAttributeId;
         }
+    }
+
+    /// <summary>
+    /// Marker Interface indicating support for Relative Distinquished Name
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface IRdn<T>
+    {
     }
 }

@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -27,14 +28,13 @@ namespace Health.Direct.Policy.Tests
         {
             // size 1
             var op1 = new List<string>{"A"};
-            var input = op1.ToArray();
 
-            Assert.Equal(1, PolicyOperator<string[]>.SIZE.Execute(input));
+
+            Assert.Equal(1, PolicyOperator<IList<String>>.SIZE.Execute(op1));
 
             op1 = new List<string>();
-            input = op1.ToArray();
 
-            Assert.Equal(0, PolicyOperator<string[]>.SIZE.Execute(input));
+            Assert.Equal(0, PolicyOperator<IList<String>>.SIZE.Execute(op1));
 
         }
     }

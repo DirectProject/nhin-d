@@ -96,18 +96,29 @@ namespace Health.Direct.Policy
         private static Func<T, Int32> SizeDelegate()
         {
             Type typeList = typeof(T);
-            if (typeList.IsGenericType && typeof (IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            if (typeList.IsGenericType)
             {
-                Type itemType = typeList.GetGenericArguments()[0];
-                var itemList = Expression.Parameter(typeList, "itemList");
+                var genericTypeDefinition = typeList.GetGenericTypeDefinition();
+                if (
+                    // Type is IEnumerable<>
+                    typeof (IEnumerable<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()) 
+                    ||
+                    //Implemented Interfaces are IEnumerable
+                    genericTypeDefinition.GetInterfaces()
+                        .Any(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof (IEnumerable<>)))
+                {
 
-                Expression countExpression =
-                    Expression.Call(typeof (Enumerable), "Count", new Type[] {itemType}
-                        , itemList);
+                    Type itemType = typeList.GetGenericArguments()[0];
+                    var itemList = Expression.Parameter(typeList, "itemList");
 
-                var lambda = Expression.Lambda<Func<T, Int32>>(countExpression, itemList).Compile();
-                return lambda;
-                //return ExpressionTreeUtil.CreateDelegate<T, Int32>(Expression.ArrayLength, Left);
+                    Expression countExpression =
+                        Expression.Call(typeof (Enumerable), "Count", new Type[] {itemType}
+                            , itemList);
+
+                    var lambda = Expression.Lambda<Func<T, Int32>>(countExpression, itemList).Compile();
+                    return lambda;
+                    //return ExpressionTreeUtil.CreateDelegate<T, Int32>(Expression.ArrayLength, Left);
+                }
             }
             return null;
         }
@@ -261,7 +272,7 @@ namespace Health.Direct.Policy
         public static Intersect<T1, T2, TResult> INTERSECT;
         public static Contains<T1, T2, TResult> CONTAINS;
         public static NotContains<T1, T2, TResult> NOT_CONTAINS;
-        public static ContainsRegEx<T1, List<T1>, TResult> CONTAINS_REG_EX;
+        public static ContainsRegEx<T1, T2, TResult> CONTAINS_REG_EX;
         
 
         static PolicyOperator()
@@ -323,7 +334,9 @@ namespace Health.Direct.Policy
                 && !typeof(string).IsAssignableFrom(typeof(T1))
                 && (
                     !typeof(IEnumerable).IsAssignableFrom(typeof(T2))
-                    || typeof(string).IsAssignableFrom(typeof(T2)))
+                    || typeof(string).IsAssignableFrom(typeof(T2))
+                    )
+                && (typeof(TResult) == typeof(Boolean))
                 )
             {
                 var left = Expression.Parameter(typeof(T2), "left");
@@ -348,7 +361,7 @@ namespace Health.Direct.Policy
 
                 //
                 // Not Contains
-                //
+                // ! list.Any(a => a = "joe")
                 Expression notAnyCall = Expression.Not(anyCall);
 
                 var notContains = new NotContains();
@@ -358,15 +371,35 @@ namespace Health.Direct.Policy
             }
 
 
+            //
+            // Contains string in string
+            // result = "joe".Contains("o");
+            //if (typeof (String) == typeof (T1) && typeof (String) == typeof (T1) && typeof(TResult) == typeof(Boolean))
+            //{
+            //    var left = Expression.Parameter(typeof(T1), "left");
+            //    var right = Expression.Parameter(typeof(T2), "right");
+            //    MethodInfo method = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            //    var containsMethodExp = Expression.Call(left, method, right);
+
+            //    var contains = new Contains();
+
+            //    CONTAINS = new Contains<T1, T2, TResult>(contains
+            //        , Expression.Lambda<Func<T1, T2, TResult>>(containsMethodExp, left, right).Compile());
+            //    TokenOperatorMap[CONTAINS.GetHashCode()] = CONTAINS;
+            //}
 
 
 
             //
             // See ContainsRegEx Func below
             //
-            var containsRegEx = new ContainsRegEx();
-            CONTAINS_REG_EX = new ContainsRegEx<T1, List<T1>, TResult>(containsRegEx, RegExContains);
-            TokenOperatorMap[CONTAINS_REG_EX.GetHashCode()] = CONTAINS_REG_EX;
+            if (typeof (IEnumerable<String>).IsAssignableFrom(typeof (T1)))
+            {
+                var containsRegEx = new ContainsRegEx();
+                CONTAINS_REG_EX = new ContainsRegEx<T1, T2, TResult>(containsRegEx, RegExContains);
+                TokenOperatorMap[CONTAINS_REG_EX.GetHashCode()] = CONTAINS_REG_EX;
+            }
+            
 
 
         }
@@ -379,26 +412,41 @@ namespace Health.Direct.Policy
             // Todo: Convert strings to IEnumerable and split on comma...
             //
             if (!typeof(IEnumerable).IsAssignableFrom(typeof(T1)) || typeof(string).IsAssignableFrom(typeof(T1))) return null;
-            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)) || typeof(string).IsAssignableFrom(typeof(T2))) return null;
+            if (!typeof(IEnumerable).IsAssignableFrom(typeof(T2)))  return null;
+            if (!typeof(IEnumerable).IsAssignableFrom(typeof(TResult))) return null;
 
             Type itemType = null;
-            Type typeList = typeof(T1);
-            Type typeList2 = typeof(T2);
-            if (typeList.IsGenericType && typeList2.IsGenericType &&
-                typeof(IList<>).IsAssignableFrom(typeList.GetGenericTypeDefinition()))
+            Type leftType = typeof(T1);
+            Type rightType = typeof(T2);
+
+            //if (left.IsGenericType && right.IsGenericType &&
+            //    typeof(IList<>).IsAssignableFrom(left.GetGenericTypeDefinition()))
+            //{
+                itemType = leftType.GetGenericArguments()[0];
+            //}
+            var left = Expression.Parameter(leftType, "leftList");
+            var right = Expression.Parameter(rightType, "rightList");
+            Expression expressionBody;
+            if (typeof(string).IsAssignableFrom(typeof(T2)))
             {
-                itemType = typeList.GetGenericArguments()[0];
+                MethodInfo methodInfo = typeof(Conversions).GetMethod("CommaStringToList");
+                Expression rightConvert = Expression.Convert(right, leftType, methodInfo);
+
+                expressionBody =
+                  Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
+                                  , left, rightConvert);
+
+                return Expression.Lambda<Func<T1, T2, TResult>>(expressionBody, left, right).Compile();
             }
 
-            var itemList = Expression.Parameter(typeList, "itemList");
-            var itemList2 = Expression.Parameter(typeList2, "itemList2");
-
-            Expression Int32ersectExpression =
+            expressionBody = 
               Expression.Call(typeof(Enumerable), "Intersect", new Type[] { itemType }
-                              , itemList, itemList2);
+                              , left, right);
 
-            return Expression.Lambda<Func<T1, T2, TResult>>(Int32ersectExpression, itemList, itemList2).Compile();
+            return Expression.Lambda<Func<T1, T2, TResult>>(expressionBody, left, right).Compile();
         }
+
+        
 
         private static ParameterExpression Left
         {
@@ -452,12 +500,13 @@ namespace Health.Direct.Policy
         /// the given string.
         /// </summary>
         /// <param name="pattern">Regular expression pattern</param>
-        /// <param name="value">Source string to search</param>
+        /// <param name="items">Source strings to search</param>
         /// <returns></returns>
-        public static TResult RegExContains(T1 pattern, List<T1> value)
+        private static TResult RegExContains(T1 items, T2 pattern) 
         {
+            var values = items as IList<String>;
             Boolean success = false;
-            foreach (var item in value)
+            foreach (var item in values)
             {
                 string v = item as string;
                 string p = pattern as string;
@@ -485,6 +534,7 @@ namespace Health.Direct.Policy
             new PolicyOperator<Int32, Boolean>();
             new PolicyOperator<Int32, String>();
             new PolicyOperator<String, Boolean>();
+            new PolicyOperator<IList<String>, Boolean>();
 
             new PolicyOperator<Int32, Int32, Boolean>();
             new PolicyOperator<Int32, Int32, Int32>();
@@ -496,12 +546,15 @@ namespace Health.Direct.Policy
             new PolicyOperator<IList<String>, IList<String>, IEnumerable<String>>();
             new PolicyOperator<Int64, String, Boolean>();
             new PolicyOperator<Int32, String, Boolean>();
+            new PolicyOperator<IList<String>, String, IEnumerable<String>>();
             new PolicyOperator<IList<String>, String, Boolean>();
-            
+
             //Unary
             //new PolicyOperator<String>();
             //new PolicyOperator<Int32>();
             new PolicyOperator<IList<String>>();
+            new PolicyOperator<IEnumerable<String>>();
+            new PolicyOperator<Boolean>();
         }
 
         //public static Equals<T, T> Equals<T>()

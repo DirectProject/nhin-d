@@ -101,14 +101,14 @@ namespace Health.Direct.Policy.Tests
             tbsField = parser.BuildTBSField("X509.TBS.Issuer.ST") as IssuerAttributeField;
             tbsField.Should().NotBeNull();
             tbsField.GetType().Should().Be(typeof(IssuerAttributeField));
-            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE);
+            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE_ST);
             tbsField.IsRequired().Should().BeFalse();
 
             parser = new SimpleTextV1LexiconPolicyParser();
             tbsField = parser.BuildTBSField("X509.TBS.Issuer.ST+") as IssuerAttributeField;
             tbsField.Should().NotBeNull();
             tbsField.GetType().Should().Be(typeof(IssuerAttributeField));
-            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE);
+            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE_ST);
             tbsField.IsRequired().Should().BeTrue();
 
             parser = new SimpleTextV1LexiconPolicyParser();
@@ -363,14 +363,14 @@ namespace Health.Direct.Policy.Tests
             tbsField = parser.BuildTBSField("X509.TBS.Subject.ST") as SubjectAttributeField;
             tbsField.Should().NotBeNull();
             tbsField.GetType().Should().Be(typeof(SubjectAttributeField));
-            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE);
+            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE_ST);
             tbsField.IsRequired().Should().BeFalse();
 
             parser = new SimpleTextV1LexiconPolicyParser();
             tbsField = parser.BuildTBSField("X509.TBS.Subject.ST+") as SubjectAttributeField;
             tbsField.Should().NotBeNull();
             tbsField.GetType().Should().Be(typeof(SubjectAttributeField));
-            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE);
+            tbsField.GetRDNAttributeFieldId().Should().Be(RDNAttributeIdentifier.STATE_ST);
             tbsField.IsRequired().Should().BeTrue();
 
             parser = new SimpleTextV1LexiconPolicyParser();

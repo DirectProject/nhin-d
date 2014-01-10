@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace Health.Direct.Policy.Extensions
@@ -36,6 +37,13 @@ namespace Health.Direct.Policy.Extensions
                 return Expression.Parameter(typeof(Int64), stringParamter.Name);
             }
             throw new NotImplementedException("Not implemented for " + stringParamter.Type );
+        }
+
+        public static IList<string> CommaStringToList(string value)
+        {
+            var stringArray = value.Split(',');
+            var stringList = new List<String>(stringArray);
+            return stringList;
         }
     }
 }

@@ -176,6 +176,7 @@ namespace Health.Direct.Policy.Tests
             Assert.False(PolicyOperator<IList<int>, int, bool>.CONTAINS.Execute(integers, 777));
         }
 
+        
 
         [Fact]
         public void TestExecute_NotContains_AssertResults()
@@ -196,9 +197,9 @@ namespace Health.Direct.Policy.Tests
         public void TestExecute_ContainsRegEx_AssertResults()
         {
             var urls = new List<string> {"http://thisis.aurl.com"};
-            Assert.True(PolicyOperator<string, IList<string>, bool>.CONTAINS_REG_EX.Execute("http", urls));
+            Assert.True(PolicyOperator<IList<String>, String, bool>.CONTAINS_REG_EX.Execute(urls, "http"));
 
-            Assert.False(PolicyOperator<string, IList<string>, bool>.CONTAINS_REG_EX.Execute("777", urls));
+            Assert.False(PolicyOperator<IList<String>, String, bool>.CONTAINS_REG_EX.Execute(urls, "777"));
 
         }
         [Fact]

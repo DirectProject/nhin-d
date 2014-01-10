@@ -56,7 +56,7 @@ namespace Health.Direct.Policy.X509
             if (RdnAttributeId.Equals(RDNAttributeIdentifier.DISTINGUISHED_NAME))
             {
                 var str = new List<String> { Certificate.SubjectName.RemoveSpaces() };
-                PolicyValue = PolicyValueFactory<List<String>>.GetInstance(str);
+                PolicyValue = PolicyValueFactory<IList<String>>.GetInstance(str);
                 return;
             }
 
@@ -67,7 +67,7 @@ namespace Health.Direct.Policy.X509
             if (!values.Any() && IsRequired())
                 throw new PolicyRequiredException(Name + " field attribute " + RdnAttributeId.Name + " is marked as required but is not present.");
 
-            PolicyValue = PolicyValueFactory<List<String>>.GetInstance(values);
+            PolicyValue = PolicyValueFactory<IList<String>>.GetInstance(values);
             
         }
     }
