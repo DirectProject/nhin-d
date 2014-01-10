@@ -1,0 +1,20 @@
+h1. About this Chapter
+
+This chapters describes the different configuration and deployment methodologies for the gateway components.
+
+h2. Agent Configuration
+
+Agent configuration consists of setting the runtime parameters for both the protocol and security and trust agents.  The agent configuration is for the most part decoupled from the protocol implementation and bridge, and the configuration settings can be stored in any addressable protocol supported by the protocol agent subsystem.
+
+* [SMTP XML configuration|./smtp-depl-xmlconfig.html]
+
+* [SMTP WebService configuration|./smtp-depl-wsconfig.html]
+
+* [Fine Grain Tuning|./smtp-fine-grain-options.html]
+
+h2. Protocol Implementation Deployment
+
+Protocol implementation deployments are dependent are the specific implementation.  A specific implementation deployment may even have several deployment options.  In almost all cases, the deployment consists of installing and configuring a protocol bridge specific to the implementation.
+
+* [SMTP Deployments|./depl-smtp.html]
+

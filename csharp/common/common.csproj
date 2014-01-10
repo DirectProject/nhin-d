@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Health.Direct.Common</RootNamespace>
+    <AssemblyName>Health.Direct.Common</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\Health.Direct.Common.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\Health.Direct.Common.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="BlueButton\DocumentSource.cs" />
+    <Compile Include="BlueButton\RequestContext.cs" />
+    <Compile Include="Caching\Cache.cs" />
+    <Compile Include="Caching\CacheSettings.cs" />
+    <Compile Include="Caching\CachingBase.cs" />
+    <Compile Include="Caching\DnsResponseCache.cs" />
+    <Compile Include="Certificates\AnchorBundleDownloader.cs">
+    </Compile>
+    <Compile Include="Certificates\AnchorBundle.cs" />
+    <Compile Include="Certificates\AnchorMetadata.cs" />
+    <Compile Include="Certificates\AnchorX509Certificate2.cs" />
+    <Compile Include="Certificates\CertificateCache.cs" />
+    <Compile Include="Certificates\CertificateIndex.cs" />
+    <Compile Include="Certificates\CertificateResolver.cs" />
+    <Compile Include="Certificates\CertificateResolverCollection.cs" />
+    <Compile Include="Certificates\CertificateStore.cs" />
+    <Compile Include="Certificates\CryptoUtility.cs" />
+    <Compile Include="Certificates\DnsCertResolver.cs" />
+    <Compile Include="Certificates\Extensions.cs" />
+    <Compile Include="Certificates\ICertificateResolver.cs" />
+    <Compile Include="Certificates\ITrustAnchorResolver.cs" />
+    <Compile Include="Certificates\IX509CertificateStore.cs" />
+    <Compile Include="Certificates\MemoryX509Store.cs" />
+    <Compile Include="Certificates\SystemX509Store.cs" />
+    <Compile Include="Certificates\TrustAnchorResolver.cs" />
+    <Compile Include="Certificates\UniformCertificateStore.cs" />
+    <Compile Include="Certificates\DisposableX509Certificate2.cs" />
+    <Compile Include="Collections\PropertyBag.cs" />
+    <Compile Include="Collections\PropertySet.cs" />
+    <Compile Include="Container\ConfigurationSectionBase.cs" />
+    <Compile Include="Container\IDependencyContainer.cs" />
+    <Compile Include="Container\IocContainerSection.cs" />
+    <Compile Include="Container\PluginDefinition.cs" />
+    <Compile Include="Container\SimpleContainerSection.cs" />
+    <Compile Include="Container\IoC.cs" />
+    <Compile Include="Container\SimpleContainerSettings.cs" />
+    <Compile Include="Container\SimpleDependencyResolver.cs" />
+    <Compile Include="Cryptography\CryptographicException.cs" />
+    <Compile Include="Cryptography\DigestAlgorithm.cs" />
+    <Compile Include="Cryptography\EncryptionAlgorithm.cs" />
+    <Compile Include="Cryptography\EncryptionError.cs" />
+    <Compile Include="Cryptography\EncryptionException.cs" />
+    <Compile Include="Cryptography\Extensions.cs" />
+    <Compile Include="Cryptography\SignatureError.cs" />
+    <Compile Include="Cryptography\SignatureException.cs" />
+    <Compile Include="Cryptography\SignedEntity.cs" />
+    <Compile Include="Cryptography\SMIMECryptographer.cs" />
+    <Compile Include="Cryptography\SMIMEStandard.cs" />
+    <Compile Include="Diagnostics\AuditNames.cs" />
+    <Compile Include="Diagnostics\EventLogAuditor.cs" />
+    <Compile Include="Diagnostics\EventLogHelper.cs" />
+    <Compile Include="Diagnostics\IAuditor.cs" />
+    <Compile Include="Diagnostics\ILogFactory.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Diagnostics\Log.cs" />
+    <Compile Include="Diagnostics\LogFileSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Diagnostics\LogFileSection.cs" />
+    <Compile Include="Diagnostics\LoggingLevel.cs" />
+    <Compile Include="Diagnostics\MethodTracer.cs" />
+    <Compile Include="Diagnostics\NullAuditor.cs" />
+    <Compile Include="Diagnostics\RolloverPeriod.cs" />
+    <Compile Include="DnsResolver\AddressRecord.cs" />
+    <Compile Include="DnsResolver\CertRecord.cs" />
+    <Compile Include="DnsResolver\CNameRecord.cs" />
+    <Compile Include="DnsResolver\Dns.cs" />
+    <Compile Include="DnsResolver\DnsBuffer.cs" />
+    <Compile Include="DnsResolver\DnsBufferReader.cs" />
+    <Compile Include="DnsResolver\DnsCert.cs" />
+    <Compile Include="DnsResolver\DnsClient.cs" />
+    <Compile Include="DnsResolver\DnsException.cs" />
+    <Compile Include="DnsResolver\DnsHeader.cs" />
+    <Compile Include="DnsResolver\DnsMessage.cs" />
+    <Compile Include="DnsResolver\DnsProtocolException.cs" />
+    <Compile Include="DnsResolver\DnsQuestion.cs" />
+    <Compile Include="DnsResolver\DnsRecordPrinter.cs" />
+    <Compile Include="DnsResolver\DnsRequest.cs" />
+    <Compile Include="DnsResolver\DnsResourceRecord.cs" />
+    <Compile Include="DnsResolver\DnsResourceRecordCollection.cs" />
+    <Compile Include="DnsResolver\DnsResponse.cs" />
+    <Compile Include="DnsResolver\Extensions.cs" />
+    <Compile Include="DnsResolver\MXRecord.cs" />
+    <Compile Include="DnsResolver\NSRecord.cs" />
+    <Compile Include="DnsResolver\PtrRecord.cs" />
+    <Compile Include="DnsResolver\RawRecord.cs" />
+    <Compile Include="DnsResolver\SOARecord.cs" />
+    <Compile Include="DnsResolver\SRVRecord.cs" />
+    <Compile Include="DnsResolver\TextRecord.cs" />
+    <Compile Include="Dns\DnsClientWithCache.cs" />
+    <Compile Include="Container\IDependencyResolver.cs" />
+    <Compile Include="Domains\DomainCache.cs" />
+    <Compile Include="Domains\IDomainResolver.cs" />
+    <Compile Include="Domains\StaticDomainResolver.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Mail\DSN\DSN.cs" />
+    <Compile Include="Mail\DSN\DSNMessageHeaders.cs" />
+    <Compile Include="Mail\DSN\DSNParser.cs" />
+    <Compile Include="Mail\DSN\DSNRecipientHeaders.cs" />
+    <Compile Include="Mail\DSN\DSNStandard.cs" />
+    <Compile Include="Mail\DSN\Extensions.cs" />
+    <Compile Include="Mail\DSN\DSNMessage.cs" />
+    <Compile Include="Mail\DSN\DSNPerMessage.cs" />
+    <Compile Include="Mail\DSN\DSNPerRecipient.cs" />
+    <Compile Include="Mail\DSN\DSNException.cs" />
+    <Compile Include="Mail\DSN\DSNError.cs" />
+    <Compile Include="Mail\Notifications\Disposition.cs" />
+    <Compile Include="Mail\Notifications\Extensions.cs" />
+    <Compile Include="Mail\Notifications\MDNError.cs" />
+    <Compile Include="Mail\Notifications\MDNException.cs" />
+    <Compile Include="Mail\Notifications\MdnGateway.cs" />
+    <Compile Include="Mail\Notifications\MDNParser.cs" />
+    <Compile Include="Mail\Notifications\Notification.cs" />
+    <Compile Include="Mail\MailParser.cs" />
+    <Compile Include="Mail\Extensions.cs" />
+    <Compile Include="Mail\Notifications\NotificationMessage.cs" />
+    <Compile Include="Mail\Notifications\MDNStandard.cs" />
+    <Compile Include="Mail\Message.cs" />
+    <Compile Include="Mail\MailStandard.cs" />
+    <Compile Include="Mail\Notifications\ReportingUserAgent.cs" />
+    <Compile Include="Mail\WrappedMessage.cs" />
+    <Compile Include="Metadata\HL7Util.cs" />
+    <Compile Include="Metadata\Institution.cs" />
+    <Compile Include="Metadata\PostalAddress.cs" />
+    <Compile Include="Metadata\Author.cs" />
+    <Compile Include="Metadata\CodedValue.cs" />
+    <Compile Include="Metadata\ConfidentialtyCode.cs" />
+    <Compile Include="Metadata\DocumentClass.cs" />
+    <Compile Include="Metadata\DocumentMetadata.cs" />
+    <Compile Include="Metadata\DocumentPackage.cs" />
+    <Compile Include="Metadata\Extensions.cs" />
+    <Compile Include="Metadata\FacilityCode.cs" />
+    <Compile Include="Metadata\FormatCode.cs" />
+    <Compile Include="Metadata\PatientID.cs" />
+    <Compile Include="Metadata\Person.cs" />
+    <Compile Include="Metadata\Recipient.cs" />
+    <Compile Include="Metadata\SpecialtyCode.cs" />
+    <Compile Include="Metadata\Telecom.cs" />
+    <Compile Include="Mime\Body.cs" />
+    <Compile Include="Mime\CharReader.cs" />
+    <Compile Include="Mime\DefaultSerializer.cs" />
+    <Compile Include="Mime\MimeFieldParameter.cs" />
+    <Compile Include="Mime\MimeFields.cs" />
+    <Compile Include="Mime\MimeWriter.cs" />
+    <Compile Include="Mime\MimeParser.cs" />
+    <Compile Include="Mime\Extensions.cs" />
+    <Compile Include="Mime\MimePart.cs" />
+    <Compile Include="Mime\MimePartType.cs" />
+    <Compile Include="Mime\MimeSerializer.cs" />
+    <Compile Include="Mime\Header.cs" />
+    <Compile Include="Mime\HeaderCollection.cs" />
+    <Compile Include="Mime\MimeStandard.cs" />
+    <Compile Include="Mime\MimeEntity.cs" />
+    <Compile Include="Mime\MimeEntityCollection.cs" />
+    <Compile Include="Mime\MimeError.cs" />
+    <Compile Include="Mime\MultipartEntity.cs" />
+    <Compile Include="Collections\ObjectCollection.cs" />
+    <Compile Include="Mime\MimeException.cs" />
+    <Compile Include="Mime\QuotedPrintableEncoding.cs" />
+    <Compile Include="Mime\StringSegment.cs" />
+    <Compile Include="DirectException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routing\FolderBalancer.cs" />
+    <Compile Include="Routing\LoadBalancer.cs" />
+    <Compile Include="Routing\IReceiver.cs" />
+    <Compile Include="Web\WebDownloader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(TargetDir)*.dll" "$(SolutionDir)..\bin\$(ConfigurationName)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>
