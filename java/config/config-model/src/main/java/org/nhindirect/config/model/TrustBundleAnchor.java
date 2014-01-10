@@ -37,7 +37,6 @@ import org.nhindirect.config.model.exceptions.CertificateConversionException;
 public class TrustBundleAnchor 
 {
     private long id;
-    private TrustBundle trustBundle;
     private byte[] anchorData;
     private String thumbprint;
     private Calendar validStartDate;
@@ -56,16 +55,6 @@ public class TrustBundleAnchor
 	public void setId(long id) 
 	{
 		this.id = id;
-	}
-
-	public TrustBundle getTrustBundle() 
-	{
-		return trustBundle;
-	}
-
-	public void setTrustBundle(TrustBundle trustBundle) 
-	{
-		this.trustBundle = trustBundle;
 	}
 
 	public byte[] getAnchorData() 

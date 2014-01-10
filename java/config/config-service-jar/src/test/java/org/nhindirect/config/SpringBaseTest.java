@@ -10,6 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.nhindirect.config.store.Address;
 import org.nhindirect.config.store.Anchor;
+import org.nhindirect.config.store.CertPolicy;
+import org.nhindirect.config.store.CertPolicyGroup;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.DNSRecord;
 import org.nhindirect.config.store.Domain;
@@ -17,6 +19,7 @@ import org.nhindirect.config.store.Setting;
 import org.nhindirect.config.store.TrustBundle;
 import org.nhindirect.config.store.dao.AddressDao;
 import org.nhindirect.config.store.dao.AnchorDao;
+import org.nhindirect.config.store.dao.CertPolicyDao;
 import org.nhindirect.config.store.dao.CertificateDao;
 import org.nhindirect.config.store.dao.DNSDao;
 import org.nhindirect.config.store.dao.DomainDao;
@@ -85,6 +88,7 @@ public abstract class SpringBaseTest extends TestCase
 		final CertificateDao certDao = (CertificateDao)ctx.getBean("certificateDao");
 		final DNSDao dnsDao = (DNSDao)ctx.getBean("dnsDao");
 		final SettingDao settingDao = (SettingDao)ctx.getBean("settingDao");
+		final CertPolicyDao policyDao = (CertPolicyDao)ctx.getBean("certPolicyDao");
 		
 		// clean anchors
 		final List<Anchor> anchors = anchorDao.listAll();
@@ -151,6 +155,22 @@ public abstract class SpringBaseTest extends TestCase
 		{
 			for (Setting setting : settings)
 				settingDao.delete(Arrays.asList(setting.getName()));
+		}	
+		
+		// clean policies
+		final Collection<CertPolicy> policies = policyDao.getPolicies();
+		if (!policies.isEmpty())
+		{
+			for (CertPolicy policy : policies)
+				policyDao.deletePolicies(new long[] {policy.getId()});
 		}
+		
+		// clean policy groups
+		final Collection<CertPolicyGroup> groups = policyDao.getPolicyGroups();
+		if (!groups.isEmpty())
+		{
+			for (CertPolicyGroup group : groups)
+				policyDao.deletePolicyGroups(new long[] {group.getId()});
+		}		
 	}
 }

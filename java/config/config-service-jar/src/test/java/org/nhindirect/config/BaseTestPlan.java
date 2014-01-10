@@ -1,5 +1,7 @@
 package org.nhindirect.config;
 
+import java.io.File;
+
 import org.nhindirect.config.providers.ConfigJSONProvider;
 
 import com.sun.jersey.api.client.Client;
@@ -11,6 +13,20 @@ public abstract class BaseTestPlan extends SpringBaseTest
 {
 	private static final Integer CONNECTION_TIMEOUT = 10000; // 10 seconds
 	private static final Integer READ_TIMEOUT = 1000000; // 1000 seconds for debugging purposes
+	
+	static protected String filePrefix;
+	
+    static
+    {
+
+		// check for Windows... it doens't like file://<drive>... turns it into FTP
+		File file = new File("./src/test/resources/bundles/signedbundle.p7b");
+		if (file.getAbsolutePath().contains(":/"))
+			filePrefix = "file:///";
+		else
+			filePrefix = "file:///";
+    }
+    
 	
 	public void perform() throws Exception 
 	{
