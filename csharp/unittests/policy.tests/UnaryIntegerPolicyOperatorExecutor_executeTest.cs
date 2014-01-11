@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Health.Direct.Policy.Tests
 {
-    public class UnaryIntegerPolicyOperatorExecutor_executeTest
+    public class UnaryIntegerPolicyOperatorExecutor_ExecuteTest
     {
         [Fact]
         public void TestExecute_Size_AssertResults()

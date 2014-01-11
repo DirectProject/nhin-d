@@ -60,24 +60,17 @@ namespace Health.Direct.Policy.Tests
 
     public class PolicyValueFactory_getInstanceTest
     {
-        //public void testGetInstance_assertValue()
-        //{
-        //    PolicyValue<Int32> value = PolicyValueFactory.getInstance(12345);
-		
-        //    assertTrue(value.getPolicyValue() instanceof Integer);
-        //    assertEquals(12345, value.getPolicyValue().intValue());
-        //    assertEquals("12345", value.toString());
-        //    assertEquals(new Integer(12345).hashCode(), value.getPolicyValue().hashCode());
-		
-		
-        //    assertFalse(value.equals(null));
-        //    assertTrue(value.equals(12345));
-        //    assertTrue(value.equals(PolicyValueFactory.getInstance(12345)));
-		
-		
-        //    assertTrue(value.equals(12345));
-        //    assertFalse(value.equals("12345"));
-        //}
+        [Fact]
+        public void testGetInstance_assertValue()
+        {
+            IPolicyValue<Int32> value = PolicyValueFactory.GetInstance(12345);
+            value.GetPolicyValue().Should().Be(12345);
+            value.Should().Be(PolicyValueFactory.GetInstance(12345));
+
+            IPolicyValue<String> value2 = PolicyValueFactory.GetInstance("12345");
+            value2.GetPolicyValue().Should().Be("12345");
+            value2.Should().Be(PolicyValueFactory.GetInstance("12345"));
+        }
 	
     }
 }
