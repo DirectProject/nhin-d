@@ -22,7 +22,7 @@ namespace Health.Direct.Policy
     /// <summary>
     /// Factory class that generates a <see cref="IPolicyValue{T}" /> instance for an actual value.
     /// </summary>
-    public class PolicyValueFactory<T>
+    public class PolicyValueFactory
     {
         private PolicyValueFactory(){}
  
@@ -31,9 +31,9 @@ namespace Health.Direct.Policy
         /// </summary>
         /// <param name="value"> The value contained within the generated <see cref="IPolicyValue{T}" /> instance.</param>
         /// <returns>New instance of a <see cref="IPolicyValue{T}" /> instance containing the given value.</returns>
-        public static IPolicyValue<T> GetInstance(T value)
+        public static IPolicyValue<T> GetInstance<T>(T value)
         {
-            return new PolicyValueImpl(value);
+            return new PolicyValueImpl<T>(value);
         }
 
 
@@ -48,7 +48,7 @@ namespace Health.Direct.Policy
         }
             
         [Serializable]
-        public class PolicyValueImpl : IPolicyValue<T>
+        public class PolicyValueImpl<T> : IPolicyValue<T>
         {
             protected readonly T Value;
 
