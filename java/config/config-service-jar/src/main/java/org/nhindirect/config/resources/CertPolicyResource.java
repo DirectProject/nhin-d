@@ -1,3 +1,24 @@
+/* 
+Copyright (c) 2010, NHIN Direct Project
+All rights reserved.
+
+Authors:
+   Greg Meyer      gm2552@cerner.com
+ 
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer 
+in the documentation and/or other materials provided with the distribution.  Neither the name of the The NHIN Direct Project (nhindirect.org). 
+nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS 
+BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE 
+GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF 
+THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 package org.nhindirect.config.resources;
 
 import java.net.URI;
@@ -34,6 +55,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing certificate policy resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("certpolicy/")
 @Singleton
@@ -61,18 +89,32 @@ public class CertPolicyResource
 		
 	}
     
+    /**
+     * Sets the policy Dao.  Auto populated by Spring
+     * @param policyDao CertPolicyDao Dao
+     */
     @Autowired
     public void setCertPolicyDao(CertPolicyDao policyDao) 
     {
         this.policyDao = policyDao;
     }
     
+    
+    /**
+     * Sets the domain Dao.  Auto populated by Spring
+     * @param domainDao DomainDao Dao
+     */
     @Autowired
     public void setDomainDao(DomainDao domainDao) 
     {
         this.domainDao = domainDao;
     }
     
+    /**
+     * Gets all certificate policies in the system.
+     * @return A JSON representation of a collection of all certificate policies in the system.  Returns a status of 204 if
+     * no certificate policies exists.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPolicies()
@@ -101,6 +143,11 @@ public class CertPolicyResource
 		return Response.ok(entity).cacheControl(noCache).build();      	
     }
     
+    /**
+     * Gets a certificate policy by name.  
+     * @param policyName The name of the certificate policy to retrieve.
+     * @return A JSON representation of the certificate policy.  Returns a status of 404 if a certificate policy with the given name does not exist.
+     */
     @GET
     @Path("{policyName}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -125,6 +172,12 @@ public class CertPolicyResource
     	}    	
     }  
     
+    /**
+     * Adds a certificate policy to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param policy The certificate policy to add.
+     * @return A status of 201 if the policy was added or a status of 409 if the policy already exists.
+     */
     @PUT 
     @Consumes(MediaType.APPLICATION_JSON)  
     public Response addPolicy(@Context UriInfo uriInfo, CertPolicy policy)
@@ -159,6 +212,11 @@ public class CertPolicyResource
     	}
     }  
     
+    /**
+     * Deletes a certificate policy by name.
+     * @param policyName The name of the certificate policy.
+     * @return Status of 200 if the policy was delete or 404 if a certificate policy with the given name does not exist.
+     */
     @Path("{policyName}")
     @DELETE
     public Response removePolicyByName(@PathParam("policyName") String policyName)
@@ -190,6 +248,12 @@ public class CertPolicyResource
     	}  
     }    
     
+    /**
+     * Updates the information of a certificate policy.
+     * @param policyName The name of the certificate policy to update.
+     * @param policyData Data that should be update.  Any null or empty attributes will result in that attribute not being updated.
+     * @return Status of 204 if the certificate policy was updated or 404 if a certificate policy with the given name does not exist.
+     */
     @POST 
     @Path("{policyName}/policyAttributes")  
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -223,6 +287,11 @@ public class CertPolicyResource
     	}
     }
     
+    /**
+     * Gets all policy groups in the system.
+     * @return A JSON representation of a collection of all policy groups in the system.  Returns a status of 204 if no policy
+     * groups exist.
+     */
     @Path("groups")  
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -252,6 +321,12 @@ public class CertPolicyResource
 		return Response.ok(entity).cacheControl(noCache).build();      	
     }  
     
+    /**
+     * Gets a policy group name.
+     * @param groupName The name of the policy group to retrieve.
+     * @return A JSON representation of the policy group.  Returns a status of 404 if a policy group with the given name does
+     * not exist.
+     */
     @Path("groups/{groupName}")  
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -276,6 +351,13 @@ public class CertPolicyResource
     	}     	
     }
     
+    /**
+     * Adds a policy group to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param group The policy group to add.
+     * @return Status of 201 if the policy group was added or a status of 409 if the policy group
+     * already exists.
+     */
     @PUT 
     @Consumes(MediaType.APPLICATION_JSON)  
     @Path("groups")
@@ -311,6 +393,12 @@ public class CertPolicyResource
     	}
     }  
     
+    /**
+     * Deletes a policy group from the system.
+     * @param groupName The name of the policy group to delete.
+     * @return A status of 200 if the policy group was deleted or a status of 404 if a policy group with the given
+     * name does not exist.
+     */
     @Path("groups/{groupName}")
     @DELETE
     public Response removePolicyGroupByName(@PathParam("groupName") String groupName)
@@ -342,6 +430,13 @@ public class CertPolicyResource
     	}  
     }       
     
+    /**
+     * Updates the attributes of a policy group.  This method only updates the policy group name.
+     * @param groupName The name of the policy group to update.
+     * @param newGroupName The new name of the policy group.
+     * @return Status of 204 if the policy group was updated or a status of 404 if a policy group with the given name
+     * does not exist.
+     */
     @POST 
     @Path("groups/{groupName}/groupAttributes")  
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -374,6 +469,13 @@ public class CertPolicyResource
     	}
     }  
     
+    /**
+     * Adds a certificate policy usage to a policy group.
+     * @param groupName The name of the policy group to add the usage to.
+     * @param use The certificate policy usage to add to the policy group.
+     * @return Status of 204 if the usage was added to the policy group or a status of 404 if either the certificate
+     * policy or policy group does not exist.
+     */
     @POST 
     @Path("groups/uses/{group}")  
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -421,7 +523,13 @@ public class CertPolicyResource
     	}
     }
     
-    
+    /**
+     * Removes a certificate policy usage from a policy group.
+     * @param groupName  The name of the policy group to remove the usage from.
+     * @param use The certificate policy usage to removed from the policy group.
+     * @return A status of 200 if the usage is removed from the policy group or a status of 404 if the certificate policy, policy group,
+     * or existing relationship is not found.
+     */
     @POST 
     @Path("groups/uses/{group}/removePolicy")
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -473,6 +581,11 @@ public class CertPolicyResource
 		return Response.ok().cacheControl(noCache).build();
     }
     
+    /**
+     * Gets all policy group to domain relationships.
+     * @return A JSON representation of a collection of domain to policy group relationships.  Returns a status of 204 if no
+     * relationships exist.
+     */
     @GET
     @Path("groups/domain")  
     @Produces(MediaType.APPLICATION_JSON)
@@ -502,6 +615,13 @@ public class CertPolicyResource
 		return Response.ok(entity).cacheControl(noCache).build();     
     }
     
+    /**
+     * Gets all policy groups associated with a domain.
+     * @param domainName The domain name to retrieve associate policy groups from.
+     * @return A JSON representation of a collection of policy groups that are associated to the given domain.  Returns
+     * a status of 404 if the a domain with the given name does not exist or a status of 204 or no policy groups are associated
+     * to the given domain.
+     */
     @GET
     @Path("groups/domain/{domain}")  
     @Produces(MediaType.APPLICATION_JSON)
@@ -545,6 +665,13 @@ public class CertPolicyResource
 		return Response.ok(entity).cacheControl(noCache).build();      	
     }
     
+    /**
+     * Associates a policy group to a domain.
+     * @param groupName The policy group name to associate to the domain.
+     * @param domainName The domain name to associate to the policy group.
+     * @return Status of 204 if the policy group and domain are associated or a status of 404 if either the policy group
+     * or domain with the given respective names do not exist.
+     */
     @POST 
     @Path("groups/domain/{group}/{domain}")  
     public Response associatePolicyGroupToDomain(@PathParam("group") String groupName, @PathParam("domain") String domainName)
@@ -590,6 +717,13 @@ public class CertPolicyResource
     	}
     }
     
+    /**
+     * Removed a policy group from a domain.
+     * @param groupName The policy group name to remove from the domain.
+     * @param domainName The domain name to remove from the policy group.
+     * @return A status of 200 if the policy group is removed from the domain or a status of 404 if either the policy group
+     * or domain with the given respective names do not exist.
+     */
     @DELETE 
     @Path("groups/domain/{group}/{domain}")  
     public Response disassociatePolicyGroupFromDomain(@PathParam("group") String groupName, @PathParam("domain") String domainName)
@@ -635,6 +769,12 @@ public class CertPolicyResource
     	} 
     }
     
+    /**
+     * Removes all policy groups for a given domain.
+     * @param domainName The domain to remove all policy groups from.
+     * @return Status of 204 if all policy groups are removed from the domain or a status or 404 if a domain with the given name does
+     * not exist.
+     */
     @DELETE 
     @Path("groups/domain/{domain}/deleteFromDomain")  
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -667,6 +807,12 @@ public class CertPolicyResource
     	} 
     }
     
+    /**
+     * Removes a given policy group from all domains.
+     * @param groupName The policy group to remove from all domains.
+     * @return Status of 200 if the policy group is removed from all domains or a status of 404 if the a policy group with the given
+     * name does not exist.
+     */
     @DELETE 
     @Path("groups/domain/{group}/deleteFromGroup")  
     @Consumes(MediaType.APPLICATION_JSON)  

@@ -21,6 +21,11 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.model;
 
+/**
+ * Enumeration of status for refresh error for trust bundles.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 public enum BundleRefreshError 
 {
 	/**

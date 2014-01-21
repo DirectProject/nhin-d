@@ -45,6 +45,11 @@ import org.nhindirect.config.model.exceptions.CertificateConversionException;
 import org.nhindirect.config.store.CertificateException;
 import org.nhindirect.policy.PolicyLexicon;
 
+/**
+ * Conversion methods from model to entity representation and vice versa.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 public class EntityModelConversion 
 {
 	

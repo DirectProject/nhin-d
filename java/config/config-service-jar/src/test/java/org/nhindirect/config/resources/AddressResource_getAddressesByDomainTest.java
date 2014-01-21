@@ -103,7 +103,7 @@ public class AddressResource_getAddressesByDomainTest
 			catch (UniformInterfaceException e)
 			{
 				
-				if (e.getResponse().getStatus() == 404)
+				if (e.getResponse().getStatus() == 404 || e.getResponse().getStatus() == 204)
 					doAssertions(new ArrayList<Address>());
 				else
 					throw e;

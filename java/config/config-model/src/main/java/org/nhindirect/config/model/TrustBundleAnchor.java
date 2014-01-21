@@ -31,7 +31,11 @@ import org.codehaus.enunciate.json.JsonRootType;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nhindirect.config.model.exceptions.CertificateConversionException;
 
-
+/**
+ * An trust anchor within a trust bundle.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class TrustBundleAnchor 
@@ -42,56 +46,99 @@ public class TrustBundleAnchor
     private Calendar validStartDate;
     private Calendar validEndDate;
     
+    /**
+     * Empty constructor.
+     */
     public TrustBundleAnchor()
     {
     	
     }
 
+    /**
+     * Gets the internal system id of the trust bundle anchor.
+     * @return The internal system id of the trust bundle anchor.
+     */
 	public long getId() 
 	{
 		return id;
 	}
 
+	/**
+	 * Sets the internal system id of the trust bundle anchor.
+	 * @param id The internal system id of the trust bundle anchor.
+	 */
 	public void setId(long id) 
 	{
 		this.id = id;
 	}
 
+	/**
+	 * Gets the DER encoded data of the anchor.
+	 * @return The DER encoded data of the anchor.
+	 */
 	public byte[] getAnchorData() 
 	{
 		return anchorData;
 	}
 
+	/**
+	 * Sets the DER encoded data of the anchor.
+	 * @param anchorData the DER encoded data of the anchor.
+	 */
 	public void setAnchorData(byte[] anchorData) 
 	{
 		this.anchorData = anchorData;
 	}
 
+	/**
+	 * Gets the thumb print of the anchor.  The thumb print consists of a SHA-1 hash of the anchors DER encoding.
+	 * @return The thumb print of the anchor. 
+	 */
 	public String getThumbprint() 
 	{
 		return thumbprint;
 	}
 
+	/**
+	 * Sets the thumb print of the anchor. 
+	 * @param thumbprint The thumb print of the anchor. 
+	 */
 	public void setThumbprint(String thumbprint) 
 	{
 		this.thumbprint = thumbprint;
 	}
 
+	/**
+	 * Gets the valid from date/time of the anchor.
+	 * @return The valid from date/time of the anchor.
+	 */
 	public Calendar getValidStartDate() 
 	{
 		return validStartDate;
 	}
 
+	/** 
+	 * Sets the valid from date/time of the anchor.
+	 * @param validStartDate The valid from date/time of the anchor.
+	 */
 	public void setValidStartDate(Calendar validStartDate) 
 	{
 		this.validStartDate = validStartDate;
 	}
 
+	/**
+	 * Gets the valid until date/time of the anchor.
+	 * @return The valid until date/time of the anchor.
+	 */
 	public Calendar getValidEndDate() 
 	{
 		return validEndDate;
 	}
 
+	/**
+	 * Sets the valid until date/time of the anchor.
+	 * @param validEndDate The valid until date/time of the anchor.
+	 */
 	public void setValidEndDate(Calendar validEndDate) 
 	{
 		this.validEndDate = validEndDate;

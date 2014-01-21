@@ -28,6 +28,11 @@ import java.util.Collections;
 
 import org.codehaus.enunciate.json.JsonRootType;
 
+/**
+ * Certificate policy group.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class CertPolicyGroup 

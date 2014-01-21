@@ -19,46 +19,7 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.config.model.exceptions;
-
 /**
- * Thrown if errors occurring during the conversions of DNS records to other representations.
- * @author Greg Meyer
- * @since 1.0
+ * Data model classes for configuration web services.
  */
-public class DNSRecordCreationException extends RuntimeException 
-{
-
-	private static final long serialVersionUID = -4626071199178973053L;
-
-	/**
-	 * Empty constructor
-	 */
-    public DNSRecordCreationException() 
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DNSRecordCreationException(String msg) 
-    {
-        super(msg);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DNSRecordCreationException(String msg, Throwable t) 
-    {
-        super(msg, t);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DNSRecordCreationException(Throwable t) 
-    {
-        super(t);
-    }
-}
+package org.nhindirect.config.model;

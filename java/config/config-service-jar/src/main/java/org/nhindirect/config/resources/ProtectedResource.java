@@ -19,46 +19,25 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.config.model.exceptions;
+package org.nhindirect.config.resources;
+
+import javax.ws.rs.core.CacheControl;
 
 /**
- * Thrown if errors occurring during the conversions of DNS records to other representations.
+ * Base class for REST resources protected by an authorization module.  
  * @author Greg Meyer
- * @since 1.0
+ * @since 2.0
  */
-public class DNSRecordCreationException extends RuntimeException 
+public abstract class ProtectedResource
 {
-
-	private static final long serialVersionUID = -4626071199178973053L;
-
 	/**
-	 * Empty constructor
+	 * Cache definition for no caching of responses.
 	 */
-    public DNSRecordCreationException() 
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DNSRecordCreationException(String msg) 
-    {
-        super(msg);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DNSRecordCreationException(String msg, Throwable t) 
-    {
-        super(msg, t);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public DNSRecordCreationException(Throwable t) 
-    {
-        super(t);
-    }
+	protected static final CacheControl noCache;
+	
+	static
+	{
+		noCache = new CacheControl();
+		noCache.setNoCache(true);
+	}
 }

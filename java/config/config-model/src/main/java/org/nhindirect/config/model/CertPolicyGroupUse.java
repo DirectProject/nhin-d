@@ -23,6 +23,11 @@ package org.nhindirect.config.model;
 
 import org.codehaus.enunciate.json.JsonRootType;
 
+/**
+ * Certificate policy usages.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class CertPolicyGroupUse

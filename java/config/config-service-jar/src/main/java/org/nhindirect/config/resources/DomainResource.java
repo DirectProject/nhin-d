@@ -35,7 +35,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -55,23 +54,28 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing domain resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("domain/")
 @Singleton
-public class DomainResource 
-{
-	protected static final CacheControl noCache;
-	
+public class DomainResource extends ProtectedResource
+{	
     private static final Log log = LogFactory.getLog(DomainResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
-    
+
+    /**
+     * Address DAO is defined in the context XML file an injected by Spring
+     */
     protected AddressDao addressDao;
     
+    /**
+     * Domain DAO is defined in the context XML file an injected by Spring
+     */
     protected DomainDao domainDao;
     
     /**
@@ -82,18 +86,32 @@ public class DomainResource
 		
 	}
     
+    /**
+     * Sets the address Dao.  Auto populated by Spring
+     * @param dao Address Dao
+     */
     @Autowired
     public void setAddressDao(AddressDao addressDao) 
     {
         this.addressDao = addressDao;
     }
     
+    /**
+     * Sets the domain Dao.  Auto populate by Spring
+     * @param domainDao The domain Dao.
+     */
     @Autowired
     public void setDomainDao(DomainDao domainDao) 
     {
         this.domainDao = domainDao;
     }
     
+    /**
+     * Gets a domain by name.
+     * @param domain The name of the domain to retrieve.
+     * @return A JSON representation of the domain.  Returns a status of 404 if a domain with the given name does
+     * not exist.
+     */
     @Path("{domain}")
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
@@ -114,6 +132,13 @@ public class DomainResource
     	}
     }
     
+    /**
+     * Gets a list of domains that match a query.
+     * @param domainName The name of the domain to to get.  Defaults to an empty string which means get all domains.
+     * @param entityStatus The entity status that the returned domain must match.  Default to empty string which means to ignore the status filter.
+     * @return A JSON representation of a collection of domains that match the search paremeters.  Returns a status of 204 if no
+     * domains match the search parameters.
+     */
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
     public Response searchDomains(@QueryParam("domainName") @DefaultValue("") String domainName,
@@ -140,7 +165,7 @@ public class DomainResource
     		Collection<org.nhindirect.config.store.Domain> domains = domainDao.searchDomain(domainName.isEmpty() ? null : domainName, status);
 
     		if (domains.isEmpty())
-    			return Response.status(Status.NOT_FOUND).cacheControl(noCache).build();
+    			return Response.status(Status.NO_CONTENT).cacheControl(noCache).build();
     		
     		final Collection<Domain> retDomains = new ArrayList<Domain>();
     		for (org.nhindirect.config.store.Domain domain : domains)
@@ -157,6 +182,12 @@ public class DomainResource
     	}
     }
     
+    /**
+     * Adds a domain to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param domain The domain to add to the system.
+     * @return Status of 201 if the domain was added or status of 409 if the domain already exists.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response addDomain(@Context UriInfo uriInfo, Domain domain) 
@@ -193,6 +224,11 @@ public class DomainResource
     	
     }   
     
+    /**
+     * Updates a domain's attributes.  
+     * @param domain The name of the domain to update.  
+     * @return Status of 204 if the domain is updated or 404 if a domain with the given name does not exist.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response updateDomain(Domain domain) 
@@ -228,6 +264,11 @@ public class DomainResource
     	
     }     
     
+    /**
+     * Deletes a domain by name.
+     * @param domain The name of the domain to delete.
+     * @return Status of 200 if the domain was deleted of status of 404 if a domain with the given name does not exists.
+     */
     @DELETE
     @Path("{domain}")   
     public Response removedDomain(@PathParam("domain") String domain)   

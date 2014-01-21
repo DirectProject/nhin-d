@@ -25,6 +25,11 @@ import java.util.Calendar;
 
 import org.codehaus.enunciate.json.JsonRootType;
 
+/**
+ * Name value pair settings in the sytem.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class Setting 
@@ -36,66 +41,117 @@ public class Setting
     private Calendar updateTime;
     private EntityStatus status;
 	
+    /**
+     * Empty constructor
+     */
 	public Setting()
 	{
 		
 	}
 
+	/**
+	 * Gets the name of the setting.
+	 * @return The name of the setting.
+	 */
 	public String getName() 
 	{
 		return name;
 	}
 
+	/**
+	 * Sets the name of the setting.
+	 * @param name The name of the setting.
+	 */
 	public void setName(String name) 
 	{
 		this.name = name;
 	}
 
+	/**
+	 * Gets the value of the setting.
+	 * @return The value of the setting.
+	 */
 	public String getValue() 
 	{
 		return value;
 	}
 
+	/**
+	 * Sets the value of the setting.
+	 * @param value The value of the setting.
+	 */
 	public void setValue(String value) 
 	{
 		this.value = value;
 	}
 
+	/**
+	 * Gets the internal system id of the setting.
+	 * @return The internal system id of the setting.
+	 */
 	public long getId() 
 	{
 		return id;
 	}
 
+	/**
+	 * Sets the internal system id of the setting.
+	 * @param id The internal system id of the setting.
+	 */
 	public void setId(long id)
 	{
 		this.id = id;
 	}
 
+	/**
+	 * Sets the date/time the setting was created in the system.
+	 * @param createTime The date/time the setting was created in the system.
+	 */ 
 	public Calendar getCreateTime() 
 	{
 		return createTime;
 	}
 
+	/**
+	 * Sets the date/time the setting was created in the system.
+	 * @param createTime The date/time the setting was created in the system.
+	 */
 	public void setCreateTime(Calendar createTime) 
 	{
 		this.createTime = createTime;
 	}
 
+	/**
+	 * Gets the date/time that the setting was last updated.
+	 * @return The date/time that the setting was last updated.
+	 */
 	public Calendar getUpdateTime() 
 	{
 		return updateTime;
 	}
 
+	/**
+	 * Sets the date/time that the setting was last updated.
+	 * @param updateTime The date/time that the setting was last updated.
+	 */
 	public void setUpdateTime(Calendar updateTime) 
 	{
 		this.updateTime = updateTime;
 	}
 
+	/**
+	 * Gets the status of the setting.
+	 * @return The status of the setting.
+	 */
 	public EntityStatus getStatus() 
 	{
 		return status;
 	}
 
+	/**
+	 * Sets the status of the setting.
+	 * @param status The status of the setting.
+	 */
 	public void setStatus(EntityStatus status) 
 	{
 		this.status = status;

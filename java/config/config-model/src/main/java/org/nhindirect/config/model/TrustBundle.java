@@ -35,10 +35,16 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nhindirect.config.model.exceptions.CertificateConversionException;
 
 
+/**
+ * A Direct trust bundle.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class TrustBundle
 {
+	
 	private long id;
 	private String bundleName;
 	private String bundleURL;
@@ -51,49 +57,90 @@ public class TrustBundle
     private Calendar createTime;  
     private String checkSum;
 	
+    /**
+     * Empty constructor
+     */
     public TrustBundle()
     {
     	
     }
     
-    public long getId() {
+    /**
+     * Gets the internal system id of the trust bundle.
+     * @return The internal system id of the trust bundle.
+     */
+    public long getId() 
+    {
 		return id;
 	}
+    
+    /**
+     * Sets the internal system id of the trust bundle.
+     * @param the internal system id of the trust bundle.
+     */
 	public void setId(long id) 
 	{
 		this.id = id;
 	}
 	
+	/**
+	 * Gets the name of the bundle.
+	 * @return The name of the bundle.
+	 */
 	public String getBundleName() 
 	{
 		return bundleName;
 	}
 	
+	/**
+	 * Sets the name of the bundle.
+	 * @param bundleName The name of the bundle.
+	 */
 	public void setBundleName(String bundleName) 
 	{
 		this.bundleName = bundleName;
 	}
 	
+	/**
+	 * Gets the URL location of the bundle.
+	 * @return The URL location of the bundle.
+	 */
 	public String getBundleURL() 
 	{
 		return bundleURL;
 	}
 	
+	/**
+	 * Sets the URL location of the bundle.
+	 * @param bundleURL The URL location of the bundle.
+	 */
 	public void setBundleURL(String bundleURL) 
 	{
 		this.bundleURL = bundleURL;
 	}
 	
+	/**
+	 * Gets the DER encoded data of the X509 certificate that signed the bundle.
+	 * @return The DER encoded data of the X509 certificate that signed the bundle.
+	 */
 	public byte[] getSigningCertificateData() 
 	{
 		return signingCertificateData;
 	}
 	
+	/**
+	 * Sets the DER encoded data of the X509 certificate that signed the bundle.
+	 * @param signingCertificateData The DER encoded data of the X509 certificate that signed the bundle.
+	 */
 	public void setSigningCertificateData(byte[] signingCertificateData) 
 	{
 		this.signingCertificateData = signingCertificateData;
 	}
 	
+	/**
+	 * Gets the trust anchors in the bundle.
+	 * @return The trust anchors in the bundle.
+	 */
 	public Collection<TrustBundleAnchor> getTrustBundleAnchors() 
 	{
 		if (trustBundleAnchors == null)
@@ -102,66 +149,118 @@ public class TrustBundle
 		return Collections.unmodifiableCollection(trustBundleAnchors);
 	}
 	
+	/**
+	 * Sets the trust anchors in the bundle.
+	 * @param trustBundleAnchors The trust anchors in the bundle.
+	 */
 	public void setTrustBundleAnchors(Collection<TrustBundleAnchor> trustBundleAnchors) 
 	{
 		this.trustBundleAnchors = new ArrayList<TrustBundleAnchor>(trustBundleAnchors);
 	}
 	
+	/**
+	 * Gets the refresh interval for the bundle.
+	 * @return The refresh interval for the bundle.
+	 */
 	public int getRefreshInterval() 
 	{
 		return refreshInterval;
 	}
 	
+	/**
+	 * Sets the refresh interval for the bundle.
+	 * @param refreshInterval The refresh interval for the bundle.
+	 */
 	public void setRefreshInterval(int refreshInterval) 
 	{
 		this.refreshInterval = refreshInterval;
 	}
 	
+	/**
+	 * Gets the date/time of the last time a refresh was attempted.
+	 * @return The date/time of the last time a refresh was attempted.
+	 */ 
 	public Calendar getLastRefreshAttempt() 
 	{
 		return lastRefreshAttempt;
 	}
 	
+	/**
+	 * Sets the date/time of the last time a refresh was attempted.
+	 * @param lastRefreshAttempt The date/time of the last time a refresh was attempted.
+	 */
 	public void setLastRefreshAttempt(Calendar lastRefreshAttempt) 
 	{
 		this.lastRefreshAttempt = lastRefreshAttempt;
 	}
 	
+	/**
+	 * Gets the status of the last refresh attempt.
+	 * @return The status of the last refresh attempt.
+	 */
 	public BundleRefreshError getLastRefreshError() 
 	{
 		return lastRefreshError;
 	}
 	
+	/**
+	 * Sets the status of the last refresh attempt.
+	 * @param lastRefreshError The status of the last refresh attempt.
+	 */
 	public void setLastRefreshError(BundleRefreshError lastRefreshError) 
 	{
 		this.lastRefreshError = lastRefreshError;
 	}
 	
+	/**
+	 * Gets the date/time of the last time the bundle was successfully refreshed.
+	 * @return The date/time of the last time the bundle was successfully refreshed.
+	 */
 	public Calendar getLastSuccessfulRefresh() 
 	{
 		return lastSuccessfulRefresh;
 	}
 	
+	/**
+	 * Sets the date/time of the last time the bundle was successfully refreshed.
+	 * @param lastSuccessfulRefresh The date/time of the last time the bundle was successfully refreshed.
+	 */
 	public void setLastSuccessfulRefresh(Calendar lastSuccessfulRefresh) 
 	{
 		this.lastSuccessfulRefresh = lastSuccessfulRefresh;
 	}
 	
+	/**
+	 * Gets the date/time that bundle was created in the system.
+	 * @return The date/time that bundle was created in the system.
+	 */
 	public Calendar getCreateTime()
 	{
 		return createTime;
 	}
 	
+	/**
+	 * Sets the date/time that bundle was created in the system.
+	 * @param createTime The date/time that bundle was created in the system.
+	 */
 	public void setCreateTime(Calendar createTime) 
 	{
 		this.createTime = createTime;
 	}
 	
+	/**
+	 * Gets the check sum of the bundle.  This consists of a an SHA-1 has of the bundle file.
+	 * @return The check sum of the bundle.
+	 */
 	public String getCheckSum() 
 	{
 		return checkSum;
 	}
 	
+	/**
+	 * Sets the check sum of the bundle.
+	 * @param checkSum The check sum of the bundle.
+	 */
 	public void setCheckSum(String checkSum) 
 	{
 		this.checkSum = checkSum;
