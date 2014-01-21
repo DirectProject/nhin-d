@@ -35,7 +35,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -55,24 +54,28 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
-
+/**
+ * JAX-RS resource for managing address resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("address/")
 @Singleton
-public class AddressResource 
+public class AddressResource extends ProtectedResource
 {
-	protected static final CacheControl noCache;
-	
     private static final Log log = LogFactory.getLog(AddressResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
     
+    /**
+     * Address DAO is defined in the context XML file an injected by Spring
+     */
     protected AddressDao dao;
   
+    /**
+     * Domain DAO is defined in the context XML file an injected by Spring
+     */
     protected DomainDao domainDao;
     
     /**
@@ -83,18 +86,31 @@ public class AddressResource
 		
 	}
     
+    /**
+     * Sets the address Dao.  Auto populated by Spring
+     * @param dao Address Dao
+     */
     @Autowired
     public void setAddressDao(AddressDao dao) 
     {
         this.dao = dao;
     }
     
+    /**
+     * Sets the domain Dao.  Auto populate by Spring
+     * @param domainDao
+     */
     @Autowired
     public void setDomainDao(DomainDao domainDao) 
     {
         this.domainDao = domainDao;
     }
     
+    /**
+     * Gets an address by name.
+     * @return A JSON representation of an Address.  Returns 404 if the address doesn't exists.
+     * @param address The address to retrieve.
+     */
     @Path("{address}")
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
@@ -115,6 +131,12 @@ public class AddressResource
     	}
     }
     
+    /**
+     * Gets all addresses configured for a given domain.
+     * @param domainName The domain name to retrieve addresses for.
+     * @return  A JSON representation of a list of addresses.  Returns a 404 status if the domain does not exists
+     * or a 204 status if no addresses are configured for the domain.
+     */
     @Path("domain/{domain}")
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
@@ -138,7 +160,7 @@ public class AddressResource
     	{
     		final List<org.nhindirect.config.store.Address> addresses = dao.getByDomain(domain, null);
     		if (addresses == null || addresses.isEmpty())
-    			return Response.status(Status.NOT_FOUND).cacheControl(noCache).build();
+    			return Response.status(Status.NO_CONTENT).cacheControl(noCache).build();
     		
     		final Collection<Address> retAddresses = new ArrayList<Address>();
     		for (org.nhindirect.config.store.Address address : addresses)
@@ -155,6 +177,13 @@ public class AddressResource
     	}
     }
     
+    /**
+     * Adds an address to the system and associates it with a domain.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param address The address to add.
+     * @return Returns status 201 if added successfully, 404 if the domain does not exist, or 409 if
+     * the address already exists.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response addAddress(@Context UriInfo uriInfo, Address address) 
@@ -208,6 +237,12 @@ public class AddressResource
     	
     }
     
+    /**
+     * Updates the attributes of an existing address.
+     * @param address The address to update along with new attributes.
+     * @return Returns 204 if the address is updated successfully, 400 if the domain name is empty, 404 if the
+     * domain or address does not exist.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response updateAddress(Address address) 
@@ -261,6 +296,11 @@ public class AddressResource
     	
     }    
     
+    /**
+     * Removes an address from the system.
+     * @param address The address to removed.
+     * @return Returns a status of 200 if the address was removed or 404 if the address does not exists.
+     */
     @DELETE
     @Path("{address}")     
     public Response removedAddress(@PathParam("address") String address)   

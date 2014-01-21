@@ -25,6 +25,11 @@ import java.util.Calendar;
 
 import org.codehaus.enunciate.json.JsonRootType;
 
+/**
+ * DNS Records
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class DNSRecord 
@@ -37,76 +42,135 @@ public class DNSRecord
 	private byte[] data;
     private Calendar createTime;
     
+    /**
+     * Empty constructor
+     */
     public DNSRecord()
     {
     	
     }
     
+    /**
+     * Gets the internal id of the record.
+     * @return The internal id of the record.
+     */
 	public long getId() 
 	{
 		return id;
 	}
 	
+	/**
+	 * Sets the internal id of the record.
+	 * @param id The internal id of the record.
+	 */
 	public void setId(long id)
 	{
 		this.id = id;
 	}
 	
+	/**
+	 * Gets the DNS name associated with the record.
+	 * @return The DNS name associated with the record.
+	 */
 	public String getName() 
 	{
 		return name;
 	}
 	
+	/**
+	 * Sets the DNS name associated with the record.
+	 * @param name The DNS name associated with the record.
+	 */
 	public void setName(String name) 
 	{
 		this.name = name;
 	}
 	
+	/**
+	 * Gets the DNS record type.
+	 * @return The DNS record type.
+	 */
 	public int getType() 
 	{
 		return type;
 	}
 	
+	/**
+	 * Sets the DNS record type.
+	 * @param type The DNS record type.
+	 */
 	public void setType(int type) 
 	{
 		this.type = type;
 	}
 	
+	/**
+	 * Gets the DNS record Dclass.
+	 * @return The DNS record Dclass.
+	 */
 	public int getDclass() 
 	{
 		return dclass;
 	}
 	
+	/**
+	 * Sets the DNS record Dclass.
+	 * @param dclass The DNS record Dclass.
+	 */
 	public void setDclass(int dclass) 
 	{
 		this.dclass = dclass;
 	}
 	
+	/**
+	 * Gets the DNS record's time to live.
+	 * @return The DNS record's time to live.
+	 */
 	public long getTtl() 
 	{
 		return ttl;
 	}
 	
+	/**
+	 * Sets the DNS record's time to live.
+	 * @param ttl The DNS record's time to live.
+	 */
 	public void setTtl(long ttl) 
 	{
 		this.ttl = ttl;
 	}
 	
+	/**
+	 * Sets the raw data of the DNS record.
+	 * @return The raw data of the DNS record.
+	 */
 	public byte[] getData() 
 	{
 		return data;
 	}
 	
+	/**
+	 * Sets the raw data of the DNS record.
+	 * @param data The raw data of the DNS record.
+	 */
 	public void setData(byte[] data) 
 	{
 		this.data = data;
 	}
 	
+	/**
+	 * Gets the date/time that the DNS record was created in the system.
+	 * @return The date/time that the DNS record was created in the system.
+	 */
 	public Calendar getCreateTime() 
 	{
 		return createTime;
 	}
 	
+	/**
+	 * Sets the date/time that the DNS record was created in the system.
+	 * @param createTime The date/time that the DNS record was created in the system.
+	 */
 	public void setCreateTime(Calendar createTime) 
 	{
 		this.createTime = createTime;

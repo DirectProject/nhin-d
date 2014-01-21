@@ -34,6 +34,11 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nhindirect.config.model.exceptions.CertificateConversionException;
 
 
+/**
+ * A trust anchor used for discerning trust of an end entity certificates.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class Anchor 
@@ -50,116 +55,207 @@ public class Anchor
     private boolean incoming;
     private boolean outgoing;
     
+    /**
+     * Empty constructor.
+     */
     public Anchor()
     {
     	
     }
 
+    /**
+     * Gets the owner of the anchor.  The owner is domain name that this anchor is associate with.
+     * @return The owner of the anchor.
+     */
 	public String getOwner() 
 	{
 		return owner;
 	}
 
+	/**
+	 * Sets the owner of the anchor.
+	 * @param owner The owner of the anchor.
+	 */
 	public void setOwner(String owner) 
 	{
 		this.owner = owner;
 	}
 
+	/**
+	 * Gets the thumbprint of the anchor.  A thumbprint is a SHA-1 has of the DER encoding of the anchor.
+	 * @return The thumbprint of the anchor.
+	 */
 	public String getThumbprint() 
 	{
 		return thumbprint;
 	}
 
+	/**
+	 * Sets the thumbprint of the anchor.
+	 * @param thumbprint The thumbprint of the anchor.
+	 */
 	public void setThumbprint(String thumbprint) 
 	{
 		this.thumbprint = thumbprint;
 	}
 
+	/**
+	 * Gets the internal id of the anchor.
+	 * @return The interal id of the anchor.
+	 */
 	public long getCertificateId() 
 	{
 		return certificateId;
 	}
 
+	/**
+	 * Sets the internal id of the anchor.
+	 * @param certificateId The internal id of the anchor.
+	 */
 	public void setCertificateId(long certificateId) 
 	{
 		this.certificateId = certificateId;
 	}
 
+	/**
+	 * Gets the DER encoded data of the anchor.
+	 * @return The DER encoded data of the anchor.
+	 */
 	public byte[] getCertificateData() 
 	{
 		return certificateData;
 	}
 
+	/**
+	 * Sets the DER encoded data of the anchor.
+	 * @param certificateData The DER encoded data of the anchor.
+	 */
 	public void setCertificateData(byte[] certificateData) 
 	{
 		this.certificateData = certificateData;
 	}
 
+	/**
+	 * Gets the internal id of the anchor.
+	 * @return The interal id of the anchor.
+	 */
 	public long getId() 
 	{
 		return id;
 	}
 
+	/**
+	 * Sets the internal id of the anchor.
+	 * @param certificateId The internal id of the anchor.
+	 */
 	public void setId(long id) 
 	{
 		this.id = id;
 	}
 
+	/**
+	 * Gets the date/time that the anchor was added to the system.
+	 * @return The date/time that the anchor was added to the system.
+	 */
 	public Calendar getCreateTime() 
 	{
 		return createTime;
 	}
 
+	/**
+	 * Sets the date/time that the anchor was added to the system.
+	 * @param createTime The date/time that the anchor was added to the system.
+	 */
 	public void setCreateTime(Calendar createTime) 
 	{
 		this.createTime = createTime;
 	}
 
+	/**
+	 * Gets the valid from date/time of the anchor.
+	 * @return The valid from date/time of the anchor.
+	 */
 	public Calendar getValidStartDate() 
 	{
 		return validStartDate;
 	}
 
+	/** 
+	 * Sets the valid from date/time of the anchor.
+	 * @param validStartDate The valid from date/time of the anchor.
+	 */
 	public void setValidStartDate(Calendar validStartDate) 
 	{
 		this.validStartDate = validStartDate;
 	}
 
+	/**
+	 * Gets the valid until date/time of the anchor.
+	 * @return The valid until date/time of the anchor.
+	 */
 	public Calendar getValidEndDate() 
 	{
 		return validEndDate;
 	}
 
+	/**
+	 * Sets the valid until date/time of the anchor.
+	 * @param validEndDate The valid until date/time of the anchor.
+	 */
 	public void setValidEndDate(Calendar validEndDate) 
 	{
 		this.validEndDate = validEndDate;
 	}
 
+	/**
+	 * Gets the status of the anchor.
+	 * @return The status of the anchor.
+	 */
 	public EntityStatus getStatus() 
 	{
 		return status;
 	}
 
+	/**
+	 * Sets the status of the anchor.
+	 * @param status The status of the anchor.
+	 */
 	public void setStatus(EntityStatus status) 
 	{
 		this.status = status;
 	}
 
+	/**
+	 * Determines if the anchor is valid for incoming messages.
+	 * @return True if the anchor can be use for incoming messages; false otherwise.
+	 */
 	public boolean isIncoming() 
 	{
 		return incoming;
 	}
 
+	/**
+	 * Sets if the anchor is valid for incoming messages.
+	 * @param incoming True if the anchor can be use for incoming messages; false otherwise.
+	 */
 	public void setIncoming(boolean incoming) 
 	{
 		this.incoming = incoming;
 	}
 
+	/**
+	 * Determines if the anchor is valid for outgoing messages.
+	 * @return True if the anchor can be use for outgoing messages; false otherwise.
+	 */
 	public boolean isOutgoing() 
 	{
 		return outgoing;
 	}
 
+	/**
+	 * Sets if the outgoing is valid for outgoing messages.
+	 * @param outgoing True if the anchor can be use for outgoing messages; false otherwise.
+	 */
 	public void setOutgoing(boolean outgoing) 
 	{
 		this.outgoing = outgoing;

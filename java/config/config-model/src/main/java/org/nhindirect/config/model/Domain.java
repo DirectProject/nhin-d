@@ -28,6 +28,11 @@ import java.util.Collections;
 
 import org.codehaus.enunciate.json.JsonRootType;
 
+/**
+ * A Direct email domain.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class Domain 
@@ -46,51 +51,90 @@ public class Domain
 
     private EntityStatus status;
     
+    /**
+     * Empty constructor
+     */
     public Domain()
     {
     	
     }
 
+    /**
+     * Gets the name of the domain.
+     * @return The name of the domain.
+     */
 	public String getDomainName() 
 	{
 		return domainName;
 	}
 
+	/**
+	 * Sets the name of the domain.
+	 * @param domainName The name of the domain.
+	 */
 	public void setDomainName(String domainName) 
 	{
 		this.domainName = domainName;
 	}
 
+	/**
+	 * Sets the date/time the domain was created in the system.
+	 * @return The date/time the domain was created in the system.
+	 */
 	public Calendar getCreateTime() 
 	{
 		return createTime;
 	}
 
+	/**
+	 * Sets the date/time the domain was created in the system.
+	 * @param createTime The date/time the domain was created in the system.
+	 */ 
 	public void setCreateTime(Calendar createTime) 
 	{
 		this.createTime = createTime;
 	}
 
+	/**
+	 * Gets the date/time that the domain was last updated.
+	 * @return The date/time that the domain was last updated.
+	 */
 	public Calendar getUpdateTime() 
 	{
 		return updateTime;
 	}
 
+	/**
+	 * Sets the date/time that the domain was last updated.
+	 * @param updateTime The date/time that the domain was last updated.
+	 */
 	public void setUpdateTime(Calendar updateTime) 
 	{
 		this.updateTime = updateTime;
 	}
 
+	/**
+	 * Gets the email address of the domain's postmaster.
+	 * @return The email address of the domain's postmaster.
+	 */
 	public Address getPostmasterAddress() 
 	{
 		return postmasterAddress;
 	}
 
+	/**
+	 * Sets the email address of the domain's postmaster.
+	 * @param postmasterAddress The email address of the domain's postmaster.
+	 */
 	public void setPostmasterAddress(Address postmasterAddress) 
 	{
 		this.postmasterAddress = postmasterAddress;
 	}
 
+	/**
+	 * Gets all addresses that are configured for a domain.
+	 * @return All addresses that are configured for a domain.
+	 */
 	public Collection<Address> getAddresses() 
 	{
 		if (addresses == null)
@@ -99,26 +143,46 @@ public class Domain
 		return Collections.unmodifiableCollection(addresses);
 	}
 
+	/**
+	 * Sets all addresses that are configured for a domain.
+	 * @param addresses All addresses that are configured for a domain.
+	 */
 	public void setAddresses(Collection<Address> addresses) 
 	{
 		this.addresses = new ArrayList<Address>(addresses);
 	}
 
+	/**
+	 * Gets the internal system id of the domain.
+	 * @return The internal system id of the domain.
+	 */
 	public long getId() 
 	{
 		return id;
 	}
 
+	/**
+	 * Sets the internal system id of the domain.
+	 * @param id The internal system id of the domain.
+	 */
 	public void setId(long id) 
 	{
 		this.id = id;
 	}
 
+	/**
+	 * Gets the status of the domain.
+	 * @return The status of the domain.
+	 */
 	public EntityStatus getStatus() 
 	{
 		return status;
 	}
 
+	/**
+	 * Sets the status of the domain.
+	 * @param status The status of the domain.
+	 */
 	public void setStatus(EntityStatus status) 
 	{
 		this.status = status;

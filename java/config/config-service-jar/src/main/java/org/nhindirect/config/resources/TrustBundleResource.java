@@ -37,7 +37,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -63,25 +62,33 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing address resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("trustbundle/")
 @Singleton
-public class TrustBundleResource 
-{
-	protected static final CacheControl noCache;
-	
+public class TrustBundleResource extends ProtectedResource
+{	
     private static final Log log = LogFactory.getLog(TrustBundleResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
     
+    /**
+     * TrustBundle DAO is defined in the context XML file an injected by Spring
+     */
     protected TrustBundleDao bundleDao;
   
+    /**
+     * Domain DAO is defined in the context XML file an injected by Spring
+     */
     protected DomainDao domainDao;
     
+    /**
+     * Producer template is defined in the context XML file an injected by Spring
+     */
     protected ProducerTemplate template;
     
     /**
@@ -92,18 +99,30 @@ public class TrustBundleResource
 		
 	}
     
+    /**
+     * Sets the trustBundle Dao.  Auto populate by Spring
+     * @param bundleDao The trustBundle Dao.
+     */
     @Autowired
     public void setTrustBundleDao(TrustBundleDao bundleDao) 
     {
         this.bundleDao = bundleDao;
     }
     
+    /**
+     * Sets the domain Dao.  Auto populate by Spring
+     * @param domainDao The domain Dao.
+     */
     @Autowired
     public void setDomainDao(DomainDao domainDao) 
     {
         this.domainDao = domainDao;
     }
     
+    /**
+     * Sets the producer template.  Auto populate by Spring
+     * @param template The producer template.
+     */
     @Autowired
     @Qualifier("bundleRefresh")
     public void setTemplate(ProducerTemplate template) 
@@ -111,6 +130,12 @@ public class TrustBundleResource
         this.template = template;
     }
     
+    /**
+     * Gets all trust bundles in the system.
+     * @param fetchAnchors Indicates if the retrieval should also include the trust anchors in the bundle.  When only needing bundle names,
+     * this parameter should be set to false for better performance. 
+     * @return A JSON representation of a collection of all trust bundles in the system.  Returns a status of 204 if no trust bundles exist.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTrustBundles(@QueryParam("fetchAnchors") @DefaultValue("true") boolean fetchAnchors)
@@ -146,6 +171,14 @@ public class TrustBundleResource
     	return Response.ok(entity).cacheControl(noCache).build();
     }
     
+    /**
+     * Gets all trust bundles associated to a domain.
+     * @param domainName The name of the domain to fetch trust bundles for.
+     * @param fetchAnchors  Indicates if the retrieval should also include the trust anchors in the bundle.  When only needing bundle names,
+     * this parameter should be set to false for better performance. 
+     * @return  A JSON representation of a collection of trust bundle that are associated to the given domain.  Returns a status of
+     * 404 if a domain with the given name does not exist or a status of 404 if no trust bundles are associated with the given name.
+     */
     @GET  
     @Produces(MediaType.APPLICATION_JSON)
     @Path("domains/{domainName}")
@@ -197,6 +230,12 @@ public class TrustBundleResource
     	return Response.ok(entity).cacheControl(noCache).build();
     }
     
+    /**
+     * Gets a trust bundle by name.
+     * @param bundleName The name of the trust bundle to retrieve.
+     * @return A JSON representation of a the trust bundle.  Returns a status of 404 if a trust bundle with the given name
+     * does not exist.
+     */
     @GET 
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{bundleName}")
@@ -221,6 +260,12 @@ public class TrustBundleResource
     	}
     }  
     
+    /**
+     * Adds a trust bundle to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param bundle The bundle to add to the system.
+     * @return Status of 201 if the bundle was added or a status of 409 if a bundle with the same name already exists.
+     */
     @PUT 
     @Consumes(MediaType.APPLICATION_JSON)  
     public Response addTrustBundle(@Context UriInfo uriInfo, TrustBundle bundle)
@@ -260,6 +305,11 @@ public class TrustBundleResource
     	}
     }   
     
+    /**
+     * Forces the refresh of a trust bundle.
+     * @param bundleName  The name of the trust bundle to refresh.
+     * @return Status of 204 if the bundle was refreshed or a status of 404 if a trust bundle with the given name does not exist.
+     */
     @Path("{bundle}/refreshBundle")
     @POST  
     public Response refreshTrustBundle(@PathParam("bundle") String bundleName)    
@@ -283,6 +333,12 @@ public class TrustBundleResource
     	}
     }
     
+    /**
+     * Deletes a trust bundle.
+     * @param bundleName  The name of the bundle to delete.
+     * @return Status of 200 if the trust bundle was deleted or a status of 404 if a trust bundle with the given name
+     * does not exist.
+     */
     @DELETE 
     @Path("{bundle}")
     public Response deleteBundle(@PathParam("bundle") String bundleName)
@@ -314,6 +370,13 @@ public class TrustBundleResource
     	}
     }
     
+    /**
+     * Updates the signing certificate of a trust bundle.
+     * @param bundleName The name of the trust bundle to update.
+     * @param certData A DER encoded representation of the new signing certificate.
+     * @return Status of 204 if the trust bundle's signing certificate was updated, status of 400 if the signing certificate is
+     * invalid, or a status 404 if a trust bundle with the given name does not exist.
+     */
     @POST 
     @Path("{bundle}/signingCert")  
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -363,6 +426,13 @@ public class TrustBundleResource
     	
     }
     
+    /**
+     * Updates multiple bundle attributes.  If the URL of the bundle changes, then the bundle is automatically refreshed.
+     * @param bundleName The name of the bundle to update.
+     * @param bundleData The data of the trust bundle to update.  Empty or null attributes indicate that the attribute should not be changed.
+     * @return Status of 204 if the bundle attributes were updated, status of 400 if the signing certificate is
+     * invalid, or a status 404 if a trust bundle with the given name does not exist.
+     */
     @POST 
     @Path("{bundle}/bundleAttributes")  
     @Consumes(MediaType.APPLICATION_JSON)  
@@ -422,6 +492,15 @@ public class TrustBundleResource
     	}
     }
     
+    /**
+     * Associates a trust bundle to a domain along with directional trust.
+     * @param bundleName The name of the bundle to associate to a domain.
+     * @param domainName The name of the domain to associate to a bundle.
+     * @param incoming Indicates if trust should be allowed for incoming messages.
+     * @param outgoing Indicates if trust should be allowed for outgoing messages.
+     * @return Status of 204 if the association was made or a status of 404 if either a domain or trust bundle with its given name
+     * does not exist.
+     */
     @POST 
     @Path("{bundle}/{domain}")  
     public Response associateTrustBundleToDomain(@PathParam("bundle") String bundleName, @PathParam("domain") String domainName,
@@ -469,6 +548,13 @@ public class TrustBundleResource
     	}    	
     }
     
+    /**
+     * Removes the association of a trust bundle from a domain.
+     * @param bundleName The name of the trust bundle to remove from the domain.
+     * @param domainName The name of the domain to remove from the trust bundle.
+     * @return Status of 200 if the association was removed or a status of 404 if either a domain or trust bundle with its given name
+     * does not exist.
+     */
     @DELETE 
     @Path("{bundle}/{domain}")  
     public Response disassociateTrustBundleFromDomain(@PathParam("bundle") String bundleName, @PathParam("domain") String domainName)
@@ -515,6 +601,12 @@ public class TrustBundleResource
     	}       	
     }
     
+    /**
+     * Removes all trust bundle from a domain.
+     * @param domainName The name of the domain to remove trust bundle from.
+     * @return Status of 200 if trust bundles were removed from the domain or a status of 404 if a domain with the given name
+     * does not exist.
+     */
     @DELETE 
     @Path("{domain}/deleteFromDomain")  
     public Response disassociateTrustBundlesFromDomain(@PathParam("domain") String domainName)
@@ -547,6 +639,12 @@ public class TrustBundleResource
     	}  
     }
     
+    /**
+     * Removes a trust bundle from all domains.
+     * @param bundleName The name of the trust bundle to remove from all domains.
+     * @return Status of 200 if the trust bundle was removed from all domains or a status of 404 if a trust bundle with the given
+     * name does not exist.
+     */
     @DELETE 
     @Path("{bundle}/deleteFromBundle")  
     public Response disassociateTrustBundleFromDomains(@PathParam("bundle") String bundleName)

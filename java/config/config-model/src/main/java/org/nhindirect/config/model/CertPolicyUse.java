@@ -21,6 +21,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.config.model;
 
+/**
+ * Enumeration of certificate policy usages.
+ * @author Greg Meyer
+ * @since 1.0
+ *
+ */
 public enum CertPolicyUse 
 {
 	/**

@@ -38,6 +38,11 @@ import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.SRVRecord;
 import org.xbill.DNS.Section;
 
+/**
+ * Utility methods for working with DNS records.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 public class DNSUtils 
 {
 	/**

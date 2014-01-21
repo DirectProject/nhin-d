@@ -36,7 +36,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -56,20 +55,19 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing anchor resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("anchor/")
 @Singleton
-public class AnchorResource 
+public class AnchorResource extends ProtectedResource
 {
-	protected static final CacheControl noCache;
-	
     private static final Log log = LogFactory.getLog(AnchorResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
     
     protected AnchorDao anchorDao;
     
@@ -81,6 +79,10 @@ public class AnchorResource
 		
 	}
     
+    /**
+     * Sets the anchor Dao.  Auto populated by Spring
+     * @param dao Anchor Dao
+     */
     @Autowired
     public void setAnchorDao(AnchorDao anchorDao) 
     {
@@ -88,6 +90,16 @@ public class AnchorResource
     }
     
     
+    /**
+     * Gets a set of list of anchor for a given owner of the anchor.  Additional query parameters can further filter the return list.
+     * @param incoming Returned anchors must be marked for use of incoming messages.  Defaults to false meaning that no filter is applied.
+     * @param outgoing Returned anchors must be marked for use of outgoing messages.  Defaults to false meaning that no filter is applied.
+     * @param thumbprint Returned anchors that match a specific thumbprint effectively limiting the number of returned anchors to 1.  
+     * Defaults to an empty string meaning that no filter is applied.
+     * @param owner The owner to retrieve anchors for.
+     * @return A JSON representation of a collection of anchors that match the filters.  Returns a status of 204 if no anchors match the filters or no
+     * anchors exist for the owner.
+     */
     @Path("{owner}")
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
@@ -129,6 +141,10 @@ public class AnchorResource
 		return Response.ok(entity).cacheControl(noCache).build();    	
     }
     
+    /**
+     * Gets all anchors in the system.
+     * @return A JSON representation of a collection of all anchors in the system.
+     */
     @Produces(MediaType.APPLICATION_JSON)       
     @GET 
     public Response getAnchors()
@@ -158,6 +174,13 @@ public class AnchorResource
 		return Response.ok(entity).cacheControl(noCache).build();  
     }
     
+    /**
+     * Adds an anchor to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param anchor The anchor to add to the system.
+     * @return Returns a status of 201 if the anchor was added, or a status of 409 if the anchor already exists for 
+     * a specific owner.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response addAnchor(@Context UriInfo uriInfo, Anchor anchor) 
@@ -198,6 +221,11 @@ public class AnchorResource
     	
     }
    
+    /**
+     * Deletes anchor from the system by system id.
+     * @param ids List of ids to delete from the system.
+     * @return Status of 200 if the anchors were deleted successfully.
+     */
     @Path("ids/{ids}")
     @DELETE
     public Response removeAnchorsByIds(@PathParam("ids") String ids)
@@ -222,6 +250,11 @@ public class AnchorResource
     	}
     }
     
+    /**
+     * Delete all anchors for a specific owner.
+     * @param owner The owner to delete anchor from.
+     * @return Status of 200 if the anchors were deleted successfully.
+     */
     @DELETE
     @Path("{owner}")   
     public Response removeAnchorsByOwner(@PathParam("owner") String owner)

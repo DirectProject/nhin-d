@@ -33,7 +33,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -52,21 +51,23 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing settings resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("setting/")
 @Singleton
-public class SettingResource 
-{
-	protected static final CacheControl noCache;
-	
+public class SettingResource extends ProtectedResource
+{	
     private static final Log log = LogFactory.getLog(SettingResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
-    
+   
+    /**
+     * Settings DAO is defined in the context XML file an injected by Spring
+     */
     protected SettingDao settingDao;
     
     /**
@@ -77,12 +78,20 @@ public class SettingResource
 		
 	}
     
+    /**
+     * Sets the settings Dao.  Auto populated by Spring
+     * @param settingDao Settings Dao
+     */
     @Autowired
     public void setSettingDao(SettingDao settingDao) 
     {
         this.settingDao = settingDao;
     }
     
+    /**
+     * Gets all settings in the system.
+     * @return A JSON representation of a collection of all settings in the system.  Returns a status of 204 if no settings exist.
+     */
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
     public Response getAllSettings()
@@ -112,6 +121,11 @@ public class SettingResource
 		return Response.ok(entity).cacheControl(noCache).build();      	
     }
     
+    /**
+     * Gets a setting by name.
+     * @param name The name of the setting to retrieve.
+     * @return A JSON representation of the setting.  Returns a status of 404 if a setting with the given name does not exist.
+     */
     @Produces(MediaType.APPLICATION_JSON)       
     @Path("{name}")
     @GET
@@ -134,6 +148,14 @@ public class SettingResource
     	}
     }  
         
+    /**
+     * Adds a setting to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param name The name of the setting to add.
+     * @param value The value of the setting.
+     * @return Status of 201 if the setting was created or a status of 409 if a setting with the same name
+     * already exists.
+     */
     @PUT
     @Path("{name}/{value}")    
     public Response addSetting(@Context UriInfo uriInfo, @PathParam("name") String name, @PathParam("value") String value)
@@ -167,6 +189,13 @@ public class SettingResource
     	}
     }
     
+    /**
+     * Updates the value of a setting.
+     * @param name The name of the setting to update.
+     * @param value The new value of the setting.
+     * @return Status of 204 if the value of the setting was updated or a status of 404 if a setting with the given name
+     * does not exist.
+     */
     @Path("{name}/{value}")
     @POST
     public Response updateSetting(@PathParam("name") String name, @PathParam("value") String value)
@@ -198,6 +227,11 @@ public class SettingResource
     } 
     
     
+    /**
+     * Deletes a setting in the system by name.
+     * @param name The name of the setting to delete.
+     * @return Status of 200 if the setting was deleted or a status of 204 if a setting with the given name does not exist.
+     */
     @DELETE
     @Path("{name}")   
     public Response removeSettingByName(@PathParam("name") String name)

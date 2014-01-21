@@ -26,6 +26,11 @@ import java.util.Calendar;
 import org.codehaus.enunciate.json.JsonRootType;
 import org.nhindirect.policy.PolicyLexicon;
 
+/**
+ * Certificate policy.
+ * @author Greg Meyer
+ * @since 1.0
+ */
 ///CLOVER:OFF
 @JsonRootType
 public class CertPolicy 

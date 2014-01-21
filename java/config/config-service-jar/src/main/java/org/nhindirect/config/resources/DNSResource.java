@@ -36,7 +36,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -55,21 +54,23 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing DNS resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("dns/")
 @Singleton
-public class DNSResource 
-{
-	protected static final CacheControl noCache;
-	
+public class DNSResource extends ProtectedResource
+{	
     private static final Log log = LogFactory.getLog(DNSResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
     
+    /**
+     * DNS DAO is defined in the context XML file an injected by Spring
+     */
     protected DNSDao dnsDao;
     
     /**
@@ -80,12 +81,23 @@ public class DNSResource
 		
 	}
     
+    /**
+     * Sets the DNS Dao.  Auto populated by Spring
+     * @param dnsDao DNS Dao
+     */
     @Autowired
     public void setDNSDao(DNSDao dnsDao) 
     {
         this.dnsDao = dnsDao;
     }
      
+    /**
+     * Gets DNS records that match a given name, type, or combination of both.
+     * @param type DNS record type filter.  Defaults to -1 which means no filter will be applied.
+     * @param name DNS record name filter.  Defaults to an empty string which means no filter will be applied.
+     * @return A JSON representation of a collection of all DNS records that match the given search criteria.  Returns
+     * a status of 204 if no records match the search criteria.
+     */
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
     public Response getDNSRecords(@QueryParam("type") @DefaultValue("-1") int type, @QueryParam("name") @DefaultValue("") String name)
@@ -128,6 +140,12 @@ public class DNSResource
 		return Response.ok(entity).cacheControl(noCache).build();      	
     }
     
+    /**
+     * Adds a DNS record.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param record The DNS record to add.
+     * @return Status fo 201 if the DNS record was added to the system or a status of 409 if the record already exists.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response addDNSRecord(@Context UriInfo uriInfo, DNSRecord record)
@@ -168,6 +186,11 @@ public class DNSResource
     	}
     }
     
+    /**
+     * Updates the attributes of an existing DNS record.
+     * @param updateRecord The DNS record to update.
+     * @return Status of 204 if the DNS record was updated or status of 404 if the record could not be found. 
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response updateDNSRecord(DNSRecord updateRecord)
@@ -200,6 +223,11 @@ public class DNSResource
     	}
     }
     
+    /**
+     * Delete DNS records by system id. 
+     * @param ids Comma delimited list of ids to delete.
+     * @return Status of 200 if the DNS records were deleted.
+     */
     @Path("{ids}")
     @DELETE
     public Response removeDNSRecordsByIds(@PathParam("ids") String ids)

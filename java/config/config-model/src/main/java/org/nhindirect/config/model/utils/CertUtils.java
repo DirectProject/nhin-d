@@ -90,6 +90,12 @@ public class CertUtils
 			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, name);
 	}	
 	
+	/**
+	 * Gets the owner of the certificate with is the email address of domain bound to the certificate. 
+	 * The subject alt name is checked first, then the legacy email field, and lastsly the common name field.
+	 * @param certificate The certificate of the to get the owner of.
+	 * @return The owner of the certificate
+	 */
     public static String getOwner(X509Certificate certificate)
     {
     	String address = "";
@@ -327,6 +333,12 @@ public class CertUtils
     	}
     }
     
+    /**
+     * Creates a certificate container that consists of the X509 certificate and its private key (if it exists).
+     * @param data A DER encoded representation of either an X509 certificate or an unencrypted PKCS12 container.
+     * @return A container object with the X509 certificate and private key (it it exists).
+     * @throws CertificateConversionException
+     */
     public static CertContainer toCertContainer(byte[] data) throws CertificateConversionException 
     {
     	CertContainer certContainer = null;

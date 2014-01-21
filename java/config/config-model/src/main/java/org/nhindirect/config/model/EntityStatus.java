@@ -24,11 +24,26 @@ package org.nhindirect.config.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Status enumeration of entities in the system.
+ * @author Greg Meyer
+ * @since 1.0.
+ */
 public enum EntityStatus 
 {
+	/**
+	 * New, but not yet enabled.
+	 */
     NEW, 
+    
+    /**
+     * Enabled as usable
+     */
     ENABLED, 
+    
+    /**
+     * Disable and not usable
+     */
     DISABLED;
 
     /**

@@ -33,7 +33,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -54,20 +53,19 @@ import org.springframework.stereotype.Component;
 
 import com.google.inject.Singleton;
 
+/**
+ * JAX-RS resource for managing certificate resources in the configuration service.
+ * <p>
+ * Although not required, this class is instantiated using the Jersey SpringServlet and dependencies are defined in the Sprint context XML file.
+ * @author Greg Meyer
+ * @since 2.0
+ */
 @Component
 @Path("certificate/")
 @Singleton
-public class CertificateResource 
-{
-	protected static final CacheControl noCache;
-	
+public class CertificateResource extends ProtectedResource
+{	
     private static final Log log = LogFactory.getLog(CertificateResource.class);
-	
-    static
-	{
-		noCache = new CacheControl();
-		noCache.setNoCache(true);
-	}
     
     protected CertificateDao certDao;
     
@@ -79,12 +77,21 @@ public class CertificateResource
 		
 	}
     
+    /**
+     * Sets the certificate Dao.  Auto populate by Spring
+     * @param certDao The certificate Dao
+     */
     @Autowired
     public void setCertificateDao(CertificateDao certDao) 
     {
         this.certDao = certDao;
     }
     
+    /**
+     * Gets all certificates in the system.
+     * @return A JSON representation of a collection of all certificates in the system.  Returns a status of 204 if no certificates
+     * exist.
+     */
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
     public Response getAllCertificates()
@@ -93,6 +100,12 @@ public class CertificateResource
 		return getCertificatesByOwner(null);
     }
     
+    /**
+     * Gets all certificates for a specific owner.
+     * @param owner The owner to retrieive certificates for.
+     * @return A JSON representation of a collection of all certificates in the system.  Returns a status of 204 if no certificates
+     * exist for the owner.
+     */
     @Path("{owner}")
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
@@ -123,6 +136,13 @@ public class CertificateResource
 		return Response.ok(entity).cacheControl(noCache).build();  
     }  
     
+    /**
+     * Gets a certificate for a specific owner and thumbprint.
+     * @param owner The owner or the certificate.
+     * @param thumbprint The thubmprint of the certificates.
+     * @return Returns a JSON representation of the certificate that matches the owner and thumbprint.  Returns a status of 404 
+     * if no matching certificate is found.
+     */
     @Path("{owner}/{thumbprint}")
     @Produces(MediaType.APPLICATION_JSON)       
     @GET
@@ -146,6 +166,12 @@ public class CertificateResource
 		return Response.ok(EntityModelConversion.toModelCertificate(retCertificate)).cacheControl(noCache).build();  
     }  
     
+    /**
+     * Adds a certificate to the system.
+     * @param uriInfo Injected URI context used for building the location URI.
+     * @param cert The certificate to add.
+     * @return Returns a status of 201 if the certificate was added or a status of 409 if the certificate already exists.
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)      
     public Response addCertificate(@Context UriInfo uriInfo, Certificate cert)
@@ -194,6 +220,11 @@ public class CertificateResource
     	}
     }
     
+    /**
+     * Deletes certificates by system id.
+     * @param ids Comma delimited list of system ids to delete.
+     * @return Status of 200 if the certificates were deleted.
+     */
     @Path("ids/{ids}")
     @DELETE
     public Response removeCertificatesByIds(@PathParam("ids") String ids)
@@ -218,6 +249,11 @@ public class CertificateResource
     	}
     }
     
+    /**
+     * Deletes all certificate for a specific owner.
+     * @param owner The owner of the certificate.
+     * @return Status of 200 if the certificates were deleted.
+     */
     @DELETE
     @Path("{owner}")   
     public Response removeCertificatesByOwner(@PathParam("owner") String owner)
