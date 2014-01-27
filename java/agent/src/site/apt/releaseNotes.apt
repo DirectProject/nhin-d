@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{2.0.5}
+
+    Changes included with release 2.0.5
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Previous version contain extra debug logging and test that was not removed before release which broke certificate path chaining.
+
 {2.0.4}
 
     Changes included with release 2.0.4
