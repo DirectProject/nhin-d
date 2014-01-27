@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{2.0.4}
+
+    Changes included with release 2.0.4
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=229}229}}: Fixed issue with CRLs not decoding when signed by large keys.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=230}230}}: NHINDException now defaults to the Unexpected status to resolved null pointer errors.  
+
 {2.0.3}
 
     Changes included with release 2.0.3
