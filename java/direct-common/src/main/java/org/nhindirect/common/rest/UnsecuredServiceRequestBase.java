@@ -130,7 +130,7 @@ public abstract class UnsecuredServiceRequestBase<T, E extends Exception> implem
 	            throw unexpectedStatus(statusCode, response.getEntity());
         }
     }
-
+    
     /**
      * Extension point invoked from {@link #call()}. This method should provide a request to send to
      * the remote server.
@@ -316,5 +316,14 @@ public abstract class UnsecuredServiceRequestBase<T, E extends Exception> implem
         return new ServiceException(
                 "This version of target service is incompatible with the server located at "
                         + serviceUrl + ".");
+    }
+    
+    /**
+     * {@inheritDoc}}
+     */
+    @Override
+    public void destroy()
+    {
+
     }
 }

@@ -24,6 +24,7 @@ package org.nhindirect.common.rest;
 import java.io.IOException;
 
 import org.apache.http.client.HttpClient;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.nhindirect.common.rest.exceptions.ServiceException;
@@ -55,6 +56,7 @@ public abstract class AbstractUnsecuredService
          this.serviceURL = serviceURL.endsWith("/") ? serviceURL : serviceURL + "/";
          this.jsonMapper = new ObjectMapper();
          this.jsonMapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+         this.jsonMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false); 
      }
      
      

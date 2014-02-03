@@ -1,6 +1,5 @@
 package org.nhind.config.client;
 
-
 import junit.framework.TestCase;
 
 import org.junit.AfterClass;
@@ -30,6 +29,7 @@ public class ClientProxyEndToEndTest
 	
 	private void cleanDomains() throws Exception
 	{
+		//Thread.sleep(10000000L);
 		Domain[] doms = proxy.listDomains(null, 100);
 	
 		if (doms != null)

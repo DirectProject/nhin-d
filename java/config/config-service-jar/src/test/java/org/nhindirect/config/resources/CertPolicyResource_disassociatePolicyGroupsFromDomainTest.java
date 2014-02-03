@@ -26,7 +26,7 @@ import org.nhindirect.config.store.dao.DomainDao;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
-public class CertPolicyGroup_disassociatePolicyGroupsFromDomainTest 
+public class CertPolicyResource_disassociatePolicyGroupsFromDomainTest 
 {
 	   protected CertPolicyDao policyDao;
 	   protected DomainDao domainDao;  
