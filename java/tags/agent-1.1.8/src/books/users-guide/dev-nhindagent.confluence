@@ -1,0 +1,607 @@
+h1. NHINDAgent
+
+The NHINDAgent is the main interface in the agent module and orchestrates logic among its internal components to implement the security and trust agent specification.  Its objective is to process incoming and outgoing messages according to the rules in the specification.
+
+{code}
+package org.nhindirect.stagent;
+
+@ImplementedBy(DefaultNHINDAgent.class)
+public interface NHINDAgent 
+{
+
+    public Collection<String> getDomains();
+	   
+    public IncomingMessage processIncoming(String messageText);
+     
+    public IncomingMessage processIncoming(String messageText, NHINDAddressCollection recipients, NHINDAddress sender);
+         
+    public IncomingMessage processIncoming(MessageEnvelope envelope);
+
+    public IncomingMessage processIncoming(MimeMessage msg);
+ 
+    public IncomingMessage processIncoming(IncomingMessage message);
+         
+    public OutgoingMessage processOutgoing(String messageText);    
+       
+    public OutgoingMessage processOutgoing(String messageText, NHINDAddressCollection recipients, NHINDAddress sender);   
+   
+    public OutgoingMessage processOutgoing(MessageEnvelope envelope);
+
+    public OutgoingMessage processOutgoing(OutgoingMessage message);
+}
+{code}
+
+The interface provides multiple signatures for processing inbound and outbound messages depending on what message format is available to the caller.  Note that agent does not provide logic to discern if a message is incoming or outgoing; it is the responsibility of the caller to make this assertion.  This is because the semantics of incoming and outgoing are dependent on the runtime environment and protocol stack that the agent is executing in, and  the agent is intended to be a generic black box. 
+
+h2.  ProcessOutgoing
+
+The ProcessOutgoing method and its variants accept a message that needs to be signed and encrypted according to the security and trust specification.  All variants result in the same output: an OutgoingMessage that contains the singed and encrypted version of the original message.  To produce the final outgoing message, the method uses the following high level algorithm.
+
+# If the message is presented in raw text format or as a MimeMessage, the message is placed in a MessageEnvelope and the recipients and sender are parsed.  *NOTE*:  The sender and recipients are obtained from the TO and FROM routing headers.  If the caller has access to other headers that may supersede the TO and FROM routing headers (ex. RCPT TO SMTP header) , then the caller should use a variant that allows the TO and FROM headers to be overridden.
+# The message is placed in a message wrapper whose content is the original message including all of the original message's headers and a content type of _message/rfc822_.  Only the routing headers and id of the original message are moved copied to the message wrapper's header.  This is necessary to protect potentially sensitive information that may be in the original message's headers such as the subject.  See the _Message Wrapping_ section of the security and trust agent [specification|http://nhindirect.org/Content+Security+for+Simple+Health+Transport] for full details.
+# Enforces the trust model ensuring that all recipients have valid certificates and that the sender is allowed to send to each recipient according to the trust policy.  Recipients that are not trusted are placed in the rejectedRecipients attributes of the returned OutgoingMessage.  If there are not trusted recipients, then an exception is thrown at this stage with an error code of NoTrustedRecipients.
+# The message is signed using a detached signature with the senders private key(s).  The result is a multipart MIME where the first part is the message wrapper and the second part is a base64 encoded signature block (content type _application/pkcs7-signature; name=smime.p7s; smime-type=signed-data_).
+# The message is encrypted using a random symmetric key and the symmetric key is encrypted using each recipients public key.  The resulting message is base64 encoded message with a content type of _application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"_.
+
+The final encrypted message can be retrieved from the OutgoingMessage using the getMessage() method.
+
+h2.  ProcessIncoming
+
+The ProcessIncomoing method and its variants accept a message that needs to be decrypted and have the signature verified according to the security and trust specification.  All variants result in the same output: an IncomingMessage that contains the sender's original message.  To produce the final incoming message, the method uses the following high level algorithm.
+
+# If the message is presented in raw text format or as a MimeMessage, the message is placed in a MessageEnvelope and the recipients and sender are parsed.  *NOTE*:  The sender and recipients are obtained from the TO and FROM routing headers.  If the caller has access to other headers that may supersede the TO and FROM routing headers (ex. RCPT TO SMTP header) , then the caller should use a variant that allows the TO and FROM headers to be overridden.
+# Categorizes the recipients list and ensures that valid recipients in the agent's domain exist in the recipient list.  If there are no recipients in the message that belong to the agent's domain, then an exception is thrown at this stage with an error code of NoTrustedRecipients.
+# Obtains valid public certificates for the sender and private keys for the recipients.
+# Decrypts the message using the private certificates of the recipients and the encrypted symmetric key.  It practice, only one valid private key is necessary because the message is encrypted using only one symmetric key.  As long as the agent can retrieve the symmetric key, the message can be successfully decrypted.   Trust of each recipient is validate in a later stage.  The result of the decryption stage is a multipart MIME with the original wrapped message and a detached signature.
+# Unwraps the original message from the message wrapper located in the first part of the multipart MIME from the previous step.
+# The message signature is validated using the senders public certificate(s).
+# Enforces the trust model by ensuring that sender has a valid trust anchor for each recipient.  If the sender is not trusted by any recipients, then an exception is thrown at this stage with an error code of NoTrustedRecipients.
+
+The final decrypted message can be retrieved from the IncomingMessage using the getMessage() method.
+
+h2. Message Wrapping
+
+To protect potentially sensitive information from being exposed as the message travels across the network backbone, the original message (including all headers) is placed in a message wrapper with a content type of _message/rfc822_.  Only routing information and id are copied to the message wrapper's header.  The following examples shows an original message and the message placed in a message wrapper.
+
+*Original Message*
+{code}
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Subject: I-D ACTION:draft-ietf-mailext-pipeline-01.txt
+Date: Thu, 05 Jan 95 10:53:24 -0500
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+Content-type: Multipart/Mixed; boundary="NextPart"
+
+--NextPart
+
+Content-type: text/plain; charset="us-ascii"
+
+A Revised Internet-Draft is available from the on-line Internet-Drafts directories.
+This draft is a work item of the Mail Extensions Working Group of the IETF.
+Title           : SMTP Service Extension for Command Pipelining
+Author(s)       : N. Freed, A. Cargille
+Filename        : draft-ietf-mailext-pipeline-01.txt
+Pages           : 9
+Date            : 01/04/1995
+
+This memo defines an extension to the SMTP service whereby a server can indicate 
+the extent of its ability to accept multiple commands in a single TCP send operation. 
+Using a single TCP send operation for multiple commands can improve SMTP 
+performance significantly.
+
+--NextPart
+
+Content-type: Message/External-body;
+name="draft-ietf-mailext-pipeline-01.txt";
+site="ds.internic.net"; access-type="anon-ftp"; directory="internet-drafts"
+
+Content-Type: text/plain
+Content-ID: <19950104161302.I-D@CNRI.Reston.VA.US>
+
+--NextPart
+{code}
+
+*Wrapped Message*
+{code}
+content-type: message/rfc822
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Subject: I-D ACTION:draft-ietf-mailext-pipeline-01.txt
+Date: Thu, 05 Jan 95 10:53:24 -0500
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+Content-type: Multipart/Mixed; boundary="NextPart"
+
+--NextPart
+
+Content-type: text/plain; charset="us-ascii"
+
+A Revised Internet-Draft is available from the on-line Internet-Drafts directories.
+This draft is a work item of the Mail Extensions Working Group of the IETF.
+Title           : SMTP Service Extension for Command Pipelining
+Author(s)       : N. Freed, A. Cargille
+Filename        : draft-ietf-mailext-pipeline-01.txt
+Pages           : 9
+Date            : 01/04/1995
+
+This memo defines an extension to the SMTP service whereby a server can indicate 
+the extent of its ability to accept multiple commands in a single TCP send operation. 
+Using a single TCP send operation for multiple commands can improve SMTP 
+performance significantly.
+
+--NextPart
+
+Content-type: Message/External-body;
+name="draft-ietf-mailext-pipeline-01.txt";
+site="ds.internic.net"; access-type="anon-ftp"; directory="internet-drafts"
+
+Content-Type: text/plain
+Content-ID: <19950104161302.I-D@CNRI.Reston.VA.US>
+
+--NextPart
+{code}
+
+h2. Certificate Resolution
+
+Certificates can be resolved in a variety of ways depending of the HISP's operational structure.  The agent requires three resolver implementations be provided:
+
+# A public certificate resolver for obtaining certificates for destinations outside of the agent's list of domains.  DNS is the current preferred method, but different implementations may use alternative methods or combination of mediums.
+# A private certificate resolver for obtaining certificates and private keys for destinations owned by agent's list of domains.
+# A trust anchor resolver for obtaining trusted certificate authorities for each domain and optionally each user.
+
+Each resolver implementation requires different configuration parameters depending on the implementation's resolution method.
+
+*NOTE*: To prevent bogus/rogue users from being added to a domain, the trust anchor resolver must includes the local domain's certificate authority.  
+
+h2. Multi-Domain Support
+
+In some cases, a HISP may be hosting multiple domains.  To support this hosting model, the agent supports hosting multiple domains within one instance of the agent.  
+
+h2. DefaultNHINDAgent
+
+The DefaultNHINDAgent is exactly what its class name states; it is the default implementation of the NHINDAgent interface.  It includes multiple constructors depending on the consumer's needs.  *NOTE*: The last constructor signature is decorated with Guice specific annotations for dependency injection.
+
+{code}
+package org.nhindirect.stagent;
+
+public class DefaultNHINDAgent implements NHINDAgent
+{
+    public DefaultNHINDAgent(String domain, CertificateResolver privateCerts, CertificateResolver publicCerts, TrustAnchorResolver anchors)
+    {
+    	
+    	this(domain, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographerImpl.Default);
+    }
+  
+    public DefaultNHINDAgent(Collection<String> domains, CertificateResolver privateCerts, CertificateResolver publicCerts, TrustAnchorResolver anchors)
+    {
+
+    	
+    	this(domains, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographerImpl.Default);
+    }    
+    
+
+    public DefaultNHINDAgent(String domain, CertificateResolver privateCerts, CertificateResolver publicCerts, TrustAnchorResolver anchors, TrustModel trustModel, Cryptographer cryptographer)
+    {            	
+    	this(Arrays.asList(new String[] {domain}), privateCerts, publicCerts, anchors, trustModel, cryptographer);    	
+    }
+
+    @Inject
+    public DefaultNHINDAgent(@AgentDomains Collection<String> domains, @PrivateCerts CertificateResolver privateCerts, 
+    		@PublicCerts CertificateResolver publicCerts, TrustAnchorResolver anchors, TrustModel trustModel, Cryptographer cryptographer)
+}
+{code}
+
+h3. Concurrent Programming
+
+A good/scalable message system should support multiple threads of execution for increased bandwidth.  All public methods of the DefaultNHINDAgent are thread safe and can be called concurrently.
+
+h3. Guice Providers and Modules
+
+The agent library contains a Guice provider for the DefaultNHINDAgent that can be used along with the AgentModule for creating instance using a Guice injector.
+
+*Agent Provider Example*
+
+{code}
+     Collection<String> domains = new ArrayList<String>();
+     domains.add("example.com");
+     
+     // private certs are stored in a keystore for this ecample
+     Provider<CertificateResolver> privateCerts = new KeyStoreCertificateStoreProvider("certStoreFile", "password", "password");
+     
+     // get the trust anchors from the private keystore for this example
+     // certs can be extracted from a key store using alias names... the getAnchorsFromCertStore function
+     // can use a configured set of aliases that are known to be trust anchors
+     Collection<X509Certificate> anchors = getAnchorsFromCertStore(privateCerts());
+     
+     // use DNS for public certs with default settings
+     Provider<CertificateResolver> publicCerts = new DNSCertStoreProvider(null, null, null);
+     
+     // use a uniform trust resolver for this example     
+     Provider<TrustAnchorResolver> trustAnchors = new UniformTrustAnchorResolverProvider(anchors);     
+
+     // use the same keystore for both public and private certs
+     Provider<NHINDAgent> agentProvider = new DefaultNHINDAgentProvider(domains, publicCerts, privateCerts, trustAnchors);
+     AgentModule agentMod = new AgentModule();
+
+     // get a Guice Injector to create instances
+     Injector inj = Guice.createInjector(agentMod);
+     NHINDAgent agent = inj.getInstance(NHINDAgent.class);
+{code}
+
+h3. Limitations
+
+*Single Resolver Instances*
+
+The default agent does not allow for different resolver instances per domain.  One and only one resolver instance can be used for the public and private resolver parameters respectively.  
+
+
+h2. Message Encryption Stage Representation
+
+The following examples illustrate what a message looks like at different stages of the encryption process.  It starts with an example message and ends with the final encrypted message.
+
+*Original Message*
+{code}
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Subject: I-D ACTION:draft-ietf-mailext-pipeline-01.txt
+Date: Thu, 05 Jan 95 10:53:24 -0500
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+Content-type: Multipart/Mixed; boundary="NextPart"
+
+--NextPart
+
+Content-type: text/plain; charset="us-ascii"
+
+A Revised Internet-Draft is available from the on-line Internet-Drafts directories.
+This draft is a work item of the Mail Extensions Working Group of the IETF.
+Title           : SMTP Service Extension for Command Pipelining
+Author(s)       : N. Freed, A. Cargille
+Filename        : draft-ietf-mailext-pipeline-01.txt
+Pages           : 9
+Date            : 01/04/1995
+
+This memo defines an extension to the SMTP service whereby a server can indicate 
+the extent of its ability to accept multiple commands in a single TCP send operation. 
+Using a single TCP send operation for multiple commands can improve SMTP 
+performance significantly.
+
+--NextPart
+
+Content-type: Message/External-body;
+name="draft-ietf-mailext-pipeline-01.txt";
+site="ds.internic.net"; access-type="anon-ftp"; directory="internet-drafts"
+
+Content-Type: text/plain
+Content-ID: <19950104161302.I-D@CNRI.Reston.VA.US>
+
+--NextPart
+{code}
+
+*Message Wrapping*
+{code}
+content-type: message/rfc822
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Subject: I-D ACTION:draft-ietf-mailext-pipeline-01.txt
+Date: Thu, 05 Jan 95 10:53:24 -0500
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+Content-type: Multipart/Mixed; boundary="NextPart"
+
+--NextPart
+
+Content-type: text/plain; charset="us-ascii"
+
+A Revised Internet-Draft is available from the on-line Internet-Drafts directories.
+This draft is a work item of the Mail Extensions Working Group of the IETF.
+Title           : SMTP Service Extension for Command Pipelining
+Author(s)       : N. Freed, A. Cargille
+Filename        : draft-ietf-mailext-pipeline-01.txt
+Pages           : 9
+Date            : 01/04/1995
+
+This memo defines an extension to the SMTP service whereby a server can indicate 
+the extent of its ability to accept multiple commands in a single TCP send operation. 
+Using a single TCP send operation for multiple commands can improve SMTP 
+performance significantly.
+
+--NextPart
+
+Content-type: Message/External-body;
+name="draft-ietf-mailext-pipeline-01.txt";
+site="ds.internic.net"; access-type="anon-ftp"; directory="internet-drafts"
+
+Content-Type: text/plain
+Content-ID: <19950104161302.I-D@CNRI.Reston.VA.US>
+
+--NextPart
+{code}
+
+*Message Signing*
+{code}
+------=_Part_0_21243558.1286387638730
+content-type: message/rfc822
+
+To: externUser1@starugh-stateline.com
+From: user1@cerner.com
+Subject: I-D ACTION:draft-ietf-mailext-pipeline-01.txt
+Date: Thu, 05 Jan 95 10:53:24 -0500
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+Content-type: Multipart/Mixed; boundary="NextPart"
+
+--NextPart
+
+Content-type: text/plain; charset="us-ascii"
+
+A Revised Internet-Draft is available from the on-line Internet-Drafts directories.
+This draft is a work item of the Mail Extensions Working Group of the IETF.
+Title           : SMTP Service Extension for Command Pipelining
+Author(s)       : N. Freed, A. Cargille
+Filename        : draft-ietf-mailext-pipeline-01.txt
+Pages           : 9
+Date            : 01/04/1995
+
+This memo defines an extension to the SMTP service whereby a server can indicate 
+the extent of its ability to accept multiple commands in a single TCP send operation. 
+Using a single TCP send operation for multiple commands can improve SMTP 
+performance significantly.
+
+--NextPart
+
+Content-type: Message/External-body;
+name="draft-ietf-mailext-pipeline-01.txt";
+site="ds.internic.net"; access-type="anon-ftp"; directory="internet-drafts"
+
+Content-Type: text/plain
+Content-ID: <19950104161302.I-D@CNRI.Reston.VA.US>
+
+--NextPart
+
+------=_Part_0_21243558.1286387638730
+Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+cjNuY2wnS6xIpbTks+hONV8ZOpa5AAAAAAAA
+------=_Part_0_21243558.1286387638730--
+{code}
+
+*Encrypted*
+{code}
+Content-Type: application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Description: S/MIME Encrypted Message
+
+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
+{code}
+
+*Final Message*
+{code}
+From: user1@cerner.com
+To: externUser1@starugh-stateline.com
+Message-ID: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+Mime-Version: 1.0
+content-type: application/pkcs7-mime; smime-type=enveloped-data; name="smime.p7m"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Description: S/MIME Encrypted Message
+
+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
+{code}
+
+For incoming message, the process is reversed in order.  
+
+*NOTE*: Running this process on the same original message in a debugger should result in a slightly different encrypted message because a new symtric encryption key is produced with each execution.

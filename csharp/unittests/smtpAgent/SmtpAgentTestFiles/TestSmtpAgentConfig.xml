@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  SAMPLE
+  Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
+  Customize as per your needs
+-->
+<SmtpAgentConfig>
+  <Domain>redmond.hsgincubator.com</Domain>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Notifications>
+    <AutoResponse>true</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>testSmtpAgent</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Debug</Level>
+  </Log>
+  <Cryptographer>
+    <DefaultEncryption>AES128</DefaultEncryption>
+    <DefaultDigest>SHA1</DefaultDigest>
+  </Cryptographer>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <Trust>
+    <MaxIssuerChainLength>4</MaxIssuerChainLength>
+    <RevocationCheckMode>Offline</RevocationCheckMode>
+    <Timeout>10000</Timeout>
+  </Trust>
+  <IncomingRoutes>
+    <Route>
+      <AddressType>XDR</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\xdr</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\xdr2</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>SMTP</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop2</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop3</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop4</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop5</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop6</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>System</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\sys</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>Special</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\special</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\special2</CopyFolder>
+      <CopyFolder>C:\inetpub\mailroot\routed\special3</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>Throw</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\routed\drop</CopyFolder>      
+    </Route>
+  </IncomingRoutes>
+  <InternalMessage>
+    <PickupFolder>C:\inetpub\mailroot\TestPickup</PickupFolder>
+    <EnableRelay>false</EnableRelay>
+  </InternalMessage>
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\incoming</CopyFolder>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\outgoing</CopyFolder>
+  </ProcessOutgoing>
+</SmtpAgentConfig>

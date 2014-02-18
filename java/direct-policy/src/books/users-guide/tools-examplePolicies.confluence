@@ -1,0 +1,37 @@
+h1. Example Policies
+
+The policy language and operators open up a wide range of expressions that can be built.  Below are some example of commonly used policies.  Remember that the engine and lexicons allow for compound expressions, so the following examples can be combined in different permutations using boolean operators.
+
+*Specific policy OID exists*
+
+X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} 1.3.6.1.4.1.41179.0.1.2
+
+*At least one specific policy OID exists*
+
+(^(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {}& 1.3.6.1.4.1.41179.0.1.2,3.2.22.1)) > 0
+
+*Secure email extension*
+
+X509.TBS.EXTENSION.ExtKeyUsageSyntax {?} 1.3.6.1.5.5.7.3.4
+
+*End entity certificate*
+
+X509.TBS.EXTENSION.BasicConstraints.CA = false
+
+*CA certificate*
+
+X509.TBS.EXTENSION.BasicConstraints.CA = true
+
+*Key encipherment usage*
+
+(X509.TBS.EXTENSION.KeyUsage & 32) > 0
+
+*Digital signature usage*
+
+(X509.TBS.EXTENSION.KeyUsage & 128) > 0
+
+*Key encipherment and not digital signature*
+
+((X509.TBS.EXTENSION.KeyUsage & 32) = 0) && ((X509.TBS.EXTENSION.KeyUsage & 128) > 0)
+
+*Digital signature and not key encipherment*
