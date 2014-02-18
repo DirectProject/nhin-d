@@ -1,5 +1,6 @@
 package org.nhindirect.config;
 
+import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -17,4 +18,10 @@ public class TestApplicationContext implements ApplicationContextAware
 	  {
 		  return CONTEXT;
 	  }
+	  
+		@Test
+		public void testDummy()
+		{
+			
+		}
 }
