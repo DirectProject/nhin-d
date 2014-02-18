@@ -23,6 +23,7 @@ import org.nhindirect.config.model.Address;
 import org.nhindirect.config.model.Domain;
 import org.nhindirect.config.model.EntityStatus;
 import org.nhindirect.config.model.TrustBundle;
+import org.nhindirect.config.model.TrustBundleDomainReltn;
 import org.nhindirect.config.resources.TrustBundleResource;
 import org.nhindirect.config.store.dao.DomainDao;
 import org.nhindirect.config.store.dao.TrustBundleDao;
@@ -64,7 +65,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 			}
 
 			
-			protected abstract Collection<TrustBundle> getBundlesToAdd();
+			protected abstract Collection<TrustBundleDomainReltn> getBundlesToAdd();
 			
 			protected abstract Domain getDomainToAdd();
 			
@@ -84,15 +85,15 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 			protected void performInner() throws Exception
 			{				
 				
-				final Collection<TrustBundle> bundlesToAdd = getBundlesToAdd();
+				final Collection<TrustBundleDomainReltn> bundlesToAdd = getBundlesToAdd();
 				
 				if (bundlesToAdd != null)
 				{
-					for (TrustBundle addBundle : bundlesToAdd)
+					for (TrustBundleDomainReltn addBundle : bundlesToAdd)
 					{
 						try
 						{
-							resource.addTrustBundle(addBundle);
+							resource.addTrustBundle(addBundle.getTrustBundle());
 						}
 						catch (ServiceException e)
 						{
@@ -123,21 +124,21 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				try
 				{
 					
-					final Collection<TrustBundle> getBundles = resource.getTrustBundlesByDomain(getDomainNameToRetrieve(), Boolean.parseBoolean(getFetchAnchors()));
+					final Collection<TrustBundleDomainReltn> getBundles = resource.getTrustBundlesByDomain(getDomainNameToRetrieve(), Boolean.parseBoolean(getFetchAnchors()));
 
 					doAssertions(getBundles);
 				}
 				catch (ServiceMethodException e)
 				{
 					if (e.getResponseCode() == 204)
-						doAssertions(new ArrayList<TrustBundle>());
+						doAssertions(new ArrayList<TrustBundleDomainReltn>());
 					else
 						throw e;
 				}
 
 			}
 				
-			protected void doAssertions(Collection<TrustBundle> bundles) throws Exception
+			protected void doAssertions(Collection<TrustBundleDomainReltn> bundles) throws Exception
 			{
 				
 			}
@@ -148,14 +149,14 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 		{
 			new TestPlan()
 			{
-				protected Collection<TrustBundle> bundles;
+				protected Collection<TrustBundleDomainReltn> bundles;
 				
 				@Override
-				protected Collection<TrustBundle> getBundlesToAdd()
+				protected Collection<TrustBundleDomainReltn> getBundlesToAdd()
 				{
 					try
 					{
-						bundles = new ArrayList<TrustBundle>();
+						bundles = new ArrayList<TrustBundleDomainReltn>();
 						
 						TrustBundle bundle = new TrustBundle();
 						bundle.setBundleName("testBundle1");
@@ -163,7 +164,12 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 						bundle.setBundleURL(filePrefix + fl.getAbsolutePath());	
 						bundle.setRefreshInterval(24);
 						bundle.setSigningCertificateData(null);		
-						bundles.add(bundle);
+						
+						TrustBundleDomainReltn reltn = new TrustBundleDomainReltn();
+						reltn.setDomain(new Domain());
+						reltn.setTrustBundle(bundle);
+						
+						bundles.add(reltn);
 			
 						
 						return bundles;
@@ -208,21 +214,21 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				}
 				
 				
-				protected void doAssertions(Collection<TrustBundle> bundles) throws Exception
+				protected void doAssertions(Collection<TrustBundleDomainReltn> bundles) throws Exception
 				{
 					assertNotNull(bundles);
 					assertEquals(1, bundles.size());
 					
-					final Iterator<TrustBundle> addedBundlesIter = this.bundles.iterator();
+					final Iterator<TrustBundleDomainReltn> addedBundlesIter = this.bundles.iterator();
 					
-					for (TrustBundle retrievedBundle : bundles)
+					for (TrustBundleDomainReltn retrievedBundle : bundles)
 					{	
-						final TrustBundle addedBundle = addedBundlesIter.next(); 
+						final TrustBundleDomainReltn addedBundle = addedBundlesIter.next(); 
 						
-						assertEquals(addedBundle.getBundleName(), retrievedBundle.getBundleName());
-						assertEquals(addedBundle.getBundleURL(), retrievedBundle.getBundleURL());
-						assertEquals(addedBundle.getRefreshInterval(), retrievedBundle.getRefreshInterval());
-						assertNull(retrievedBundle.getSigningCertificateData());
+						assertEquals(addedBundle.getTrustBundle().getBundleName(), retrievedBundle.getTrustBundle().getBundleName());
+						assertEquals(addedBundle.getTrustBundle().getBundleURL(), retrievedBundle.getTrustBundle().getBundleURL());
+						assertEquals(addedBundle.getTrustBundle().getRefreshInterval(), retrievedBundle.getTrustBundle().getRefreshInterval());
+						assertNull(retrievedBundle.getTrustBundle().getSigningCertificateData());
 					}
 				}
 			}.perform();
@@ -233,7 +239,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 		{
 			new TestPlan()
 			{
-				protected Collection<TrustBundle> bundles;
+				protected Collection<TrustBundleDomainReltn> bundles;
 				
 				@Override
 				protected String getFetchAnchors()
@@ -242,11 +248,11 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				}
 				
 				@Override
-				protected Collection<TrustBundle> getBundlesToAdd()
+				protected Collection<TrustBundleDomainReltn> getBundlesToAdd()
 				{
 					try
 					{
-						bundles = new ArrayList<TrustBundle>();
+						bundles = new ArrayList<TrustBundleDomainReltn>();
 						
 						TrustBundle bundle = new TrustBundle();
 						bundle.setBundleName("testBundle1");
@@ -254,7 +260,12 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 						bundle.setBundleURL(filePrefix + fl.getAbsolutePath());	
 						bundle.setRefreshInterval(24);
 						bundle.setSigningCertificateData(null);		
-						bundles.add(bundle);
+						
+						TrustBundleDomainReltn reltn = new TrustBundleDomainReltn();
+						reltn.setTrustBundle(bundle);
+						reltn.setDomain(new Domain());
+						
+						bundles.add(reltn);
 			
 						
 						return bundles;
@@ -299,22 +310,22 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				}
 				
 				
-				protected void doAssertions(Collection<TrustBundle> bundles) throws Exception
+				protected void doAssertions(Collection<TrustBundleDomainReltn> bundles) throws Exception
 				{
 					assertNotNull(bundles);
 					assertEquals(1, bundles.size());
 					
-					final Iterator<TrustBundle> addedBundlesIter = this.bundles.iterator();
+					final Iterator<TrustBundleDomainReltn> addedBundlesIter = this.bundles.iterator();
 					
-					for (TrustBundle retrievedBundle : bundles)
+					for (TrustBundleDomainReltn retrievedBundle : bundles)
 					{	
-						final TrustBundle addedBundle = addedBundlesIter.next(); 
+						final TrustBundleDomainReltn addedBundle = addedBundlesIter.next(); 
 						
-						assertEquals(addedBundle.getBundleName(), retrievedBundle.getBundleName());
-						assertEquals(addedBundle.getBundleURL(), retrievedBundle.getBundleURL());
-						assertEquals(addedBundle.getRefreshInterval(), retrievedBundle.getRefreshInterval());
-						assertNull(retrievedBundle.getSigningCertificateData());
-						assertTrue(retrievedBundle.getTrustBundleAnchors().isEmpty());
+						assertEquals(addedBundle.getTrustBundle().getBundleName(), retrievedBundle.getTrustBundle().getBundleName());
+						assertEquals(addedBundle.getTrustBundle().getBundleURL(), retrievedBundle.getTrustBundle().getBundleURL());
+						assertEquals(addedBundle.getTrustBundle().getRefreshInterval(), retrievedBundle.getTrustBundle().getRefreshInterval());
+						assertNull(retrievedBundle.getTrustBundle().getSigningCertificateData());
+						assertTrue(retrievedBundle.getTrustBundle().getTrustBundleAnchors().isEmpty());
 					}
 				}
 			}.perform();
@@ -327,7 +338,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 			{
 				
 				@Override
-				protected Collection<TrustBundle> getBundlesToAdd()
+				protected Collection<TrustBundleDomainReltn> getBundlesToAdd()
 				{
 					return null;
 				}
@@ -366,7 +377,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				}
 				
 				
-				protected void doAssertions(Collection<TrustBundle> bundles) throws Exception
+				protected void doAssertions(Collection<TrustBundleDomainReltn> bundles) throws Exception
 				{
 					assertNotNull(bundles);
 					assertEquals(0, bundles.size());
@@ -382,7 +393,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 			{
 				
 				@Override
-				protected Collection<TrustBundle> getBundlesToAdd()
+				protected Collection<TrustBundleDomainReltn> getBundlesToAdd()
 				{
 					return null;
 				}
@@ -462,7 +473,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				}	
 				
 				@Override
-				protected Collection<TrustBundle> getBundlesToAdd()
+				protected Collection<TrustBundleDomainReltn> getBundlesToAdd()
 				{
 					return null;
 				}
@@ -543,7 +554,7 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 				}	
 				
 				@Override
-				protected Collection<TrustBundle> getBundlesToAdd()
+				protected Collection<TrustBundleDomainReltn> getBundlesToAdd()
 				{
 					return null;
 				}

@@ -89,6 +89,7 @@ public class NHINDSecurityAndTrustMailet_onProcess_Test extends TestCase
 				params.put("ConfigURL", "file://" + configfile);
 			
 			retVal = new OverrideOnProcessMailet();
+			
 			MailetConfig mailetConfig = new MockMailetConfig(params, "OverrideOnProcessMailet");
 			
 			retVal.init(mailetConfig);
@@ -261,7 +262,7 @@ public class NHINDSecurityAndTrustMailet_onProcess_Test extends TestCase
 			return null;
 		}
 		
-		final class OverrideOnProcessMailet extends OnProcessMailet
+		class OverrideOnProcessMailet extends OnProcessMailet
 		{
 			@Override
 			protected Collection<Module> getInitModules() 

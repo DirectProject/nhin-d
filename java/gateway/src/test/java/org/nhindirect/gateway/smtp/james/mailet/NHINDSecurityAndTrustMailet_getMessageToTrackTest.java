@@ -17,11 +17,14 @@ import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.common.tx.model.TxMessageType;
 
+import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.AddressSource;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
+
+import com.google.inject.Provider;
 
 
 public class NHINDSecurityAndTrustMailet_getMessageToTrackTest extends TestCase
@@ -48,6 +51,11 @@ public class NHINDSecurityAndTrustMailet_getMessageToTrackTest extends TestCase
 				protected boolean isOutgoing(MimeMessage msg, NHINDAddress sender)
 				{
 					return isMessageOutgoing();
+				}
+
+				protected Provider<SmtpAgentConfig> getConfigProvider()
+				{
+					return null;
 				}
 			};
 

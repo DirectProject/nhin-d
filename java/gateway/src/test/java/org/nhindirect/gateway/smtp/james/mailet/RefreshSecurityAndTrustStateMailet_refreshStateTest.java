@@ -26,6 +26,7 @@ public class RefreshSecurityAndTrustStateMailet_refreshStateTest extends TestCas
 			params.put("ConfigURL", "file://" + configfile);
 		
 		retVal = new NHINDSecurityAndTrustMailet();
+		
 		MailetConfig mailetConfig = new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");
 		
 		retVal.init(mailetConfig);

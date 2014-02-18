@@ -45,6 +45,7 @@ public class NHINDSecurityAndTrustMailet_createDSNCreatorTest extends TestCase
 				{
 					return getTestInitModules();
 				}
+
 			};
 
 			MailetConfig config = getMailetConfig();

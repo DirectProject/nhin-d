@@ -11,9 +11,9 @@ import org.nhindirect.common.rest.AbstractGetRequest;
 import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
-import org.nhindirect.config.model.TrustBundle;
+import org.nhindirect.config.model.TrustBundleDomainReltn;
 
-public class GetTrustBundlesByDomainRequest extends AbstractGetRequest<TrustBundle>
+public class GetTrustBundlesByDomainRequest extends AbstractGetRequest<TrustBundleDomainReltn>
 {
 	private final String domainName;
 	private final boolean fetchAnchors;
@@ -37,7 +37,7 @@ public class GetTrustBundlesByDomainRequest extends AbstractGetRequest<TrustBund
     }
     
     @Override
-    protected Collection<TrustBundle> interpretResponse(int statusCode, HttpResponse response)
+    protected Collection<TrustBundleDomainReltn> interpretResponse(int statusCode, HttpResponse response)
             throws IOException, ServiceException 
     {
         switch (statusCode) 

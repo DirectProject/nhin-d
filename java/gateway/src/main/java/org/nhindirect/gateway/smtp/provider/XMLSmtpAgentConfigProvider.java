@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp.provider;
 
+import java.net.URL;
+
 import org.nhindirect.gateway.smtp.annotation.SmptAgentConfigFile;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.config.XMLSmtpAgentConfig;
@@ -30,16 +32,35 @@ import org.nhindirect.stagent.NHINDAgent;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 
-public class XMLSmtpAgentConfigProvider implements Provider<SmtpAgentConfig> 
+public class XMLSmtpAgentConfigProvider implements Provider<SmtpAgentConfig>, URLAccessedConfigProvider, NHINDAgentConfigurableProvider
 {
-	private final String configFile;
-	private final Provider<NHINDAgent> agentProvider;
+	private String configFile;
+	private Provider<NHINDAgent> agentProvider;
+	
+	public XMLSmtpAgentConfigProvider()
+	{
+		
+	}
 	
 	@Inject
 	public XMLSmtpAgentConfigProvider(@SmptAgentConfigFile String configFile, Provider<NHINDAgent> agentProvider)
 	{
 		this.configFile = configFile;
 		this.agentProvider = agentProvider;
+	}
+	
+	
+	@Override
+	public void setConfigURL(URL url) 
+	{
+		this.configFile = url.toExternalForm();
+		
+	}
+	
+	@Override
+	public void setNHINDAgentProvider(Provider<NHINDAgent> provider) 
+	{
+		this.agentProvider = provider;
 	}
 	
 	public SmtpAgentConfig get()

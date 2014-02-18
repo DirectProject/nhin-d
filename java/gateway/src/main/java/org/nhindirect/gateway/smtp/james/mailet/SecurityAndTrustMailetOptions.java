@@ -87,5 +87,28 @@ public class SecurityAndTrustMailetOptions
  	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ConsumeMDNProcessed
      */
     public static final String USE_OUTGOING_POLICY_FOR_INCOMING_NOTIFICATIONS = "UseOutgoingPolicyForIncomingNotifications";
+    
+    /**
+     * Mailet configuration parameter for providing a custom Guice provider for the SmtpAgentConfig interface.  This parameter is a string containing the fully
+     * qualified class name of the provider.  If this parameter is empty or null, the WSSmtpAgentConfigProvider will be used by default.
+     * <p>
+     * This option is configured using the <b>SmptAgentConfigProvider</b> element of the NHINDSecurityAndTrustMailet configuration.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.SmptAgentConfigProvider
+     */
+    public static final String SMTP_AGENT_CONFIG_PROVIDER = "SmptAgentConfigProvider";
+    
+    
+    /**
+     * Mailet configuration parameter for providing a custom Guice provider ServiceSecurityManager interface.  Security managers
+     * are necessary for configuration service clients that use authentication protocols to protect vital configuration data
+     * such as anchors and certificates.  This parameter is a string containing the fully
+     * qualified class name of the provider.  If this parameter is empty or null, the OpenServiceSecurityManagerProvider will be used
+     * by default.
+     * <p>
+     * This option is configured using the <b>ServiceSecurityManagerProvider</b> element of the NHINDSecurityAndTrustMailet configuration.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ServiceSecurityManagerProvider
+     */
+    public static final String SERVICE_SECURITY_MANAGER_PROVIDER = "ServiceSecurityManagerProvider";
+    
      
 }

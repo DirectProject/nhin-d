@@ -4,11 +4,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-
-import org.nhindirect.policy.PolicyExpression;
-import org.nhindirect.stagent.cert.impl.util.Lookup;
-import org.nhindirect.stagent.cert.impl.util.LookupFactory;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -51,13 +46,20 @@ import org.nhind.config.Domain;
 import org.nhind.config.PolicyLexicon;
 import org.nhind.config.Setting;
 import org.nhind.config.TrustBundle;
+import org.nhind.config.rest.CertificateService;
+import org.nhind.config.rest.impl.DefaultCertificateService;
+import org.nhindirect.common.rest.HttpClientFactory;
+import org.nhindirect.common.rest.OpenServiceSecurityManager;
+import org.nhindirect.common.rest.ServiceSecurityManager;
+import org.nhindirect.common.rest.provider.OpenServiceSecurityManagerProvider;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
-import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceCertificateStore;
+import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceRESTCertificateStore;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
+import org.nhindirect.policy.PolicyExpression;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.DefaultNHINDAgent;
 import org.nhindirect.stagent.IncomingMessage;
@@ -72,6 +74,8 @@ import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.cert.impl.LDAPCertificateStore;
 import org.nhindirect.stagent.cert.impl.TrustAnchorCertificateStore;
+import org.nhindirect.stagent.cert.impl.util.Lookup;
+import org.nhindirect.stagent.cert.impl.util.LookupFactory;
 import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.policy.PolicyResolver;
 import org.nhindirect.stagent.trust.TrustAnchorResolver;
@@ -81,13 +85,15 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SRVRecord;
 
 import com.google.inject.Injector;
+import com.google.inject.Provider;
 
-public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest 
+public class RESTSmtpAgentConfigFunctional_Test extends AbstractServerTest 
 {
 	private static final String certBasePath = "src/test/resources/certs/";
 	
 	private ConfigurationServiceProxy proxy;	
 	private Lookup mockLookup;
+	protected CertificateService certService;
 	
 	protected String filePrefix;
 	
@@ -205,6 +211,9 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
 		ConfigServiceRunner.startConfigService();
 		
 		proxy = new ConfigurationServiceProxy(ConfigServiceRunner.getConfigServiceURL());
+		
+		certService = new DefaultCertificateService(ConfigServiceRunner.getRestAPIBaseURL(), HttpClientFactory.createHttpClient(),
+				new OpenServiceSecurityManager());
 	}
 	
     /**
@@ -382,7 +391,9 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
         
         protected SmtpAgentConfig createSmtpAgentConfig() throws Exception
         {        	
-        	SmtpAgentConfig config = new WSSmtpAgentConfig(new URL(ConfigServiceRunner.getConfigServiceURL()), null);
+        	Provider<ServiceSecurityManager> secMgrProvider = new OpenServiceSecurityManagerProvider();
+        	
+        	SmtpAgentConfig config = new RESTSmtpAgentConfig(new URL(ConfigServiceRunner.getRestAPIBaseURL()), null, secMgrProvider);
             return config;
         }
         
@@ -543,7 +554,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	Collection<X509Certificate> certs = privResl.getCertificates(new InternetAddress("gm2552@cerner.com"));
             	assertNotNull(certs);
             	assertEquals(2, certs.size());
-            	assertTrue(privResl instanceof ConfigServiceCertificateStore);
+            	assertTrue(privResl instanceof ConfigServiceRESTCertificateStore);
             	
             	// do it again to test the cache
             	certs = privResl.getCertificates(new InternetAddress("gm2552@cerner.com"));
@@ -672,7 +683,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	super.doAssertions(agent);
             	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
             	CertificateResolver privResl = nAgent.getPrivateCertResolver();
-            	assertTrue(privResl instanceof ConfigServiceCertificateStore);
+            	assertTrue(privResl instanceof ConfigServiceRESTCertificateStore);
             	
             	
             	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
@@ -803,10 +814,10 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	CertificateResolver wsRes = null;
             	for (CertificateResolver res : publicResls)
             	{
-            		if (res instanceof ConfigServiceCertificateStore)
+            		if (res instanceof ConfigServiceRESTCertificateStore)
             		{
             			wsRes = res;
-            			((ConfigServiceCertificateStore)wsRes).flush(true);
+            			((ConfigServiceRESTCertificateStore)wsRes).flush(true);
             			break;
             		}
             	}
@@ -1139,7 +1150,7 @@ public class WSSmtpAgentConfigFunctional_Test extends AbstractServerTest
             	super.doAssertions(agent);
             	DefaultNHINDAgent nAgent = ((DefaultNHINDAgent)agent.getAgent());
             	CertificateResolver privResl = nAgent.getPrivateCertResolver();
-            	assertTrue(privResl instanceof ConfigServiceCertificateStore);
+            	assertTrue(privResl instanceof ConfigServiceRESTCertificateStore);
             	
             	
             	CertificateResolver trustResl = nAgent.getTrustAnchors().getIncomingAnchors();
