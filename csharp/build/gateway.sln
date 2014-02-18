@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent", "..\gateway\smtpAgent\smtpAgent.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent.tests", "..\unittests\smtpAgent\smtpAgent.tests.csproj", "{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}"
@@ -75,6 +77,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{C9ADF5
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "policy.ui", "..\policy.ui\policy.ui.csproj", "{4CF6DA9F-4954-493C-A5AA-2477B36760E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -714,6 +718,24 @@ Global
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Release|Win32.ActiveCfg = Release|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Release|x64.ActiveCfg = Release|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|Win32.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|x64.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Win32.ActiveCfg = Release|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
