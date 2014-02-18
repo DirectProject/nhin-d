@@ -376,7 +376,18 @@
   <xs:complexType name="ConfigurationServiceException">
     <xs:sequence>
       <xs:element name="message" type="xs:string" minOccurs="0"/>
+      <xs:element name="suppressed" type="tns:throwable" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="throwable">
+    <xs:sequence>
+      <xs:element name="stackTrace" type="tns:stackTraceElement" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="stackTraceElement" final="extension restriction">
+    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getAnchor">
@@ -967,7 +978,7 @@
 
   <xs:complexType name="updateDomain">
     <xs:sequence>
-      <xs:element name="domain" type="tns:domain" minOccurs="0"/>
+      <xs:element ref="tns:domain" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -1129,7 +1140,7 @@
 
   <xs:complexType name="addDomain">
     <xs:sequence>
-      <xs:element name="domain" type="tns:domain" minOccurs="0"/>
+      <xs:element ref="tns:domain" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -1197,7 +1208,7 @@
   <xs:complexType name="certPolicyGroupDomainReltn">
     <xs:sequence>
       <xs:element name="certPolicyGroup" type="tns:certPolicyGroup" minOccurs="0"/>
-      <xs:element name="domain" type="tns:domain" minOccurs="0"/>
+      <xs:element ref="tns:domain" minOccurs="0"/>
       <xs:element name="id" type="xs:long"/>
     </xs:sequence>
   </xs:complexType>
@@ -1229,7 +1240,7 @@
 
   <xs:complexType name="trustBundleDomainReltn">
     <xs:sequence>
-      <xs:element name="domain" type="tns:domain" minOccurs="0"/>
+      <xs:element ref="tns:domain" minOccurs="0"/>
       <xs:element name="id" type="xs:long"/>
       <xs:element name="incoming" type="xs:boolean"/>
       <xs:element name="outgoing" type="xs:boolean"/>

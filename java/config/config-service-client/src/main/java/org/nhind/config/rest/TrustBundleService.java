@@ -5,12 +5,13 @@ import java.util.Collection;
 
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.config.model.TrustBundle;
+import org.nhindirect.config.model.TrustBundleDomainReltn;
 
 public interface TrustBundleService 
 {
 	public Collection<TrustBundle> getTrustBundles(boolean fetchAnchors) throws ServiceException;
 	
-	public Collection<TrustBundle> getTrustBundlesByDomain(String domainName, boolean fetchAnchors) throws ServiceException;	
+	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(String domainName, boolean fetchAnchors) throws ServiceException;	
 	
 	public TrustBundle getTrustBundle(String bundleName) throws ServiceException;
 	

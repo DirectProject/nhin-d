@@ -21,6 +21,7 @@ import org.nhindirect.common.rest.AbstractSecuredService;
 import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.config.model.TrustBundle;
+import org.nhindirect.config.model.TrustBundleDomainReltn;
 
 public class DefaultTrustBundleService extends AbstractSecuredService implements TrustBundleService
 {
@@ -37,7 +38,7 @@ public class DefaultTrustBundleService extends AbstractSecuredService implements
 	}
 
 	@Override
-	public Collection<TrustBundle> getTrustBundlesByDomain(String domainName, boolean fetchAnchors) throws ServiceException 
+	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(String domainName, boolean fetchAnchors) throws ServiceException 
 	{
 		return callWithRetry(new GetTrustBundlesByDomainRequest(httpClient, serviceURL, jsonMapper, securityManager, domainName, fetchAnchors));	
 	}

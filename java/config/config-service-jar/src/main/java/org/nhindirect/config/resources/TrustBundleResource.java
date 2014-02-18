@@ -49,11 +49,12 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.config.model.TrustBundle;
+import org.nhindirect.config.model.TrustBundleDomainReltn;
 import org.nhindirect.config.model.exceptions.CertificateConversionException;
 import org.nhindirect.config.model.utils.CertUtils;
 import org.nhindirect.config.resources.util.EntityModelConversion;
 import org.nhindirect.config.store.TrustBundleAnchor;
-import org.nhindirect.config.store.TrustBundleDomainReltn;
+
 import org.nhindirect.config.store.dao.DomainDao;
 import org.nhindirect.config.store.dao.TrustBundleDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,7 +201,7 @@ public class TrustBundleResource extends ProtectedResource
     		return Response.serverError().cacheControl(noCache).build();
     	}
     	
-    	Collection<TrustBundleDomainReltn> retBundles = null;
+    	Collection<org.nhindirect.config.store.TrustBundleDomainReltn> retBundles = null;
     	
     	try
     	{
@@ -216,16 +217,22 @@ public class TrustBundleResource extends ProtectedResource
     		return Response.serverError().cacheControl(noCache).build();
     	}
     	
-    	final Collection<TrustBundle> modelBundles = new ArrayList<TrustBundle>();
+    	final Collection<TrustBundleDomainReltn> modelBundles = new ArrayList<TrustBundleDomainReltn>();
     	for (org.nhindirect.config.store.TrustBundleDomainReltn bundleReltn: retBundles)
     	{
     		if (!fetchAnchors)
     			bundleReltn.getTrustBundle().setTrustBundleAnchors(new ArrayList<TrustBundleAnchor>());
     		
-    		modelBundles.add(EntityModelConversion.toModelTrustBundle(bundleReltn.getTrustBundle()));
+    		final TrustBundleDomainReltn newReltn = new TrustBundleDomainReltn();
+    		newReltn.setIncoming(bundleReltn.isIncoming());
+    		newReltn.setOutgoing(bundleReltn.isOutgoing());
+    		newReltn.setDomain(EntityModelConversion.toModelDomain(bundleReltn.getDomain()));
+    		newReltn.setTrustBundle(EntityModelConversion.toModelTrustBundle(bundleReltn.getTrustBundle()));
+    		
+    		modelBundles.add(newReltn);
     	}
     	
-    	final GenericEntity<Collection<TrustBundle>> entity = new GenericEntity<Collection<TrustBundle>>(modelBundles) {};
+    	final GenericEntity<Collection<TrustBundleDomainReltn>> entity = new GenericEntity<Collection<TrustBundleDomainReltn>>(modelBundles) {};
     	
     	return Response.ok(entity).cacheControl(noCache).build();
     }

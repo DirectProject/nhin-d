@@ -59,7 +59,7 @@ public class NHINDSecurityAndTrustMailet_trackMessageTest extends TestCase
 					mods.add(DefaultTxDetailParserModule.create());
 					
 					return mods;
-				}
+				}			
 			};
 
 			try

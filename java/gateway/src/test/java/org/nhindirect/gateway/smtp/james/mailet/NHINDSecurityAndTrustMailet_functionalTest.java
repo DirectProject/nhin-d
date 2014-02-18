@@ -43,6 +43,7 @@ import org.nhindirect.stagent.mail.Message;
 import org.nhindirect.stagent.mail.notifications.MDNStandard;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
+
 import junit.framework.TestCase;
 
 public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase 
@@ -110,6 +111,7 @@ public class NHINDSecurityAndTrustMailet_functionalTest extends TestCase
 				params.put("ConfigURL", "file://" + configfile);
 			
 			retVal = new NHINDSecurityAndTrustMailet();
+			
 			MailetConfig mailetConfig = new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");
 			
 			retVal.init(mailetConfig);

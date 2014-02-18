@@ -14,6 +14,7 @@ import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.NHINDAddress;
 
+
 public class NHINDSecurityAndTrustMailet_isOutgoingTest extends TestCase
 {
 	abstract class TestPlan extends BaseTestPlan 

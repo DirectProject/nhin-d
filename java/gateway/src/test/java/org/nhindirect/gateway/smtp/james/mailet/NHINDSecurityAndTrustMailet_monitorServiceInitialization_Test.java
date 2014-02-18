@@ -48,7 +48,7 @@ public class NHINDSecurityAndTrustMailet_monitorServiceInitialization_Test exten
 				protected Collection<Module> getInitModules()
 				{
 					return getTestInitModules();
-				}
+				}			
 			};
 
 			MailetConfig config = getMailetConfig();

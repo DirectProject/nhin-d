@@ -57,7 +57,7 @@ public class NHINDSecurityAndTrustMailet_monitorMessageTest extends TestCase
 					mods.add(DefaultTxDetailParserModule.create());
 					
 					return mods;
-				}
+				}			
 			};
 
 			try

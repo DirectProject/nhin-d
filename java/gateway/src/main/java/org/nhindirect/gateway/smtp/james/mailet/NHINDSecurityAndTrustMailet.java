@@ -35,7 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
+import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
+import org.nhindirect.common.rest.provider.OpenServiceSecurityManagerProvider;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxMessageType;
@@ -49,6 +51,9 @@ import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.gateway.smtp.dsn.provider.RejectedRecipientDSNCreatorProvider;
+import org.nhindirect.gateway.smtp.provider.SecureURLAccessedConfigProvider;
+import org.nhindirect.gateway.smtp.provider.URLAccessedConfigProvider;
+import org.nhindirect.gateway.smtp.provider.WSSmtpAgentConfigProvider;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.cryptography.SMIMEStandard;
@@ -89,7 +94,9 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		final Map<String, String> JVM_PARAMS = new HashMap<String, String>();
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.MONITORING_SERVICE_URL_PARAM, "org.nhindirect.gateway.smtp.james.mailet.TxServiceURL");
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM, "org.nhindirect.gateway.smtp.james.mailet.AutoDSNFailueCreation");
-				
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.SMTP_AGENT_CONFIG_PROVIDER, "org.nhindirect.gateway.smtp.james.mailet.SmptAgentConfigProvider");	
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.SERVICE_SECURITY_MANAGER_PROVIDER, "org.nhindirect.gateway.smtp.james.mailet.ServiceSecurityManagerProvider");	
+		
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
 	
@@ -144,9 +151,18 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		
 		Collection<Module> modules = getInitModules();
 
+		final Provider<SmtpAgentConfig> configProvider;
 		try
 		{
-			final Provider<SmtpAgentConfig> configProvider = this.getConfigProvider();
+			configProvider = this.getConfigProvider();
+			
+			if (configProvider instanceof URLAccessedConfigProvider)
+				((URLAccessedConfigProvider)configProvider).setConfigURL(configURL);
+			
+			final Provider<ServiceSecurityManager> srvSecMgr = getServiceSecurityManagerProvider();
+			if (configProvider instanceof SecureURLAccessedConfigProvider)
+				((SecureURLAccessedConfigProvider)configProvider).setServiceSecurityManager(srvSecMgr);
+			
 			agent = SmtpAgentFactory.createAgent(configURL, configProvider, null, modules);
 			
 		}
@@ -186,7 +202,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 			gwState.stopAgentSettingsManager();
 		
 		gwState.setSmtpAgent(agent);
-		gwState.setSmptAgentConfig(SmptAgentConfigFactory.createSmtpAgentConfig(configURL, this.getConfigProvider(), null));
+		gwState.setSmptAgentConfig(SmptAgentConfigFactory.createSmtpAgentConfig(configURL, configProvider, null));
 		gwState.startAgentSettingsManager();
 		
 		LOGGER.info("NHINDSecurityAndTrustMailet initialization complete.");
@@ -359,7 +375,65 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 	 */
 	protected Provider<SmtpAgentConfig> getConfigProvider()
 	{
-		return null;
+		Provider<SmtpAgentConfig> retVal = null;
+		
+		String providerClazz = GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.SMTP_AGENT_CONFIG_PROVIDER, this, "");
+		
+		if (providerClazz != null && !providerClazz.isEmpty())
+		{
+			try
+			{
+				// create an instance of the provider
+				@SuppressWarnings("unchecked")
+				Class<Provider<SmtpAgentConfig>> clazz = (Class<Provider<SmtpAgentConfig>>)getClass().getClassLoader().loadClass(providerClazz);
+				retVal = clazz.newInstance();
+			}
+			catch (Exception e)
+			{
+				LOGGER.warn("Failed to load smtp agent config provider class " + providerClazz + ": " + e.getMessage(), e);
+				retVal = new WSSmtpAgentConfigProvider();
+			}
+		}
+		else
+		{
+			// for backward compatibility, use the old default behavior
+			retVal = null;
+		}
+			
+		return retVal;
+	}
+	
+	/**
+	 * Gets a custom service security manager provider.  If this is null, the system will us a default provider.
+	 * @return Gets a service security manager provider.
+	 */
+	protected Provider<ServiceSecurityManager> getServiceSecurityManagerProvider()
+	{
+		Provider<ServiceSecurityManager> retVal = null;
+		
+		String providerClazz = GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.SERVICE_SECURITY_MANAGER_PROVIDER, this, "");
+		
+		if (providerClazz != null && !providerClazz.isEmpty())
+		{
+			try
+			{
+				// create an instance of the provider
+				@SuppressWarnings("unchecked")
+				Class<Provider<ServiceSecurityManager>> clazz = (Class<Provider<ServiceSecurityManager>>)getClass().getClassLoader().loadClass(providerClazz);
+				retVal = clazz.newInstance();
+			}
+			catch (Exception e)
+			{
+				LOGGER.warn("Failed to load service security manager provider class " + providerClazz + ": " + e.getMessage(), e);
+				retVal = new OpenServiceSecurityManagerProvider();
+			}
+		}
+		else
+		{
+			retVal = new OpenServiceSecurityManagerProvider();
+		}
+			
+		return retVal;
 	}
 	
 	/**

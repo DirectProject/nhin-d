@@ -11,6 +11,7 @@ public class ConfigServiceRunner
 	private static Server server;
 	private static int HTTPPort;
 	private static String configServiceURL;
+	private static String restAPIBaseURL;
 	
 	public synchronized static void startConfigService() throws Exception
 	{
@@ -26,19 +27,16 @@ public class ConfigServiceRunner
 			HTTPPort = AvailablePortFinder.getNextAvailable( 1024 );
 			connector.setPort(HTTPPort);
 			
-			WebAppContext context = new WebAppContext();
+			WebAppContext context = new WebAppContext("src/test/resources/webapp", "/");
 		    
-			context.setContextPath("/config");	 
-			context.setServer(server);
-			context.setWar("war/config-service.war");
-			    	
 			server.setSendServerVersion(false);
 			server.addConnector(connector);
 			server.addHandler(context);
 			
 			server.start();
 			
-			configServiceURL = "http://localhost:" + HTTPPort + "/config/ConfigurationService";
+			configServiceURL = "http://localhost:" + HTTPPort + "/ConfigurationService";
+			restAPIBaseURL = "http://localhost:" + HTTPPort + "/api";
 		
 		}
 	}
@@ -62,4 +60,9 @@ public class ConfigServiceRunner
 	{
 		return configServiceURL;
 	}
+	
+	public synchronized static String getRestAPIBaseURL()
+	{
+		return restAPIBaseURL;
+	}	
 }
