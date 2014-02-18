@@ -1,5 +1,6 @@
 package org.nhind.config.testbase;
 
+import org.junit.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -16,5 +17,11 @@ public class TestApplicationContext implements ApplicationContextAware
 	  public static ApplicationContext getApplicationContext()
 	  {
 		  return CONTEXT;
+	  }
+	  
+	  @Test
+	  public void testDummy()
+	  {
+		
 	  }
 }
