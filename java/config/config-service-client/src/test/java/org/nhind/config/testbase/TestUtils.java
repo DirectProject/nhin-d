@@ -9,6 +9,7 @@ import java.security.cert.X509Certificate;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.Test;
 
 public class TestUtils 
 {
@@ -66,4 +67,10 @@ public class TestUtils
             throw new RuntimeException("Failed to encode value: " + val, e);
         }
     }
+    
+	@Test
+    public void testDummy()
+	{
+		
+	}    
 }
