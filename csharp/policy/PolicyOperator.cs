@@ -18,16 +18,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security.Principal;
 using System.Text.RegularExpressions;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.OpCode;
 using Health.Direct.Policy.Operators;
-using Org.BouncyCastle.Asn1.X509.Qualified;
+
 
 namespace Health.Direct.Policy
 {
@@ -316,12 +314,12 @@ namespace Health.Direct.Policy
                 if (typeof(Int64) == typeof(T1) && typeof(String) == typeof(T2))
                 {
                     NOT_EQUALS = new NotEquals<T1, T2, TResult>(notEquals, NotEqualDelegateStringToLong());
-                    TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                    TokenOperatorMap[NOT_EQUALS.GetHashCode()] = NOT_EQUALS;
                 }
                 else
                 {
                     NOT_EQUALS = new NotEquals<T1, T2, TResult>(notEquals, NotEqualDelegate());
-                    TokenOperatorMap[EQUALS.GetHashCode()] = EQUALS;
+                    TokenOperatorMap[NOT_EQUALS.GetHashCode()] = NOT_EQUALS;
                 }
             }
 

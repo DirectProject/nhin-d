@@ -64,6 +64,7 @@
     <Compile Include="LiteralPolicyExpressionFactory_getInstanceTest.cs" />
     <Compile Include="OperationPolicyExpression_getInstanceTest.cs" />
     <Compile Include="PolicyFilter_simpleTextLexiconTest.cs" />
+    <Compile Include="PolicyFilter_textConversionToIntegerComplianceTest.cs" />
     <Compile Include="PolicyOperator_getEnumAttributesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleTextV1LexiconPolicyParser_buildExpressionTest.cs" />
