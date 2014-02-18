@@ -46,7 +46,7 @@ namespace Health.Direct.Policy.X509
         public override void InjectReferenceValue(X509Certificate2 value)
         {
             Certificate = value;
-            PolicyValue = PolicyValueFactory<string>.GetInstance(value.GetKeyAlgorithm()); 
+            PolicyValue = PolicyValueFactory.GetInstance(value.GetKeyAlgorithm()); 
         }
     }
 }

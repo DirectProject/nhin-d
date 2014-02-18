@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using FluentAssertions;
 using Health.Direct.Policy.Operators;
 using Xunit;
@@ -55,5 +56,21 @@ namespace Health.Direct.Policy.Tests
             equalsOperator = PolicyOperator.FromToken(("=_" + "String_String").GetHashCode());
             equalsOperator.Should().NotBeNull();
         }
+    }
+
+    public class PolicyValueFactory_getInstanceTest
+    {
+        [Fact]
+        public void testGetInstance_assertValue()
+        {
+            IPolicyValue<Int32> value = PolicyValueFactory.GetInstance(12345);
+            value.GetPolicyValue().Should().Be(12345);
+            value.Should().Be(PolicyValueFactory.GetInstance(12345));
+
+            IPolicyValue<String> value2 = PolicyValueFactory.GetInstance("12345");
+            value2.GetPolicyValue().Should().Be("12345");
+            value2.Should().Be(PolicyValueFactory.GetInstance("12345"));
+        }
+	
     }
 }

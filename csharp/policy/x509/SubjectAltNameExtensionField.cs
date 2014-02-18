@@ -49,7 +49,7 @@ namespace Health.Direct.Policy.X509
                 else
                 {
                     var emptyList = new List<string>();
-                    PolicyValue = PolicyValueFactory<IList<string>>.GetInstance(emptyList);
+                    PolicyValue = PolicyValueFactory.GetInstance<IList<string>>(emptyList);
                     return;
                 }
             }
@@ -63,7 +63,7 @@ namespace Health.Direct.Policy.X509
                 var type = StandardExt.FromTag<Standard.GeneralNameType>(name.TagNo);
                 names.Add(type.Name() + ":" + name.Name);
 		    }
-            PolicyValue = PolicyValueFactory<IList<string>>.GetInstance(names);
+            PolicyValue = PolicyValueFactory.GetInstance<IList<string>>(names);
         }
 
         /// <inheritdoc />

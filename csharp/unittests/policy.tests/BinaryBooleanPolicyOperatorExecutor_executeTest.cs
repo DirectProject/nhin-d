@@ -119,6 +119,11 @@ namespace Health.Direct.Policy.Tests
             Assert.False((bool) del.DynamicInvoke(new object[] {"00F74F1C4FE4E1762E".HexAsLong(), "f74f1c4fe4e1762e"}));
             Assert.True((bool)del.DynamicInvoke(new object[] { "00F74F1C4FE4E17600".HexAsLong(), "f74f1c4fe4e1762e" }));
 
+            
+            var tokenHashCode = "!=_Int32_String".GetHashCode();
+            OperatorBase operatorBase = PolicyOperator.FromToken(tokenHashCode);
+            operatorBase.Should().NotBeNull();
+
         }
 
         [Fact]
