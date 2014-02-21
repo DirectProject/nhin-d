@@ -22,5 +22,29 @@ namespace Health.Direct.Policy.UI.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PolicyFile {
+            get {
+                return ((string)(this["PolicyFile"]));
+            }
+            set {
+                this["PolicyFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CertFile {
+            get {
+                return ((string)(this["CertFile"]));
+            }
+            set {
+                this["CertFile"] = value;
+            }
+        }
     }
 }
