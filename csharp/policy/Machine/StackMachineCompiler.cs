@@ -46,7 +46,6 @@ namespace Health.Direct.Policy.Machine
             IList<IOpCode> entries = new List<IOpCode>();
             entries.Add(Compile(entries, cert, expression));
             return entries;
-
         }
 
 

@@ -1,10 +1,17 @@
 ﻿using System;
 using System.IO;
+using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Media;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.Machine;
+using Health.Direct.Policy.UI.Extensions;
 using Microsoft.Win32;
 
 namespace Health.Direct.Policy.UI
@@ -19,6 +26,46 @@ namespace Health.Direct.Policy.UI
             InitializeComponent();
             ClearDesignerText();
             LoadSettings();
+
+
+            var textChangedObservable = Observable
+                .FromEventPattern<TextChangedEventArgs>(PolicyRichTextBox, "TextChanged")
+                .Throttle(TimeSpan.FromMilliseconds(500))
+                .Select(evt => ((RichTextBox) evt.Sender));
+
+            textChangedObservable.ObserveOnDispatcher().Subscribe(rtxBox => ParseLexicon(rtxBox));
+            }
+
+
+        private void ParseLexicon(RichTextBox rtxBox)
+        {
+            var textRange = new TextRange(rtxBox.Document.ContentStart, rtxBox.Document.ContentEnd);
+            CallLexiconParser(textRange.Text, rtxBox);
+        }
+
+        private async void CallLexiconParser(string lexicon, RichTextBox rtxBox)
+        {
+            try
+            {
+                IPolicyExpression exppression = await ParseLexicon(lexicon);
+                var textRange = new TextRange(rtxBox.Document.ContentStart, rtxBox.Document.ContentEnd);
+                textRange.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Black);
+            }
+            catch (PolicyGrammarException)
+            {
+                var textRange = new TextRange(rtxBox.Document.ContentStart, rtxBox.Document.ContentEnd);
+                textRange.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
+            }
+
+        }
+
+        private Task<IPolicyExpression> ParseLexicon(string lexicon)
+        {
+            return Task.Run(() =>
+            {
+                var parser = new SimpleTextV1LexiconPolicyParser();
+                return parser.Parse(lexicon.ToStream());
+            });
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -94,6 +141,11 @@ namespace Health.Direct.Policy.UI
         private void CertBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
+            var fileInfo = new FileInfo(CertificateLocation.Text);
+            if (fileInfo.DirectoryName != null && Directory.Exists(fileInfo.DirectoryName))
+            {
+                openFileDialog.InitialDirectory = fileInfo.DirectoryName;
+            }
             openFileDialog.ReadOnlyChecked = true;
             openFileDialog.Filter = "Certificate files (*.der, *.cer)|*.der;*.cer";
             if (openFileDialog.ShowDialog() == true)
@@ -105,35 +157,55 @@ namespace Health.Direct.Policy.UI
         private void ValidateCertButton_Click(object sender, RoutedEventArgs e)
         {
             var ms = new MemoryStream();
-            bool succeed = false;
-            string resultMessage = string.Empty;
-            using (ms)
+            
+            var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
+                PolicyRichTextBox.Document.ContentEnd);
+            textRange.Save(ms, DataFormats.Text);
+            ms.Position = 0;
+            var cert = new X509Certificate2(CertificateLocation.Text);
+            ICompiler compiler = new StackMachineCompiler();
+            IPolicyFilter filter = new DefaultPolicyFilter(compiler, new StackMachine(),
+                new SimpleTextV1LexiconPolicyParser());
+            var sb = new StringBuilder();
+            sb.Append("Validation run at ")
+                .AppendLine(DateTime.Now.ToString("ddd, MMM d yyyy HH:mm:ss"))
+                .AppendLine();
+            try
             {
-                var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
-                    PolicyRichTextBox.Document.ContentEnd);
-                textRange.Save(ms, DataFormats.Text);
-                ms.Position = 0;
-                var cert = new X509Certificate2(CertificateLocation.Text);
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
-                try
+                if (filter.IsCompliant(cert, ms))
                 {
-                    succeed = filter.IsCompliant(cert, ms);
+                    sb.Append("Certificate is compliant with the provided policy.");
                 }
-                catch (Exception ex)
+                else
                 {
-                    resultMessage = ex.ToString();
+                    sb.AppendLine("Certificate is NOT compliant with the provided policy.").AppendLine();
+                    foreach (string item in compiler.CompiliationReport)
+                    {
+                        sb.AppendLine(item);
+                    }
                 }
             }
-
-            if (succeed)
+            catch (PolicyRequiredException ex)
             {
-                ValidationResults.Text = "Succeeded.";
+                sb.AppendLine("Validation Successful")
+                    .AppendLine("Certificate is missing a required field \t")
+                    .AppendLine(ex.Message);
             }
-            else
+            catch (PolicyGrammarException ex)
             {
-                ValidationResults.Text = string.Format("Falied. \r\n {0}", resultMessage);
+                sb.AppendLine("Validation Failed:")
+                    .AppendLine("Error compiling policy\t")
+                    .AppendLine(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                sb.AppendLine("Validation Failed:")
+                .AppendLine("Error compiling or proccessing policy\t" + ex.Message)
+                .AppendLine(ex.StackTrace);
             }
             
+            ValidationResults.Text = sb.ToString();
         }
+
     }
 }
