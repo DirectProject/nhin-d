@@ -313,7 +313,7 @@ namespace Health.Direct.Policy.Impl
                     if (retVal == null)
 					    throw new PolicyParseException("X509Field with token name " + token + " has not been implemented yet.");
 			    }
-			    catch (PolicyParseException ex)
+			    catch (PolicyParseException)
 			    {
 				    throw;
 			    }
@@ -362,7 +362,7 @@ namespace Health.Direct.Policy.Impl
                         retVal = fieldRefClass as IPolicyExpression;
                     }
                 }
-                catch (PolicyParseException ex)
+                catch (PolicyParseException)
                 {
                     throw;
                 }

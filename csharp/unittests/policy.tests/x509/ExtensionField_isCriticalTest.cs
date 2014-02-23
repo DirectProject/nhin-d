@@ -61,8 +61,7 @@ namespace Health.Direct.Policy.Tests.x509
         {
 
             var field = new BasicContraintsExtensionField(false);
-            bool exceptionOccured = false;
-
+           
             Action action = () => field.IsCritical();
             action.ShouldThrow<InvalidOperationException>();
 

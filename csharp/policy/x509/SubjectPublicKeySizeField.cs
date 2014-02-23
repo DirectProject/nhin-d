@@ -58,7 +58,7 @@ namespace Health.Direct.Policy.X509
                     retVal = pubKey.Key.KeySize;
                 }
             }
-            catch (NotSupportedException ex)
+            catch (NotSupportedException)
             {
                 retVal = 0;
             }
