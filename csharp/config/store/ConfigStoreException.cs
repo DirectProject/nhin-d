@@ -76,7 +76,9 @@ namespace Health.Direct.Config.Store
         InvalidUrl,
         UrlLength,
         InvalidBundle,
-        DuplicateMdnStart
+        DuplicateMdnStart,
+        InvalidCertPolicyName,
+        CertPolicyNameLength
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>
