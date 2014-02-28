@@ -1,9 +1,9 @@
-﻿/* 
- Copyright (c) 2013, Direct Project
+/* 
+ Copyright (c) 2014, Direct Project
  All rights reserved.
 
  Authors:
-    Joe Shook      jshook@kryptiq.com
+    Joe Shook      Joseph.Shook@Surescipts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -14,47 +14,27 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-
 using System.IO;
-using Health.Direct.Policy.Extensions;
-using Health.Direct.Policy.Impl;
-using Xunit;
 
-namespace Health.Direct.Policy.Tests
+namespace Health.Direct.Policy.Extensions
 {
-    public class SimpleTextV1LexiconPolicyParser_parseTest
+    public static class StreamExt
     {
-        [Fact]
-        public void TestParse_UnclosedGroup_AssertGrammarException()
+        public static Stream ToStream(this string str)
         {
-
-            using (Stream stream = "(1 = 1".ToStream())
-            {
-                var parser = new SimpleTextV1LexiconPolicyParser();
-                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
-            }
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(str);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
 
-
-        [Fact]
-        public void TestParse_NoOperator_AssertGrammarException()
+        public static Stream ToMemoryStream(this byte[] buffer)
         {
-            using (Stream stream = "(1".ToStream())
-            {
-                var parser = new SimpleTextV1LexiconPolicyParser();
-                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
-            }
+            Stream stream = new MemoryStream(buffer);
+            return stream;
         }
-
-        [Fact]
-        public void testParse_extraniousOperator_assertGrammarException()
-        {
-            using (Stream stream = "1 = 1 =".ToStream())
-            {
-                var parser = new SimpleTextV1LexiconPolicyParser();
-                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
-            }
-        }
+        
     }
-
 }

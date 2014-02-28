@@ -1,9 +1,9 @@
 ﻿/* 
- Copyright (c) 2013, Direct Project
+ Copyright (c) 2014, Direct Project
  All rights reserved.
 
  Authors:
-    Joe Shook      jshook@kryptiq.com
+    Joe Shook     Joseph.Shook@Surescipts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -14,20 +14,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System.IO;
+using System.Text;
 
-namespace Health.Direct.Policy.UI.Extensions
+namespace Health.Direct.Policy.Extensions
 {
-    public static class StreamExt
+    public static class StringExt
     {
-        public static Stream ToStream(this string str)
+        public static byte[] ToBytesUtf8(this string lexicon)
         {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(str);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
+            return Encoding.UTF8.GetBytes(lexicon);
         }
     }
 }

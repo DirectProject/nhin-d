@@ -14,12 +14,11 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
+
 using System.Data;
 using System.Data.Common;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
-using Health.Direct.Common.Mail.Notifications;
 
 namespace Health.Direct.Config.Store
 {
@@ -37,6 +36,8 @@ namespace Health.Direct.Config.Store
         Table<Property> m_properties;
         Table<NamedBlob> m_blobs;
         Table<Mdn> m_mdns;
+        Table<CertPolicy> m_certPolicies;
+        Table<CertPolicyGroup> m_certPolicyGroups;
         Table<Bundle> m_bundles;
         
         DbTransaction m_transaction;
@@ -174,6 +175,33 @@ namespace Health.Direct.Config.Store
                 return m_mdns;
             }
         }
+
+        public Table<CertPolicy> CertPolicies
+        {
+            get
+            {
+                if (m_certPolicies == null)
+                {
+                    m_certPolicies = this.GetTable<CertPolicy>();
+                }
+
+                return m_certPolicies;
+            }
+        }
+
+        public Table<CertPolicyGroup> CertPolicyGroups
+        {
+            get
+            {
+                if (m_certPolicyGroups == null)
+                {
+                    m_certPolicyGroups = this.GetTable<CertPolicyGroup>();
+                }
+
+                return m_certPolicyGroups;
+            }
+        }
+
 
         public void BeginTransaction()
         {

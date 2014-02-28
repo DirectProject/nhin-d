@@ -16,7 +16,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,6 +32,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,6 +57,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\..\build\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
@@ -93,6 +97,12 @@
     <Compile Include="BlobFacts.cs" />
     <Compile Include="CertificateFacts.cs" />
     <Compile Include="CertificateManagerFacts.cs" />
+    <Compile Include="CertPolicyFacts.cs" />
+    <Compile Include="CertPolicyGroupDomainMapFacts.cs" />
+    <Compile Include="CertPolicyGroupFacts.cs" />
+    <Compile Include="CertPolicyGroupMapFacts.cs" />
+    <Compile Include="CertPolicyGroupManagerFacts.cs" />
+    <Compile Include="CertPolicyManagerFacts.cs" />
     <Compile Include="ConfigStoreTestBase.cs" />
     <Compile Include="DnsRecordFacts.cs" />
     <Compile Include="DnsRecordManagerFacts.cs" />
@@ -110,6 +120,10 @@
     <ProjectReference Include="..\..\config\store\config.store.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\policy\policy.csproj">
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
+      <Name>policy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +143,9 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -141,4 +158,5 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

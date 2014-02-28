@@ -78,7 +78,11 @@ namespace Health.Direct.Config.Store
         InvalidBundle,
         DuplicateMdnStart,
         InvalidCertPolicyName,
-        CertPolicyNameLength
+        CertPolicyNameLength,
+        MissingCertPolicyData,
+        InvalidCertPolicy,
+        InvalidCertPolicyGroupName,
+        InvalidCertPolicyGroup
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>

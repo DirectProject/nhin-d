@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joe Shook      Joseph.Shook@Surescipts.com
+    Joe Shook     Joseph.Shook@Surescipts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,33 +15,49 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Data.Linq;
+using System.Linq;
 
-
-namespace Health.Direct.Policy
+namespace Health.Direct.Config.Store
 {
-    /// <summary>
-    /// Utility methods for the policy engine.
-    /// </summary>
-    public class PolicyUtils
+    public static class CertPolcyQueries
     {
+        const string Sql_DeleteAllCertPolicies =
+                     @" Begin tran                         
+                        delete from CertPolicyGroupMap                        
+                        delete from CertPolicy
+                        DBCC CHECKIDENT(CertPolicy,RESEED,0)                                             
+                    commit tran 
+                ";
 
-        /// <summary>
-        /// Creates a string representation of a byte array.
-        /// <param name="bytes">The byte array to convert to a string representation.</param>
-        /// <returns>A string represention of the byte array.</returns> 
-        /// </summary>
-        public static String CreateByteStringRep(byte[] bytes)
+        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicy>> CertPolicy = CompiledQuery.Compile(
+            (ConfigDatabase db, string certPolicyName) =>
+            from certPolicy in db.CertPolicies
+            where certPolicy.Name == certPolicyName
+            select certPolicy
+            );
+
+        
+        public static ConfigDatabase GetDB(this Table<CertPolicy> table)
         {
-            var c = new char[bytes.Length*2];
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                var b = bytes[i] >> 4;
-                c[i*2] = (char) (55 + b + (((b - 10) >> 31) & -7));
-                b = bytes[i] & 0xF;
-                c[i*2 + 1] = (char) (55 + b + (((b - 10) >> 31) & -7));
-            }
-            return new string(c);
+            return (ConfigDatabase)table.Context;
+        }
 
+        public static int GetCount(this Table<CertPolicy> table)
+        {
+            return (from certPolicy in table.GetDB().CertPolicies
+                    select certPolicy.ID).Count();
+        }
+
+        public static CertPolicy Get(this Table<CertPolicy> table, string name)
+        {
+            return CertPolicy(table.GetDB(), name).SingleOrDefault();
+        }
+        
+        public static void ExecDeleteAll(this Table<CertPolicy> table)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteAllCertPolicies);
         }
     }
+
 }

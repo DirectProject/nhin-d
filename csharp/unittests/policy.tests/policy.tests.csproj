@@ -60,7 +60,6 @@
     <Compile Include="BinaryCollectionPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="BinaryIntegerPolicyOperatorExecutor_executeTest.cs" />
     <Compile Include="DefaultPolicyFilter_isCompliantTest.cs" />
-    <Compile Include="Extensions\StreamExt.cs" />
     <Compile Include="LiteralPolicyExpressionFactory_getInstanceTest.cs" />
     <Compile Include="OperationPolicyExpression_getInstanceTest.cs" />
     <Compile Include="PolicyFilter_simpleTextLexiconTest.cs" />

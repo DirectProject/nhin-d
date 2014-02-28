@@ -1,9 +1,9 @@
 ﻿/* 
- Copyright (c) 2013, Direct Project
+ Copyright (c) 2014, Direct Project
  All rights reserved.
 
  Authors:
-    Joe Shook      jshook@kryptiq.com
+    Joe Shook     Joseph.Shook@Surescipts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -14,20 +14,24 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System.IO;
+using System;
+using Xunit;
 
-namespace Health.Direct.Policy.Tests.Extensions
+namespace Health.Direct.Config.Store.Tests
 {
-    public static class StreamExt
+    public class CertPolicyGroupDomainMapFacts : ConfigStoreTestBase
     {
-        public static Stream ToStream(this string str)
+        /// <summary>
+        /// A test for CreateDate
+        /// </summary>
+        [Fact]
+        public void CreateDateTest()
         {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(str);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
+            CertPolicyGroupDomainMap target = new CertPolicyGroupDomainMap();
+            DateTime expected = DateTime.UtcNow;
+            target.CreateDate = expected;
+            DateTime actual = target.CreateDate;
+            Assert.Equal(expected, actual);
         }
     }
 }
