@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 
@@ -24,25 +25,62 @@ namespace Health.Direct.Config.Store
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicyGroupMap
     {
-        [Column(Name = "CertPolicyGroupMapId", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
+        public CertPolicyGroupMap()
+        {
+            CreateDate = DateTimeHelper.Now;
+            Use = CertPolicyUse.Trust;
+        }
+
+        public CertPolicyGroupMap(CertPolicyUse use, bool forIncoming, bool forOutgoing): this()
+        {
+            Use = use;
+            ForIncoming = forIncoming;
+            ForOutgoing = forOutgoing;
+        }
+
+        [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
+        private long m_CertPolicyGroupId;
+        private EntityRef<CertPolicyGroup> m_CertPolicyGroup = new EntityRef<CertPolicyGroup>();
+
+        [Column(IsPrimaryKey = true, Name = "CertPolicyId")]
+        private long m_CertPolicyId;
+        private EntityRef<CertPolicy> m_CertPolicy = new EntityRef<CertPolicy>();
+
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_CertPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
         [DataMember(IsRequired = true)]
-        public long ID
+        public CertPolicyGroup CertPolicyGroup
+        {
+            get { return m_CertPolicyGroup.Entity; }
+            set { m_CertPolicyGroup.Entity = value; }
+        }
+        
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", IsForeignKey = true, Storage = "m_CertPolicy", ThisKey = "m_CertPolicyId")]
+        [DataMember(IsRequired = true)]
+        public CertPolicy CertPolicy
+        {
+            get { return m_CertPolicy.Entity; }
+            set { m_CertPolicy.Entity = value; }
+        }
+
+        [Column(Name = "PolicyUse", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
+        public CertPolicyUse Use
         {
             get;
             set;
         }
 
-        [Column(Name = "CertPolicyGroupId", UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "ForIncoming", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
-        public long CertPolicyGroupId
+        public bool ForIncoming
         {
             get;
             set;
         }
 
-        [Column(Name = "CertPolicyId", UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "ForOutgoing", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
-        public long CertPolicyId
+        public bool ForOutgoing
         {
             get;
             set;
@@ -55,5 +93,6 @@ namespace Health.Direct.Config.Store
             get;
             set;
         }
+
     }
 }

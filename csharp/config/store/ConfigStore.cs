@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using Health.Direct.Policy.Impl;
 
 namespace Health.Direct.Config.Store
 {
@@ -35,6 +36,7 @@ namespace Health.Direct.Config.Store
         PropertyManager m_properties;
         NamedBlobManager m_blobs;
         BundleManager m_bundles;
+        CertPolicyManager m_certPolicies;
         private MdnManager m_Mdns;
         
         public ConfigStore(string connectString)
@@ -65,6 +67,7 @@ namespace Health.Direct.Config.Store
             m_blobs = new NamedBlobManager(this);
             m_Mdns = new MdnManager(this);
             m_bundles = new BundleManager(this);
+            m_certPolicies = new CertPolicyManager(this, new CertPolicyParseValidator());
         }
 
         public TimeSpan Timeout
@@ -169,6 +172,14 @@ namespace Health.Direct.Config.Store
             get
             {
                 return m_bundles;
+            }
+        }
+
+        public CertPolicyManager CertPolicies
+        {
+            get
+            {
+                return m_certPolicies;
             }
         }
 

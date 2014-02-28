@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
 
@@ -27,18 +28,14 @@ namespace Health.Direct.Config.Store
         public const int MaxOwnerLength = 400;
         string m_owner;
 
-        [Column(Name = "CertPolicyGroupDomainMapId", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = true)]
-        public long ID
-        {
-            get;
-            set;
-        }
-
+        [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
+        private long m_CertPolicyGroupId;
+        private EntityRef<CertPolicyGroup> m_CertPolicyGroup = new EntityRef<CertPolicyGroup>();
+        
         /// <summary>
         /// Relationshp to Domain.  Not enforced in SQL schema. 
         /// </summary>
-        [Column(Name = "Owner", CanBeNull = false, IsPrimaryKey = false)]
+        [Column(Name = "Owner", CanBeNull = false, IsPrimaryKey = true)]
         [DataMember(IsRequired = true)]
         public string Owner
         {
@@ -63,13 +60,14 @@ namespace Health.Direct.Config.Store
         }
 
 
-        [Column(Name = "CertPolicyGroupId", UpdateCheck = UpdateCheck.WhenChanged)]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_CertPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
         [DataMember(IsRequired = true)]
-        public long CertPolicyGroupId
+        public CertPolicyGroup CertPolicyGroup
         {
-            get;
-            set;
+            get { return m_CertPolicyGroup.Entity; }
+            set { m_CertPolicyGroup.Entity = value; }
         }
+
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]

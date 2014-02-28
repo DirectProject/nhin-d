@@ -52,6 +52,8 @@
     <Compile Include="ExtensionField.cs" />
     <Compile Include="Extensions\Conversions.cs" />
     <Compile Include="Extensions\DerSequenceExt.cs" />
+    <Compile Include="Extensions\StreamExt.cs" />
+    <Compile Include="Extensions\StringExt.cs" />
     <Compile Include="Extensions\X500Ext.cs" />
     <Compile Include="Extensions\x509Ext.cs" />
     <Compile Include="Extensions\RefExt.cs" />

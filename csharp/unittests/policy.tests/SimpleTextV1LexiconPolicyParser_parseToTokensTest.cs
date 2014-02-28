@@ -15,8 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using FluentAssertions;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
-using Health.Direct.Policy.Tests.Extensions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

@@ -1,9 +1,9 @@
 ﻿/* 
- Copyright (c) 2013, Direct Project
+ Copyright (c) 2014, Direct Project
  All rights reserved.
 
  Authors:
-    Joe Shook      jshook@kryptiq.com
+    Joe Shook     Joseph.Shook@Surescipts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,46 +15,58 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-using System.IO;
-using Health.Direct.Policy.Extensions;
-using Health.Direct.Policy.Impl;
+using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using Xunit;
 
-namespace Health.Direct.Policy.Tests
+namespace Health.Direct.Config.Store.Tests
 {
-    public class SimpleTextV1LexiconPolicyParser_parseTest
+    public class CertPolicyGroupManagerFacts : ConfigStoreTestBase
     {
-        [Fact]
-        public void TestParse_UnclosedGroup_AssertGrammarException()
+        private static new CertPolicyGroupManager CreateManager()
         {
+            return new CertPolicyGroupManager(CreateConfigStore());
+        }
 
-            using (Stream stream = "(1 = 1".ToStream())
-            {
-                var parser = new SimpleTextV1LexiconPolicyParser();
-                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
-            }
+        /// <summary>
+        ///A test for Store
+        ///</summary>
+        [Fact]
+        public void StoreTest()
+        {
+            CertPolicyGroupManager mgr = CreateManager();
+            ConfigStore actual = mgr.Store;
+            Assert.Equal(mgr.Store, actual);
         }
 
 
+        /// <summary>
+        /// A test for GetEnumerator
+        /// </summary>
         [Fact]
-        public void TestParse_NoOperator_AssertGrammarException()
+        public void GetEnumeratorTest()
         {
-            using (Stream stream = "(1".ToStream())
-            {
-                var parser = new SimpleTextV1LexiconPolicyParser();
-                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
-            }
+            InitCertPolicyGroupRecords();
+            IEnumerable<CertPolicyGroup> mgr = CreateManager();
+            Assert.Equal(3, mgr.Count());
         }
 
+        /// <summary>
+        /// A test for Get by name
+        /// Get policy by name
+        /// </summary>
         [Fact]
-        public void testParse_extraniousOperator_assertGrammarException()
+        public void GetPolicyGroupByName()
         {
-            using (Stream stream = "1 = 1 =".ToStream())
-            {
-                var parser = new SimpleTextV1LexiconPolicyParser();
-                Assert.Throws<PolicyGrammarException>(() => parser.Parse(stream));
-            }
+            InitCertPolicyGroupRecords();
+            CertPolicyGroupManager mgr = CreateManager();
+            CertPolicyGroup group = mgr.Get("PolicyGroup1");
+            group.Name.Should().BeEquivalentTo("PolicyGroup1");
         }
+
+       
+
+
     }
-
 }

@@ -9,9 +9,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.Machine;
-using Health.Direct.Policy.UI.Extensions;
 using Microsoft.Win32;
 
 namespace Health.Direct.Policy.UI
@@ -47,7 +47,7 @@ namespace Health.Direct.Policy.UI
         {
             try
             {
-                IPolicyExpression exppression = await ParseLexicon(lexicon);
+                IPolicyExpression expression = await ParseLexicon(lexicon);
                 var textRange = new TextRange(rtxBox.Document.ContentStart, rtxBox.Document.ContentEnd);
                 textRange.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Black);
             }

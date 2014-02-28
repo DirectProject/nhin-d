@@ -18,9 +18,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
+using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.Machine;
-using Health.Direct.Policy.Tests.Extensions;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests

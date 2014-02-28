@@ -28,6 +28,27 @@ namespace Health.Direct.Config.Store
         public const int MaxNameLength = 400;
 
         string m_Name;
+        private EntitySet<CertPolicyGroupMap> m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
+        private EntitySet<CertPolicyGroupDomainMap> m_CertPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>();
+
+        public CertPolicyGroup()
+        {
+            CreateDate = DateTimeHelper.Now;
+            Status = EntityStatus.New;
+        }
+
+        public CertPolicyGroup(string name)
+            : this()
+        {
+            Name = name;
+        }
+
+        public CertPolicyGroup(string name, string description)
+            : this()
+        {
+            Name = name;
+            Description = description;
+        }
 
         [Column(Name = "CertPolicyGroupId", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -61,12 +82,39 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        
-        [Association(Storage = "_CustomerAddresses", ThisKey = "CertPolicyGroupId", OtherKey = "CertPolicyGroupMapId")]
+
+        [Column(Name = "Description", CanBeNull = true, IsPrimaryKey = false)]
+        [DataMember(IsRequired = false)]
+        public string Description
+        {
+            get;
+            set;
+        }
+
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
         public EntitySet<CertPolicyGroupMap> CertPolicyGroupMap
         {
-            set;
-            get;
+            set
+            {
+                m_CertPolicyGroupMap = value;
+            }
+            get
+            {
+                return m_CertPolicyGroupMap ?? (m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>());
+            }
+        }
+
+        [Association(Name = "FK_CertPolicyGroupDomainMap_CertPolicyGroup", Storage = "m_CertPolicyGroupDomainMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
+        public EntitySet<CertPolicyGroupDomainMap> CertPolicyGroupDomainMap
+        {
+            set
+            {
+                m_CertPolicyGroupDomainMap = value;
+            }
+            get
+            {
+                return m_CertPolicyGroupDomainMap ?? (m_CertPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>());
+            }
         }
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
@@ -76,5 +124,29 @@ namespace Health.Direct.Config.Store
             get;
             set;
         }
+
+        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
+        public EntityStatus Status
+        {
+            get;
+            set;
+        }
+
+        internal void CopyFixed(CertPolicyGroup source)
+        {
+            this.ID = source.ID;
+            this.CreateDate = source.CreateDate;
+            this.Name = source.Name;
+        }
+
+        internal void ApplyChanges(CertPolicyGroup source)
+        {
+            this.Status = source.Status;
+            this.Description = source.Description;
+            this.CertPolicyGroupMap = source.CertPolicyGroupMap;
+            this.m_CertPolicyGroupDomainMap = source.CertPolicyGroupDomainMap;
+        }
+        
     }
 }

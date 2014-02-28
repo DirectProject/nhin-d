@@ -95,14 +95,20 @@
     <Compile Include="Anchor.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="CertificateQueries.cs" />
+    <Compile Include="CertPolcyGroupQueries.cs" />
+    <Compile Include="CertPolcyQueries.cs" />
     <Compile Include="CertPolicy.cs" />
     <Compile Include="CertPolicyGroup.cs" />
     <Compile Include="CertPolicyGroupDomainMap.cs" />
     <Compile Include="CertPolicyGroupMap.cs" />
+    <Compile Include="CertPolicyGroupManager.cs" />
+    <Compile Include="CertPolicyManager.cs" />
+    <Compile Include="CertPolicyParseValidator.cs" />
     <Compile Include="CertPolicyUse.cs" />
     <Compile Include="ConfigStore.cs" />
     <Compile Include="ConfigDatabase.cs" />
     <Compile Include="ConfigStoreException.cs" />
+    <Compile Include="ICertPolicyValidator.cs" />
     <Compile Include="Mdn.cs" />
     <Compile Include="MdnQueries.cs" />
     <Compile Include="MdnStatus.cs" />
@@ -146,7 +152,6 @@
       <Name>policy</Name>
     </ProjectReference>
   </ItemGroup>
-  
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

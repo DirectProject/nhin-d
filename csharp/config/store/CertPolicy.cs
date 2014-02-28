@@ -16,8 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Runtime.Serialization;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Policy.Impl;
 
 
@@ -27,16 +29,63 @@ namespace Health.Direct.Config.Store
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicy
     {
-        public const int MaxNameLength = 400;
+        public const int MaxNameLength = 255;
 
         string m_Name;
+        private EntitySet<CertPolicyGroupMap> m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
 
+        public CertPolicy()
+        {
+            CreateDate = DateTimeHelper.Now;
+            Status = EntityStatus.New;
+        }
+
+        public CertPolicy(string name) : this()
+        {
+            Name = name;
+            Lexicon = "SimpleText";
+        }
+
+        public CertPolicy(string name, byte[] data)
+            : this()
+        {
+            Name = name;
+            Lexicon = "SimpleText"; 
+            Data = data;
+        }
+
+        public CertPolicy(string name, string description, byte[] data)
+            : this()
+        {
+            Name = name;
+            Description = description;
+            Lexicon = "SimpleText";
+            Data = data;
+        }
+
+        
         [Column(Name = "CertPolicyId", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public long ID 
         { 
             get; 
             set; 
+        }
+
+        
+
+
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
+        public EntitySet<CertPolicyGroupMap> CertPolicyGroupMap
+        {
+            set
+            {
+                m_CertPolicyGroupMap = value;
+            }
+            get
+            {
+                return m_CertPolicyGroupMap ?? (m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>());
+            }
         }
 
         [Column(Name = "Name", CanBeNull = false, IsPrimaryKey = false )]
@@ -63,6 +112,13 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        [Column(Name = "Description", CanBeNull = true, IsPrimaryKey = false)]
+        [DataMember(IsRequired = false)]
+        public string Description
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// For now thie will always be the <see cref="SimpleTextV1LexiconPolicyParser"/>.
@@ -77,7 +133,7 @@ namespace Health.Direct.Config.Store
 
         [Column(Name = "Data", DbType = "varbinary(MAX)", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
-        public byte[] PolicyData
+        public byte[] Data
         {
             get; 
             set;
@@ -92,6 +148,43 @@ namespace Health.Direct.Config.Store
             set;
         }
 
+        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [DataMember(IsRequired = true)]
+        public EntityStatus Status
+        {
+            get;
+            set;
+        }
 
+        public bool HasData
+        {
+            get
+            {
+                return (Data != null && Data.Length > 0);
+            }
+        }
+
+        public void ValidateHasData()
+        {
+            if (Data.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.MissingCertPolicyData);
+            }
+        }
+
+        internal void CopyFixed(CertPolicy source)
+        {
+            this.ID = source.ID;
+            this.CreateDate = source.CreateDate;
+            this.Name = source.Name;
+        }
+
+        internal void ApplyChanges(CertPolicy source)
+        {
+            this.Status = source.Status;
+            this.Description = source.Description;
+            this.Data = source.Data;
+            this.CertPolicyGroupMap = source.CertPolicyGroupMap;
+        }
     }
 }
