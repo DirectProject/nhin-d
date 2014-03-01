@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,11 @@ namespace Health.Direct.Config.Store
             m_validator = validator;
         }
 
+        internal CertPolicyManager(ConfigStore store)
+        {
+            m_store = store;
+        }
+
         internal ConfigStore Store
         {
             get
@@ -42,6 +48,15 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        //internal DataLoadOptions DataLoadOptions
+        //{
+        //    get
+        //    {
+        //        var dataLoadOptions = new DataLoadOptions();
+        //        dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
+        //        return dataLoadOptions;
+        //    }
+        //}
 
         public CertPolicy Add(CertPolicy policy)
         {
@@ -105,27 +120,6 @@ namespace Health.Direct.Config.Store
             return db.CertPolicies.Get(name);
         }
 
-        public CertPolicyGroup GetGroup(string name)
-        {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.GetGroup(db, name);
-            }
-        }
-
-        public CertPolicyGroup GetGroup(ConfigDatabase db, string name)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-            }
-
-            return db.CertPolicyGroups.Get(name);
-        }
 
         public void Update(CertPolicy policy)
         {
@@ -183,7 +177,7 @@ namespace Health.Direct.Config.Store
         {
             return GetEnumerator();
         }
-
+        
         
     }
 }
