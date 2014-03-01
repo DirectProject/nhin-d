@@ -90,23 +90,72 @@ namespace Health.Direct.Config.Store.Tests
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
         }
 
+        /// <summary>
+        /// Add group to policy session based style
+        /// </summary>
         [Fact]
-        public void AssociatePolicyToGroup()
+        public void AddGroupToPolicySessionTest()
         {
             InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyManager mgr = CreateManager();
+            CertPolicy policy;
+            using (ConfigDatabase db = CreateConfigDatabase())
+            {
+                policy = mgr.Get(db, "Policy1");
+                policy.CertPolicyGroupMap.Count.Should().Be(0);
+
+                CertPolicyGroup group = new CertPolicyGroup("PolicyGroup99");
+
+                policy.CertPolicyGroups.Add(group);
+                db.SubmitChanges();
+            }
+
+            policy = mgr.Get("Policy1");
+            policy.CertPolicyGroupMap.Count.Should().Be(1);
+
+        }
+
+
+        /// <summary>
+        /// associate group to policy session based style
+        /// </summary>
+        [Fact]
+        public void AssociatePolicyToGroupSessionTest()
+        {
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            using (ConfigDatabase db = CreateConfigDatabase())
+            {
+                CertPolicyManager mgr = CreateManager();
+                CertPolicy policy = mgr.Get(db, "Policy1");
+                CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
+                CertPolicyGroup group = groupMgr.Get(db, "PolicyGroup1");
+
+                policy.CertPolicyGroups.Add(group);
+                db.SubmitChanges();
+            }
+        }
+
+        /// <summary>
+        /// Add group to policy sessionless based style
+        /// </summary>
+        [Fact]
+        public void AddGroupToPolicy()
+        {
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+            
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy1");
 
-            CertPolicyGroupMap groupMap = new CertPolicyGroupMap(CertPolicyUse.PrivateResolver, true, true);
+            CertPolicyGroup group = new CertPolicyGroup("PolicyGroup99");
 
-            CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
-            CertPolicyGroup group = groupMgr.Get("PolicyGroup1");
-
-            policy.CertPolicyGroupMap.Add(groupMap);
-            group.CertPolicyGroupMap.Add(groupMap);
-
+            policy.CertPolicyGroups.Add(group);
             mgr.Update(policy);
-
+           
         }
 
     }

@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace Health.Direct.Config.Store
 {
-    public enum CertPolicyUse
+    public enum CertPolicyUse : byte
     {
         /// <summary>
         /// Validating certificate path trust chaining

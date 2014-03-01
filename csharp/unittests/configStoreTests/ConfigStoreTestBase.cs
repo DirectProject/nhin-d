@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.IO;
 using Health.Direct.Common.Certificates;
@@ -749,6 +750,9 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         protected void InitCertPolicyRecords()
         {
+            //var dataLoadOptions = new DataLoadOptions();
+            //dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
+
             ConfigStore configStore = CreateConfigStore();
             this.InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
                                    , new ConfigDatabase(ConnectionString));
@@ -783,7 +787,7 @@ namespace Health.Direct.Config.Store.Tests
 
             foreach (CertPolicy val in TestCertPolicies)
             {
-                Assert.NotNull(mgr.Get(val.Name));
+                Assert.NotNull(mgr.Get(db, val.Name));
             }
 
         }
@@ -827,7 +831,7 @@ namespace Health.Direct.Config.Store.Tests
 
             foreach (CertPolicyGroup val in TestCertPolicyGroups)
             {
-                Assert.NotNull(mgr.Get(val.Name));
+                Assert.NotNull(mgr.Get(db, val.Name));
             }
 
         }

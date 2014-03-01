@@ -19,6 +19,7 @@ using System.Data;
 using System.Data.Common;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Linq;
 
 namespace Health.Direct.Config.Store
 {
@@ -41,12 +42,25 @@ namespace Health.Direct.Config.Store
         Table<Bundle> m_bundles;
         
         DbTransaction m_transaction;
-                          
+
+        private static string m_removeRecordMtoMConnectionString ;    
+        
         public ConfigDatabase(string connectString)
             : base(connectString, s_mappingSource)
         {
+            m_removeRecordMtoMConnectionString = connectString;
+            LoadOptions = _dataLoadOptions;
         }
 
+         
+        static readonly DataLoadOptions _dataLoadOptions = new DataLoadOptions();
+
+        static ConfigDatabase()
+        {
+            _dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
+            _dataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicyGroup);
+        }
+        
         public Table<Address> Addresses
         {
             get
@@ -202,6 +216,22 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        //
+        // datacontext for many to many relationship 
+        //
+        private static ConfigDatabase removeRecordContext = null;
+        public static void RemoveAssociativeRecord<T>(T association) where T : class
+        {
+            if (removeRecordContext == null)
+                removeRecordContext = new ConfigDatabase(m_removeRecordMtoMConnectionString);
+
+            Table<T> tableData = removeRecordContext.GetTable<T>();
+            var record = tableData.SingleOrDefault(r => r == association);
+            if (record != null)
+            {
+                tableData.DeleteOnSubmit(record);
+            }
+        }
 
         public void BeginTransaction()
         {

@@ -21,6 +21,8 @@ using System.Runtime.Serialization;
 
 namespace Health.Direct.Config.Store
 {
+#pragma warning disable 0169        // Ignore warnings. Fields used by LINQ
+
     [Table(Name = "CertPolicyGroupMap")]
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicyGroupMap
@@ -40,26 +42,56 @@ namespace Health.Direct.Config.Store
 
         [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
         private long m_CertPolicyGroupId;
-        private EntityRef<CertPolicyGroup> m_CertPolicyGroup = new EntityRef<CertPolicyGroup>();
+        private EntityRef<CertPolicyGroup> m_certPolicyGroup = new EntityRef<CertPolicyGroup>();
 
         [Column(IsPrimaryKey = true, Name = "CertPolicyId")]
         private long m_CertPolicyId;
-        private EntityRef<CertPolicy> m_CertPolicy = new EntityRef<CertPolicy>();
+        private EntityRef<CertPolicy> m_certPolicy = new EntityRef<CertPolicy>();
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_CertPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_certPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
         [DataMember(IsRequired = true)]
         public CertPolicyGroup CertPolicyGroup
         {
-            get { return m_CertPolicyGroup.Entity; }
-            set { m_CertPolicyGroup.Entity = value; }
+            get { return m_certPolicyGroup.Entity; }
+            set
+            {
+                CertPolicyGroup originalCertPolicyGroup = m_certPolicyGroup.Entity;
+                CertPolicyGroup newCertPolicyGroup = value;
+
+                if (originalCertPolicyGroup != newCertPolicyGroup)
+                {
+                    m_certPolicyGroup.Entity = null;
+                    if (originalCertPolicyGroup != null)
+                    {
+                        originalCertPolicyGroup.CertPolicyGroupMap.Remove(this);
+                    }
+                    m_certPolicyGroup.Entity = newCertPolicyGroup;
+                    newCertPolicyGroup.CertPolicyGroupMap.Add(this);
+                }
+            }
         }
-        
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", IsForeignKey = true, Storage = "m_CertPolicy", ThisKey = "m_CertPolicyId")]
+
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", IsForeignKey = true, Storage = "m_certPolicy", ThisKey = "m_CertPolicyId")]
         [DataMember(IsRequired = true)]
         public CertPolicy CertPolicy
         {
-            get { return m_CertPolicy.Entity; }
-            set { m_CertPolicy.Entity = value; }
+            get { return m_certPolicy.Entity; }
+            set
+            {
+                CertPolicy originalCertPolicy = m_certPolicy.Entity;
+                CertPolicy newCertPolicy = value;
+
+                if (originalCertPolicy != newCertPolicy)
+                {
+                    m_certPolicy.Entity = null;
+                    if (originalCertPolicy != null)
+                    {
+                        originalCertPolicy.CertPolicyGroupMap.Remove(this);
+                    }
+                    m_certPolicy.Entity = newCertPolicy;
+                    newCertPolicy.CertPolicyGroupMap.Add(this);
+                }
+            }
         }
 
         [Column(Name = "PolicyUse", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
@@ -94,5 +126,14 @@ namespace Health.Direct.Config.Store
             set;
         }
 
+        public void Remove( ) {
+            ConfigDatabase.RemoveAssociativeRecord(this);
+
+            CertPolicy originalCertPolicy = CertPolicy;
+            originalCertPolicy.CertPolicyGroupMap.Remove(this);
+
+            CertPolicyGroup originalCertPolicyGroup = CertPolicyGroup;
+            originalCertPolicyGroup.CertPolicyGroupMap.Remove(this);
+        }
     }
 }

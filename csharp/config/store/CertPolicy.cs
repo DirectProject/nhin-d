@@ -16,9 +16,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Policy.Impl;
 
@@ -39,7 +44,7 @@ namespace Health.Direct.Config.Store
             CreateDate = DateTimeHelper.Now;
             Status = EntityStatus.New;
         }
-
+        
         public CertPolicy(string name) : this()
         {
             Name = name;
@@ -72,19 +77,16 @@ namespace Health.Direct.Config.Store
             set; 
         }
 
-        
-
-
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
-        public EntitySet<CertPolicyGroupMap> CertPolicyGroupMap
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyId")]
+        public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
         {
             set
             {
-                m_CertPolicyGroupMap = value;
+                m_CertPolicyGroupMap.Assign(value);
             }
             get
             {
-                return m_CertPolicyGroupMap ?? (m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>());
+                return m_CertPolicyGroupMap;
             }
         }
 
@@ -114,7 +116,7 @@ namespace Health.Direct.Config.Store
 
         [Column(Name = "Description", CanBeNull = true, IsPrimaryKey = false)]
         [DataMember(IsRequired = false)]
-        public string Description
+        public String Description
         {
             get;
             set;
@@ -156,6 +158,52 @@ namespace Health.Direct.Config.Store
             set;
         }
 
+
+        public ICollection<CertPolicyGroup> CertPolicyGroups
+        {
+            get
+            {
+                var policyGroups = new ObservableCollection<CertPolicyGroup>(
+                        from groupMap in CertPolicyGroupMap select groupMap.CertPolicyGroup);
+                policyGroups.CollectionChanged += CertPolicyGroupCollectionChanged;
+                return policyGroups;
+            }
+        }
+
+        private void CertPolicyGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (NotifyCollectionChangedAction.Add == e.Action)
+            {
+                foreach (CertPolicyGroup policyGroup in e.NewItems)
+                    OnPolicyGroupAdded(policyGroup);
+            }
+
+            if (NotifyCollectionChangedAction.Remove == e.Action)
+            {
+                foreach (CertPolicyGroup policyGroup in e.OldItems)
+                    OnPolicyGroupRemoved(policyGroup);
+            }
+        }
+
+
+        private void OnPolicyGroupAdded(CertPolicyGroup policyGroup)
+        {
+            CertPolicyGroupMap map = new CertPolicyGroupMap();
+            map.CertPolicy = this;
+            map.CertPolicyGroup = policyGroup;
+        }
+
+        private void OnPolicyGroupRemoved(CertPolicyGroup policyGroup)
+        {
+            CertPolicyGroupMap map =
+                CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicy == this && pg.CertPolicyGroup == policyGroup);
+            if (map != null)
+            {
+                map.Remove();
+            }
+        }
+
+
         public bool HasData
         {
             get
@@ -186,5 +234,7 @@ namespace Health.Direct.Config.Store
             this.Data = source.Data;
             this.CertPolicyGroupMap = source.CertPolicyGroupMap;
         }
+
+
     }
 }

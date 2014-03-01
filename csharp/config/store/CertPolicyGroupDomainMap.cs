@@ -21,6 +21,8 @@ using System.Runtime.Serialization;
 
 namespace Health.Direct.Config.Store
 {
+#pragma warning disable 0169        // Ignore warnings. Fields used by LINQ
+
     [Table(Name = "CertPolicyGroupDomainMap")]
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicyGroupDomainMap
