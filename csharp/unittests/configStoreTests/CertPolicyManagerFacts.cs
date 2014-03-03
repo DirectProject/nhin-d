@@ -159,7 +159,7 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicy certPolicy = policyMgr.Get("Policy1");
             policyMgr.Get("Policy1").Should().NotBeNull();
             policyGroup.CertPolicies.Add(certPolicy);
-            groupMgr.AddPolicy(policyGroup);
+            groupMgr.AddAssociation(policyGroup);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);

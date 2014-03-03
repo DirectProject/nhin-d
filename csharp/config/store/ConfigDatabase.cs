@@ -39,6 +39,7 @@ namespace Health.Direct.Config.Store
         Table<Mdn> m_mdns;
         Table<CertPolicy> m_certPolicies;
         Table<CertPolicyGroupMap> m_certPolicyGroupMap;
+        Table<CertPolicyGroupDomainMap> m_certPolicyGroupDomainMap;
         Table<CertPolicyGroup> m_certPolicyGroups;
         Table<Bundle> m_bundles;
         
@@ -211,7 +212,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public Table<CertPolicyGroupMap> CertPolicyGroupMaps
+        public Table<CertPolicyGroupMap> CertPolicyGroupMap
         {
             get
             {
@@ -221,6 +222,19 @@ namespace Health.Direct.Config.Store
                 }
 
                 return m_certPolicyGroupMap;
+            }
+        }
+
+        public Table<CertPolicyGroupDomainMap> CertPolicyGroupDomainMap
+        {
+            get
+            {
+                if (m_certPolicyGroupDomainMap == null)
+                {
+                    m_certPolicyGroupDomainMap = this.GetTable<CertPolicyGroupDomainMap>();
+                }
+
+                return m_certPolicyGroupDomainMap;
             }
         }
 

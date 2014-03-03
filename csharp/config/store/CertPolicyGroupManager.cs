@@ -168,16 +168,16 @@ namespace Health.Direct.Config.Store
             
         }
 
-        public void AddPolicy(CertPolicyGroup policyGroup)
+        public void AddAssociation(CertPolicyGroup policyGroup)
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                this.AddPolicy(db, policyGroup);
+                this.AddAssociation(db, policyGroup);
                 db.SubmitChanges();
             }
         }
 
-        protected void AddPolicy(ConfigDatabase db, CertPolicyGroup policyGroup)
+        protected void AddAssociation(ConfigDatabase db, CertPolicyGroup policyGroup)
         {
             if (db == null)
             {
@@ -193,10 +193,21 @@ namespace Health.Direct.Config.Store
             {
                 if (certPolicyGroupMap.IsNew)
                 {
-                    db.CertPolicyGroupMaps.InsertOnSubmit(certPolicyGroupMap);
+                    db.CertPolicyGroupMap.InsertOnSubmit(certPolicyGroupMap);
                     if (certPolicyGroupMap.CertPolicy.IsNew())
                     {
                         db.CertPolicies.InsertOnSubmit(certPolicyGroupMap.CertPolicy);
+                    }
+                }
+            }
+            foreach (CertPolicyGroupDomainMap domainMap in policyGroup.CertPolicyGroupDomainMap)
+            {
+                if (domainMap.IsNew)
+                {
+                    db.CertPolicyGroupDomainMap.InsertOnSubmit(domainMap);
+                    if (domainMap.CertPolicyGroup.IsNew())
+                    {
+                        db.CertPolicyGroups.InsertOnSubmit(domainMap.CertPolicyGroup);
                     }
                 }
             }

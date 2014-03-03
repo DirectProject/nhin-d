@@ -44,7 +44,20 @@ namespace Health.Direct.Config.Store
         {
             CreateDate = DateTimeHelper.Now;
             Status = EntityStatus.New;
+            m_certPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>(OnDomainMapAdded, OnDomainMapRemoved);
         }
+
+        private void OnDomainMapAdded(CertPolicyGroupDomainMap obj)
+        {
+            obj.CertPolicyGroup = this;
+        }
+
+        private void OnDomainMapRemoved(CertPolicyGroupDomainMap obj)
+        {
+            obj.CertPolicyGroup = null;
+        }
+
+        
 
         public CertPolicyGroup(string name)
             : this()
@@ -192,9 +205,7 @@ namespace Health.Direct.Config.Store
                 map.Remove();
             }
         }
-
-
-
+                
         internal void CopyFixed(CertPolicyGroup source)
         {
             this.ID = source.ID;
