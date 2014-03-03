@@ -99,12 +99,12 @@ namespace Health.Direct.Config.Store.Tests
 
 
         /// <summary>
-        /// A test for Add Policy group 
+        /// A test for Add Policy @group 
         /// </summary>
         [Fact]
         public void AddPolicyGroup()
         {
-            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
             CertPolicyGroupManager mgr = CreateManager();
 
             CertPolicyGroup expectedPolicy = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest Policy Group Description");
@@ -115,8 +115,6 @@ namespace Health.Direct.Config.Store.Tests
             expectedPolicy.Name.Should().BeEquivalentTo("UnitTestPolicyGroup");
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
         }
-
-        
 
     }
 }

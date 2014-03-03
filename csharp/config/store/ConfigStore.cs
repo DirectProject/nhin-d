@@ -38,8 +38,8 @@ namespace Health.Direct.Config.Store
         PropertyManager m_properties;
         NamedBlobManager m_blobs;
         BundleManager m_bundles;
+        MdnManager m_Mdns;
         CertPolicyManager m_certPolicies;
-        private MdnManager m_Mdns;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -199,5 +199,22 @@ namespace Health.Direct.Config.Store
                            ObjectTrackingEnabled = false
                        };
         }
+
+
+        public ConfigDatabase CreateContext(DataLoadOptions dataLoadOptions)
+        {
+            return new ConfigDatabase(m_connectString, dataLoadOptions) { CommandTimeout = this.TimeoutSeconds };
+        }
+
+
+        public ConfigDatabase CreateReadContext(DataLoadOptions dataLoadOptions)
+        {
+            return new ConfigDatabase(m_connectString, dataLoadOptions)
+            {
+                CommandTimeout = this.TimeoutSeconds,
+                ObjectTrackingEnabled = false
+            };
+        }
+
     }
 }

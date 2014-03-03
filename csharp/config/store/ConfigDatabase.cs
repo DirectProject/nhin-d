@@ -38,6 +38,7 @@ namespace Health.Direct.Config.Store
         Table<NamedBlob> m_blobs;
         Table<Mdn> m_mdns;
         Table<CertPolicy> m_certPolicies;
+        Table<CertPolicyGroupMap> m_certPolicyGroupMap;
         Table<CertPolicyGroup> m_certPolicyGroups;
         Table<Bundle> m_bundles;
         
@@ -49,17 +50,24 @@ namespace Health.Direct.Config.Store
             : base(connectString, s_mappingSource)
         {
             m_removeRecordMtoMConnectionString = connectString;
-            LoadOptions = _dataLoadOptions;
+            //LoadOptions = _dataLoadOptions;
         }
 
-         
-        static readonly DataLoadOptions _dataLoadOptions = new DataLoadOptions();
-
-        static ConfigDatabase()
+        public ConfigDatabase(string connectString, DataLoadOptions dataLoadOptions)
+            : base(connectString, s_mappingSource)
         {
-            _dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
-            _dataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicyGroup);
+            m_removeRecordMtoMConnectionString = connectString;
+            LoadOptions = dataLoadOptions;
         }
+         
+        //static readonly DataLoadOptions _dataLoadOptions = new DataLoadOptions();
+
+        //static ConfigDatabase()
+        //{
+        //    _dataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMap);
+        //    _dataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
+        //    _dataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMap);
+        //}
         
         public Table<Address> Addresses
         {
@@ -200,6 +208,19 @@ namespace Health.Direct.Config.Store
                 }
 
                 return m_certPolicies;
+            }
+        }
+
+        public Table<CertPolicyGroupMap> CertPolicyGroupMaps
+        {
+            get
+            {
+                if (m_certPolicyGroupMap == null)
+                {
+                    m_certPolicyGroupMap = this.GetTable<CertPolicyGroupMap>();
+                }
+
+                return m_certPolicyGroupMap;
             }
         }
 

@@ -21,6 +21,7 @@ using System.Data.Linq;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Config.Store
 {
@@ -48,19 +49,18 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        //internal DataLoadOptions DataLoadOptions
-        //{
-        //    get
-        //    {
-        //        var dataLoadOptions = new DataLoadOptions();
-        //        dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
-        //        return dataLoadOptions;
-        //    }
-        //}
+        public static readonly DataLoadOptions DataLoadOptions = new DataLoadOptions();
+
+        static CertPolicyManager()
+        {
+            DataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
+            DataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicyGroup);
+        }
+        
 
         public CertPolicy Add(CertPolicy policy)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
                 this.Add(db, policy);
                 db.SubmitChanges();
@@ -100,7 +100,7 @@ namespace Health.Direct.Config.Store
 
         public CertPolicy Get(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
+            using (ConfigDatabase db = this.Store.CreateReadContext(DataLoadOptions))
             {
                 return this.Get(db, name);
             }
@@ -123,7 +123,7 @@ namespace Health.Direct.Config.Store
 
         public void Update(CertPolicy policy)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
                 this.Update(db, policy);
                 db.SubmitChanges();
@@ -144,9 +144,64 @@ namespace Health.Direct.Config.Store
 
             CertPolicy update = new CertPolicy();
             update.CopyFixed(policy);
-
             db.CertPolicies.Attach(update);
             update.ApplyChanges(policy);
+            //foreach (CertPolicyGroupMap certPolicyGroupMap in policy.CertPolicyGroupMap)
+            //{
+            //    if (certPolicyGroupMap.IsNew)
+            //    {
+            //        db.CertPolicyGroupMaps.InsertOnSubmit(certPolicyGroupMap);
+            //        if (certPolicyGroupMap.CertPolicyGroup.IsNew())
+            //        {
+            //            db.CertPolicyGroups.InsertOnSubmit(certPolicyGroupMap.CertPolicyGroup);
+            //        }
+            //    }
+            //}
+
+        }
+
+        public void Remove(long policyId)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, policyId);
+            }
+        }
+
+        public void Remove(ConfigDatabase db, long policyId)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            db.CertPolicies.ExecDelete(policyId);
+        }
+
+        public void Remove(long[] policyIds)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, policyIds);
+                // We don't commit, because we execute deletes directly
+            }
+        }
+
+        public void Remove(ConfigDatabase db, long[] policyIds)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (policyIds.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            for (int i = 0; i < policyIds.Length; ++i)
+            {
+                db.CertPolicies.ExecDelete(policyIds[i]);
+            }
         }
 
         public void RemoveAll(ConfigDatabase db)
@@ -156,7 +211,7 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
                 this.RemoveAll(db);
             }
@@ -164,7 +219,7 @@ namespace Health.Direct.Config.Store
 
         public IEnumerator<CertPolicy> GetEnumerator()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
                 foreach (CertPolicy policy in db.CertPolicies)
                 {

@@ -20,14 +20,23 @@ using System.Linq;
 
 namespace Health.Direct.Config.Store
 {
-    public static class CertPolcyGroupQueries
+    public static class CertPolicyGroupQueries
     {
+        const string Sql_DeleteCertPolicyGroups = "Delete from CertPolicyGroups where CertPolicyId = {0}";
+
+        const string Sql_DeleteCertPolicyGroupMap =
+            @"
+                    Delete from CertPolicyGroupMap
+                    Where CertPolicyId = {0}
+                    And   CertPolicyGroupId = {1}
+            ";
+
         const string Sql_DeleteAllCertPolicies =
                      @" Begin tran 
-                        delete from CertPolicyGroupDomainMap 
-                        delete from CertPolicyGroupMap 
-                        delete from CertPolicyGroup
-                        DBCC CHECKIDENT(CertPolicyGroup,RESEED,0)                         
+                        Delete from CertPolicyGroupDomainMap 
+                        Delete from CertPolicyGroupMap 
+                        Delete from CertPolicyGroups
+                        DBCC CHECKIDENT(CertPolicyGroups,RESEED,0)                         
                     commit tran 
                 ";
 
@@ -54,6 +63,17 @@ namespace Health.Direct.Config.Store
         {
             return CertPolicyGroup(table.GetDB(), name).SingleOrDefault();
         }
+
+        public static void ExecDelete(this Table<CertPolicyGroup> table, long certPolicyGroupId)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroups, certPolicyGroupId);
+        }
+
+        public static void ExecDelete(this Table<CertPolicyGroup> table, CertPolicyGroupMap map)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupMap, map.CertPolicy.ID, map.CertPolicyGroup.ID);
+        }
+
 
         public static void ExecDeleteAll(this Table<CertPolicyGroup> table)
         {

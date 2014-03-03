@@ -27,14 +27,24 @@ namespace Health.Direct.Config.Store
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicyGroupMap
     {
+        bool m_new;
+
         public CertPolicyGroupMap()
         {
             CreateDate = DateTimeHelper.Now;
             Use = CertPolicyUse.Trust;
         }
 
+        public CertPolicyGroupMap(bool isNew)
+        {
+            CreateDate = DateTimeHelper.Now;
+            Use = CertPolicyUse.Trust;
+            m_new = isNew;
+        }
+
         public CertPolicyGroupMap(CertPolicyUse use, bool forIncoming, bool forOutgoing): this()
         {
+            m_new = true;
             Use = use;
             ForIncoming = forIncoming;
             ForOutgoing = forOutgoing;
@@ -48,7 +58,7 @@ namespace Health.Direct.Config.Store
         private long m_CertPolicyId;
         private EntityRef<CertPolicy> m_certPolicy = new EntityRef<CertPolicy>();
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_certPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroups", IsForeignKey = true, Storage = "m_certPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
         [DataMember(IsRequired = true)]
         public CertPolicyGroup CertPolicyGroup
         {
@@ -71,7 +81,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", IsForeignKey = true, Storage = "m_certPolicy", ThisKey = "m_CertPolicyId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", IsForeignKey = true, Storage = "m_certPolicy", ThisKey = "m_CertPolicyId")]
         [DataMember(IsRequired = true)]
         public CertPolicy CertPolicy
         {
@@ -126,6 +136,10 @@ namespace Health.Direct.Config.Store
             set;
         }
 
+        public bool IsNew
+        {
+            get { return m_new; }
+        }
         public void Remove( ) {
             ConfigDatabase.RemoveAssociativeRecord(this);
 

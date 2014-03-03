@@ -95,8 +95,8 @@
     <Compile Include="Anchor.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="CertificateQueries.cs" />
-    <Compile Include="CertPolcyGroupQueries.cs" />
-    <Compile Include="CertPolcyQueries.cs" />
+    <Compile Include="CertPolicyGroupQueries.cs" />
+    <Compile Include="CertPolicyQueries.cs" />
     <Compile Include="CertPolicy.cs" />
     <Compile Include="CertPolicyGroup.cs" />
     <Compile Include="CertPolicyGroupDomainMap.cs" />

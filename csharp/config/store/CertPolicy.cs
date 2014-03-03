@@ -30,13 +30,16 @@ using Health.Direct.Policy.Impl;
 
 namespace Health.Direct.Config.Store
 {
-    [Table(Name = "CertPolicy")]
+    [Table(Name = "CertPolicies")]
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicy
     {
         public const int MaxNameLength = 255;
+        public const int MaxDescriptionLength = 255;
 
         string m_Name;
+        string m_Description = String.Empty;
+
         private EntitySet<CertPolicyGroupMap> m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
 
         public CertPolicy()
@@ -77,7 +80,7 @@ namespace Health.Direct.Config.Store
             set; 
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyId")]
         public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
         {
             set
@@ -90,7 +93,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        [Column(Name = "Name", CanBeNull = false, IsPrimaryKey = false )]
+        [Column(Name = "Name", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Name
         {
@@ -114,26 +117,37 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        [Column(Name = "Description", CanBeNull = true, IsPrimaryKey = false)]
+        [Column(Name = "Description", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = false)]
         public String Description
         {
-            get;
-            set;
+            get
+            {
+                return m_Description;
+            }
+            set
+            {
+                if (value.Length > MaxDescriptionLength)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.CertPolicyGroupDescriptionLength);
+                }
+
+                m_Description = value;
+            }
         }
 
         /// <summary>
         /// For now thie will always be the <see cref="SimpleTextV1LexiconPolicyParser"/>.
         /// 
         /// </summary>
-        [Column(Name = "Lexicon", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Lexicon", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Lexicon { 
             get;
             set;
         }
 
-        [Column(Name = "Data", DbType = "varbinary(MAX)", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Data", DbType = "varbinary(MAX)", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public byte[] Data
         {
@@ -150,7 +164,7 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public EntityStatus Status
         {
@@ -188,7 +202,7 @@ namespace Health.Direct.Config.Store
 
         private void OnPolicyGroupAdded(CertPolicyGroup policyGroup)
         {
-            CertPolicyGroupMap map = new CertPolicyGroupMap();
+            CertPolicyGroupMap map = new CertPolicyGroupMap(true);
             map.CertPolicy = this;
             map.CertPolicyGroup = policyGroup;
         }
@@ -203,6 +217,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        
 
         public bool HasData
         {
@@ -232,9 +247,12 @@ namespace Health.Direct.Config.Store
             this.Status = source.Status;
             this.Description = source.Description;
             this.Data = source.Data;
-            this.CertPolicyGroupMap = source.CertPolicyGroupMap;
+            this.Lexicon = source.Lexicon;
         }
 
-
+        public bool IsNew()
+        {
+            return ID <= 0;
+        }
     }
 }

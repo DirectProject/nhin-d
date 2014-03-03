@@ -21,14 +21,21 @@ using System.Windows.Forms.VisualStyles;
 
 namespace Health.Direct.Config.Store
 {
-    public static class CertPolcyQueries
+    public static class CertPolicyQueries
     {
+        const string Sql_DeleteCertPolicies =
+            @" Begin tran
+                DELETE from CertPolicyGroupMap where CertPolicyId = {0}                
+                DELETE from CertPolicies where CertPolicyId = {0}
+               Commit tran 
+            ";
+
         const string Sql_DeleteAllCertPolicies =
                      @" Begin tran                         
                         delete from CertPolicyGroupMap                        
-                        delete from CertPolicy
-                        DBCC CHECKIDENT(CertPolicy,RESEED,0)                                             
-                    commit tran 
+                        delete from CertPolicies
+                        DBCC CHECKIDENT(CertPolicies,RESEED,0)                                             
+                    Commit tran 
                 ";
 
         static readonly Func<ConfigDatabase, string, IQueryable<CertPolicy>> CertPolicy = CompiledQuery.Compile(
@@ -41,7 +48,9 @@ namespace Health.Direct.Config.Store
         
         public static ConfigDatabase GetDB(this Table<CertPolicy> table)
         {
-            return (ConfigDatabase)table.Context;
+            ConfigDatabase db = (ConfigDatabase)table.Context;
+            //db.LoadOptions = CertPolicyManager.DataLoadOptions;
+            return db;
         }
 
         public static int GetCount(this Table<CertPolicy> table)
@@ -54,7 +63,12 @@ namespace Health.Direct.Config.Store
         {
             return CertPolicy(table.GetDB(), name).SingleOrDefault();
         }
-        
+
+        public static void ExecDelete(this Table<CertPolicy> table, long certPolicyId)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCertPolicies, certPolicyId);
+        }
+
         public static void ExecDeleteAll(this Table<CertPolicy> table)
         {
             table.Context.ExecuteCommand(Sql_DeleteAllCertPolicies);

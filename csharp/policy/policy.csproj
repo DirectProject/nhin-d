@@ -50,6 +50,7 @@
     <Compile Include="DefaultPolicyFilter.cs" />
     <Compile Include="ExpressionTreeUtil.cs" />
     <Compile Include="ExtensionField.cs" />
+    <Compile Include="Extensions\ByteExt.cs" />
     <Compile Include="Extensions\Conversions.cs" />
     <Compile Include="Extensions\DerSequenceExt.cs" />
     <Compile Include="Extensions\StreamExt.cs" />
