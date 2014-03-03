@@ -35,10 +35,8 @@ namespace Health.Direct.Config.Store
             Use = CertPolicyUse.Trust;
         }
 
-        public CertPolicyGroupMap(bool isNew)
+        public CertPolicyGroupMap(bool isNew) : this()
         {
-            CreateDate = DateTimeHelper.Now;
-            Use = CertPolicyUse.Trust;
             m_new = isNew;
         }
 

@@ -72,7 +72,7 @@ namespace Health.Direct.Config.Store.Tests
             @group.Name.Should().BeEquivalentTo("PolicyGroup1");
         }
 
-
+        
         /// <summary>
         /// A test for Add PolicyGroup
         /// </summary>
@@ -131,7 +131,7 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicy certPolicy = policyMgr.Get("Policy1");
 
             policyGroup.CertPolicies.Add(certPolicy);
-            groupMgr.AddPolicy(policyGroup);
+            groupMgr.AddAssociation(policyGroup);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
@@ -160,6 +160,72 @@ namespace Health.Direct.Config.Store.Tests
             updatedCertPolicy.Description.ShouldAllBeEquivalentTo("blank");
         }
 
+        
+
+        /// <summary>
+        /// Associate policy to group sessionless based style
+        /// </summary>
+        [Fact]
+        public void DissAssociatePolicyFromGroupTest()
+        {
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+            CertPolicyManager policyMgr = CreatePolicyManager();
+            CertPolicy certPolicy = policyMgr.Get("Policy1");
+
+            policyGroup.CertPolicies.Add(certPolicy);
+            groupMgr.AddAssociation(policyGroup);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(1);
+
+            // now dissassociate
+            //var query = policyGroup.CertPolicies.AsEnumerable().Where(cp => cp.ID == certPolicy.ID);
+            //foreach (CertPolicy cp in query.ToList())
+            //{
+            //    policyGroup.CertPolicies.Remove(cp);
+            //}
+            CertPolicyGroupMap[] map = new CertPolicyGroupMap[] {policyGroup.CertPolicyGroupMap.First()};
+            groupMgr.RemovePolicy(map);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+        }
+
+
+        [Fact]
+        public void AssociatePolicyGroupToDomain()
+        {
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+            
+            CertPolicyGroupDomainMap domainMap = new CertPolicyGroupDomainMap();
+            domainMap.CertPolicyGroup = policyGroup;
+
+            policyGroup.CertPolicyGroupDomainMap.Add(domainMap);
+            groupMgr.AddAssociation(policyGroup);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMap.Count.Should().Be(1);
+        }
+
+        /// <summary>
+        /// Get Policy Groups by domain
+        /// </summary>
+        [Fact]
+        public void GetPolicyGroupsByDomain()
+        {
+
+        }
         /*
          *  Add Policy x
          *  Update Policy 
@@ -178,40 +244,7 @@ namespace Health.Direct.Config.Store.Tests
          *  Update Policy Group
          */
 
-        /// <summary>
-        /// Associate policy to group sessionless based style
-        /// </summary>
-        [Fact]
-        public void DissAssociatePolicyToGroupTest()
-        {
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
 
-            CertPolicyGroupManager groupMgr = CreateManager();
-            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
-            policyGroup.CertPolicies.Count.Should().Be(0);
 
-            CertPolicyManager policyMgr = CreatePolicyManager();
-            CertPolicy certPolicy = policyMgr.Get("Policy1");
-
-            policyGroup.CertPolicies.Add(certPolicy);
-            groupMgr.AddPolicy(policyGroup);
-
-            policyGroup = groupMgr.Get("PolicyGroup1");
-            policyGroup.CertPolicies.Count.Should().Be(1);
-
-            // now dissassociate
-            //var query = policyGroup.CertPolicies.AsEnumerable().Where(cp => cp.ID == certPolicy.ID);
-            //foreach (CertPolicy cp in query.ToList())
-            //{
-            //    policyGroup.CertPolicies.Remove(cp);
-            //}
-            CertPolicyGroupMap[] map = new CertPolicyGroupMap[] {policyGroup.CertPolicyGroupMap.First()};
-            groupMgr.RemovePolicy(map);
-
-            policyGroup = groupMgr.Get("PolicyGroup1");
-            policyGroup.CertPolicies.Count.Should().Be(0);
-
-        }
     }
 }

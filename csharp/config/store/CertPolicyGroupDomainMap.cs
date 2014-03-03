@@ -29,6 +29,18 @@ namespace Health.Direct.Config.Store
     {
         public const int MaxOwnerLength = 400;
         string m_owner;
+        bool m_new;
+
+        public CertPolicyGroupDomainMap()
+        {
+            CreateDate = DateTimeHelper.Now;
+        }
+
+        public CertPolicyGroupDomainMap(bool isNew)
+            : this()
+        {
+            m_new = isNew;
+        }
 
         [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
         private long m_CertPolicyGroupId;
@@ -67,7 +79,10 @@ namespace Health.Direct.Config.Store
         public CertPolicyGroup CertPolicyGroup
         {
             get { return m_CertPolicyGroup.Entity; }
-            set { m_CertPolicyGroup.Entity = value; }
+            set
+            {
+                m_CertPolicyGroup.Entity = value;
+            }
         }
 
 
@@ -77,6 +92,14 @@ namespace Health.Direct.Config.Store
         {
             get;
             set;
+        }
+
+        public bool IsNew
+        {
+            get
+            {
+                return m_new;
+            }
         }
     }
 }
