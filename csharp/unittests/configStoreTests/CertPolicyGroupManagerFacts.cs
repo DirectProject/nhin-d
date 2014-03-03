@@ -201,6 +201,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AssociatePolicyGroupToDomain()
         {
+            InitDomainRecords();
             InitCertPolicyRecords();
             InitCertPolicyGroupRecords();
 
@@ -208,8 +209,9 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
             
-            CertPolicyGroupDomainMap domainMap = new CertPolicyGroupDomainMap();
+            CertPolicyGroupDomainMap domainMap = new CertPolicyGroupDomainMap(true);
             domainMap.CertPolicyGroup = policyGroup;
+            domainMap.Owner = "domain1.test.com";
 
             policyGroup.CertPolicyGroupDomainMap.Add(domainMap);
             groupMgr.AddAssociation(policyGroup);
