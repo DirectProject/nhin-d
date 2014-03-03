@@ -82,7 +82,8 @@ namespace Health.Direct.Config.Store
         MissingCertPolicyData,
         InvalidCertPolicy,
         InvalidCertPolicyGroupName,
-        InvalidCertPolicyGroup
+        InvalidCertPolicyGroup,
+        CertPolicyGroupDescriptionLength
     }
 
     public class ConfigStoreException : DirectException<ConfigStoreError>

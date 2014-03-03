@@ -18,20 +18,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Security.Cryptography;
 
 namespace Health.Direct.Config.Store
 {
-    [Table(Name = "CertPolicyGroup")]
+    [Table(Name = "CertPolicyGroups")]
     [DataContract(Namespace = ConfigStore.Namespace)]
     public class CertPolicyGroup
     {
         public const int MaxNameLength = 400;
+        public const int MaxDescriptionLength = 255;
 
         string m_Name;
+        string m_Description = String.Empty;
+
         private EntitySet<CertPolicyGroupMap> m_certPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
         private EntitySet<CertPolicyGroupDomainMap> m_certPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>();
 
@@ -62,7 +67,7 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "Name", CanBeNull = false, IsPrimaryKey = false)]
+        [Column(Name = "Name", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Name
         {
@@ -87,15 +92,26 @@ namespace Health.Direct.Config.Store
         }
 
 
-        [Column(Name = "Description", CanBeNull = true, IsPrimaryKey = false)]
+        [Column(Name = "Description", CanBeNull = false, IsPrimaryKey = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = false)]
         public string Description
         {
-            get;
-            set;
+            get
+            {
+                return m_Description;
+            }
+            set
+            {
+                if (value.Length > MaxDescriptionLength)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.CertPolicyGroupDescriptionLength);
+                }
+
+                m_Description = value;
+            }
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicy", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
         public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
         {
             set
@@ -105,7 +121,7 @@ namespace Health.Direct.Config.Store
             get { return m_certPolicyGroupMap; }
         }
 
-        [Association(Name = "FK_CertPolicyGroupDomainMap_CertPolicyGroup", Storage = "m_certPolicyGroupDomainMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupDomainMap_CertPolicyGroups", Storage = "m_certPolicyGroupDomainMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
         public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMap
         {
             set
@@ -160,7 +176,7 @@ namespace Health.Direct.Config.Store
 
         private void OnPolicyAdded(CertPolicy policyGroup)
         {
-            CertPolicyGroupMap map = new CertPolicyGroupMap();
+            CertPolicyGroupMap map = new CertPolicyGroupMap(true);
             map.CertPolicyGroup = this;
             map.CertPolicy = policyGroup;
         }
@@ -169,6 +185,8 @@ namespace Health.Direct.Config.Store
         {
             CertPolicyGroupMap map =
                 CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicyGroup == this && pg.CertPolicy == policy);
+            //CertPolicyGroupMap map =
+            //    CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicy == policy);
             if (map != null)
             {
                 map.Remove();
@@ -180,17 +198,22 @@ namespace Health.Direct.Config.Store
         internal void CopyFixed(CertPolicyGroup source)
         {
             this.ID = source.ID;
-            this.CreateDate = source.CreateDate;
             this.Name = source.Name;
+            this.CreateDate = source.CreateDate;
+            
         }
 
         internal void ApplyChanges(CertPolicyGroup source)
         {
             this.Status = source.Status;
             this.Description = source.Description;
-            this.CertPolicyGroupMap = source.CertPolicyGroupMap;
-            this.m_certPolicyGroupDomainMap.Assign(source.CertPolicyGroupDomainMap);
+            //this.CertPolicyGroupMap = source.CertPolicyGroupMap;
+            //this.m_certPolicyGroupDomainMap.Assign(source.CertPolicyGroupDomainMap);
         }
-        
+
+        public bool IsNew()
+        {
+            return ID <= 0;
+        }
     }
 }

@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -90,73 +91,128 @@ namespace Health.Direct.Config.Store.Tests
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
         }
 
+        
+
+        
         /// <summary>
-        /// Add group to policy session based style
+        /// Remove Policy
         /// </summary>
         [Fact]
-        public void AddGroupToPolicySessionTest()
+        public void DeletePolicyTest()
         {
             InitCertPolicyRecords();
             InitCertPolicyGroupRecords();
 
             CertPolicyManager mgr = CreateManager();
-            CertPolicy policy;
-            using (ConfigDatabase db = CreateConfigDatabase())
-            {
-                policy = mgr.Get(db, "Policy1");
-                policy.CertPolicyGroupMap.Count.Should().Be(0);
+            CertPolicy policy = mgr.Get("Policy2");
+            mgr.Remove(policy.ID);
 
-                CertPolicyGroup group = new CertPolicyGroup("PolicyGroup99");
-
-                policy.CertPolicyGroups.Add(group);
-                db.SubmitChanges();
-            }
-
-            policy = mgr.Get("Policy1");
-            policy.CertPolicyGroupMap.Count.Should().Be(1);
-
+            mgr.Get("Policy2").Should().BeNull();
         }
 
-
         /// <summary>
-        /// associate group to policy session based style
+        /// Remove Multiple Policies
         /// </summary>
         [Fact]
-        public void AssociatePolicyToGroupSessionTest()
+        public void DeletePoliciesTest()
+        {
+            InitCertPolicyRecords();
+
+            CertPolicyManager mgr = CreateManager();
+            mgr.Count().Should().Be(9);
+            long[] ids = mgr.Select(certPolicy => certPolicy.ID).ToArray();
+            mgr.Remove(ids);
+
+            mgr.Count().Should().Be(0);
+        }
+
+        /// <summary>
+        /// Remove Multiple Policies
+        /// </summary>
+        [Fact]
+        public void Delete2PoliciesTest()
+        {
+            InitCertPolicyRecords();
+
+            CertPolicyManager mgr = CreateManager();
+            mgr.Count().Should().Be(9);
+            mgr.Remove(new long[]{1,2});
+
+            mgr.Count().Should().Be(7);
+        }
+
+        /// <summary>
+        /// Delete policy and its associations
+        /// </summary>
+        [Fact]
+        public void DeletePolicyWithAssociations()
         {
             InitCertPolicyRecords();
             InitCertPolicyGroupRecords();
 
-            using (ConfigDatabase db = CreateConfigDatabase())
-            {
-                CertPolicyManager mgr = CreateManager();
-                CertPolicy policy = mgr.Get(db, "Policy1");
-                CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
-                CertPolicyGroup group = groupMgr.Get(db, "PolicyGroup1");
 
-                policy.CertPolicyGroups.Add(group);
-                db.SubmitChanges();
-            }
-        }
+            CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
 
-        /// <summary>
-        /// Add group to policy sessionless based style
-        /// </summary>
-        [Fact]
-        public void AddGroupToPolicy()
-        {
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
-            
+            CertPolicyManager policyMgr = CreateManager();
+            CertPolicy certPolicy = policyMgr.Get("Policy1");
+            policyMgr.Get("Policy1").Should().NotBeNull();
+            policyGroup.CertPolicies.Add(certPolicy);
+            groupMgr.AddPolicy(policyGroup);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(1);
+
+
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy1");
+            mgr.Remove(policy.ID);
+            policyMgr.Get("Policy1").Should().BeNull();
 
-            CertPolicyGroup group = new CertPolicyGroup("PolicyGroup99");
-
-            policy.CertPolicyGroups.Add(group);
-            mgr.Update(policy);
-           
         }
 
+
+        /// <summary>
+        /// A test for Update Policy
+        /// </summary>
+        [Fact]
+        public void UpdatePolicyDataTest()
+        {
+            InitCertPolicyRecords();
+            CertPolicyManager mgr = CreateManager();
+
+            CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
+            mgr.Add(newCertPolicy);
+            CertPolicy actualCertPolicy = mgr.Get("UnitTestPolicy");
+            actualCertPolicy.Should().NotBeNull();
+
+            actualCertPolicy.Data = "1 != 1".ToBytesUtf8();
+            mgr.Update(actualCertPolicy);
+
+            CertPolicy updatedCertPolicy = mgr.Get("UnitTestPolicy");
+            updatedCertPolicy.Data.ToUtf8String().ShouldAllBeEquivalentTo("1 != 1");
+        }
+
+        /// <summary>
+        /// A test for Update Policy
+        /// </summary>
+        [Fact]
+        public void UpdatePolicyDescriptionTest()
+        {
+            InitCertPolicyRecords();
+            CertPolicyManager mgr = CreateManager();
+
+            CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
+            mgr.Add(newCertPolicy);
+            CertPolicy actualCertPolicy = mgr.Get("UnitTestPolicy");
+            actualCertPolicy.Should().NotBeNull();
+
+            actualCertPolicy.Description = "blank";
+            mgr.Update(actualCertPolicy);
+
+            CertPolicy updatedCertPolicy = mgr.Get("UnitTestPolicy");
+            updatedCertPolicy.Description.ShouldAllBeEquivalentTo("blank");
+        }
     }
 }

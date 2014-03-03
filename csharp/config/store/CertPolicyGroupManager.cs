@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Linq;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Config.Store
 {
@@ -37,30 +39,38 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        public static readonly DataLoadOptions DataLoadOptions = new DataLoadOptions();
 
-        public CertPolicyGroup Add(CertPolicyGroup group)
+        static CertPolicyGroupManager()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            DataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMap);
+            DataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
+            DataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMap);
+        }
+
+        public CertPolicyGroup Add(CertPolicyGroup @group)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                this.Add(db, group);
+                this.Add(db, @group);
                 db.SubmitChanges();
-                return group;
+                return @group;
             }
         }
 
-        public CertPolicyGroup Add(ConfigDatabase db, CertPolicyGroup group)
+        public CertPolicyGroup Add(ConfigDatabase db, CertPolicyGroup @group)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (group == null)
+            if (@group == null)
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroup);
             }
             
-            db.CertPolicyGroups.InsertOnSubmit(group);
-            return group;
+            db.CertPolicyGroups.InsertOnSubmit(@group);
+            return @group;
         }
 
         public int Count()
@@ -74,9 +84,22 @@ namespace Health.Direct.Config.Store
 
         public CertPolicyGroup Get(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                return this.Get(db, name);
+                var certPolicyGroup = this.Get(db, name);
+                FixUpModel(certPolicyGroup);
+                return certPolicyGroup;
+            }
+        }
+
+        //
+        // This object mapping is missing.  Not sure why it was not automatic
+        //
+        private static void FixUpModel(CertPolicyGroup certPolicyGroup)
+        {
+            foreach (var certPolicyGroupMap in certPolicyGroup.CertPolicyGroupMap)
+            {
+                certPolicyGroupMap.CertPolicyGroup = certPolicyGroup;
             }
         }
 
@@ -117,32 +140,141 @@ namespace Health.Direct.Config.Store
         }
 
 
-        public void Update(CertPolicyGroup policy)
+        public void Update(CertPolicyGroup policyGroup)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Update(db, policy);
+                this.Update(db, policyGroup);
                 db.SubmitChanges();
             }
         }
 
 
-        protected void Update(ConfigDatabase db, CertPolicyGroup policy)
+        protected void Update(ConfigDatabase db, CertPolicyGroup policyGroup)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (policy == null)
+            if (policyGroup == null)
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
             }
 
             CertPolicyGroup update = new CertPolicyGroup();
-            update.CopyFixed(policy);
-
+            update.CopyFixed(policyGroup);
             db.CertPolicyGroups.Attach(update);
-            update.ApplyChanges(policy);
+            update.ApplyChanges(policyGroup);
+            
+        }
+
+        public void AddPolicy(CertPolicyGroup policyGroup)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.AddPolicy(db, policyGroup);
+                db.SubmitChanges();
+            }
+        }
+
+        protected void AddPolicy(ConfigDatabase db, CertPolicyGroup policyGroup)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (policyGroup == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+            }
+            
+            db.CertPolicyGroups.Attach(policyGroup);
+            foreach (CertPolicyGroupMap certPolicyGroupMap in policyGroup.CertPolicyGroupMap)
+            {
+                if (certPolicyGroupMap.IsNew)
+                {
+                    db.CertPolicyGroupMaps.InsertOnSubmit(certPolicyGroupMap);
+                    if (certPolicyGroupMap.CertPolicy.IsNew())
+                    {
+                        db.CertPolicies.InsertOnSubmit(certPolicyGroupMap.CertPolicy);
+                    }
+                }
+            }
+        }
+
+        public void Remove(long policyGroupId)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, policyGroupId);
+            }
+        }
+
+        public void Remove(ConfigDatabase db, long policyGroupId)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            db.CertPolicyGroups.ExecDelete(policyGroupId);
+        }
+
+        public void Remove(long[] policyIds)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, policyIds);
+                // We don't commit, because we execute deletes directly
+            }
+        }
+
+        public void Remove(ConfigDatabase db, long[] policyGroupIds)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (policyGroupIds.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            for (int i = 0; i < policyGroupIds.Length; ++i)
+            {
+                db.CertPolicyGroups.ExecDelete(policyGroupIds[i]);
+            }
+        }
+
+        public void RemovePolicy(CertPolicyGroupMap[] map)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, map);
+                // We don't commit, because we execute deletes directly
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="map">Tuple of certPolicyId and certPolicyGroupId</param>
+        public void Remove(ConfigDatabase db, CertPolicyGroupMap[] map)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (map.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            for (int i = 0; i < map.Length; ++i)
+            {
+                db.CertPolicyGroups.ExecDelete(map[i]);
+            }
         }
 
         public void RemoveAll(ConfigDatabase db)
@@ -152,7 +284,7 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
                 this.RemoveAll(db);
             }
@@ -160,7 +292,7 @@ namespace Health.Direct.Config.Store
 
         public IEnumerator<CertPolicyGroup> GetEnumerator()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
                 foreach (CertPolicyGroup policy in db.CertPolicyGroups)
                 {

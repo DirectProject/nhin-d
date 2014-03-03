@@ -76,6 +76,7 @@ namespace Health.Direct.Config.Store.Tests
         {
         }
 
+
         /// <summary>
         /// Logs to <see cref="Console.Out"/> if <paramref name="dumpEnabled"/> is <c>true</c>.
         /// </summary>
@@ -84,6 +85,8 @@ namespace Health.Direct.Config.Store.Tests
         {
             m_dumpEnabled = dumpEnabled;
         }
+
+        
 
         /// <summary>
         /// Dump the <paramref name="msg"/> to the output with a preamble line of '!'s
@@ -274,7 +277,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        /// Gets the Test cert policies
+        /// Gets the Test cert policy
         /// </summary>
         protected static IEnumerable<CertPolicy> TestCertPolicies
         {
@@ -755,7 +758,7 @@ namespace Health.Direct.Config.Store.Tests
 
             ConfigStore configStore = CreateConfigStore();
             this.InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
-                                   , new ConfigDatabase(ConnectionString));
+                                   , new ConfigDatabase(ConnectionString, CertPolicyManager.DataLoadOptions));
         }
 
 
@@ -792,15 +795,14 @@ namespace Health.Direct.Config.Store.Tests
 
         }
 
-
+        
         /// <summary>
         /// This method will clean, load and verify CertPolcyGroup records in the DB for testing purposes
         /// </summary>
         protected void InitCertPolicyGroupRecords()
         {
             ConfigStore configStore = CreateConfigStore();
-            this.InitCertPolicyGroupRecords(new CertPolicyGroupManager(configStore)
-                                   , new ConfigDatabase(ConnectionString));
+            this.InitCertPolicyGroupRecords(new CertPolicyGroupManager(configStore));
         }
 
         /// <summary>
@@ -813,27 +815,28 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitCertPolicyGroupRecords(CertPolicyGroupManager mgr
-                                         , ConfigDatabase db)
+        protected void InitCertPolicyGroupRecords(CertPolicyGroupManager mgr)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
             mgr.RemoveAll();
 
-            foreach (CertPolicyGroup val in TestCertPolicyGroups)
-            {
-                mgr.Add(db, val);
+            using (var db = new ConfigDatabase(ConnectionString, CertPolicyGroupManager.DataLoadOptions))
+            { 
+                foreach (CertPolicyGroup val in TestCertPolicyGroups)
+                {
+                    mgr.Add(db, val);
+                }
+
+                //----------------------------------------------------------------------------------------------------
+                //---submit changes to db and verify existence of records
+                db.SubmitChanges();
+
+                foreach (CertPolicyGroup val in TestCertPolicyGroups)
+                {
+                    Assert.NotNull(mgr.Get(db, val.Name));
+                }
             }
-
-            //----------------------------------------------------------------------------------------------------
-            //---submit changes to db and verify existence of records
-            db.SubmitChanges();
-
-            foreach (CertPolicyGroup val in TestCertPolicyGroups)
-            {
-                Assert.NotNull(mgr.Get(db, val.Name));
-            }
-
         }
 
         /// <summary>
@@ -1246,6 +1249,11 @@ namespace Health.Direct.Config.Store.Tests
         protected static ConfigDatabase CreateConfigDatabase()
         {
             return new ConfigDatabase(ConnectionString);
+        }
+
+        protected static ConfigDatabase CreateConfigDatabase(DataLoadOptions dataLoadOptions)
+        {
+            return new ConfigDatabase(ConnectionString, dataLoadOptions);
         }
     }
 }
