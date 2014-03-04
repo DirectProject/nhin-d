@@ -56,7 +56,6 @@ namespace Health.Direct.Policy.UI
                 var textRange = new TextRange(rtxBox.Document.ContentStart, rtxBox.Document.ContentEnd);
                 textRange.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
             }
-
         }
 
         private Task<IPolicyExpression> ParseLexicon(string lexicon)
@@ -119,8 +118,10 @@ namespace Health.Direct.Policy.UI
         private void FileOpen_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            var fileInfo = new FileInfo(PolicyFileLocation.Text);
-            if (fileInfo.DirectoryName != null && Directory.Exists(fileInfo.DirectoryName))
+            var fileInfo = GetFileInfo(PolicyFileLocation.Text);
+            if (fileInfo != null 
+                && fileInfo.DirectoryName != null 
+                && Directory.Exists(fileInfo.DirectoryName))
             {
                 openFileDialog.InitialDirectory = fileInfo.DirectoryName;
             }
@@ -138,11 +139,22 @@ namespace Health.Direct.Policy.UI
             }
         }
 
+        private FileInfo GetFileInfo(string path)
+        {
+            if (String.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+            return new FileInfo(path);
+        }
+
         private void CertBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
-            var fileInfo = new FileInfo(CertificateLocation.Text);
-            if (fileInfo.DirectoryName != null && Directory.Exists(fileInfo.DirectoryName))
+            var fileInfo = GetFileInfo(CertificateLocation.Text);
+            if (fileInfo != null 
+                && fileInfo.DirectoryName != null 
+                && Directory.Exists(fileInfo.DirectoryName))
             {
                 openFileDialog.InitialDirectory = fileInfo.DirectoryName;
             }

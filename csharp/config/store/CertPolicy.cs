@@ -45,7 +45,6 @@ namespace Health.Direct.Config.Store
         public CertPolicy()
         {
             CreateDate = DateTimeHelper.Now;
-            Status = EntityStatus.New;
         }
         
         public CertPolicy(string name) : this()
@@ -164,14 +163,6 @@ namespace Health.Direct.Config.Store
             set;
         }
 
-        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
-        [DataMember(IsRequired = true)]
-        public EntityStatus Status
-        {
-            get;
-            set;
-        }
-
 
         public ICollection<CertPolicyGroup> CertPolicyGroups
         {
@@ -244,7 +235,6 @@ namespace Health.Direct.Config.Store
 
         internal void ApplyChanges(CertPolicy source)
         {
-            this.Status = source.Status;
             this.Description = source.Description;
             this.Data = source.Data;
             this.Lexicon = source.Lexicon;
