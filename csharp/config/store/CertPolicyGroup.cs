@@ -43,7 +43,6 @@ namespace Health.Direct.Config.Store
         public CertPolicyGroup()
         {
             CreateDate = DateTimeHelper.Now;
-            Status = EntityStatus.New;
             m_certPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>(OnDomainMapAdded, OnDomainMapRemoved);
         }
 
@@ -135,7 +134,7 @@ namespace Health.Direct.Config.Store
         }
 
         [Association(Name = "FK_CertPolicyGroupDomainMap_CertPolicyGroups", Storage = "m_certPolicyGroupDomainMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
-        public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMap
+        public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps
         {
             set
             {
@@ -147,14 +146,6 @@ namespace Health.Direct.Config.Store
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
         [DataMember(IsRequired = true)]
         public DateTime CreateDate
-        {
-            get;
-            set;
-        }
-
-        [Column(Name = "Status", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
-        [DataMember(IsRequired = true)]
-        public EntityStatus Status
         {
             get;
             set;
@@ -216,7 +207,6 @@ namespace Health.Direct.Config.Store
 
         internal void ApplyChanges(CertPolicyGroup source)
         {
-            this.Status = source.Status;
             this.Description = source.Description;
             //this.CertPolicyGroupMap = source.CertPolicyGroupMap;
             //this.m_certPolicyGroupDomainMap.Assign(source.CertPolicyGroupDomainMap);

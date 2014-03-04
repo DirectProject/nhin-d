@@ -48,27 +48,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(expected, actual);
         }
 
-        /// <summary>
-        ///A test for Status
-        ///</summary>
-        [Fact]
-        public void StatusTest()
-        {
-            CertPolicyGroup target = new CertPolicyGroup("Policy_Group_1");
-            EntityStatus expected = EntityStatus.Disabled;
-            target.Status = expected;
-            EntityStatus actual = target.Status;
-            Assert.Equal(expected, actual);
-
-
-
-            target = new CertPolicyGroup("Policy_2");
-            expected = EntityStatus.New;
-            target.Status = expected;
-            actual = target.Status;
-            Assert.Equal(expected, actual);
-        }
-
+        
         /// <summary>
         ///A test for Name
         ///</summary>
@@ -93,7 +73,7 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroupDomainMap targetChild2 = new CertPolicyGroupDomainMap();
 
             target.CertPolicyGroupMap.Add(targetChild);
-            target.CertPolicyGroupDomainMap.Add(targetChild2);
+            target.CertPolicyGroupDomainMaps.Add(targetChild2);
         }
     }
 }

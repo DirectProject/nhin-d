@@ -15,7 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Collections.Generic;
 using System.Data.Linq;
+using System.Drawing.Drawing2D;
 using System.Linq;
 
 namespace Health.Direct.Config.Store
@@ -31,6 +33,12 @@ namespace Health.Direct.Config.Store
                     And   CertPolicyGroupId = {1}
             ";
 
+        private const string Sql_DeleteCertPolicyGroupDomainMap =
+            @"
+                    Delete from CertPolicyGroupDomainMap
+                    Where CertPolicyGroupId = {0}
+                    And   Owner = '{1}'
+            ";
         const string Sql_DeleteAllCertPolicies =
                      @" Begin tran 
                         Delete from CertPolicyGroupDomainMap 
@@ -47,6 +55,13 @@ namespace Health.Direct.Config.Store
            select policyGroup
            );
 
+        static readonly Func<ConfigDatabase, long, int, IQueryable<CertPolicyGroup>> EnumPoliciyGroupsByID = CompiledQuery.Compile(
+            (ConfigDatabase db, long lastPolicyID, int maxResults) =>
+            (from certPolicyGroup in db.CertPolicyGroups
+             where certPolicyGroup.ID > lastPolicyID
+             orderby certPolicyGroup.ID ascending
+             select certPolicyGroup).Take(maxResults)
+            );
        
         public static ConfigDatabase GetDB(this Table<CertPolicyGroup> table)
         {
@@ -64,17 +79,52 @@ namespace Health.Direct.Config.Store
             return CertPolicyGroup(table.GetDB(), name).SingleOrDefault();
         }
 
+        public static IEnumerable<CertPolicyGroup> Get(this Table<CertPolicyGroup> table, string[] owners)
+        {
+            //This works... Maybe in future make a one query set up and then construct the object.
+            var q =
+                (from certPolicyGroup in table.GetDB().CertPolicyGroups
+                    select new
+                           {
+                               CertPolicyGroup = certPolicyGroup,
+                               certPolicyGroup.CertPolicyGroupDomainMaps
+                           }).Where(arg => arg.CertPolicyGroupDomainMaps.Any(map => owners.Contains(map.Owner)))
+                    .AsEnumerable() //key to this working.
+                    .Select(cpg => new CertPolicyGroup
+                                   {
+                                       ID = cpg.CertPolicyGroup.ID,
+                                       Name = cpg.CertPolicyGroup.Name,
+                                       Description = cpg.CertPolicyGroup.Description,
+                                       CreateDate = cpg.CertPolicyGroup.CreateDate,
+                                       CertPolicyGroupDomainMaps = 
+                                           (from map in table.GetDB().CertPolicyGroupDomainMap
+                                           where owners.Contains(map.Owner)
+                                           && cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
+                                           select map).ToList()
+                                   });
+            return q;
+        }
+
+        public static IQueryable<CertPolicyGroup> Get(this Table<CertPolicyGroup> table, long lastPolicyID, int maxResults)
+        {
+            return EnumPoliciyGroupsByID(table.GetDB(), lastPolicyID, maxResults);
+        }
+
         public static void ExecDelete(this Table<CertPolicyGroup> table, long certPolicyGroupId)
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroups, certPolicyGroupId);
         }
 
-        public static void ExecDelete(this Table<CertPolicyGroup> table, CertPolicyGroupMap map)
+        public static void ExecDeleteGroupMap(this Table<CertPolicyGroup> table, CertPolicyGroupMap map)
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupMap, map.CertPolicy.ID, map.CertPolicyGroup.ID);
         }
 
-
+        public static void ExecDeleteDomainMap(this Table<CertPolicyGroup> table, CertPolicyGroupDomainMap map)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupDomainMap, map.CertPolicyGroup.ID, map.Owner);
+        }
+        
         public static void ExecDeleteAll(this Table<CertPolicyGroup> table)
         {
             table.Context.ExecuteCommand(Sql_DeleteAllCertPolicies);

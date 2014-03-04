@@ -45,7 +45,15 @@ namespace Health.Direct.Config.Store
             select certPolicy
             );
 
-        
+
+        static readonly Func<ConfigDatabase, long, int, IQueryable<CertPolicy>> EnumPoliciesByID = CompiledQuery.Compile(
+            (ConfigDatabase db, long lastPolicyID, int maxResults) =>
+            (from certPolicy in db.CertPolicies
+             where certPolicy.ID > lastPolicyID
+             orderby certPolicy.ID ascending
+             select certPolicy).Take(maxResults)
+            );
+
         public static ConfigDatabase GetDB(this Table<CertPolicy> table)
         {
             ConfigDatabase db = (ConfigDatabase)table.Context;
@@ -62,6 +70,12 @@ namespace Health.Direct.Config.Store
         public static CertPolicy Get(this Table<CertPolicy> table, string name)
         {
             return CertPolicy(table.GetDB(), name).SingleOrDefault();
+        }
+
+        
+        public static IQueryable<CertPolicy> Get(this Table<CertPolicy> table, long lastPolicyID, int maxResults)
+        {
+            return EnumPoliciesByID(table.GetDB(), lastPolicyID, maxResults);
         }
 
         public static void ExecDelete(this Table<CertPolicy> table, long certPolicyId)

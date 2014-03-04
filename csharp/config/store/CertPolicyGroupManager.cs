@@ -18,6 +18,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.Linq;
+using System.Linq;
 using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Config.Store
@@ -45,7 +46,7 @@ namespace Health.Direct.Config.Store
         {
             DataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMap);
             DataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
-            DataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMap);
+            DataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMaps);
         }
 
         public CertPolicyGroup Add(CertPolicyGroup @group)
@@ -117,28 +118,22 @@ namespace Health.Direct.Config.Store
             return db.CertPolicyGroups.Get(name);
         }
 
-        public CertPolicyGroup GetGroup(string name)
+
+        public CertPolicyGroup[] GetByDomains(string[] owners)
         {
+            if (owners.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
-                return this.GetGroup(db, name);
+                var cpgs = db.CertPolicyGroups.Get(owners);
+                return cpgs.ToArray();
             }
         }
 
-        public CertPolicyGroup GetGroup(ConfigDatabase db, string name)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-            }
-
-            return db.CertPolicyGroups.Get(name);
-        }
-
+       
 
         public void Update(CertPolicyGroup policyGroup)
         {
@@ -200,7 +195,7 @@ namespace Health.Direct.Config.Store
                     }
                 }
             }
-            foreach (CertPolicyGroupDomainMap domainMap in policyGroup.CertPolicyGroupDomainMap)
+            foreach (CertPolicyGroupDomainMap domainMap in policyGroup.CertPolicyGroupDomainMaps)
             {
                 if (domainMap.IsNew)
                 {
@@ -261,17 +256,13 @@ namespace Health.Direct.Config.Store
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                this.Remove(db, map);
+                this.RemovePolicy(db, map);
                 // We don't commit, because we execute deletes directly
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="map">Tuple of certPolicyId and certPolicyGroupId</param>
-        public void Remove(ConfigDatabase db, CertPolicyGroupMap[] map)
+        
+        public void RemovePolicy(ConfigDatabase db, CertPolicyGroupMap[] map)
         {
             if (db == null)
             {
@@ -284,7 +275,33 @@ namespace Health.Direct.Config.Store
 
             for (int i = 0; i < map.Length; ++i)
             {
-                db.CertPolicyGroups.ExecDelete(map[i]);
+                db.CertPolicyGroups.ExecDeleteGroupMap(map[i]);
+            }
+        }
+
+        public void RemoveDomain(CertPolicyGroupDomainMap[] map)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.RemoveDomain(db, map);
+                // We don't commit, because we execute deletes directly
+            }
+        }
+
+        public void RemoveDomain(ConfigDatabase db, CertPolicyGroupDomainMap[] map)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (map.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            for (int i = 0; i < map.Length; ++i)
+            {
+                db.CertPolicyGroups.ExecDeleteDomainMap(map[i]);
             }
         }
 

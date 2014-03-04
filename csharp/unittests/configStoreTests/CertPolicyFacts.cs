@@ -103,25 +103,7 @@ namespace Health.Direct.Config.Store.Tests
             }
         }
 
-        /// <summary>
-        ///A test for Status
-        ///</summary>
-        [Fact]
-        public void StatusTest()
-        {
-            CertPolicy target = new CertPolicy("Policy_1");
-            EntityStatus expected = EntityStatus.Disabled;
-            target.Status = expected;
-            EntityStatus actual = target.Status;
-            Assert.Equal(expected, actual);
-
-
-            target = new CertPolicy("Policy_2");
-            expected = EntityStatus.New;
-            target.Status = expected;
-            actual = target.Status;
-            Assert.Equal(expected, actual);
-        }
+        
 
         /// <summary>
         ///A test for Name
