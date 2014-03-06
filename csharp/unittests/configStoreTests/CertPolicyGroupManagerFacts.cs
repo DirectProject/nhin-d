@@ -190,7 +190,7 @@ namespace Health.Direct.Config.Store.Tests
             //{
             //    policyGroup.CertPolicies.Remove(cp);
             //}
-            CertPolicyGroupMap[] map = new CertPolicyGroupMap[] {policyGroup.CertPolicyGroupMap.First()};
+            CertPolicyGroupMap[] map = new CertPolicyGroupMap[] {policyGroup.CertPolicyGroupMaps.First()};
             groupMgr.RemovePolicy(map);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
@@ -353,6 +353,8 @@ namespace Health.Direct.Config.Store.Tests
 
             //
             // map cert policy group to policies
+            // PolicyGroup1 associated with two policies
+            // PolicyGroup2 associated with two policies
             //
             CertPolicyManager policyMgr = CreatePolicyManager();
             CertPolicy certPolicy = policyMgr.Get("Policy1");
@@ -397,7 +399,7 @@ namespace Health.Direct.Config.Store.Tests
                 });
 
             //
-            // Submit the addistions to the CertPolicyGroup object graph. 
+            // Submit the additions to the CertPolicyGroup object graph. 
             // This is the first time we push the changes into the database.
             //
             groupMgr.AddAssociation(policyGroup1);
@@ -405,22 +407,30 @@ namespace Health.Direct.Config.Store.Tests
 
             CertPolicyGroup[] policyGroups = groupMgr.GetByDomains(new string[] { "domain1.test.com" });
             policyGroups.Length.Should().Be(1);
-            policyGroups[0].CertPolicyGroupDomainMaps.Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
 
             policyGroups = groupMgr.GetByDomains(new string[] { "domain2.test.com" });
             policyGroups.Length.Should().Be(2);
-            policyGroups.Where(cpg => cpg.Name == "PolicyGroup1").Select(cpg => cpg.CertPolicyGroupDomainMaps).ToList().Count.Should().Be(1);
-            policyGroups.Where(cpg => cpg.Name == "PolicyGroup2").Select(cpg => cpg.CertPolicyGroupDomainMaps).ToList().Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupMaps.Count.Should().Be(1);
 
             policyGroups = groupMgr.GetByDomains(new string[] { "domain1.test.com", "domain2.test.com" });
             policyGroups.Length.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(2);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupMaps.Count.Should().Be(1);
 
             policyGroups = groupMgr.GetByDomains(new string[] { "domain1.test.com", "domain2.test.com", "domain3.test.com" });
             policyGroups.Length.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(3);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupMaps.Count.Should().Be(1);
+
 
         }
     }

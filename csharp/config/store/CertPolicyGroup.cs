@@ -124,7 +124,7 @@ namespace Health.Direct.Config.Store
         }
 
         [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
-        public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
+        public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps
         {
             set
             {
@@ -156,7 +156,7 @@ namespace Health.Direct.Config.Store
             get
             {
                 var policies = new ObservableCollection<CertPolicy>(
-                        from groupMap in CertPolicyGroupMap select groupMap.CertPolicy);
+                        from groupMap in CertPolicyGroupMaps select groupMap.CertPolicy);
                 policies.CollectionChanged += CertPolicyGroupCollectionChanged;
                 return policies;
             }
@@ -188,7 +188,7 @@ namespace Health.Direct.Config.Store
         private void OnPolicyRemoved(CertPolicy policy)
         {
             CertPolicyGroupMap map =
-                CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicyGroup == this && pg.CertPolicy == policy);
+                CertPolicyGroupMaps.SingleOrDefault(pg => pg.CertPolicyGroup == this && pg.CertPolicy == policy);
             //CertPolicyGroupMap map =
             //    CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicy == policy);
             if (map != null)

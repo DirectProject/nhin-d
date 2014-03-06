@@ -100,6 +100,10 @@ namespace Health.Direct.Config.Store
                                            (from map in table.GetDB().CertPolicyGroupDomainMap
                                            where owners.Contains(map.Owner)
                                            && cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
+                                           select map).ToList(),
+                                        CertPolicyGroupMaps = 
+                                           (from map in table.GetDB().CertPolicyGroupMap
+                                           where cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
                                            select map).ToList()
                                    });
             return q;
