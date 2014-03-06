@@ -71,10 +71,10 @@ namespace Health.Direct.Config.Store
                     m_certPolicyGroup.Entity = null;
                     if (originalCertPolicyGroup != null)
                     {
-                        originalCertPolicyGroup.CertPolicyGroupMap.Remove(this);
+                        originalCertPolicyGroup.CertPolicyGroupMaps.Remove(this);
                     }
                     m_certPolicyGroup.Entity = newCertPolicyGroup;
-                    newCertPolicyGroup.CertPolicyGroupMap.Add(this);
+                    newCertPolicyGroup.CertPolicyGroupMaps.Add(this);
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace Health.Direct.Config.Store
             originalCertPolicy.CertPolicyGroupMap.Remove(this);
 
             CertPolicyGroup originalCertPolicyGroup = CertPolicyGroup;
-            originalCertPolicyGroup.CertPolicyGroupMap.Remove(this);
+            originalCertPolicyGroup.CertPolicyGroupMaps.Remove(this);
         }
     }
 }

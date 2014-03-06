@@ -72,7 +72,7 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroupMap targetChild = new CertPolicyGroupMap();
             CertPolicyGroupDomainMap targetChild2 = new CertPolicyGroupDomainMap();
 
-            target.CertPolicyGroupMap.Add(targetChild);
+            target.CertPolicyGroupMaps.Add(targetChild);
             target.CertPolicyGroupDomainMaps.Add(targetChild2);
         }
     }

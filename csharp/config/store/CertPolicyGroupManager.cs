@@ -44,7 +44,7 @@ namespace Health.Direct.Config.Store
 
         static CertPolicyGroupManager()
         {
-            DataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMap);
+            DataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMaps);
             DataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
             DataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMaps);
         }
@@ -98,7 +98,7 @@ namespace Health.Direct.Config.Store
         //
         private static void FixUpModel(CertPolicyGroup certPolicyGroup)
         {
-            foreach (var certPolicyGroupMap in certPolicyGroup.CertPolicyGroupMap)
+            foreach (var certPolicyGroupMap in certPolicyGroup.CertPolicyGroupMaps)
             {
                 certPolicyGroupMap.CertPolicyGroup = certPolicyGroup;
             }
@@ -184,7 +184,7 @@ namespace Health.Direct.Config.Store
             }
             
             db.CertPolicyGroups.Attach(policyGroup);
-            foreach (CertPolicyGroupMap certPolicyGroupMap in policyGroup.CertPolicyGroupMap)
+            foreach (CertPolicyGroupMap certPolicyGroupMap in policyGroup.CertPolicyGroupMaps)
             {
                 if (certPolicyGroupMap.IsNew)
                 {
