@@ -19,6 +19,7 @@ using System.IO;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
+using Health.Direct.Common.Policies;
 using Health.Direct.SmtpAgent.Config;
 using Xunit;
 using Xunit.Extensions;
@@ -99,7 +100,7 @@ namespace Health.Direct.SmtpAgent.Tests
             SmtpAgentSettings settings = null;
             Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath("TestSmtpAgentConfigService.xml")));
 
-            Verify(settings.Policies);
+            Verify(settings.CertPolicies);
 
         }
 

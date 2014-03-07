@@ -131,8 +131,8 @@ namespace Health.Direct.Agent.Config
         /// <summary>
         /// <see cref="PolicySettings"/> for public policies.
         /// </summary>
-        [XmlElement("Policies")]
-        public PolicySettings Policies
+        [XmlElement("CertPolicies")]
+        public PolicySettings CertPolicies
         {
             get; 
             set;

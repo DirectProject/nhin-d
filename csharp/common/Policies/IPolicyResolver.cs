@@ -15,17 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Net.Mail;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using Health.Direct.Policy;
 
-namespace Health.Direct.Common.Certificates
+namespace Health.Direct.Common.Policies
 {
     /// <summary>
     /// Supports resolution of policies
@@ -48,20 +42,5 @@ namespace Health.Direct.Common.Certificates
         /// <param name="address"></param>
         /// <returns></returns>
         IList<IPolicyExpression> GetIncomingPolicy(MailAddress address);
-    }
-
-    public class PolicyResolver : IPolicyResolver
-    {
-
-
-        public IList<IPolicyExpression> GetOutgoingPolicy(MailAddress address)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IList<IPolicyExpression> GetIncomingPolicy(MailAddress address)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
