@@ -19,6 +19,7 @@ using System.Xml.Serialization;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Policies;
 using Health.Direct.Config.Client;
 using Health.Direct.SmtpAgent.Policy;
 

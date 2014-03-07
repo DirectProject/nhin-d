@@ -21,7 +21,7 @@ using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {
-    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IDnsRecordManager
+    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IDnsRecordManager, ICertPolicyStore
     {
         #region IDomainManager Members
 
@@ -374,6 +374,115 @@ namespace Health.Direct.Config.Service
             {
                 throw CreateFault("EnumerateDnsRecordsByType", ex);
             }
+        }
+
+        #endregion
+
+        #region ICertPolcyStore
+        public CertPolicy[] GetPolicies()
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicy GetPolicyByName(string policyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicy GetPolicyById(long policyId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicy[] GetPoliciesByDomain(string domain, bool incoming)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public CertPolicy AddPolicy(CertPolicy policy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemovePolicies(long[] policyIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdatePolicyAttributes(long policyId, string policyName, byte[] policyData, string Description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicyGroup[] GetPolicyGroups()
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicyGroup GetPolicyGroupByName(string policyGroupName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicyGroup GetPolicyGroupById(long policyGroupId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicyGroup AddPolicyGroup(CertPolicyGroup policy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemovePolicyGroups(long[] policyGroupIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateGroupAttributes(long policyGroupId, string policyGroupName, string Description)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddPolicyUseToGroup(long policyGroupId, long policyId, CertPolicyUse policyUse, bool incoming, bool outgoing)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemovePolicyUseFromGroup(long policyGroupMapId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AssociatePolicyGroupToDomain(string domain, long policyGroupId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisassociatePolicyGroupsFromDomain(string domain)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DisassociatePolicyGroupFromDomains(long policyGroupId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicyGroupDomainMap[] GetPolicyGroupDomainMap()
+        {
+            throw new NotImplementedException();
+        }
+
+        public CertPolicyGroup[] GetPolicyGroupsByDomain(string domain)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -123,6 +123,7 @@
     <Compile Include="PluginRoute.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="DomainPostmasters.cs" />
+    <Compile Include="Policy\CertPolicyIndex.cs" />
     <Compile Include="Policy\PrivatePolicyResolver.cs" />
     <Compile Include="Policy\TrustPolicyResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

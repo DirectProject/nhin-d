@@ -16,14 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
-using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy;
 using Moq;
 using Xunit;

@@ -19,7 +19,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <UseIISExpress>false</UseIISExpress>
     <TargetFrameworkProfile />
     <IISExpressSSLPort />
@@ -107,6 +106,7 @@
     <Compile Include="IAuthManager.cs" />
     <Compile Include="IBlobManager.cs" />
     <Compile Include="IBundleStore.cs" />
+    <Compile Include="ICertPolicyStore.cs" />
     <Compile Include="IDnsRecordManager.cs" />
     <Compile Include="DomainManagerService.svc.cs">
       <DependentUpon>DomainManagerService.svc</DependentUpon>

@@ -21,6 +21,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy;
 
 namespace Health.Direct.Agent
