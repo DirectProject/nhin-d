@@ -67,6 +67,23 @@
     </MachineResolver>
    -->
   </Anchors>
+  <Policies>
+    <Public>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/Policies</Url>
+      </ClientSettings>
+    </Public>
+    <Private>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/Policies</Url>
+      </ClientSettings>
+    </Private>
+    <Trust>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/Policies</Url>
+      </ClientSettings>
+    </Trust>
+  </Policies>
   <IncomingRoutes>
     <Route>
       <AddressType>XDR</AddressType>

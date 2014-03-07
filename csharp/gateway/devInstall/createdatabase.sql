@@ -1,0 +1,15 @@
+USE [master];
+GO
+
+IF (DB_ID(N'$(DBName)') IS NOT NULL) 
+BEGIN
+    ALTER DATABASE [$(DBName)]
+    SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE [$(DBName)];
+END
+
+GO
+PRINT N'Creating $(DBName)...'
+GO
+CREATE DATABASE [$(DBName)] 
+GO

@@ -51,7 +51,7 @@ namespace Health.Direct.Config.Client
             client.UpdateAddresses(new Address[] { address });
         }
 
-        public static Address GetAddressesOrDomain(this AddressManagerClient client, MailAddress address, EntityStatus? status)
+        public static Address GetAddressesOrDomain(this IAddressManager client, MailAddress address, EntityStatus? status)
         {
             if (address == null)
             {
@@ -62,7 +62,7 @@ namespace Health.Direct.Config.Client
         }
 
 
-        public static Address GetAddressesOrDomain(this AddressManagerClient client, string emailAddress, EntityStatus? status)
+        public static Address GetAddressesOrDomain(this IAddressManager client, string emailAddress, EntityStatus? status)
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
@@ -85,7 +85,7 @@ namespace Health.Direct.Config.Client
             return client.GetAddress(address.Address, null);
         }
 
-        public static Address GetAddress(this AddressManagerClient client, MailAddress address, EntityStatus? status)
+        public static Address GetAddress(this IAddressManager client, MailAddress address, EntityStatus? status)
         {
             if (address == null)
             {
@@ -100,7 +100,7 @@ namespace Health.Direct.Config.Client
             return client.GetAddress(emailAddress, null);
         }
         
-        public static Address GetAddress(this AddressManagerClient client, string emailAddress, EntityStatus? status)
+        public static Address GetAddress(this IAddressManager client, string emailAddress, EntityStatus? status)
         {
             if (string.IsNullOrEmpty(emailAddress))
             {
