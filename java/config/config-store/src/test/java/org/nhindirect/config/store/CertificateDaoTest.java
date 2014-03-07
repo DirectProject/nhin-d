@@ -59,7 +59,7 @@ public class CertificateDaoTest
 		return FileUtils.readFileToByteArray(fl);
 	}
 	
-	private static byte[] loadPkcs12FromCertAndKey(String certFileName, String keyFileName) throws Exception
+	public static byte[] loadPkcs12FromCertAndKey(String certFileName, String keyFileName) throws Exception
 	{
 		byte[] retVal = null;
 		try

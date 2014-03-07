@@ -52,6 +52,20 @@
 			<scope>compile</scope>
 		</dependency>	
 		<dependency>
+			<groupId>org.nhind</groupId>
+			<artifactId>direct-common</artifactId>
+			<version>1.3-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>	
+		<dependency>
+			<groupId>org.nhind</groupId>
+			<artifactId>config-model</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>					
+		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-asm</artifactId>
 			<version>3.0.4.RELEASE</version>
