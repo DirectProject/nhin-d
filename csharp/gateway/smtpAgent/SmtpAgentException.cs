@@ -60,7 +60,8 @@ namespace Health.Direct.SmtpAgent
         /// <summary>
         /// AutoDsnOption is unknown.
         /// </summary>
-        UnkownAutoDsnOption
+        UnkownAutoDsnOption,
+        MissingPolicyResolverClientSettings
     }
 
     public class SmtpAgentException : DirectException<SmtpAgentError>

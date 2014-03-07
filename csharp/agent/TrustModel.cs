@@ -15,10 +15,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
+using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Common.Certificates;
+using Health.Direct.Policy;
 
 namespace Health.Direct.Agent
 {
@@ -38,7 +41,7 @@ namespace Health.Direct.Agent
         /// <summary>
         /// Trust checked and confirmed.
         /// </summary>
-        Success= 1,                     // Signature valid, siging cert trusted, and certs match perfectly
+        Success = 1,                     // Signature valid, siging cert trusted, and certs match perfectly
     }
 
     /// <summary>
@@ -50,9 +53,13 @@ namespace Health.Direct.Agent
         /// A trust model with default configurations for chain validator
         /// </summary>
         public static readonly TrustModel Default = new TrustModel();
-        
+
         TrustChainValidator m_certChainValidator;
-                                
+
+        IPolicyResolver m_trustPolicyResolver;
+
+        IPolicyFilter m_policyFilter;
+
         /// <summary>
         /// Constructs an instance with a default chain validator.
         /// </summary>
@@ -60,7 +67,7 @@ namespace Health.Direct.Agent
             : this(new TrustChainValidator())
         {
         }
-        
+
         /// <summary>
         /// Constructs an instance specifying a certificate chain validator.
         /// </summary>
@@ -71,10 +78,42 @@ namespace Health.Direct.Agent
             {
                 throw new ArgumentNullException("validator");
             }
-            
+
             m_certChainValidator = validator;
         }
-        
+
+        /// <summary>
+        /// Constructs an instance specifying a certificate chain validator.
+        /// </summary>
+        /// <param name="validator">The <see cref="TrustChainValidator"/> to use in validating certificate chains</param>
+        /// <param name="policyResolver">The <see cref="IPolicyResolver"/> to use in resolving policies.</param>
+        /// <param name="policyFilter">The <see cref="IPolicyFilter"/> to use in validating certificate against policies</param>
+        public TrustModel(TrustChainValidator validator, IPolicyResolver policyResolver, IPolicyFilter policyFilter)
+        {
+            if (validator == null)
+            {
+                throw new ArgumentNullException("validator");
+            }
+
+            m_certChainValidator = validator;
+
+            if (policyResolver == null)
+            {
+                throw new ArgumentNullException("policyResolver");
+            }
+
+            m_trustPolicyResolver = policyResolver;
+
+            if (policyFilter == null)
+            {
+                throw new ArgumentNullException("policyFilter");
+            }
+
+            m_policyFilter = policyFilter;
+        }
+
+
+
         /// <summary>
         /// Gets the <see cref="TrustChainValidator"/> instance used by this model to validate certificate chains.
         /// </summary>
@@ -98,7 +137,7 @@ namespace Health.Direct.Agent
             {
                 throw new ArgumentNullException("message");
             }
-            
+
             if (!message.HasSignatures)
             {
                 throw new AgentException(AgentError.UnsignedMessage);
@@ -122,15 +161,15 @@ namespace Health.Direct.Agent
                 //
                 // First, find a signature that this recipient trusts
                 //
-                MessageSignature trustedSignature = this.FindTrustedSignature(message, recipient.TrustAnchors);
+                MessageSignature trustedSignature = this.FindTrustedSignature(message, recipient, recipient.TrustAnchors);
                 if (trustedSignature != null)
                 {
                     recipient.Status = TrustEnforcementStatus.Success;
                     //
                     // Signature has already been verified by FindTrustedSignature!
                     //
-                } 
-            }            
+                }
+            }
         }
 
         /// <summary>
@@ -144,12 +183,12 @@ namespace Health.Direct.Agent
             {
                 throw new ArgumentNullException("message");
             }
-            
+
             DirectAddress sender = message.Sender;
 
             foreach (DirectAddress recipient in message.Recipients)
             {
-                recipient.Status = TrustEnforcementStatus.Failed;    
+                recipient.Status = TrustEnforcementStatus.Failed;
 
                 // The recipient is trusted if we at least one certificate that the sender trusts.
                 recipient.Certificates = this.FindTrustedCerts(recipient.Certificates, sender.TrustAnchors);
@@ -159,7 +198,7 @@ namespace Health.Direct.Agent
                 }
             }
         }
-        
+
         X509Certificate2Collection FindTrustedCerts(X509Certificate2Collection certs, X509Certificate2Collection anchors)
         {
             if (certs == null)
@@ -173,7 +212,7 @@ namespace Health.Direct.Agent
         void FindSenderSignatures(IncomingMessage message)
         {
             message.SenderSignatures = null;
-            
+
             DirectAddress sender = message.Sender;
             SignerInfoCollection allSigners = message.Signatures.SignerInfos;
             MessageSignatureCollection senderSignatures = null;
@@ -182,44 +221,54 @@ namespace Health.Direct.Agent
             foreach (SignerInfo signer in allSigners)
             {
                 bool isOrgCertificate = false;
-                
+
                 match = signer.Certificate.MatchEmailNameOrName(sender.Address);
                 if (!match)
                 {
                     match = signer.Certificate.MatchDnsOrEmailOrName(sender.Host);
                     isOrgCertificate = match;
                 }
-                
+
                 if (match)
                 {
                     senderSignatures = senderSignatures ?? new MessageSignatureCollection();
                     senderSignatures.Add(new MessageSignature(signer, isOrgCertificate));
                 }
             }
-            
+
             message.SenderSignatures = senderSignatures;
         }
 
-        MessageSignature FindTrustedSignature(IncomingMessage message, X509Certificate2Collection anchors)
-        {                        
+        
+        MessageSignature FindTrustedSignature(IncomingMessage message, MailAddress recipient, X509Certificate2Collection anchors)
+        {
             DirectAddress sender = message.Sender;
             MessageSignatureCollection signatures = message.SenderSignatures;
             MessageSignature lastTrustedSignature = null;
-            
+
             foreach (MessageSignature signature in signatures)
             {
-                if (m_certChainValidator.IsTrustedCertificate(signature.Certificate, anchors) && signature.CheckSignature())
+                bool certTrustedAndInPolicy =
+                    (m_certChainValidator.IsTrustedCertificate(signature.Certificate, anchors) &&
+                     signature.CheckSignature());
+                if (certTrustedAndInPolicy && recipient != null)
                 {
+                    certTrustedAndInPolicy = IsCertPolicyCompliant(recipient, signature.Certificate);
+                }
+
+                if (certTrustedAndInPolicy)
+                {
+
                     if (!sender.HasCertificates)
                     {
                         // Can't really check thumbprints etc. So, this is about as good as its going to get
                         return signature;
                     }
-                    
+
                     if (signature.CheckThumbprint(sender))
                     {
                         return signature;
-                    }            
+                    }
                     //
                     // We'll save this guy, but keep looking for a signer whose thumbprint we can verify
                     // If we can't find one, we'll use the last trusted signer we found.. and just mark the recipient's trust
@@ -228,8 +277,45 @@ namespace Health.Direct.Agent
                     lastTrustedSignature = signature;
                 }
             }
-            
             return lastTrustedSignature;
+        }
+
+        /// <summary>
+        /// Resolve incoming public policies base on recipient 
+        /// Any negative policy will retturn an uncompliant result.
+        /// No policies will result in compliance.
+        /// </summary>
+        /// <param name="recipient">Incoming messages are sent to the recipent</param>
+        /// <param name="cert">Signing cert</param>
+        public bool IsCertPolicyCompliant(MailAddress recipient, X509Certificate2 cert)
+        {
+            bool isCompliant = true;
+            // apply the policy if it exists
+            if (m_trustPolicyResolver != null && m_policyFilter != null)
+            {
+                IList<IPolicyExpression> expressions = m_trustPolicyResolver.GetIncomingPolicy(recipient);
+
+                foreach (var expression in expressions)
+                {
+                    try
+                    {
+                        // check for compliance
+                        if (m_policyFilter.IsCompliant(cert, expression)) continue;
+                        isCompliant = false;
+                        break;
+                    }
+                    catch (PolicyRequiredException)
+                    {
+                        isCompliant = false;
+                        break;
+                    }
+                    catch (PolicyProcessException ppe)
+                    {
+                        throw new AgentException(AgentError.InvalidPolicy, ppe);
+                    }
+                }
+            }
+            return isCompliant;
         }
     }
 }

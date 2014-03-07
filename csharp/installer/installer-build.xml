@@ -16,7 +16,7 @@
 	</Target>
 
 	<Target Name="build-installer-tools">
-		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
+		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 	
 	<Target Name="build-installer" DependsOnTargets="build-installer-tools;update-version-info">
