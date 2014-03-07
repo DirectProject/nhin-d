@@ -126,8 +126,20 @@ namespace Health.Direct.Agent.Config
         {
             get;
             set;
-        }   
+        }
+
+        /// <summary>
+        /// <see cref="PolicySettings"/> for public policies.
+        /// </summary>
+        [XmlElement("Policies")]
+        public PolicySettings Policies
+        {
+            get; 
+            set;
+        } 
         
+
+
         /// <summary>
         /// <see cref="CryptographerSettings"/> defining the cryptography methods used by the agent.
         /// </summary>

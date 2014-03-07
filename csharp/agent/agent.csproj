@@ -16,7 +16,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -83,6 +82,8 @@
     <Compile Include="Config\PluginAnchorResolverSettings.cs" />
     <Compile Include="Config\PluginCertResolverSettings.cs" />
     <Compile Include="Config\PluginDomainResolverSettings.cs" />
+    <Compile Include="Config\PolicyResolverSettings.cs" />
+    <Compile Include="Config\PolicySettings.cs" />
     <Compile Include="Config\TrustAnchorSettings.cs" />
     <Compile Include="Config\TrustAnchorResolverSettings.cs" />
     <Compile Include="Config\MachineAnchorResolverSettings.cs" />
@@ -106,6 +107,10 @@
     <ProjectReference Include="..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\policy\policy.csproj">
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
+      <Name>policy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

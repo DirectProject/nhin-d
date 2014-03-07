@@ -16,7 +16,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -33,6 +32,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\build\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,6 +57,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\..\build\packages\FluentAssertions.2.1.0.0\lib\net45\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\..\build\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -99,6 +106,7 @@
     <Compile Include="ResolverTests.cs" />
     <Compile Include="TestEnvelope.cs" />
     <Compile Include="TrustChainTests.cs" />
+    <Compile Include="TrustModelWithPolicyTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Certificates\Bundles\bundleNoMetadata.p7b">
@@ -206,6 +214,7 @@
     <None Include="Certificates\redmond\Public\umesh.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="TestMessages\Attachments.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -249,6 +258,10 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\policy\policy.csproj">
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
+      <Name>policy</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Certificates\Chain\notes.txt" />
@@ -281,4 +294,5 @@
   <PropertyGroup>
     <PostBuildEvent>XCOPY /I /Q /R /S /Y "$(ProjectDir)\Certificates\*.*" "$(SolutionDir)..\bin\$(ConfigurationName)\Certificates"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

@@ -16,7 +16,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -94,6 +93,7 @@
     <Compile Include="Certificates\DnsCertResolver.cs" />
     <Compile Include="Certificates\Extensions.cs" />
     <Compile Include="Certificates\ICertificateResolver.cs" />
+    <Compile Include="Certificates\IPolicyResolver.cs" />
     <Compile Include="Certificates\ITrustAnchorResolver.cs" />
     <Compile Include="Certificates\IX509CertificateStore.cs" />
     <Compile Include="Certificates\MemoryX509Store.cs" />
@@ -259,6 +259,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\policy\policy.csproj">
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
+      <Name>policy</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

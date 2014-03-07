@@ -115,6 +115,7 @@ namespace Health.Direct.SmtpAgent.Config
             }
         }
 
+        
         /// <summary>
         /// Limit the # of domain recipients on an incoming message - to prevent DOS attacks
         /// </summary>
@@ -356,7 +357,9 @@ namespace Health.Direct.SmtpAgent.Config
                 return (this.Container != null);
             }
         }
-                       
+
+        
+
         public override void Validate()
         {
             base.Validate();

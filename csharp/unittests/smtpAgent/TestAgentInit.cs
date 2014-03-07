@@ -93,6 +93,15 @@ namespace Health.Direct.SmtpAgent.Tests
             }
         }
 
+        [Fact]
+        public void TestPolicyResolver_Settings()
+        {
+            SmtpAgentSettings settings = null;
+            Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath("TestSmtpAgentConfigService.xml")));
+
+            Verify(settings.Policies);
+
+        }
 
         //
         // Use reflection to uninitialize the factory.
@@ -123,7 +132,8 @@ namespace Health.Direct.SmtpAgent.Tests
             
             Assert.NotNull(settings.Anchors);
             this.Verify(settings.Anchors);
-
+            
+            
         }
 
         
@@ -194,6 +204,22 @@ namespace Health.Direct.SmtpAgent.Tests
             }
         }
 
+        void Verify(PolicySettings settings)
+        {
+            Assert.NotNull(settings.Resolvers);
+            foreach (PolicyResolverSettings resolverSettings in settings.Resolvers)
+            {
+                Assert.DoesNotThrow(() => resolverSettings.Validate());
+
+                PolicyResolverSettings policyResolverSettings = resolverSettings;
+                
+                IPolicyResolver resolver = null;
+                Assert.DoesNotThrow(() => resolver = resolverSettings.CreateResolver());
+                Assert.NotNull(resolver);
+                
+            }
+        }
+        
         void Verify(TrustAnchorSettings settings)
         {
             Assert.NotNull(settings.Resolver);
