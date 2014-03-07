@@ -43,6 +43,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.nhindirect.config.model.utils.CertUtils;
+
 @Entity
 @Table(name = "certificate")
 /**
@@ -143,10 +145,15 @@ public class Certificate
         if (data == NULL_CERT) {
             setThumbprint("");
         } else {
-            loadCertFromData();
+        	loadCertFromEmptyProtectedData();
         }
     }
 
+    public void setRawData(byte[] data)
+    {
+    	this.data = data;
+    }
+    
     /**
      * Indicates if the certificate has a private key
      * 
@@ -316,18 +323,23 @@ public class Certificate
         }
     }
 
-    private void loadCertFromData() throws CertificateException {
+    private void loadCertFromEmptyProtectedData() throws CertificateException
+    {
+    	loadCertFromData("".toCharArray(), "".toCharArray());
+    }
+    
+    private void loadCertFromData(char[] keyStorePassPhrase, char[] privateKeyPassPhrase) throws CertificateException {
         X509Certificate cert = null;
-        CertContainer container = null;
+        CertUtils.CertContainer container = null;
         try {
             validate();
 
             try
             {
-                container = toCredential();
+                container = CertUtils.toCertContainer(data, keyStorePassPhrase, keyStorePassPhrase);
             	cert = container.getCert();
             }
-            catch (CertificateException e)
+            catch (Exception e)
             {
             	/*no-op*/
             }
@@ -335,9 +347,16 @@ public class Certificate
             if (cert == null)
             {
             	// might be a URL for IPKIX
-            	@SuppressWarnings("unused")
-				final URL url = new URL(new String(data, "ASCII"));
-            	
+            	try
+            	{
+            		@SuppressWarnings("unused")
+            		final URL url = new URL(new String(data, "ASCII"));
+            	}
+            	catch (Exception e)
+            	{
+            		// may not be a URL.. may be an encrypted stream that can't be accessed
+            		// set the thumbprint to empty because the cert must be decrtyped
+            	}
             	setThumbprint("");
             }
             else
@@ -353,7 +372,22 @@ public class Certificate
         }
     }
     
-    public CertContainer toCredential() throws CertificateException 
+    /**
+     * @deprecated
+     * @return
+     * @throws CertificateException
+     */
+    public CertContainer toCredential() throws CertificateException
+    {
+    	return toCredential("".toCharArray(), "".toCharArray());
+    }
+    
+    /**
+     * @deprecated
+     * @return
+     * @throws CertificateException
+     */
+    public CertContainer toCredential(char[] keyStorePass, char[] privateKeyPass) throws CertificateException
     {
     	CertContainer certContainer = null;
         try 
@@ -366,7 +400,7 @@ public class Certificate
             {
             	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", getJCEProviderName());
             	
-            	localKeyStore.load(bais, "".toCharArray());
+            	localKeyStore.load(bais, keyStorePass);
             	Enumeration<String> aliases = localKeyStore.aliases();
 
 
@@ -377,7 +411,7 @@ public class Certificate
         			X509Certificate cert = (X509Certificate)localKeyStore.getCertificate(alias);
         			
     				// check if there is private key
-    				Key key = localKeyStore.getKey(alias, "".toCharArray());
+    				Key key = localKeyStore.getKey(alias, privateKeyPass);
     				if (key != null && key instanceof PrivateKey) 
     				{
     					certContainer = new CertContainer(cert, key);
@@ -409,6 +443,11 @@ public class Certificate
         return certContainer;
     }
     
+    /**
+     * @deprecated
+     * @see org.nhindirect.config.model.utils.CertUtils.CertContainer
+     * @author Greg Meyer
+     */
     public static class CertContainer
     {
 		private final X509Certificate cert;

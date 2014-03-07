@@ -21,6 +21,7 @@
 
 package org.nhindirect.config.store.dao.impl;
 
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -34,10 +35,12 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nhindirect.common.crypto.KeyStoreProtectionManager;
+import org.nhindirect.config.model.exceptions.CertificateConversionException;
+import org.nhindirect.config.model.utils.CertUtils;
 import org.nhindirect.config.store.Certificate;
 import org.nhindirect.config.store.CertificateException;
 import org.nhindirect.config.store.EntityStatus;
-import org.nhindirect.config.store.Certificate.CertContainer;
 import org.nhindirect.config.store.dao.CertificateDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -51,11 +54,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class CertificateDaoImpl implements CertificateDao 
 {
+    static
+    {
+
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    }
+	
     @PersistenceContext
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired(required = false)
+    private KeyStoreProtectionManager kspMgr;
+    
     private static final Log log = LogFactory.getLog(CertificateDaoImpl.class);
+    
+    public void setKeyStoreProtectionManager(KeyStoreProtectionManager mgr)
+    {
+    	this.kspMgr = mgr;
+    }
+    
+    public void setEntityManager(EntityManager entityManager)
+    {
+    	this.entityManager = entityManager;
+    }
     
     /*
      * (non-Javadoc)
@@ -98,6 +120,9 @@ public class CertificateDaoImpl implements CertificateDao
         }
         else 
         	return null;
+        
+        for (Certificate cert : result)
+        	stripP12Protection(cert);
         
         if (log.isDebugEnabled())
             log.debug("Exit");
@@ -143,9 +168,12 @@ public class CertificateDaoImpl implements CertificateDao
             result = (List<Certificate>) rs;
         }
 
+        for (Certificate cert : result)
+        	stripP12Protection(cert);
+        
         if (log.isDebugEnabled())
             log.debug("Exit");
-        
+       
         return result;    	
 
     }
@@ -179,9 +207,12 @@ public class CertificateDaoImpl implements CertificateDao
             result = (List<Certificate>) rs;
         }
         
+        for (Certificate cert : result)
+        	stripP12Protection(cert);
+        
         if (log.isDebugEnabled())
             log.debug("Exit");
-        
+         
         return result;
     	
     }
@@ -197,6 +228,43 @@ public class CertificateDaoImpl implements CertificateDao
     	save(Arrays.asList(cert));
     }
 
+    private Certificate stripP12Protection(Certificate cert)
+    {
+    	
+    	if (cert.isPrivateKey() && kspMgr != null)
+    	{
+    		final char[] emptyProtection = "".toCharArray();
+    		try
+    		{
+    			if (CertUtils.toCertContainer(cert.getData()) != null)
+    				return cert;
+    		}
+    		catch (CertificateConversionException e)
+    		{
+    			// no-op.. this just means that the certificate is probably protected by pass phrases
+    			// need to convert
+    		}
+    		
+			try
+			{
+	    		final String oldKeystorePassPhrase = new String(kspMgr.getKeyStoreProtectionKey().getEncoded());
+				final String oldPrivateKeyPassPhrase = new String(kspMgr.getKeyStoreProtectionKey().getEncoded());
+	    		
+	    		// decrypt the key store and private key
+				final byte[] data = CertUtils.changePkcs12Protection(cert.getData(), oldKeystorePassPhrase.toCharArray(), 
+								oldPrivateKeyPassPhrase.toCharArray(), emptyProtection, emptyProtection);
+				
+				cert.setData(data);
+			}
+			catch (Exception e)
+			{
+				throw new RuntimeException("Error stripping P12 protection data", e);
+			}
+    	}
+
+    	return cert;  // this is just a plain jane X509 Certificate
+    }
+    
     /*
      * (non-Javadoc)
      * 
@@ -216,14 +284,15 @@ public class CertificateDaoImpl implements CertificateDao
         	
 	        	try
 	        	{
-	        		CertContainer container = null;
+	        		CertUtils.CertContainer container = null;
 	        		X509Certificate xcert = null;
 	        		try
 	        		{
-	        			container = cert.toCredential();
+	        			// this might be an X509Certificate or a P12 key store.. assume there is no protection for P12 key stores... 
+	        			container = CertUtils.toCertContainer(cert.getData());
 	        			xcert = container.getCert();
 	        		}
-	        		catch (CertificateException e)
+	        		catch (Exception e)
 	        		{
 	        			// probably not a certificate but an IPKIX URL
 	        		}
@@ -245,6 +314,23 @@ public class CertificateDaoImpl implements CertificateDao
 	        			cert.setStatus(EntityStatus.NEW);
 	        		
 	        		cert.setPrivateKey(container != null && container.getKey() != null);
+	        		
+	        		// if the key store protection manager is set and this is a P12 file, convert the cert data into a protected P12 file
+	        		if (cert.isPrivateKey() && kspMgr != null)
+	        		{
+						try
+						{
+							final String newKeystorePassPhrase = new String(kspMgr.getKeyStoreProtectionKey().getEncoded());
+							final String newPrivateKeyPassPhrase = new String(kspMgr.getPrivateKeyProtectionKey().getEncoded());
+							
+							cert.setRawData(CertUtils.changePkcs12Protection(cert.getData(), "".toCharArray(), "".toCharArray(), 
+									newKeystorePassPhrase.toCharArray(), newPrivateKeyPassPhrase.toCharArray()));
+						}
+						catch (Exception e)
+						{
+							throw new RuntimeException("Error converting P12 to encrypted/protected format", e);
+						}
+	        		}
 	        	}
 	        	catch (CertificateException e)
 	        	{
