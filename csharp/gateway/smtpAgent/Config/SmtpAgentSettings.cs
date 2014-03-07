@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml.Serialization;
@@ -402,10 +403,24 @@ namespace Health.Direct.SmtpAgent.Config
         public static SmtpAgentSettings LoadSettings(string configFilePath)
         {
             ExtensibleXmlSerializer serializer = new ExtensibleXmlSerializer();
+
+
             serializer.AddElementOption<CertificateSettings>("Resolvers", "ServiceResolver", typeof(CertServiceResolverSettings));
             serializer.AddElementOption<TrustAnchorSettings>("Resolver", "ServiceResolver", typeof(AnchorServiceResolverSettings));
             serializer.AddElementOption<DomainSettings>("Resolver", "ServiceResolver", typeof(DomainServiceResolverSettings));
 
+            List<XmlElementAttribute> elements = new List<XmlElementAttribute>()
+                                                 {
+                                                     new XmlElementAttribute("Public",
+                                                         typeof (PublicPolicyServiceResolverSettings)),
+                                                         new XmlElementAttribute("Private",
+                                                         typeof (PrivatePolicyServiceResolverSettings)),
+                                                         new XmlElementAttribute("Trust",
+                                                         typeof (TrustPolicyServiceResolverSettings))
+                                                 };
+            serializer.AddElementOption<PolicySettings>("Resolvers", elements.ToArray());
+
+            
             using (Stream stream = File.OpenRead(configFilePath))
             {
                 return serializer.Deserialize<SmtpAgentSettings>(stream);

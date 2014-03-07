@@ -24,6 +24,7 @@ using Health.Direct.Config.Client;
 using Health.Direct.Policy;
 using Health.Direct.SmtpAgent.Config;
 
+
 namespace Health.Direct.SmtpAgent.Policy
 {
     /// <inheritdoc />
@@ -31,18 +32,18 @@ namespace Health.Direct.SmtpAgent.Policy
     {
         IPolicyResolver m_outgoingPolicies;
         IPolicyResolver m_incomingPolicies;
-        PolicyServiceResolverSettings m_settings;
+        PublicPolicyServiceResolverSettings m_settings;
 
-        public PublicPolicyResolver(PolicyServiceResolverSettings settings)
+        public PublicPolicyResolver(PublicPolicyServiceResolverSettings settings)
         {
            
             m_settings = settings;
 
-            CacheSettings incomingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.incoming" };
+            //CacheSettings incomingCacheSettings =
+            //    new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.incoming" };
 
-            CacheSettings outgoingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.outgoing" };
+            //CacheSettings outgoingCacheSettings =
+            //    new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.outgoing" };
 
             //m_incomingResolver =
             //    new PolicyResolver(new BundleAnchorIndex(m_settings, true), incomingCacheSettings);
@@ -62,4 +63,7 @@ namespace Health.Direct.SmtpAgent.Policy
             throw new NotImplementedException();
         }
     }
+
+
+    
 }
