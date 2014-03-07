@@ -27,9 +27,6 @@ namespace Health.Direct.Agent.Config
         /// <summary>
         /// Policy resolvers
         /// </summary>
-        [XmlElement("PrivateResolver", typeof(PolicyResolverSettings))]
-        [XmlElement("PublicResolver", typeof(PolicyResolverSettings))]
-        [XmlElement("TrustResolver", typeof(PolicyResolverSettings))]
         public PolicyResolverSettings[] Resolvers
         {
             get;

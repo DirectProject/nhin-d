@@ -18,15 +18,40 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using Health.Direct.Common.Caching;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Policy;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent.Policy
 {
     /// <inheritdoc />
     public class TrustPolicyResolver : IPolicyResolver
     {
-        public IList<IPolicyExpression> GetOutgoingPolicy(MailAddress address)
+        IPolicyResolver m_outgoingPolicies;
+        IPolicyResolver m_incomingPolicies;
+        TrustPolicyServiceResolverSettings m_settings;
+
+        public TrustPolicyResolver(TrustPolicyServiceResolverSettings settings)
+        {
+
+            m_settings = settings;
+
+            CacheSettings incomingCacheSettings =
+                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.incoming" };
+
+            CacheSettings outgoingCacheSettings =
+                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.outgoing" };
+
+            //m_incomingResolver =
+            //    new PolicyResolver(new BundleAnchorIndex(m_settings, true), incomingCacheSettings);
+
+            //m_outgoingResolver =
+            //    new CertificateResolver(new BundleAnchorIndex(m_settings, false), outgoingCacheSettings);
+
+        }
+        public IList<IPolicyExpression>
+            GetOutgoingPolicy(MailAddress address)
         {
             throw new NotImplementedException();
         }

@@ -15,10 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Caching;
@@ -29,11 +25,9 @@ using Health.Direct.SmtpAgent.Policy;
 namespace Health.Direct.SmtpAgent.Config
 {
 
-    /// <summary>
-    /// Settings for policy resolvers.
-    /// </summary>
-    [XmlType("ServiceResolver")]
-    public class PolicyServiceResolverSettings : PolicyResolverSettings
+    
+    [XmlType("Public")]
+    public class PublicPolicyServiceResolverSettings : PolicyResolverSettings
     {
         [XmlElement]
         public ClientSettings ClientSettings
@@ -52,6 +46,12 @@ namespace Health.Direct.SmtpAgent.Config
             set;
         }
 
+        public override IPolicyResolver CreateResolver()
+        {
+            PublicPolicyResolver resolver = new PublicPolicyResolver(this);
+            return resolver;
+        }
+
         public override void Validate()
         {
             if (this.ClientSettings == null)
@@ -61,19 +61,78 @@ namespace Health.Direct.SmtpAgent.Config
             this.ClientSettings.Validate();
         }
 
-        public override IPolicyResolver CreateResolver()
-        {
-            throw new NotImplementedException();
-        }
     }
 
-    public class PublicPolicyServiceResolverSettings : PolicyServiceResolverSettings
+    [XmlType("Private")]
+    public class PrivatePolicyServiceResolverSettings : PolicyResolverSettings
     {
-        
+        [XmlElement]
+        public ClientSettings ClientSettings
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Optional (but you're an idiot if you don't provide) cache settings
+        /// </summary>
+        [XmlElement]
+        public CacheSettings CacheSettings
+        {
+            get;
+            set;
+        }
         public override IPolicyResolver CreateResolver()
         {
-            PublicPolicyResolver resolver = new PublicPolicyResolver(this);
+            PrivatePolicyResolver resolver = new PrivatePolicyResolver(this);
             return resolver;
         }
+
+        public override void Validate()
+        {
+            if (this.ClientSettings == null)
+            {
+                throw new SmtpAgentException(SmtpAgentError.MissingPolicyResolverClientSettings);
+            }
+            this.ClientSettings.Validate();
+        }
+
+    }
+
+
+    [XmlType("Trust")]
+    public class TrustPolicyServiceResolverSettings : PolicyResolverSettings
+    {
+        [XmlElement]
+        public ClientSettings ClientSettings
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Optional (but you're an idiot if you don't provide) cache settings
+        /// </summary>
+        [XmlElement]
+        public CacheSettings CacheSettings
+        {
+            get;
+            set;
+        }
+        public override IPolicyResolver CreateResolver()
+        {
+            TrustPolicyResolver resolver = new TrustPolicyResolver(this);
+            return resolver;
+        }
+
+        public override void Validate()
+        {
+            if (this.ClientSettings == null)
+            {
+                throw new SmtpAgentException(SmtpAgentError.MissingPolicyResolverClientSettings);
+            }
+            this.ClientSettings.Validate();
+        }
+
     }
 }
