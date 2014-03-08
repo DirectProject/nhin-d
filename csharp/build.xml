@@ -29,7 +29,7 @@
 	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
-	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd;test-certPolicy" />
 
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
