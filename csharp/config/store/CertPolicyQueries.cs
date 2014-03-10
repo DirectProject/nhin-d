@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
+using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
 using System.Windows.Forms.VisualStyles;
@@ -38,13 +39,19 @@ namespace Health.Direct.Config.Store
                     Commit tran 
                 ";
 
-        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicy>> CertPolicy = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicy>> CertPolicyByName = CompiledQuery.Compile(
             (ConfigDatabase db, string certPolicyName) =>
             from certPolicy in db.CertPolicies
             where certPolicy.Name == certPolicyName
             select certPolicy
             );
 
+        static readonly Func<ConfigDatabase, long, IQueryable<CertPolicy>> CertPolicyByID = CompiledQuery.Compile(
+           (ConfigDatabase db, long ID) =>
+           from certPolicy in db.CertPolicies
+           where certPolicy.ID == ID
+           select certPolicy
+           );
 
         static readonly Func<ConfigDatabase, long, int, IQueryable<CertPolicy>> EnumPoliciesByID = CompiledQuery.Compile(
             (ConfigDatabase db, long lastPolicyID, int maxResults) =>
@@ -69,10 +76,55 @@ namespace Health.Direct.Config.Store
 
         public static CertPolicy Get(this Table<CertPolicy> table, string name)
         {
-            return CertPolicy(table.GetDB(), name).SingleOrDefault();
+            return CertPolicyByName(table.GetDB(), name).SingleOrDefault();
+        }
+
+        public static CertPolicy Get(this Table<CertPolicy> table, long id)
+        {
+            return CertPolicyByID(table.GetDB(), id).SingleOrDefault();
+        }
+
+        public static IEnumerable<CertPolicy> GetIncoming(this Table<CertPolicy> table, string @owner)
+        {
+            var q =
+                from c in table.GetDB().CertPolicies
+                join groupMap in table.GetDB().CertPolicyGroupMaps
+                    on c equals groupMap.CertPolicy
+                join g in table.GetDB().CertPolicyGroups
+                    on groupMap.CertPolicyGroup equals g
+                join domainMap in table.GetDB().CertPolicyGroupDomainMaps
+                    on g equals domainMap.CertPolicyGroup
+                where domainMap.Owner == @owner
+                      && groupMap.ForIncoming
+                select c;
+            return q;
+        }
+
+        public static IEnumerable<CertPolicy> GetOutgoing(this Table<CertPolicy> table, string owner)
+        {
+            var q =
+                from c in table.GetDB().CertPolicies
+                join groupMap in table.GetDB().CertPolicyGroupMaps
+                    on c equals groupMap.CertPolicy
+                join g in table.GetDB().CertPolicyGroups
+                    on groupMap.CertPolicyGroup equals g
+                join domainMap in table.GetDB().CertPolicyGroupDomainMaps
+                    on g equals domainMap.CertPolicyGroup
+                where domainMap.Owner == @owner
+                      && groupMap.ForOutgoing
+                select c;
+            return q;
         }
 
         
+
+        public static IEnumerable<CertPolicy> Get(this Table<CertPolicy> table, long[] policyIDs)
+        {
+            return from cp in table.GetDB().CertPolicies
+                   where policyIDs.Contains(cp.ID)
+                   select cp;
+        }
+
         public static IQueryable<CertPolicy> Get(this Table<CertPolicy> table, long lastPolicyID, int maxResults)
         {
             return EnumPoliciesByID(table.GetDB(), lastPolicyID, maxResults);

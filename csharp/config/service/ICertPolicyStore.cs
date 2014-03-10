@@ -26,19 +26,23 @@ namespace Health.Direct.Config.Service
     {
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicy[] GetPolicies();
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
         CertPolicy GetPolicyByName(string policyName);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicy GetPolicyById(long policyId);
+        CertPolicy GetPolicyByID(long policyId);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicy[] GetPoliciesByDomain(string domain, bool incoming);
+        CertPolicy[] GetIncomingPoliciesByDomain(string domainName);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        CertPolicy[] GetOutgoingPoliciesByDomain(string domainName);
+
+        [OperationContract]
+        [FaultContract(typeof (ConfigStoreFault))]
+        CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -46,15 +50,15 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void RemovePolicies(long[] policyIds);
+        void RemovePolicies(long[] policyIDs);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void UpdatePolicyAttributes(long policyId, string policyName, byte[] policyData, string Description);
+        void UpdatePolicyAttributes(CertPolicy certPolicy);
 
         [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicyGroup[] GetPolicyGroups();
+        [FaultContract(typeof (ConfigStoreFault))]
+        CertPolicyGroup[] EnumerateCertPolicyGroups(long lastCertPolicyGroupID, int maxResults);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -62,7 +66,7 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicyGroup GetPolicyGroupById(long policyGroupId);
+        CertPolicyGroup GetPolicyGroupByID(long policyGroupID);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -70,16 +74,15 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void RemovePolicyGroups(long[] policyGroupIds);
+        void RemovePolicyGroups(long[] policyGroupIDs);
 
         [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void UpdateGroupAttributes(long policyGroupId, string policyGroupName, string Description);
+        [FaultContract(typeof (ConfigStoreFault))]
+        void UpdateGroupAttributes(CertPolicyGroup policyGroup);
 
         [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void AddPolicyUseToGroup(long policyGroupId, long policyId, 
-            CertPolicyUse policyUse, bool incoming, bool outgoing);
+        [FaultContract(typeof (ConfigStoreFault))]
+        void AddPolicyUseToGroup(CertPolicyGroupMap certPolicyGroupMap);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -87,11 +90,11 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AssociatePolicyGroupToDomain(string domain, long policyGroupId);
+        void AssociatePolicyGroupToDomain(string domain, long policyGroupID);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void DisassociatePolicyGroupFromDomain(string domain, long policyGroupId);
+        void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -99,7 +102,7 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void DisassociatePolicyGroupFromDomains(long policyGroupId);
+        void DisassociatePolicyGroupFromDomains(long policyGroupID);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -108,5 +111,7 @@ namespace Health.Direct.Config.Service
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         CertPolicyGroup[] GetPolicyGroupsByDomain(string domain);
+
+        
     }
 }

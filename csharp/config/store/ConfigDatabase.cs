@@ -212,7 +212,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public Table<CertPolicyGroupMap> CertPolicyGroupMap
+        public Table<CertPolicyGroupMap> CertPolicyGroupMaps
         {
             get
             {
@@ -225,7 +225,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public Table<CertPolicyGroupDomainMap> CertPolicyGroupDomainMap
+        public Table<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps
         {
             get
             {
@@ -237,7 +237,8 @@ namespace Health.Direct.Config.Store
                 return m_certPolicyGroupDomainMap;
             }
         }
-
+        
+        
         public Table<CertPolicyGroup> CertPolicyGroups
         {
             get

@@ -183,6 +183,7 @@ namespace Health.Direct.Config.Store
             CertPolicyGroupMap map = new CertPolicyGroupMap(true);
             map.CertPolicyGroup = this;
             map.CertPolicy = policyGroup;
+
         }
 
         private void OnPolicyRemoved(CertPolicy policy)
@@ -215,6 +216,30 @@ namespace Health.Direct.Config.Store
         public bool IsNew()
         {
             return ID <= 0;
+        }
+    }
+
+    public static class CertPolicyGroupExt
+    {
+        public static void Add(this ICollection<CertPolicy> policies, CertPolicy policy, CertPolicyGroupMap certPolicyGroupMap)
+        {
+            policies.Add(policy);
+            
+            // Find the new map and add Use attributes
+            foreach (var certPolicy in policies)
+            {
+                foreach (var policyGroupMap in certPolicy.CertPolicyGroupMap)
+                {
+                    if (policyGroupMap.CertPolicy.ID == certPolicyGroupMap.CertPolicy.ID
+                        && policyGroupMap.CertPolicyGroup.ID == certPolicyGroupMap.CertPolicyGroup.ID)
+                    {
+                        policyGroupMap.Use = certPolicyGroupMap.Use;
+                        policyGroupMap.ForIncoming = certPolicyGroupMap.ForIncoming;
+                        policyGroupMap.ForOutgoing = certPolicyGroupMap.ForOutgoing;
+                        return;
+                    }
+                }
+            }
         }
     }
 }

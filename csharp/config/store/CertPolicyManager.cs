@@ -89,6 +89,22 @@ namespace Health.Direct.Config.Store
             return policy;
         }
 
+        public void Add(IEnumerable<CertPolicy> policies)
+        {
+            if (policies == null)
+            {
+                throw new ArgumentNullException("policies");
+            }
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                foreach (CertPolicy policy in policies)
+                {
+                    this.Add(db, policy);
+                }
+                db.SubmitChanges();
+            }
+        }
+
         public int Count()
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
@@ -118,6 +134,74 @@ namespace Health.Direct.Config.Store
             }
 
             return db.CertPolicies.Get(name);
+        }
+
+        public CertPolicy Get(long policyID)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return db.CertPolicies.Get(policyID);
+            }
+        }
+
+        public CertPolicy[] Get(long[] policyIDs)
+        {
+            if (policyIDs.IsNullOrEmpty())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return db.CertPolicies.Get(policyIDs).ToArray();
+            }
+        }
+
+        public CertPolicy[] Get(long lastID, int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, lastID, maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<CertPolicy> Get(ConfigDatabase db, long lastID, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            return db.CertPolicies.Get(lastID, maxResults);
+        }
+
+
+        public CertPolicy[] GetIncomingByDomain(string owner)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                var cpgs = db.CertPolicies.GetIncoming(owner);
+                return cpgs.ToArray();
+            }
+        }
+
+        public CertPolicy[] GetOutgoingByDomain(string owner)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                var cpgs = db.CertPolicies.GetOutgoing(owner);
+                return cpgs.ToArray();
+            }
         }
 
 

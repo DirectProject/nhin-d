@@ -48,6 +48,14 @@ namespace Health.Direct.Config.Store
             ForOutgoing = forOutgoing;
         }
 
+        [Column(Name = "MapID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
+        public long ID
+        {
+            get;
+            set;
+        }
+
         [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
         private long m_CertPolicyGroupId;
         private EntityRef<CertPolicyGroup> m_certPolicyGroup = new EntityRef<CertPolicyGroup>();

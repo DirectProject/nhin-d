@@ -40,6 +40,7 @@ namespace Health.Direct.Config.Store
         BundleManager m_bundles;
         MdnManager m_Mdns;
         CertPolicyManager m_certPolicies;
+        CertPolicyGroupManager m_certPolicyGroups;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -70,6 +71,7 @@ namespace Health.Direct.Config.Store
             m_Mdns = new MdnManager(this);
             m_bundles = new BundleManager(this);
             m_certPolicies = new CertPolicyManager(this, new CertPolicyParseValidator());
+            m_certPolicyGroups = new CertPolicyGroupManager(this);
         }
 
         public TimeSpan Timeout
@@ -182,6 +184,14 @@ namespace Health.Direct.Config.Store
             get
             {
                 return m_certPolicies;
+            }
+        }
+
+        public CertPolicyGroupManager CertPolicyGroups
+        {
+            get
+            {
+                return m_certPolicyGroups;
             }
         }
 
