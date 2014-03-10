@@ -20,7 +20,7 @@ using System.Data.Linq;
 
 namespace Health.Direct.Config.Store
 {
-    public class CertPolicyGroupMapQueries
+    public static class CertPolicyGroupMapQueries
     {
         const string Sql_DeleteCertPolicyGroupMap =
             @"
