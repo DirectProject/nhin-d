@@ -230,7 +230,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         [Fact]
-        public void DissAssociatePolicyGroupToDomain()
+        public void DissAssociatePolicyGroupFromomain()
         {
             InitDomainRecords();
             InitCertPolicyRecords();
@@ -409,6 +409,12 @@ namespace Health.Direct.Config.Store.Tests
             policyGroups.Length.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
+            policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicies.Count.Should().Be(2);
+            foreach (var policy in policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicies)
+            {
+                Console.WriteLine(policy.Name);
+                Console.WriteLine(policy.Data.ToUtf8String());
+            }
 
             policyGroups = groupMgr.GetByDomains(new string[] { "domain2.test.com" });
             policyGroups.Length.Should().Be(2);

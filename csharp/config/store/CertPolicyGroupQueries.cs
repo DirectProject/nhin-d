@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Data.Linq;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Config.Store
 {
@@ -48,10 +49,17 @@ namespace Health.Direct.Config.Store
                     commit tran 
                 ";
 
-        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicyGroup>> CertPolicyGroup = CompiledQuery.Compile(
+        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicyGroup>> CertPolicyGroupByName = CompiledQuery.Compile(
            (ConfigDatabase db, string certPolicyName) =>
            from policyGroup in db.CertPolicyGroups
            where policyGroup.Name == certPolicyName
+           select policyGroup
+           );
+
+        static readonly Func<ConfigDatabase, long, IQueryable<CertPolicyGroup>> CertPolicyGroupByID = CompiledQuery.Compile(
+           (ConfigDatabase db, long ID) =>
+           from policyGroup in db.CertPolicyGroups
+           where policyGroup.ID == ID
            select policyGroup
            );
 
@@ -76,12 +84,16 @@ namespace Health.Direct.Config.Store
 
         public static CertPolicyGroup Get(this Table<CertPolicyGroup> table, string name)
         {
-            return CertPolicyGroup(table.GetDB(), name).SingleOrDefault();
+            return CertPolicyGroupByName(table.GetDB(), name).SingleOrDefault();
         }
 
-        public static IEnumerable<CertPolicyGroup> Get(this Table<CertPolicyGroup> table, string[] owners)
+        public static CertPolicyGroup Get(this Table<CertPolicyGroup> table, long id)
         {
-            //This works... Maybe in future make a one query set up and then construct the object.
+            return CertPolicyGroupByID(table.GetDB(), id).SingleOrDefault();
+        }
+
+        public static IEnumerable<CertPolicyGroup> GetByOwners(this Table<CertPolicyGroup> table, string[] owners)
+        {
             var q =
                 (from certPolicyGroup in table.GetDB().CertPolicyGroups
                     select new
@@ -97,18 +109,38 @@ namespace Health.Direct.Config.Store
                                        Description = cpg.CertPolicyGroup.Description,
                                        CreateDate = cpg.CertPolicyGroup.CreateDate,
                                        CertPolicyGroupDomainMaps = 
-                                           (from map in table.GetDB().CertPolicyGroupDomainMap
+                                           (from map in table.GetDB().CertPolicyGroupDomainMaps
                                            where owners.Contains(map.Owner)
                                            && cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
                                            select map).ToList(),
                                         CertPolicyGroupMaps = 
-                                           (from map in table.GetDB().CertPolicyGroupMap
-                                           where cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
-                                           select map).ToList()
+                                           (from map in table.GetDB().CertPolicyGroupMaps
+                                              select new
+                                                     {
+                                                         CertPolicyGroupMap = map,
+                                                         map.CertPolicy
+                                                     })
+                                            .Where(arg => cpg.CertPolicyGroup ==  arg.CertPolicyGroupMap.CertPolicyGroup )
+                                            .AsEnumerable()
+                                            .Select(gm => new CertPolicyGroupMap()
+                                                         {
+                                                             Use = gm.CertPolicyGroupMap.Use,
+                                                             ForIncoming = gm.CertPolicyGroupMap.ForIncoming,
+                                                             ForOutgoing = gm.CertPolicyGroupMap.ForOutgoing,
+                                                             CreateDate = gm.CertPolicyGroupMap.CreateDate,
+                                                             CertPolicyGroup = gm.CertPolicyGroupMap.CertPolicyGroup,
+                                                             CertPolicy =
+                                                                 (  from cp in table.GetDB().CertPolicies
+                                                                    where cp == gm.CertPolicy
+                                                                    select cp
+                                                                    ).FirstOrDefault()
+                                                                
+                                                         }).ToList()
                                    });
             return q;
         }
 
+        
         public static IQueryable<CertPolicyGroup> Get(this Table<CertPolicyGroup> table, long lastPolicyID, int maxResults)
         {
             return EnumPoliciyGroupsByID(table.GetDB(), lastPolicyID, maxResults);
@@ -128,7 +160,7 @@ namespace Health.Direct.Config.Store
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupDomainMap, map.CertPolicyGroup.ID, map.Owner);
         }
-        
+
         public static void ExecDeleteAll(this Table<CertPolicyGroup> table)
         {
             table.Context.ExecuteCommand(Sql_DeleteAllCertPolicies);

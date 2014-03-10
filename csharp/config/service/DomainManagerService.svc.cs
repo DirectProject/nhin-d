@@ -379,88 +379,212 @@ namespace Health.Direct.Config.Service
         #endregion
 
         #region ICertPolcyStore
-        public CertPolicy[] GetPolicies()
-        {
-            throw new NotImplementedException();
-        }
-
         public CertPolicy GetPolicyByName(string policyName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return (Store.CertPolicies.Get(policyName));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyByName", ex);
+            }
         }
 
-        public CertPolicy GetPolicyById(long policyId)
+        public CertPolicy GetPolicyByID(long policyID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                CertPolicy[] bundles = Store.CertPolicies.Get(new long[] {policyID});
+                return (bundles[0]);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetBundle", ex);
+            }
         }
 
-        public CertPolicy[] GetPoliciesByDomain(string domain, bool incoming)
+        public CertPolicy[] GetIncomingPoliciesByDomain(string owner)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return (Store.CertPolicies.GetIncomingByDomain(owner));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyByName", ex);
+            }
         }
 
+        public CertPolicy[] GetOutgoingPoliciesByDomain(string owner)
+        {
+            try
+            {
+                return (Store.CertPolicies.GetIncomingByDomain(owner));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyByName", ex);
+            }
+        }
+
+        public CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults)
+        {
+            try
+            {
+                return Store.CertPolicies.Get(lastCertPolicyID, maxResults);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateCertPolicies", ex);
+            }
+        }
 
         public CertPolicy AddPolicy(CertPolicy policy)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Store.CertPolicies.Add(policy);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
-        public void RemovePolicies(long[] policyIds)
+        public void RemovePolicies(long[] policyIDs)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicies.Remove(policyIDs);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicies", ex);
+            }
         }
 
-        public void UpdatePolicyAttributes(long policyId, string policyName, byte[] policyData, string Description)
+        public void UpdatePolicyAttributes(CertPolicy policy)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicies.Update(policy);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("UpdatePolicyAttributes", ex);
+            }
         }
 
-        public CertPolicyGroup[] GetPolicyGroups()
+        public CertPolicyGroup[] EnumerateCertPolicyGroups(long lastCertPolicyGroupID, int maxResults)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Store.CertPolicyGroups.Get(lastCertPolicyGroupID, maxResults);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateCertPolicyGroups", ex);
+            }
         }
 
         public CertPolicyGroup GetPolicyGroupByName(string policyGroupName)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Store.CertPolicyGroups.Get(policyGroupName);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByName", ex);
+            }
         }
 
-        public CertPolicyGroup GetPolicyGroupById(long policyGroupId)
+        public CertPolicyGroup GetPolicyGroupByID(long policyGroupID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Store.CertPolicyGroups.Get(policyGroupID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByID", ex);
+            }
         }
 
-        public CertPolicyGroup AddPolicyGroup(CertPolicyGroup policy)
+        public CertPolicyGroup AddPolicyGroup(CertPolicyGroup policyGroup)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return Store.CertPolicyGroups.Add(policyGroup);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicyGroup", ex);
+            }
         }
 
-        public void RemovePolicyGroups(long[] policyGroupIds)
+        public void RemovePolicyGroups(long[] policyGroupIDs)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.Remove(policyGroupIDs);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicyGroups", ex);
+            }
         }
 
-        public void UpdateGroupAttributes(long policyGroupId, string policyGroupName, string Description)
+        public void UpdateGroupAttributes(CertPolicyGroup policyGroup)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.Update(policyGroup);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("UpdateGroupAttributes", ex);
+            }
         }
 
-        public void AddPolicyUseToGroup(long policyGroupId, long policyId, CertPolicyUse policyUse, bool incoming, bool outgoing)
+        public void AddPolicyUseToGroup(CertPolicyGroupMap certPolicyGroupMap)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.AddPolicyUse(certPolicyGroupMap);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
-        public void RemovePolicyUseFromGroup(long policyGroupMapId)
+        public void RemovePolicyUseFromGroup(long policyGroupMapID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.RemovePolicyUseFromGroup(policyGroupMapID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
-        public void AssociatePolicyGroupToDomain(string domain, long policyGroupId)
+        public void AssociatePolicyGroupToDomain(string domain, long policyGroupID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.AssociateToDomain(domain, policyGroupID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
-        public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupId)
+        public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID)
         {
             throw new NotImplementedException();
         }
@@ -470,7 +594,7 @@ namespace Health.Direct.Config.Service
             throw new NotImplementedException();
         }
 
-        public void DisassociatePolicyGroupFromDomains(long policyGroupId)
+        public void DisassociatePolicyGroupFromDomains(long policyGroupID)
         {
             throw new NotImplementedException();
         }
@@ -484,6 +608,10 @@ namespace Health.Direct.Config.Service
         {
             throw new NotImplementedException();
         }
+
+        
+
+        
 
         #endregion
     }
