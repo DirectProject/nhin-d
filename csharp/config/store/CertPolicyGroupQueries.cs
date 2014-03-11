@@ -38,7 +38,7 @@ namespace Health.Direct.Config.Store
             @"
                     Delete from CertPolicyGroupDomainMap
                     Where CertPolicyGroupId = {0}
-                    And   Owner = '{1}'
+                    And   Owner = {1}
             ";
         const string Sql_DeleteAllCertPolicies =
                      @" Begin tran 
@@ -70,7 +70,7 @@ namespace Health.Direct.Config.Store
              orderby certPolicyGroup.ID ascending
              select certPolicyGroup).Take(maxResults)
             );
-       
+
         public static ConfigDatabase GetDB(this Table<CertPolicyGroup> table)
         {
             return (ConfigDatabase)table.Context;
@@ -92,15 +92,25 @@ namespace Health.Direct.Config.Store
             return CertPolicyGroupByID(table.GetDB(), id).SingleOrDefault();
         }
 
+        public static IQueryable<CertPolicyGroup> GetByOwner(this Table<CertPolicyGroup> table, string owner)
+        {
+            var q = from certPolicyGroup in table.GetDB().CertPolicyGroups
+                    join domainMap in table.GetDB().CertPolicyGroupDomainMaps
+                        on certPolicyGroup equals domainMap.CertPolicyGroup
+                    where domainMap.Owner == owner
+                    select certPolicyGroup;
+            return q;
+        }
+
         public static IEnumerable<CertPolicyGroup> GetByOwners(this Table<CertPolicyGroup> table, string[] owners)
         {
             var q =
                 (from certPolicyGroup in table.GetDB().CertPolicyGroups
-                    select new
-                           {
-                               CertPolicyGroup = certPolicyGroup,
-                               certPolicyGroup.CertPolicyGroupDomainMaps
-                           }).Where(arg => arg.CertPolicyGroupDomainMaps.Any(map => owners.Contains(map.Owner)))
+                 select new
+                        {
+                            CertPolicyGroup = certPolicyGroup,
+                            certPolicyGroup.CertPolicyGroupDomainMaps
+                        }).Where(arg => arg.CertPolicyGroupDomainMaps.Any(map => owners.Contains(map.Owner)))
                     .AsEnumerable() //key to this working.
                     .Select(cpg => new CertPolicyGroup
                                    {
@@ -108,39 +118,39 @@ namespace Health.Direct.Config.Store
                                        Name = cpg.CertPolicyGroup.Name,
                                        Description = cpg.CertPolicyGroup.Description,
                                        CreateDate = cpg.CertPolicyGroup.CreateDate,
-                                       CertPolicyGroupDomainMaps = 
+                                       CertPolicyGroupDomainMaps =
                                            (from map in table.GetDB().CertPolicyGroupDomainMaps
-                                           where owners.Contains(map.Owner)
-                                           && cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
-                                           select map).ToList(),
-                                        CertPolicyGroupMaps = 
-                                           (from map in table.GetDB().CertPolicyGroupMaps
-                                              select new
-                                                     {
-                                                         CertPolicyGroupMap = map,
-                                                         map.CertPolicy
-                                                     })
-                                            .Where(arg => cpg.CertPolicyGroup ==  arg.CertPolicyGroupMap.CertPolicyGroup )
-                                            .AsEnumerable()
-                                            .Select(gm => new CertPolicyGroupMap()
-                                                         {
-                                                             Use = gm.CertPolicyGroupMap.Use,
-                                                             ForIncoming = gm.CertPolicyGroupMap.ForIncoming,
-                                                             ForOutgoing = gm.CertPolicyGroupMap.ForOutgoing,
-                                                             CreateDate = gm.CertPolicyGroupMap.CreateDate,
-                                                             CertPolicyGroup = gm.CertPolicyGroupMap.CertPolicyGroup,
-                                                             CertPolicy =
-                                                                 (  from cp in table.GetDB().CertPolicies
-                                                                    where cp == gm.CertPolicy
-                                                                    select cp
-                                                                    ).FirstOrDefault()
-                                                                
-                                                         }).ToList()
+                                            where owners.Contains(map.Owner)
+                                            && cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
+                                            select map).ToList(),
+                                       CertPolicyGroupMaps =
+                                          (from map in table.GetDB().CertPolicyGroupMaps
+                                           select new
+                                                  {
+                                                      CertPolicyGroupMap = map,
+                                                      map.CertPolicy
+                                                  })
+                                           .Where(arg => cpg.CertPolicyGroup == arg.CertPolicyGroupMap.CertPolicyGroup)
+                                           .AsEnumerable()
+                                           .Select(gm => new CertPolicyGroupMap()
+                                                        {
+                                                            Use = gm.CertPolicyGroupMap.Use,
+                                                            ForIncoming = gm.CertPolicyGroupMap.ForIncoming,
+                                                            ForOutgoing = gm.CertPolicyGroupMap.ForOutgoing,
+                                                            CreateDate = gm.CertPolicyGroupMap.CreateDate,
+                                                            CertPolicyGroup = gm.CertPolicyGroupMap.CertPolicyGroup,
+                                                            CertPolicy =
+                                                                (from cp in table.GetDB().CertPolicies
+                                                                 where cp == gm.CertPolicy
+                                                                 select cp
+                                                                   ).FirstOrDefault()
+
+                                                        }).ToList()
                                    });
             return q;
         }
 
-        
+
         public static IQueryable<CertPolicyGroup> Get(this Table<CertPolicyGroup> table, long lastPolicyID, int maxResults)
         {
             return EnumPoliciyGroupsByID(table.GetDB(), lastPolicyID, maxResults);

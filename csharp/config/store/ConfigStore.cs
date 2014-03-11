@@ -195,6 +195,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        
         public ConfigDatabase CreateContext()
         {
             return new ConfigDatabase(m_connectString) {CommandTimeout = this.TimeoutSeconds};

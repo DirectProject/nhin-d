@@ -70,7 +70,7 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroup);
             }
-            
+
             db.CertPolicyGroups.InsertOnSubmit(@group);
             return @group;
         }
@@ -139,7 +139,7 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("db");
             }
-            
+
             return db.CertPolicyGroups.Get(id);
         }
 
@@ -175,8 +175,8 @@ namespace Health.Direct.Config.Store
 
             return db.CertPolicyGroups.Get(lastID, maxResults);
         }
-        
-        
+
+
         public void Update(CertPolicyGroup policyGroup)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
@@ -202,7 +202,7 @@ namespace Health.Direct.Config.Store
             update.CopyFixed(policyGroup);
             db.CertPolicyGroups.Attach(update);
             update.ApplyChanges(policyGroup);
-            
+
         }
 
         public void AddAssociation(CertPolicyGroup policyGroup)
@@ -224,7 +224,7 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
             }
-            
+
             db.CertPolicyGroups.Attach(policyGroup);
             foreach (CertPolicyGroupMap certPolicyGroupMap in policyGroup.CertPolicyGroupMaps)
             {
@@ -296,15 +296,64 @@ namespace Health.Direct.Config.Store
             CertPolicyGroup policyGroup = db.CertPolicyGroups.Get(policyGroupID);
             if (policyGroup.CertPolicyGroupDomainMaps.All(map => map.Owner != owner))
             {
-                CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true);
+                CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
+                {
+                    CertPolicyGroup = policyGroup,
+                    Owner = owner
+                };
                 policyGroup.CertPolicyGroupDomainMaps.Add(map);
             }
         }
 
+        public void DissAssociateFromDomain(string owner, long policyGroupID)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                CertPolicyGroup policyGroup = db.CertPolicyGroups.Get(policyGroupID);
+                if (policyGroup.CertPolicyGroupDomainMaps.Any(map => map.Owner == owner))
+                {
+                    CertPolicyGroupDomainMap[] maps =
+                    {
+                        new CertPolicyGroupDomainMap(true)
+                        {
+                            CertPolicyGroup = policyGroup,
+                            Owner = owner
+                        }
+                    };
+                    this.RemoveDomain(db, maps);
+                    // We don't commit, because we execute deletes directly
+                }
+            }
+        }
+
+        /// <summary>
+        /// Dissassoicate all Policy Groups associated to an owner
+        /// </summary>
+        /// <param name="owner"></param>
+        public void DissAssociateFromDomain(string owner)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                db.CertPolicyGroupDomainMaps.ExecDelete(owner);
+            }
+        }
+
+        /// <summary>
+        /// Remove all 
+        /// </summary>
+        /// <param name="policyGroupId"></param>
+        public void DissAssociateFromDomains(long policyGroupId)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext())
+            {
+                db.CertPolicyGroupDomainMaps.ExecDelete(policyGroupId);
+            }
+        }
+        
 
         public void Remove(long policyGroupId)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Remove(db, policyGroupId);
             }
@@ -320,11 +369,11 @@ namespace Health.Direct.Config.Store
             db.CertPolicyGroups.ExecDelete(policyGroupId);
         }
 
-        public void Remove(long[] policyIds)
+        public void Remove(long[] policyGroupIds)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
-                this.Remove(db, policyIds);
+                this.Remove(db, policyGroupIds);
                 // We don't commit, because we execute deletes directly
             }
         }
@@ -348,14 +397,14 @@ namespace Health.Direct.Config.Store
 
         public void RemovePolicy(CertPolicyGroupMap[] map)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.RemovePolicy(db, map);
                 // We don't commit, because we execute deletes directly
             }
         }
 
-        
+
         public void RemovePolicy(ConfigDatabase db, CertPolicyGroupMap[] map)
         {
             if (db == null)
@@ -448,6 +497,6 @@ namespace Health.Direct.Config.Store
         }
 
 
-        
+
     }
 }
