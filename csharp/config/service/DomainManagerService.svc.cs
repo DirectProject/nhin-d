@@ -572,11 +572,11 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public void AssociatePolicyGroupToDomain(string domain, long policyGroupID)
+        public void AssociatePolicyGroupToDomain(string owner, long policyGroupID)
         {
             try
             {
-                Store.CertPolicyGroups.AssociateToDomain(domain, policyGroupID);
+                Store.CertPolicyGroups.AssociateToDomain(owner, policyGroupID);
             }
             catch (Exception ex)
             {
@@ -584,34 +584,55 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID)
+        public void DisassociatePolicyGroupFromDomain(string owner, long policyGroupID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.DissAssociateFromDomain(owner, policyGroupID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
-        public void DisassociatePolicyGroupsFromDomain(string domain)
+        public void DisassociatePolicyGroupsFromDomain(string owner)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.DissAssociateFromDomain(owner);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
         public void DisassociatePolicyGroupFromDomains(long policyGroupID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Store.CertPolicyGroups.DissAssociateFromDomains(policyGroupID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
         }
 
-        public CertPolicyGroupDomainMap[] GetPolicyGroupDomainMap()
+        public CertPolicyGroup[] GetPolicyGroupsByDomain(string owner)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return (Store.CertPolicyGroups.GetByDomains(new[] {owner}));
+            ;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyByName", ex);
+            }
         }
 
-        public CertPolicyGroup[] GetPolicyGroupsByDomain(string domain)
-        {
-            throw new NotImplementedException();
-        }
-
-        
-
-        
 
         #endregion
     }

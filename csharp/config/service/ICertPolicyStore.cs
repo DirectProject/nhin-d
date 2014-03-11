@@ -104,10 +104,7 @@ namespace Health.Direct.Config.Service
         [FaultContract(typeof(ConfigStoreFault))]
         void DisassociatePolicyGroupFromDomains(long policyGroupID);
 
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicyGroupDomainMap[] GetPolicyGroupDomainMap();
-
+        
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         CertPolicyGroup[] GetPolicyGroupsByDomain(string domain);

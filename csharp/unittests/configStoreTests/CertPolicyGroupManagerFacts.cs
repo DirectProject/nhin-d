@@ -229,6 +229,28 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
         }
 
+
+        [Fact]
+        public void AssociatePolicyGroupToDomain_WS_Style_Test()
+        {
+            InitDomainRecords();
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+            
+            groupMgr.AssociateToDomain("domain1.test.com", policyGroup.ID);
+            groupMgr.AssociateToDomain("domain2.test.com", policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
+        }
+
+        
+
         [Fact]
         public void DissAssociatePolicyGroupFromomain()
         {
@@ -258,7 +280,101 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(0);
         }
 
-        
+        [Fact]
+        public void DissAssociatePolicyGroupFromomain_WS_Style_Test()
+        {
+            InitDomainRecords();
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+
+            groupMgr.AssociateToDomain("domain1.test.com", policyGroup.ID);
+            groupMgr.AssociateToDomain("domain2.test.com", policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
+
+            // now dissassociate 
+            groupMgr.DissAssociateFromDomain("domain1.test.com", policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(1);
+
+            groupMgr.DissAssociateFromDomain("domain2.test.com", policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
+        }
+
+        /// <summary>
+        /// Dissassociate all policy groups from a owner (
+        /// </summary>
+        [Fact]
+        public void DissAssociate_All_PolicyGroups_ByDomain_Test()
+        {
+            InitDomainRecords();
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+
+            groupMgr.AssociateToDomain("domain1.test.com", policyGroup.ID);
+            groupMgr.AssociateToDomain("domain2.test.com", policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
+
+            //group2
+            CertPolicyGroup policyGroup2 = groupMgr.Get("PolicyGroup2");
+            policyGroup2.CertPolicies.Count.Should().Be(0);
+            groupMgr.AssociateToDomain("domain1.test.com", policyGroup2.ID);
+            policyGroup2 = groupMgr.Get("PolicyGroup2");
+            policyGroup2.CertPolicyGroupDomainMaps.Count.Should().Be(1);
+
+            groupMgr.DissAssociateFromDomain("domain1.test.com");
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(1);
+
+            policyGroup = groupMgr.Get("PolicyGroup2");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
+
+        }
+
+        /// <summary>
+        /// Dissassociate a policy group from all owners
+        /// </summary>
+        [Fact]
+        public void DissAssociate_All_Domains_From_PolicyGroup_Test()
+        {
+            InitDomainRecords();
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+
+            groupMgr.AssociateToDomain("domain1.test.com", policyGroup.ID);
+            groupMgr.AssociateToDomain("domain2.test.com", policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
+            
+            groupMgr.DissAssociateFromDomains(policyGroup.ID);
+
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
+
+        }
 
         /// <summary>
         /// Get Policy Groups by domain
