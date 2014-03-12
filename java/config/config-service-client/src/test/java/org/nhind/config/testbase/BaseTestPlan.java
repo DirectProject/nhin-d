@@ -16,6 +16,7 @@ import org.nhind.config.rest.impl.DefaultDomainService;
 import org.nhind.config.rest.impl.DefaultSettingService;
 import org.nhind.config.rest.impl.DefaultTrustBundleService;
 import org.nhindirect.common.rest.AbstractSecuredService;
+import org.nhindirect.common.rest.BootstrapBasicAuthServiceSecurityManager;
 import org.nhindirect.common.rest.HttpClientFactory;
 import org.nhindirect.common.rest.ServiceSecurityManager;
 
@@ -97,7 +98,7 @@ public abstract class BaseTestPlan extends SpringBaseTest
 		}
 	}
 	
-	public static AbstractSecuredService getService(String serviceURL, ServiceSecurityManager secMgr, String serviceName)
+	public static AbstractSecuredService getService(String serviceURL, String serviceName)
 	{
 		final Class<?> clazz = serviceClassMap.get(serviceName);
 		
@@ -108,7 +109,7 @@ public abstract class BaseTestPlan extends SpringBaseTest
 		{
 			final Constructor<?> ctr = clazz.getDeclaredConstructor(String.class, HttpClient.class, ServiceSecurityManager.class);
 		
-			final AbstractSecuredService service = (AbstractSecuredService)ctr.newInstance(serviceURL, HttpClientFactory.createHttpClient(), secMgr);
+			final AbstractSecuredService service = (AbstractSecuredService)ctr.newInstance(serviceURL, HttpClientFactory.createHttpClient(), getTestServiceSecurityManager());
 			
 			return service;
 		}
@@ -116,7 +117,11 @@ public abstract class BaseTestPlan extends SpringBaseTest
 		{
 			throw new RuntimeException(e);
 		}
-		
-
+	}
+	
+	public static ServiceSecurityManager getTestServiceSecurityManager() 
+	{
+		//return new OpenServiceSecurityManager();
+		return new BootstrapBasicAuthServiceSecurityManager("gm2552", "password");
 	}
 }

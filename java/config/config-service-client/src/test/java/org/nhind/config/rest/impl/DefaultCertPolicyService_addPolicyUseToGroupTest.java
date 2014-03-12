@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.CertPolicyService;
 import org.nhind.config.testbase.BaseTestPlan;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 import org.nhindirect.config.model.CertPolicy;
@@ -48,7 +48,7 @@ public class DefaultCertPolicyService_addPolicyUseToGroupTest
 				policyDao = (CertPolicyDao)ConfigServiceRunner.getSpringApplicationContext().getBean("certPolicyDao");
 				domainDao =  (DomainDao)ConfigServiceRunner.getSpringApplicationContext().getBean("domainDao");
 				
-				resource = 	(CertPolicyService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), CERT_POLICY_SERVICE);	
+				resource = 	(CertPolicyService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), CERT_POLICY_SERVICE);	
 
 			}
 			catch (Throwable t)
