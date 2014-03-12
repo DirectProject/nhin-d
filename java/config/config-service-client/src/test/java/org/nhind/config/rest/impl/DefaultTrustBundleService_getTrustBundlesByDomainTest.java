@@ -15,7 +15,7 @@ import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.DomainService;
 import org.nhind.config.rest.TrustBundleService;
 import org.nhind.config.testbase.BaseTestPlan;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 
@@ -48,8 +48,8 @@ public class DefaultTrustBundleService_getTrustBundlesByDomainTest
 					bundleDao = (TrustBundleDao)ConfigServiceRunner.getSpringApplicationContext().getBean("trustBundleDao");
 					domainDao = (DomainDao)ConfigServiceRunner.getSpringApplicationContext().getBean("domainDao");
 					
-					resource = 	(TrustBundleService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), TRUST_BUNDLE_SERVICE);	
-					domainResource = (DomainService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), DOMAIN_SERVICE);	
+					resource = 	(TrustBundleService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), TRUST_BUNDLE_SERVICE);	
+					domainResource = (DomainService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), DOMAIN_SERVICE);	
 
 				}
 				catch (Throwable t)

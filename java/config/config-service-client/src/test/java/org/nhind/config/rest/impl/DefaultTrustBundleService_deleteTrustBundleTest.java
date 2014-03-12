@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.TrustBundleService;
 import org.nhind.config.testbase.BaseTestPlan;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 import org.nhindirect.config.model.TrustBundle;
@@ -36,7 +36,7 @@ public class DefaultTrustBundleService_deleteTrustBundleTest
 			{
 				bundleDao = (TrustBundleDao)ConfigServiceRunner.getSpringApplicationContext().getBean("trustBundleDao");
 				
-				resource = 	(TrustBundleService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), TRUST_BUNDLE_SERVICE);	
+				resource = 	(TrustBundleService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), TRUST_BUNDLE_SERVICE);	
 
 			}
 			catch (Throwable t)

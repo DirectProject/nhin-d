@@ -13,7 +13,7 @@ import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.AnchorService;
 import org.nhind.config.testbase.BaseTestPlan;
 import org.nhind.config.testbase.TestUtils;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 
@@ -38,7 +38,7 @@ public class DefaultAnchorService_deleteAnchorsByOwnerTest
 			{
 				anchorDao = (AnchorDao)ConfigServiceRunner.getSpringApplicationContext().getBean("anchorDao");
 				
-				resource = 	(AnchorService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), ANCHOR_SERVICE);	
+				resource = 	(AnchorService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), ANCHOR_SERVICE);	
 
 			}
 			catch (Throwable t)

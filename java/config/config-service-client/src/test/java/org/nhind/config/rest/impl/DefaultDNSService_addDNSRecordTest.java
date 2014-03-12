@@ -16,7 +16,7 @@ import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.DNSService;
 import org.nhind.config.testbase.BaseTestPlan;
 import org.nhind.config.testbase.TestUtils;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 
@@ -44,7 +44,7 @@ public class DefaultDNSService_addDNSRecordTest
 				{
 					dnsDao = (DNSDao)ConfigServiceRunner.getSpringApplicationContext().getBean("DNSDaoImpl");
 					
-					resource = 	(DNSService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), DNS_SERVICE);	
+					resource = 	(DNSService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), DNS_SERVICE);	
 
 				}
 				catch (Throwable t)

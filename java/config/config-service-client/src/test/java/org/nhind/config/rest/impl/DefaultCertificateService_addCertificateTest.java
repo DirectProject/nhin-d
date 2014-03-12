@@ -16,7 +16,7 @@ import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.CertificateService;
 import org.nhind.config.testbase.BaseTestPlan;
 import org.nhind.config.testbase.TestUtils;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 import org.nhindirect.config.model.Certificate;
@@ -40,7 +40,7 @@ public class DefaultCertificateService_addCertificateTest
 			{
 				certDao = (CertificateDao)ConfigServiceRunner.getSpringApplicationContext().getBean("certificateDao");
 				
-				resource = 	(CertificateService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), CERT_SERVICE);	
+				resource = 	(CertificateService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), CERT_SERVICE);	
 
 			}
 			catch (Throwable t)
