@@ -110,5 +110,21 @@ public class SecurityAndTrustMailetOptions
      */
     public static final String SERVICE_SECURITY_MANAGER_PROVIDER = "ServiceSecurityManagerProvider";
     
-     
+    /**
+     * Mailet configuration parameter for providing the subject (i.e. user or client id) for authenticating to the configuration service if a protected
+     * security manager is configured.  
+     * <p>
+     * This option is configured using the <b>ServiceSecurityAuthSubject</b> element of the NHINDSecurityAndTrustMailet configuration.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ServiceSecurityAuthSubject
+     */    
+    public static final String SERVICE_SECURITY_AUTH_SUBJECT = "ServiceSecurityAuthSubject";  
+    
+    /**
+     * Mailet configuration parameter for providing the secret (i.e. password or client secret) for authenticating to the configuration service if a protected
+     * security manager is configured. 
+     * <p>
+     * This option is configured using the <b>ServiceSecurityAuthSecret</b> element of the NHINDSecurityAndTrustMailet configuration.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ServiceSecurityAuthSecret
+     */     
+    public static final String SERVICE_SECURITY_AUTH_SECRET = "ServiceSecurityAuthSecret";  
 }
