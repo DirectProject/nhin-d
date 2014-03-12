@@ -51,6 +51,7 @@ import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.gateway.smtp.dsn.provider.RejectedRecipientDSNCreatorProvider;
+import org.nhindirect.gateway.smtp.provider.MailetAwareProvider;
 import org.nhindirect.gateway.smtp.provider.SecureURLAccessedConfigProvider;
 import org.nhindirect.gateway.smtp.provider.URLAccessedConfigProvider;
 import org.nhindirect.gateway.smtp.provider.WSSmtpAgentConfigProvider;
@@ -433,6 +434,9 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 			retVal = new OpenServiceSecurityManagerProvider();
 		}
 			
+		if (retVal instanceof MailetAwareProvider)
+			((MailetAwareProvider)retVal).setMailet(this);
+		
 		return retVal;
 	}
 	

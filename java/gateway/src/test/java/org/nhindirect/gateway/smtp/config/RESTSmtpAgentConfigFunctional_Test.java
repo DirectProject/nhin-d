@@ -51,11 +51,11 @@ import org.nhind.config.rest.impl.DefaultCertificateService;
 import org.nhindirect.common.rest.HttpClientFactory;
 import org.nhindirect.common.rest.OpenServiceSecurityManager;
 import org.nhindirect.common.rest.ServiceSecurityManager;
-import org.nhindirect.common.rest.provider.OpenServiceSecurityManagerProvider;
 import org.nhindirect.gateway.smtp.DomainPostmaster;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.gateway.smtp.SmtpAgentSettings;
 import org.nhindirect.gateway.smtp.config.cert.impl.ConfigServiceRESTCertificateStore;
+import org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.ldap.PrivkeySchema;
@@ -391,7 +391,7 @@ public class RESTSmtpAgentConfigFunctional_Test extends AbstractServerTest
         
         protected SmtpAgentConfig createSmtpAgentConfig() throws Exception
         {        	
-        	Provider<ServiceSecurityManager> secMgrProvider = new OpenServiceSecurityManagerProvider();
+        	Provider<ServiceSecurityManager> secMgrProvider = new ConfigBasicAuthServiceSecurityManagerProvider();
         	
         	SmtpAgentConfig config = new RESTSmtpAgentConfig(new URL(ConfigServiceRunner.getRestAPIBaseURL()), null, secMgrProvider);
             return config;

@@ -6,8 +6,10 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.apache.mailet.MailetConfig;
+import org.nhindirect.common.rest.BootstrapBasicAuthServiceSecurityManager;
 import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.provider.OpenServiceSecurityManagerProvider;
+import org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.gateway.testutils.TestUtils;
 import org.nhindirect.stagent.options.OptionsManagerUtils;
@@ -161,4 +163,43 @@ public class NHINDSecurityAndTrustMailet_getServiceSecurityManagerProviderTest e
 			}				
 		}.perform();
 	}		
+	
+	public void test_getServiceSecurityManager_mailetParamBasicAuthSecurityProvider_assertBasicProviderWithUserPass() throws Exception 
+	{
+		new TestPlan() 
+		{
+			@Override
+			protected MailetConfig getMailetConfig() throws Exception
+			{
+				String configfile = TestUtils.getTestConfigFile(getConfigFileName());
+				Map<String,String> params = new HashMap<String, String>();
+				
+				params.put("ConfigURL", "file://" + configfile);
+				
+				if (getSecurityManagerProviderName() != null && !getSecurityManagerProviderName().isEmpty())
+					params.put(SecurityAndTrustMailetOptions.SERVICE_SECURITY_MANAGER_PROVIDER, getSecurityManagerProviderName());
+				
+				params.put(SecurityAndTrustMailetOptions.SERVICE_SECURITY_AUTH_SUBJECT, "gm2552");
+				params.put(SecurityAndTrustMailetOptions.SERVICE_SECURITY_AUTH_SECRET, "password");
+				
+				return new MockMailetConfig(params, "NHINDSecurityAndTrustMailet");	
+			}
+			
+			@Override
+			protected String getSecurityManagerProviderName()
+			{
+				return "org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider";
+			}
+			
+			@Override
+			protected void doAssertions(Provider<ServiceSecurityManager> provider) throws Exception
+			{
+				assertNotNull(provider);
+				assertTrue(provider instanceof ConfigBasicAuthServiceSecurityManagerProvider);
+				
+				BootstrapBasicAuthServiceSecurityManager mgr = (BootstrapBasicAuthServiceSecurityManager)provider.get();
+				assertNotNull(mgr);
+			}				
+		}.perform();
+	}	
 }
