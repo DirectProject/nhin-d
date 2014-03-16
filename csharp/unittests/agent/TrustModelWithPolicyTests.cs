@@ -20,7 +20,6 @@ using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using Health.Direct.Common.Policies;
-using Health.Direct.Policy;
 using Moq;
 using Xunit;
 

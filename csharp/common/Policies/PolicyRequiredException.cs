@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Health.Direct.Policy
+namespace Health.Direct.Common.Policies
 {
     public class PolicyRequiredException : PolicyProcessException
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.X509;
 using Xunit;

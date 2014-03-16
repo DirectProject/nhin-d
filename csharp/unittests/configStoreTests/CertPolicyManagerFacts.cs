@@ -22,6 +22,7 @@ using System.Linq;
 using FluentAssertions;
 using Health.Direct.Policy.Extensions;
 using Xunit;
+using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
@@ -293,7 +294,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// A test for Add Policy
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void AddPolicy()
         {
             InitCertPolicyRecords();
