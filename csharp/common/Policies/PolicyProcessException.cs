@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Health.Direct.Policy
+namespace Health.Direct.Common.Policies
 {
     /// <summary>
     /// Generic exception for errors that occur during the policy engine process.

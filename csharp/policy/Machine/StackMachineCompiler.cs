@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy.X509;
 
 namespace Health.Direct.Policy.Machine

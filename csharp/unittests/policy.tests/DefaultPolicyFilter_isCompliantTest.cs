@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using FluentAssertions;
+using Health.Direct.Common.Policies;
 using Moq;
 using System.Collections.Generic;
 using System.IO;

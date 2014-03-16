@@ -67,7 +67,6 @@
     <Compile Include="Impl\TokenType.cs" />
     <Compile Include="IOpCode.cs" />
     <Compile Include="IOperationPolicyExpression.cs" />
-    <Compile Include="IPolicyFilter.cs" />
     <Compile Include="IPolicyValue.cs" />
     <Compile Include="IReferencePolicyExpression.cs" />
     <Compile Include="ITBSField.cs" />
@@ -97,15 +96,10 @@
     <Compile Include="Operators\RegularExpression.cs" />
     <Compile Include="Operators\Size.cs" />
     <Compile Include="Operators\UriValid.cs" />
-    <Compile Include="PolicyExpression.cs" />
     <Compile Include="IPolicyExpressionSerializer.cs" />
     <Compile Include="PolicyExpressionReferenceType.cs" />
-    <Compile Include="PolicyExpressionType.cs" />
     <Compile Include="IPolicyLexiconParser.cs" />
     <Compile Include="PolicyOperator.cs" />
-    <Compile Include="PolicyParseException.cs" />
-    <Compile Include="PolicyProcessException.cs" />
-    <Compile Include="PolicyRequiredException.cs" />
     <Compile Include="PolicySerializer.cs" />
     <Compile Include="PolicyUtils.cs" />
     <Compile Include="PolicyValue.cs" />
@@ -147,6 +141,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
