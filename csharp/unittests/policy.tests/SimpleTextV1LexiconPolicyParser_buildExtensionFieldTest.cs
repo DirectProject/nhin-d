@@ -1,4 +1,5 @@
 ﻿
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.X509;
 using Xunit;

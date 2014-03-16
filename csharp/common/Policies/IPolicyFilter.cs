@@ -18,7 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Health.Direct.Policy
+namespace Health.Direct.Common.Policies
 {
     /// <summary>
     /// <para>
@@ -43,8 +43,8 @@ namespace Health.Direct.Policy
         bool IsCompliant(X509Certificate2 cert, Stream policyStream);
         /// <summary>
         /// Checks if an X509 certificate is compliant with a given policy.  This is a slight variation from the other version of this method in that
-        /// it takes a previously parsed <see cref="IPolicyExpression"/>.  This method version exists for performance reasons when it is not necessary to 
-        /// parse the policy expression from a lexicon input stream; it allows the reuse of a parsed <see cref="IPolicyExpression"/>.
+        /// it takes a previously parsed <see cref="Health.Direct.Common.Policies.IPolicyExpression"/>.  This method version exists for performance reasons when it is not necessary to 
+        /// parse the policy expression from a lexicon input stream; it allows the reuse of a parsed <see cref="Health.Direct.Common.Policies.IPolicyExpression"/>.
         /// </summary>
         /// <param name="cert"></param>
         /// <param name="expression"></param>

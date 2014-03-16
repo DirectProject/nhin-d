@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Collections.Generic;
 using FluentAssertions;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy.X509;
 using System;
 using System.Security.Cryptography.X509Certificates;

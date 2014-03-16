@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.Collections.Generic;
-using Health.Direct.Policy;
 
 namespace Health.Direct.Common.Policies
 {

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Common.Policies;
 
 namespace Health.Direct.Policy
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Health.Direct.Policy
+namespace Health.Direct.Common.Policies
 {
     /// <summary>
     /// Thrown when errors are encountered when parsing a expression from a lexicon.

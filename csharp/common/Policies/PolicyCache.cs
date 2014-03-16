@@ -18,8 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Health.Direct.Common.Caching;
-using Health.Direct.Common.Extensions;
-using Health.Direct.Policy;
 
 namespace Health.Direct.Common.Policies
 {

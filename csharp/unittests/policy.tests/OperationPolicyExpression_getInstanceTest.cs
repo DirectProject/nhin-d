@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using FluentAssertions;
 using System.Collections.Generic;
+using Health.Direct.Common.Policies;
 using Xunit;
 
 namespace Health.Direct.Policy.Tests
