@@ -51,7 +51,7 @@ namespace Health.Direct.SmtpAgent.Policy
                 {
                     if (m_incoming) //incoming
                     {
-                        matches = client.GetPoliciesByDomain(domain, true)
+                        matches = client.GetIncomingPoliciesByDomain(domain)
                             .Select(p => GetPolicyExpression(p.Data))
                             .Select(p => p)
                             .Where(p => p != null)
@@ -59,7 +59,7 @@ namespace Health.Direct.SmtpAgent.Policy
                     }
                     else // outgoing
                     {
-                        matches = client.GetPoliciesByDomain(domain, false)
+                        matches = client.GetOutgoingPoliciesByDomain(domain)
                             .Select(p => GetPolicyExpression(p.Data))
                             .Select(p => p)
                             .Where(p => p != null)

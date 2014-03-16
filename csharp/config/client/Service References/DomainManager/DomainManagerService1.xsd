@@ -530,35 +530,6 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicies">
-    <xs:complexType>
-      <xs:sequence />
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="GetPoliciesResponse">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="GetPoliciesResult" nillable="true" type="tns:ArrayOfCertPolicy" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:complexType name="ArrayOfCertPolicy">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="CertPolicy" nillable="true" type="tns:CertPolicy" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfCertPolicy" nillable="true" type="tns:ArrayOfCertPolicy" />
-  <xs:complexType name="CertPolicy">
-    <xs:sequence>
-      <xs:element name="CreateDate" type="xs:dateTime" />
-      <xs:element name="Data" nillable="true" type="xs:base64Binary" />
-      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
-      <xs:element name="ID" type="xs:long" />
-      <xs:element name="Lexicon" nillable="true" type="xs:string" />
-      <xs:element name="Name" nillable="true" type="xs:string" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="CertPolicy" nillable="true" type="tns:CertPolicy" />
   <xs:element name="GetPolicyByName">
     <xs:complexType>
       <xs:sequence>
@@ -573,32 +544,77 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicyById">
+  <xs:complexType name="CertPolicy">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="Data" nillable="true" type="xs:base64Binary" />
+      <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element name="Lexicon" nillable="true" type="xs:string" />
+      <xs:element name="Name" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CertPolicy" nillable="true" type="tns:CertPolicy" />
+  <xs:element name="GetPolicyByID">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="policyId" type="xs:long" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicyByIdResponse">
+  <xs:element name="GetPolicyByIDResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="GetPolicyByIdResult" nillable="true" type="tns:CertPolicy" />
+        <xs:element minOccurs="0" name="GetPolicyByIDResult" nillable="true" type="tns:CertPolicy" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPoliciesByDomain">
+  <xs:element name="GetIncomingPoliciesByDomain">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="incoming" type="xs:boolean" />
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPoliciesByDomainResponse">
+  <xs:element name="GetIncomingPoliciesByDomainResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="GetPoliciesByDomainResult" nillable="true" type="tns:ArrayOfCertPolicy" />
+        <xs:element minOccurs="0" name="GetIncomingPoliciesByDomainResult" nillable="true" type="tns:ArrayOfCertPolicy" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="ArrayOfCertPolicy">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="CertPolicy" nillable="true" type="tns:CertPolicy" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfCertPolicy" nillable="true" type="tns:ArrayOfCertPolicy" />
+  <xs:element name="GetOutgoingPoliciesByDomain">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetOutgoingPoliciesByDomainResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetOutgoingPoliciesByDomainResult" nillable="true" type="tns:ArrayOfCertPolicy" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateCertPolicies">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastCertPolicyID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateCertPoliciesResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateCertPoliciesResult" nillable="true" type="tns:ArrayOfCertPolicy" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -619,7 +635,7 @@
   <xs:element name="RemovePolicies">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q20="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="policyIds" nillable="true" type="q20:ArrayOflong" />
+        <xs:element xmlns:q20="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="policyIDs" nillable="true" type="q20:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -631,10 +647,7 @@
   <xs:element name="UpdatePolicyAttributes">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="policyId" type="xs:long" />
-        <xs:element minOccurs="0" name="policyName" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="policyData" nillable="true" type="xs:base64Binary" />
-        <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="certPolicy" nillable="true" type="tns:CertPolicy" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -643,15 +656,18 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicyGroups">
-    <xs:complexType>
-      <xs:sequence />
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="GetPolicyGroupsResponse">
+  <xs:element name="EnumerateCertPolicyGroups">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="GetPolicyGroupsResult" nillable="true" type="tns:ArrayOfCertPolicyGroup" />
+        <xs:element minOccurs="0" name="lastCertPolicyGroupID" type="xs:long" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateCertPolicyGroupsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateCertPolicyGroupsResult" nillable="true" type="tns:ArrayOfCertPolicyGroup" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -684,17 +700,17 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicyGroupById">
+  <xs:element name="GetPolicyGroupByID">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="policyGroupId" type="xs:long" />
+        <xs:element minOccurs="0" name="policyGroupID" type="xs:long" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicyGroupByIdResponse">
+  <xs:element name="GetPolicyGroupByIDResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="GetPolicyGroupByIdResult" nillable="true" type="tns:CertPolicyGroup" />
+        <xs:element minOccurs="0" name="GetPolicyGroupByIDResult" nillable="true" type="tns:CertPolicyGroup" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -715,7 +731,7 @@
   <xs:element name="RemovePolicyGroups">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q21="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="policyGroupIds" nillable="true" type="q21:ArrayOflong" />
+        <xs:element xmlns:q21="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="policyGroupIDs" nillable="true" type="q21:ArrayOflong" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -727,9 +743,7 @@
   <xs:element name="UpdateGroupAttributes">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="policyGroupId" type="xs:long" />
-        <xs:element minOccurs="0" name="policyGroupName" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="Description" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="policyGroup" nillable="true" type="tns:CertPolicyGroup" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -741,14 +755,22 @@
   <xs:element name="AddPolicyUseToGroup">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="policyGroupId" type="xs:long" />
-        <xs:element minOccurs="0" name="policyId" type="xs:long" />
-        <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="policyUse" type="q22:CertPolicyUse" />
-        <xs:element minOccurs="0" name="incoming" type="xs:boolean" />
-        <xs:element minOccurs="0" name="outgoing" type="xs:boolean" />
+        <xs:element minOccurs="0" name="certPolicyGroupMap" nillable="true" type="tns:CertPolicyGroupMap" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:complexType name="CertPolicyGroupMap">
+    <xs:sequence>
+      <xs:element name="CertPolicy" nillable="true" type="tns:CertPolicy" />
+      <xs:element name="CertPolicyGroup" nillable="true" type="tns:CertPolicyGroup" />
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="ForIncoming" type="xs:boolean" />
+      <xs:element name="ForOutgoing" type="xs:boolean" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Use" type="q22:CertPolicyUse" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="CertPolicyGroupMap" nillable="true" type="tns:CertPolicyGroupMap" />
   <xs:element name="AddPolicyUseToGroupResponse">
     <xs:complexType>
       <xs:sequence />
@@ -770,7 +792,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="policyGroupId" type="xs:long" />
+        <xs:element minOccurs="0" name="policyGroupID" type="xs:long" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -783,7 +805,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="policyGroupId" type="xs:long" />
+        <xs:element minOccurs="0" name="policyGroupID" type="xs:long" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -807,7 +829,7 @@
   <xs:element name="DisassociatePolicyGroupFromDomains">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="policyGroupId" type="xs:long" />
+        <xs:element minOccurs="0" name="policyGroupID" type="xs:long" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -816,32 +838,6 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetPolicyGroupDomainMap">
-    <xs:complexType>
-      <xs:sequence />
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="GetPolicyGroupDomainMapResponse">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element minOccurs="0" name="GetPolicyGroupDomainMapResult" nillable="true" type="tns:ArrayOfCertPolicyGroupDomainMap" />
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:complexType name="ArrayOfCertPolicyGroupDomainMap">
-    <xs:sequence>
-      <xs:element minOccurs="0" maxOccurs="unbounded" name="CertPolicyGroupDomainMap" nillable="true" type="tns:CertPolicyGroupDomainMap" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="ArrayOfCertPolicyGroupDomainMap" nillable="true" type="tns:ArrayOfCertPolicyGroupDomainMap" />
-  <xs:complexType name="CertPolicyGroupDomainMap">
-    <xs:sequence>
-      <xs:element name="CertPolicyGroup" nillable="true" type="tns:CertPolicyGroup" />
-      <xs:element name="CreateDate" type="xs:dateTime" />
-      <xs:element name="Owner" nillable="true" type="xs:string" />
-    </xs:sequence>
-  </xs:complexType>
-  <xs:element name="CertPolicyGroupDomainMap" nillable="true" type="tns:CertPolicyGroupDomainMap" />
   <xs:element name="GetPolicyGroupsByDomain">
     <xs:complexType>
       <xs:sequence>

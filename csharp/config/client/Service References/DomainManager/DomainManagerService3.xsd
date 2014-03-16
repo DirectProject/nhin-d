@@ -73,6 +73,7 @@
       <xs:enumeration value="InvalidCertPolicyGroupName" />
       <xs:enumeration value="InvalidCertPolicyGroup" />
       <xs:enumeration value="CertPolicyGroupDescriptionLength" />
+      <xs:enumeration value="InvalidCertPolicyUse" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />

@@ -19,7 +19,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using Health.Direct.Common.Caching;
+using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Policies;
+using Health.Direct.Config.Client;
 using Health.Direct.Policy;
 using Health.Direct.SmtpAgent.Config;
 
@@ -28,26 +30,26 @@ namespace Health.Direct.SmtpAgent.Policy
     /// <inheritdoc />
     public class TrustPolicyResolver : IPolicyResolver
     {
-        IPolicyResolver m_outgoingPolicies;
-        IPolicyResolver m_incomingPolicies;
-        TrustPolicyServiceResolverSettings m_settings;
+        IPolicyResolver m_incomingResolver;
+        IPolicyResolver m_outgoingResolver;
+        ClientSettings m_settings;
 
         public TrustPolicyResolver(TrustPolicyServiceResolverSettings settings)
         {
 
-            m_settings = settings;
+            m_settings = settings.ClientSettings;
 
             CacheSettings incomingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.incoming" };
+                new CacheSettings(settings.CacheSettings) { Name = "BundleCache.incoming" };
 
             CacheSettings outgoingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.outgoing" };
+                new CacheSettings(settings.CacheSettings) { Name = "BundleCache.outgoing" };
 
-            //m_incomingResolver =
-            //    new PolicyResolver(new BundleAnchorIndex(m_settings, true), incomingCacheSettings);
+            m_incomingResolver =
+                new PolicyResolver(new CertPolicyIndex(m_settings, true), incomingCacheSettings);
 
-            //m_outgoingResolver =
-            //    new CertificateResolver(new BundleAnchorIndex(m_settings, false), outgoingCacheSettings);
+            m_outgoingResolver =
+                new PolicyResolver(new CertPolicyIndex(m_settings, false), outgoingCacheSettings);
 
         }
         public IList<IPolicyExpression>

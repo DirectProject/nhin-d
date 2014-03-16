@@ -61,7 +61,5 @@ namespace Health.Direct.SmtpAgent.Policy
         {
             throw new NotImplementedException();
         }
-
-       
     }
 }
