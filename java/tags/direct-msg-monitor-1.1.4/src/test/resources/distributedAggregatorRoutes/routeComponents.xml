@@ -1,0 +1,123 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd"       
+       default-autowire="byName">
+
+	<context:annotation-config />
+	<context:component-scan base-package="org.nhindirect.monitor.dao" />
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+
+	<!-- Exception translation bean post processor -->
+	<bean
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+    <bean id="persistenceUnitManager" class="org.springframework.orm.jpa.persistenceunit.DefaultPersistenceUnitManager">
+      <property name="persistenceXmlLocations">
+        <list>
+         <value>classpath*:META-INF/persistence.xml</value>
+        </list>
+      </property>
+      <property name="defaultDataSource" ref="dataSource"/>
+    </bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="false" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+			</bean>
+		</property>
+		<property name="dataSource" ref="dataSource"/>
+	    <property name="persistenceUnitManager" ref="persistenceUnitManager" />
+	</bean>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url" value="jdbc:derby:target/msg-monitor-service-integration;create=true" />
+		<property name="username" value="aggregate" />
+		<property name="password" value="service" />
+	</bean> 
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	    <property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+
+    <!-- Aggregator components -->
+    <bean id="generalTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="1000"/>
+    </bean>
+
+    <bean id="reliableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="1000"/>
+    </bean>
+
+    <bean id="varaiableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.VariableTimeoutCondition">
+		<constructor-arg ref="generalTimeoutCondition" />
+		<constructor-arg ref="reliableTimeoutCondition" />
+    </bean>
+
+    <bean id="generalCompletionCondition" class="org.nhindirect.monitor.condition.impl.GeneralCompletionCondition" />
+
+    <bean id="reliableCompletionCondition" class="org.nhindirect.monitor.condition.impl.TimelyAndReliableCompletionCondition" />
+
+    <bean id="variableCompletionCondition" class="org.nhindirect.monitor.condition.impl.VariableCompletionCondition">
+		<constructor-arg ref="reliableCompletionCondition" />
+		<constructor-arg ref="generalCompletionCondition" />
+    </bean>
+
+    <bean id="aggregationStrategy" class="org.nhindirect.monitor.aggregator.BasicTxAggregator">
+		<constructor-arg ref="variableCompletionCondition" />  
+		<constructor-arg ref="varaiableTimeoutCondition" />  		
+    </bean>
+
+    <bean id="msgIdCorrelator" class="org.nhindirect.monitor.expression.MessageIdCorrelationExpression" />
+
+    <bean id="aggregationDAO" class="org.nhindirect.monitor.dao.impl.AggregationDAOImpl" />
+
+    <bean id="directMonitoringRepo" class="org.nhindirect.monitor.aggregator.repository.ConcurrentJPAAggregationRepository">
+      <!-- store the repo in the hawtdb.dat file -->
+      <property name="aggreationDAO" ref="aggregationDAO"/>
+      <!-- and use directMonitoring as the repository name -->   
+      <property name="recoveryInterval" value="200" />
+      <property name="maximumRedeliveries" value="5" />         
+    </bean>
+
+  <bean id="textAssemblerFactor" class="org.nhindirect.common.mail.dsn.impl.HumanReadableTextAssemblerFactory">
+  </bean> 
+
+  <bean id="textBodyGenerator" class="org.nhindirect.common.mail.dsn.impl.DefaultDSNFailureTextBodyPartGenerator">
+        <constructor-arg value="%original_sender_tag%,&lt;br/&gt;"/>
+        <constructor-arg value="The &lt;i&gt;Cerner Direct&lt;/i&gt; Team&lt;br/&gt;&lt;br/&gt;&lt;b&gt;&lt;u&gt;Troubleshooting Information&lt;/u&gt;&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;%headers_tag%"/>        
+        <constructor-arg value="We have not received a delivery notification for the following recipient(s) because the receiving system may be down or configured incorrectly:"/>    
+        <constructor-arg value=""/>            
+        <constructor-arg value="&lt;b&gt;Your message delivery has been delayed.&lt;/b&gt; Please confirm your recipient email addresses are correct. If the addresses are correct and the message is time sensitive, consider a different communication method. We will send another notification to you in 24 hours if we still have not received a delivery notification.&lt;br&gt;&lt;br/&gt;If you continue to receive this message, please have the recipient check with their system admin and include the &quot;Troubleshooting Information&quot; below."/>              
+        <constructor-arg ref="textAssemblerFactor"/>    
+  </bean>
+
+  <bean id="dsnGenerator" class="org.nhindirect.common.mail.dsn.DSNGenerator">
+        <constructor-arg value="Not Delivered:"/>
+  </bean>
+
+  <bean id="dsnMessageProcessor" class="org.nhindirect.monitor.processor.DSNMessageGenerator">
+		<constructor-arg ref="dsnGenerator" />
+		<constructor-arg value="postmaster" />	
+		<constructor-arg ref="variableCompletionCondition" />	
+		<constructor-arg value="DirectMessageMonitor" />	
+		<constructor-arg ref="textBodyGenerator" />							
+  </bean>
+
+</beans>

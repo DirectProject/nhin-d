@@ -1,0 +1,6 @@
+h1. About this Chapter
+
+This chapters describes the deployment and configuration model for the monitoring service.
+
+* [Web Deployment And Configuration|./web-depl-config.html]
+* [Deployment Considerations|./dep-errata.html]

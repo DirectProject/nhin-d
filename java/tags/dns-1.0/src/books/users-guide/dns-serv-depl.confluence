@@ -1,0 +1,166 @@
+h1. DNS Service Deployment
+
+The DNS services are deployable on a number of different operating environments and can be launched either interactively (for debugging) or as a background service.  Although each OS configures and runs background services differently, the DNS service package contains OS specific script files that normalize the deployment process.
+
+h2. Service Package Layout
+
+The DNS services are assembled and packaged as a zipped tar ball.  In side the package, the services are bundled using in the following directory structure.
+
+{code}
+  +-- DirectDNSServer
+      +-- bin
+      +-- conf
+      +-- lib
+      +-- logs
+{code}
+
+*Directory Contents*
+
+* bin  - Contains installation and service launching/shutdown scripts.
+* conf - Contains service configuration files.
+* lib  - Contains the binary code packages.
+* logs - Contains service execution log files.
+
+h2. Service Installation
+
+Installation of the DNS services is slightly different for each operating system, however each case uses the same assembly.  To install, first download the Direct Project [assembly|http://nhin-d.googlecode.com/files/DirectGateway-M1.tar.gz] and unpack the contents into the desired location using your archiver of choice (tar, WinZip, WinRar, File Roller, etc).
+
+h3. Windows Installation
+
+The DNS server runs as Windows service on Windows deployments.  To install as a service:
+
+# Launch a command shell and navigate to the DirectDNSServer/bin directory.
+# Run the command _DirectDNSServer install_
+
+This will install as the server as a windows service that starts automatically on system boot up.  You should be able to see the service in the Windows service control panel (services.msc).
+
+!images/winservices.png!
+
+To start the server, use one of the following methods:
+
+* Right click on the service in the service control panel and click _start_.
+* In a command shell, run the command _DirectDNSServer start_.
+
+To stop the server, use one of the following methods:
+
+* Right click on the service in the service control panel and click _stop_.
+* In a command shell, run the command _DirectDNSServer stop_.
+
+To uninstall the server:
+
+# Stop the service using of the method described above.
+# Launch a command shell and navigate to the DirectDNSServer/bin directory.
+# Run the command _DirectDNSServer remove_
+
+*NOTE:* The service runs as process named _wrapper-windows-x86-32.exe_.  If for some reason the service hangs or will not stop, you can terminate it manually by killing this process.
+
+h3. Linux Installation
+
+The DNS server runs as a background process on Linux based systems and can be optionally configured to run as a service daemon.  To start the service manually:
+
+# Open a terminal shell and navigate to the DirectDNSServer/bin directory.
+# Run the command _./DirectDNSServer start_
+
+*NOTE:*  If you get an error of "Permissioned denied" you will need to set the executable flag on the script files:
+
+{code}
+ chmod +x DirectDNSServer
+ chmod +x wrapper-linux-x86-32   (or wrapper-linux-x86-64 depending if you are using a 64 or bit linux installation).
+{code}
+
+To stop the server:
+
+# Open a terminal shell and navigate to the DirectDNSServer/bin directory.
+# Run the command _DirectDNSServer stop_.
+
+You can also optionally configure the server as a service.  There are different ways to do this depending on your linux distribution.  On possibility is to create a script file in the /etc/init.d directory.  
+
+Assuming you have deployed the server in the /opt directory and you are running Ubuntu, create the file /etc/init.d/DirectDNSServer using the editor of you choice paste the following content:
+
+{code}
+ #  DirectDNSServer auto-start
+ #
+ # description: Auto-starts the DirectDNSServer
+
+ case $1 in
+    start)
+            sh /opt/DirectDNSServer/bin/DirectDNSServer start
+            ;;
+    stop)
+            sh /opt/DirectDNSServer/bin/DirectDNSServer stop
+            ;;
+    restart)
+            sh /opt/DirectDNSServer/bin/DirectDNSServer start
+            sh /opt/DirectDNSServer/bin/DirectDNSServer stop
+            ;;
+
+ esac
+ exit 0
+{code}
+
+Make the script executable using the following command:
+
+{code}
+sudo chmod 755 /etc/init.d/DirectDNSServer
+{code}
+
+You can then start the service by running the command:
+
+{code}
+service DirectDNSServer start
+{code}
+
+Conversely you can stop the service by running the command:
+
+{code}
+service DirectDNSServer stop
+{code}
+
+h3. Running Interactively
+
+For debugging or troubleshooting purposes, you may need to run the service interactively.  Running interactively is the same across all platforms.
+
+# Open a terminal shell and navigate to the DirectDNSServer/bin directory.
+# Run the command _DirectDNSServer console_.
+
+The service will output all logging to the current console and the log file.  To terminate the interactive service, simply press _CTRL+C_ (Control C).
+
+h2. Service Deployment Configuration
+
+The service deployment is configured using a file named _wrapper.conf_ found in the ./conf directory of the service's directory structure.  The service script files read this configuration file to set runtime attributes such as classpath, logging locations and thresholds, JVM arguments, and application arguments.  The service itself is just a plain Java application, but is wrapped by a series of deployment classes that are intialized and launched by the service script.
+
+The configuration file in most cases does not need a lot of modification, however there a few settings that will need adjustment depending on your deployment.
+
+{code}
+# Java Additional Parameters
+wrapper.java.additional.1=-Djava.security.policy=conf/policy.all
+wrapper.java.additional.2=-Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog
+wrapper.java.additional.3=-Dorg.apache.commons.logging.simplelog.defaultlog=info
+.
+.
+.
+# Application parameters.  Add parameters as needed starting from 1
+wrapper.app.parameter.1=org.nhindirect.dns.service.SimpleServiceRunner
+wrapper.app.parameter.2=-p
+wrapper.app.parameter.3=53
+wrapper.app.parameter.4=-b
+wrapper.app.parameter.5=0.0.0.0
+wrapper.app.parameter.6=-u
+wrapper.app.parameter.7=http://localhost:8081/config-service/ConfigurationService
+wrapper.app.parameter.8=-m
+wrapper.app.parameter.9=SERVER
+{code}
+
+Typical settings that may need adjustment.
+
+||Setting||Description||
+|-Dorg.apache.commons.logging.simplelog.defaultlog|The logging threshold.  Valid value: \\ \\fatal: Severe errors that cause premature termination\\error: Other runtime errors or unexpected conditions.\\warn: Use of deprecated APIs, poor use of API, 'almost' errors, other runtime situations that are undesirable or unexpected, but not necessarily "wrong".\\info (default):  Interesting runtime events such as startup/shutdown.\\debug: Detailed information on flow of through the system.\\trace: Even more detailed information such as entering and exiting methods.|
+|wrapper.app.parameter.2=-p|The IP port that the DNS server will use for listening for DNS queries.  The default is 53. \\NOTE:  Some operating systems may require the service to run with elevated account privileges to open ports in this range.|
+|wrapper.app.parameter.4=-b|The IP addressed on the local machine that the service will bind to.  Multiple IP addresses are separated with a comma.  The default is 0.0.0.0 which means the service will bind to all IP addresses on the machine (including the loopback address of 127.0.0.1)|
+|wrapper.app.parameter.6=-u|This is the URL of the location of the DNS records.  Generally this will be the URL of the Direct Project configuration web service.|
+
+Some of these parameters can be over ridden with settings in the configuration service.  See the protocol [configuration|./dns-proto-config.html] for more details. 
+
+h2. Service Logging
+
+The service logs are written to the file _wrapper.txt_ found in the ./logs directory of the service's directory structure.  Logging threshold configuration is described in the previous section.

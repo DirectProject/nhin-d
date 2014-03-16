@@ -1,0 +1,22 @@
+h1. DNS Protocol Configuration
+
+The DNS server has several configuration parameters for tuning the DNS communication protocol.  Some of the basic settings are configurable in the services configuration [file|./dns-serv-depl.html], however the service can be tuned at a more granular level using the configuration UI web tool.  Settings in the configuration UI take precedence over those in the configuration file.
+
+h2. Protocol Configuration Parameters
+
+Protocol configuration parameters are set using the same section of the configuration UI web tool as SMTP server [settings|http://api.nhindirect.org/java/site/gateway/1.5/users-guide/smtp-depl-wsconfig.html#Anchors].
+
+!images/dnsconfigsetting.png!
+
+
+||Setting||Description||
+|DNSServerBindings|The IP addressed on the local machine that the service will bind to.  Multiple IP addresses are separated with a comma.  The default is 0.0.0.0 which means the service will bind to all IP addresses on the machine (including the loopback address of 127.0.0.1)|
+|DNSServerPort|The IP port that the DNS server will use for listening for DNS queries.  The default is 53. \\NOTE:  Some operating systems may require the service to run with elevated account privileges to open ports in this range.|
+|DNSServerMaxRequestSize|The maximum size in bytes for an query request.  The default is 16K.|
+|DNSServerMaxConnectionBacklog|The maximum number of connections that are in the IP socket accept backlog.  Socket backlog is only relevant for TCP session based connections.  Setting this value to high can overload the IP stack or result in DNS client timeouts.  The default value is 64.|
+|DNSServerMaxActiveRequests|The maximum number of concurrent requests that can be processed by the server at any give time.  Setting this value to high may result in overloading the system.  Setting this value to low can limit throughput.  The default is 64.|
+|DNSServerMaxOutstandingRequests|The maximum number of requests that can be accepted by the server, but not yet committed to a processing thread.  Setting this value to high may result in DNS clients timing out due to outstanding requests waiting to long for a processing thread.  The default is 16 requests.|
+|DNSServerMaxRequestBuffer|The maximum size request buffer size in bytes.  The default value is 1024 bytes.|
+|DNSServerSendTimeout|The socket timeout in milliseconds for sending responses.  Setting this value to high can result in performance degradation if multiple clients abandon their sessions.  Setting this value to low can result in clients not receiving responses in high latency environments.  The default value is 5000 milliseconds.|
+|DNSServerRecieveTimeout|The socket timeout in milliseconds for receiving or reading request.  Setting this value to high can result in performance degradation if multiple clients abandon their sessions.  Setting this value to low can result in the server not fully reading request data in high latency environments.  The default value is 5000 milliseconds.|
+|DNSServerSocketCloseTimeout|The timeout in milliseconds for closing a socket connection.  The default value is 5000 milliseconds.|

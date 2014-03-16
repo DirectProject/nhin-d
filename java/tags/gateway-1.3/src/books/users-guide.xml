@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<book xmlns="http://maven.apache.org/BOOK/1.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/BOOK/1.0.0 ../../../doxia/doxia-book/target/generated-site/xsd/book-1.0.0.xsd">
+  <id>users-guide</id>
+  <title>Gateway Module Users Guide</title>
+  <chapters>
+    <chapter>
+      <id>preface</id>
+      <title>Preface</title>
+      <sections>
+        <section>
+          <id>preface</id>
+        </section>
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>dev</id>
+      <title>Developers Guide</title>
+      <sections>
+        <section>
+          <id>dev-intro</id>     
+        </section>   
+        <section>
+          <id>dev-arch</id>     
+        </section>         
+        <section>
+          <id>dev-write</id>     
+        </section>
+        <section>
+          <id>dev-write</id>     
+        </section>                        
+      </sections>
+    </chapter>
+    <chapter>
+      <id>deployment</id>
+      <title>Deployment Guide</title>
+      <sections>
+        <section>
+          <id>depl-intro</id>     
+        </section>   
+        <section>
+          <id>smtp-depl-xmlconfig</id>     
+        </section>
+        <section>
+          <id>smtp-depl-wsconfig</id>     
+        </section>                  
+        <section>
+          <id>depl-smtp</id>     
+        </section>   
+        <section>
+          <id>depl-james</id>     
+        </section>                              
+      </sections>
+    </chapter>    
+  </chapters>
+</book>

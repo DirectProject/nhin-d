@@ -1,0 +1,59 @@
+h1. Completion and Timeout Condition Components
+
+The completion condition component determines if all notification messages have been received for a message.  It can also determine which recipients of the original message have not received all of the required notification message.  Additionally, the timeout condition component determines how long a particular aggregated set of messages can remain in the system.
+
+The condition components are defined by the following interfaces:
+
+{code}
+package org.nhindirect.monitor.condition;
+
+public interface TxCompletionCondition 
+{	
+	public boolean isComplete(Collection<Tx> txs);
+
+	public Collection<String> getIncompleteRecipients(Collection<Tx> txs);
+}
+{code}
+
+{code}
+package org.nhindirect.monitor.condition;
+
+public interface TxTimeoutCondition 
+{
+	public long getTimeout(Collection<Tx> txs, long exchangeStartTime);
+}
+{code}
+
+h2. Completion Conditions
+
+The completion condition is the work horse of the monitoring service.  It determines if all of the required notification messages have been received for a given message.  Each time a message is received by the monitoring service, the isComplete method is called.  The method receives a collection of all messages (the original message plus all notifications) that are correlated to the original message along with the corresponding attributes.  The isComplete method then applies the completion rules to the message collection.  
+
+h3. Timely and Reliable Completion Condition
+
+So what are these completion rules?  This is where the fun comes in.  The rules for timely and reliable messaging are defined by the implementation guide and implemented by a concrete implementation class of the TxCompletionCondition interface named TimelyAndReliableCompletionCondition.  When is isComplete is executed as part of the Camel route, the collection is checked to ensure all required messages exist in the passed collection.  The logic is not at all trivial.  For a successful ACK, both the MDN processed and dispatched messages must be received.  For a NACK, either a failure MDN or DNS must be present.  To complicate matters, not only must all notifications be present, but they must be present and complete for every recipient of the original message.  This is the purpose of the getIncompleteRecipients method.  It determines which recipients of the original message have not yet received all the required notification messages.  This is a very useful method when it comes time to generate a failure message in the event of a timeout.  If all recipients have not received all of the their notification messages, then the aggregation is determine to still be is a pending state, and isComplete returns false.  Conversely, if all recipients have received their required notification messages, then the isComplete returns true and the aggregated list of messages is moved on through the Camel route.
+
+h3. General Completion Condition
+
+The TimelyAndReliableCompletionCondition applies rules to messages that have explicitly requested timely and reliable messaging.  But what about messages that do not need it?  The gateway sends all messages to the monitor, so what do you do with all the  messages when the rules of the implementation guide do not apply?  You have a couple of options here.  They could just be ignored (with the proper route configuration), or a HISP could be a good neighbor and consider quality of service (QoS) as a valuable attribute for all messages.
+
+As a fall back to providing some sort of QoS to other messages, the GeneralCompletionCondition class implements a simpler set of completion rules.  Instead of requiring multiple MDN messages to determine an ACK, the general condition only checks to see if any type of notification, MDN or DSN, exists per recipient.  If at least one notification exists for every recipient, then the condition is considered complete.  The same semantics apply to the isComplete method.  If the condition is complete, then aggregated list of messages is moved on through the Camel route.  Otherwise, the aggregation stays in a pending state.
+
+h3. Variable Completion Condition
+
+So now our monitoring service has completion condition for both reliable messages and general messages.  But how does the service determine which rules should apply to which messages?  The VariableCompletionCondition class is another concrete implementation of the TxCompletionCondition interface that wraps instances of a timely and reliable completion condition and a general completion condition.  When the isComplete method is called on the variable condition class, it determines which rules should be applied by searching for the message attribute requesting timely and reliable messaging.  If the attribute exists, then it delegates the call to the timely and reliable completion condition.  Otherwise the general condition is used.
+
+The wrapped completion condition instances are provided as required constructor parameters to the VariableCompletionCondition class.  
+
+h2. Timeout Conditions
+
+In cases where all notifications message have not be received (which will happen if the receiving HISP does not trust the original message), some action needs to take place within some time period.  This is the 'timely' attribute of timely and reliable messaging.  
+
+h3. Decaying Timeout Condition
+
+In Camel, the default method of applying a timeout to an aggregator is to provide the timeout period in the DSL.  The problem is that the timeout period is reset each time a message is added to aggregation.  This not an ideal solution for timely and reliable messaging because it requires the timeout start from the time the original message was sent and only last for a set time period.  To resolve this, Camel supports defining a custom dynamic time.  A dynamic timer means the timeout period changes each time a message is correlated with a set of messages (added to an aggregation).  The timer is still reset with each received message, so for timely and reliable message, the timeout must 'decay' with each received message.  This is the purpose of the DecayingTimeoutCondition class.
+
+The DecayingTimeoutCondition recalculates the timeout for Camel each time a message is received.  To do this, it needs to know what time the first message was received for an aggregation.  Fortunately, Camel already provides this as an attribute of every aggregation.  It then takes the current time, and subtracts it from the aggregation start time to calculate how much time has elapsed from the start of the aggregation.  When the DecayingTimeoutCondition is instantiated, the 'timely' attribute is provided as a class property to determine the maximum amount of time an aggregation stays active before it is considered timed out.  The elapsed time is subtracted from this property to determine what the new timer value should be (remember the timer is reset is time a message is received).  Using this algorithm, each new message results in the timer being reset correctly to achieve the desired overall timeout of an aggregation.
+
+h3. Variable Timeout Condition
+
+The VariableTimeoutCondition class provides the same purpose as the VariableCompletionCondition, only using timeouts instead of completion conditions.  The rules for recalculating the timeout for timely and reliable and general messages is the same in both cases.  However, the two scenarios may want different aggregation timeout periods.  The VariableTimeoutCondition may take two completely different instances of the DecayingTimeoutCondition as constructor parameters to provide different timeouts, or it may use the same instance is both scenarios have the same timeout period.

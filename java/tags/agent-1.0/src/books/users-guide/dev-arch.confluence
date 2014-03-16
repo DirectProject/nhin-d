@@ -1,0 +1,27 @@
+h1. Security and Trust Agent Architecture and Components
+
+At a high level the agent can be viewed as a black box that implements the security and trust [specification|http://nhindirect.org/Content+Security+for+Simple+Health+Transport].  Digging deeper into the box, the agent consists of a directly consumable API and several subsystems that can be directly consumed as stand-alone components.  
+
+!images/highLevelArch.png!
+
+Each component within the agent functions independently whilst the agent orchestrates the business logic between the internal components.
+
+*Core Components and Interfaces*
+
+* *[NHINDAgent|./dev-nhindagent.html]*: Interface specification for the security and trust agent.  Incoming and outgoing messages are processed by the agent according to the security and trust [specification|http://nhindirect.org/Content+Security+for+Simple+Health+Transport].  [JavaDoc|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/NHINDAgent.html]
+
+* *[Cryptographer|./dev-cryptographer.html]*: Interface specification for the encryption/decryption and message signature operations.  [JavaDoc|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/cryptography/Cryptographer.html]
+
+* *[CertificateResolver|./dev-certresolver.html]*: Certificate resolvers are responsible for locating public and private X509 certificates for destination addresses.  Certificates are used for encryption/decryption, message signing, and signature validation.  [JavaDoc|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/cert/CertificateResolver.html]
+
+* *[TrustModel|./dev-trustmodel.html]*: Interface specification for the trust enforcement policy.  Trust is enforced by trust anchors and an optional set of intermediate certificates.  [JavaDoc|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/trust/TrustModel.html]
+
+* *[Mail Library|./dev-maillib.html]*: Contains utility classes and specific implementations of agent mail classes.  The majority of the classes are built on the [JavaMail|http://java.sun.com/products/javamail/javadocs/index.html] API.  [JavaDoc|http://api.nhindirect.org/java/site/agent/1.0-SNAPSHOT/apidocs/org/nhindirect/stagent/mail/package-summary.html]
+
+Typically messages are processed by the agent using the appropriate incoming or outgoing method and return either a processed message or throw an exception if the message cannot be processed.
+
+h2. IoC and DI Support
+
+Inversion of control (IoC) and dependency injection (DI) are popular design patterns for componentized software.   Most of the components support multiple IoC and DI framework through constructor and attribute setter methods; however, the agent module is biased to the Google [Guice|http://code.google.com/p/google-guice] framework and supports Guice specific constructs such as bindings, providers, and modules.
+
+Although the protocol implementation bridges provided by the gateway [module|http://api.nhindirect.org/java/site/gateway/1.0-SNAPSHOT] almost exclusively instantiate component instances using Guice, component instances can be created directly without the use of DI. 
