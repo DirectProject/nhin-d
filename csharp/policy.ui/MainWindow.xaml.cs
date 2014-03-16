@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
 using Health.Direct.Policy.Machine;

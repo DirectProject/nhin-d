@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Health.Direct.Common.Policies;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.OpCode;
 using Health.Direct.Policy.Operators;

@@ -116,6 +116,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\policy\policy.csproj">
       <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
       <Name>policy</Name>
