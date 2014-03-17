@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
@@ -26,7 +25,22 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class CertPolicyManagerFacts : ConfigStoreTestBase
+    public class CertPolicyTestFixture : ConfigStoreTestBase, IDisposable
+    {
+        public CertPolicyTestFixture()
+        {
+            InitDomainRecords();
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+        }
+
+        public void Dispose()
+        {
+            // Do "global" teardown here; Only called once.
+        }
+    }
+
+    public class CertPolicyManagerFacts : ConfigStoreTestBase, IUseFixture<CertPolicyTestFixture>
     {
         private static new CertPolicyManager CreateManager()
         {
@@ -38,6 +52,12 @@ namespace Health.Direct.Config.Store.Tests
             return new CertPolicyGroupManager(CreateConfigStore());
         }
 
+        public void SetFixture(CertPolicyTestFixture data)
+        {
+           
+        }
+
+        
         /// <summary>
         ///A test for Store
         ///</summary>
@@ -56,7 +76,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetEnumeratorTest()
         {
-            InitCertPolicyRecords();
             IEnumerable<CertPolicy> mgr = CreateManager();
             Assert.Equal(9, mgr.Count());
         }
@@ -68,19 +87,17 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetPolicyByName()
         {
-            InitCertPolicyRecords();
+           
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy1");
             policy.Name.Should().BeEquivalentTo("Policy1");
         }
 
 
-        [Fact]
+        [Fact, AutoRollback]
         public void GetIncomingAndOutgoingCertPolicieByOwnerTest()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            
 
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
@@ -150,12 +167,10 @@ namespace Health.Direct.Config.Store.Tests
         }
 
 
-        [Fact]
+        [Fact, AutoRollback]
         public void GetIncomingCertPolicieByOwnerTest()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            
 
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
@@ -223,12 +238,10 @@ namespace Health.Direct.Config.Store.Tests
 
         }
 
-        [Fact]
+        [Fact, AutoRollback]
         public void GetOutgoingCertPolicieByOwnerTest()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            
 
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
@@ -297,7 +310,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public void AddPolicy()
         {
-            InitCertPolicyRecords();
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy expectedPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
@@ -315,11 +327,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Remove Policy
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void DeletePolicyTest()
         {
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+           
 
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy2");
@@ -331,11 +342,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Remove Multiple Policies
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void DeletePoliciesTest()
         {
-            InitCertPolicyRecords();
-
             CertPolicyManager mgr = CreateManager();
             mgr.Count().Should().Be(9);
             long[] ids = mgr.Select(certPolicy => certPolicy.ID).ToArray();
@@ -347,10 +356,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Remove Multiple Policies
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void Delete2PoliciesTest()
         {
-            InitCertPolicyRecords();
+           
 
             CertPolicyManager mgr = CreateManager();
             mgr.Count().Should().Be(9);
@@ -362,11 +371,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Delete policy and its associations
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void DeletePolicyWithAssociations()
         {
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+           
 
 
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
@@ -394,10 +402,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// A test for Update Policy
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void UpdatePolicyDataTest()
         {
-            InitCertPolicyRecords();
+            
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
@@ -415,10 +423,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// A test for Update Policy
         /// </summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void UpdatePolicyDescriptionTest()
         {
-            InitCertPolicyRecords();
+            
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
