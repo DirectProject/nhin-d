@@ -20,7 +20,7 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 :InstallDb
 call :PrintHeading "Installing DirectConfig database"
 mkdir log
-call createdatabase.bat (localdb)\Projects DirectConfig %sqlSchemaFile% %sqlUsersFile% %sqlReadonlyUsersFile%
+call createdatabase.bat (localdb)\Projects DirectConfig %sqlSchemaFile% %sqlUsersFile% %sqlReadonlyUsersFile% 
 goto :EOF
 
 
