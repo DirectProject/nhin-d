@@ -261,5 +261,27 @@ namespace Health.Direct.Common.Extensions
             string rfc822Date = dateTimeString.Remove(dateTimeString.LastIndexOf(':'), 1);
             return rfc822Date;
         }
+
+        /// <summary>
+        /// Serializes the given DateTime to an RFC822 compliant Date Time string as UTC
+        /// </summary>
+        /// <param name="dateTime">DateTime</param>
+        /// <returns>RFC822 compliant date time string</returns>
+        public static string ToRFC822UtcString(this DateTime dateTime)
+        {
+            int offset = TimeZone.CurrentTimeZone.GetUtcOffset(dateTime).Hours;
+
+            string timeZone = "+" + offset.ToString().PadLeft(2, '0');
+
+            if (offset < 0)
+            {
+                int i = offset * -1;
+                timeZone = "-" + i.ToString().PadLeft(2, '0');
+            }
+
+            string utc = dateTime.ToUniversalTime().ToString("r");
+            int length = utc.Length;
+            return utc.Substring(0, length - 3) + timeZone.PadRight(5, '0');
+        }
     }
 }

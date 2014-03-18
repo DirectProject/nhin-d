@@ -14,12 +14,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Net.Mail;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Extensions;
 using Xunit;
@@ -98,12 +100,40 @@ namespace Health.Direct.Common.Tests.Mail
             Console.WriteLine(dateString);
             int indexOfDash = -1;
             Assert.DoesNotThrow(() => indexOfDash = dateString.LastIndexOf('-'));
+            if (indexOfDash == -1)
+            {
+                indexOfDash = dateString.LastIndexOf('+');
+            }
             Assert.True(indexOfDash >= 0);
             
-            // Verify there is no colon after the dash
+            // Verify there is no colon after the dash or plus
             Assert.True(dateString.IndexOf(':', indexOfDash) < 0);
         }
-        
+
+        [Theory]
+        [PropertyData("Dates")]
+        public void TestZoneUtc(DateTime now)
+        {
+            string dateString = null;
+
+            Assert.DoesNotThrow(() => dateString = now.ToUniversalTime().ToRFC822UtcString());
+            Console.WriteLine(dateString);
+            int indexOfDash = -1;
+            Assert.DoesNotThrow(() => indexOfDash = dateString.LastIndexOf('-'));
+            if (indexOfDash == -1)
+            {
+                indexOfDash = dateString.LastIndexOf('+');
+            }
+            Assert.True(indexOfDash >= 0);
+
+            // Verify there is no colon after the dash or plus
+            Assert.True(dateString.IndexOf(':', indexOfDash) < 0);
+        }
+
+
+
+
+       
         [Fact]
         public void TestMessage()
         {
