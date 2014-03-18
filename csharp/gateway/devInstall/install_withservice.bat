@@ -26,7 +26,7 @@ goto :Done
 @rem --------------------------------
 :InstallDb
 mkdir log
-call createdatabase.bat .\sqlexpress DirectConfig %sqlSchemaFile% %sqlUsersFile% %sqlReadonlyUsersFile%
+call createdatabase.bat (localdb)\Projects DirectConfig %sqlSchemaFile% %sqlUsersFile% %sqlReadonlyUsersFile%
 goto :EOF
 
 
