@@ -29,7 +29,7 @@
 	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
-	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd;test-certPolicy" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd;test-certPolicy;test-store" />
 
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
@@ -103,7 +103,7 @@
 		<xunitproject ProjectFile="unittests\agent.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 
-	<Target Name="test-certPolicy" DependsOnTargets="build-gateway" >
+	<Target Name="test-certPolicy" DependsOnTargets="create-db;build-gateway" >
 		<xunitproject ProjectFile="unittests\certPolicy.release.xunit" Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\certPolicy.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
@@ -113,17 +113,18 @@
 	</Target>
 
 	
-<!-- 	<Target Name="test-store" DependsOnTargets="build-gateway;build-xd"> -->
-	<Target Name="test-store" >
-		<!-- <Exec Command="SqlLocalDb stop Projects" /> -->
-	    <Exec Command="SqlLocalDb create Projects -s" />
-		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
-		<Exec Command='SQLCMD.exe -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
-		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+     <Target Name="test-store" DependsOnTargets="create-db;build-gateway;build-xd">
 		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' " Verbose="true" /> 
 	</Target>
 
+	<Target Name="create-db" >
+		<Exec Command="SqlLocalDb create Projects -s" />
+		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='SQLCMD.exe -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+	</Target>
+	
 	<Target Name="publish-configui">
 		<MSBuild Targets="clean-configui-install" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
 		<CallTarget Targets="build-configui" />
