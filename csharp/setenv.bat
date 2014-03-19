@@ -1,3 +1,5 @@
+@rem looking for VS2013
+
 @ECHO OFF
 
 SET frameworkpath=%windir%\microsoft.net\framework64\v4.0.30319
@@ -8,9 +10,9 @@ IF "%arch%" == "x86" SET frameworkpath=%windir%\microsoft.net\framework\v4.0.303
 
 IF NOT EXIST %frameworkpath% GOTO :FrameworkMissing
 
-IF "%VS110COMNTOOLS%"=="" GOTO :VisualStudioMissing
+IF "%VS120COMNTOOLS%"=="" GOTO :VisualStudioMissing
 
-SET vcvarsallpath=%VS110COMNTOOLS%..\..\VC\vcvarsall.bat
+SET vcvarsallpath=%VS120COMNTOOLS%..\..\VC\vcvarsall.bat
 
 IF NOT EXIST "%vcvarsallpath%" GOTO :VCVarsMissing
 
@@ -25,11 +27,11 @@ ECHO Unable to find .NET 4.5 framework path. Is .NET 4.5 installed?
 GOTO :EOF
 
 :VisualStudioMissing
-ECHO Unable to find VS110COMNTOOLS environment variable. Is Visual Studio 2012 installed?
+ECHO Unable to find VS120COMNTOOLS environment variable. Is Visual Studio 2012 installed?
 GOTO :EOF
 
 :VCVarsMissing
-ECHO Unable to find VS110COMNTOOLS environment variable. Is Visual Studio 2012 installed?
+ECHO Unable to find VS120COMNTOOLS environment variable. Is Visual Studio 2012 installed?
 GOTO :EOF
 
 :Finished

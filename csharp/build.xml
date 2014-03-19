@@ -113,9 +113,15 @@
 	</Target>
 
 	
-	<Target Name="test-store" DependsOnTargets="build-xd">
+<!-- 	<Target Name="test-store" DependsOnTargets="build-gateway;build-xd"> -->
+	<Target Name="test-store" >
+		<!-- <Exec Command="SqlLocalDb stop Projects" /> -->
+	    <Exec Command="SqlLocalDb create Projects -s" />
+		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='SQLCMD.exe -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' " Verbose="true" /> 
 	</Target>
 
 	<Target Name="publish-configui">
