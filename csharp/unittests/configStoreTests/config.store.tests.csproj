@@ -92,7 +92,6 @@
     <Compile Include="CertPolicyFacts.cs" />
     <Compile Include="CertPolicyGroupDomainMapFacts.cs" />
     <Compile Include="CertPolicyGroupFacts.cs" />
-    <Compile Include="CertPolicyGroupMapFacts.cs" />
     <Compile Include="CertPolicyGroupManagerFacts.cs" />
     <Compile Include="CertPolicyManagerFacts.cs" />
     <Compile Include="ConfigStoreTestBase.cs" />
