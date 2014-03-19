@@ -34,7 +34,7 @@ namespace Health.Direct.SmtpAgent.Tests
 {
     public class SmtpAgentTester
     {
-        private const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        private const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
 
 
         public static string TestMessage =

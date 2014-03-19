@@ -28,7 +28,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class ConfigStoreTestBase
     {
-        private const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        private const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
 
         protected const int MAXDOMAINCOUNT = 10; //---number should be <= .cer file count in metadata folder
         protected const int MAXSMTPCOUNT = 3;
