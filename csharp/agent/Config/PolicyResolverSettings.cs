@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joe Shook     Joseph.Shook@Surescipts.com
+    Joe Shook     Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.Xml.Serialization;
-using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Policies;
 
 namespace Health.Direct.Agent.Config
@@ -26,6 +25,14 @@ namespace Health.Direct.Agent.Config
     public abstract class PolicyResolverSettings
     {
         /// <summary>
+        /// The name of this store.
+        /// </summary>
+        public abstract string Name
+        {
+            get;
+        }
+
+        /// <summary>
         /// Validates the instance.
         /// </summary>
         public abstract void Validate();
@@ -35,4 +42,5 @@ namespace Health.Direct.Agent.Config
         /// <returns>The policy resolver instance corresponding to the settings.</returns>
         public abstract IPolicyResolver CreateResolver();
     }
+
 }

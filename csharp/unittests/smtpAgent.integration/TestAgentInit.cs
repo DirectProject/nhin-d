@@ -49,7 +49,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         {
             get
             {
-                yield return new[] { "TestSmtpAgentConfig.xml" };
+                //yield return new[] { "TestSmtpAgentConfig.xml" };
                 yield return new[] { "TestSmtpAgentConfigService.xml" };
             }
         }

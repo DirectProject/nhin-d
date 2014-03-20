@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joe Shook     Joseph.Shook@Surescipts.com
+    Joe Shook     Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -22,7 +22,7 @@ namespace Health.Direct.Common.Policies
 {
     /// <summary>
     /// Supports resolution of policies
-    /// If no policy for address, methods retur null
+    /// If no policy for address, methods return null
     /// Throws exception if there is an error during retrieval, such as network issues
     /// Implementations may use implementation specific caching policies
     /// </summary>

@@ -44,6 +44,38 @@
       </Outgoing>
     </MachineResolver>
   </Anchors>
+  <CertPolicies>
+    <Public>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <NegativeCache>true</NegativeCache>
+        <CacheTTLSeconds>60</CacheTTLSeconds>
+      </CacheSettings>
+    </Public>
+    <Private>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <NegativeCache>true</NegativeCache>
+        <CacheTTLSeconds>60</CacheTTLSeconds>
+      </CacheSettings>
+    </Private>
+    <Trust>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <NegativeCache>true</NegativeCache>
+        <CacheTTLSeconds>60</CacheTTLSeconds>
+      </CacheSettings>
+    </Trust>
+  </CertPolicies>
   <Trust>
     <MaxIssuerChainLength>4</MaxIssuerChainLength>
     <RevocationCheckMode>Offline</RevocationCheckMode>

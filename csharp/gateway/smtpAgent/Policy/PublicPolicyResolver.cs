@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joe Shook     Joseph.Shook@Surescipts.com
+    Joe Shook     Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using Health.Direct.Agent.Config;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Policies;

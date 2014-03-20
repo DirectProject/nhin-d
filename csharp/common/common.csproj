@@ -91,6 +91,8 @@
     <Compile Include="Certificates\DnsCertResolver.cs" />
     <Compile Include="Certificates\Extensions.cs" />
     <Compile Include="Certificates\ICertificateResolver.cs" />
+    <Compile Include="Policies\CertPolicyResolvers.cs" />
+    <Compile Include="Policies\ICertPolicyResolvers.cs" />
     <Compile Include="Policies\IPolicyExpression.cs" />
     <Compile Include="Policies\IPolicyFilter.cs" />
     <Compile Include="Policies\IPolicyIndex.cs" />

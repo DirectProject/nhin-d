@@ -13,12 +13,17 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Xml.Serialization;
 
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Domains;
+using Health.Direct.Common.Policies;
 
 namespace Health.Direct.Agent.Config
 {
@@ -237,12 +242,45 @@ namespace Health.Direct.Agent.Config
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
 
             IDomainResolver domainResolver = this.CreateResolver();
-            
-            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer);
+
+            ICertPolicyResolvers certPolicyResolvers = PolicyResolvers();
+
+            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
             
             return agent;
+        }
+
+        
+
+        private CertPolicyResolvers PolicyResolvers()
+        {
+            IList<KeyValuePair<string, IPolicyResolver>> policyResolvers = new List<KeyValuePair<string, IPolicyResolver>>();
+            if (CertPolicies != null)
+            {
+                PolicyResolverSettings policyResolverSettings =
+                    this.CertPolicies.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.TrustPolicyName);
+                if (policyResolverSettings != null)
+                {
+                    IPolicyResolver trustPolicyResolver = policyResolverSettings.CreateResolver();
+                    policyResolvers.Add(new KeyValuePair<string, IPolicyResolver>(CertPolicyResolvers.TrustPolicyName, trustPolicyResolver));
+                }
+                policyResolverSettings = this.CertPolicies.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PrivatePolicyName);
+                if (policyResolverSettings != null)
+                {
+                    IPolicyResolver privatePolicyResolver = policyResolverSettings.CreateResolver();
+                    policyResolvers.Add(new KeyValuePair<string, IPolicyResolver>(CertPolicyResolvers.PrivatePolicyName, privatePolicyResolver));
+                }
+                policyResolverSettings = this.CertPolicies.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PublicPolicyName);
+                if (policyResolverSettings != null)
+                {
+                    IPolicyResolver publicPolicyResolver = policyResolverSettings.CreateResolver();
+                    policyResolvers.Add(new KeyValuePair<string, IPolicyResolver>(CertPolicyResolvers.PublicPolicyName, publicPolicyResolver));
+                }
+            }
+            CertPolicyResolvers certPolicyResolvers = new CertPolicyResolvers(policyResolvers);
+            return certPolicyResolvers;
         }
 
         //
