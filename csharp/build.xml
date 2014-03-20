@@ -93,28 +93,28 @@
 	</Target>
 
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
-	<Target Name="test-agent" DependsOnTargets="build-agent">
+	<Target Name="test-agent" >
 		<xunitproject ProjectFile="unittests\agent.release.xunit" Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\agent.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 	
-	<Target Name="test-gateway" DependsOnTargets="build-gateway">
+	<Target Name="test-gateway" >
 		<xunitproject ProjectFile="unittests\gateway.release.xunit" Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\agent.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 
-	<Target Name="test-certPolicy" DependsOnTargets="create-db;build-gateway" >
+	<Target Name="test-certPolicy" >
 		<xunitproject ProjectFile="unittests\certPolicy.release.xunit" Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\certPolicy.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 	
-	<Target Name="test-xd" DependsOnTargets="build-xd">
+	<Target Name="test-xd" >
 		<xunitproject ProjectFile="unittests\xd.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 
 	
-     <Target Name="test-store" DependsOnTargets="create-db;build-gateway;build-xd">
+     <Target Name="test-store" DependsOnTargets="create-db;">
 		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' " Verbose="true" /> 
 	</Target>

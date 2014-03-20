@@ -17,7 +17,7 @@ namespace Health.Direct.DnsResponder.Tests
         ///TODO: incorporate sample for executing database population one time...
         
 
-        protected const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        protected const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
         //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
         private readonly static string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
