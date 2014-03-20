@@ -8,11 +8,15 @@ set sqlSchemaFile=..\..\config\store\Schema.sql
 set sqlUsersFile=..\..\installer\createuser.sql
 set sqlReadonlyUsersFile=..\..\installer\createReadOnlyUser.sql
 set srcbin=..\..\bin\debug
+set installdir="..\..\installer"
 
 call :InstallDb
 if %ERRORLEVEL% NEQ 0 goto :Done
 
 call :Install_Test_Certs
+if %ERRORLEVEL% NEQ 0 goto :Done
+
+call :Install_Eventlog_Sources
 if %ERRORLEVEL% NEQ 0 goto :Done
 
 
@@ -34,6 +38,17 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 Echo Succeeded
 popd
 goto :EOF
+
+
+:Install_Eventlog_Sources
+@rem --------------------------------
+pushd %installdir%
+call createeventlogsource.bat 
+if %ERRORLEVEL% NEQ 0 goto :Done
+Echo Succeeded
+popd
+goto :EOF
+
 
 
 @rem -------------------------------

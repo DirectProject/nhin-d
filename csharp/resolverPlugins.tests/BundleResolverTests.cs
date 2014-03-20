@@ -30,10 +30,10 @@ using Xunit.Extensions;
 
 namespace Health.Direct.ResolverPlugins.Tests
 {
-    // +-------------------------------------------------------------------------------------------------+
-    // | NOTE all of these tests require a config service running at http://localhost/ConfigService and  |
-    // | that the "Patients-Test" bundle of the Direct Patient Community be accessible.                  |
-    // +-------------------------------------------------------------------------------------------------+
+    // +------------------------------------------------------------------------------------------------------+
+    // | NOTE all of these tests require a config service running at http://localhost:6692/ConfigService and  |
+    // | that the "Patients-Test" bundle of the Direct Patient Community be accessible.                       |
+    // +------------------------------------------------------------------------------------------------------+
 
     public class BundleResolverTests : System.IDisposable
     {
@@ -174,20 +174,21 @@ namespace Health.Direct.ResolverPlugins.Tests
     
         public const string BundleClientSettingsXml = @"
             <ClientSettings>
-              <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
             <!--
-            <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+              <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
             -->
+            <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+            
             </ClientSettings>
             ";
 
         public const string BundleResolverSettingsXml = @"
             <BundleResolver>
               <ClientSettings>
-              <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
-                <!--
-                <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+                 <!--
+                  <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
                 -->
+                <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
               </ClientSettings>
               <CacheSettings>
                 <Cache>true</Cache>
