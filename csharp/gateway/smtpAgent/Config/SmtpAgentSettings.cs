@@ -24,6 +24,7 @@ using Health.Direct.Agent.Config;
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Policies;
 using Health.Direct.Config.Client;
 
 namespace Health.Direct.SmtpAgent.Config
@@ -411,11 +412,11 @@ namespace Health.Direct.SmtpAgent.Config
 
             List<XmlElementAttribute> elements = new List<XmlElementAttribute>()
                                                  {
-                                                     new XmlElementAttribute("Public",
+                                                     new XmlElementAttribute( CertPolicyResolvers.TrustPolicyName,
                                                          typeof (PublicPolicyServiceResolverSettings)),
-                                                         new XmlElementAttribute("Private",
+                                                         new XmlElementAttribute( CertPolicyResolvers.PrivatePolicyName,
                                                          typeof (PrivatePolicyServiceResolverSettings)),
-                                                         new XmlElementAttribute("Trust",
+                                                         new XmlElementAttribute( CertPolicyResolvers.PublicPolicyName,
                                                          typeof (TrustPolicyServiceResolverSettings))
                                                  };
             serializer.AddElementOption<PolicySettings>("Resolvers", elements.ToArray());

@@ -30,6 +30,14 @@ namespace Health.Direct.SmtpAgent.Config
     [XmlType("Public")]
     public class PublicPolicyServiceResolverSettings : PolicyResolverSettings
     {
+        /// <summary>
+        /// The name of this store.
+        /// </summary>
+        public override string Name
+        {
+            get { return CertPolicyResolvers.PublicPolicyName; }
+        }
+
         [XmlElement]
         public ClientSettings ClientSettings
         {
@@ -67,6 +75,14 @@ namespace Health.Direct.SmtpAgent.Config
     [XmlType("Private")]
     public class PrivatePolicyServiceResolverSettings : PolicyResolverSettings
     {
+        /// <summary>
+        /// The name of this store.
+        /// </summary>
+        public override string Name
+        {
+            get { return CertPolicyResolvers.PrivatePolicyName; }
+        }
+
         [XmlElement]
         public ClientSettings ClientSettings
         {
@@ -104,6 +120,14 @@ namespace Health.Direct.SmtpAgent.Config
     [XmlType("Trust")]
     public class TrustPolicyServiceResolverSettings : PolicyResolverSettings
     {
+        /// <summary>
+        /// The name of this store.
+        /// </summary>
+        public override string Name
+        {
+            get { return CertPolicyResolvers.TrustPolicyName; }
+        }
+
         [XmlElement]
         public ClientSettings ClientSettings
         {

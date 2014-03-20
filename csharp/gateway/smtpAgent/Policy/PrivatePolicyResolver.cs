@@ -3,7 +3,7 @@
  All rights reserved.
 
  Authors:
-    Joe Shook     Joseph.Shook@Surescipts.com
+    Joe Shook     Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -17,10 +17,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
+using Health.Direct.Agent.Config;
 using Health.Direct.Common.Caching;
-using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Policies;
-using Health.Direct.Policy;
 using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent.Policy
@@ -29,8 +28,8 @@ namespace Health.Direct.SmtpAgent.Policy
     /// <inheritdoc />
     public class PrivatePolicyResolver : IPolicyResolver
     {
-        IPolicyResolver m_outgoingPolicies;
-        IPolicyResolver m_incomingPolicies;
+        IPolicyResolver m_incomingResolver;
+        IPolicyResolver m_outgoingResolver;
         PrivatePolicyServiceResolverSettings m_settings;
 
         public PrivatePolicyResolver(PrivatePolicyServiceResolverSettings settings)
@@ -39,16 +38,16 @@ namespace Health.Direct.SmtpAgent.Policy
             m_settings = settings;
 
             CacheSettings incomingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.incoming" };
+                new CacheSettings(m_settings.CacheSettings) { Name = "privatePolicy.incoming" };
 
             CacheSettings outgoingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "BundleCache.outgoing" };
+                new CacheSettings(m_settings.CacheSettings) { Name = "privatePolicy.outgoing" };
 
-            //m_incomingResolver =
-            //    new PolicyResolver(new BundleAnchorIndex(m_settings, true), incomingCacheSettings);
+            m_incomingResolver =
+                new PolicyResolver(new CertPolicyIndex(m_settings.ClientSettings, true), incomingCacheSettings);
 
-            //m_outgoingResolver =
-            //    new CertificateResolver(new BundleAnchorIndex(m_settings, false), outgoingCacheSettings);
+            m_outgoingResolver =
+                new PolicyResolver(new CertPolicyIndex(m_settings.ClientSettings, false), outgoingCacheSettings);
 
         }
         public IList<IPolicyExpression>

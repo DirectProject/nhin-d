@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
@@ -58,6 +59,8 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             m_handler.InitFromConfigFile(Fullpath(fileName));
         }
+
+      
 
         [Fact]
         public void TestContainer()
@@ -208,17 +211,13 @@ namespace Health.Direct.SmtpAgent.Tests
         void Verify(PolicySettings settings)
         {
             Assert.NotNull(settings.Resolvers);
-            foreach (PolicyResolverSettings resolverSettings in settings.Resolvers)
-            {
-                Assert.DoesNotThrow(() => resolverSettings.Validate());
-
-                PolicyResolverSettings policyResolverSettings = resolverSettings;
-                
-                IPolicyResolver resolver = null;
-                Assert.DoesNotThrow(() => resolver = resolverSettings.CreateResolver());
-                Assert.NotNull(resolver);
-                
-            }
+            Assert.Equal(3, settings.Resolvers.Count());
+            IPolicyResolver trustResolver = settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.TrustPolicyName).CreateResolver();
+            IPolicyResolver privateResolver = settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PrivatePolicyName).CreateResolver();
+            IPolicyResolver publicResolver = settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PublicPolicyName).CreateResolver();
+            Assert.NotNull(trustResolver);
+            Assert.NotNull(privateResolver);
+            Assert.NotNull(publicResolver);
         }
         
         void Verify(TrustAnchorSettings settings)
