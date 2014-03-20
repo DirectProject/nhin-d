@@ -282,7 +282,7 @@ namespace Health.Direct.Policy.Tests
             
         }
 
-        [Fact]
+        [Fact(Skip = "Not sure if this will be implemented.")]
         public void TestBuildTBSField_Validity_AssertFieldNotImplemented()
         {
             var parser = new SimpleTextV1LexiconPolicyParser();

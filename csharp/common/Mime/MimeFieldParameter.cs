@@ -15,9 +15,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Common.Mime
@@ -228,7 +230,9 @@ namespace Health.Direct.Common.Mime
             {
                 return;
             }
-            
+
+            param = EnsureSmtpDateTime(param);
+
             bool needsQuotes = (alwaysQuoteValue || ContainsSpecialChars(param.Value));
             if (needsQuotes)
             {
@@ -241,7 +245,37 @@ namespace Health.Direct.Common.Mime
                 output.Append(MailStandard.DQUOTE);
             }
         }
+
         
+        static readonly string[] dateKeys = new[]
+        {
+              "modification-date"
+            , "read-date"
+            , "creation-date"
+        };
+
+        
+        static KeyValuePair<string, string> EnsureSmtpDateTime(KeyValuePair<string, string> param)
+        {
+            if (!dateKeys.Contains(param.Key))
+            {
+                return param;
+            }
+            DateTime dateValue;
+            // Fix the following format up to be RFC5322 date-time compliant: RFC5322 3.3.
+            // Notice Hour must be two digits.
+            if (DateTime.TryParseExact(param.Value, new[] { "ddd, dd MMM yyyy H:mm:ss zzz" }, CultureInfo.InvariantCulture,
+                DateTimeStyles.AllowWhiteSpaces, out dateValue))
+            {
+                KeyValuePair<string, string>  paramFormatted 
+                    = new KeyValuePair<string, string>(
+                        param.Key
+                        , dateValue.ToRFC822String());
+                return paramFormatted;
+            }
+            return param;
+        }
+
         /// <summary>
         /// Read field parameters from the given field value
         /// </summary>
