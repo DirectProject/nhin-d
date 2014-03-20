@@ -16,24 +16,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Collections.Generic;
 using System.IO;
-using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
+using Health.Direct.ResolverPlugins;
 using Xunit;
-using Xunit.Extensions;
 
-namespace Health.Direct.ResolverPlugins.Tests
+namespace Health.Direct.SmtpAgent.Integration.Tests
 {
-    // +------------------------------------------------------------------------------------------------------+
-    // | NOTE all of these tests require a config service running at http://localhost:6692/ConfigService and  |
-    // | that the "Patients-Test" bundle of the Direct Patient Community be accessible.                       |
-    // +------------------------------------------------------------------------------------------------------+
+    // +-------------------------------------------------------------------------------------------------+
+    // | NOTE all of these tests require a config service running at http://localhost/ConfigService and  |
+    // | that the "Patients-Test" bundle of the Direct Patient Community be accessible.                  |
+    // +-------------------------------------------------------------------------------------------------+
 
     public class BundleResolverTests : System.IDisposable
     {
@@ -77,7 +74,7 @@ namespace Health.Direct.ResolverPlugins.Tests
             using (StringReader reader2 = new StringReader(BundleResolverSettingsXml))
             {
                 XmlSerializer serializer = new XmlSerializer(typeof(BundleResolverSettings));
-                m_bundleResolverSettings = (BundleResolverSettings) serializer.Deserialize(reader2);
+                m_bundleResolverSettings = (BundleResolverSettings)serializer.Deserialize(reader2);
                 m_bundleResolver = m_bundleResolverSettings.CreateResolver();
             }
         }
@@ -87,7 +84,7 @@ namespace Health.Direct.ResolverPlugins.Tests
             m_client.Close();
         }
 
-        [Fact] 
+        [Fact]
         public void EnsureTestBundlesExist()
         {
             List<Bundle> bundles = new List<Bundle>();
@@ -156,7 +153,7 @@ namespace Health.Direct.ResolverPlugins.Tests
 
         private BundleResolverSettings m_bundleResolverSettings;
         private ITrustAnchorResolver m_bundleResolver;
-        
+
         #region data
 
         public const string BundleGoodSubject = "direct.example.org";
@@ -171,24 +168,23 @@ namespace Health.Direct.ResolverPlugins.Tests
         public static Bundle BadBundleBidirectional = new Bundle(BundleBadSubject, BundleBadUrl, true, true);
 
         public static Bundle[] TestBundles = { GoodBundleIncoming, GoodBundleOutgoing, GoodBundleBidi, BadBundleBidirectional };
-    
+
         public const string BundleClientSettingsXml = @"
             <ClientSettings>
-            <!--
               <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
-            -->
+            <!--
             <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
-            
+            -->
             </ClientSettings>
             ";
 
         public const string BundleResolverSettingsXml = @"
             <BundleResolver>
               <ClientSettings>
-                 <!--
-                  <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
-                -->
+              <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
+                <!--
                 <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+                -->
               </ClientSettings>
               <CacheSettings>
                 <Cache>true</Cache>

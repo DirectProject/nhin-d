@@ -23,10 +23,11 @@ using Health.Direct.Agent;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
+using Health.Direct.ResolverPlugins;
 using Xunit;
 using Xunit.Extensions;
 
-namespace Health.Direct.ResolverPlugins.Tests
+namespace Health.Direct.SmtpAgent.Tests
 {
 
 
@@ -263,7 +264,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts500@direct1.demo.direct-test.com")]
-        public void Test500(string subject)
+        public void Test_DCDT_500(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -305,7 +306,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts501@direct1.demo.direct-test.com")]
-        public void Test501(string subject)
+        public void Test_DCDT_501(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -348,7 +349,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts502@direct1.demo.direct-test.com")]
-        public void Test502(string subject)
+        public void Test_DCDT_502(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -377,7 +378,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts505@direct2.demo.direct-test.com")]
-        public void Test505(string subject)
+        public void Test_DCDT_505(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -407,7 +408,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts506@direct2.demo.direct-test.com")]
-        public void Test506(string subject)
+        public void Test_DCDT_506(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -439,7 +440,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts507@direct3.demo.direct-test.com")]
-        public void Test507(string subject)
+        public void Test_DCDT_507(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -489,7 +490,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts515@direct2.demo.direct-test.com")]
-        public void Test515(string subject)
+        public void Test_DCDT_515(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -537,7 +538,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts517@direct3.demo.direct-test.com")]
-        public void Test517(string subject)
+        public void Test_DCDT_517(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -602,7 +603,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts520@direct5.demo.direct-test.com")]
-        public void Test520(string subject)
+        public void Test_DCDT_520(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -630,7 +631,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts511@direct4.demo.direct-test.com")]
-        public void Test511(string subject)
+        public void Test_DCDT_511(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();
@@ -656,7 +657,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         /// <param name="subject"></param>
         [Theory]
         [InlineData("dts512@direct6.demo.direct-test.com")]
-        public void Test512(string subject)
+        public void Test_DCDT_512(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
             DirectAgent agent = settings.CreateAgent();

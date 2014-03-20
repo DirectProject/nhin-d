@@ -20,7 +20,7 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Container;
 
-namespace Health.Direct.ResolverPlugins.Tests.Fakes
+namespace Health.Direct.SmtpAgent.Tests.Fakes
 {
     public class DnsFakeResolver : ICertificateResolver , IPlugin
     {
