@@ -29,7 +29,7 @@
 	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
-	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd;test-certPolicy;test-store" />
+	<Target Name="test-all" DependsOnTargets="test-plugins;test-agent;test-gateway;test-xd;test-certPolicy;test-store" />
 
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
@@ -92,6 +92,12 @@
 		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 
+	
+	<Target Name="test-plugins" >
+		<xunitproject ProjectFile="unittests\resolverplugins.release.xunit" Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\resolverplugins.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+	
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test-agent" >
 		<xunitproject ProjectFile="unittests\agent.release.xunit" Condition=" $(Configuration) == 'Release' "/>
