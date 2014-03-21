@@ -218,6 +218,31 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.NotNull(trustResolver);
             Assert.NotNull(privateResolver);
             Assert.NotNull(publicResolver);
+
+            TrustPolicyServiceResolverSettings trustSettings =
+                settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.TrustPolicyName) as
+                    TrustPolicyServiceResolverSettings;
+
+            Assert.True(trustSettings.CacheSettings.Cache);
+            Assert.True(trustSettings.CacheSettings.NegativeCache);
+            Assert.Equal(60, trustSettings.CacheSettings.CacheTTLSeconds);
+
+            PrivatePolicyServiceResolverSettings privateSettings =
+                settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PrivatePolicyName) as
+                    PrivatePolicyServiceResolverSettings;
+
+            Assert.True(privateSettings.CacheSettings.Cache);
+            Assert.True(privateSettings.CacheSettings.NegativeCache);
+            Assert.Equal(60, privateSettings.CacheSettings.CacheTTLSeconds);
+
+
+            PublicPolicyServiceResolverSettings publicSettings =
+                settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PublicPolicyName) as
+                    PublicPolicyServiceResolverSettings;
+
+            Assert.True(publicSettings.CacheSettings.Cache);
+            Assert.True(publicSettings.CacheSettings.NegativeCache);
+            Assert.Equal(60, publicSettings.CacheSettings.CacheTTLSeconds);
         }
         
         void Verify(TrustAnchorSettings settings)

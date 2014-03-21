@@ -3,6 +3,7 @@
 @echo off
 setlocal
 
+if not exist "C:\inetpub\mailroot\pickup" mkdir C:\inetpub\mailroot\pickup
 
 set sqlSchemaFile=..\..\config\store\Schema.sql
 set sqlUsersFile=..\..\installer\createuser.sql
@@ -23,7 +24,7 @@ if %ERRORLEVEL% NEQ 0 goto :Done
 @rem --------------------------------
 :InstallDb
 call :PrintHeading "Installing DirectConfig database"
-mkdir log
+if not exist "log" mkdir log
 call createdatabase.bat (localdb)\Projects DirectConfig %sqlSchemaFile% %sqlUsersFile% %sqlReadonlyUsersFile% 
 goto :EOF
 
