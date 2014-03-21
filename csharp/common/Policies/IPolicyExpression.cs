@@ -1,9 +1,9 @@
 ﻿/* 
- Copyright (c) 2013, Direct Project
+ Copyright (c) 2014, Direct Project
  All rights reserved.
 
  Authors:
-    Joe Shook      jshook@kryptiq.com
+    Joe Shook     Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
