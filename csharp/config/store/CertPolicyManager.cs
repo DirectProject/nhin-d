@@ -60,7 +60,7 @@ namespace Health.Direct.Config.Store
 
         public CertPolicy Add(CertPolicy policy)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db, policy);
                 db.SubmitChanges();

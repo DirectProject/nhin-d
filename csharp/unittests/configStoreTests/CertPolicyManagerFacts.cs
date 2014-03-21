@@ -312,7 +312,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             CertPolicyManager mgr = CreateManager();
 
-            CertPolicy expectedPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
+            CertPolicy expectedPolicy = new CertPolicy("UnitTestPolicy", "", "1 = 1".ToBytesUtf8());
             mgr.Add(expectedPolicy);
             
 

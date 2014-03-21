@@ -70,6 +70,14 @@ namespace Health.Direct.Config.Store
             Data = data;
         }
 
+        public CertPolicy(CertPolicy policy) : this()
+        {
+
+            Name = policy.Name;
+            Description = policy.Description;
+            Lexicon = policy.Lexicon;
+            Data = policy.Data;
+        }
         
         [Column(Name = "CertPolicyId", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
@@ -168,6 +176,10 @@ namespace Health.Direct.Config.Store
         {
             get
             {
+                if (CertPolicyGroupMap == null)
+                {
+                    return null;
+                }
                 var policyGroups = new ObservableCollection<CertPolicyGroup>(
                         from groupMap in CertPolicyGroupMap select groupMap.CertPolicyGroup);
                 policyGroups.CollectionChanged += CertPolicyGroupCollectionChanged;
