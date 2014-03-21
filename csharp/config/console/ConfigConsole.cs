@@ -17,6 +17,7 @@ using System;
 using System.ServiceModel;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
+using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Client.SettingsManager;
 using Health.Direct.Config.Console.Command;
 using Health.Direct.Config.Store;
@@ -37,6 +38,8 @@ namespace Health.Direct.Config.Console
         private PropertyManagerClient m_propertyClient;
         private BlobManagerClient m_blobClient;
         private BundleStoreClient m_bundleClient;
+        private MdnMonitorClient m_mdnMoniotrClient;
+        private CertPolicyStoreClient m_certPolicyClient;
         
         internal ConfigConsole(ConsoleSettings settings)
         {
@@ -57,6 +60,8 @@ namespace Health.Direct.Config.Console
             m_commands.Register(new SettingsCommands(this));
             m_commands.Register(new TestCommands(this));
             m_commands.Register(new BundleCommands(this, () => m_bundleClient));
+            m_commands.Register(new MdnMonitorCommands(this, () => m_mdnMoniotrClient));
+            m_commands.Register(new CertPolicyCommands(this, () => m_certPolicyClient));
 
             m_settings.HostAndPortChanged += HostAndPortChanged;
         }
@@ -87,6 +92,14 @@ namespace Health.Direct.Config.Console
             if (m_settings.BlobManager != null)
             {
                 m_blobClient = m_settings.BlobManager.CreateBlobManagerClient();
+            }
+            if (m_settings.MdnMonitorManager != null)
+            {
+                m_mdnMoniotrClient = m_settings.MdnMonitorManager.CreateMdnMonitorClient() as MdnMonitorClient;
+            }
+            if (m_settings.CertPolicyManager != null)
+            {
+                m_certPolicyClient = m_settings.CertPolicyManager.CreateCertPolicyStoreClient() as CertPolicyStoreClient;
             }
         }
         

@@ -16,7 +16,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -59,9 +58,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Runtime.Serialization"/>
-    <Reference Include="System.ServiceModel"/>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -75,9 +74,11 @@
     <Compile Include="Command\BundleCommands.cs" />
     <Compile Include="Command\CertificateCommands.cs" />
     <Compile Include="Command\CertificateFileInfo.cs" />
+    <Compile Include="Command\CertPolicyCommands.cs" />
     <Compile Include="Command\CommandsBase.cs" />
     <Compile Include="Command\DnsRecordCommands.cs" />
     <Compile Include="Command\DomainCommands.cs" />
+    <Compile Include="Command\MdnMonitorCommands.cs" />
     <Compile Include="Command\PropertyCommands.cs" />
     <Compile Include="Command\SettingsCommands.cs">
       <SubType>Code</SubType>
@@ -88,7 +89,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConfigConsoleSettings.xml">
@@ -99,6 +102,10 @@
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\policy\policy.csproj">
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
+      <Name>policy</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\tools\toolutil\config.tools.csproj">
       <Project>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</Project>

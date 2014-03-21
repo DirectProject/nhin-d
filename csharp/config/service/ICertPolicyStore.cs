@@ -30,6 +30,10 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        int GetCertPoliciesCount();
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         CertPolicy GetPolicyByID(long policyId);
 
         [OperationContract]

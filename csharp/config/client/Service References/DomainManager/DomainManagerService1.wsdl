@@ -324,6 +324,15 @@
   <wsdl:message name="ICertPolicyStore_GetPolicyByName_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPoliciesCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPoliciesCount" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPoliciesCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPoliciesCountResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPoliciesCount_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="ICertPolicyStore_GetPolicyByID_InputMessage">
     <wsdl:part name="parameters" element="tns:GetPolicyByID" />
   </wsdl:message>
@@ -685,6 +694,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByName" message="tns:ICertPolicyStore_GetPolicyByName_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByNameResponse" message="tns:ICertPolicyStore_GetPolicyByName_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByNameConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyByName_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertPoliciesCount">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCount" message="tns:ICertPolicyStore_GetCertPoliciesCount_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCountResponse" message="tns:ICertPolicyStore_GetCertPoliciesCount_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetCertPoliciesCount_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetPolicyByID">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByID" message="tns:ICertPolicyStore_GetPolicyByID_InputMessage" />

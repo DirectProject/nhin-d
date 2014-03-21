@@ -254,5 +254,10 @@ namespace Health.Direct.Config.Client
         {
             return new MdnMonitorClient(this.Binding, this.Endpoint);
         }
+
+        public virtual ICertPolicyStore CreateCertPolicyStoreClient()
+        {
+            return new CertPolicyStoreClient(this.Binding, this.Endpoint);
+        }
     }
 }

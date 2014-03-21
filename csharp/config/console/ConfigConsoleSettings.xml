@@ -1,4 +1,5 @@
 ﻿<ConsoleSettings>
+  <!--
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -20,13 +21,16 @@
   <BlobManager>
     <Url>http://localhost/ConfigService/SettingsManager.svc/Blobs</Url>
   </BlobManager>
-  <MdnMonitor>
+  <MdnMonitorManager>
     <Url>http://localhost/ConfigService/MonitorService.svc/Dispositions</Url>
-  </MdnMonitor>
+  </MdnMonitorManager>
   <BundleManager>
     <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
   </BundleManager>
-<!--
+  <CertPolicyManager>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+  </CertPolicyManager>
+-->
   <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -48,5 +52,14 @@
   <BlobManager>
     <Url>http://localhost:6692/SettingsManager.svc/Blobs</Url>
   </BlobManager>
- -->
+  <MdnMonitorManager>
+    <Url>http://localhost:6692/MonitorService.svc/Dispositions</Url>
+  </MdnMonitorManager>
+  <BundleManager>
+    <Url>http://localhost:6692/CertificateService.svc/Bundles</Url>
+  </BundleManager>
+  <CertPolicyManager>
+    <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+  </CertPolicyManager>
+
 </ConsoleSettings>
