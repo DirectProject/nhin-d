@@ -41,10 +41,10 @@ namespace Health.Direct.SmtpAgent.Policy
                 new CacheSettings(settings.CacheSettings) {Name = "BundleCache.outgoing"};
 
             m_incomingResolver =
-                new PolicyResolver(new CertPolicyIndex(settings1, true, CertPolicyUse.Trust), incomingCacheSettings);
+                new PolicyResolver(new CertPolicyIndex(settings1, true, CertPolicyUse.TRUST), incomingCacheSettings);
 
             m_outgoingResolver =
-                new PolicyResolver(new CertPolicyIndex(settings1, false, CertPolicyUse.Trust), outgoingCacheSettings);
+                new PolicyResolver(new CertPolicyIndex(settings1, false, CertPolicyUse.TRUST), outgoingCacheSettings);
         }
 
         public IList<IPolicyExpression>

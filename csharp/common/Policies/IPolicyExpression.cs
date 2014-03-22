@@ -14,11 +14,38 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy;
+
 namespace Health.Direct.Common.Policies
 {
+    //TODO: revisit the explanation. Specifically the Operations: part.
 
+    /// <summary>
+    /// <para>
+    /// Expressions are the building blocks of building policy statements.  Expressions can be simple literals or a complex series of operations that take other expressions as parameters.
+    /// </para>
+    /// <para>
+    /// PolicyExpression objects are generally the resulting intermediate state of a parsed input by an implemented <see cref="Health.Direct.Policy.IPolicyLexiconParser"/> before being further processed by the policy engine <see cref="ICompiler"/>\
+    /// </para>
+    /// Expressions are categorized into three types.
+    /// <ul>
+    ///     <li>Literals: Literals are simply primitive types or objects that have a static value.  In the policy engine, literals are represented by <see cref="IPolicyValue{T}"/> objects. </li>
+    ///     <li>References: References are objects whose values are evaluated at runtime similar to variables.  Reference may be simple structures or specific structure types such as X509 certificates. At this time all known implementations are of type <see cref="X509Certificate2"/> </li>
+    ///     <li>Operations: Operations are a combination of a <see cref="PolicyOperator{T}"/> and one or more parameters.  Operator parameters are themselves expressions allowing parameters to be either literals, references, or the result of another operation. </li>
+    ///  </ul>
+    /// <para>
+    /// Because operator parameters are expressions, complex expressions can be built, nesting other operations as parameters resulting in a tree construct.
+    /// Expressions are built using the either the <see cref="ILiteralPolicyExpression{T}"/>, the <see cref="IOperationPolicyExpression"/>, or by instantiating 
+    /// one of the defined reference structures in the <see cref="Health.Direct.Policy.X509"/> name space.
+    /// </para>
+    /// </summary>
     public interface IPolicyExpression
     {
+        /// <summary>
+        /// Get the expression type.
+        /// </summary>
+        /// <returns><see cref="PolicyExpressionType"/></returns>
         PolicyExpressionType GetExpressionType();
     }
 }

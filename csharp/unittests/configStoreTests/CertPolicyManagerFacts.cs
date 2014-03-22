@@ -18,6 +18,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using FluentAssertions;
 using Health.Direct.Policy.Extensions;
 using Xunit;
@@ -97,8 +98,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public void GetIncomingAndOutgoingCertPolicieByOwnerTest()
         {
-            
-
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
             policyGroup1.CertPolicies.Count.Should().Be(0);
@@ -106,57 +105,26 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
-            //
-            // map cert policy group to policies
-            // PolicyGroup1 associated with two policies
-            // PolicyGroup2 associated with two policies
-            //
-            CertPolicyManager policyMgr = CreateManager();
-            CertPolicy certPolicy = policyMgr.Get("Policy1");
-            policyGroup1.CertPolicies.Add(certPolicy);
-            certPolicy = policyMgr.Get("Policy2");
-            policyGroup1.CertPolicies.Add(certPolicy);
-            certPolicy = policyMgr.Get("Policy3");
-            policyGroup2.CertPolicies.Add(certPolicy);
-
-            //policyGroup1 will have incoming and outgoing marked for all
-            foreach (CertPolicyGroupMap groupmap in policyGroup1.CertPolicyGroupMaps)
-            {
-                groupmap.ForIncoming = true;
-                groupmap.ForOutgoing = true;
-                groupmap.Use = CertPolicyUse.Trust;
-            }
+            
 
 
             //
             // Map cert policy group to domains
             //
-            policyGroup1.CertPolicyGroupDomainMaps.Add(
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup1,
-                    Owner = "domain1.test.com"
-                });
-
+            groupMgr.AssociateToDomain(policyGroup1.Name, "domain1.test.com");
+            groupMgr.AssociateToDomain(policyGroup2.Name, "domain2.test.com");
+            //
+            // Map cert policy group to policy
+            //
+            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, true, false);
             
-            policyGroup2.CertPolicyGroupDomainMaps.Add(
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup2,
-                    Owner = "domain2.test.com"
-                });
 
-            //
-            // Submit the additions to the CertPolicyGroup object graph. 
-            // This is the first time we push the changes into the database.
-            //
-            groupMgr.AddAssociation(policyGroup1);
-            groupMgr.AddAssociation(policyGroup2);
-
+            CertPolicyManager policyMgr = CreateManager();
             CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
             policies.Length.Should().Be(2);
             policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
-            policies.Length.Should().Be(2);
+            policies.Length.Should().Be(1);
 
             policies = policyMgr.GetIncomingByOwner("domain2.test.com");
             policies.Length.Should().Be(0);
@@ -167,11 +135,9 @@ namespace Health.Direct.Config.Store.Tests
         }
 
 
-        [Fact, AutoRollback]
-        public void GetIncomingCertPolicieByOwnerTest()
+        [Fact]
+        public void GetIncomingAndOutgoingCertPolicieByOwnerAndUsage_Test()
         {
-            
-
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
             policyGroup1.CertPolicies.Count.Should().Be(0);
@@ -179,129 +145,37 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
-            //
-            // map cert policy group to policies
-            // PolicyGroup1 associated with two policies
-            // PolicyGroup2 associated with two policies
-            //
-            CertPolicyManager policyMgr = CreateManager();
-            CertPolicy certPolicy = policyMgr.Get("Policy1");
-            policyGroup1.CertPolicies.Add(certPolicy);
-            certPolicy = policyMgr.Get("Policy2");
-            policyGroup1.CertPolicies.Add(certPolicy);
-            certPolicy = policyMgr.Get("Policy3");
-            policyGroup2.CertPolicies.Add(certPolicy);
 
-            //policyGroup1 will have incoming and outgoing marked for all
-            foreach (CertPolicyGroupMap groupmap in policyGroup1.CertPolicyGroupMaps)
-            {
-                groupmap.ForIncoming = true;
-                groupmap.Use = CertPolicyUse.Trust;
-            }
 
 
             //
             // Map cert policy group to domains
             //
-            policyGroup1.CertPolicyGroupDomainMaps.Add(
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup1,
-                    Owner = "domain1.test.com"
-                });
-
-
-            policyGroup2.CertPolicyGroupDomainMaps.Add(
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup2,
-                    Owner = "domain2.test.com"
-                });
-
+            groupMgr.AssociateToDomain(policyGroup1.Name, "domain1.test.com");
+            groupMgr.AssociateToDomain(policyGroup2.Name, "domain2.test.com");
             //
-            // Submit the additions to the CertPolicyGroup object graph. 
-            // This is the first time we push the changes into the database.
+            // Map cert policy group to policy
             //
-            groupMgr.AddAssociation(policyGroup1);
-            groupMgr.AddAssociation(policyGroup2);
+            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, false);
 
-            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
-            policies.Length.Should().Be(2);
-            policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
-            policies.Length.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByOwner("domain2.test.com");
-            policies.Length.Should().Be(0);
-
-            policies = policyMgr.GetIncomingByOwner("domain3.test.com");
-            policies.Length.Should().Be(0);
-
-        }
-
-        [Fact, AutoRollback]
-        public void GetOutgoingCertPolicieByOwnerTest()
-        {
-            
-
-            CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
-            CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
-            policyGroup1.CertPolicies.Count.Should().Be(0);
-            CertPolicyGroup policyGroup2 = groupMgr.Get("PolicyGroup2");
-            policyGroup1.CertPolicies.Count.Should().Be(0);
-            policyGroup2.CertPolicies.Count.Should().Be(0);
-
-            //
-            // map cert policy group to policies
-            // PolicyGroup1 associated with two policies
-            // PolicyGroup2 associated with two policies
-            //
             CertPolicyManager policyMgr = CreateManager();
-            CertPolicy certPolicy = policyMgr.Get("Policy1");
-            policyGroup1.CertPolicies.Add(certPolicy);
-            certPolicy = policyMgr.Get("Policy2");
-            policyGroup1.CertPolicies.Add(certPolicy);
-            certPolicy = policyMgr.Get("Policy3");
-            policyGroup2.CertPolicies.Add(certPolicy);
-
-            //policyGroup1 will have incoming and outgoing marked for all
-            foreach (CertPolicyGroupMap groupmap in policyGroup1.CertPolicyGroupMaps)
-            {
-                groupmap.ForOutgoing = true;
-                groupmap.Use = CertPolicyUse.Trust;
-            }
-
-
-            //
-            // Map cert policy group to domains
-            //
-            policyGroup1.CertPolicyGroupDomainMaps.Add(
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup1,
-                    Owner = "domain1.test.com"
-                });
-
-
-            policyGroup2.CertPolicyGroupDomainMaps.Add(
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup2,
-                    Owner = "domain2.test.com"
-                });
-
-            //
-            // Submit the additions to the CertPolicyGroup object graph. 
-            // This is the first time we push the changes into the database.
-            //
-            groupMgr.AddAssociation(policyGroup1);
-            groupMgr.AddAssociation(policyGroup2);
-
-            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
+            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.TRUST);
+            policies.Length.Should().Be(1);
+            policies = policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.PUBLIC_RESOLVER);
             policies.Length.Should().Be(0);
-            policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
-            policies.Length.Should().Be(2);
+            policies = policyMgr.GetOutgoingByOwner("domain1.test.com", CertPolicyUse.TRUST);
+            policies.Length.Should().Be(1);
+            policies = policyMgr.GetOutgoingByOwner("domain1.test.com", CertPolicyUse.PRIVATE_RESOLVER);
+            policies.Length.Should().Be(0);
 
-            
+            policies = policyMgr.GetIncomingByOwner("domain2.test.com", CertPolicyUse.PRIVATE_RESOLVER);
+            policies.Length.Should().Be(0);
+
+            policies = policyMgr.GetIncomingByOwner("domain3.test.com", CertPolicyUse.PRIVATE_RESOLVER);
+            policies.Length.Should().Be(0);
+
         }
 
         /// <summary>
@@ -382,10 +256,10 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(0);
 
             CertPolicyManager policyMgr = CreateManager();
-            CertPolicy certPolicy = policyMgr.Get("Policy1");
             policyMgr.Get("Policy1").Should().NotBeNull();
-            policyGroup.CertPolicies.Add(certPolicy);
-            groupMgr.AddAssociation(policyGroup);
+            
+            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, true);
+            
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);

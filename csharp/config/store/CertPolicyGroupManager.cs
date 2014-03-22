@@ -112,6 +112,7 @@ namespace Health.Direct.Config.Store
         //
         private static void FixUpModel(CertPolicyGroup certPolicyGroup)
         {
+            if (certPolicyGroup == null) return;
             foreach (var certPolicyGroupMap in certPolicyGroup.CertPolicyGroupMaps)
             {
                 certPolicyGroupMap.CertPolicyGroup = certPolicyGroup;
@@ -213,85 +214,52 @@ namespace Health.Direct.Config.Store
 
         }
 
-        public void AddAssociation(CertPolicyGroup policyGroup)
+
+
+        public void AddPolicyUse(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                this.AddAssociation(db, policyGroup);
+                this.AddPolicyUse(db, policyName, groupName, policyUse, incoming, outgoing);
                 db.SubmitChanges();
             }
         }
 
-        protected void AddAssociation(ConfigDatabase db, CertPolicyGroup policyGroup)
+
+        protected void AddPolicyUse(ConfigDatabase db, string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
         {
             if (db == null)
             {
                 throw new ArgumentNullException("db");
             }
-            if (policyGroup == null)
+            if (String.IsNullOrEmpty(policyName))
             {
-                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
             }
-
-            db.CertPolicyGroups.Attach(policyGroup);
-            foreach (CertPolicyGroupMap certPolicyGroupMap in policyGroup.CertPolicyGroupMaps)
+            if (String.IsNullOrEmpty(groupName))
             {
-                if (certPolicyGroupMap.IsNew)
-                {
-                    db.CertPolicyGroupMaps.InsertOnSubmit(certPolicyGroupMap);
-                    if (certPolicyGroupMap.CertPolicy.IsNew())
-                    {
-                        db.CertPolicies.InsertOnSubmit(certPolicyGroupMap.CertPolicy);
-                    }
-                }
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
             }
-            foreach (CertPolicyGroupDomainMap domainMap in policyGroup.CertPolicyGroupDomainMaps)
-            {
-                if (domainMap.IsNew)
-                {
-                    db.CertPolicyGroupDomainMaps.InsertOnSubmit(domainMap);
-                    if (domainMap.CertPolicyGroup.IsNew())
-                    {
-                        db.CertPolicyGroups.InsertOnSubmit(domainMap.CertPolicyGroup);
-                    }
-                }
-            }
+            CertPolicyGroup group = db.CertPolicyGroups.Get(groupName);
+            CertPolicy policy = db.CertPolicyGroups.GetPolicy(policyName);
+            group.CertPolicies.Add(policy);
+            CertPolicyGroupMap map = group.CertPolicyGroupMaps.First(m => m.IsNew);
+            map.Use = policyUse;
+            map.ForIncoming = incoming;
+            map.ForOutgoing = outgoing;
         }
 
-        //public void AddPolicyUse(CertPolicyGroupMap certPolicyGroupMap)
-        //{
-        //    using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-        //    {
-        //        this.AddPolicyUse(db, certPolicyGroupMap);
-        //        db.SubmitChanges();
-        //    }
-        //}
 
-        //protected void AddPolicyUse(ConfigDatabase db, CertPolicyGroupMap certPolicyGroupMap)
-        //{
-        //    if (db == null)
-        //    {
-        //        throw new ArgumentNullException("db");
-        //    }
-        //    if (certPolicyGroupMap == null)
-        //    {
-        //        throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyUse);
-        //    }
-        //    CertPolicyGroup policyGroup = db.CertPolicyGroups.Get(certPolicyGroupMap.CertPolicyGroup.ID);
-        //    CertPolicy policy = db.CertPolicies.Get(certPolicyGroupMap.CertPolicy.ID);
-        //    policyGroup.CertPolicies.Add(policy, certPolicyGroupMap);
-        //}
-
-        public void AssociateToDomain(string owner, long policyGroupID)
+        public void AssociateToDomain(string groupName, string owner)
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                this.AssociateToDomain(db, owner, policyGroupID);
+                this.AssociateToDomain(db, groupName, owner);
                 db.SubmitChanges();
             }
         }
 
-        protected void AssociateToDomain(ConfigDatabase db, string owner, long policyGroupID)
+        protected void AssociateToDomain(ConfigDatabase db, string groupName, string owner)
         {
             if (db == null)
             {
@@ -301,15 +269,15 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
-            CertPolicyGroup policyGroup = db.CertPolicyGroups.Get(policyGroupID);
-            if (policyGroup.CertPolicyGroupDomainMaps.All(map => map.Owner != owner))
+            CertPolicyGroup group = db.CertPolicyGroups.Get(groupName);
+            if (group.CertPolicyGroupDomainMaps.All(map => map.Owner != owner))
             {
                 CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
                 {
-                    CertPolicyGroup = policyGroup,
+                    CertPolicyGroup = group,
                     Owner = owner
                 };
-                policyGroup.CertPolicyGroupDomainMaps.Add(map);
+                group.CertPolicyGroupDomainMaps.Add(map);
             }
         }
 

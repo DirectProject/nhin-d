@@ -13,6 +13,9 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
+using Health.Direct.Policy;
+
 namespace Health.Direct.Common.Policies
 {
     /// <summary>
@@ -30,8 +33,9 @@ namespace Health.Direct.Common.Policies
         /// such as X509 certificates.</summary>
         REFERENCE,
 
+        //TODO: revisit the explanation.
         /// <summary>
-        /// Operations are a combination of a {@link PolicyOperator} and one or more parameters.  Operator parameters are themselves expressions
+        /// Operations are a combination of a <see cref="PolicyOperator{T}"/> and one or more parameters.  Operator parameters are themselves expressions
         /// allowing parameters to be either literals, references, or the result of another operation.</summary>
         OPERATION
     }

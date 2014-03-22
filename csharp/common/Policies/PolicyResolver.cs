@@ -54,15 +54,25 @@ namespace Health.Direct.Common.Policies
             }
         }
 
-
+        //TODO: Don't like this.  Caching is not efficient and the comment about CertPolicyUse is not enforced in the interface. And more...
+        /// <summary>
+        /// Resolve policy by usage outgoing and <see cref="Health.Direct.Config.Store.CertPolicyUse"/>
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public IList<IPolicyExpression> GetOutgoingPolicy(MailAddress address)
         {
-            throw new NotImplementedException();
+            return Resolve(address.Host); //TODO: decide if we resolve at email address also.
         }
 
+        /// <summary>
+        /// Resolve policy by usage incoming and <see cref="Health.Direct.Config.Store.CertPolicyUse"/>
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
         public IList<IPolicyExpression> GetIncomingPolicy(MailAddress address)
         {
-            throw new NotImplementedException();
+            return Resolve(address.Host);
         }
 
         /// <summary>

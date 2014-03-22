@@ -23,22 +23,22 @@ namespace Health.Direct.Config.Store
         /// <summary>
         /// No validation
         /// </summary>
-        None = 0,
+        NONE = 0,
         /// <summary>
         /// Validating certificate path trust chaining
         /// </summary>
-        Trust = 1,
+        TRUST = 1,
         /// <summary>
         /// Accessing certificate via a private resolver.
         /// </summary>
-        PrivateResolver = 2,
+        PRIVATE_RESOLVER = 2,
         /// <summary>
         /// Accessing certificate via a public resolver.
         /// </summary>
-        PublicResolver = 3,
+        PUBLIC_RESOLVER = 3,
         /// <summary>
         /// Perform basic policy validation outside the context of the security and trust agent.
         /// </summary>
-        Validation = 4
+        VALIDATION = 4
     }
 }
