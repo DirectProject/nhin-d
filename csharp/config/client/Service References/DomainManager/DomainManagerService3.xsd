@@ -84,6 +84,7 @@
       </xs:appinfo>
     </xs:annotation>
     <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
       <xs:enumeration value="Trust" />
       <xs:enumeration value="PrivateResolver" />
       <xs:enumeration value="PublicResolver" />

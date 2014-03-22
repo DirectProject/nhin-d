@@ -18,13 +18,27 @@ using System;
 
 namespace Health.Direct.Common.Policies
 {
+    /// <summary>
+    /// Required policy exception
+    /// </summary>
     public class PolicyRequiredException : PolicyProcessException
     {
+        /// <summary>
+        /// Construct <see cref="PolicyRequiredException"/>
+        /// </summary>
         public PolicyRequiredException() { }
 
-
+        /// <summary>
+        /// Construct <see cref="PolicyRequiredException"/> with message.
+        /// </summary>
+        /// <param name="msg"></param>
         public PolicyRequiredException(String msg) : base(msg) { }
 
+        /// <summary>
+        /// Construct <see cref="PolicyRequiredException"/> with message and inner exception.
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="ex">Inner <see cref="Exception"/></param>
         public PolicyRequiredException(String msg, Exception ex) : base(msg, ex) { }
 
     }

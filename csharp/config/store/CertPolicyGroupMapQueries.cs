@@ -16,7 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Data.Linq;
+using System.Linq;
 
 namespace Health.Direct.Config.Store
 {
@@ -28,10 +30,40 @@ namespace Health.Direct.Config.Store
                     Where MapID = {0}
             ";
 
+        public static ConfigDatabase GetDB(this Table<CertPolicyGroupMap> table)
+        {
+            return (ConfigDatabase)table.Context;
+        }
 
         public static void ExecDeleteGroupMap(this Table<CertPolicyGroupMap> table, long mapId)
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupMap, mapId);
+        }
+
+
+        static readonly Func<ConfigDatabase, string, string, CertPolicyUse, bool, bool, IQueryable<CertPolicyGroupMap>> map = CompiledQuery.Compile(
+            (ConfigDatabase db, string policyOwner, string groupName, CertPolicyUse policyUse, bool incoming,
+                bool outgoing) =>
+            
+                from c in db.CertPolicies
+                join groupMap in db.CertPolicyGroupMaps
+                    on c equals groupMap.CertPolicy
+                join g in db.CertPolicyGroups
+                    on groupMap.CertPolicyGroup equals g
+                where c.Name == policyOwner
+                      && g.Name == groupName
+                      && groupMap.Use == policyUse
+                      && groupMap.ForIncoming == incoming
+                      && groupMap.ForOutgoing == outgoing
+                select groupMap
+            
+            );
+
+
+        public static bool Exists(this Table<CertPolicyGroupMap> table, string policyName, string groupName, CertPolicyUse policyUse, bool incoming,
+            bool outgoing)
+        {
+            return map(table.GetDB(), policyName, groupName, policyUse, incoming, outgoing).Any();
         }
     }
 }

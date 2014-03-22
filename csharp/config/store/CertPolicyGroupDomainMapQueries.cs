@@ -18,7 +18,7 @@ using System.Data.Linq;
 
 namespace Health.Direct.Config.Store
 {
-    public static class CertPolicyGroupMapQueryies
+    public static class CertPolicyGroupDomainMapQueries
     {
         const string Sql_DeleteCertPolicyGroupMapsByGroup = "Delete from CertPolicyGroupDomainMap where CertPolicyGroupId = {0}";
         const string Sql_DeleteCertPolicyGroupMapsByOwner = "Delete from CertPolicyGroupDomainMap where Owner = {0}";

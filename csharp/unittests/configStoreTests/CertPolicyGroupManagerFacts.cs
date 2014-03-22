@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Health.Direct.Common.Mail;
 using Health.Direct.Policy.Extensions;
 using Xunit;
 
@@ -137,7 +138,84 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(1);
         }
 
-        
+        /// <summary>
+        /// Associate policy to group with Usage
+        /// </summary>
+        [Fact]
+        public void AssociatePolicyToGroup_Usage_Test()
+        {
+            //arrange
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+            CertPolicyManager policyMgr = CreatePolicyManager();
+            CertPolicy certPolicy = policyMgr.Get("Policy1");
+
+            policyGroup.CertPolicies.Add(certPolicy);
+            policyGroup.CertPolicyGroupMaps.Count().Should().Be(1);
+            policyGroup.CertPolicyGroupMaps.First().Use = CertPolicyUse.PrivateResolver;
+            
+
+            //act
+            groupMgr.AddAssociation(policyGroup);
+            
+            
+            //assert
+            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(1);
+            policyGroup.CertPolicyGroupMaps.First().Use.Should().Be(CertPolicyUse.PrivateResolver);
+        }
+
+        /// <summary>
+        /// Associate policy to group with Usage
+        /// </summary>
+        [Fact]
+        public void AssociatePolicyToGroup_Usage_Test2()
+        {
+            //arrange
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            CertPolicyGroupManager groupMgr = CreateManager();
+            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup.CertPolicies.Count.Should().Be(0);
+
+            CertPolicyManager policyMgr = CreatePolicyManager();
+           
+            policyGroup.CertPolicies.Add(policyMgr.Get("Policy1"));
+            policyGroup.CertPolicies.Add(policyMgr.Get("Policy2"));
+
+            policyGroup.CertPolicyGroupMaps.Count().Should().Be(2);
+            CertPolicyGroupMap map= policyGroup.CertPolicyGroupMaps.First(m => m.CertPolicy.Name == "Policy1");
+            map.Use = CertPolicyUse.PublicResolver;
+            map.ForIncoming = true;
+
+            map = policyGroup.CertPolicyGroupMaps.First(m => m.CertPolicy.Name == "Policy2");
+            map.Use = CertPolicyUse.Trust;
+            map.ForOutgoing = true;
+
+            
+            //act
+            groupMgr.AddAssociation(policyGroup);
+
+
+            //assert
+            CertPolicyGroup policyGroupResult = groupMgr.Get("PolicyGroup1");
+            policyGroupResult.CertPolicies.Count.Should().Be(2);
+            map = policyGroup.CertPolicyGroupMaps.First(m => m.CertPolicy.Name == "Policy1");
+            map.Use.Should().Be(CertPolicyUse.PublicResolver);
+            map.ForIncoming.Should().BeTrue();
+            map.ForOutgoing.Should().BeFalse();
+
+            map = policyGroup.CertPolicyGroupMaps.First(m => m.CertPolicy.Name == "Policy2");
+            map.Use.Should().Be(CertPolicyUse.Trust);
+            map.ForIncoming.Should().BeFalse();
+            map.ForOutgoing.Should().BeTrue();
+        }
 
         /// <summary>
         /// A test for Update Policy

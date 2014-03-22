@@ -1,1 +1,1 @@
-X509.TBS.EXTENSION.KeyUsage+ = 16
+X509.TBS.EXTENSION.KeyUsage+ = 16 & 

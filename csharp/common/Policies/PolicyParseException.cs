@@ -23,12 +23,24 @@ namespace Health.Direct.Common.Policies
     /// </summary>
     public class PolicyParseException : PolicyProcessException
     {
+        /// <summary>
+        /// Construct <see cref="PolicyParseException"/>
+        /// </summary>
         public PolicyParseException()
         {
         }
 
+        /// <summary>
+        /// Construct <see cref="PolicyParseException"/> with message.
+        /// </summary>
+        /// <param name="msg"></param>
         public PolicyParseException(String msg) :base(msg){}
 
+        /// <summary>
+        /// Construct <see cref="PolicyParseException"/> with message and inner exception.
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <param name="ex">Inner <see cref="Exception"/></param>
         public PolicyParseException(String msg, Exception ex) : base(msg, ex){}
 
     }

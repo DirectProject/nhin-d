@@ -71,6 +71,14 @@ namespace Health.Direct.Config.Store
             Description = description;
         }
 
+        public CertPolicyGroup(CertPolicyGroup policy)
+            : this()
+        {
+
+            Name = policy.Name;
+            Description = policy.Description;
+        }
+
         [Column(Name = "CertPolicyGroupId", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public long ID

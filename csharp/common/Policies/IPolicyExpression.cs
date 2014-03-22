@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace Health.Direct.Common.Policies
 {
+
     public interface IPolicyExpression
     {
         PolicyExpressionType GetExpressionType();

@@ -26,8 +26,8 @@ namespace Health.Direct.Common.Policies
     /// </summary>
     public class PolicyResolver : IPolicyResolver
     {
-        IPolicyIndex m_policyIndex;
-        PolicyCache m_policyCache;
+        readonly IPolicyIndex m_policyIndex;
+        readonly PolicyCache m_policyCache;
 
         /// <summary>
         /// Creates a policy resolver that retrieves policies from the email address. 

@@ -36,13 +36,18 @@ namespace Health.Direct.Config.Service
         [FaultContract(typeof(ConfigStoreFault))]
         CertPolicy GetPolicyByID(long policyId);
 
+        
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicy[] GetIncomingPoliciesByDomain(string domainName);
+        CertPolicy[] GetIncomingPoliciesByOwner(string owner, CertPolicyUse use);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        CertPolicy[] GetOutgoingPoliciesByDomain(string domainName);
+        CertPolicy[] GetOutgoingPoliciesByOwner(string owner, CertPolicyUse use);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        bool PolicyToGroupExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing);
 
         [OperationContract]
         [FaultContract(typeof (ConfigStoreFault))]
@@ -86,7 +91,7 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof (ConfigStoreFault))]
-        void AddPolicyUseToGroup(CertPolicyGroupMap certPolicyGroupMap);
+        void AddPolicyToGroup(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]

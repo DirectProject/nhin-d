@@ -103,10 +103,10 @@ namespace Health.Direct.Agent.Config
         /// </summary>
         MissingPluginProducerDefinition,
         /// <summary>
-        /// No typename for Plugin Producer
+        /// No type name for Plugin Producer
         /// </summary>
-        MissingPluginProducerType,
-        MissingPolicyResolverSettings
+        MissingPluginProducerType
+        
     }
 
     /// <summary>

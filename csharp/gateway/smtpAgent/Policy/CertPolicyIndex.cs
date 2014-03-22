@@ -20,7 +20,7 @@ using System.Linq;
 using Health.Direct.Common.Policies;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
-using Health.Direct.Policy;
+using Health.Direct.Config.Store;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
 
@@ -30,11 +30,12 @@ namespace Health.Direct.SmtpAgent.Policy
     {
         ClientSettings m_clientSettings;
         bool m_incoming;
-
-        internal CertPolicyIndex(ClientSettings clientSettings, bool incoming)
+        CertPolicyUse m_use;
+        internal CertPolicyIndex(ClientSettings clientSettings, bool incoming, CertPolicyUse use)
         {
             m_clientSettings = clientSettings;
             m_incoming = incoming;
+            m_use = use;
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Health.Direct.SmtpAgent.Policy
                 {
                     if (m_incoming) //incoming
                     {
-                        matches = client.GetIncomingPoliciesByDomain(domain)
+                        matches = client.GetIncomingPoliciesByOwner(domain, m_use)
                             .Select(p => GetPolicyExpression(p.Data))
                             .Select(p => p)
                             .Where(p => p != null)
@@ -59,7 +60,7 @@ namespace Health.Direct.SmtpAgent.Policy
                     }
                     else // outgoing
                     {
-                        matches = client.GetOutgoingPoliciesByDomain(domain)
+                        matches = client.GetOutgoingPoliciesByOwner(domain, m_use)
                             .Select(p => GetPolicyExpression(p.Data))
                             .Select(p => p)
                             .Where(p => p != null)

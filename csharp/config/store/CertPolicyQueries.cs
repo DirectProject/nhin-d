@@ -100,6 +100,23 @@ namespace Health.Direct.Config.Store
             return q;
         }
 
+        public static IEnumerable<CertPolicy> GetIncoming(this Table<CertPolicy> table, string @owner, CertPolicyUse use)
+        {
+            var q =
+                from c in table.GetDB().CertPolicies
+                join groupMap in table.GetDB().CertPolicyGroupMaps
+                    on c equals groupMap.CertPolicy
+                join g in table.GetDB().CertPolicyGroups
+                    on groupMap.CertPolicyGroup equals g
+                join domainMap in table.GetDB().CertPolicyGroupDomainMaps
+                    on g equals domainMap.CertPolicyGroup
+                where domainMap.Owner == @owner
+                      && groupMap.ForIncoming
+                      && groupMap.Use == use
+                select c;
+            return q;
+        }
+
         public static IEnumerable<CertPolicy> GetOutgoing(this Table<CertPolicy> table, string owner)
         {
             var q =
@@ -116,7 +133,23 @@ namespace Health.Direct.Config.Store
             return q;
         }
 
-        
+        public static IEnumerable<CertPolicy> GetOutgoing(this Table<CertPolicy> table, string owner, CertPolicyUse use)
+        {
+            var q =
+                from c in table.GetDB().CertPolicies
+                join groupMap in table.GetDB().CertPolicyGroupMaps
+                    on c equals groupMap.CertPolicy
+                join g in table.GetDB().CertPolicyGroups
+                    on groupMap.CertPolicyGroup equals g
+                join domainMap in table.GetDB().CertPolicyGroupDomainMaps
+                    on g equals domainMap.CertPolicyGroup
+                where domainMap.Owner == @owner
+                      && groupMap.ForOutgoing
+                      && groupMap.Use == use
+                select c;
+            return q;
+        }
+
 
         public static IEnumerable<CertPolicy> Get(this Table<CertPolicy> table, long[] policyIDs)
         {

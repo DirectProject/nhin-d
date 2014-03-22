@@ -448,19 +448,25 @@ namespace Health.Direct.Config.Client.DomainManager {
             "ultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.CertPolicy GetPolicyByID(long policyId);
         
-        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByDomai" +
-            "n", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByDomai" +
-            "nResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByDomai" +
-            "nConfigStoreFaultFault", Name="ConfigStoreFault")]
-        Health.Direct.Config.Store.CertPolicy[] GetIncomingPoliciesByDomain(string domainName);
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwner" +
+            "", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwner" +
+            "Response")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwner" +
+            "ConfigStoreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.CertPolicy[] GetIncomingPoliciesByOwner(string owner, Health.Direct.Config.Store.CertPolicyUse use);
         
-        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByDomai" +
-            "n", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByDomai" +
-            "nResponse")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByDomai" +
-            "nConfigStoreFaultFault", Name="ConfigStoreFault")]
-        Health.Direct.Config.Store.CertPolicy[] GetOutgoingPoliciesByDomain(string domainName);
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwner" +
+            "", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwner" +
+            "Response")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwner" +
+            "ConfigStoreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.CertPolicy[] GetOutgoingPoliciesByOwner(string owner, Health.Direct.Config.Store.CertPolicyUse use);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExists", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExistsRespons" +
+            "e")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExistsConfigS" +
+            "toreFaultFault", Name="ConfigStoreFault")]
+        bool PolicyToGroupExists(string policyName, string groupName, Health.Direct.Config.Store.CertPolicyUse policyUse, bool incoming, bool outgoing);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicies", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPoliciesRespo" +
             "nse")]
@@ -519,11 +525,10 @@ namespace Health.Direct.Config.Client.DomainManager {
             "gStoreFaultFault", Name="ConfigStoreFault")]
         void UpdateGroupAttributes(Health.Direct.Config.Store.CertPolicyGroup policyGroup);
         
-        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyUseToGroup", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyUseToGroupRespons" +
-            "e")]
-        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyUseToGroupConfigS" +
-            "toreFaultFault", Name="ConfigStoreFault")]
-        void AddPolicyUseToGroup(Health.Direct.Config.Store.CertPolicyGroupMap certPolicyGroupMap);
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroup", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroupResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroupConfigStor" +
+            "eFaultFault", Name="ConfigStoreFault")]
+        void AddPolicyToGroup(string policyName, string groupName, Health.Direct.Config.Store.CertPolicyUse policyUse, bool incoming, bool outgoing);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroup", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroupRe" +
             "sponse")]
@@ -605,12 +610,16 @@ namespace Health.Direct.Config.Client.DomainManager {
             return base.Channel.GetPolicyByID(policyId);
         }
         
-        public Health.Direct.Config.Store.CertPolicy[] GetIncomingPoliciesByDomain(string domainName) {
-            return base.Channel.GetIncomingPoliciesByDomain(domainName);
+        public Health.Direct.Config.Store.CertPolicy[] GetIncomingPoliciesByOwner(string owner, Health.Direct.Config.Store.CertPolicyUse use) {
+            return base.Channel.GetIncomingPoliciesByOwner(owner, use);
         }
         
-        public Health.Direct.Config.Store.CertPolicy[] GetOutgoingPoliciesByDomain(string domainName) {
-            return base.Channel.GetOutgoingPoliciesByDomain(domainName);
+        public Health.Direct.Config.Store.CertPolicy[] GetOutgoingPoliciesByOwner(string owner, Health.Direct.Config.Store.CertPolicyUse use) {
+            return base.Channel.GetOutgoingPoliciesByOwner(owner, use);
+        }
+        
+        public bool PolicyToGroupExists(string policyName, string groupName, Health.Direct.Config.Store.CertPolicyUse policyUse, bool incoming, bool outgoing) {
+            return base.Channel.PolicyToGroupExists(policyName, groupName, policyUse, incoming, outgoing);
         }
         
         public Health.Direct.Config.Store.CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults) {
@@ -653,8 +662,8 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.UpdateGroupAttributes(policyGroup);
         }
         
-        public void AddPolicyUseToGroup(Health.Direct.Config.Store.CertPolicyGroupMap certPolicyGroupMap) {
-            base.Channel.AddPolicyUseToGroup(certPolicyGroupMap);
+        public void AddPolicyToGroup(string policyName, string groupName, Health.Direct.Config.Store.CertPolicyUse policyUse, bool incoming, bool outgoing) {
+            base.Channel.AddPolicyToGroup(policyName, groupName, policyUse, incoming, outgoing);
         }
         
         public void RemovePolicyUseFromGroup(long policyGroupMapId) {
