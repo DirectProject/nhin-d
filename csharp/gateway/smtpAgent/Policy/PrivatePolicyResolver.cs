@@ -14,12 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
+
 using System.Collections.Generic;
 using System.Net.Mail;
-using Health.Direct.Agent.Config;
+
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Policies;
+using Health.Direct.Config.Store;
 using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent.Policy
@@ -28,37 +29,35 @@ namespace Health.Direct.SmtpAgent.Policy
     /// <inheritdoc />
     public class PrivatePolicyResolver : IPolicyResolver
     {
-        IPolicyResolver m_incomingResolver;
-        IPolicyResolver m_outgoingResolver;
-        PrivatePolicyServiceResolverSettings m_settings;
+        readonly IPolicyResolver m_incomingResolver;
+        readonly IPolicyResolver m_outgoingResolver;
 
         public PrivatePolicyResolver(PrivatePolicyServiceResolverSettings settings)
         {
-
-            m_settings = settings;
+            PrivatePolicyServiceResolverSettings settings1 = settings;
 
             CacheSettings incomingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "privatePolicy.incoming" };
+                new CacheSettings(settings1.CacheSettings) { Name = "privatePolicy.incoming" };
 
             CacheSettings outgoingCacheSettings =
-                new CacheSettings(m_settings.CacheSettings) { Name = "privatePolicy.outgoing" };
+                new CacheSettings(settings1.CacheSettings) { Name = "privatePolicy.outgoing" };
 
             m_incomingResolver =
-                new PolicyResolver(new CertPolicyIndex(m_settings.ClientSettings, true), incomingCacheSettings);
+                new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, true, CertPolicyUse.PrivateResolver), incomingCacheSettings);
 
             m_outgoingResolver =
-                new PolicyResolver(new CertPolicyIndex(m_settings.ClientSettings, false), outgoingCacheSettings);
+                new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, false, CertPolicyUse.PrivateResolver), outgoingCacheSettings);
 
         }
         public IList<IPolicyExpression>
             GetOutgoingPolicy(MailAddress address)
         {
-            throw new NotImplementedException();
+            return m_outgoingResolver.GetOutgoingPolicy(address);
         }
 
         public IList<IPolicyExpression> GetIncomingPolicy(MailAddress address)
         {
-            throw new NotImplementedException();
+            return m_incomingResolver.GetIncomingPolicy(address);
         }
     }
 }

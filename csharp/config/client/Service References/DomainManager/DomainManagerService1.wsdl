@@ -342,22 +342,31 @@
   <wsdl:message name="ICertPolicyStore_GetPolicyByID_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByDomain_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetIncomingPoliciesByDomain" />
+  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingPoliciesByOwner" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByDomain_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetIncomingPoliciesByDomainResponse" />
+  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingPoliciesByOwnerResponse" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByDomain_ConfigStoreFaultFault_FaultMessage">
+  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByDomain_InputMessage">
-    <wsdl:part name="parameters" element="tns:GetOutgoingPoliciesByDomain" />
+  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingPoliciesByOwner" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByDomain_OutputMessage">
-    <wsdl:part name="parameters" element="tns:GetOutgoingPoliciesByDomainResponse" />
+  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingPoliciesByOwnerResponse" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByDomain_ConfigStoreFaultFault_FaultMessage">
+  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyToGroupExists_InputMessage">
+    <wsdl:part name="parameters" element="tns:PolicyToGroupExists" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyToGroupExists_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PolicyToGroupExistsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyToGroupExists_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:message name="ICertPolicyStore_EnumerateCertPolicies_InputMessage">
@@ -450,13 +459,13 @@
   <wsdl:message name="ICertPolicyStore_UpdateGroupAttributes_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_AddPolicyUseToGroup_InputMessage">
-    <wsdl:part name="parameters" element="tns:AddPolicyUseToGroup" />
+  <wsdl:message name="ICertPolicyStore_AddPolicyToGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyToGroup" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_AddPolicyUseToGroup_OutputMessage">
-    <wsdl:part name="parameters" element="tns:AddPolicyUseToGroupResponse" />
+  <wsdl:message name="ICertPolicyStore_AddPolicyToGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyToGroupResponse" />
   </wsdl:message>
-  <wsdl:message name="ICertPolicyStore_AddPolicyUseToGroup_ConfigStoreFaultFault_FaultMessage">
+  <wsdl:message name="ICertPolicyStore_AddPolicyToGroup_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:message name="ICertPolicyStore_RemovePolicyUseFromGroup_InputMessage">
@@ -705,15 +714,20 @@
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByIDResponse" message="tns:ICertPolicyStore_GetPolicyByID_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByIDConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyByID_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetIncomingPoliciesByDomain">
-      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByDomain" message="tns:ICertPolicyStore_GetIncomingPoliciesByDomain_InputMessage" />
-      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByDomainResponse" message="tns:ICertPolicyStore_GetIncomingPoliciesByDomain_OutputMessage" />
-      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetIncomingPoliciesByDomain_ConfigStoreFaultFault_FaultMessage" />
+    <wsdl:operation name="GetIncomingPoliciesByOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwner" message="tns:ICertPolicyStore_GetIncomingPoliciesByOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwnerResponse" message="tns:ICertPolicyStore_GetIncomingPoliciesByOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetIncomingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
-    <wsdl:operation name="GetOutgoingPoliciesByDomain">
-      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByDomain" message="tns:ICertPolicyStore_GetOutgoingPoliciesByDomain_InputMessage" />
-      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByDomainResponse" message="tns:ICertPolicyStore_GetOutgoingPoliciesByDomain_OutputMessage" />
-      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetOutgoingPoliciesByDomain_ConfigStoreFaultFault_FaultMessage" />
+    <wsdl:operation name="GetOutgoingPoliciesByOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwner" message="tns:ICertPolicyStore_GetOutgoingPoliciesByOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwnerResponse" message="tns:ICertPolicyStore_GetOutgoingPoliciesByOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetOutgoingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PolicyToGroupExists">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExists" message="tns:ICertPolicyStore_PolicyToGroupExists_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExistsResponse" message="tns:ICertPolicyStore_PolicyToGroupExists_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExistsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_PolicyToGroupExists_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="EnumerateCertPolicies">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicies" message="tns:ICertPolicyStore_EnumerateCertPolicies_InputMessage" />
@@ -765,10 +779,10 @@
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributesResponse" message="tns:ICertPolicyStore_UpdateGroupAttributes_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_UpdateGroupAttributes_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
-    <wsdl:operation name="AddPolicyUseToGroup">
-      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyUseToGroup" message="tns:ICertPolicyStore_AddPolicyUseToGroup_InputMessage" />
-      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyUseToGroupResponse" message="tns:ICertPolicyStore_AddPolicyUseToGroup_OutputMessage" />
-      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyUseToGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_AddPolicyUseToGroup_ConfigStoreFaultFault_FaultMessage" />
+    <wsdl:operation name="AddPolicyToGroup">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroup" message="tns:ICertPolicyStore_AddPolicyToGroup_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroupResponse" message="tns:ICertPolicyStore_AddPolicyToGroup_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_AddPolicyToGroup_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="RemovePolicyUseFromGroup">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroup" message="tns:ICertPolicyStore_RemovePolicyUseFromGroup_InputMessage" />

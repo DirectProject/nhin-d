@@ -176,7 +176,7 @@ namespace Health.Direct.Config.Store
         }
 
 
-        public CertPolicy[] GetIncomingByDomain(string owner)
+        public CertPolicy[] GetIncomingByOwner(string owner)
         {
             if (string.IsNullOrEmpty(owner))
             {
@@ -190,7 +190,21 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public CertPolicy[] GetOutgoingByDomain(string owner)
+        public CertPolicy[] GetIncomingByOwner(string owner, CertPolicyUse use)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                var cpgs = db.CertPolicies.GetIncoming(owner, use);
+                return cpgs.ToArray();
+            }
+        }
+
+        public CertPolicy[] GetOutgoingByOwner(string owner)
         {
             if (string.IsNullOrEmpty(owner))
             {
@@ -200,6 +214,20 @@ namespace Health.Direct.Config.Store
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 var cpgs = db.CertPolicies.GetOutgoing(owner);
+                return cpgs.ToArray();
+            }
+        }
+
+        public CertPolicy[] GetOutgoingByOwner(string owner, CertPolicyUse use)
+        {
+            if (string.IsNullOrEmpty(owner))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+            }
+
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                var cpgs = db.CertPolicies.GetOutgoing(owner, use);
                 return cpgs.ToArray();
             }
         }

@@ -14,12 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Domains;
@@ -159,6 +156,7 @@ namespace Health.Direct.Agent
         /// <param name="anchors">
         /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
+        /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors
             , ICertPolicyResolvers certPolicyResolvers)
             : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers)
@@ -191,7 +189,7 @@ namespace Health.Direct.Agent
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
-            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, CertPolicyResolvers.Default)
+            : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default)
         {
         }
         
@@ -224,7 +222,7 @@ namespace Health.Direct.Agent
         /// <param name="cryptographer">
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
-        /// <param name="certPolicyResolvers"></param>
+        /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer,
             ICertPolicyResolvers certPolicyResolvers)
         {
@@ -271,7 +269,7 @@ namespace Health.Direct.Agent
 
 
         /// <summary>
-        /// The domainS this agent is managing.
+        /// The domains this agent is managing.
         /// </summary>
         /// <value>An enumeration of string values, each providing a fully qualified domain name.</value>
         public AgentDomains Domains

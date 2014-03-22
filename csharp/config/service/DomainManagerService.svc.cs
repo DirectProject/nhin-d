@@ -15,7 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
@@ -416,29 +417,43 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public CertPolicy[] GetIncomingPoliciesByDomain(string owner)
+
+        public CertPolicy[] GetIncomingPoliciesByOwner(string owner, CertPolicyUse use)
         {
             try
             {
-                return (Store.CertPolicies.GetIncomingByDomain(owner));
+                return Store.CertPolicies.GetIncomingByOwner(owner, use);
             }
             catch (Exception ex)
             {
-                throw CreateFault("GetPolicyByName", ex);
+                throw CreateFault("GetIncomingPoliciesByOwnerAndUse", ex);
             }
         }
 
-        public CertPolicy[] GetOutgoingPoliciesByDomain(string owner)
+        public CertPolicy[] GetOutgoingPoliciesByOwner(string owner, CertPolicyUse use)
         {
             try
             {
-                return (Store.CertPolicies.GetIncomingByDomain(owner));
+                return Store.CertPolicies.GetOutgoingByOwner(owner, use);
             }
             catch (Exception ex)
             {
-                throw CreateFault("GetPolicyByName", ex);
+                throw CreateFault("GetOutgoingPoliciesByOwner", ex);
             }
         }
+
+        public bool PolicyToGroupExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.PolicyGroupMapExists(policyName, groupName, policyUse, incoming, outgoing);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("PolicyToGroupExists", ex);
+            }
+        }
+
 
         public CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults)
         {
@@ -529,7 +544,8 @@ namespace Health.Direct.Config.Service
         {
             try
             {
-                return Store.CertPolicyGroups.Add(policyGroup);
+                CertPolicyGroup certPolicyGroup = new CertPolicyGroup(policyGroup);
+                return Store.CertPolicyGroups.Add(certPolicyGroup);
             }
             catch (Exception ex)
             {
@@ -561,11 +577,18 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public void AddPolicyUseToGroup(CertPolicyGroupMap certPolicyGroupMap)
+        public void AddPolicyToGroup(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
         {
             try
             {
-                Store.CertPolicyGroups.AddPolicyUse(certPolicyGroupMap);
+                CertPolicy certPolicy = Store.CertPolicies.Get(policyName);
+                CertPolicyGroup policyGroup = Store.CertPolicyGroups.Get(groupName);
+                policyGroup.CertPolicies.Add(certPolicy);
+                policyGroup.CertPolicyGroupMaps.First().Use = policyUse;
+                policyGroup.CertPolicyGroupMaps.First().ForIncoming = incoming;
+                policyGroup.CertPolicyGroupMaps.First().ForOutgoing = outgoing;
+
+                Store.CertPolicyGroups.AddAssociation(policyGroup);
             }
             catch (Exception ex)
             {

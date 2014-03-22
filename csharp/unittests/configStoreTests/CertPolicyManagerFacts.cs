@@ -153,15 +153,15 @@ namespace Health.Direct.Config.Store.Tests
             groupMgr.AddAssociation(policyGroup1);
             groupMgr.AddAssociation(policyGroup2);
 
-            CertPolicy[] policies = policyMgr.GetIncomingByDomain("domain1.test.com");
+            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
             policies.Length.Should().Be(2);
-            policies = policyMgr.GetOutgoingByDomain("domain1.test.com");
+            policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
             policies.Length.Should().Be(2);
 
-            policies = policyMgr.GetIncomingByDomain("domain2.test.com");
+            policies = policyMgr.GetIncomingByOwner("domain2.test.com");
             policies.Length.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByDomain("domain3.test.com");
+            policies = policyMgr.GetIncomingByOwner("domain3.test.com");
             policies.Length.Should().Be(0);
             
         }
@@ -225,15 +225,15 @@ namespace Health.Direct.Config.Store.Tests
             groupMgr.AddAssociation(policyGroup1);
             groupMgr.AddAssociation(policyGroup2);
 
-            CertPolicy[] policies = policyMgr.GetIncomingByDomain("domain1.test.com");
+            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
             policies.Length.Should().Be(2);
-            policies = policyMgr.GetOutgoingByDomain("domain1.test.com");
+            policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
             policies.Length.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByDomain("domain2.test.com");
+            policies = policyMgr.GetIncomingByOwner("domain2.test.com");
             policies.Length.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByDomain("domain3.test.com");
+            policies = policyMgr.GetIncomingByOwner("domain3.test.com");
             policies.Length.Should().Be(0);
 
         }
@@ -296,9 +296,9 @@ namespace Health.Direct.Config.Store.Tests
             groupMgr.AddAssociation(policyGroup1);
             groupMgr.AddAssociation(policyGroup2);
 
-            CertPolicy[] policies = policyMgr.GetIncomingByDomain("domain1.test.com");
+            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
             policies.Length.Should().Be(0);
-            policies = policyMgr.GetOutgoingByDomain("domain1.test.com");
+            policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
             policies.Length.Should().Be(2);
 
             

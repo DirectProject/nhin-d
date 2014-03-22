@@ -21,20 +21,24 @@ namespace Health.Direct.Config.Store
     public enum CertPolicyUse : byte
     {
         /// <summary>
+        /// No validation
+        /// </summary>
+        None = 0,
+        /// <summary>
         /// Validating certificate path trust chaining
         /// </summary>
-        Trust = 0,
+        Trust = 1,
         /// <summary>
         /// Accessing certificate via a private resolver.
         /// </summary>
-        PrivateResolver =1,
+        PrivateResolver = 2,
         /// <summary>
         /// Accessing certificate via a public resolver.
         /// </summary>
-        PublicResolver = 2,
+        PublicResolver = 3,
         /// <summary>
         /// Perform basic policy validation outside the context of the security and trust agent.
         /// </summary>
-        Validation = 3
+        Validation = 4
     }
 }

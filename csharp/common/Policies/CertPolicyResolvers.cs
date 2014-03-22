@@ -51,11 +51,20 @@ namespace Health.Direct.Common.Policies
             Resolvers = new List<KeyValuePair<string, IPolicyResolver>>();
         }
 
+        /// <summary>
+        /// Construct a <see cref="CertPolicyResolvers"/> container with supplied key value pairs.
+        /// Name the resolver as the key and store the <see cref="IPolicyResolver"/> in value.
+        /// </summary>
+        /// <param name="resolvers"></param>
         public CertPolicyResolvers(IList<KeyValuePair<string, IPolicyResolver>> resolvers)
         {
             Resolvers = resolvers;
         }
+
+        /// <inheritdoc />
         public IList<KeyValuePair<string, IPolicyResolver>> Resolvers { get; private set; }
+
+        /// <inheritdoc />
         public IPolicyResolver TrustResolver
         {
             get
@@ -63,6 +72,8 @@ namespace Health.Direct.Common.Policies
                 return Resolvers.FirstOrDefault(r => r.Key == TrustPolicyName).Value;
             }
         }
+
+        /// <inheritdoc />
         public IPolicyResolver PrivateResolver
         {
             get
@@ -70,6 +81,8 @@ namespace Health.Direct.Common.Policies
                 return Resolvers.FirstOrDefault(r => r.Key == PrivatePolicyName).Value;
             }
         }
+
+        /// <inheritdoc />
         public IPolicyResolver PublicResolver
         {
             get

@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
@@ -33,6 +34,11 @@ namespace Health.Direct.Config.Client
             }
             CertPolicy policy = client.GetPolicyByName(name);
             return (policy != null);
+        }
+
+        public static bool Contains(this CertPolicyStoreClient client, string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+        {
+            return client.PolicyToGroupExists(policyName, groupName, policyUse, incoming, outgoing);
         }
 
         public static IEnumerable<CertPolicy> EnumerateCertPolicies(this CertPolicyStoreClient client, int chunkSize)
