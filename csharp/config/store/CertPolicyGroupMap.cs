@@ -32,7 +32,7 @@ namespace Health.Direct.Config.Store
         public CertPolicyGroupMap()
         {
             CreateDate = DateTimeHelper.Now;
-            Use = CertPolicyUse.Trust;
+            Use = CertPolicyUse.NONE;
         }
 
         public CertPolicyGroupMap(bool isNew) : this()

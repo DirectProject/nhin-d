@@ -72,7 +72,7 @@ namespace Health.Direct.Config.Store
 
         public CertPolicy(CertPolicy policy) : this()
         {
-
+            ID = policy.ID;
             Name = policy.Name;
             Description = policy.Description;
             Lexicon = policy.Lexicon;

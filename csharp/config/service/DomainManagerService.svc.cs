@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
+using System.ServiceModel;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
@@ -582,17 +583,37 @@ namespace Health.Direct.Config.Service
             try
             {
                 CertPolicy certPolicy = Store.CertPolicies.Get(policyName);
+                if (certPolicy == null)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
+                }
                 CertPolicyGroup policyGroup = Store.CertPolicyGroups.Get(groupName);
-                policyGroup.CertPolicies.Add(certPolicy);
-                policyGroup.CertPolicyGroupMaps.First().Use = policyUse;
-                policyGroup.CertPolicyGroupMaps.First().ForIncoming = incoming;
-                policyGroup.CertPolicyGroupMaps.First().ForOutgoing = outgoing;
+                if (policyGroup == null)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
+                }
+                //todo: hacky.  Should look closer at CreateFault in the throw below to see if we can accuratly examine this exception
+                //and turn it into a ConfigStoreError.UniqueConstraint 
+                if (PolicyToGroupExists(policyName, groupName, policyUse, incoming, outgoing))
+                {
+                    ConfigStoreFault fault = new ConfigStoreFault(ConfigStoreError.UniqueConstraint,
+                        "Duplicate policy to group mapping");
+                    throw new FaultException<ConfigStoreFault>(fault, new FaultReason(fault.ToString()));
+                }
+                policyGroup.CertPolicies.Add(new CertPolicy(certPolicy));
+                policyGroup.CertPolicyGroupMaps.First(m => m.IsNew).Use = policyUse;
+                policyGroup.CertPolicyGroupMaps.First(m => m.IsNew).ForIncoming = incoming;
+                policyGroup.CertPolicyGroupMaps.First(m => m.IsNew).ForOutgoing = outgoing;
 
                 Store.CertPolicyGroups.AddAssociation(policyGroup);
             }
+            catch (FaultException faultEx)
+            {
+                throw faultEx;
+            }
             catch (Exception ex)
             {
-                throw CreateFault("AddPolicy", ex);
+                throw CreateFault("AddPolicyToGroup", ex);
             }
         }
 

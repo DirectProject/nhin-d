@@ -183,7 +183,7 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
+            using (ConfigDatabase db = this.Store.CreateReadContext(DataLoadOptions))
             {
                 var cpgs = db.CertPolicies.GetIncoming(owner);
                 return cpgs.ToArray();

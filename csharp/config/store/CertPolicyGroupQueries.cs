@@ -56,6 +56,13 @@ namespace Health.Direct.Config.Store
            select policyGroup
            );
 
+        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicy>> CertPolicyByName = CompiledQuery.Compile(
+           (ConfigDatabase db, string certPolicyName) =>
+            from certPolicy in db.CertPolicies
+            where certPolicy.Name == certPolicyName
+            select certPolicy
+            );
+
         static readonly Func<ConfigDatabase, long, IQueryable<CertPolicyGroup>> CertPolicyGroupByID = CompiledQuery.Compile(
            (ConfigDatabase db, long ID) =>
            from policyGroup in db.CertPolicyGroups
@@ -85,6 +92,11 @@ namespace Health.Direct.Config.Store
         public static CertPolicyGroup Get(this Table<CertPolicyGroup> table, string name)
         {
             return CertPolicyGroupByName(table.GetDB(), name).SingleOrDefault();
+        }
+
+        public static CertPolicy GetPolicy(this Table<CertPolicyGroup> table, string name)
+        {
+            return CertPolicyByName(table.GetDB(), name).SingleOrDefault();
         }
 
         public static CertPolicyGroup Get(this Table<CertPolicyGroup> table, long id)

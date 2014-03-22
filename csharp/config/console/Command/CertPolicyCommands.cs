@@ -222,7 +222,7 @@ namespace Health.Direct.Config.Console.Command
             }
             bool incoming = args.GetOptionalValue<bool>(3, true);
             bool outgoing = args.GetOptionalValue<bool>(4, true);
-            PushAddPolicyToGroup(policyName, groupName, policyUse, incoming, outgoing, false);
+            PushAddPolicyToGroup(policyName, groupName, policyUse, incoming, outgoing, true);
 
         }
 
@@ -308,7 +308,7 @@ namespace Health.Direct.Config.Console.Command
                     WriteLine("With the following usage >");
                     WriteLine(" \t policyUse: {0}", policyUse.ToString());
                     WriteLine(" \t forIncoming: {0}", incoming);
-                    WriteLine(" \t forOutgoing: {0}", incoming);
+                    WriteLine(" \t forOutgoing: {0}", outgoing);
                 }
                 else
                 {

@@ -43,10 +43,10 @@ namespace Health.Direct.SmtpAgent.Policy
                 new CacheSettings(settings1.CacheSettings) { Name = "privatePolicy.outgoing" };
 
             m_incomingResolver =
-                new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, true, CertPolicyUse.PrivateResolver), incomingCacheSettings);
+                new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, true, CertPolicyUse.PRIVATE_RESOLVER), incomingCacheSettings);
 
             m_outgoingResolver =
-                new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, false, CertPolicyUse.PrivateResolver), outgoingCacheSettings);
+                new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, false, CertPolicyUse.PRIVATE_RESOLVER), outgoingCacheSettings);
 
         }
         public IList<IPolicyExpression>

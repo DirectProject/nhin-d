@@ -59,6 +59,12 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Health.Direct.Config.Store">
+      <HintPath>..\config\store\bin\Debug\Health.Direct.Config.Store.dll</HintPath>
+    </Reference>
+    <Reference Include="Health.Direct.Policy">
+      <HintPath>..\config\store\bin\Debug\Health.Direct.Policy.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
