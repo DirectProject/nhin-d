@@ -56,6 +56,28 @@ namespace Health.Direct.Config.Store
            select policyGroup
            );
 
+        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicyGroupMap>> CertPolicyGroupByNameWithPolicies = CompiledQuery.Compile(
+           (ConfigDatabase db, string certPolicyName) =>
+           from policyGroup in db.CertPolicyGroups
+           join map in db.CertPolicyGroupMaps
+                on policyGroup equals map.CertPolicyGroup
+           join policy in db.CertPolicies
+                on map.CertPolicy equals policy
+           where policyGroup.Name == certPolicyName
+           select map
+           );
+
+        static readonly Func<ConfigDatabase, string, IQueryable<CertPolicyGroupDomainMap>> CertPolicyGroupByNameWithDomains = CompiledQuery.Compile(
+           (ConfigDatabase db, string certPolicyName) =>
+           from policyGroup in db.CertPolicyGroups
+           join map in db.CertPolicyGroupDomainMaps
+                on policyGroup equals map.CertPolicyGroup
+           join domainMap in db.CertPolicyGroupDomainMaps
+                on policyGroup equals domainMap.CertPolicyGroup
+           where policyGroup.Name == certPolicyName
+           select map
+           );
+
         static readonly Func<ConfigDatabase, string, IQueryable<CertPolicy>> CertPolicyByName = CompiledQuery.Compile(
            (ConfigDatabase db, string certPolicyName) =>
             from certPolicy in db.CertPolicies
@@ -92,6 +114,16 @@ namespace Health.Direct.Config.Store
         public static CertPolicyGroup Get(this Table<CertPolicyGroup> table, string name)
         {
             return CertPolicyGroupByName(table.GetDB(), name).SingleOrDefault();
+        }
+
+        public static IQueryable<CertPolicyGroupMap> GetWithPolicies(this Table<CertPolicyGroup> table, string name)
+        {
+            return CertPolicyGroupByNameWithPolicies(table.GetDB(), name);
+        }
+
+        public static IQueryable<CertPolicyGroupDomainMap> GetWithOwners(this Table<CertPolicyGroup> table, string name)
+        {
+            return CertPolicyGroupByNameWithDomains(table.GetDB(), name);
         }
 
         public static CertPolicy GetPolicy(this Table<CertPolicyGroup> table, string name)

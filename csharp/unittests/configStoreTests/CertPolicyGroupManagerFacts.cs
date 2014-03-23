@@ -73,6 +73,25 @@ namespace Health.Direct.Config.Store.Tests
             @group.Name.Should().BeEquivalentTo("PolicyGroup1");
         }
 
+        /// <summary>
+        /// A test for Get by name with policies
+        /// 
+        /// </summary>
+        [Fact]
+        public void GetPolicyGroupByNameWithPolicyUsage()
+        {
+            InitCertPolicyRecords();
+            InitCertPolicyGroupRecords();
+
+            
+            CertPolicyGroupManager mgr = CreateManager();
+            mgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            CertPolicyGroupMap[] maps = mgr.GetWithPolicies("PolicyGroup1");
+            maps[0].CertPolicyGroup.Name.Should().Be("PolicyGroup1");
+            maps[0].CertPolicy.Name.Should().Be("Policy1");
+        }
+
+
         
         /// <summary>
         /// A test for Add PolicyGroup
@@ -208,8 +227,8 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(0);
 
 
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
@@ -229,8 +248,8 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(0);
 
 
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
@@ -262,8 +281,8 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(0);
 
 
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
@@ -271,7 +290,7 @@ namespace Health.Direct.Config.Store.Tests
             //group2
             CertPolicyGroup policyGroup2 = groupMgr.Get("PolicyGroup2");
             policyGroup2.CertPolicies.Count.Should().Be(0);
-            groupMgr.AssociateToDomain(policyGroup2.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup2.Name, "domain1.test.com");
             policyGroup2 = groupMgr.Get("PolicyGroup2");
             policyGroup2.CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
@@ -300,8 +319,8 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(0);
 
 
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
@@ -333,10 +352,10 @@ namespace Health.Direct.Config.Store.Tests
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain2.test.com");
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain3.test.com");
-            groupMgr.AssociateToDomain(policyGroup2.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
+            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
 
             CertPolicyGroup[] policyGroups = groupMgr.GetByDomains(new string[] { "domain1.test.com" });
             policyGroups.Length.Should().Be(1);
@@ -381,10 +400,10 @@ namespace Health.Direct.Config.Store.Tests
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain2.test.com");
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain3.test.com");
-            groupMgr.AssociateToDomain(policyGroup2.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
+            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
             //
             // Map cert policy group to policy
             //

@@ -40,7 +40,8 @@ namespace Health.Direct.Config.Store
         string m_Name;
         string m_Description = String.Empty;
 
-        private EntitySet<CertPolicyGroupMap> m_CertPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
+        // don't remove
+        private EntitySet<CertPolicyGroupMap> m_certPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
 
         public CertPolicy()
         {
@@ -87,16 +88,17 @@ namespace Health.Direct.Config.Store
             set; 
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_CertPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_certPolicyId")]
         public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
         {
             set
             {
-                m_CertPolicyGroupMap.Assign(value);
+                m_certPolicyGroupMap.Assign(value);
             }
             get
             {
-                return m_CertPolicyGroupMap;
+                //  initialization needed for serialization 
+                return m_certPolicyGroupMap ??  new EntitySet<CertPolicyGroupMap>();
             }
         }
 

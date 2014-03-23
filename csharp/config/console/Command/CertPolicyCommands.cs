@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.ServiceModel;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
@@ -255,8 +256,77 @@ namespace Health.Direct.Config.Console.Command
             WriteLine("{0} certificate polices", Client.GetCertPolicyGroupCount());
         }
 
+        /// <summary>
+        /// List all polici
+        /// </summary>
+        [Command(Name = "CertPolicyUsage_List", Usage = CertPolicyUsageListUsage)]
+        public void CertPolicyUsageList(string[] args)
+        {
+            string groupName = args.GetRequiredValue(0);
+            Print(GetCertPolicyGroupWithPolicies(groupName));
+        }
+
+        private const string CertPolicyUsageListUsage
+            = "List policies and their usage with in a policy group."
+              + Constants.CRLF + "groupName"
+              + Constants.CRLF +
+              " \t groupName: Name of the policy group to search on.  Place the policy group name in quotes (\") if there are spaces in the name.";
 
 
+
+        /// <summary>
+        /// Associate a certificate policy group to an owner
+        /// </summary>
+        [Command(Name = "CertPolicyGroup_AddOwner", Usage = CertPolicyGroupAddOwnerUsage)]
+        public void CertPolicyGroupAddOwner(string[] args)
+        {
+            string groupName = args.GetRequiredValue(0);
+            string owner = args.GetRequiredValue(1);
+            AssociatePolicyGroupToDomain(groupName, owner, false);
+        }
+
+        private const string CertPolicyGroupAddOwnerUsage
+            = "Adds an existing policy group to an existing owner."
+              + Constants.CRLF + "groupName owner"
+              + Constants.CRLF + " \t groupName: Name of the policy group.  Place the policy group name in quotes (\") if there are spaces in the name."
+              + Constants.CRLF + " \t owner: Name of the owner to associate with groupName."; 
+              
+              
+        /// <summary>
+        /// Associate a certificate policy group to an owner, if one does not already exist
+        /// </summary>
+        [Command(Name = "CertPolicyGroup_EnsureOwner", Usage = CertPolicyGroupEnsureOwnerUsage)]
+        public void CertPolicyGroupEnsureOwner(string[] args)
+        {
+            string groupName = args.GetRequiredValue(0);
+            string owner = args.GetRequiredValue(1);
+            AssociatePolicyGroupToDomain(groupName, owner, true);
+        }
+        
+        private const string CertPolicyGroupEnsureOwnerUsage
+             = "Adds an existing policy group to an existing owner.  - if not already there."
+              + Constants.CRLF + "groupName owner"
+              + Constants.CRLF + " \t groupName: Name of the policy group.  Place the policy group name in quotes (\") if there are spaces in the name."
+              + Constants.CRLF + " \t owner: Name of the owner to associate with groupName.";
+
+
+        /// <summary>
+        /// List all owners associated to a policy group
+        /// </summary>
+        [Command(Name = "CertPolicyGroup_OwnersList", Usage = CertPolicyGroupOwnersListUsage)]
+        public void CertPolicyGroup_OwnersList(string[] args)
+        {
+            string groupName = args.GetRequiredValue(0);
+            Print(getCertPolicyGroupWithOwners(groupName));
+        }
+
+        private const string CertPolicyGroupOwnersListUsage
+            = "List owners associated with in a policy group."
+              + Constants.CRLF + "groupName"
+              + Constants.CRLF +
+              " \t groupName: Name of the policy group to search on.  Place the policy group name in quotes (\") if there are spaces in the name.";
+
+        
         //---------------------------------------
         //
         // Implementation details
@@ -349,6 +419,32 @@ namespace Health.Direct.Config.Console.Command
             }
         }
 
+        private void AssociatePolicyGroupToDomain(string groupName, string owner, bool checkForDupes)
+        {
+            try
+            {
+                if (!checkForDupes || !Client.Contains(groupName, owner))
+                {
+                    Client.AssociatePolicyGroupToDomain(groupName, owner);
+                    WriteLine("Associated {0} to {1}", groupName, owner);
+                }
+                else
+                {
+                    WriteLine("Group to owner association already exists");
+                }
+            }
+            catch (FaultException<ConfigStoreFault> ex)
+            {
+                if (ex.Detail.Error == ConfigStoreError.UniqueConstraint)
+                {
+                    WriteLine("Policy to group association already exists");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
 
         private CertPolicy GetCertPolicy(string name)
         {
@@ -357,8 +453,38 @@ namespace Health.Direct.Config.Console.Command
             {
                 throw new ArgumentException(string.Format("CertPolicy {0} not found", name));
             }
-
             return certPolicy;
+        }
+
+        private CertPolicyGroup GetCertPolicyGroup(string name)
+        {
+            CertPolicyGroup certPolicy = Client.GetPolicyGroupByName(name);
+            if (certPolicy == null)
+            {
+                throw new ArgumentException(string.Format("CertPolicy {0} not found", name));
+            }
+            return certPolicy;
+        }
+
+        private List<CertPolicyGroupMap> GetCertPolicyGroupWithPolicies(string name)
+        {
+            List<CertPolicyGroupMap> maps = Client.GetPolicyGroupByNameWithPolicies(name).ToList();
+            if (maps == null)
+            {
+                throw new ArgumentException(string.Format("CertPolicy {0} not found", name));
+            }
+            return maps;
+        }
+
+
+        private List<CertPolicyGroupDomainMap> getCertPolicyGroupWithOwners(string name)
+        {
+            List<CertPolicyGroupDomainMap> maps = Client.GetPolicyGroupByNameWithOwners(name).ToList();
+            if (maps == null)
+            {
+                throw new ArgumentException(string.Format("CertPolicy {0} not found", name));
+            }
+            return maps;
         }
 
 
@@ -389,17 +515,51 @@ namespace Health.Direct.Config.Console.Command
                 CommandUI.PrintSectionBreak();
             }
         }
-
-
+        
         public void Print(CertPolicyGroup group)
         {
             CommandUI.Print("ID", group.ID);
             CommandUI.Print("Name", group.Name);
             CommandUI.Print("Description", group.Description);
             CommandUI.Print("CreateDate", group.CreateDate);
-            CommandUI.Print("# of Policies", group.CertPolicies == null ? 0 : group.CertPolicies.Count);
-            CommandUI.Print("# of Domains", group.CertPolicyGroupDomainMaps == null ? 0 : group.CertPolicyGroupDomainMaps.Count);
+        }
+
+        public void Print(List<CertPolicyGroupMap> maps)
+        {
+            if (!maps.Any())
+            {
+                WriteLine("Group has no policies associated with it.");
+                return;
+            }
+            CommandUI.Print("GroupName", maps.First().CertPolicyGroup.Name);
+            CommandUI.Print("Description", maps.First().CertPolicyGroup.Description);
+            foreach (CertPolicyGroupMap map in maps)
+            {
+                CommandUI.Print(" \t PolicyName \t ", map.CertPolicy.Name);
+                CommandUI.Print(" \t Description \t ", map.CertPolicy.Description);
+                CommandUI.Print(" \t PolicyUse \t ", map.Use);
+                CommandUI.Print(" \t ForIncoming \t ", map.ForIncoming);
+                CommandUI.Print(" \t ForOutgoing \t ", map.ForOutgoing);
+                CommandUI.Print(" \t CreateDate \t ", map.CreateDate);
+                CommandUI.PrintDivider();
+            }
+        }
+
+        public void Print(List<CertPolicyGroupDomainMap> maps)
+        {
+            if (!maps.Any())
+            {
+                WriteLine("Group has no owners associated with it.");
+                return;
+            }
+            CommandUI.Print("GroupName", maps.First().CertPolicyGroup.Name);
+            CommandUI.Print("Description", maps.First().CertPolicyGroup.Description);
+            foreach (CertPolicyGroupDomainMap map in maps)
+            {
+                CommandUI.Print(" \t Owner   \t ", map.Owner);
+                CommandUI.Print(" \t CreateDate \t ", map.CreateDate);
+                CommandUI.PrintDivider();
+            }
         }
     }
-    
 }

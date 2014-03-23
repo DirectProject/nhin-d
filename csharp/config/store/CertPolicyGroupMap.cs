@@ -57,18 +57,19 @@ namespace Health.Direct.Config.Store
         }
 
         [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
-        private long m_CertPolicyGroupId;
+        private long m_certPolicyGroupId;
         private EntityRef<CertPolicyGroup> m_certPolicyGroup = new EntityRef<CertPolicyGroup>();
 
         [Column(IsPrimaryKey = true, Name = "CertPolicyId")]
-        private long m_CertPolicyId;
+        private long m_certPolicyId;
         private EntityRef<CertPolicy> m_certPolicy = new EntityRef<CertPolicy>();
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroups", IsForeignKey = true, Storage = "m_certPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
+
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroups", IsForeignKey = true, Storage = "m_certPolicyGroup", ThisKey = "m_certPolicyGroupId")]
         [DataMember(IsRequired = true)]
         public CertPolicyGroup CertPolicyGroup
         {
-            get { return m_certPolicyGroup.Entity; }
+            get { return m_certPolicyGroup.HasLoadedOrAssignedValue ? m_certPolicyGroup.Entity : null; }
             set
             {
                 CertPolicyGroup originalCertPolicyGroup = m_certPolicyGroup.Entity;
@@ -87,7 +88,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", IsForeignKey = true, Storage = "m_certPolicy", ThisKey = "m_CertPolicyId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", IsForeignKey = true, Storage = "m_certPolicy", ThisKey = "m_certPolicyId")]
         [DataMember(IsRequired = true)]
         public CertPolicy CertPolicy
         {

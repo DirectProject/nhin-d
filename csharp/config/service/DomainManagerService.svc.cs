@@ -467,6 +467,17 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public bool PolicyGroupToOwnerExists(string policyGroup, string owner)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.PolicyGroupMapExists(policyGroup, owner);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("PolicyGroupToOwnerExists", ex);
+            }
+        }
 
         public CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults)
         {
@@ -540,6 +551,33 @@ namespace Health.Direct.Config.Service
                 throw CreateFault("GetPolicyGroupByName", ex);
             }
         }
+
+        public CertPolicyGroupMap[] GetPolicyGroupByNameWithPolicies(string policyGroupName)
+        {
+            try
+            {
+                CertPolicyGroupMap[] maps = Store.CertPolicyGroups.GetWithPolicies(policyGroupName);
+                return maps;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByNameWithPolicies", ex);
+            }
+        }
+
+        public CertPolicyGroupDomainMap[] GetPolicyGroupByNameWithOwners(string policyGroupName)
+        {
+            try
+            {
+                CertPolicyGroupDomainMap[] maps = Store.CertPolicyGroups.GetWithOwners(policyGroupName);
+                return maps;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByNameWithOwner", ex);
+            }
+        }
+
 
         public CertPolicyGroup GetPolicyGroupByID(long policyGroupID)
         {
@@ -623,15 +661,15 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public void AssociatePolicyGroupToDomain(string owner, string policyName)
+        public void AssociatePolicyGroupToDomain(string groupName, string owner)
         {
             try
             {
-                Store.CertPolicyGroups.AssociateToDomain(owner, policyName);
+                Store.CertPolicyGroups.AssociateToOwner(groupName, owner);
             }
             catch (Exception ex)
             {
-                throw CreateFault("AddPolicy", ex);
+                throw CreateFault("AssociatePolicyGroupToDomain", ex);
             }
         }
 

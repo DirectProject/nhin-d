@@ -493,6 +493,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="PolicyGroupToOwnerExists">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExists" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="EnumerateCertPolicies">
       <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicies" style="document" />
       <wsdl:input>
@@ -555,6 +567,30 @@
     </wsdl:operation>
     <wsdl:operation name="GetPolicyGroupByName">
       <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByNameWithPolicies">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPolicies" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByNameWithOwners">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOwners" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

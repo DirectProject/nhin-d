@@ -111,8 +111,8 @@ namespace Health.Direct.Config.Store.Tests
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup2.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
             //
             // Map cert policy group to policy
             //
@@ -135,7 +135,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
 
-        [Fact]
+        [Fact, AutoRollback]
         public void GetIncomingAndOutgoingCertPolicieByOwnerAndUsage_Test()
         {
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
@@ -151,8 +151,8 @@ namespace Health.Direct.Config.Store.Tests
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToDomain(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToDomain(policyGroup2.Name, "domain2.test.com");
+            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
             //
             // Map cert policy group to policy
             //

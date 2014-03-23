@@ -37,7 +37,9 @@ namespace Health.Direct.Config.Store
         string m_Name;
         string m_Description = String.Empty;
 
+        // don't remove
         private EntitySet<CertPolicyGroupMap> m_certPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
+        // don't remove
         private EntitySet<CertPolicyGroupDomainMap> m_certPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>();
 
         public CertPolicyGroup()
@@ -55,8 +57,6 @@ namespace Health.Direct.Config.Store
         {
             obj.CertPolicyGroup = null;
         }
-
-        
 
         public CertPolicyGroup(string name)
             : this()
@@ -131,17 +131,21 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_certPolicyGroupId")]
         public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps
         {
             set
             {
                 m_certPolicyGroupMap.Assign(value);
             }
-            get { return m_certPolicyGroupMap; }
+            get
+            {
+                //initialization needed for serialization
+                return m_certPolicyGroupMap ?? new EntitySet<CertPolicyGroupMap>();
+            }
         }
 
-        [Association(Name = "FK_CertPolicyGroupDomainMap_CertPolicyGroups", Storage = "m_certPolicyGroupDomainMap", ThisKey = "ID", OtherKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupDomainMap_CertPolicyGroups", Storage = "m_certPolicyGroupDomainMap", ThisKey = "ID", OtherKey = "m_certPolicyGroupId")]
         public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps
         {
             set
@@ -163,13 +167,17 @@ namespace Health.Direct.Config.Store
         {
             get
             {
+                if (CertPolicyGroupMaps == null)
+                {
+                    return null;
+                }
                 var policies = new ObservableCollection<CertPolicy>(
                         from groupMap in CertPolicyGroupMaps select groupMap.CertPolicy);
                 policies.CollectionChanged += CertPolicyGroupCollectionChanged;
                 return policies;
             }
         }
-
+        
         private void CertPolicyGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (NotifyCollectionChangedAction.Add == e.Action)
@@ -227,6 +235,7 @@ namespace Health.Direct.Config.Store
         }
     }
 
+    
     public static class CertPolicyGroupExt
     {
         public static void Add(this ICollection<CertPolicy> policies, CertPolicy policy, CertPolicyGroupMap certPolicyGroupMap)
