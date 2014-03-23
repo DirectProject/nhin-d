@@ -528,9 +528,13 @@ Regards, Postmaster XXX.YYY
          </mailet>
 
          <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
-            <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>
+            <ConfigURL>http://localhost:8081/config-service/api</ConfigURL>
             <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
             <AutoDSNFailueCreation>General,ReliableAndTimely</AutoDSNFailueCreation> 
+            <SmptAgentConfigProvider>org.nhindirect.gateway.smtp.provider.RESTSmtpAgentConfigProvider</SmptAgentConfigProvider>
+            <ServiceSecurityManagerProvider>org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider</ServiceSecurityManagerProvider>
+            <ServiceSecurityAuthSubject>direct</ServiceSecurityAuthSubject>
+            <ServiceSecurityAuthSecret>#H|tBro$</ServiceSecurityAuthSecret>            
          </mailet>
 
          <!-- This mailet tracks all incoming notification messages.  All messages at this point should not encrypted, so they

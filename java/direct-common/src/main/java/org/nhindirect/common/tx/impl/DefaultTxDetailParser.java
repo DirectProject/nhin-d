@@ -111,6 +111,7 @@ public class DefaultTxDetailParser implements TxDetailParser
 		return retVal;		
 	}
 	
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public Map<String, TxDetail> getMessageDetails(MimeMessage msg) 
 	{

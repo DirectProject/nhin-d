@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.DomainService;
 import org.nhind.config.testbase.BaseTestPlan;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 import org.nhindirect.config.model.Address;
@@ -32,7 +32,7 @@ public class DefaultDomainService_getDomainTest
 			{
 				domainDao = (DomainDao)ConfigServiceRunner.getSpringApplicationContext().getBean("domainDao");
 				
-				resource = 	(DomainService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), DOMAIN_SERVICE);	
+				resource = 	(DomainService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), DOMAIN_SERVICE);	
 
 			}
 			catch (Throwable t)
@@ -54,7 +54,7 @@ public class DefaultDomainService_getDomainTest
 		@Override
 		protected void performInner() throws Exception
 		{				
-			
+
 			final Domain addDomain = getDomainToAdd();
 			
 			if (addDomain != null)
@@ -65,7 +65,6 @@ public class DefaultDomainService_getDomainTest
 				}
 				catch (ServiceException e)
 				{
-	
 					throw e;
 				}
 			}

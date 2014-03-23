@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.AddressService;
 import org.nhind.config.testbase.BaseTestPlan;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 
@@ -39,7 +39,7 @@ public class DefaultAddressService_deleteAddressTest
 					addressDao = (AddressDao)ConfigServiceRunner.getSpringApplicationContext().getBean("addressDaoImpl");
 					domainDao =  (DomainDao)ConfigServiceRunner.getSpringApplicationContext().getBean("domainDao");
 					
-					resource = 	(AddressService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), ADDRESS_SERVICE);	
+					resource = 	(AddressService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), ADDRESS_SERVICE);	
 
 				}
 				catch (Throwable t)

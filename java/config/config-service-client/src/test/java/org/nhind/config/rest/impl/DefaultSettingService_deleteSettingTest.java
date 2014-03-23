@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.nhind.config.client.ConfigServiceRunner;
 import org.nhind.config.rest.SettingService;
 import org.nhind.config.testbase.BaseTestPlan;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
+
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 
@@ -39,7 +39,7 @@ public class DefaultSettingService_deleteSettingTest
 				{
 					settingDao =  (SettingDao)ConfigServiceRunner.getSpringApplicationContext().getBean("settingDao");
 					
-					resource = 	(SettingService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), new OpenServiceSecurityManager(), SETTING_SERVICE);	
+					resource = 	(SettingService)BaseTestPlan.getService(ConfigServiceRunner.getRestAPIBaseURL(), SETTING_SERVICE);	
 
 				}
 				catch (Throwable t)
