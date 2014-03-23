@@ -565,6 +565,18 @@
         <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="GetCertPolicyGroupCount">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
     <wsdl:operation name="GetPolicyGroupByID">
       <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByID" style="document" />
       <wsdl:input>

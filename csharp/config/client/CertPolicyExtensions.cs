@@ -65,5 +65,32 @@ namespace Health.Direct.Config.Client
                 lastPolicy = policies[policies.Length - 1].ID;
             }
         }
+
+        public static IEnumerable<CertPolicyGroup> EnumerateCertPolicyGroups(this CertPolicyStoreClient client, int chunkSize)
+        {
+            if (chunkSize < 1)
+            {
+                throw new ArgumentException("value was less than 1", "chunkSize");
+            }
+
+            long lastPolicy = -1;
+
+            CertPolicyGroup[] groups;
+            while (true)
+            {
+                groups = client.EnumerateCertPolicyGroups(lastPolicy, chunkSize);
+                if (groups.IsNullOrEmpty())
+                {
+                    yield break;
+                }
+                for (int i = 0; i < groups.Length; ++i)
+                {
+                    yield return groups[i];
+                }
+                lastPolicy = groups[groups.Length - 1].ID;
+            }
+        }
+
+
     }
 }

@@ -405,6 +405,18 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public int GetCertPolicyGroupCount()
+        {
+            try
+            {
+                return Store.CertPolicyGroups.Count();
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetCertPolicyGroupCount", ex);
+            }
+        }
+
         public CertPolicy GetPolicyByID(long policyID)
         {
             try

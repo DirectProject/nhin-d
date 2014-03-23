@@ -423,6 +423,15 @@
   <wsdl:message name="ICertPolicyStore_GetPolicyGroupByName_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPolicyGroupCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPolicyGroupCount" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPolicyGroupCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPolicyGroupCountResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPolicyGroupCount_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="ICertPolicyStore_GetPolicyGroupByID_InputMessage">
     <wsdl:part name="parameters" element="tns:GetPolicyGroupByID" />
   </wsdl:message>
@@ -758,6 +767,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByName" message="tns:ICertPolicyStore_GetPolicyGroupByName_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameResponse" message="tns:ICertPolicyStore_GetPolicyGroupByName_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyGroupByName_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertPolicyGroupCount">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCount" message="tns:ICertPolicyStore_GetCertPolicyGroupCount_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountResponse" message="tns:ICertPolicyStore_GetCertPolicyGroupCount_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetCertPolicyGroupCount_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="GetPolicyGroupByID">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByID" message="tns:ICertPolicyStore_GetPolicyGroupByID_InputMessage" />
