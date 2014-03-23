@@ -20,10 +20,7 @@
 	</Target>
 	
 	<Target Name="build-installer" DependsOnTargets="build-installer-tools;update-version-info">
-		<Exec Command='"C:\Program Files (x86)\inno setup 5\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' 
-			Condition="Exists('C:\Program Files (x86)\inno setup 5\iscc.exe')" />
-		<Exec Command='"C:\Program Files\inno setup 5\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' 
-			Condition="Exists('C:\Program Files\inno setup 5\iscc.exe')" />
+		<Exec Command='"$(MSBuildProjectDirectory)\..\build\packages\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' />		
 		<MSBuild Targets="clean-configui" Projects="..\build.xml" Properties="state=post" />
 	</Target>
 	
