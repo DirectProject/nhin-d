@@ -1,0 +1,1 @@
+java -classpath ../target/classes:../target/lib/concurrent-1.0.jar:../target/lib/commons-logging-1.1.1.jar:../target/lib/dnsjava-2.0.8.jar:../target/lib/jcs-1.3.jar:../target/lib/bcprov-jdk15-140.jar:../target/lib/mail-1.4.1.jar:../target/lib/commons-io-1.4.jar org.nhindirect.stagent.cert.tools.DNSCertDumper $1 $2 $3 $4 $5 $6

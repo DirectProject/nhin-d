@@ -1,0 +1,552 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{2.0.5}
+
+    Changes included with release 2.0.5
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Previous version contain extra debug logging and test that was not removed before release which broke certificate path chaining.
+
+{2.0.4}
+
+    Changes included with release 2.0.4
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=229}229}}: Fixed issue with CRLs not decoding when signed by large keys.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=230}230}}: NHINDException now defaults to the Unexpected status to resolved null pointer errors.  
+
+{2.0.3}
+
+    Changes included with release 2.0.3
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=223}223}}: Fixed issue in message id format of auto generated MDN messages.
+
+{2.0.2}
+
+    Changes included with release 2.0.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Resolved issue with certificates for incoming messages being reused for outgoing messages.  This was affecting interop with systems using separate certificates for signing and encryption.
+    
+    * Cleaned up logs when encountering expired certificates, revoked certificates, and certificates with no CRLs.
+
+{2.0.1}
+
+    Changes included with release 2.0.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=218}218}}: Fixed build and test issues with JDK 7.
+
+{2.0}
+
+    Changes included with release 2.0
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=156}156}}: Policy enablement enhancement
+    
+    [] 
+     
+    Bug Fixes
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=216}216}}: Intermediate CAs not being resolved via AIA extension.
+
+{1.6}
+
+    Changes included with release 1.6
+    
+    []
+    
+    Enhancements
+    
+ 	* Added ability to use outgoing policy for incoming notification messages.
+    
+    [] 
+     
+    Bug Fixes
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=208}208}}: Fixed message wrappers when a content encoding or other parameters are present with the rfc822 content type.
+    
+    * Fixed issue where multiple certs encrypted message, but the receiving HISP filters usable certs to decrypt.
+
+{1.5.5}
+
+    Changes included with release 1.5.5
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Additional fixes for NIST and MU2 certification regarding certificate discovery.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=185}185}}: Backing out bug 185 as it is not in compliance with the applicability statement.
+
+{1.5.4}
+
+    Changes included with release 1.5.4
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=194}194}}: Fixed issue with DNS SRV priority not being respected for LDAP queries.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=188}188}}: Fixed issue with DNS certificate resolver not supporting IPKIX records according the applicability statement.
+
+{1.5.3}
+
+    Changes included with release 1.5.3
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Date is promoted to external headers in message wrapping to be compliant with required headers in the applicability statement.
+    
+    * Content type validation is agnostic to content parameter order and use of quotes in parameter values.
+
+{1.5.2}
+
+    Changes included with release 1.5.2
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed compatibility issue with dnsjava versions 2.1 and higher.
+
+{1.5.1}
+
+    Changes included with release 1.5.1
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=191}191}}: Fixed issue where extension field could not be set on an MDN report.
+
+
+{1.5}
+
+    Changes included with release 1.5
+    
+    []
+    
+    Bug Fixes    
+    
+ 	* NA
+    
+    [] 
+     
+    Enhancements
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=187}187}}: Added support for MDN dispatch notification production.
+
+{1.4.2}
+
+    Changes included with release 1.4.2
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=185}185}}: Fixed certificate resolver issue not retrieving domain certificate if user certificate is invalid.
+
+
+{1.4.1}
+
+    Changes included with release 1.4.1
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=184}184}}: Certificates resolvers now support null file based caches.  This now the default behavior of the resolvers.
+
+{1.4}
+
+    Changes included with release 1.4
+    
+    []
+    
+    Enhancements
+
+    * Revocation manager now caches CRLs off line in a configurable location.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=183}183}}: CRL, built in resolvers, and cryptography algorithms can be configured through JVM parameters or a properties file.
+    
+    [] 
+     
+    Bug Fixes
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=170}170}} CRL cache now uses a weak reference hash to protect against out of memory errors.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=149}149}} Fixed exceptions thrown for not finding the sender's certificates.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=142}142}} Changed the order of the final updating of routing headers and encryption/signing of outgoing messages to be consist with the .Net implementation 
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=133}133}} Removed incorrect comment that message wrapping is required by the applicability statement.
+    
+    * Resolved compilation warnings.
+    
+{1.3.1}
+
+    Changes included with release 1.3.1
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Disabling CRL checking in the cert path validation due to compatibility issues until a better solution can be implemented.
+
+{1.3}
+
+    Changes included with release 1.3
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=171}171}}: Default agent implements new MutableAgent for updating agent at runtime.
+    
+    * Added additional logging to certificate resolvers and trust enforcement negative actions.
+    
+    * Added cert cache factory for maintaining cache content when creating multiple resolver instances.
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed concurrency issue with key store updating from multiple threads.
+
+{1.2.3}
+
+    Changes included with release 1.2.3
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Back patching fix from 1.3.1.  Disabling CRL checking in the cert path validation due to compatibility issues until a better solution can be implemented.
+
+{1.2.2}
+
+    Changes included with release 1.2.2
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Public LDAP certificate uses the "userCertificate" field instead of "userSMIMECertificate" 
+
+{1.2.1}
+
+    Changes included with release 1.2.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed cert path validation checking error where the validation object was not being provided the Set of CRLs to check against when the CRL distribution point extension was set on the certificate.
+
+{1.2}
+
+    Changes included with release 1.2
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=159}159}}: OCSP revocation checking.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=166}166}}: Public LDAP resolver.
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=165}165}}: Error parsing addresses with display names.
+
+{1.1.6}
+
+    Changes included with release 1.1.6
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=151}151}}: Supports BouncyCastle 146 libraries correctly.
+
+{1.1.5}
+
+    Changes included with release 1.1.5
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=146}146}}: Agent support non self signed certs as anchors.
+
+{1.1.4}
+
+    Changes included with release 1.1.4
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=126}126}}: Fixed issue with signing certificates not validating correctly.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=121}121}}: Fixed issue with certificate lookups not use alt subject names.
+    
+    * Fixed issue generating and reading MDN message when using Sun's dsn library. 
+
+{1.1.3}
+
+    Changes included with release 1.1.3
+   
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=109}109}}: Fixed form of message/disposition-notification part of MDN message.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=111}11}}: Fixed null pointer error when the -out parameter is omitted in the CreatePKCS12 tool.
+    
+    * Trust model now enforces that all recipients have a valid certificate.
+
+{1.1.2}
+
+    Changes included with release 1.1.2
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * Added date field to MDN messages.
+
+{1.1.1}
+
+    Changes included with release 1.1.1
+	
+    []
+    
+    General
+    
+    * CertGen allows certs to create leaf certs if they do not have the basic constraint flag set so as long as they are self signed certs.
+    
+    []
+    
+    Enhancements
+    
+    * N/A
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=97}97}}: Fixed issue where MIME-Version header is missing in MDN messages.
+
+{1.1}
+
+    Changes included with release 1.1
+	
+    []
+    
+    * CertGen tool adding alternate subject names for email RFC822Name or DNSName.
+    
+    * CertGen tool properly enforces BasicConstraint policy for CAs.   
+    
+    []
+    
+    Enhancements
+    
+    * Updated MDN policy.  MDN acks can be sent even if the sender did not request one.  Controlled by gateway preference. 
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed case sensitivity issue when searching for certificates in the message signature.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=87}87}}: Certificate extension searches now searching for subject alt names.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=89}89}}: Fixed incorrect NHINDAddress constructor where personal name was missing.
+
+{1.0.1}
+
+    Changes included with release 1.0.1.
+	
+    []
+    
+    * Updated doxia book API reference to use 1.0 release instead of snapshots.
+    
+    * Cleaned up some findbugs issues.
+    
+    []
+    
+    Enhancements
+    
+    * N/A 
+
+    [] 
+     
+    Bug Fixes
+
+    * Trust chain validator not properly handling trust anchors that may be publicly resolved as intermediate certs. 
+
+    * Trust chain validator not properly checking for non root anchors.
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=86}86}}: MDN missing subject and Final-Recipient headers.
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	

@@ -1,0 +1,17 @@
+h1. About this Chapter
+
+This chapters describes tools that accompany the agent source code.
+
+The reference implementation's agent source tree provides a set of tools to assist testing and development.  The tools are located under the /java/agent/tools directory in the source tree.
+
+*NOTE:* You will need to checkout the reference implementation source tree first as described in the direct project software development [process|http://wiki.directproject.org/Software+Development+Process].  You will also need [maven|http://maven.apache.org/] installed to build the tools.  After checking out the source and installing maven, build the tools by running the following command under the /java/agent directory:
+
+{code}
+mvn clean install
+{code} 
+
+* [Certificate Generation|./dev-cert-gen.html]
+
+* [DNS Certificate Dumper|./dev-dns-dumper.html]
+
+* [LDAP Certificate Dumper|./dev-ldap-dumper.html]

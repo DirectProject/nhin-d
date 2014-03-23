@@ -1,0 +1,101 @@
+h1. Trust
+
+Arguable the most important aspects of the security and trust specification is the trust aspect.  The security and encryption algorithms can ensure that message a is securely transported from one location to another without being compromised or tampered with, but what value is a message if you do not trust its contents?  In theory anyone can setup a HISP, create certificates, and claim to have some type of authoritative credentials.  A HISP user may be able to irrefutably validate their identity according to there credentials (certificates), but how do you know you can trust the content of the dialog?  The security and trust model allows a HISP to "filter" and accept only messages from HISP that they deem trust worthy.  Transitively, a HISP should only allow users to create destinations or "account" that they deem trust worthy.  
+
+Trust is not an absolute indicator of truth in terms of content, but subjective only in how much a recipient wants to trust the sender.  In the context of health care data, trust in content can result in life changing decision and in extreme case life or death and needs to be dealt with accordingly.  
+
+The security and trust model provides a great deal of flexibility in determining trust between HISPs and even individual users.  Because messages are signed using X509 standards, public key infrastructure (pkix) can be used to "filter" message based on entities called trust anchors.  Every signing X509 certificate is created from a certificate authority, and a public certificate authority file can be used to validate the authenticity and issuer of an X509 certificate.  In the most simple case, a certificate authority (CA) is a trust anchor.  If a HISP or user trusts a particular trust anchor, then all certificates created by that anchor or CA are considered to be trusted.  PKIX allows a great amount of flexibility and granularity in terms of certificate validation with trust anchors.  CAs can create child CAs or signing certificates which in turn can create there own certificates; this process is generally called chaining.  When validating trust any certificate in the chain can be used as a trust anchor (trust anchors all also referred to as the most trusted certificate in a certificate chain), but all certificates in the hierarchy between the actual signing certificate and the trust anchor must be present to validate trust.  At the most granular level, a signing certificate itself may be used as its own trust anchor.
+
+The agent library supports the trust model through the trust model class and the TrustAnchorResolver interface.  The resolver is responsible for locating anchors for a particular destination.  As with certificate resolvers, there are different implementation models based on the how trust anchors are located and how they should be applied for a specific destination (organization level vs. individual user).
+
+*NOTE*:  Trust anchors and CA that act as trust anchors should not be confused with CAs that are used between SMTP or HTTP clients and servers.  They essentially serve the same purpose (validay trust between two entities), but satisfy different use cases. 
+
+h2. TrustAnchorResolver
+
+The TrustAnchorResolver interface specifies two methods for locating and applying trust anchors: one for incoming message and one for outgoing messages.
+
+{code}
+package org.nhindirect.stagent.trust;
+
+public interface TrustAnchorResolver 
+{
+	CertificateResolver getOutgoingAnchors();
+
+	CertificateResolver getIncomingAnchors();
+}
+{code}
+
+The return value of each method is simply a CertificateResolver (trust anchors are simply certificates), but the set of certificates returned by the certificate resolver are governed by a different set of rules.  With a regular CertificateResolver, the return value of the getCertificates method is a collection of certificate that represent the destination address parameter.  Trust anchors are different in that calling getCertificates returns the configured set of trust anchors that a particular sender trusts.  Depending on the CertificateResolver implementation and configuration, the configured set may be the same for all senders in a given domain or may be different for each user.  In some cases it may be the same for every sender regardless of domain.
+
+In many cases the CertificateResolver for outgoing and incoming messages return the same set of trust anchors.  However they may be cases where a HIPS or user trusts sending to particular HISPs and/or users, but trusts a subset or completely different set of HISPs and/or users when receiving messages.
+
+h2. DefaultTrustAnchorResolver
+
+The DefaultTrustAnchorResolver is a the default implementation of the TrustAnchorResolver interface.  In allows multiple configurations of trust anchors from a single set of trust anchors for both incoming and outgoing messages to full blown CertificateResolver implementations.
+
+The first set of constructors take a set of trust anchors and create a [UniformCertificateStore|#UniformCertificateStore] as the certificate resolver.  Each variation that only takes one parameters uses the same store for both incoming and outgoing certificate stores. 
+{code}
+public DefaultTrustAnchorResolver(Collection<X509Certificate> anchors) 
+
+public DefaultTrustAnchorResolver(Collection<X509Certificate> outgoingAnchors, Collection<X509Certificate> incomingAnchors)
+
+public DefaultTrustAnchorResolver(X509Store anchors)
+
+public DefaultTrustAnchorResolver(X509Store outgoingAnchors, X509Store incomingAnchors)
+{code}
+
+The other set of constructors take a specific CertificateResolver implementation.  Each implementation is configured to its own specification and allows for very granular trust anchor resolution. 
+
+{code}
+    public DefaultTrustAnchorResolver(CertificateResolver anchors)
+
+    @Inject
+    public DefaultTrustAnchorResolver(@OutgoingTrustAnchors CertificateResolver outgoingAnchors, 
+    		@IncomingTrustAnchors CertificateResolver incomingAnchors)
+{code}
+
+As with the previous set, the first constructor uses the same resolver for both incoming and outgoing messages.  The last constructor is used by Guice for dependency injection.
+
+h2. UniformCertificateStore
+
+The UniformCertificateStore is a very simple certificate resolver for trust anchors.  It is initialized from either a set of certificates or an [X509Store|http://api.nhindirect.org/java/site/agent/1.0/apidocs/org/nhindirect/stagent/cert/X509Store.html].  In the latter case, the UniformCertificateStore initializes itself by calling getAllCertificates on the X509 store.
+
+The UniformCertificateStore satisfies the use case where every address owned by the agent or consumer code uses the same set of trust anchors.  This is typically used in a test environment or a single domain HISP that does not support separate trust per user.
+
+h2. TrustAnchorCertificateStore
+
+The TrustAnchorCertificateStore is more sophisticated than the UniformCertificateStore in that supports unique sets of trust anchors per domain.  When a consumer calls getCertificates, the store uses the domain information from the address and looks up the trust anchors for that particular domain.
+
+The TrustAnchorCertificateStore has one constructor.
+{code}
+public TrustAnchorCertificateStore(Map<String, Collection<X509Certificate>> certs)
+{code}
+
+The constructor takes a map of strings which equates to a list of domain names.  Each domain name maps to a collection of trust anchors for that particular domain.  *NOTE*: The domain name is case insensitive, so looking up example.com and EXAMPLE.com will result in the same set of trust anchors.
+
+h2. Binding Address To Trust Anchors
+
+Part of the agent's logic is to resolve trust anchors for recipients of an incoming message and resolve trust anchors for the sender of an outgoing message.  The agent places every message into a MessageEnvelope container.  The MessageEnvelope interface and default implementation parse and store the sender and recipient addresses into NHINDAddress structures.  The NHINDAddress structure contains the method setTrustAnchors which takes a collection of X509 certificates that should be as trust anchors for that address.  Typically for incoming messages, the agent looks up the trust anchors for each domain recipient and sets the trust anchors for each recipient.  For outgoing messages, the agent looks up the trust anchors for the sender and set the trust anchors for that sender.  The [TrustModel|#TrustModel] class expects that the trust anchors will be bound to each address appropriately (for incoming and outgoing messages) before calling methods on it.
+
+h2. TrustModel
+
+The [TrustModel|http://api.nhindirect.org/java/site/agent/1.0/apidocs/org/nhindirect/stagent/trust/TrustModel.html] class enforces the trust portion of the security and trust specification.  Although the TrustModel exposes two constructors, it is only really necessary to use the default empty constructor unless you need to subclass the [TrustChainValidator|http://api.nhindirect.org/java/site/agent/1.0/apidocs/org/nhindirect/stagent/trust/TrustChainValidator.html] class.
+
+The trust model supports different levels of trust called the [TrustEnforcementStatus|http://api.nhindirect.org/java/site/agent/1.0/apidocs/org/nhindirect/stagent/trust/TrustEnforcementStatus.html].  During the enforcement phase, each address is flagged with a status indicating if the address trusts the incoming or outgoing message.  It is up to the agent or client code to assert what level of trust status it will allow through the security and trust processes.  The default threshold level is Success_Offline.
+
+
+h3. Enforce(IncomingMessage)
+
+This method enforces the trust policy for incoming messages using the following algorithm.
+
+# Validates that signature exists on the message.
+# Iterates through each domain recipient and iterates through each domain recipient's trust anchor set looking for a trust anchor that is valid for the one on of the signing certificates in the message signature block using the trust chain validator.  Usually there is only one signing certificate, but they may be more than one if the sender supports multiple circles of trust.  If the signing certificate is not validated by the trust anchors, then that recipient's status is flagged as not being a trusted recipient resulting in the message not being delivered to that recipient.  In the agent, this recipient is added to the rejected recipient list of the MessageEnvelope.
+# Validates the signature block on the message to ensure it has not been tampered with.
+# Validates the senders signing certificate against the signers certificate in the public certificate store using certificate "thumb printing."
+
+
+h3. Enforce(OutgoingMessage)
+
+This method enforces the trust policy for outgoing messages using the following algorithm.
+
+# Iterates through each recipient and and looks for a trust anchor in the senders trust anchor set valid for each recipient's certificates.  Usually there is only one certificate per recipient, but they may be more than one if the recipient supports multiple circles of trust.  If a recipients certificates cannot be validated against one of the senders trust anchors, then the recipient's trust status is flagged as failed resulting in the message not being sent to the recipient.  In the agent, this recipient is added to the rejected recipient list of the MessageEnvelope.

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xunit>
+  <assemblies>
+    <assembly filename=".\agent\bin\Release\Health.Direct.Agent.Tests.dll" shadow-copy="true" />
+    <assembly filename=".\common\bin\Release\Health.Direct.Common.Tests.dll" shadow-copy="true" />
+  </assemblies>
+</xunit>

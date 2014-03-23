@@ -1,0 +1,13 @@
+<org.nhindirect.policy.OperationPolicyExpressionFactory_-OperationPolicyExpressionImpl>
+  <operator>EQUALS</operator>
+  <operands>
+    <org.nhindirect.policy.LiteralPolicyExpressionFactory_-LiteralPolicyExpressionImpl>
+      <value class="org.nhindirect.policy.PolicyValueFactory$PolicyValueImpl">
+        <value class="int">16</value>
+      </value>
+    </org.nhindirect.policy.LiteralPolicyExpressionFactory_-LiteralPolicyExpressionImpl>
+    <org.nhindirect.policy.x509.KeyUsageExtensionField>
+      <required>true</required>
+    </org.nhindirect.policy.x509.KeyUsageExtensionField>
+  </operands>
+</org.nhindirect.policy.OperationPolicyExpressionFactory_-OperationPolicyExpressionImpl>

@@ -1,0 +1,69 @@
+//
+// Commands issued to ConfigConsole.exe to set up default Test domains
+// Run in a batch by the exe
+//
+
+// 
+// Change this to set up the machine your config service is running on
+//
+settings_host_set localhost 80
+
+echo ******************************
+//
+// Add domains
+//
+domain_add redmond.hsgincubator.com
+domain_add nhind.hsgincubator.com
+
+echo ******************************
+//
+// Add Addresses
+//
+address_add toby@redmond.hsgincubator.com
+address_add bob@nhind.hsgincubator.com
+address_add biff@nhind.hsgincubator.com
+address_add throw@nhind.hsgincubator.com Throw
+address_add throw@redmond.hsgincubator.com Throw
+
+//Address only.  Resolvers will find org level cert
+address_add toto@nhind.hsgincubator.com
+
+//Post Masters for AutoDSN
+address_add PostMaster@redmond.hsgincubator.com
+address_add PostMaster@nhind.hsgincubator.com
+
+
+echo ******************************
+//
+// Install Certificates and anchors
+//
+test_certs_InstallInService
+
+echo ******************************
+//
+// Enable Domains
+//
+domain_status_set redmond.hsgincubator.com Enabled
+domain_status_set nhind.hsgincubator.com Enabled
+
+
+echo ******************************
+//
+// Set agent name to identify domain groups
+//
+domain_agent_set redmond.hsgincubator.com Agent1
+domain_agent_set nhind.hsgincubator.com Agent2
+
+
+echo ******************************
+//
+// Enable all addresses in the domains
+//
+domain_address_status_set redmond.hsgincubator.com Enabled
+domain_address_status_set nhind.hsgincubator.com Enabled
+//
+// How to enable/disable individual Addresses
+//
+//address_status_set toby@redmond.hsgincubator.com Enabled
+//address_status_set bob@nhind.hsgincubator.com Enabled
+//address_status_set biff@nhind.hsgincubator.com Enabled

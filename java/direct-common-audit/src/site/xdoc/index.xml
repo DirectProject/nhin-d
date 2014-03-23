@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Common Auditing Implementations</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Common Auditing Implementations</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+				This module includes additional auditing implementations include RDBMS based storage.
+            </p>
+        </section>
+    </body>
+</document>

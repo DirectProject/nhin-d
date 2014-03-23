@@ -1,0 +1,14 @@
+<IncomingTrustAnchors> 
+	<Anchor name="cacert"/>
+	<Anchor name="externCaCert"/>
+	<Anchor name="secureHealthEmailCACert"/>
+	<Anchor name="msanchor"/>
+	<Anchor name="cernerDemosCaCert"/>       
+</IncomingTrustAnchors>  
+<OutgoingTrustAnchors> 
+	<Anchor name="cacert"/>
+	<Anchor name="externCaCert"/>
+	<Anchor name="secureHealthEmailCACert"/>
+	<Anchor name="msanchor"/>
+	<Anchor name="cernerDemosCaCert"/>      
+</OutgoingTrustAnchors>  
