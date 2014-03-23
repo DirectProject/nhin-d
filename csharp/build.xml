@@ -23,7 +23,7 @@
 
 	<!-- Aliases -->
 	<Target Name="build" DependsOnTargets="build-all" />
-	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xd;build-configui" />
+	<Target Name="build-all" DependsOnTargets="update-nuget;build-agent;build-gateway;build-xd;build-configui" />
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
 	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
@@ -31,6 +31,12 @@
 	<Target Name="test" DependsOnTargets="test-all" />
 	<Target Name="test-all" DependsOnTargets="test-plugins;test-agent;test-gateway;test-xd;test-certPolicy;test-store" />
 
+	<!--This will load nuget dependancie assoicated to only the solution and not in any project 
+	    such as the Tools.InnoSetup.x.x.x project-->
+	<Target Name="update-nuget">
+		<Exec Command=".\build\.nuget\nuget restore $(gateway_solution)" />
+	</Target>
+	
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
 	</Target>
