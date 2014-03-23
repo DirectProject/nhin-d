@@ -235,6 +235,27 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + " \t forIncoming: Indicates if policy is used for incoming messages.  Defaults to true"
               + Constants.CRLF + " \t forOutgoing: Indicates if policy is used for outgoing messages.  Defaults to true";
 
+        /// <summary>
+        /// List all polici
+        /// </summary>
+        [Command(Name = "CertPolicyGroups_List", Usage = "List all policy groups")]
+        public void CertPolicyGroupList(string[] args)
+        {
+            int chunkSize = args.GetOptionalValue(0, DefaultChunkSize);
+            Print(Client.EnumerateCertPolicyGroups(chunkSize));
+        }
+
+
+        /// <summary>
+        /// How many certificate policies exist? 
+        /// </summary>
+        [Command(Name = "CertPolicyGroups_Count", Usage = "Retrieve # of certificate policy groups.")]
+        public void CertPolicyGroupCount(string[] args)
+        {
+            WriteLine("{0} certificate polices", Client.GetCertPolicyGroupCount());
+        }
+
+
 
         //---------------------------------------
         //
@@ -352,14 +373,33 @@ namespace Health.Direct.Config.Console.Command
 
         public void Print(CertPolicy policy)
         {
-            CommandUI.Print("Name", policy.Name);
             CommandUI.Print("ID", policy.ID);
-            CommandUI.Print("AgentName", policy.Description);
+            CommandUI.Print("Name", policy.Name);
+            CommandUI.Print("Description", policy.Description);
             CommandUI.Print("CreateDate", policy.CreateDate);
             CommandUI.Print("Data", policy.Data.ToUtf8String());
             CommandUI.Print("# of Groups", policy.CertPolicyGroups == null ? 0 : policy.CertPolicyGroups.Count);
         }
-        
+
+        public void Print(IEnumerable<CertPolicyGroup> policies)
+        {
+            foreach (CertPolicyGroup group in policies)
+            {
+                Print(group);
+                CommandUI.PrintSectionBreak();
+            }
+        }
+
+
+        public void Print(CertPolicyGroup group)
+        {
+            CommandUI.Print("ID", group.ID);
+            CommandUI.Print("Name", group.Name);
+            CommandUI.Print("Description", group.Description);
+            CommandUI.Print("CreateDate", group.CreateDate);
+            CommandUI.Print("# of Policies", group.CertPolicies == null ? 0 : group.CertPolicies.Count);
+            CommandUI.Print("# of Domains", group.CertPolicyGroupDomainMaps == null ? 0 : group.CertPolicyGroupDomainMaps.Count);
+        }
     }
     
 }

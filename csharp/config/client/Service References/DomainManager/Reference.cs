@@ -502,6 +502,12 @@ namespace Health.Direct.Config.Client.DomainManager {
             "StoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.CertPolicyGroup GetPolicyGroupByName(string policyGroupName);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCount", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountRes" +
+            "ponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountCon" +
+            "figStoreFaultFault", Name="ConfigStoreFault")]
+        int GetCertPolicyGroupCount();
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByID", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByIDResponse" +
             "")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByIDConfigSt" +
@@ -644,6 +650,10 @@ namespace Health.Direct.Config.Client.DomainManager {
         
         public Health.Direct.Config.Store.CertPolicyGroup GetPolicyGroupByName(string policyGroupName) {
             return base.Channel.GetPolicyGroupByName(policyGroupName);
+        }
+        
+        public int GetCertPolicyGroupCount() {
+            return base.Channel.GetCertPolicyGroupCount();
         }
         
         public Health.Direct.Config.Store.CertPolicyGroup GetPolicyGroupByID(long policyGroupID) {
