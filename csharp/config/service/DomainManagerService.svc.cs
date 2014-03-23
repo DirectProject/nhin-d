@@ -587,25 +587,7 @@ namespace Health.Direct.Config.Service
                 {
                     throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
                 }
-                CertPolicyGroup policyGroup = Store.CertPolicyGroups.Get(groupName);
-                if (policyGroup == null)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-                }
-                //todo: hacky.  Should look closer at CreateFault in the throw below to see if we can accuratly examine this exception
-                //and turn it into a ConfigStoreError.UniqueConstraint 
-                if (PolicyToGroupExists(policyName, groupName, policyUse, incoming, outgoing))
-                {
-                    ConfigStoreFault fault = new ConfigStoreFault(ConfigStoreError.UniqueConstraint,
-                        "Duplicate policy to group mapping");
-                    throw new FaultException<ConfigStoreFault>(fault, new FaultReason(fault.ToString()));
-                }
-                policyGroup.CertPolicies.Add(new CertPolicy(certPolicy));
-                policyGroup.CertPolicyGroupMaps.First(m => m.IsNew).Use = policyUse;
-                policyGroup.CertPolicyGroupMaps.First(m => m.IsNew).ForIncoming = incoming;
-                policyGroup.CertPolicyGroupMaps.First(m => m.IsNew).ForOutgoing = outgoing;
-
-                Store.CertPolicyGroups.AddAssociation(policyGroup);
+                Store.CertPolicyGroups.AddPolicyUse(policyName, groupName, policyUse, incoming, outgoing);
             }
             catch (FaultException faultEx)
             {
@@ -629,11 +611,11 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public void AssociatePolicyGroupToDomain(string owner, long policyGroupID)
+        public void AssociatePolicyGroupToDomain(string owner, string policyName)
         {
             try
             {
-                Store.CertPolicyGroups.AssociateToDomain(owner, policyGroupID);
+                Store.CertPolicyGroups.AssociateToDomain(owner, policyName);
             }
             catch (Exception ex)
             {

@@ -84,11 +84,11 @@
       </xs:appinfo>
     </xs:annotation>
     <xs:restriction base="xs:string">
-      <xs:enumeration value="None" />
-      <xs:enumeration value="Trust" />
-      <xs:enumeration value="PrivateResolver" />
-      <xs:enumeration value="PublicResolver" />
-      <xs:enumeration value="Validation" />
+      <xs:enumeration value="NONE" />
+      <xs:enumeration value="TRUST" />
+      <xs:enumeration value="PRIVATE_RESOLVER" />
+      <xs:enumeration value="PUBLIC_RESOLVER" />
+      <xs:enumeration value="VALIDATION" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="CertPolicyUse" nillable="true" type="tns:CertPolicyUse" />

@@ -541,7 +541,7 @@ namespace Health.Direct.Config.Client.DomainManager {
             "inResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/AssociatePolicyGroupToDoma" +
             "inConfigStoreFaultFault", Name="ConfigStoreFault")]
-        void AssociatePolicyGroupToDomain(string domain, long policyGroupID);
+        void AssociatePolicyGroupToDomain(string domain, string policyName);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFro" +
             "mDomain", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFro" +
@@ -670,8 +670,8 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.RemovePolicyUseFromGroup(policyGroupMapId);
         }
         
-        public void AssociatePolicyGroupToDomain(string domain, long policyGroupID) {
-            base.Channel.AssociatePolicyGroupToDomain(domain, policyGroupID);
+        public void AssociatePolicyGroupToDomain(string domain, string policyName) {
+            base.Channel.AssociatePolicyGroupToDomain(domain, policyName);
         }
         
         public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID) {

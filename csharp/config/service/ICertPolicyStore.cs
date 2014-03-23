@@ -99,7 +99,7 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void AssociatePolicyGroupToDomain(string domain, long policyGroupID);
+        void AssociatePolicyGroupToDomain(string domain, string policyName);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
