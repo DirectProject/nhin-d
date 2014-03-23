@@ -816,7 +816,7 @@
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="policyGroupID" type="xs:long" />
+        <xs:element minOccurs="0" name="policyName" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
