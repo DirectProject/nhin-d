@@ -41,12 +41,21 @@ namespace Health.Direct.Config.Store
         }
 
         public static readonly DataLoadOptions DataLoadOptions = new DataLoadOptions();
+        public static readonly DataLoadOptions GroupMapDataLoadOptions = new DataLoadOptions();
+        public static readonly DataLoadOptions OwnerMapDataLoadOptions = new DataLoadOptions();
+
+        
 
         static CertPolicyGroupManager()
         {
             DataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMaps);
             DataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
             DataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMaps);
+
+            GroupMapDataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
+            GroupMapDataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicyGroup);
+
+            OwnerMapDataLoadOptions.LoadWith<CertPolicyGroupDomainMap>(map => map.CertPolicyGroup);
         }
 
         public CertPolicyGroup Add(CertPolicyGroup @group)
@@ -82,6 +91,17 @@ namespace Health.Direct.Config.Store
             }
         }
 
+
+        public CertPolicyGroup Get(long id)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                var certPolicyGroup = this.Get(db, id);
+                FixUpModel(certPolicyGroup);
+                return certPolicyGroup;
+            }
+        }
+
         /// <summary>
         /// Get PolicyGroup by name
         /// </summary>
@@ -97,15 +117,35 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        public CertPolicyGroup Get(long id)
+        /// <summary>
+        /// Get PolicyGroupMap by name with policies
+        /// </summary>
+        /// <param name="name">Name of the policy</param>
+        /// <returns></returns>
+        public CertPolicyGroupMap[] GetWithPolicies(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext(GroupMapDataLoadOptions))
             {
-                var certPolicyGroup = this.Get(db, id);
-                FixUpModel(certPolicyGroup);
-                return certPolicyGroup;
+                var maps = this.GetWithPolicies(db, name);
+                return maps;
             }
         }
+
+        /// <summary>
+        /// Get PolicyGroupOwnerMap by name with owners
+        /// </summary>
+        /// <param name="name">Name of the policy</param>
+        /// <returns></returns>
+        public CertPolicyGroupDomainMap[] GetWithOwners(string name)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(OwnerMapDataLoadOptions))
+            {
+                var maps = this.GetWithOwners(db, name);
+                return maps;
+            }
+        }
+
+
 
         //
         // This object mapping is missing.  Not sure why it was not automatic
@@ -132,6 +172,37 @@ namespace Health.Direct.Config.Store
 
             return db.CertPolicyGroups.Get(name);
         }
+
+
+        public CertPolicyGroupMap[] GetWithPolicies(ConfigDatabase db, string name)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
+            }
+
+            return db.CertPolicyGroups.GetWithPolicies(name).ToArray();
+        }
+
+
+        public CertPolicyGroupDomainMap[] GetWithOwners(ConfigDatabase db, string name)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
+            }
+
+            return db.CertPolicyGroups.GetWithOwners(name).ToArray();
+        }
+
 
         public CertPolicyGroup Get(ConfigDatabase db, long id)
         {
@@ -176,12 +247,20 @@ namespace Health.Direct.Config.Store
             return db.CertPolicyGroups.Get(lastID, maxResults);
         }
 
-        public bool PolicyGroupMapExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming,
-            bool outgoing)
+        public bool PolicyGroupMapExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
         {
             using (ConfigDatabase db = this.Store.CreateReadContext())
             {
                 return db.CertPolicyGroupMaps.Exists(policyName, groupName, policyUse, incoming, outgoing);
+
+            }
+        }
+
+        public bool PolicyGroupMapExists(string groupName, string owner)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return db.CertPolicyGroupDomainMaps.Exists(groupName, owner);
 
             }
         }
@@ -250,16 +329,16 @@ namespace Health.Direct.Config.Store
         }
 
 
-        public void AssociateToDomain(string groupName, string owner)
+        public void AssociateToOwner(string groupName, string owner)
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
-                this.AssociateToDomain(db, groupName, owner);
+                this.AssociateToOwner(db, groupName, owner);
                 db.SubmitChanges();
             }
         }
 
-        protected void AssociateToDomain(ConfigDatabase db, string groupName, string owner)
+        protected void AssociateToOwner(ConfigDatabase db, string groupName, string owner)
         {
             if (db == null)
             {
@@ -270,15 +349,14 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
             CertPolicyGroup group = db.CertPolicyGroups.Get(groupName);
-            if (group.CertPolicyGroupDomainMaps.All(map => map.Owner != owner))
+
+            CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
             {
-                CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = group,
-                    Owner = owner
-                };
-                group.CertPolicyGroupDomainMaps.Add(map);
-            }
+                CertPolicyGroup = group,
+                Owner = owner
+            };
+            group.CertPolicyGroupDomainMaps.Add(map);
+
         }
 
         public void DissAssociateFromDomain(string owner, long policyGroupID)
@@ -325,7 +403,7 @@ namespace Health.Direct.Config.Store
                 db.CertPolicyGroupDomainMaps.ExecDelete(policyGroupId);
             }
         }
-        
+
 
         public void Remove(long policyGroupId)
         {

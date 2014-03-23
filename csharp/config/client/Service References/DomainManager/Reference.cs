@@ -468,6 +468,12 @@ namespace Health.Direct.Config.Client.DomainManager {
             "toreFaultFault", Name="ConfigStoreFault")]
         bool PolicyToGroupExists(string policyName, string groupName, Health.Direct.Config.Store.CertPolicyUse policyUse, bool incoming, bool outgoing);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExists", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExistsRe" +
+            "sponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExistsCo" +
+            "nfigStoreFaultFault", Name="ConfigStoreFault")]
+        bool PolicyGroupToOwnerExists(string policyGroup, string owner);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicies", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPoliciesRespo" +
             "nse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPoliciesConfi" +
@@ -501,6 +507,20 @@ namespace Health.Direct.Config.Client.DomainManager {
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameConfig" +
             "StoreFaultFault", Name="ConfigStoreFault")]
         Health.Direct.Config.Store.CertPolicyGroup GetPolicyGroupByName(string policyGroupName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPo" +
+            "licies", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPo" +
+            "liciesResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPo" +
+            "liciesConfigStoreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.CertPolicyGroupMap[] GetPolicyGroupByNameWithPolicies(string policyGroupName);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOw" +
+            "ners", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOw" +
+            "nersResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOw" +
+            "nersConfigStoreFaultFault", Name="ConfigStoreFault")]
+        Health.Direct.Config.Store.CertPolicyGroupDomainMap[] GetPolicyGroupByNameWithOwners(string policyGroupName);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCount", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountRes" +
             "ponse")]
@@ -547,7 +567,7 @@ namespace Health.Direct.Config.Client.DomainManager {
             "inResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/AssociatePolicyGroupToDoma" +
             "inConfigStoreFaultFault", Name="ConfigStoreFault")]
-        void AssociatePolicyGroupToDomain(string domain, string policyName);
+        void AssociatePolicyGroupToDomain(string groupName, string owner);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFro" +
             "mDomain", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFro" +
@@ -628,6 +648,10 @@ namespace Health.Direct.Config.Client.DomainManager {
             return base.Channel.PolicyToGroupExists(policyName, groupName, policyUse, incoming, outgoing);
         }
         
+        public bool PolicyGroupToOwnerExists(string policyGroup, string owner) {
+            return base.Channel.PolicyGroupToOwnerExists(policyGroup, owner);
+        }
+        
         public Health.Direct.Config.Store.CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults) {
             return base.Channel.EnumerateCertPolicies(lastCertPolicyID, maxResults);
         }
@@ -650,6 +674,14 @@ namespace Health.Direct.Config.Client.DomainManager {
         
         public Health.Direct.Config.Store.CertPolicyGroup GetPolicyGroupByName(string policyGroupName) {
             return base.Channel.GetPolicyGroupByName(policyGroupName);
+        }
+        
+        public Health.Direct.Config.Store.CertPolicyGroupMap[] GetPolicyGroupByNameWithPolicies(string policyGroupName) {
+            return base.Channel.GetPolicyGroupByNameWithPolicies(policyGroupName);
+        }
+        
+        public Health.Direct.Config.Store.CertPolicyGroupDomainMap[] GetPolicyGroupByNameWithOwners(string policyGroupName) {
+            return base.Channel.GetPolicyGroupByNameWithOwners(policyGroupName);
         }
         
         public int GetCertPolicyGroupCount() {
@@ -680,8 +712,8 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.RemovePolicyUseFromGroup(policyGroupMapId);
         }
         
-        public void AssociatePolicyGroupToDomain(string domain, string policyName) {
-            base.Channel.AssociatePolicyGroupToDomain(domain, policyName);
+        public void AssociatePolicyGroupToDomain(string groupName, string owner) {
+            base.Channel.AssociatePolicyGroupToDomain(groupName, owner);
         }
         
         public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID) {

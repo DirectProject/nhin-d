@@ -142,6 +142,7 @@
     <None Include="Properties\DataSources\Health.Direct.Config.Store.CertPolicy.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.CertPolicyGroup.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.CertPolicyGroupDomainMap.datasource" />
+    <None Include="Properties\DataSources\Health.Direct.Config.Store.CertPolicyGroupMap.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.DnsRecord1.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Mdn1.datasource" />
     <None Include="Properties\DataSources\Health.Direct.Config.Store.Property1.datasource" />

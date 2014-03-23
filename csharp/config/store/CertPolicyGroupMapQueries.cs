@@ -65,5 +65,7 @@ namespace Health.Direct.Config.Store
         {
             return map(table.GetDB(), policyName, groupName, policyUse, incoming, outgoing).Any();
         }
+
+        
     }
 }

@@ -14,7 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using System.Data.Linq;
+using System.Linq;
 
 namespace Health.Direct.Config.Store
 {
@@ -22,6 +24,11 @@ namespace Health.Direct.Config.Store
     {
         const string Sql_DeleteCertPolicyGroupMapsByGroup = "Delete from CertPolicyGroupDomainMap where CertPolicyGroupId = {0}";
         const string Sql_DeleteCertPolicyGroupMapsByOwner = "Delete from CertPolicyGroupDomainMap where Owner = {0}";
+
+        public static ConfigDatabase GetDB(this Table<CertPolicyGroupDomainMap> table)
+        {
+            return (ConfigDatabase)table.Context;
+        }
 
         public static void ExecDelete(this Table<CertPolicyGroupDomainMap> table, long certPolicyGroupId)
         {
@@ -31,6 +38,23 @@ namespace Health.Direct.Config.Store
         public static void ExecDelete(this Table<CertPolicyGroupDomainMap> table, string owner)
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupMapsByOwner, owner);
+        }
+
+        static readonly Func<ConfigDatabase, string, string, IQueryable<CertPolicyGroupDomainMap>> map = CompiledQuery.Compile(
+            (ConfigDatabase db, string groupName, string owner) =>
+
+                from groups in db.CertPolicyGroups
+                join ownerMap in db.CertPolicyGroupDomainMaps
+                    on groups equals ownerMap.CertPolicyGroup
+                where groups.Name == groupName
+                    && ownerMap.Owner == owner
+                select ownerMap
+            );
+
+
+        public static bool Exists(this Table<CertPolicyGroupDomainMap> table, string groupName, string owner)
+        {
+            return map(table.GetDB(), groupName, owner).Any();
         }
     }
 }

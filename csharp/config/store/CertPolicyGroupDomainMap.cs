@@ -51,8 +51,8 @@ namespace Health.Direct.Config.Store
         }
 
         [Column(IsPrimaryKey = true, Name = "CertPolicyGroupId")]
-        private long m_CertPolicyGroupId;
-        private EntityRef<CertPolicyGroup> m_CertPolicyGroup = new EntityRef<CertPolicyGroup>();
+        private long m_certPolicyGroupId;
+        private EntityRef<CertPolicyGroup> m_certPolicyGroup = new EntityRef<CertPolicyGroup>();
         
         /// <summary>
         /// Relationshp to Domain.  Not enforced in SQL schema. 
@@ -82,14 +82,14 @@ namespace Health.Direct.Config.Store
         }
 
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_CertPolicyGroup", ThisKey = "m_CertPolicyGroupId")]
+        [Association(Name = "FK_CertPolicyGroupMap_CertPolicyGroup", IsForeignKey = true, Storage = "m_certPolicyGroup", ThisKey = "m_certPolicyGroupId")]
         [DataMember(IsRequired = true)]
         public CertPolicyGroup CertPolicyGroup
         {
-            get { return m_CertPolicyGroup.Entity; }
+            get { return m_certPolicyGroup.HasLoadedOrAssignedValue ? m_certPolicyGroup.Entity : null; }
             set
             {
-                m_CertPolicyGroup.Entity = value;
+                m_certPolicyGroup.Entity = value;
             }
         }
 
