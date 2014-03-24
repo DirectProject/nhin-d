@@ -8,7 +8,7 @@ if "%2" EQU "Release" set Configuration=Release
 
 if "%1" EQU "help" goto :help
 
-set VERSION=1.0.0.0
+set VERSION=2.0.0.0
 
 call :check_environment
 
@@ -16,7 +16,7 @@ call :check_environment
 echo Enter the version information:
 set /p VERSION=  VERSION (DEFAULT %VERSION%)? 
 
-if "%VERSION%" EQU "" set VERSION=1.0.0.0
+if "%VERSION%" EQU "" set VERSION=2.0.0.0
 
 set /p CONFIRM=Use '%VERSION%' as the version info? (DEFAULT=Y) 
 if "%CONFIRM%" EQU "" set CONFIRM=Y
