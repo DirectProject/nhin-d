@@ -20,7 +20,7 @@
 	</Target>
 	
 	<Target Name="build-installer" DependsOnTargets="build-installer-tools;update-version-info">
-		<Exec Command='"$(MSBuildProjectDirectory)\..\build\packages\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' />		
+		<Exec Command='"$(MSBuildProjectDirectory)\..\build\packages\Tools.InnoSetup.5.5.4\tools\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' />		
 		<MSBuild Targets="clean-configui" Projects="..\build.xml" Properties="state=post" />
 	</Target>
 	
