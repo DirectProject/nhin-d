@@ -19,10 +19,21 @@
 		<smtpEventHandler_solution>.\build\smtpEventHandler.sln</smtpEventHandler_solution>
 		<xd_solution>.\build\xd.sln</xd_solution>
 		<configui_solution>.\build\AdminUI.sln</configui_solution>
+		
+		<!-- need to place this here to get around some sticky quote issues -->
+		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content ..\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content ..\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
+		<PsInstallerFile>powershell -Command "(Get-Content .installer\Direct.iss) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\Direct.iss"</PsInstallerFile>
+		<installer_tools_solution>$(MSBuildProjectDirectory)\toolutil\install.tools\install.tools.sln</installer_tools_solution>
+		
 	</PropertyGroup>
 
+	<Target Name="update-version-info">
+		<Exec Command='$(PsGlobalAssemblyInfo)' />
+		<Exec Command='$(PsInstallerFile)' />
+	</Target>
+	
 	<!-- Aliases -->
-	<Target Name="build" DependsOnTargets="build-all" />
+	<Target Name="build" DependsOnTargets="update-version-info;build-all" />
 	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xd;build-configui" />
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
