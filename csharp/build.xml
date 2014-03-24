@@ -31,11 +31,7 @@
 	<Target Name="test" DependsOnTargets="test-all" />
 	<Target Name="test-all" DependsOnTargets="test-plugins;test-agent;test-gateway;test-xd;test-certPolicy;test-store" />
 
-	<!--This will load nuget dependancie assoicated to only the solution and not in any project 
-	    such as the Tools.InnoSetup.x.x.x project-->
-	<Target Name="update-nuget">
-		<Exec Command=".\build\.nuget\nuget restore $(gateway_solution)" />
-	</Target>
+	
 	
 	<Target Name="build-agent">
 		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
@@ -165,7 +161,7 @@
 	</Target>
 
 	<!--<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway32;build-gateway64;publish-configui" />-->
-	<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway64;publish-configui;update-nuget" />
+	<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway64;publish-configui" />
 
 	<Target Name="get-smtpEventHandlerBin" >
 		<ItemGroup>
