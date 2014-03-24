@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.3.0.0
+AppVerName=Direct Project .NET Gateway 2.0.0.0
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.3.0.0-NET45
+OutputBaseFilename=Direct-2.0.0.0-NET45
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.3.0.0
+VersionInfoVersion=2.0.0.0
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -127,7 +127,6 @@ Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libra
 
 Source: "createadmin.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createdatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
-Source: "updatedatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createeventlogsource.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "InstallDnsResponder.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: dnsresponder;
 Source: "InstallMonitorServer.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: monitorserver;
@@ -584,7 +583,7 @@ begin
     
     existingValue := xpathTools.SelectSingleAttribute(xpath);
     
-    if (existingValue = nil) then
+    if ( VarIsNull(existingValue)) then
     begin
       xpathTools.CreateFragment(xpath);
     end;
@@ -1281,7 +1280,7 @@ begin
   if (length(bundleString) = 0) then
   begin
     bundleString := 'http://localhost/ConfigService/CertificateService.svc/Bundles';
-  end
+  end;
   BundleText.Text := bundleString;
 
 end;
