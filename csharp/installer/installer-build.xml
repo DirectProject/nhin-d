@@ -31,7 +31,7 @@
 		<Exec Command="$(MSBuildProjectDirectory)\..\build\.nuget\nuget restore $(gateway_solution)" /> 
 	</Target>
 	
-	<Target Name="publish-configui-buildServer">
+	<Target Name="publish-configui">
 		<MSBuild Targets="publish-configui" Projects="..\build.xml" />
 	</Target>
 </Project>
