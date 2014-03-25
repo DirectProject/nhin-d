@@ -34,4 +34,5 @@
 	<Target Name="publish-configui">
 		<MSBuild Targets="publish-configui" Projects="..\build.xml" />
 	</Target>
+	
 </Project>
