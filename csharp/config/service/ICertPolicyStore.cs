@@ -67,6 +67,10 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
+        void RemovePolicy(string policyName);
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
         void UpdatePolicyAttributes(CertPolicy certPolicy);
 
         [OperationContract]
@@ -102,6 +106,11 @@ namespace Health.Direct.Config.Service
         void RemovePolicyGroups(long[] policyGroupIDs);
 
         [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        void RemovePolicyGroup(string groupName);
+
+
+        [OperationContract]
         [FaultContract(typeof (ConfigStoreFault))]
         void UpdateGroupAttributes(CertPolicyGroup policyGroup);
 
@@ -112,6 +121,7 @@ namespace Health.Direct.Config.Service
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         void RemovePolicyUseFromGroup(long policyGroupMapId);
+        
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
@@ -119,7 +129,7 @@ namespace Health.Direct.Config.Service
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
-        void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID);
+        void DisassociatePolicyGroupFromDomain(string groupName, string owner);
 
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]

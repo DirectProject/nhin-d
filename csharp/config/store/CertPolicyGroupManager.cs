@@ -359,7 +359,7 @@ namespace Health.Direct.Config.Store
 
         }
 
-        public void DissAssociateFromDomain(string owner, long policyGroupID)
+        public void DisassociateFromDomain(string owner, long policyGroupID)
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
@@ -381,10 +381,10 @@ namespace Health.Direct.Config.Store
         }
 
         /// <summary>
-        /// Dissassoicate all Policy Groups associated to an owner
+        /// Disassociate all Policy Groups associated to an owner
         /// </summary>
         /// <param name="owner"></param>
-        public void DissAssociateFromDomain(string owner)
+        public void DisassociateFromDomain(string owner)
         {
             using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
             {
@@ -396,7 +396,7 @@ namespace Health.Direct.Config.Store
         /// Remove all 
         /// </summary>
         /// <param name="policyGroupId"></param>
-        public void DissAssociateFromDomains(long policyGroupId)
+        public void DisassociateFromDomains(long policyGroupId)
         {
             using (ConfigDatabase db = this.Store.CreateContext())
             {
@@ -447,6 +447,28 @@ namespace Health.Direct.Config.Store
             {
                 db.CertPolicyGroups.ExecDelete(policyGroupIds[i]);
             }
+        }
+
+        public void Remove(string groupName)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, groupName);
+                // We don't commit, because we execute deletes directly
+            }
+        }
+
+        public void Remove(ConfigDatabase db, string groupName)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (string.IsNullOrEmpty(groupName))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
+            }
+            db.CertPolicyGroups.ExecDelete(groupName);
         }
 
         public void RemovePolicy(CertPolicyGroupMap[] map)

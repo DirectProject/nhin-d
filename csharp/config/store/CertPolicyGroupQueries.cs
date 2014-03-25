@@ -34,6 +34,14 @@ namespace Health.Direct.Config.Store
                     And   CertPolicyGroupId = {1}
             ";
 
+        private const string Sql_DeleteCertPolicyGroupByName =
+            @" Begin tran
+                DELETE from CertPolicyGroupMap where CertPolicyGroupId = (Select CertPolicyGroupId from CertPolicyGroups where Name = {0})  
+                DELETE from CertPolicyGroupDomainMap where CertPolicyGroupId = (Select CertPolicyGroupId from CertPolicyGroups where Name = {0})  
+                DELETE from CertPolicyGroups where Name = {0}
+               Commit tran 
+            ";
+
         private const string Sql_DeleteCertPolicyGroupDomainMap =
             @"
                     Delete from CertPolicyGroupDomainMap
@@ -72,8 +80,8 @@ namespace Health.Direct.Config.Store
            from policyGroup in db.CertPolicyGroups
            join map in db.CertPolicyGroupDomainMaps
                 on policyGroup equals map.CertPolicyGroup
-           join domainMap in db.CertPolicyGroupDomainMaps
-                on policyGroup equals domainMap.CertPolicyGroup
+           //join domainMap in db.CertPolicyGroupDomainMaps
+           //     on policyGroup equals domainMap.CertPolicyGroup
            where policyGroup.Name == certPolicyName
            select map
            );
@@ -213,6 +221,11 @@ namespace Health.Direct.Config.Store
         public static void ExecDeleteDomainMap(this Table<CertPolicyGroup> table, CertPolicyGroupDomainMap map)
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupDomainMap, map.CertPolicyGroup.ID, map.Owner);
+        }
+        
+        public static void ExecDelete(this Table<CertPolicyGroup> table, string policyName)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupByName, policyName);
         }
 
         public static void ExecDeleteAll(this Table<CertPolicyGroup> table)

@@ -316,6 +316,28 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        public void Remove(string policyName)
+        {
+            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            {
+                this.Remove(db, policyName);
+                // We don't commit, because we execute deletes directly
+            }
+        }
+
+        public void Remove(ConfigDatabase db, string policyName)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+            if (string.IsNullOrEmpty(policyName))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
+            }
+            db.CertPolicies.ExecDelete(policyName);
+        }
+
         public void RemoveAll(ConfigDatabase db)
         {
             db.CertPolicies.ExecDeleteAll();

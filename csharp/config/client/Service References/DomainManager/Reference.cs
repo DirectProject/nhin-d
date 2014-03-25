@@ -490,6 +490,11 @@ namespace Health.Direct.Config.Client.DomainManager {
             "aultFault", Name="ConfigStoreFault")]
         void RemovePolicies(long[] policyIDs);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicy", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyConfigStoreFau" +
+            "ltFault", Name="ConfigStoreFault")]
+        void RemovePolicy(string policyName);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributes", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributesResp" +
             "onse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributesConf" +
@@ -545,6 +550,11 @@ namespace Health.Direct.Config.Client.DomainManager {
             "oreFaultFault", Name="ConfigStoreFault")]
         void RemovePolicyGroups(long[] policyGroupIDs);
         
+        [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroup", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupResponse")]
+        [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupConfigSto" +
+            "reFaultFault", Name="ConfigStoreFault")]
+        void RemovePolicyGroup(string groupName);
+        
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributes", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributesRespo" +
             "nse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributesConfi" +
@@ -574,7 +584,7 @@ namespace Health.Direct.Config.Client.DomainManager {
             "mDomainResponse")]
         [System.ServiceModel.FaultContractAttribute(typeof(Health.Direct.Config.Store.ConfigStoreFault), Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFro" +
             "mDomainConfigStoreFaultFault", Name="ConfigStoreFault")]
-        void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID);
+        void DisassociatePolicyGroupFromDomain(string groupName, string owner);
         
         [System.ServiceModel.OperationContractAttribute(Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupsFr" +
             "omDomain", ReplyAction="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupsFr" +
@@ -664,6 +674,10 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.RemovePolicies(policyIDs);
         }
         
+        public void RemovePolicy(string policyName) {
+            base.Channel.RemovePolicy(policyName);
+        }
+        
         public void UpdatePolicyAttributes(Health.Direct.Config.Store.CertPolicy certPolicy) {
             base.Channel.UpdatePolicyAttributes(certPolicy);
         }
@@ -700,6 +714,10 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.RemovePolicyGroups(policyGroupIDs);
         }
         
+        public void RemovePolicyGroup(string groupName) {
+            base.Channel.RemovePolicyGroup(groupName);
+        }
+        
         public void UpdateGroupAttributes(Health.Direct.Config.Store.CertPolicyGroup policyGroup) {
             base.Channel.UpdateGroupAttributes(policyGroup);
         }
@@ -716,8 +734,8 @@ namespace Health.Direct.Config.Client.DomainManager {
             base.Channel.AssociatePolicyGroupToDomain(groupName, owner);
         }
         
-        public void DisassociatePolicyGroupFromDomain(string domain, long policyGroupID) {
-            base.Channel.DisassociatePolicyGroupFromDomain(domain, policyGroupID);
+        public void DisassociatePolicyGroupFromDomain(string groupName, string owner) {
+            base.Channel.DisassociatePolicyGroupFromDomain(groupName, owner);
         }
         
         public void DisassociatePolicyGroupsFromDomain(string domain) {
