@@ -516,6 +516,18 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public void RemovePolicy(string policyName)
+        {
+            try
+            {
+                Store.CertPolicies.Remove(policyName);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicy", ex);
+            }
+        }
+
         public void UpdatePolicyAttributes(CertPolicy policy)
         {
             try
@@ -616,6 +628,18 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public void RemovePolicyGroup(string groupName)
+        {
+            try
+            {
+                Store.CertPolicyGroups.Remove(groupName);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicyGroup", ex);
+            }
+        }
+
         public void UpdateGroupAttributes(CertPolicyGroup policyGroup)
         {
             try
@@ -673,11 +697,12 @@ namespace Health.Direct.Config.Service
             }
         }
 
-        public void DisassociatePolicyGroupFromDomain(string owner, long policyGroupID)
+        public void DisassociatePolicyGroupFromDomain(string groupName, string owner)
         {
             try
             {
-                Store.CertPolicyGroups.DissAssociateFromDomain(owner, policyGroupID);
+                long groupId = Store.CertPolicyGroups.Get(groupName).ID;
+                Store.CertPolicyGroups.DisassociateFromDomain(owner, groupId);
             }
             catch (Exception ex)
             {
@@ -689,7 +714,7 @@ namespace Health.Direct.Config.Service
         {
             try
             {
-                Store.CertPolicyGroups.DissAssociateFromDomain(owner);
+                Store.CertPolicyGroups.DisassociateFromDomain(owner);
             }
             catch (Exception ex)
             {
@@ -701,7 +726,7 @@ namespace Health.Direct.Config.Service
         {
             try
             {
-                Store.CertPolicyGroups.DissAssociateFromDomains(policyGroupID);
+                Store.CertPolicyGroups.DisassociateFromDomains(policyGroupID);
             }
             catch (Exception ex)
             {
@@ -724,5 +749,10 @@ namespace Health.Direct.Config.Service
 
 
         #endregion
+
+
+        
+
+        
     }
 }

@@ -38,6 +38,7 @@ namespace Health.Direct.Config.Console.Command
         //---------------------------------------
         //
         // Commands
+        //  Sections: CertPolicy and CertPolicyGroup
         //
         //---------------------------------------
 
@@ -45,6 +46,17 @@ namespace Health.Direct.Config.Console.Command
             : base(console, client)
         {
         }
+
+
+
+        /*
+         * 
+         * 
+         *  CertPolicy section
+         * 
+         * 
+         * 
+         */
 
 
         /// <summary>
@@ -134,9 +146,47 @@ namespace Health.Direct.Config.Console.Command
         }
 
 
+        /// <summary>
+        /// Delete policy from system by policy name.
+        /// </summary>
+        [Command(Name = "CertPolicy_Delete", Usage = CertPolicyDeleteUsage)]
+        public void CertPolicyDelete(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            Client.RemovePolicy(name);
+        }
+
+        private const string CertPolicyDeleteUsage
+            = "Delete policy from system by policy name."
+              + Constants.CRLF + "policyName"
+              + Constants.CRLF + " \t policyName: Name of the policy.  Place the policy name in quotes (\"\") if there are spaces in the name.";
+
+
+        /// <summary>
+        /// Delete policy from a policy group 
+        /// </summary>
+        [Command(Name = "CertPolicy_DeleteFromGroup", Usage = CertPolicyDeleteFromGroupUsage)]
+        public void CertPolicyDeleteFromGroup(string[] args)
+        {
+            long mapId = args.GetRequiredValue<long>(0);
+            Client.RemovePolicyUseFromGroup(mapId);
+        }
+        
+        private const string CertPolicyDeleteFromGroupUsage
+            = "Delete policy from a policy group ."
+              + Constants.CRLF + "mapId"
+              + Constants.CRLF + " \t mapId: Id that associates a group to a policy usage.";
 
 
 
+        /*
+         * 
+         * 
+         *  CertPolicyGroup section
+         * 
+         * 
+         * 
+         */
 
         /// <summary>
         /// Create a certificate policy group
@@ -176,6 +226,19 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "    name options"
               + Constants.CRLF + " \t description: (optional) additional description";
 
+        /// <summary>
+        /// Retrieve a certificate policy group
+        /// </summary>
+        [Command(Name = "CertPolicyGroup_Get", Usage = CertPolicyGroupGetUsage)]
+        public void CertPolicyGroupGet(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            Print(GetCertPolicyGroup(name));
+        }
+
+        private const string CertPolicyGroupGetUsage
+           = "Retrieve information for an existing certificate policy group by name."
+             + Constants.CRLF + "    name";
 
 
         /// <summary>
@@ -326,12 +389,47 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF +
               " \t groupName: Name of the policy group to search on.  Place the policy group name in quotes (\") if there are spaces in the name.";
 
-        
+        /// <summary>
+        /// Delete policy group from system by group name.
+        /// </summary>
+        [Command(Name = "CertPolicyGroup_Delete", Usage = CertPolicyGroupDeleteUsage)]
+        public void CertPolicyGroupDelete(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            Client.RemovePolicyGroup(name);
+        }
+
+        private const string CertPolicyGroupDeleteUsage
+            = "Delete policy group from system by group name."
+              + Constants.CRLF + "groupName"
+              + Constants.CRLF + " \t groupName: Name of the policy group.  Place the group name in quotes (\"\") if there are spaces in the name.";
+
+
+        /// <summary>
+        /// Deletes an existing policy group from a owner.
+        /// </summary>
+        [Command(Name = "CertPolicyGroup_DeleteFromOwner", Usage = CertPolicyGroupDeleteFromOwnerUsage)]
+        public void CertPolicyGroupDeleteFromOwner(string[] args)
+        {
+            string groupName = args.GetRequiredValue(0);
+            string ownerName = args.GetRequiredValue(1);
+            Client.DisassociatePolicyGroupFromDomain(groupName, ownerName);
+        }
+
+        private const string CertPolicyGroupDeleteFromOwnerUsage
+            = "Deletes an existing policy group from a owner."
+              + Constants.CRLF + "groupName, ownerName"
+              + Constants.CRLF + " \t groupId: Name of the policy group to delete from the owner.  Place the policy group name in quotes (\"\") if there are spaces in the name."
+              + Constants.CRLF + " \t ownerName: Name of the owner to delete the policy group from.";
+
+
         //---------------------------------------
         //
         // Implementation details
         //
-        //---------------------------------------               
+        //---------------------------------------    
+        
+   
         internal void PushPolicy(string name, string policyText, string description, bool checkForDupes)
         {
             try
@@ -537,6 +635,7 @@ namespace Health.Direct.Config.Console.Command
             {
                 CommandUI.Print(" \t PolicyName \t ", map.CertPolicy.Name);
                 CommandUI.Print(" \t Description \t ", map.CertPolicy.Description);
+                CommandUI.Print(" \t MapId (link) \t ", map.ID);
                 CommandUI.Print(" \t PolicyUse \t ", map.Use);
                 CommandUI.Print(" \t ForIncoming \t ", map.ForIncoming);
                 CommandUI.Print(" \t ForOutgoing \t ", map.ForOutgoing);

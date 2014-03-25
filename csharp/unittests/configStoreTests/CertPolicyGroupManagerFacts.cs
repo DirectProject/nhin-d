@@ -191,7 +191,7 @@ namespace Health.Direct.Config.Store.Tests
         /// Associate policy to group sessionless based style
         /// </summary>
         [Fact]
-        public void DissAssociatePolicyFromGroupTest()
+        public void DisassociatePolicyFromGroupTest()
         {
             InitCertPolicyRecords();
             InitCertPolicyGroupRecords();
@@ -237,7 +237,7 @@ namespace Health.Direct.Config.Store.Tests
         
 
         [Fact]
-        public void DissAssociatePolicyGroupFromomain_Test()
+        public void DisassociatePolicyGroupFromomain_Test()
         {
             InitDomainRecords();
             InitCertPolicyRecords();
@@ -255,12 +255,12 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
 
             // now disassociate 
-            groupMgr.DissAssociateFromDomain("domain1.test.com", policyGroup.ID);
+            groupMgr.DisassociateFromDomain("domain1.test.com", policyGroup.ID);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
-            groupMgr.DissAssociateFromDomain("domain2.test.com", policyGroup.ID);
+            groupMgr.DisassociateFromDomain("domain2.test.com", policyGroup.ID);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
@@ -270,7 +270,7 @@ namespace Health.Direct.Config.Store.Tests
         /// Disassociate all policy groups from a owner (
         /// </summary>
         [Fact]
-        public void DissAssociate_All_PolicyGroups_ByDomain_Test()
+        public void Disassociate_All_PolicyGroups_ByDomain_Test()
         {
             InitDomainRecords();
             InitCertPolicyRecords();
@@ -294,7 +294,7 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup2 = groupMgr.Get("PolicyGroup2");
             policyGroup2.CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
-            groupMgr.DissAssociateFromDomain("domain1.test.com");
+            groupMgr.DisassociateFromDomain("domain1.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(1);
@@ -305,10 +305,10 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        /// Dissassociate a policy group from all owners
+        /// Disassociate a policy group from all owners
         /// </summary>
         [Fact]
-        public void DissAssociate_All_Domains_From_PolicyGroup_Test()
+        public void Disassociate_All_Domains_From_PolicyGroup_Test()
         {
             InitDomainRecords();
             InitCertPolicyRecords();
@@ -325,7 +325,7 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
             
-            groupMgr.DissAssociateFromDomains(policyGroup.ID);
+            groupMgr.DisassociateFromDomains(policyGroup.ID);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);

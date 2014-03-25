@@ -405,6 +405,15 @@
   <wsdl:message name="ICertPolicyStore_RemovePolicies_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicy_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicy" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicy_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicy_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="ICertPolicyStore_UpdatePolicyAttributes_InputMessage">
     <wsdl:part name="parameters" element="tns:UpdatePolicyAttributes" />
   </wsdl:message>
@@ -484,6 +493,15 @@
     <wsdl:part name="parameters" element="tns:RemovePolicyGroupsResponse" />
   </wsdl:message>
   <wsdl:message name="ICertPolicyStore_RemovePolicyGroups_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyGroup" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroup_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
   <wsdl:message name="ICertPolicyStore_UpdateGroupAttributes_InputMessage">
@@ -785,6 +803,11 @@
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePoliciesResponse" message="tns:ICertPolicyStore_RemovePolicies_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePoliciesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicies_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
+    <wsdl:operation name="RemovePolicy">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicy" message="tns:ICertPolicyStore_RemovePolicy_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyResponse" message="tns:ICertPolicyStore_RemovePolicy_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicy_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
     <wsdl:operation name="UpdatePolicyAttributes">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributes" message="tns:ICertPolicyStore_UpdatePolicyAttributes_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributesResponse" message="tns:ICertPolicyStore_UpdatePolicyAttributes_OutputMessage" />
@@ -829,6 +852,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroups" message="tns:ICertPolicyStore_RemovePolicyGroups_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupsResponse" message="tns:ICertPolicyStore_RemovePolicyGroups_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicyGroups_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyGroup">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroup" message="tns:ICertPolicyStore_RemovePolicyGroup_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupResponse" message="tns:ICertPolicyStore_RemovePolicyGroup_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicyGroup_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="UpdateGroupAttributes">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributes" message="tns:ICertPolicyStore_UpdateGroupAttributes_InputMessage" />
