@@ -6,7 +6,7 @@
 	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
 	<!-- ON 64-bit machines you may need to change line 6 in the MSBuild.Community.Tasks.Targets 
 			 to $(MSBuildExtensionsPath32)\MSBuildCommunityTasks -->
-	<!-- <Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /> -->
+	<!--<Import Project=""$(MSBuildProjectDirectory)\.build\MSBuild.Community.Tasks" /> -->
 	
 	<!-- this imports the xunit and xunitproject tasks -->
 	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
@@ -24,7 +24,12 @@
 		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content ..\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content ..\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
 		<PsInstallerFile>powershell -Command "(Get-Content .installer\Direct.iss) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\Direct.iss"</PsInstallerFile>
 		<installer_tools_solution>$(MSBuildProjectDirectory)\toolutil\install.tools\install.tools.sln</installer_tools_solution>
-		
+		<SqlCmd2012>"C:\Program Files\Microsoft SQL Server\110\Tools\Binn\sqlcmd.exe"</SqlCmd2012>
+		<WebSiteName>Default Web Site</WebSiteName>
+		<AppPoolName>ASP.NET v4.0</AppPoolName>
+		<ConfigServicName>ConfigService</ConfigServicName>
+		<ConfigServicPath>$(MSBuildProjectDirectory)\Config\Service</ConfigServicPath>
+		<CreateConfigServiceWebApp>powershell -Command "set-executionpolicy remotesigned; Import-Module WebAdministration; New-WebApplication -Name '$(ConfigServicName)' -Site '$(WebSiteName)'  -PhysicalPath '$(ConfigServicPath)' -ApplicationPool '$(AppPoolName)' -Force" ;</CreateConfigServiceWebApp>
 	</PropertyGroup>
 
 	<Target Name="update-version-info">
@@ -40,7 +45,7 @@
 	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
 
 	<Target Name="test" DependsOnTargets="test-all" />
-	<Target Name="test-all" DependsOnTargets="test-plugins;test-agent;test-gateway;test-xd;test-certPolicy;test-store" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd;test-certPolicy;test-store;" />
 
 	
 	
@@ -106,10 +111,6 @@
 	</Target>
 
 	
-	<Target Name="test-plugins" >
-		<xunitproject ProjectFile="unittests\resolverplugins.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\resolverplugins.xunit" Condition=" $(Configuration) == 'Debug' "/>
-	</Target>
 	
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test-agent" >
@@ -119,7 +120,7 @@
 	
 	<Target Name="test-gateway" >
 		<xunitproject ProjectFile="unittests\gateway.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\agent.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunitproject ProjectFile="unittests\gateway.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 
 	<Target Name="test-certPolicy" >
@@ -131,7 +132,15 @@
 		<xunitproject ProjectFile="unittests\xd.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
-
+		
+	<Target Name="test-smtp-integration" DependsOnTargets="create-config-webservice;create-db;Create-TestData">	    
+		<xunitproject ProjectFile="unittests\smtpAgent.integration.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\smtpAgent.integration.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+		
+	<Target Name="create-config-webservice">	    
+		<Exec Command='$(CreateConfigServiceWebApp)' />
+	</Target>
 	
      <Target Name="test-store" DependsOnTargets="create-db;">
 		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
@@ -140,9 +149,16 @@
 
 	<Target Name="create-db" >
 		<Exec Command="SqlLocalDb create Projects -s" />
-		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
-		<Exec Command='SQLCMD.exe -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
-		<Exec Command="SQLCMD.exe -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig" WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command="SqlLocalDb share Projects ProjectsShare" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="IIS APPPOOL\ASP.NET v4.0"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+	</Target>
+	
+	<Target Name="Create-TestData">
+		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 	</Target>
 	
 	<Target Name="publish-configui">
@@ -192,6 +208,10 @@
 	
 	<Target Name="build-installer">
 		<Error Text="Use the build-installer.bat script found in the installer directory." />
+	</Target>
+	
+	<Target Name="update-nuget">
+		<Exec Command="$(MSBuildProjectDirectory)\..\build\.nuget\nuget restore $(gateway_solution)" /> 
 	</Target>
 	
 </Project>
