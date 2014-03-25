@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<xunit>
-  <assemblies>
-    <assembly filename="..\resolverPlugins.tests\bin\debug\Health.Direct.ResolverPlugins.Tests.dll" shadow-copy="true" />
-  </assemblies>
-</xunit>
