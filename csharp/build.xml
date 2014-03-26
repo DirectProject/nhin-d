@@ -1,4 +1,4 @@
-<Project DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
 	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
 	
@@ -30,8 +30,13 @@
 		<ConfigServicName>ConfigService</ConfigServicName>
 		<ConfigServicPath>$(MSBuildProjectDirectory)\Config\Service</ConfigServicPath>
 		<CreateConfigServiceWebApp>powershell -Command "set-executionpolicy remotesigned; Import-Module WebAdministration; New-WebApplication -Name '$(ConfigServicName)' -Site '$(WebSiteName)'  -PhysicalPath '$(ConfigServicPath)' -ApplicationPool '$(AppPoolName)' -Force" ;</CreateConfigServiceWebApp>
+		<PsListTargets>powershell -Command "$build = [xml](Get-Content $(MSBuildProjectFile)); $build.Project.Target| Select-Object Name | Sort-Object Name "</PsListTargets>
 	</PropertyGroup>
 
+	<Target Name="Targets">
+		<Exec Command='$(PsListTargets)' />
+	</Target>
+	
 	<Target Name="update-version-info">
 		<Exec Command='$(PsGlobalAssemblyInfo)' />
 		<Exec Command='$(PsInstallerFile)' />
@@ -133,7 +138,7 @@
 		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 		
-	<Target Name="test-smtp-integration" DependsOnTargets="create-config-webservice;create-db;Create-TestData">	    
+	<Target Name="test-smtp-integration" DependsOnTargets="create-db;create-config-webservice;Create-TestData">	    
 		<xunitproject ProjectFile="unittests\smtpAgent.integration.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\smtpAgent.integration.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>

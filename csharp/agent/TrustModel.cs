@@ -72,14 +72,8 @@ namespace Health.Direct.Agent
         /// Constructs an instance specifying a certificate chain validator.
         /// </summary>
         /// <param name="validator">The <see cref="TrustChainValidator"/> to use in validating certificate chains</param>
-        public TrustModel(TrustChainValidator validator)
+        public TrustModel(TrustChainValidator validator):this(validator, null, null)
         {
-            if (validator == null)
-            {
-                throw new ArgumentNullException("validator");
-            }
-
-            m_certChainValidator = validator;
         }
 
         /// <summary>
@@ -97,18 +91,8 @@ namespace Health.Direct.Agent
 
             m_certChainValidator = validator;
 
-            if (policyResolver == null)
-            {
-                throw new ArgumentNullException("policyResolver");
-            }
-
+            
             m_trustPolicyResolver = policyResolver;
-
-            if (policyFilter == null)
-            {
-                throw new ArgumentNullException("policyFilter");
-            }
-
             m_policyFilter = policyFilter;
         }
 

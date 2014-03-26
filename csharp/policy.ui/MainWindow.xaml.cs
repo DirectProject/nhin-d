@@ -178,7 +178,7 @@ namespace Health.Direct.Policy.UI
             var cert = new X509Certificate2(CertificateLocation.Text);
             ICompiler compiler = new StackMachineCompiler();
             compiler.ReportModeEnabled = true;
-            IPolicyFilter filter = new DefaultPolicyFilter(compiler, new StackMachine(),
+            IPolicyFilter filter = new PolicyFilter(compiler, new StackMachine(),
                 new SimpleTextV1LexiconPolicyParser());
             var sb = new StringBuilder();
             sb.Append("Validation run at ")
