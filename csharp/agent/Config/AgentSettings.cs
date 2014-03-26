@@ -238,14 +238,15 @@ namespace Health.Direct.Agent.Config
             ICertificateResolver privateCerts = this.PrivateCerts.CreateResolver();
             ICertificateResolver publicCerts = this.PublicCerts.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
-            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel() : TrustModel.Default;
+            ICertPolicyResolvers certPolicyResolvers = PolicyResolvers();
+            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel(certPolicyResolvers.TrustResolver) : TrustModel.Default;
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
 
             IDomainResolver domainResolver = this.CreateResolver();
 
-            ICertPolicyResolvers certPolicyResolvers = PolicyResolvers();
-
-            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers);
+            
+            
+            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers, null);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
             
