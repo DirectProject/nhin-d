@@ -1,0 +1,104 @@
+h1. Cryptographer
+
+Cryptographers are responsible for encrypting, decrypting, signing, and validating signatures and support multiple message container constructs. They are defined by the [Cryptographer|http://api.nhindirect.org/java/site/agent/1.4.2/apidocs/org/nhindirect/stagent/cryptography/Cryptographer.html] interface.
+
+{code}
+package org.nhindirect.stagent.cryptography;
+
+public interface Cryptographer 
+{
+	
+    public MimeEntity encrypt(MimeMultipart entity, X509Certificate encryptingCertificate);
+    
+    public MimeEntity encrypt(MimeMultipart mmEntity, Collection<X509Certificate> encryptingCertificates);
+    
+    public MimeEntity encrypt(MimeEntity entity, X509Certificate encryptingCertificate);
+    
+    public MimeEntity encrypt(MimeEntity entity,  Collection<X509Certificate> encryptingCertificates);
+
+    public MimeEntity decrypt(Message message, X509CertificateEx decryptingCertificate);
+    
+    public MimeEntity decrypt(MimeEntity encryptedEntity, X509CertificateEx decryptingCertificate);
+    
+    public MimeEntity decrypt(MimeEntity encryptedEntity, Collection<X509CertificateEx> decryptingCertificates);
+    
+    public SignedEntity sign(Message message, X509Certificate signingCertificate);
+    
+    public SignedEntity sign(Message message, Collection<X509Certificate> signingCertificates);
+    
+    public SignedEntity sign(MimeEntity entity, X509Certificate signingCertificate);
+
+    public SignedEntity sign(MimeEntity entity, Collection<X509Certificate> signingCertificates);
+    
+    public void checkSignature(SignedEntity signedEntity, X509Certificate signerCertificate, Collection<X509Certificate> anchors) throws SignatureValidationException;
+    
+    public CMSSignedData deserializeSignatureEnvelope(SignedEntity entity);
+    
+    public CMSSignedData deserializeEnvelopedSignature(MimeEntity envelopeEntity);
+    
+    public CMSSignedData deserializeEnvelopedSignature(byte[] messageBytes);
+
+}
+{code}
+
+Although the cryptography classes do not enforce the content type of the messages provided to the each method, the security and trust agent uses the following series of cryptography tasks in order:
+
+*Outgoing Messages*
+# Sign Message
+# Encrypt Message
+
+*Incoming Message*
+# Decrypt Message
+# Validate Signature
+
+*NOTE*: All of the following method descriptions assume the SMIME implementation.
+
+h2. Encrypt
+
+The Encrypt method and its variants accept a message that needs to be encrypted and the public certificate of each recipient.  The methods generates a random symmetric key to encrypt the message based on the implementation's configured encryption algorithm such as AES128.  The message is encrypted using the symmetric key, and the key is then encrypted using each public certificate.  Each encrypted version of the symmetric key is stored in the final message and can only be decrypted be the recipients' private key.
+
+All variants result in the same output: an MimeEntity that contains an SMIME encrypted version of the original message.  The raw representation is base64 encoded.
+
+h2. Decrypt
+
+The Decrypt method and its variants accept a message that needs to be decrypted and the private certificate of reach recipient.  The message must be a valid encrypted message using the cryptographer's expected format such as SMIME.  This method uses the recipients' private keys to extract the symmetric key from the message.  Only one valid private key needs to be found in the collection of certificates to extract the symmetric key.  Once the symmetric key is extracted, the message content is then decrypted using the algorithm specified in the message.
+
+
+All variants result in the same output: an MimeEntity that contains the decrypted version of the original message.
+
+h2. Sign
+
+The Sign method and its variants accept a message that needs to be signed and private certificate(s) of the sender.  The methods generates a digest of the message based on the implementation's configured digest algorithm such as SHA1.  The message also provides other attributes such as the signers public key(s) and produces a digital signature using the provided private key.  
+
+All variants result in the same output: an SignedEntity object that contains the original message and a signature block.  The raw representation of the or the SignedEnity is a multipart MIME that contains two parts: the original message in the first part and a detached signature in the second part.  The signature block is base64 encoded.
+
+h2. CheckSignature
+
+The CheckSignature method asserts the validity and integrity of a signed message using the sender's public certificate.  The method validates that the signature in the messages signature block matches the provided public certificate and validates that the message has not been tampered with using the message digest.  *NOTE*: You should not extract the certificate from the signature block and provide it as the signerCertificate parameter as this essentially defeats the purpose of validation.  The signerCertificate should be obtained from a public certificate store.  However, the extracted certificate is used for trust validation.
+
+This method returns without incident if the signature can be validated.  Otherwise an exception is thrown.
+
+*NOTE*:  The default agent implementation does not use this method.  Instead it uses the MessageSignature interface to validate signatures on incoming messages during the trust validation stage. 
+
+h2. DeserializeSignatureEnvelope
+
+The DeserializeSignatureEnvelope method and its variants are utility functions to extract the [CMS|http://en.wikipedia.org/wiki/Cryptographic_Message_Syntax] data embedded in the message signature block.  The latest version of CMS is decribed by [RFC5652|http://tools.ietf.org/html/rfc5652].
+
+h2. SMIMECryptographerImpl
+
+The SMIMECryptographerImpl is an SMIME specific implementation of the Cryptographer interface.  Internal algorithms use the SMIME specification to generate encrypted and signed message representation. It includes multiple constructors depending on the consumer's needs.  *NOTE*: The last constructor signature is decorated with Guice specific annotations for dependency injection.  This class is also the default implementation of the Cryptographer interface if no other implementation is provided Guice.
+
+{code}
+public SMIMECryptographerImpl()
+
+public SMIMECryptographerImpl(EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
+{code}
+
+The fist constructor generates an SMIMECryptographerImpl instance defaulting the encryption and digest algorithms to AES128 and SHA1 respectively.  The algorithms can be changed later using setter methods.
+
+The second constructor different from the first only that the algorithms are provided as constructor parameters.
+
+
+h3. Concurrent Programming
+
+All public methods of the SMIMECryptographerImpl are thread safe and can be called concurrently.
