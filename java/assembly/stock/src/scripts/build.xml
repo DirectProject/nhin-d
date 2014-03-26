@@ -370,6 +370,7 @@
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
 		<copy file="${src}/scripts/phoenix.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/run.bat" todir="${james.stage.dir}/bin" overwrite="true"></copy>		
 		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
@@ -387,6 +388,9 @@
 		<!-- delete the template files that aren't needed -->
 		<delete file="${james3.stage.conf.dir}/domainlist-template.conf"></delete>
 		<delete file="${james3.stage.conf.dir}/mailetcontainer-template.conf"></delete>
+		
+		<!-- make the directory for the audit DB prop files -->
+		<mkdir dir="${james3.stage.lib.dir}/properties"></mkdir>
 		
 		<!-- populate new libraries -->
 		<copy file="${lib.activation}" todir="${james3.stage.lib.dir}"></copy>
@@ -449,7 +453,7 @@
 		<copy file="${src}/scripts/james3/set-domain-domainlist.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/james3/set-domain-mailetcontainer.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 
-		
+		<copy file="${src}/scripts/auditStore.properties" todir="${james3.stage.lib.dir}/properties" overwrite="true"></copy> 		
 	</target>	
 	
 	<target name="configure-tomcat">
