@@ -46,6 +46,8 @@
 	<property name="james.stage.config.save" value="${james.stage.apps.dir}/SAR-INF/config.xml.save"></property>
 	<property name="james.stage.config.new" value="${james.stage.apps.dir}/SAR-INF/config-new.xml"></property>
 	<property name="james.stage.apps.SAR-INF.lib.dir" value="${james.stage.apps.dir}/SAR-INF/lib"></property>
+	<property name="james.stage.lib.dir" value="${james.stage.dir}/lib"></property>
+	<property name="james.stage.lib.properties.dir" value="${james.stage.lib.dir}/properties"></property>	
 	<property name="james.stage.apps.james.sar.path" value="${james.stage.dir}/apps/james.sar"></property>
 
 	<property name="james3.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-james-3.0-beta4"></property>
@@ -118,6 +120,26 @@
 	<property name="lib.jackson-mapper-asl" value="${install.root.dir}/lib/jackson-mapper-asl-1.7.5.jar"></property>		
 	<property name="lib.jdom" value="${install.root.dir}/lib/jdom-1.1.jar"></property>		
 	<property name="lib.jaxb-impl" value="${install.root.dir}/lib/jaxb-impl-2.1.13.jar"></property>			
+	<property name="lib.aopalliance" value="${install.root.dir}/lib/aopalliance-1.0.jar"></property>	
+	<property name="lib.asm" value="${install.root.dir}/lib/asm-1.5.3.jar"></property>	
+	<property name="lib.cglib" value="${install.root.dir}/lib/cglib-2.1_3.jar"></property>	
+	<property name="lib.dom4j" value="${install.root.dir}/lib/dom4j-1.6.1.jar"></property>	
+	<property name="lib.geronimo-spec-jta" value="${install.root.dir}/lib/geronimo-spec-jta-1.0.1B-rc4.jar"></property>	
+	<property name="lib.geronimo-jpa_2.0_spec" value="${install.root.dir}/lib/geronimo-jpa_2.0_spec-1.0.jar"></property>	
+	<property name="lib.hibernate" value="${install.root.dir}/lib/hibernate-3.2.6.ga.jar"></property>	
+	<property name="lib.hibernate-annotations" value="${install.root.dir}/lib/hibernate-annotations-3.3.1.GA.jar"></property>	
+	<property name="lib.hibernate-commons-annotations" value="${install.root.dir}/lib/hibernate-commons-annotations-3.0.0.ga.jar"></property>	
+	<property name="lib.hibernate-core" value="${install.root.dir}/lib/hibernate-core-3.3.2.GA.jar"></property>	
+	<property name="lib.hibernate-entitymanager" value="${install.root.dir}/lib/hibernate-entitymanager-3.3.2.GA.jar"></property>	
+	<property name="lib.spring-aop" value="${install.root.dir}/lib/spring-aop-3.2.3.RELEASE.jar"></property>	
+	<property name="lib.spring-beans" value="${install.root.dir}/lib/spring-beans-3.2.3.RELEASE.jar"></property>	
+	<property name="lib.spring-core" value="${install.root.dir}/lib/spring-core-3.2.3.RELEASE.jar"></property>
+	<property name="lib.spring-context" value="${install.root.dir}/lib/spring-context-3.2.3.RELEASE.jar"></property>
+	<property name="lib.spring-expression" value="${install.root.dir}/lib/spring-expression-3.2.3.RELEASE.jar"></property>	
+	<property name="lib.spring-jdbc" value="${install.root.dir}/lib/spring-jdbc-3.0.4.RELEASE.jar"></property>	
+	<property name="lib.spring-orm" value="${install.root.dir}/lib/spring-orm-3.0.4.RELEASE.jar"></property>	
+	<property name="lib.spring-tx" value="${install.root.dir}/lib/spring-tx-3.0.4.RELEASE.jar"></property>		
+	<property name="lib.javassist" value="${install.root.dir}/lib/javassist-3.4.GA.jar"></property>	
 	
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${install.root.dir}/lib/jcs-1.3.jar"></property>
@@ -136,11 +158,13 @@
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
 	<property name="gateway.dir" value="${install.root.dir}/../gateway"></property>
 	<property name="direct-common.dir" value="${install.root.dir}/../direct-common"></property>	
+	<property name="direct-common-audit.dir" value="${install.root.dir}/../direct-common-audit"></property>		
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
 	<property name="lib.agent" value="${install.root.dir}/lib/agent-2.1-SNAPSHOT.jar"></property>
 	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-3.1-SNAPSHOT.jar"></property>
 	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.3-SNAPSHOT.jar"></property>	
+	<property name="lib.direct-common-audit" value="${install.root.dir}/lib/direct-common-audit-1.0-SNAPSHOT.jar"></property>		
 	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.3.jar"></property>
 	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
 	<property name="lib.policy" value="${install.root.dir}/lib/direct-policy-1.0.jar"></property>	
@@ -279,6 +303,8 @@
 		<delete dir="${james.stage.apps.dir}/META-INF"></delete>
 		<delete dir="${james.stage.apps.SAR-INF.lib.dir}"></delete>
 		<mkdir dir="${james.stage.apps.SAR-INF.lib.dir}"></mkdir>
+		<mkdir dir="${james.stage.lib.properties.dir}"></mkdir>
+		
 
 		<!-- populate new libraries -->
 		<copy file="${lib.activation}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
@@ -297,6 +323,7 @@
 		<copy file="${lib.agent}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.direct-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
+		<copy file="${lib.direct-common-audit}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>				
 		<copy file="${lib.xdmail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.xd-common}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
 		<copy file="${lib.policy}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
@@ -317,15 +344,39 @@
 	    <copy file="${lib.jackson-jaxrs}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
 	    <copy file="${lib.jackson-mapper-asl}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 	    <copy file="${lib.jdom}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+	    <copy file="${lib.aopalliance}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.asm}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.cglib}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.dom4j}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.geronimo-spec-jta}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>				
+		<copy file="${lib.geronimo-jpa_2.0_spec}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
+		<copy file="${lib.hibernate}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-annotations}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-commons-annotations}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-core}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-entitymanager}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-aop}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-beans}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-context}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>			
+		<copy file="${lib.spring-core}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-expression}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-jdbc}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-orm}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.spring-tx}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.javassist}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
 		
 		<!-- edit the config.xml file -->
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
 		<copy file="${src}/scripts/config.xml" tofile="${james.stage.config}" overwrite="true"></copy>
 
+		<copy file="${src}/scripts/phoenix.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 
+		<!-- copy the audit db properties file -->
+		<copy file="${src}/scripts/auditStore.properties" todir="${james.stage.lib.properties.dir}" overwrite="true"></copy>
+		
 		<!-- clean up work files -->
 		<delete file="${james.stage.config.new}" failonerror="false"></delete>
 		
@@ -345,7 +396,8 @@
 		<copy file="${lib.dsn}" todir="${james3.stage.lib.dir}"></copy>		
 		<copy file="${lib.agent}" todir="${james3.stage.lib.dir}"></copy>
 		<copy file="${lib.gateway}" todir="${james3.stage.lib.dir}"></copy>
-		<copy file="${lib.direct-common}" todir="${james3.stage.lib.dir}"></copy>		
+		<copy file="${lib.direct-common}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.direct-common-audit}" todir="${james3.stage.lib.dir}"></copy>			
 		<copy file="${lib.xdmail}" todir="${james3.stage.lib.dir}"></copy>
 		<copy file="${lib.xd-common}" todir="${james3.stage.lib.dir}"></copy>		
 		<copy file="${lib.policy}" todir="${james3.stage.lib.dir}"></copy>		
@@ -364,7 +416,27 @@
 	    <copy file="${lib.jackson-jaxrs}" todir="${james3.stage.lib.dir}"></copy>			
 	    <copy file="${lib.jackson-mapper-asl}" todir="${james3.stage.lib.dir}"></copy>		
 	    <copy file="${lib.jdom}" todir="${james3.stage.lib.dir}"></copy>	
-	    <copy file="${lib.jaxb-impl}" todir="${james3.stage.lib.dir}"></copy>			
+	    <copy file="${lib.jaxb-impl}" todir="${james3.stage.lib.dir}"></copy>		
+	    <copy file="${lib.aopalliance}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.asm}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.cglib}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.dom4j}" todir="${james3.stage.lib.dir}"></copy>
+		<copy file="${lib.geronimo-spec-jta}" todir="${james3.stage.lib.dir}"></copy>				
+		<copy file="${lib.geronimo-jpa_2.0_spec}" todir="${james3.stage.lib.dir}"></copy>			
+		<copy file="${lib.hibernate}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-annotations}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-commons-annotations}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-core}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.hibernate-entitymanager}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-aop}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-beans}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-context}" todir="${james3.stage.lib.dir}"></copy>			
+		<copy file="${lib.spring-core}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-expression}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-jdbc}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-orm}" todir="${james3.stage.lib.dir}"></copy>	
+		<copy file="${lib.spring-tx}" todir="${james3.stage.lib.dir}"></copy>			
+		<copy file="${lib.javassist}" todir="${james3.stage.lib.dir}"></copy>			
 		
 		<!-- copy the new config files -->
 		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
