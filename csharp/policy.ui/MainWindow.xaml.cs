@@ -177,6 +177,7 @@ namespace Health.Direct.Policy.UI
             ms.Position = 0;
             var cert = new X509Certificate2(CertificateLocation.Text);
             ICompiler compiler = new StackMachineCompiler();
+            compiler.ReportModeEnabled = true;
             IPolicyFilter filter = new DefaultPolicyFilter(compiler, new StackMachine(),
                 new SimpleTextV1LexiconPolicyParser());
             var sb = new StringBuilder();

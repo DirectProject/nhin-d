@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
@@ -69,9 +70,10 @@ namespace Health.Direct.Agent
         TrustModel m_trustModel;
         TrustEnforcementStatus m_minTrustRequirement;
         AgentDomains m_managedDomains;
-        IPolicyResolver m_trustPolicyResolver;
         IPolicyResolver m_privatePolicyResolver;
         IPolicyResolver m_publicPolicyResolver;
+        IPolicyFilter m_policyFilter;
+
         //
         // Options
         //
@@ -158,8 +160,8 @@ namespace Health.Direct.Agent
         /// </param>
         /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors
-            , ICertPolicyResolvers certPolicyResolvers)
-            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers)
+            , ICertPolicyResolvers certPolicyResolvers, IPolicyFilter polciyFilter)
+            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers, polciyFilter)
         {
         }
         
@@ -189,14 +191,10 @@ namespace Health.Direct.Agent
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
-            : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default)
+            : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default, null)
         {
         }
         
-
-        //m_trustPolicyResolver;
-        //m_privatePolicyResolver
-        //m_publicPolicyResolver;
 
         /// <summary>
         /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and 
@@ -223,8 +221,9 @@ namespace Health.Direct.Agent
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
         /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
-        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer,
-            ICertPolicyResolvers certPolicyResolvers)
+        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts
+            , ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer,
+            ICertPolicyResolvers certPolicyResolvers, IPolicyFilter policyFilter)
         {
             m_managedDomains = new AgentDomains(domainResolver);
 
@@ -260,10 +259,10 @@ namespace Health.Direct.Agent
             }
             
             m_minTrustRequirement = TrustEnforcementStatus.Success;
-
-            m_trustPolicyResolver = certPolicyResolvers.TrustResolver;
+            
             m_privatePolicyResolver = certPolicyResolvers.PrivateResolver;
             m_publicPolicyResolver = certPolicyResolvers.PublicResolver;
+            m_policyFilter = policyFilter;
         }
         
 
@@ -572,7 +571,7 @@ namespace Health.Direct.Agent
             //
             this.BindAddresses(message);
             //
-            // Decrypt the message, extract the signature and original content
+            // Decrypt the message, extract the senders signature and original content
             //
             this.DecryptSignedContent(message);
             //
@@ -610,10 +609,14 @@ namespace Health.Direct.Agent
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
-                recipient.Certificates = this.ResolvePrivateCerts(recipient, m_encryptionEnabled);
+                recipient.Certificates = this.ResolvePrivateCerts(recipient, m_encryptionEnabled)
+                    //Certificate Policy
+                    .Where(cert => FilterCertificateByPolicy(recipient, cert, m_privatePolicyResolver, true));
                 recipient.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(recipient);
             }
         }
+
+        
 
         void DecryptSignedContent(IncomingMessage message)
         {
@@ -915,7 +918,9 @@ namespace Health.Direct.Agent
             {
                 message.Sender.TrustAnchors = m_trustAnchors.OutgoingAnchors.GetCertificates(message.Sender);
             }
-            message.Sender.Certificates = this.ResolvePrivateCerts(message.Sender, true);
+            message.Sender.Certificates = this.ResolvePrivateCerts(message.Sender, true)
+                    //Certificate Policy
+                    .Where(cert => FilterCertificateByPolicy(message.Sender, cert, m_privatePolicyResolver, false));
             //
             // Bind each recipient's certs
             //
@@ -923,7 +928,9 @@ namespace Health.Direct.Agent
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
-                X509Certificate2Collection certificates = this.ResolvePublicCerts(recipient, false);
+                X509Certificate2Collection certificates = this.ResolvePublicCerts(recipient, false)
+                    //Certificate Policy
+                    .Where(cert => FilterCertificateByPolicy(message.Sender, cert, m_publicPolicyResolver, false)); ;
                 recipient.Certificates = certificates;
                 if(certificates != null)
                 {
@@ -1040,7 +1047,40 @@ namespace Health.Direct.Agent
 
             return cert;
         }
-        
+
+        private bool FilterCertificateByPolicy(MailAddress address, X509Certificate2 cert, IPolicyResolver resolver, bool incoming)
+        {
+            if (cert == null || resolver == null || m_policyFilter == null)
+            {
+                return true;
+            }
+
+            IList<IPolicyExpression> exressions = (incoming)
+                ? resolver.GetIncomingPolicy(address)
+                : resolver.GetOutgoingPolicy(address);
+
+            try
+            {
+                foreach (var expression in exressions)
+                {
+                    if (! m_policyFilter.IsCompliant(cert, expression)) 
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (PolicyRequiredException) // certificate 
+            {
+                return false;
+            }
+            catch (PolicyProcessException processException)
+            {
+                throw new AgentException(AgentError.InvalidPolicy, processException);
+            }
+            return true;
+        }
+
+
         //-----------------------------
         //
         // Events

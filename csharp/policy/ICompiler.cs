@@ -25,8 +25,7 @@ namespace Health.Direct.Policy
     public interface ICompiler
     {
         IList<IOpCode> Compile(X509Certificate2 cert , IPolicyExpression expression);
-        void SetReportModeEnabled(bool reportMode);
-        bool IsReportModeEnabled();
+        bool ReportModeEnabled { get; set; }
         IList<String> CompiliationReport { get; }
     }
 }
