@@ -28,6 +28,13 @@ namespace Health.Direct.SmtpAgent
         private static readonly object m_initSync = new object();
         private static bool m_initialized;
 
+        public static SmtpAgent Create(SmtpAgentSettings settings)
+        {
+            InitializeContainer(settings);
+            Log.For<MessageArrivalEventHandler>().Debug(settings);
+            return new SmtpAgent(settings);
+        }
+
         public static SmtpAgent Create(string configFilePath)
         {
             SmtpAgentSettings settings = null;

@@ -37,7 +37,7 @@ namespace Health.Direct.Policy.Tests
                 Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
                 mockEngine.Setup(e => e.Evaluate(It.IsAny<IList<IOpCode>>())).Returns(true);
 
-                DefaultPolicyFilter filter = new DefaultPolicyFilter(mockCompiler.Object, mockEngine.Object, new XMLLexiconPolicyParser());
+                PolicyFilter filter = new PolicyFilter(mockCompiler.Object, mockEngine.Object, new XMLLexiconPolicyParser());
                 filter.IsCompliant(mockCert.Object, stream);
 
             }
@@ -52,7 +52,7 @@ namespace Health.Direct.Policy.Tests
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
             mockEngine.Setup(e => e.Evaluate(It.IsAny<IList<IOpCode>>())).Returns(true);
-            DefaultPolicyFilter filter = new DefaultPolicyFilter(mockCompiler.Object, mockEngine.Object);
+            PolicyFilter filter = new PolicyFilter(mockCompiler.Object, mockEngine.Object);
             filter.IsCompliant(mockCert.Object, mockExpression.Object);
         }
 
@@ -62,7 +62,7 @@ namespace Health.Direct.Policy.Tests
             Mock<IPolicyExpression> mockExpression = new Mock<IPolicyExpression>();
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
-            DefaultPolicyFilter filter = new DefaultPolicyFilter(null, null);
+            PolicyFilter filter = new PolicyFilter(null, null);
             Action action = () => filter.IsCompliant(mockCert.Object, mockExpression.Object);
             action.ShouldThrow<InvalidOperationException>().WithMessage("Compiler cannot be null");
 
@@ -75,7 +75,7 @@ namespace Health.Direct.Policy.Tests
             Mock<IPolicyExpression> mockExpression = new Mock<IPolicyExpression>();
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
-            DefaultPolicyFilter filter = new DefaultPolicyFilter(mockCompiler.Object, null);
+            PolicyFilter filter = new PolicyFilter(mockCompiler.Object, null);
             Action action = () => filter.IsCompliant(mockCert.Object, mockExpression.Object);
             action.ShouldThrow<InvalidOperationException>().WithMessage("Execution engine cannot be null");
         }

@@ -164,6 +164,7 @@ namespace Health.Direct.Common.Certificates
         public static X509Certificate2Collection Where(this X509Certificate2Collection certs, Func<X509Certificate2, bool> match)
         {
             X509Certificate2Collection matchingCerts = null;
+            if (certs.IsNullOrEmpty()) return null;
 
             foreach (X509Certificate2 cert in certs)
             {
@@ -176,6 +177,8 @@ namespace Health.Direct.Common.Certificates
 
             return matchingCerts;
         }
+
+
 
         /// <summary>
         /// Returns the first element matching the supplied predicate.

@@ -691,6 +691,18 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="RemovePolicy">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="policyName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemovePolicyResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="UpdatePolicyAttributes">
     <xs:complexType>
       <xs:sequence>
@@ -860,6 +872,18 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="RemovePolicyGroup">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="groupName" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RemovePolicyGroupResponse">
+    <xs:complexType>
+      <xs:sequence />
+    </xs:complexType>
+  </xs:element>
   <xs:element name="UpdateGroupAttributes">
     <xs:complexType>
       <xs:sequence>
@@ -916,8 +940,8 @@
   <xs:element name="DisassociatePolicyGroupFromDomain">
     <xs:complexType>
       <xs:sequence>
-        <xs:element minOccurs="0" name="domain" nillable="true" type="xs:string" />
-        <xs:element minOccurs="0" name="policyGroupID" type="xs:long" />
+        <xs:element minOccurs="0" name="groupName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="owner" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

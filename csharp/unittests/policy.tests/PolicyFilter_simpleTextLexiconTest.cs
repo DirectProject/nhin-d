@@ -34,7 +34,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "X509.Algorithm = 1.2.840.113549.1.1.5".ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -45,7 +45,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "X509.TBS.SerialNumber = 00F74F1C4FE4E1762E".ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
 
@@ -53,7 +53,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "X509.TBS.SerialNumber = 00f74f1c4fe4e1762e".ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -61,7 +61,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "X509.TBS.SerialNumber = f74f1c4fe4e1762e".ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -73,7 +73,7 @@ namespace Health.Direct.Policy.Tests
 				    " && (X509.TBS.Issuer.E {?} cmii@cerner.com) && (X509.TBS.Issuer.OU {?} Medical Informatics)").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -86,7 +86,7 @@ namespace Health.Direct.Policy.Tests
                     " && (X509.TBS.Issuer.E {?} cmii@cerner.com) && (X509.TBS.Issuer.OU {?} Medical Informatics)").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -101,7 +101,7 @@ namespace Health.Direct.Policy.Tests
                 " && (X509.TBS.Subject.E {?} umesh@securehealthemail.com) && (X509.TBS.Subject.OU {?} Medical Informatics)").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -115,7 +115,7 @@ namespace Health.Direct.Policy.Tests
                 " && (X509.TBS.Subject.E {?} umesh@securehealthemail.com) && (X509.TBS.Subject.OU {?} Medical Informatics)").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -128,7 +128,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.SubjectPublicKeyInfo.Algorithm = 1.2.840.113549.1.1.1").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -141,7 +141,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.SubjectPublicKeyInfo.Size = 2024").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -153,7 +153,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.KeyUsage = 224").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -165,7 +165,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("(X509.TBS.EXTENSION.KeyUsage & 32) > 0").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -177,7 +177,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.SubjectAltName {?} rfc822:AlAnderson@hospitalA.direct.visionshareinc.com").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -189,7 +189,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.SubjectAltName {?}! me@you.com").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -201,7 +201,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.SubjectAltName {}$ AlAnderson@hospitalA.direct.visionshareinc.com").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -213,7 +213,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("{}X509.TBS.EXTENSION.SubjectAltName").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -225,7 +225,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("{}!X509.TBS.EXTENSION.SubjectAltName").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -238,7 +238,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.SubjectKeyIdentifier = e0f63ccfeb5ce3eef5c04efe8084c92bc628682c").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -250,7 +250,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.AuthorityKeyIdentifier.KeyId = 3aa0074b77b2493efb447de5ce6cd055085de3f0").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -262,7 +262,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} 1.3.6.1.4.1.41179.0.1.2").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/policyMixedQualifier.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -274,7 +274,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("^(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {}& 1.3.6.1.4.1.41179.0.1.2) = 1").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/policyMixedQualifier.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -286,7 +286,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("^(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {}& 1.3.6.1.4.1.41179.0.1.2,12345) = 1").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/policyMixedQualifier.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -298,7 +298,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("^(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {}& 1.3.6.1.4.1.41179.0.1.2,1.3.6.1.4.1.41179.1.3) = 2").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/policyMixedQualifier.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -310,7 +310,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("^X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs = 4").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/policyMixedQualifier.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -322,7 +322,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("{}X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/umesh.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -334,7 +334,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.CertificatePolicies.CPSUrls {?} https://www.phicert.com/cps").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/policyMixedQualifier.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -346,7 +346,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.BasicConstraints.CA = true").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/CernerDirect DevCert Provider CA.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -359,7 +359,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("X509.TBS.EXTENSION.ExtKeyUsageSyntax {?} 1.3.6.1.5.5.7.3.4").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -372,7 +372,7 @@ namespace Health.Direct.Policy.Tests
                 "{?} caIssuers:http://ca.cerner.com/public/root.der").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -385,7 +385,7 @@ namespace Health.Direct.Policy.Tests
                 "{?} OCSP:http://ca.cerner.com/OCSP").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -398,7 +398,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("^X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.Url = 2").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -411,7 +411,7 @@ namespace Health.Direct.Policy.Tests
                 "{?} http://ca.cerner.com/OCSP").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
@@ -424,7 +424,7 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = ("^X509.TBS.EXTENSION.AuthorityInfoAccessSyntax.OCSPLocation  = 1").ToStream())
             {
                 X509Certificate2 cert = new X509Certificate2(@"resources/certs/CernerDirectProviderCA.der");
-                IPolicyFilter filter = new DefaultPolicyFilter(new StackMachineCompiler(), new StackMachine(),
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(),
                     new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }

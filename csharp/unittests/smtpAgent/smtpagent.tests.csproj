@@ -94,9 +94,11 @@
     <Compile Include="TestNotifications.cs" />
     <Compile Include="TestRouter.cs" />
     <Compile Include="TestSmtpAgent.cs" />
+    <Compile Include="TestSmtpAgentCertPolicies.cs" />
     <Compile Include="TestSmtpAgentDSNs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SmtpAgentTestFiles\SmtpAgentConfig.xml" />
     <Content Include="SmtpAgentTestFiles\TestDomainTenancyConfig.xml">
       <SubType>Form</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -113,7 +115,7 @@
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestSmtpAgentConfig.xml">
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfig_InternalRelay.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

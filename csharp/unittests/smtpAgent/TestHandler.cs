@@ -39,7 +39,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public TestHandler()
         {
             m_handler = new MessageArrivalEventHandler();
-            m_handler.InitFromConfigFile(MakeFilePath("TestSmtpAgentConfig.xml"));
+            m_handler.InitFromConfigFile(MakeFilePath(@"SmtpAgentTestFiles\TestSmtpAgentConfig_InternalRelay.xml"));
         }
 
         public static IEnumerable<object[]> EndToEndParams

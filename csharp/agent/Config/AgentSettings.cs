@@ -24,6 +24,7 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Domains;
 using Health.Direct.Common.Policies;
+using Health.Direct.Policy;
 
 namespace Health.Direct.Agent.Config
 {
@@ -238,14 +239,15 @@ namespace Health.Direct.Agent.Config
             ICertificateResolver privateCerts = this.PrivateCerts.CreateResolver();
             ICertificateResolver publicCerts = this.PublicCerts.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
-            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel() : TrustModel.Default;
+            ICertPolicyResolvers certPolicyResolvers = GetPolicyResolvers();
+            IPolicyFilter policyFilter = PolicyFilter.Default;
+            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel(certPolicyResolvers.TrustResolver, policyFilter) : TrustModel.Default;
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
 
             IDomainResolver domainResolver = this.CreateResolver();
 
-            ICertPolicyResolvers certPolicyResolvers = PolicyResolvers();
-
-            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers);
+            
+            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers, policyFilter);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
             
@@ -254,7 +256,11 @@ namespace Health.Direct.Agent.Config
 
         
 
-        private CertPolicyResolvers PolicyResolvers()
+        /// <summary>
+        /// Get the cert policy resolvers as a <see cref="ICertPolicyResolvers"/> structured container..
+        /// </summary>
+        /// <returns></returns>
+        public ICertPolicyResolvers GetPolicyResolvers()
         {
             IList<KeyValuePair<string, IPolicyResolver>> policyResolvers = new List<KeyValuePair<string, IPolicyResolver>>();
             if (CertPolicies != null)

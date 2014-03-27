@@ -31,6 +31,13 @@ namespace Health.Direct.Config.Store
                Commit tran 
             ";
 
+        private const string Sql_DeleteCertPolicyByName =
+            @" Begin tran
+                DELETE from CertPolicyGroupMap where CertPolicyId = (Select CertPolicyId from CertPolicies where Name = {0})  
+                DELETE from CertPolicies where Name = {0}
+               Commit tran 
+            ";
+
         const string Sql_DeleteAllCertPolicies =
                      @" Begin tran                         
                         delete from CertPolicyGroupMap                        
@@ -166,6 +173,11 @@ namespace Health.Direct.Config.Store
         public static void ExecDelete(this Table<CertPolicy> table, long certPolicyId)
         {
             table.Context.ExecuteCommand(Sql_DeleteCertPolicies, certPolicyId);
+        }
+
+        public static void ExecDelete(this Table<CertPolicy> table, string policyName)
+        {
+            table.Context.ExecuteCommand(Sql_DeleteCertPolicyByName, policyName);
         }
 
         public static void ExecDeleteAll(this Table<CertPolicy> table)

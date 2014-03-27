@@ -26,15 +26,16 @@ namespace Health.Direct.Policy.Machine
 {
     public class StackMachineCompiler : ICompiler
     {
-        readonly bool m_reportModeEnabled;
+        
         readonly ThreadLocal<IList<String>> m_compilerReport;
 
         public StackMachineCompiler()
         {
-            m_reportModeEnabled = false;
+            ReportModeEnabled = false;
             m_compilerReport = new ThreadLocal<IList<String>>();
         }
 
+        public bool ReportModeEnabled { get; set; }
 
         public IList<IOpCode> Compile(X509Certificate2 cert, IPolicyExpression expression)
         {
@@ -48,8 +49,6 @@ namespace Health.Direct.Policy.Machine
             entries.Add(Compile(entries, cert, expression));
             return entries;
         }
-
-
 
 
         protected StackMachineEntry<OperationPolicyExpression> Compile(IList<IOpCode> entries, X509Certificate2 cert, IPolicyExpression expression)
@@ -133,8 +132,7 @@ namespace Health.Direct.Policy.Machine
         {
             return new StackMachineEntry<T>(EntryType.Value, expression.GetPolicyValue().GetPolicyValue());
         }
-
-
+        
         protected IPolicyValue<T> EvaluateReferenceExpression<R, T>(X509Certificate2 cert, IReferencePolicyExpression<R, T> expression)
         {
             switch (expression.GetPolicyExpressionReferenceType())
@@ -159,7 +157,7 @@ namespace Health.Direct.Policy.Machine
             catch (PolicyRequiredException e)
             {
                 // add this to the report and re-evaluate without the required flag
-                if (m_reportModeEnabled)
+                if (ReportModeEnabled)
                 {
                     AddErrorToReport(e);
                     expression.SetRequired(false);
@@ -181,16 +179,7 @@ namespace Health.Direct.Policy.Machine
             }
             report.Add(e.Message);
         }
-        public void SetReportModeEnabled(bool reportMode)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsReportModeEnabled()
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public IList<string> CompiliationReport
         {
             get

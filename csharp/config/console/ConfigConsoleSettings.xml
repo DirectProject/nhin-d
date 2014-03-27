@@ -1,5 +1,5 @@
 ﻿<ConsoleSettings>
-  <!--
+  
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -30,7 +30,7 @@
   <CertPolicyManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
   </CertPolicyManager>
--->
+<!--
   <DomainManager>
     <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
   </DomainManager>
@@ -61,5 +61,5 @@
   <CertPolicyManager>
     <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
   </CertPolicyManager>
-
+-->
 </ConsoleSettings>
