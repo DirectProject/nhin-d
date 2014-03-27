@@ -7,6 +7,7 @@ using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service.Controllers
 {
+    [RoutePrefix("Domain")]
     public class DomainController : ApiController
     {
         private readonly ConfigStore _configStore;
@@ -52,14 +53,14 @@ namespace Health.Direct.Config.Service.Controllers
         }
 
         [HttpGet]
-        [Route("Domain/Count")]
+        [Route("Count")]
         public HttpResponseMessage GetDomainCount(string lastDomainName, int maxResults)
         {
             try
             {
-                var domains = _configStore.Domains.Get(lastDomainName, maxResults);
+                var count = _configStore.Domains.Count();
 
-                return Request.CreateResponse(HttpStatusCode.OK, domains);
+                return Request.CreateResponse(HttpStatusCode.OK, count);
             }
             catch (Exception ex)
             {
@@ -69,7 +70,7 @@ namespace Health.Direct.Config.Service.Controllers
         }
 
         [HttpGet]
-        [Route("Domain/{id}")]
+        [Route("{id}")]
         public HttpResponseMessage GetDomain(long id)
         {
             try
@@ -85,24 +86,24 @@ namespace Health.Direct.Config.Service.Controllers
             }
         }
 
-        [HttpGet]
-        public HttpResponseMessage GetDomains(string[] domainNames, EntityStatus? status)
-        {
-            try
-            {
-                var domains = _configStore.Domains.Get(domainNames, status);
+//        [HttpGet]
+//        public HttpResponseMessage GetDomains(string[] domainNames, EntityStatus? status)
+//        {
+//            try
+//            {
+//                var domains = _configStore.Domains.Get(domainNames, status);
+//
+//                return Request.CreateResponse(HttpStatusCode.OK, domains);
+//            }
+//            catch (Exception ex)
+//            {
+//                _logger.Info("GetDomains failed with exception.", ex);
+//                return Request.CreateResponse(HttpStatusCode.InternalServerError);
+//            }
+//        }
 
-                return Request.CreateResponse(HttpStatusCode.OK, domains);
-            }
-            catch (Exception ex)
-            {
-                _logger.Info("GetDomains failed with exception.", ex);
-                return Request.CreateResponse(HttpStatusCode.InternalServerError);
-            }
-        }
-
         [HttpGet]
-        [Route("Domain/Agent/{agentName}/{status}")]
+        [Route("Agent/{agentName}/{status}")]
         public HttpResponseMessage GetAgentDomains(string agentName, EntityStatus? status)
         {
             try
@@ -135,7 +136,7 @@ namespace Health.Direct.Config.Service.Controllers
         }
 
         [HttpGet]
-        [Route("Domain/Enumerate/{lastDomainName}/{maxResults}")]
+        [Route("Enumerate/{lastDomainName}/{maxResults}")]
         public HttpResponseMessage EnumerateDomain(string lastDomainName, int maxResults)
         {
             try
