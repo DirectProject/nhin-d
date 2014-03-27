@@ -11,7 +11,7 @@ namespace Health.Direct.Config.Service.Controllers
     public class DomainController : ApiController
     {
         private readonly ConfigStore _configStore;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public DomainController()
         {
@@ -20,7 +20,8 @@ namespace Health.Direct.Config.Service.Controllers
         }
 
         [HttpPost]
-        public HttpResponseMessage AddDomain(Domain domain)
+        [Route("")]
+        public HttpResponseMessage AddDomain([FromBody] Domain domain)
         {
             try
             {
@@ -37,7 +38,8 @@ namespace Health.Direct.Config.Service.Controllers
         }
 
         [HttpPut]
-        public HttpResponseMessage UpdateDomain(Domain domain)
+        [Route("")]
+        public HttpResponseMessage UpdateDomain([FromBody] Domain domain)
         {
             try
             {
@@ -54,7 +56,7 @@ namespace Health.Direct.Config.Service.Controllers
 
         [HttpGet]
         [Route("Count")]
-        public HttpResponseMessage GetDomainCount(string lastDomainName, int maxResults)
+        public HttpResponseMessage GetDomainCount()
         {
             try
             {
