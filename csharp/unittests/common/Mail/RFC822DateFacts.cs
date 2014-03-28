@@ -116,7 +116,7 @@ namespace Health.Direct.Common.Tests.Mail
         {
             string dateString = null;
 
-            Assert.DoesNotThrow(() => dateString = now.ToUniversalTime().ToRFC822UtcString());
+            Assert.DoesNotThrow(() => dateString = now.ToUniversalTime().ToRFC822String());
             Console.WriteLine(dateString);
             int indexOfDash = -1;
             Assert.DoesNotThrow(() => indexOfDash = dateString.LastIndexOf('-'));
