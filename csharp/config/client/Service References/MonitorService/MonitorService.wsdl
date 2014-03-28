@@ -52,6 +52,15 @@
   <wsdl:message name="IMdnMonitor_SweepTimouts_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="IMdnMonitor_EnumerateMdns_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateMdns" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_EnumerateMdns_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateMdnsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_EnumerateMdns_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:portType name="IMdnMonitor">
     <wsdl:operation name="Start">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/Start" message="tns:IMdnMonitor_Start_InputMessage" />
@@ -77,6 +86,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimouts" message="tns:IMdnMonitor_SweepTimouts_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsResponse" message="tns:IMdnMonitor_SweepTimouts_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_SweepTimouts_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateMdns">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/EnumerateMdns" message="tns:IMdnMonitor_EnumerateMdns_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/EnumerateMdnsResponse" message="tns:IMdnMonitor_EnumerateMdns_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/EnumerateMdnsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_EnumerateMdns_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
   </wsdl:portType>
 </wsdl:definitions>

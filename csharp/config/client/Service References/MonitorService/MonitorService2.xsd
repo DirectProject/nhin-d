@@ -53,6 +53,14 @@
       <xs:enumeration value="UrlLength" />
       <xs:enumeration value="InvalidBundle" />
       <xs:enumeration value="DuplicateMdnStart" />
+      <xs:enumeration value="InvalidCertPolicyName" />
+      <xs:enumeration value="CertPolicyNameLength" />
+      <xs:enumeration value="MissingCertPolicyData" />
+      <xs:enumeration value="InvalidCertPolicy" />
+      <xs:enumeration value="InvalidCertPolicyGroupName" />
+      <xs:enumeration value="InvalidCertPolicyGroup" />
+      <xs:enumeration value="CertPolicyGroupDescriptionLength" />
+      <xs:enumeration value="InvalidCertPolicyUse" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
