@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 
@@ -38,7 +39,10 @@ namespace Health.Direct.Admin.Console.Models
             get
             {
                 DnsBuffer buffer = new DnsBuffer();
-                new AddressRecord(DomainName, IPAddress) {TTL = TTL}.Serialize(buffer);
+                if (!String.IsNullOrEmpty(IPAddress))
+                {
+                    new AddressRecord(DomainName, IPAddress) {TTL = TTL}.Serialize(buffer);
+                }
                 return buffer.Buffer;
             }
             set
