@@ -127,8 +127,12 @@
     <Compile Include="Controllers\DnsRecordsController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MdnRecordsController.cs" />
     <Compile Include="Models\AddressRecordModel.cs" />
     <Compile Include="Models\DnsRecordModel.cs" />
+    <Compile Include="Models\MdnModel.cs" />
+    <Compile Include="Models\Repositories\IMdnRecordRepository.cs" />
+    <Compile Include="Models\Repositories\MdnRecordRepository.cs" />
     <Compile Include="Models\ResolveModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -227,6 +231,10 @@
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
+      <Name>diagnostics.nlog</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\dev.client.config" />
@@ -268,6 +276,15 @@
     <Content Include="Views\DnsRecords\AddMx.aspx" />
     <Content Include="Views\DnsRecords\AddAname.aspx" />
     <Content Include="Views\DnsRecords\AddSoa.aspx" />
+    <Content Include="Views\DnsRecords\AnameDetails.ascx" />
+    <Content Include="Views\DnsRecords\DnsRecordDetailsDialog.ascx" />
+    <Content Include="Views\DnsRecords\EditAname.aspx" />
+    <Content Include="Views\DnsRecords\EditMx.aspx" />
+    <Content Include="Views\DnsRecords\EditSoa.aspx" />
+    <Content Include="Views\DnsRecords\MxDetails.ascx" />
+    <Content Include="Views\DnsRecords\SoaDetails.ascx" />
+    <Content Include="Views\MdnRecords\Index.aspx" />
+    <Content Include="Views\MdnRecords\MdnList.ascx" />
     <Content Include="Views\Shared\ConfigStoreError.aspx" />
     <Content Include="Views\Shared\ServiceDownError.aspx" />
     <Content Include="Views\Shared\UnAuthSite.Master" />

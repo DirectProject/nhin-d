@@ -1,10 +1,10 @@
-﻿/* 
+/* 
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
  Authors:
-    Joe Shook       jshook@kryptiq.com
- 
+    John Theisen
+  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -14,36 +14,26 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.ServiceModel;
+using System.ComponentModel.DataAnnotations;
+
+using Health.Direct.Admin.Console.Common;
 using Health.Direct.Config.Store;
 
-namespace Health.Direct.Config.Service
+namespace Health.Direct.Admin.Console.Models
 {
-    [ServiceContract(Namespace = Service.Namespace)]
-    public interface IMdnMonitor
+    public class MdnModel
     {
-        [OperationContract]
-        [FaultContract(typeof (ConfigStoreFault))]
-        void Start(Mdn[] mdns);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void Update(Mdn mdn);
-
-        [OperationContract]
-        [FaultContract(typeof (ConfigStoreFault))]
-        Mdn[] GetExpiredProcessed(TimeSpan expiredLimit, int maxResults);
-
-        [OperationContract]
-        [FaultContract(typeof (ConfigStoreFault))]
-        Mdn[] GetExpiredDispatched(TimeSpan expiredLimit, int maxResults);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        void SweepTimouts(TimeSpan expiredLimit, int bulkCount);
-
-        [OperationContract]
-        [FaultContract(typeof(ConfigStoreFault))]
-        Mdn[] EnumerateMdns(string lastMdnName, int maxResults);
+		public string MdnIdentifier { get; set; }
+		public long Id { get; set; }
+		public string MessageId { get; set; }
+		public string SubjectValue { get; set; }
+		public string Recipient { get; set; }
+		public string Sender { get; set; }
+		public bool Timedout { get; set; }
+		public bool NotifyDispatched { get; set; }
+		public DateTime MdnProcessedDate { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
+        public string Status { get; set; }
     }
 }

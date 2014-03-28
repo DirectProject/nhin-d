@@ -8,6 +8,9 @@ using Health.Direct.Admin.Console.Models.Repositories;
 
 using Autofac;
 using AutoMapper;
+using Health.Direct.Common.Container;
+using Health.Direct.Common.Diagnostics;
+using Health.Direct.Diagnostics.NLog;
 
 namespace Health.Direct.Admin.Console
 {
@@ -17,6 +20,7 @@ namespace Health.Direct.Admin.Console
 
         protected void Application_Start()
         {
+            InitializeContainer();
             ConfigureContainer();
             ConfigureAutoMapper();
 
@@ -45,6 +49,15 @@ namespace Health.Direct.Admin.Console
             container.InjectUnsetProperties(Membership.Provider);
         }
 
+        private static void InitializeContainer()
+        {
+            LogFileSettings settings = LogFileSection.GetAsSettings();
+
+            // setup the container here... grrr... we're duplicating this!
+            IoC.Initialize(new SimpleDependencyResolver()
+                               .Register<ILogFactory>(new NLogFactory(settings))
+                );
+        }
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
@@ -52,7 +65,7 @@ namespace Health.Direct.Admin.Console
             routes.MapRoute(
                 "Domains",
                 "Domains/Page/{page}",
-                new {controller = "Domains", action = "Index"}
+                new { controller = "Domains", action = "Index" }
                 );
 
             routes.MapRoute(

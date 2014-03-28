@@ -13,6 +13,8 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,13 +23,31 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class AnchorManagerFacts : ConfigStoreTestBase 
+    public class AnchorManagerTestFixture : ConfigStoreTestBase, IDisposable
+    {
+        public AnchorManagerTestFixture()
+        {
+            InitAnchorRecords();
+        }
+
+        public void Dispose()
+        {
+            // Do "global" teardown here; Only called once.
+        }
+    }
+
+    public class AnchorManagerFacts : ConfigStoreTestBase, IUseFixture<AnchorManagerTestFixture>
     {
         private static new AnchorManager CreateManager()
         {
             return new AnchorManager(CreateConfigStore());
         }
 
+        public void SetFixture(AnchorManagerTestFixture data)
+        {
+
+        }
+        
         /// <summary>
         /// property to expose enumerable testing Anchor certificate instances
         /// </summary>
@@ -75,7 +95,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Store
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void StoreTest()
         {
             AnchorManager mgr = CreateManager();
@@ -86,10 +106,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest1()
         {
-            InitAnchorRecords();
+            
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 foreach (string domain in TestDomainNames)
@@ -126,10 +146,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest()
         {
-            InitAnchorRecords();
+            
             foreach (string domain in TestDomainNames)
             {
                 string subject = "CN=" + domain;
@@ -162,10 +182,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for RemoveAll
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveAllTest1()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             using (ConfigDatabase db = CreateConfigDatabase())
@@ -179,10 +199,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for RemoveAll
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveAllTest()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
 
@@ -195,10 +215,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest5()
         {
-            InitAnchorRecords();
+            
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 AnchorManager target = CreateManager();
@@ -213,10 +233,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest4()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
@@ -228,10 +248,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest3()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
@@ -243,12 +263,12 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest2()
         {
             using (ConfigDatabase db = CreateConfigDatabase())
             {
-                InitAnchorRecords();
+                
                 AnchorManager target = CreateManager();
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
                 string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
@@ -261,10 +281,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest1()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
             string owner = certs[0].Owner;
@@ -278,10 +298,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest()
         {
-            InitAnchorRecords();
+            
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 AnchorManager target = CreateManager();
@@ -297,10 +317,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for GetOutgoing
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetOutgoingTest1()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             target.SetStatus(ownerName, EntityStatus.Enabled);
@@ -315,10 +335,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for GetOutgoing
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetOutgoingTest()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Anchor[] actual = target.GetOutgoing(ownerName);
@@ -333,10 +353,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for GetIncoming
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetIncomingTest1()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             target.SetStatus(ownerName, EntityStatus.Enabled);
@@ -352,10 +372,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for GetIncoming
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetIncomingTest()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Anchor[] actual = target.GetIncoming(ownerName);
@@ -369,10 +389,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest6()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
@@ -387,10 +407,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest5()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             const long lastCertID = 0;
             const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
@@ -402,10 +422,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest4()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             long[] certIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
             Anchor[] actual = target.Get(certIDs);
@@ -420,10 +440,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest3()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Anchor[] actual = target.Get(owner).ToArray();
@@ -438,10 +458,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest2()
         {
-            InitAnchorRecords();
+            
             AnchorManager target = CreateManager();
             List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
             string owner = certs[GetRndCertID()].Owner;
@@ -456,10 +476,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest1()
         {
-            InitAnchorRecords();
+            
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 AnchorManager target = CreateManager();
@@ -476,10 +496,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest()
         {
-            InitAnchorRecords();
+            
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 AnchorManager target = CreateManager();
@@ -496,7 +516,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Theory]
+        [Theory, AutoRollback]
         [PropertyData("TestAnchors")]
         public void AddTest2(Anchor anc)
         {
@@ -513,7 +533,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void AddTest1()
         {
             AnchorManager target = CreateManager();
@@ -527,7 +547,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Theory]
+        [Theory, AutoRollback]
         [PropertyData("TestAnchors")]
         public void AddTest(Anchor anc)
         {

@@ -299,8 +299,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        static void Update(ConfigDatabase db
-            , DnsRecord dnsRecord)
+        public void Update(ConfigDatabase db, DnsRecord dnsRecord)
         {
             if (db == null)
             {
@@ -312,10 +311,7 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidDnsRecord);
             }
 
-            DnsRecord update = new DnsRecord();
-            update.CopyFixed(dnsRecord);
-
-            db.DnsRecords.Attach(update);
+            DnsRecord update = Get(db, dnsRecord.ID);
             update.ApplyChanges(dnsRecord);
         }
 

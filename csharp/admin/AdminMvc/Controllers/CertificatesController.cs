@@ -27,6 +27,7 @@ using AutoMapper;
 using Health.Direct.Config.Store;
 
 using MvcContrib.Pagination;
+using System.Net.Mail;
 
 namespace Health.Direct.Admin.Console.Controllers
 {
@@ -99,7 +100,22 @@ namespace Health.Direct.Admin.Console.Controllers
                 }
                 
                 var domain = m_domainRepository.GetByDomainName(model.Owner);
-                if (domain == null) return View("NotFound");
+				if (domain == null)
+				{
+					// Check the address host
+					try
+					{
+						domain = m_domainRepository.GetByDomainName(new MailAddress(model.Owner).Host);
+						if (domain == null)
+						{
+							return View("NotFound");
+						}
+					}
+					catch
+					{
+						return View("NotFound");
+					}
+				}
 
                 try
                 {
@@ -146,21 +162,31 @@ namespace Health.Direct.Admin.Console.Controllers
             return View(model);
         }
 
-        private bool LocalTryUpdateModel(CertificateUploadModel model)
-        {
-            if (!TryUpdateModel(model)) return false;
+		private bool LocalTryUpdateModel(CertificateUploadModel model)
+		{
+			if (!TryUpdateModel(model)) return false;
 
-            // TODO: should we also check the address table?
-            var domain = m_domainRepository.GetByDomainName(model.Owner);
-            if (domain == null)
-            {
-                model.Owner = "";
-                ModelState.AddModelError("Owner", "Domain does not exist");
-                return false;
-            }
+			var domain = m_domainRepository.GetByDomainName(model.Owner);
+			if (domain != null)
+			{
+				return true;
+			}
 
-            return true;
-        }
+			// Check the address host
+			try
+			{
+				domain = m_domainRepository.GetByDomainName(new MailAddress(model.Owner).Host);
+				if (domain != null)
+				{
+					return true;
+				}
+			}
+			catch { }
+
+			model.Owner = "";
+			ModelState.AddModelError("Owner", "Domain does not exist");
+			return false;
+		}
 
         protected override ActionResult EnableDisable(long id, EntityStatus status)
         {

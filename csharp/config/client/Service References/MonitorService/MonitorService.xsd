@@ -96,4 +96,19 @@
       <xs:sequence />
     </xs:complexType>
   </xs:element>
+  <xs:element name="EnumerateMdns">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="lastMdnName" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="maxResults" type="xs:int" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="EnumerateMdnsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="EnumerateMdnsResult" nillable="true" type="tns:ArrayOfMdn" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

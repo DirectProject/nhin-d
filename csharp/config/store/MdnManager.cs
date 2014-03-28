@@ -233,7 +233,26 @@ namespace Health.Direct.Config.Store
 
             return db.Mdns.Get(mdnIdentifier);
         }
-        
+
+        public Mdn[] Get(string lastMdn, int maxResults)
+        {
+            using (ConfigDatabase db = this.Store.CreateReadContext())
+            {
+                return this.Get(db, lastMdn, maxResults).ToArray();
+            }
+        }
+
+        public IEnumerable<Mdn> Get(ConfigDatabase db, string lastMdn, int maxResults)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException("db");
+            }
+
+            return db.Mdns.ExecGet(lastMdn, maxResults);
+        }
+
+
         public Mdn[] GetTimedOut()
         {
             using (var db = Store.CreateReadContext())

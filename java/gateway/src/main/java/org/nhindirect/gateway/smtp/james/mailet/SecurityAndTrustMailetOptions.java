@@ -127,4 +127,27 @@ public class SecurityAndTrustMailetOptions
  	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.ServiceSecurityAuthSecret
      */     
     public static final String SERVICE_SECURITY_AUTH_SECRET = "ServiceSecurityAuthSecret";  
+    
+    /**
+     * Mailet configuration parameter for providing a custom Guice provider for the Auditor interface.  This parameter is a string containing the fully
+     * qualified class name of the provider.  If this parameter is empty or null, no provider will be configured and the system will use a log file
+     * based auditor by default.
+     * <p>
+     * This option is configured using the <b>SmptAgentAuditorProvider</b> element of the NHINDSecurityAndTrustMailet configuration.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.SmptAgentAuditorProvider
+     */
+    public static final String SMTP_AGENT_AUDITOR_PROVIDER = "SmptAgentAuditorProvider";    
+
+
+    /**
+     * Mailet configuration parameter for providing the location of an auditing configuration file.  This parameter is a string containing the name
+     * or relative name of the configuraton file.  If this parameter is empty or null, a default configuration location will be selected by the auditor
+     * if it support declaractive based configuration.
+     * <p>
+     * This option is configured using the <b>SmptAgentAuditorConifgLocation</b> element of the NHINDSecurityAndTrustMailet configuration.
+ 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.gateway.smtp.james.mailet.SmptAgentAuditorConifgLocation
+     */
+    public static final String SMTP_AGENT_AUDITOR_CONFIG_LOC = "SmptAgentAuditorConifgLocation";    
 }
+
+

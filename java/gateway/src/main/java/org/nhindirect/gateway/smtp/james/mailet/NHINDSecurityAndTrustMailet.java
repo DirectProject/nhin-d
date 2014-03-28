@@ -21,9 +21,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp.james.mailet;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.mailet.Mail;
 import org.apache.mailet.MailAddress;
+import org.nhindirect.common.audit.Auditor;
 import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.rest.provider.OpenServiceSecurityManagerProvider;
@@ -51,6 +55,7 @@ import org.nhindirect.gateway.smtp.config.SmptAgentConfigFactory;
 import org.nhindirect.gateway.smtp.config.SmtpAgentConfig;
 import org.nhindirect.gateway.smtp.dsn.DSNCreator;
 import org.nhindirect.gateway.smtp.dsn.provider.RejectedRecipientDSNCreatorProvider;
+import org.nhindirect.gateway.smtp.module.AuditorModule;
 import org.nhindirect.gateway.smtp.provider.MailetAwareProvider;
 import org.nhindirect.gateway.smtp.provider.SecureURLAccessedConfigProvider;
 import org.nhindirect.gateway.smtp.provider.URLAccessedConfigProvider;
@@ -97,6 +102,9 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.AUTO_DSN_FAILURE_CREATION_PARAM, "org.nhindirect.gateway.smtp.james.mailet.AutoDSNFailueCreation");
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.SMTP_AGENT_CONFIG_PROVIDER, "org.nhindirect.gateway.smtp.james.mailet.SmptAgentConfigProvider");	
 		JVM_PARAMS.put(SecurityAndTrustMailetOptions.SERVICE_SECURITY_MANAGER_PROVIDER, "org.nhindirect.gateway.smtp.james.mailet.ServiceSecurityManagerProvider");	
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.SMTP_AGENT_AUDITOR_PROVIDER, "org.nhindirect.gateway.smtp.james.mailet.SmptAgentAuditorProvider");	
+		JVM_PARAMS.put(SecurityAndTrustMailetOptions.SMTP_AGENT_AUDITOR_CONFIG_LOC, "org.nhindirect.gateway.smtp.james.mailet.SmptAgentAuditorConifgLocation");	
+
 		
 		OptionsManager.addInitParameters(JVM_PARAMS);
 	}
@@ -370,6 +378,81 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 		return false;
 	}
 	
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Collection<Module> getInitModules()
+	{
+		final Module auditModule = getAuditModule();
+		
+		if (auditModule != null)
+		{
+			return Arrays.asList(auditModule);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets a custom audit module if one if configured.
+	 * @return A custom audit module.  Null if a custom module is not configured.
+	 */
+	protected Module getAuditModule()
+	{
+		Module retVal = null;
+		
+		Provider<Auditor> provider = null;
+		
+		final String providerClazz = GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.SMTP_AGENT_AUDITOR_PROVIDER, this, "");
+		final String auditoConfigLoc = GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.SMTP_AGENT_AUDITOR_CONFIG_LOC, this, "");
+		
+		if (providerClazz != null && !providerClazz.isEmpty())
+		{
+			try
+			{
+				// create an instance of the provider
+				@SuppressWarnings("unchecked")
+				Class<Provider<Auditor>> clazz = (Class<Provider<Auditor>>)getClass().getClassLoader().loadClass(providerClazz);
+				
+				if (auditoConfigLoc != null && !auditoConfigLoc.isEmpty())
+				{
+					try
+					{
+						Constructor<Provider<Auditor>> constr =  (Constructor<Provider<Auditor>>)clazz.getConstructor(String.class);
+						provider = constr.newInstance(auditoConfigLoc);
+					}
+					catch (InvocationTargetException e)
+					{
+						
+						if (e.getTargetException() instanceof IllegalStateException)
+						{
+							LOGGER.warn("Could not create auditor from specified audito configuration file " + auditoConfigLoc, e);
+							return null;
+						}
+						else
+							LOGGER.warn("Auditor configuration location " + auditoConfigLoc + " provided but not supported by Auditor provider:" + e.getMessage(), e);
+					}
+					catch (Exception e)
+					{
+						LOGGER.warn("Auditor configuration location " + auditoConfigLoc + " provided but not supported by Auditor provider:" + e.getMessage(), e);
+					}
+				}
+				if (provider == null)
+					provider = clazz.newInstance();
+				
+				retVal = AuditorModule.create(provider);
+			}
+			catch (Exception e)
+			{
+				LOGGER.warn("Failed to load auditor provider class " + providerClazz + ": " + e.getMessage(), e);
+			}
+		}
+		
+		return retVal;
+	}
+	
 	/**
 	 * Gets a custom configuration provider.  If this is null, the system will us a default provider.
 	 * @return Gets a custom configuration provider.
@@ -378,7 +461,7 @@ public class NHINDSecurityAndTrustMailet extends AbstractNotificationAwareMailet
 	{
 		Provider<SmtpAgentConfig> retVal = null;
 		
-		String providerClazz = GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.SMTP_AGENT_CONFIG_PROVIDER, this, "");
+		final String providerClazz = GatewayConfiguration.getConfigurationParam(SecurityAndTrustMailetOptions.SMTP_AGENT_CONFIG_PROVIDER, this, "");
 		
 		if (providerClazz != null && !providerClazz.isEmpty())
 		{
