@@ -15,13 +15,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-
+using System.Linq;
+using System.Runtime.ConstrainedExecution;
+using System.ServiceModel;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
 namespace Health.Direct.Config.Service
 {
-    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IDnsRecordManager
+    public class DomainManagerService : ConfigServiceBase, IDomainManager, IAddressManager, IDnsRecordManager, ICertPolicyStore
     {
         #region IDomainManager Members
 
@@ -384,5 +386,380 @@ namespace Health.Direct.Config.Service
         }
 
         #endregion
+
+        #region ICertPolcyStore
+        public CertPolicy GetPolicyByName(string policyName)
+        {
+            try
+            {
+                return (Store.CertPolicies.Get(policyName));
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyByName", ex);
+            }
+        }
+
+        public int GetCertPoliciesCount()
+        {
+            try
+            {
+                return Store.CertPolicies.Count();
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetCertPoliciesCount", ex);
+            }
+        }
+
+        public int GetCertPolicyGroupCount()
+        {
+            try
+            {
+                return Store.CertPolicyGroups.Count();
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetCertPolicyGroupCount", ex);
+            }
+        }
+
+        public CertPolicy GetPolicyByID(long policyID)
+        {
+            try
+            {
+                CertPolicy[] bundles = Store.CertPolicies.Get(new long[] {policyID});
+                return (bundles[0]);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetBundle", ex);
+            }
+        }
+
+
+        public CertPolicy[] GetIncomingPoliciesByOwner(string owner, CertPolicyUse use)
+        {
+            try
+            {
+                return Store.CertPolicies.GetIncomingByOwner(owner, use);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetIncomingPoliciesByOwnerAndUse", ex);
+            }
+        }
+
+        public CertPolicy[] GetOutgoingPoliciesByOwner(string owner, CertPolicyUse use)
+        {
+            try
+            {
+                return Store.CertPolicies.GetOutgoingByOwner(owner, use);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetOutgoingPoliciesByOwner", ex);
+            }
+        }
+
+        public bool PolicyToGroupExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.PolicyGroupMapExists(policyName, groupName, policyUse, incoming, outgoing);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("PolicyToGroupExists", ex);
+            }
+        }
+
+        public bool PolicyGroupToOwnerExists(string policyGroup, string owner)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.PolicyGroupMapExists(policyGroup, owner);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("PolicyGroupToOwnerExists", ex);
+            }
+        }
+
+        public CertPolicy[] EnumerateCertPolicies(long lastCertPolicyID, int maxResults)
+        {
+            try
+            {
+                return Store.CertPolicies.Get(lastCertPolicyID, maxResults);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateCertPolicies", ex);
+            }
+        }
+
+        public CertPolicy AddPolicy(CertPolicy policy)
+        {
+            try
+            {
+                CertPolicy certPolicy = new CertPolicy(policy);
+                return Store.CertPolicies.Add(certPolicy);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
+        }
+
+        public void RemovePolicies(long[] policyIDs)
+        {
+            try
+            {
+                Store.CertPolicies.Remove(policyIDs);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicies", ex);
+            }
+        }
+
+        public void RemovePolicy(string policyName)
+        {
+            try
+            {
+                Store.CertPolicies.Remove(policyName);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicy", ex);
+            }
+        }
+
+        public void UpdatePolicyAttributes(CertPolicy policy)
+        {
+            try
+            {
+                Store.CertPolicies.Update(policy);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("UpdatePolicyAttributes", ex);
+            }
+        }
+
+        public CertPolicyGroup[] EnumerateCertPolicyGroups(long lastCertPolicyGroupID, int maxResults)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.Get(lastCertPolicyGroupID, maxResults);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("EnumerateCertPolicyGroups", ex);
+            }
+        }
+
+        public CertPolicyGroup GetPolicyGroupByName(string policyGroupName)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.Get(policyGroupName);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByName", ex);
+            }
+        }
+
+        public CertPolicyGroupMap[] GetPolicyGroupByNameWithPolicies(string policyGroupName)
+        {
+            try
+            {
+                CertPolicyGroupMap[] maps = Store.CertPolicyGroups.GetWithPolicies(policyGroupName);
+                return maps;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByNameWithPolicies", ex);
+            }
+        }
+
+        public CertPolicyGroupDomainMap[] GetPolicyGroupByNameWithOwners(string policyGroupName)
+        {
+            try
+            {
+                CertPolicyGroupDomainMap[] maps = Store.CertPolicyGroups.GetWithOwners(policyGroupName);
+                return maps;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByNameWithOwner", ex);
+            }
+        }
+
+
+        public CertPolicyGroup GetPolicyGroupByID(long policyGroupID)
+        {
+            try
+            {
+                return Store.CertPolicyGroups.Get(policyGroupID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyGroupByID", ex);
+            }
+        }
+
+        public CertPolicyGroup AddPolicyGroup(CertPolicyGroup policyGroup)
+        {
+            try
+            {
+                CertPolicyGroup certPolicyGroup = new CertPolicyGroup(policyGroup);
+                return Store.CertPolicyGroups.Add(certPolicyGroup);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicyGroup", ex);
+            }
+        }
+
+        public void RemovePolicyGroups(long[] policyGroupIDs)
+        {
+            try
+            {
+                Store.CertPolicyGroups.Remove(policyGroupIDs);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicyGroups", ex);
+            }
+        }
+
+        public void RemovePolicyGroup(string groupName)
+        {
+            try
+            {
+                Store.CertPolicyGroups.Remove(groupName);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("RemovePolicyGroup", ex);
+            }
+        }
+
+        public void UpdateGroupAttributes(CertPolicyGroup policyGroup)
+        {
+            try
+            {
+                Store.CertPolicyGroups.Update(policyGroup);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("UpdateGroupAttributes", ex);
+            }
+        }
+
+        public void AddPolicyToGroup(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+        {
+            try
+            {
+                CertPolicy certPolicy = Store.CertPolicies.Get(policyName);
+                if (certPolicy == null)
+                {
+                    throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
+                }
+                Store.CertPolicyGroups.AddPolicyUse(policyName, groupName, policyUse, incoming, outgoing);
+            }
+            catch (FaultException faultEx)
+            {
+                throw faultEx;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicyToGroup", ex);
+            }
+        }
+
+        public void RemovePolicyUseFromGroup(long policyGroupMapID)
+        {
+            try
+            {
+                Store.CertPolicyGroups.RemovePolicyUseFromGroup(policyGroupMapID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
+        }
+
+        public void AssociatePolicyGroupToDomain(string groupName, string owner)
+        {
+            try
+            {
+                Store.CertPolicyGroups.AssociateToOwner(groupName, owner);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AssociatePolicyGroupToDomain", ex);
+            }
+        }
+
+        public void DisassociatePolicyGroupFromDomain(string groupName, string owner)
+        {
+            try
+            {
+                long groupId = Store.CertPolicyGroups.Get(groupName).ID;
+                Store.CertPolicyGroups.DisassociateFromDomain(owner, groupId);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
+        }
+
+        public void DisassociatePolicyGroupsFromDomain(string owner)
+        {
+            try
+            {
+                Store.CertPolicyGroups.DisassociateFromDomain(owner);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
+        }
+
+        public void DisassociatePolicyGroupFromDomains(long policyGroupID)
+        {
+            try
+            {
+                Store.CertPolicyGroups.DisassociateFromDomains(policyGroupID);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddPolicy", ex);
+            }
+        }
+
+        public CertPolicyGroup[] GetPolicyGroupsByDomain(string owner)
+        {
+            try
+            {
+                return (Store.CertPolicyGroups.GetByDomains(new[] {owner}));
+            ;
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("GetPolicyByName", ex);
+            }
+        }
+
+
+        #endregion
+
+
+        
+
+        
     }
 }

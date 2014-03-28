@@ -27,7 +27,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class MultiThreadTests : ConfigStoreTestBase
     {
-        public const string ConnectionStringTimeout = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;Connection Timeout=120";
+        public const string ConnectionStringTimeout = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;Connection Timeout=120";
         static ConfigStore s_store;
         const string TestDomain = "unittests.com";
         

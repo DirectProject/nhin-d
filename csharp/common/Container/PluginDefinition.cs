@@ -115,6 +115,28 @@ namespace Health.Direct.Common.Container
         }
         
         /// <summary>
+        /// Create an instance of the plugin 
+        /// </summary>
+        /// <param name="settings">Construct with settings object.</param>
+        /// <returns>object</returns>                
+        public object Create<TSettings>(TSettings settings)
+        {
+            if (!this.HasTypeName)
+            {
+                throw new NotSupportedException("No type name specified");
+            }
+
+            object obj = Activator.CreateInstance(Type.GetType(this.TypeName, true), settings);
+            IPlugin plugin = obj as IPlugin;
+            if (plugin != null)
+            {
+                plugin.Init(this);
+            }
+
+            return obj;
+        }
+
+        /// <summary>
         /// Create a typed instance of the plugin
         /// </summary>
         /// <typeparam name="T">Type of plugin to create</typeparam>
@@ -124,7 +146,19 @@ namespace Health.Direct.Common.Container
         {
             return this.Create() as T;
         }
-        
+
+        /// <summary>
+        /// Create a typed instance of the plugin
+        /// </summary>
+        /// <typeparam name="T">Type of plugin to create</typeparam>
+        /// <typeparam name="TSettings">Object containing settings</typeparam>
+        /// <returns>plugin instance</returns>
+        public T Create<T, TSettings>(TSettings settings)
+            where T : class
+        {
+            return this.Create(settings) as T;
+        }
+
         /// <summary>
         /// Deserialize the Settings XmlNode into a typed object
         /// Uses the XmlSerializer.

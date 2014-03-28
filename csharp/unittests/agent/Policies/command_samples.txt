@@ -1,0 +1,1 @@
+certpolicy_add "bob" C:\joeshook-nhind-net45-policy\csharp\unittests\agent\Policies\dataEnciphermentOnlyRequired.txt

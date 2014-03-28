@@ -16,18 +16,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.IO;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
-
+using Health.Direct.Policy.Extensions;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
     public class ConfigStoreTestBase
     {
-        private const string ConnectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        private const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
 
         protected const int MAXDOMAINCOUNT = 10; //---number should be <= .cer file count in metadata folder
         protected const int MAXSMTPCOUNT = 3;
@@ -75,6 +76,7 @@ namespace Health.Direct.Config.Store.Tests
         {
         }
 
+
         /// <summary>
         /// Logs to <see cref="Console.Out"/> if <paramref name="dumpEnabled"/> is <c>true</c>.
         /// </summary>
@@ -83,6 +85,8 @@ namespace Health.Direct.Config.Store.Tests
         {
             m_dumpEnabled = dumpEnabled;
         }
+
+        
 
         /// <summary>
         /// Dump the <paramref name="msg"/> to the output with a preamble line of '!'s
@@ -269,6 +273,72 @@ namespace Health.Direct.Config.Store.Tests
                        
 
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the Test cert policy
+        /// </summary>
+        protected static IEnumerable<CertPolicy> TestCertPolicies
+        {
+            get { 
+                
+                yield return new CertPolicy(
+                "Policy1"
+                ,"Specific policy OID exists"
+                , "X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} 1.3.6.1.4.1.41179.0.1.2".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy2"
+                , "At least one specific policy OID exists"
+                , "(^(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {}& 1.3.6.1.4.1.41179.0.1.2,3.2.22.1)) > 0".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy3"
+                , "Secure email extension"
+                , "X509.TBS.EXTENSION.ExtKeyUsageSyntax {?} 1.3.6.1.5.5.7.3.4".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy4"
+                , "End entity certificate"
+                , "X509.TBS.EXTENSION.BasicConstraints.CA = false".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy5"
+                , "CA certificate"
+                , "X509.TBS.EXTENSION.BasicConstraints.CA = true".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy6"
+                , "Key encipherment usage"
+                , "(X509.TBS.EXTENSION.KeyUsage & 32) > 0".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy7"
+                , "Digital signature usage"
+                , "(X509.TBS.EXTENSION.KeyUsage & 128) > 0".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy8"
+                , "Key encipherment and not digital signature"
+                , "((X509.TBS.EXTENSION.KeyUsage & 32) > 0) && ((X509.TBS.EXTENSION.KeyUsage & 128) = 0)".ToBytesUtf8());
+
+                yield return new CertPolicy(
+                "Policy9"
+                , "Digital signature and not key encipherment"
+                , "((X509.TBS.EXTENSION.KeyUsage & 32) = 0) && ((X509.TBS.EXTENSION.KeyUsage & 128) > 0)".ToBytesUtf8());
+
+            }
+        }
+
+
+        protected static IEnumerable<CertPolicyGroup> TestCertPolicyGroups
+        {
+            get
+            {
+                yield return new CertPolicyGroup("PolicyGroup1", "Test Group 1");
+                yield return new CertPolicyGroup("PolicyGroup2", "Test Group 2");
+                yield return new CertPolicyGroup("PolicyGroup3", "Test Group 3");
             }
         }
 
@@ -676,6 +746,97 @@ namespace Health.Direct.Config.Store.Tests
 
             }
             return bytes;
+        }
+
+        /// <summary>
+        /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
+        /// </summary>
+        protected void InitCertPolicyRecords()
+        {
+            //var dataLoadOptions = new DataLoadOptions();
+            //dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
+
+            ConfigStore configStore = CreateConfigStore();
+            this.InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
+                                   , new ConfigDatabase(ConnectionString, CertPolicyManager.DataLoadOptions));
+        }
+
+
+        /// <summary>
+        /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
+        /// </summary>
+        /// <param name="mgr">CertPolicyManager instance used for controlling the certPolicy records</param>
+        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <remarks>
+        /// this approach goes out to db each time it is called, however it ensures that clean records
+        /// are present for every test that is execute, if it is taking too long, simply cut down on the
+        /// number of items using the consts above
+        /// </remarks>
+        protected void InitCertPolicyRecords(CertPolicyManager mgr
+                                         , ConfigDatabase db)
+        {
+            //----------------------------------------------------------------------------------------------------
+            //---clean all existing records
+            mgr.RemoveAll();
+            
+            foreach (CertPolicy val in TestCertPolicies)
+            {
+                mgr.Add(db, val);
+            }
+
+            //----------------------------------------------------------------------------------------------------
+            //---submit changes to db and verify existence of records
+            db.SubmitChanges();
+
+            foreach (CertPolicy val in TestCertPolicies)
+            {
+                Assert.NotNull(mgr.Get(db, val.Name));
+            }
+
+        }
+
+        
+        /// <summary>
+        /// This method will clean, load and verify CertPolcyGroup records in the DB for testing purposes
+        /// </summary>
+        protected void InitCertPolicyGroupRecords()
+        {
+            ConfigStore configStore = CreateConfigStore();
+            this.InitCertPolicyGroupRecords(new CertPolicyGroupManager(configStore));
+        }
+
+        /// <summary>
+        /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
+        /// </summary>
+        /// <param name="mgr">CertPolicyGroupManager instance used for controlling the certPolicyGroup records</param>
+        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <remarks>
+        /// this approach goes out to db each time it is called, however it ensures that clean records
+        /// are present for every test that is execute, if it is taking too long, simply cut down on the
+        /// number of items using the consts above
+        /// </remarks>
+        protected void InitCertPolicyGroupRecords(CertPolicyGroupManager mgr)
+        {
+            //----------------------------------------------------------------------------------------------------
+            //---clean all existing records
+            mgr.RemoveAll();
+
+            using (var db = new ConfigDatabase(ConnectionString, CertPolicyGroupManager.DataLoadOptions))
+            { 
+                foreach (CertPolicyGroup val in TestCertPolicyGroups)
+                {
+                    mgr.Add(db, val);
+                }
+
+                //----------------------------------------------------------------------------------------------------
+                //---submit changes to db and verify existence of records
+                db.SubmitChanges();
+
+                foreach (CertPolicyGroup val in TestCertPolicyGroups)
+                {
+                    Assert.NotNull(mgr.Get(db, val.Name));
+                }
+            }
         }
 
         /// <summary>
@@ -1088,6 +1249,11 @@ namespace Health.Direct.Config.Store.Tests
         protected static ConfigDatabase CreateConfigDatabase()
         {
             return new ConfigDatabase(ConnectionString);
+        }
+
+        protected static ConfigDatabase CreateConfigDatabase(DataLoadOptions dataLoadOptions)
+        {
+            return new ConfigDatabase(ConnectionString, dataLoadOptions);
         }
     }
 }

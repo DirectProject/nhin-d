@@ -273,7 +273,7 @@ namespace Health.Direct.Common.Mail
         }
         
         /// <summary>
-        /// Parses an SMTP server line of address (e.g. RCPT TO, MAIL FROM) and adds to the supplied <paramref name="collection"/> address entries of type <typeparamref name="T"/> that
+        /// Parses an SMTP server line of address (e.g. RCPT TO, MAIL FROM) and adds to the supplied <paramref name="recipients"/> address entries of type <typeparamref name="T"/> that
         /// are subtypes of <see cref="MailAddress"/> and are constructed from mail address
         /// string values using <paramref name="constructor"/>
         /// </summary>

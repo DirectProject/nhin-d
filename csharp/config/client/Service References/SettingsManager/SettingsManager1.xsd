@@ -39,6 +39,20 @@
       <xs:enumeration value="InvalidTextBlobName" />
       <xs:enumeration value="InvalidTextBlobNameLength" />
       <xs:enumeration value="InvalidBlob" />
+      <xs:enumeration value="AgentNameLength" />
+      <xs:enumeration value="InvalidAgentName" />
+      <xs:enumeration value="InvalidMdnIdentifier" />
+      <xs:enumeration value="InvalidMdn" />
+      <xs:enumeration value="DuplicateProcessedMdn" />
+      <xs:enumeration value="DuplicateDispatchedMdn" />
+      <xs:enumeration value="DuplicateFailedMdn" />
+      <xs:enumeration value="MdnPreviouslyProcessed" />
+      <xs:enumeration value="MdnUncorrelated" />
+      <xs:enumeration value="MdnPreviouslyFailed" />
+      <xs:enumeration value="InvalidUrl" />
+      <xs:enumeration value="UrlLength" />
+      <xs:enumeration value="InvalidBundle" />
+      <xs:enumeration value="DuplicateMdnStart" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />

@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -246,6 +247,8 @@ Final-Recipient:rfc822;toby@redmond.hsgincubator.com
             Assert.Equal("processed", mdn.Disposition.Notification.ToString(), StringComparer.OrdinalIgnoreCase);
         }
 
+
+        
         [Fact]
         public void TestDispositionTypeFormats()
         {

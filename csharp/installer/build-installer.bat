@@ -8,7 +8,7 @@ if "%2" EQU "Release" set Configuration=Release
 
 if "%1" EQU "help" goto :help
 
-set VERSION=1.0.0.0
+set VERSION=2.0.0.0
 
 call :check_environment
 
@@ -16,7 +16,7 @@ call :check_environment
 echo Enter the version information:
 set /p VERSION=  VERSION (DEFAULT %VERSION%)? 
 
-if "%VERSION%" EQU "" set VERSION=1.0.0.0
+if "%VERSION%" EQU "" set VERSION=2.0.0.0
 
 set /p CONFIRM=Use '%VERSION%' as the version info? (DEFAULT=Y) 
 if "%CONFIRM%" EQU "" set CONFIRM=Y
@@ -39,7 +39,7 @@ if "%1" NEQ "test" (
   hg commit --message "Advancing version number to %VERSION%..." ..\GlobalAssemblyInfo.cs .\Direct.iss
   hg tag --force --message "Tagging CSharp as dotnet-%VERSION%" dotnet-%VERSION%
   pushd ..\..
-  hg archive --rev dotnet-%VERSION% --type zip --exclude certs --exclude java --exclude .hg* csharp\installer\Direct-%VERSION%-NET35-Source.zip
+  hg archive --rev dotnet-%VERSION% --type zip --exclude certs --exclude java --exclude .hg* csharp\installer\Direct-%VERSION%-NET45-Source.zip
   popd
 )
 

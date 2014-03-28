@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,8 +10,28 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Health.Direct.Common</RootNamespace>
     <AssemblyName>Health.Direct.Common</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +43,8 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>bin\Debug\Health.Direct.Common.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,13 +55,13 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>bin\Release\Health.Direct.Common.xml</DocumentationFile>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
+    <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
@@ -69,6 +91,12 @@
     <Compile Include="Certificates\DnsCertResolver.cs" />
     <Compile Include="Certificates\Extensions.cs" />
     <Compile Include="Certificates\ICertificateResolver.cs" />
+    <Compile Include="Policies\CertPolicyResolvers.cs" />
+    <Compile Include="Policies\ICertPolicyResolvers.cs" />
+    <Compile Include="Policies\IPolicyExpression.cs" />
+    <Compile Include="Policies\IPolicyFilter.cs" />
+    <Compile Include="Policies\IPolicyIndex.cs" />
+    <Compile Include="Policies\IPolicyResolver.cs" />
     <Compile Include="Certificates\ITrustAnchorResolver.cs" />
     <Compile Include="Certificates\IX509CertificateStore.cs" />
     <Compile Include="Certificates\MemoryX509Store.cs" />
@@ -210,6 +238,12 @@
     <Compile Include="Mime\QuotedPrintableEncoding.cs" />
     <Compile Include="Mime\StringSegment.cs" />
     <Compile Include="DirectException.cs" />
+    <Compile Include="Policies\PolicyCache.cs" />
+    <Compile Include="Policies\PolicyExpressionType.cs" />
+    <Compile Include="Policies\PolicyParseException.cs" />
+    <Compile Include="Policies\PolicyProcessException.cs" />
+    <Compile Include="Policies\PolicyRequiredException.cs" />
+    <Compile Include="Policies\PolicyResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Routing\FolderBalancer.cs" />
     <Compile Include="Routing\LoadBalancer.cs" />

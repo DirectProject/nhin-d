@@ -66,7 +66,30 @@
       <xs:enumeration value="UrlLength" />
       <xs:enumeration value="InvalidBundle" />
       <xs:enumeration value="DuplicateMdnStart" />
+      <xs:enumeration value="InvalidCertPolicyName" />
+      <xs:enumeration value="CertPolicyNameLength" />
+      <xs:enumeration value="MissingCertPolicyData" />
+      <xs:enumeration value="InvalidCertPolicy" />
+      <xs:enumeration value="InvalidCertPolicyGroupName" />
+      <xs:enumeration value="InvalidCertPolicyGroup" />
+      <xs:enumeration value="CertPolicyGroupDescriptionLength" />
+      <xs:enumeration value="InvalidCertPolicyUse" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
+  <xs:simpleType name="CertPolicyUse">
+    <xs:annotation>
+      <xs:appinfo>
+        <ActualType Name="unsignedByte" Namespace="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NONE" />
+      <xs:enumeration value="TRUST" />
+      <xs:enumeration value="PRIVATE_RESOLVER" />
+      <xs:enumeration value="PUBLIC_RESOLVER" />
+      <xs:enumeration value="VALIDATION" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="CertPolicyUse" nillable="true" type="tns:CertPolicyUse" />
 </xs:schema>

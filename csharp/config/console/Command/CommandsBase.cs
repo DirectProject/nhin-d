@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 
-using Health.Direct.Config.Store;
-using Health.Direct.Config.Tools.Command;
 
 namespace Health.Direct.Config.Console.Command
 {
@@ -68,7 +66,7 @@ namespace Health.Direct.Config.Console.Command
                 T client = m_clientResolver();
                 if (client == null)
                 {
-                    throw new NotSupportedException("No WCF client for this Command configured");
+                    throw new NotSupportedException("No WCF client for this Command configured.  Check ConfigConsoleSettings.xml");
                 }
                 return client;
             }

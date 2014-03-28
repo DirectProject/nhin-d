@@ -68,7 +68,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AutoResponse = true;
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            m_agent.Settings.MdnMonitor.Url = "http://localhost/ConfigService/MonitorService.svc/Dispositions";
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -143,7 +143,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AutoResponse = true;
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            m_agent.Settings.MdnMonitor.Url = "http://localhost/ConfigService/MonitorService.svc/Dispositions";
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -253,7 +253,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.Notifications.GatewayIsDestination = true;
             m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            m_agent.Settings.MdnMonitor.Url = "http://localhost/ConfigService/MonitorService.svc/Dispositions";
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -350,7 +350,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.Notifications.GatewayIsDestination = true;
             m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            m_agent.Settings.MdnMonitor.Url = "http://localhost/ConfigService/MonitorService.svc/Dispositions";
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -442,7 +442,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.Notifications.GatewayIsDestination = true;
             m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            m_agent.Settings.MdnMonitor.Url = "http://localhost/ConfigService/MonitorService.svc/Dispositions";
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -520,7 +520,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.Notifications.AutoResponse = true;
             m_agent.Settings.Notifications.AlwaysAck = true;
             m_agent.Settings.MdnMonitor = new ClientSettings();
-            m_agent.Settings.MdnMonitor.Url = "http://localhost:6692/MonitorService.svc/Dispositions";
+            m_agent.Settings.MdnMonitor.Url = "http://localhost/ConfigService/MonitorService.svc/Dispositions";
 
             string textMessage = string.Format(TestMessageTimelyAndReliableMissingTo, Guid.NewGuid());
             //

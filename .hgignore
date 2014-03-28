@@ -9,7 +9,7 @@ syntax: glob
 # ignore lock files
 *.lck
 
-# ignore old school pom.xml 
+# ignore old school pom.xml
 java/config/config-service/pom.xml.orig
 
 # ignore for Mac OX
@@ -118,3 +118,5 @@ csharp/installer/DirectConfig.sql
 csharp/installer/*.zip
 tools/trust.bundler/cmdlet/Examples/*.p7*
 tools/trust.bundler/build/packages/**
+csharp/build/packages/**
+*.DotSettings

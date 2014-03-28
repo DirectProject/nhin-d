@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="urn:directproject:config/store/082010" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="urn:directproject:config/store/082010" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <xsd:schema targetNamespace="urn:directproject:config/store/082010/Imports">
       <xsd:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd0" namespace="urn:directproject:config/store/082010" />
@@ -315,6 +315,267 @@
   <wsdl:message name="IDnsRecordManager_EnumerateDnsRecordsByType_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyByName" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyByNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyByName_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPoliciesCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPoliciesCount" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPoliciesCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPoliciesCountResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPoliciesCount_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyByID" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyByID_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingPoliciesByOwner" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetIncomingPoliciesByOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetIncomingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByOwner_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingPoliciesByOwner" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByOwner_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetOutgoingPoliciesByOwnerResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetOutgoingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyToGroupExists_InputMessage">
+    <wsdl:part name="parameters" element="tns:PolicyToGroupExists" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyToGroupExists_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PolicyToGroupExistsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyToGroupExists_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyGroupToOwnerExists_InputMessage">
+    <wsdl:part name="parameters" element="tns:PolicyGroupToOwnerExists" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyGroupToOwnerExists_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PolicyGroupToOwnerExistsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_PolicyGroupToOwnerExists_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_EnumerateCertPolicies_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateCertPolicies" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_EnumerateCertPolicies_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateCertPoliciesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_EnumerateCertPolicies_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicy_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicy" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicy_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicy_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicies_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicies" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicies_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePoliciesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicies_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicy_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicy" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicy_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicy_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_UpdatePolicyAttributes_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdatePolicyAttributes" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_UpdatePolicyAttributes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdatePolicyAttributesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_UpdatePolicyAttributes_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_EnumerateCertPolicyGroups_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateCertPolicyGroups" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_EnumerateCertPolicyGroups_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateCertPolicyGroupsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_EnumerateCertPolicyGroups_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByName" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByName_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByNameWithPolicies_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByNameWithPolicies" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByNameWithPolicies_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByNameWithPoliciesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByNameWithPolicies_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByNameWithOwners_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByNameWithOwners" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByNameWithOwners_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByNameWithOwnersResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByNameWithOwners_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPolicyGroupCount_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPolicyGroupCount" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPolicyGroupCount_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetCertPolicyGroupCountResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetCertPolicyGroupCount_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByID" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupByIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupByID_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicyGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyGroup" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicyGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicyGroup_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroups_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyGroups" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroups_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyGroupsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroups_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyGroup" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyGroup_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_UpdateGroupAttributes_InputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateGroupAttributes" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_UpdateGroupAttributes_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateGroupAttributesResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_UpdateGroupAttributes_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicyToGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyToGroup" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicyToGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPolicyToGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AddPolicyToGroup_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyUseFromGroup_InputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyUseFromGroup" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyUseFromGroup_OutputMessage">
+    <wsdl:part name="parameters" element="tns:RemovePolicyUseFromGroupResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_RemovePolicyUseFromGroup_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AssociatePolicyGroupToDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:AssociatePolicyGroupToDomain" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AssociatePolicyGroupToDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AssociatePolicyGroupToDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_AssociatePolicyGroupToDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupFromDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:DisassociatePolicyGroupFromDomain" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupFromDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DisassociatePolicyGroupFromDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupFromDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupsFromDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:DisassociatePolicyGroupsFromDomain" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupsFromDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DisassociatePolicyGroupsFromDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupsFromDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupFromDomains_InputMessage">
+    <wsdl:part name="parameters" element="tns:DisassociatePolicyGroupFromDomains" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupFromDomains_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DisassociatePolicyGroupFromDomainsResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_DisassociatePolicyGroupFromDomains_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupsByDomain_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupsByDomain" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupsByDomain_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetPolicyGroupsByDomainResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertPolicyStore_GetPolicyGroupsByDomain_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:portType name="IAddressManager">
     <wsdl:operation name="AddAddress">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IAddressManager/AddAddress" message="tns:IAddressManager_AddAddress_InputMessage" />
@@ -489,6 +750,153 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByType" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByTypeResponse" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IDnsRecordManager/EnumerateDnsRecordsByTypeConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IDnsRecordManager_EnumerateDnsRecordsByType_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="ICertPolicyStore">
+    <wsdl:operation name="GetPolicyByName">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByName" message="tns:ICertPolicyStore_GetPolicyByName_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByNameResponse" message="tns:ICertPolicyStore_GetPolicyByName_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByNameConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyByName_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertPoliciesCount">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCount" message="tns:ICertPolicyStore_GetCertPoliciesCount_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCountResponse" message="tns:ICertPolicyStore_GetCertPoliciesCount_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetCertPoliciesCount_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyByID">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByID" message="tns:ICertPolicyStore_GetPolicyByID_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByIDResponse" message="tns:ICertPolicyStore_GetPolicyByID_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByIDConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyByID_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingPoliciesByOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwner" message="tns:ICertPolicyStore_GetIncomingPoliciesByOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwnerResponse" message="tns:ICertPolicyStore_GetIncomingPoliciesByOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetIncomingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingPoliciesByOwner">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwner" message="tns:ICertPolicyStore_GetOutgoingPoliciesByOwner_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwnerResponse" message="tns:ICertPolicyStore_GetOutgoingPoliciesByOwner_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwnerConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetOutgoingPoliciesByOwner_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PolicyToGroupExists">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExists" message="tns:ICertPolicyStore_PolicyToGroupExists_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExistsResponse" message="tns:ICertPolicyStore_PolicyToGroupExists_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExistsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_PolicyToGroupExists_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PolicyGroupToOwnerExists">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExists" message="tns:ICertPolicyStore_PolicyGroupToOwnerExists_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExistsResponse" message="tns:ICertPolicyStore_PolicyGroupToOwnerExists_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExistsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_PolicyGroupToOwnerExists_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateCertPolicies">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicies" message="tns:ICertPolicyStore_EnumerateCertPolicies_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPoliciesResponse" message="tns:ICertPolicyStore_EnumerateCertPolicies_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPoliciesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_EnumerateCertPolicies_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPolicy">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicy" message="tns:ICertPolicyStore_AddPolicy_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyResponse" message="tns:ICertPolicyStore_AddPolicy_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_AddPolicy_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicies">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicies" message="tns:ICertPolicyStore_RemovePolicies_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePoliciesResponse" message="tns:ICertPolicyStore_RemovePolicies_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePoliciesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicies_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicy">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicy" message="tns:ICertPolicyStore_RemovePolicy_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyResponse" message="tns:ICertPolicyStore_RemovePolicy_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicy_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePolicyAttributes">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributes" message="tns:ICertPolicyStore_UpdatePolicyAttributes_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributesResponse" message="tns:ICertPolicyStore_UpdatePolicyAttributes_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_UpdatePolicyAttributes_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateCertPolicyGroups">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicyGroups" message="tns:ICertPolicyStore_EnumerateCertPolicyGroups_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicyGroupsResponse" message="tns:ICertPolicyStore_EnumerateCertPolicyGroups_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicyGroupsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_EnumerateCertPolicyGroups_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByName">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByName" message="tns:ICertPolicyStore_GetPolicyGroupByName_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameResponse" message="tns:ICertPolicyStore_GetPolicyGroupByName_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyGroupByName_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByNameWithPolicies">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPolicies" message="tns:ICertPolicyStore_GetPolicyGroupByNameWithPolicies_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPoliciesResponse" message="tns:ICertPolicyStore_GetPolicyGroupByNameWithPolicies_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPoliciesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyGroupByNameWithPolicies_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByNameWithOwners">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOwners" message="tns:ICertPolicyStore_GetPolicyGroupByNameWithOwners_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOwnersResponse" message="tns:ICertPolicyStore_GetPolicyGroupByNameWithOwners_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOwnersConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyGroupByNameWithOwners_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetCertPolicyGroupCount">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCount" message="tns:ICertPolicyStore_GetCertPolicyGroupCount_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountResponse" message="tns:ICertPolicyStore_GetCertPolicyGroupCount_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCountConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetCertPolicyGroupCount_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByID">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByID" message="tns:ICertPolicyStore_GetPolicyGroupByID_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByIDResponse" message="tns:ICertPolicyStore_GetPolicyGroupByID_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByIDConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyGroupByID_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPolicyGroup">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyGroup" message="tns:ICertPolicyStore_AddPolicyGroup_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyGroupResponse" message="tns:ICertPolicyStore_AddPolicyGroup_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_AddPolicyGroup_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyGroups">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroups" message="tns:ICertPolicyStore_RemovePolicyGroups_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupsResponse" message="tns:ICertPolicyStore_RemovePolicyGroups_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicyGroups_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyGroup">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroup" message="tns:ICertPolicyStore_RemovePolicyGroup_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupResponse" message="tns:ICertPolicyStore_RemovePolicyGroup_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicyGroup_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateGroupAttributes">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributes" message="tns:ICertPolicyStore_UpdateGroupAttributes_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributesResponse" message="tns:ICertPolicyStore_UpdateGroupAttributes_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributesConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_UpdateGroupAttributes_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPolicyToGroup">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroup" message="tns:ICertPolicyStore_AddPolicyToGroup_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroupResponse" message="tns:ICertPolicyStore_AddPolicyToGroup_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_AddPolicyToGroup_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyUseFromGroup">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroup" message="tns:ICertPolicyStore_RemovePolicyUseFromGroup_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroupResponse" message="tns:ICertPolicyStore_RemovePolicyUseFromGroup_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroupConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_RemovePolicyUseFromGroup_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AssociatePolicyGroupToDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AssociatePolicyGroupToDomain" message="tns:ICertPolicyStore_AssociatePolicyGroupToDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AssociatePolicyGroupToDomainResponse" message="tns:ICertPolicyStore_AssociatePolicyGroupToDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/AssociatePolicyGroupToDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_AssociatePolicyGroupToDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DisassociatePolicyGroupFromDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomain" message="tns:ICertPolicyStore_DisassociatePolicyGroupFromDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomainResponse" message="tns:ICertPolicyStore_DisassociatePolicyGroupFromDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_DisassociatePolicyGroupFromDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DisassociatePolicyGroupsFromDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupsFromDomain" message="tns:ICertPolicyStore_DisassociatePolicyGroupsFromDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupsFromDomainResponse" message="tns:ICertPolicyStore_DisassociatePolicyGroupsFromDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupsFromDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_DisassociatePolicyGroupsFromDomain_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DisassociatePolicyGroupFromDomains">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomains" message="tns:ICertPolicyStore_DisassociatePolicyGroupFromDomains_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomainsResponse" message="tns:ICertPolicyStore_DisassociatePolicyGroupFromDomains_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomainsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_DisassociatePolicyGroupFromDomains_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupsByDomain">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupsByDomain" message="tns:ICertPolicyStore_GetPolicyGroupsByDomain_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupsByDomainResponse" message="tns:ICertPolicyStore_GetPolicyGroupsByDomain_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupsByDomainConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertPolicyStore_GetPolicyGroupsByDomain_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
   </wsdl:portType>
 </wsdl:definitions>

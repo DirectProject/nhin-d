@@ -32,7 +32,7 @@ namespace Health.Direct.Config.Store.Tests
         public void UpdateDateTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1,1), BuildEmailAddressDisplayName(1,1));
-            DateTime expected = DateTime.UtcNow;
+            DateTime expected = DateTime.UtcNow.AddSeconds(1);
             Assert.NotEqual(addr.UpdateDate, expected);            
             addr.UpdateDate = expected;
             DateTime actual = addr.UpdateDate;
@@ -154,7 +154,7 @@ namespace Health.Direct.Config.Store.Tests
         public void CreateDateTest()
         {
             Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
-            DateTime expected = DateTime.UtcNow;
+            DateTime expected = DateTime.UtcNow.AddSeconds(1);
             Assert.NotEqual(addr.CreateDate, expected);
             addr.CreateDate = expected;
             DateTime actual = addr.CreateDate;

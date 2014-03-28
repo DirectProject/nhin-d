@@ -89,6 +89,10 @@ namespace Health.Direct.Agent
         /// <summary>
         /// The recipients in the envelope were not found in raw message headers
         /// </summary>
-        RecipientMismatch
+        RecipientMismatch,
+        /// <summary>
+        /// Policy engine exception.
+        /// </summary>
+        InvalidPolicy
     }
 }

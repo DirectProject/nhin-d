@@ -173,7 +173,7 @@ namespace Health.Direct.Common.Cryptography
         }
 
         /// <summary>
-        /// Maps the supplied <paramref name="type"/> to an instance of <see cref="AlgorithmIdentifier"/>
+        /// Maps the supplied <paramref name="algorithm"/> to an instance of <see cref="AlgorithmIdentifier"/>
         /// </summary>
         /// <param name="algorithm">The encryption algorithm to map</param>
         /// <returns>The corresponding <see cref="AlgorithmIdentifier"/></returns>

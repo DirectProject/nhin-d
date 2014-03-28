@@ -23,10 +23,11 @@ using Health.Direct.Agent;
 using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Extensions;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent
 {
-    public class NotificationProducer
+    public class NotificationProducer : INotificationProducer
     {
         NotificationSettings m_settings;
         
@@ -68,12 +69,14 @@ namespace Health.Direct.SmtpAgent
         /// To simplify inbound mail sending, SMTP Server allows you to drop new messages into a pickup folder
         /// You don't need to use SmtpClient or some other SMTP client
         /// </summary>
-        public void SendFailure(OutgoingMessage envelope, string pickupFolder, DirectAddressCollection recipients) 
+        public void SendFailure(OutgoingMessage envelope, string pickupFolder) 
         {
             if (string.IsNullOrEmpty(pickupFolder))
             {
                 throw new ArgumentException("value null or empty", "pickupFolder");
             }
+
+            DirectAddressCollection recipients = envelope.RejectedRecipients;
 
             if (recipients.IsNullOrEmpty())
             {
@@ -83,24 +86,11 @@ namespace Health.Direct.SmtpAgent
             if (recipients != null && envelope.UsingDeliveryStatus)
             {
                 DSNMessage notification = this.ProduceFailure(envelope, recipients);
-                           
+
 
                 string filePath = Path.Combine(pickupFolder, Extensions.CreateUniqueFileName());
                 notification.Save(filePath);
             }
-            
-
-            //Or maybe
-            //
-            // m_router.Route(message, envelope, routedRecipients);  
-            // 
-            // This would avoid loopback encrypt/decrypt...
-            //
-            // ISmtpMessage message
-            // MessageEnvelope envelope 
-            // DirectAddressCollection routedRecipients, but would use DSN in-reply-to:
-            //
-            
             
         }
 
@@ -179,6 +169,11 @@ namespace Health.Direct.SmtpAgent
                     }
                 }
             }
+        }
+
+        public virtual void Resolved(string messageId)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

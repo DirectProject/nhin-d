@@ -16,7 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Xml;
+using System.Xml.Serialization;
+using Health.Direct.Common.Policies;
+using Health.Direct.SmtpAgent.Config;
 using Xunit;
 using Xunit.Extensions;
 using Health.Direct.Common.Container;
@@ -55,6 +60,8 @@ namespace Health.Direct.SmtpAgent.Tests
             m_handler.InitFromConfigFile(Fullpath(fileName));
         }
 
+      
+
         [Fact]
         public void TestContainer()
         {
@@ -72,6 +79,32 @@ namespace Health.Direct.SmtpAgent.Tests
             IAuditor auditor = null;
             Assert.DoesNotThrow(() => auditor = IoC.Resolve<IAuditor>());
             Assert.True(auditor is DummyAuditor);
+        }
+
+        [Fact]
+        public void TestAddressDomainEnabled_Settings()
+        {
+            SmtpAgentSettings settings = null;
+             Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath("TestSmtpAgentConfigService.xml")));
+            
+            Assert.True(settings.AddressManager.HasSettings);
+            using (XmlNodeReader reader = new XmlNodeReader(settings.AddressManager.Settings))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(AddressManagerSettings), new XmlRootAttribute(settings.AddressManager.Settings.LocalName));
+                AddressManagerSettings addressManagerSettings = (AddressManagerSettings)serializer.Deserialize(reader);
+                Assert.NotNull(addressManagerSettings);
+                Assert.True(addressManagerSettings.EnableDomainSearch);
+            }
+        }
+
+        [Fact]
+        public void TestPolicyResolver_Settings()
+        {
+            SmtpAgentSettings settings = null;
+            Assert.DoesNotThrow(() => settings = SmtpAgentSettings.LoadSettings(Fullpath("TestSmtpAgentConfigService.xml")));
+
+            Verify(settings.CertPolicies);
+
         }
 
         //
@@ -103,7 +136,8 @@ namespace Health.Direct.SmtpAgent.Tests
             
             Assert.NotNull(settings.Anchors);
             this.Verify(settings.Anchors);
-
+            
+            
         }
 
         
@@ -174,6 +208,43 @@ namespace Health.Direct.SmtpAgent.Tests
             }
         }
 
+        void Verify(PolicySettings settings)
+        {
+            Assert.NotNull(settings.Resolvers);
+            Assert.Equal(3, settings.Resolvers.Count());
+            IPolicyResolver trustResolver = settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.TrustPolicyName).CreateResolver();
+            IPolicyResolver privateResolver = settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PrivatePolicyName).CreateResolver();
+            IPolicyResolver publicResolver = settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PublicPolicyName).CreateResolver();
+            Assert.NotNull(trustResolver);
+            Assert.NotNull(privateResolver);
+            Assert.NotNull(publicResolver);
+
+            TrustPolicyServiceResolverSettings trustSettings =
+                settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.TrustPolicyName) as
+                    TrustPolicyServiceResolverSettings;
+
+            Assert.True(trustSettings.CacheSettings.Cache);
+            Assert.True(trustSettings.CacheSettings.NegativeCache);
+            Assert.Equal(60, trustSettings.CacheSettings.CacheTTLSeconds);
+
+            PrivatePolicyServiceResolverSettings privateSettings =
+                settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PrivatePolicyName) as
+                    PrivatePolicyServiceResolverSettings;
+
+            Assert.True(privateSettings.CacheSettings.Cache);
+            Assert.True(privateSettings.CacheSettings.NegativeCache);
+            Assert.Equal(60, privateSettings.CacheSettings.CacheTTLSeconds);
+
+
+            PublicPolicyServiceResolverSettings publicSettings =
+                settings.Resolvers.FirstOrDefault(r => r.Name == CertPolicyResolvers.PublicPolicyName) as
+                    PublicPolicyServiceResolverSettings;
+
+            Assert.True(publicSettings.CacheSettings.Cache);
+            Assert.True(publicSettings.CacheSettings.NegativeCache);
+            Assert.Equal(60, publicSettings.CacheSettings.CacheTTLSeconds);
+        }
+        
         void Verify(TrustAnchorSettings settings)
         {
             Assert.NotNull(settings.Resolver);

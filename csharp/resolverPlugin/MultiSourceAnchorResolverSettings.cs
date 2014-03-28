@@ -25,6 +25,7 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Client;
 using Health.Direct.Common.Caching;
 using Health.Direct.SmtpAgent;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.ResolverPlugins
 {

@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Xml.Serialization;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Common.Policies;
 
 namespace Health.Direct.Agent.Config
 {
@@ -87,12 +88,22 @@ namespace Health.Direct.Agent.Config
             get;
             set;
         }
-        
+
         /// <summary>
         /// Create a Trust Model from the given settings
         /// </summary>
         /// <returns>TrustModel</returns>
         public TrustModel CreateTrustModel()
+        {
+            return CreateTrustModel(null);
+        }
+        
+        /// <summary>
+        /// Create a Trust Model from the given settings
+        /// </summary>
+        /// <param name="trustPolicyResolver"><see cref="IPolicyResolver"/> injected for trust policy resolution.</param>
+        /// <returns>TrustModel</returns>
+        public TrustModel CreateTrustModel(IPolicyResolver trustPolicyResolver)
         {
             TrustChainValidator validator = new TrustChainValidator();
             validator.RevocationCheckMode = this.RevocationCheckMode;

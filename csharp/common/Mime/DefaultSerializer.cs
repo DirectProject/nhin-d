@@ -70,7 +70,7 @@ namespace Health.Direct.Common.Mime
         }
 
         /// <summary>
-        /// Serializes the <paramref name="entity"/> as RFC 5322 text to <paramref name="writer"/>
+        /// Serializes the <paramref name="entity"/> as RFC 5322 text to <paramref name="entityWriter"/>
         /// </summary>
         /// <param name="entity">The <see cref="MimeEntity"/> to serialize</param>
         /// <param name="entityWriter">The <see cref="MimeWriter"/> to which to serialize</param>

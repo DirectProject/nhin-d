@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:i0="urn:directproject:config/store/082010" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="http://tempuri.org/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" name="DomainManagerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="urn:directproject:config/store/082010" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="DomainManagerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:import namespace="urn:directproject:config/store/082010" location="http://localhost:6692/DomainManagerService.svc?wsdl=wsdl0" />
   <wsdl:types />
   <wsdl:binding name="BasicHttpBinding_IAddressManager" type="i0:IAddressManager">
@@ -419,6 +419,357 @@
       </wsdl:fault>
     </wsdl:operation>
   </wsdl:binding>
+  <wsdl:binding name="BasicHttpBinding_ICertPolicyStore" type="i0:ICertPolicyStore">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetPolicyByName">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCertPoliciesCount">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPoliciesCount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyByID">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyByID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetIncomingPoliciesByOwner">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetIncomingPoliciesByOwner" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetOutgoingPoliciesByOwner">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetOutgoingPoliciesByOwner" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="PolicyToGroupExists">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/PolicyToGroupExists" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="PolicyGroupToOwnerExists">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/PolicyGroupToOwnerExists" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateCertPolicies">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicies" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddPolicy">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicy" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicies">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicies" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicy">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicy" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="UpdatePolicyAttributes">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/UpdatePolicyAttributes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateCertPolicyGroups">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/EnumerateCertPolicyGroups" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByName">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByNameWithPolicies">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithPolicies" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByNameWithOwners">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByNameWithOwners" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetCertPolicyGroupCount">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetCertPolicyGroupCount" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupByID">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupByID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddPolicyGroup">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyGroups">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroups" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyGroup">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateGroupAttributes">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/UpdateGroupAttributes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AddPolicyToGroup">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/AddPolicyToGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="RemovePolicyUseFromGroup">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/RemovePolicyUseFromGroup" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="AssociatePolicyGroupToDomain">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/AssociatePolicyGroupToDomain" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DisassociatePolicyGroupFromDomain">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomain" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DisassociatePolicyGroupsFromDomain">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupsFromDomain" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="DisassociatePolicyGroupFromDomains">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/DisassociatePolicyGroupFromDomains" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="GetPolicyGroupsByDomain">
+      <soap:operation soapAction="urn:directproject:config/store/082010/ICertPolicyStore/GetPolicyGroupsByDomain" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ConfigStoreFaultFault">
+        <soap:fault use="literal" name="ConfigStoreFaultFault" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
   <wsdl:service name="DomainManagerService">
     <wsdl:port name="BasicHttpBinding_IAddressManager" binding="tns:BasicHttpBinding_IAddressManager">
       <soap:address location="http://localhost:6692/DomainManagerService.svc/Addresses" />
@@ -428,6 +779,9 @@
     </wsdl:port>
     <wsdl:port name="BasicHttpBinding_IDnsRecordManager" binding="tns:BasicHttpBinding_IDnsRecordManager">
       <soap:address location="http://localhost:6692/DomainManagerService.svc/DnsRecords" />
+    </wsdl:port>
+    <wsdl:port name="BasicHttpBinding_ICertPolicyStore" binding="tns:BasicHttpBinding_ICertPolicyStore">
+      <soap:address location="http://localhost:6692/DomainManagerService.svc/CertPolicies" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

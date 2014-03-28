@@ -82,7 +82,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Import and add an anchor, if one does not already exist
         /// </summary>
-        [Command(Name = "Anchor_Ensure", Usage = AnchorAddUsage)]
+        [Command(Name = "Anchor_Ensure", Usage = AnchorEnsureUsage)]
         public void AnchorEnsure(string[] args)
         {
             string owner = args.GetRequiredValue(0);

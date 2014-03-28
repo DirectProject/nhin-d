@@ -15,6 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Data.Linq;
+using System.Runtime.InteropServices;
+using Health.Direct.Policy.Impl;
 
 namespace Health.Direct.Config.Store
 {
@@ -35,7 +38,9 @@ namespace Health.Direct.Config.Store
         PropertyManager m_properties;
         NamedBlobManager m_blobs;
         BundleManager m_bundles;
-        private MdnManager m_Mdns;
+        MdnManager m_Mdns;
+        CertPolicyManager m_certPolicies;
+        CertPolicyGroupManager m_certPolicyGroups;
         
         public ConfigStore(string connectString)
             : this(connectString, DefaultTimeout)
@@ -65,6 +70,8 @@ namespace Health.Direct.Config.Store
             m_blobs = new NamedBlobManager(this);
             m_Mdns = new MdnManager(this);
             m_bundles = new BundleManager(this);
+            m_certPolicies = new CertPolicyManager(this, new CertPolicyParseValidator());
+            m_certPolicyGroups = new CertPolicyGroupManager(this);
         }
 
         public TimeSpan Timeout
@@ -172,10 +179,28 @@ namespace Health.Direct.Config.Store
             }
         }
 
+        public CertPolicyManager CertPolicies
+        {
+            get
+            {
+                return m_certPolicies;
+            }
+        }
+
+        public CertPolicyGroupManager CertPolicyGroups
+        {
+            get
+            {
+                return m_certPolicyGroups;
+            }
+        }
+
+        
         public ConfigDatabase CreateContext()
         {
             return new ConfigDatabase(m_connectString) {CommandTimeout = this.TimeoutSeconds};
         }
+
 
         public ConfigDatabase CreateReadContext()
         {
@@ -185,5 +210,22 @@ namespace Health.Direct.Config.Store
                            ObjectTrackingEnabled = false
                        };
         }
+
+
+        public ConfigDatabase CreateContext(DataLoadOptions dataLoadOptions)
+        {
+            return new ConfigDatabase(m_connectString, dataLoadOptions) { CommandTimeout = this.TimeoutSeconds };
+        }
+
+
+        public ConfigDatabase CreateReadContext(DataLoadOptions dataLoadOptions)
+        {
+            return new ConfigDatabase(m_connectString, dataLoadOptions)
+            {
+                CommandTimeout = this.TimeoutSeconds,
+                ObjectTrackingEnabled = false
+            };
+        }
+
     }
 }

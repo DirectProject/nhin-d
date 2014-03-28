@@ -17,6 +17,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 using Health.Direct.Common.Certificates;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent
 {

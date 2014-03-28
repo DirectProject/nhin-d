@@ -33,6 +33,7 @@ using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 using Health.Direct.Common.Mail.Notifications;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -585,11 +586,12 @@ namespace Health.Direct.SmtpAgent
                 {
                     return;
                 }
-                m_notifications.SendFailure(envelope, m_settings.InternalMessage.PickupFolder, envelope.RejectedRecipients);
+                m_notifications.SendFailure(envelope, m_settings.InternalMessage.PickupFolder);
             }
             catch (Exception ex)
             {
                 Logger.Error("While sending un-secured DSN {0}", ex.Message);
+                Logger.Debug(ex.ToString());
             }     
 
         }

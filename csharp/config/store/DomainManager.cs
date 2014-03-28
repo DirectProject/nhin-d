@@ -222,16 +222,7 @@ namespace Health.Direct.Config.Store
                 db.SubmitChanges();
             }
         }
-
-        public void UpdateAgent(Domain domain)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Update(db, domain);
-                db.SubmitChanges();
-            }
-        }
-
+        
         protected void Update(ConfigDatabase db, Domain domain)
         {
             if (db == null)

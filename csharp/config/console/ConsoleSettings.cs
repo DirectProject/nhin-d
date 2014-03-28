@@ -80,9 +80,24 @@ namespace Health.Direct.Config.Console
             get;
             set;
         }
-
+        
+        
         [XmlElement]
         public ClientSettings BundleManager
+        {
+            get;
+            set;
+        }
+
+        [XmlElement]
+        public ClientSettings MdnMonitorManager
+        {
+            get;
+            set;
+        }
+
+        [XmlElement]
+        public ClientSettings CertPolicyManager
         {
             get;
             set;
@@ -103,7 +118,14 @@ namespace Health.Direct.Config.Console
             {
                 this.BlobManager.SetHost(host, port);
             }
-
+            if (this.MdnMonitorManager != null)
+            {
+                this.MdnMonitorManager.SetHost(host, port);
+            }
+            if (this.CertPolicyManager != null)
+            {
+                this.CertPolicyManager.SetHost(host, port);
+            }
             InvokeHostAndPortChanged();
         }
         
@@ -116,6 +138,8 @@ namespace Health.Direct.Config.Console
             Validate(this.CertificateManager, "CertificateManager", true);
             Validate(this.PropertyManager, "PropertyManager", false);
             Validate(this.BlobManager, "BlobManager", false);
+            Validate(this.MdnMonitorManager, "MdnMonitorManager", false);
+            Validate(this.CertPolicyManager, "BlobManager", false);
         }
         
         void Validate(ClientSettings settings, string name, bool required)

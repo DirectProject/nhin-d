@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -23,6 +24,7 @@ using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Mime;
 using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Store;
+using Health.Direct.SmtpAgent.Config;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -39,7 +41,8 @@ namespace Health.Direct.SmtpAgent
         {
             Debug.Assert(m_settings.HasMdnManager);
 
-            using (MdnMonitorClient client = m_settings.MdnMonitor.CreateMdnMonitorClient())
+            IMdnMonitor client = m_settings.MdnMonitor.CreateMdnMonitorClient();
+            using (client as IDisposable)
             {
                 List<Mdn> mdns = CreateMdnStarts(message);
                 client.Start(mdns.ToArray());
@@ -62,7 +65,8 @@ namespace Health.Direct.SmtpAgent
         {
             Debug.Assert(m_settings.HasMdnManager);
 
-            using (MdnMonitorClient client = m_settings.MdnMonitor.CreateMdnMonitorClient())
+            IMdnMonitor client = m_settings.MdnMonitor.CreateMdnMonitorClient();
+            using (client as IDisposable)
             {
                 var notification = MDNParser.Parse(message.Message);
                 var disposition = notification.Disposition;

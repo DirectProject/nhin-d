@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.2.0.8
+AppVerName=Direct Project .NET Gateway 2.0.0.0
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.2.0.8-NET35
+OutputBaseFilename=Direct-2.0.0.0-NET45
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.2.0.8
+VersionInfoVersion=2.0.0.0
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -127,7 +127,6 @@ Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libra
 
 Source: "createadmin.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createdatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
-Source: "updatedatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createeventlogsource.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "InstallDnsResponder.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: dnsresponder;
 Source: "InstallMonitorServer.bat"; DestDir: "{app}";  Flags: ignoreversion; Components: monitorserver;
@@ -177,8 +176,8 @@ Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{ap
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
 Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver and not developergateway;
-Filename: {dotnet2032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
-Filename: {dotnet2064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
+Filename: {dotnet4032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
+Filename: {dotnet4064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\Log\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway;
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
 Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway;
@@ -189,8 +188,8 @@ Filename: {app}\uninstall.bat; Flags: runascurrentuser; RunOnceId: 'RemoveDevelo
 Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder and not developergateway;
 Filename: {app}\UninstallMonitorServer.bat; RunOnceId: 'RemoveMonitorServer';  Components: monitorserver and not developergateway;
 Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway and not developergateway;
-Filename: {dotnet2064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
-Filename: {dotnet2032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
+Filename: {dotnet4064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
+Filename: {dotnet4032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
 
 
 [INI]
@@ -584,7 +583,7 @@ begin
     
     existingValue := xpathTools.SelectSingleAttribute(xpath);
     
-    if (existingValue = nil) then
+    if ( VarIsNull(existingValue)) then
     begin
       xpathTools.CreateFragment(xpath);
     end;
@@ -1281,7 +1280,7 @@ begin
   if (length(bundleString) = 0) then
   begin
     bundleString := 'http://localhost/ConfigService/CertificateService.svc/Bundles';
-  end
+  end;
   BundleText.Text := bundleString;
 
 end;
@@ -1386,8 +1385,8 @@ begin
   if(not toolsRegistered) then
   begin
     ExtractTemporaryFile('Health.Direct.Install.Tools.dll');     
-    Exec(ExpandConstant('{dotnet2032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
-    Exec(ExpandConstant('{dotnet2064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+    Exec(ExpandConstant('{dotnet4032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+    Exec(ExpandConstant('{dotnet4064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
     toolsRegistered := true;
   end;
 
@@ -2352,17 +2351,17 @@ begin
     //Dns web service somponent selected and Not installing development type
     if (pos( 'dnswebservice', WizardSelectedComponents( false)) > 0) and (pos( 'development', WizardSetupType( false)) = 0) then  
       begin
-        CreateIISVirtualDir('DnsService', ExpandConstant('{app}') + '\DnsService', 'Direct DNS Responder Service');
+        CreateIIS4VirtualDir('DnsService', ExpandConstant('{app}') + '\DnsService', 'Direct DNS Responder Service');
       end; 
     //Config web service component selected and Not installing development type
     if (pos( 'configwebservice', WizardSelectedComponents( false)) > 0)  and (pos( 'development', WizardSetupType( false)) = 0) then  
       begin
-        CreateIISVirtualDir('ConfigService', ExpandConstant('{app}') + '\ConfigService', 'Direct Config Service');
+        CreateIIS4VirtualDir('ConfigService', ExpandConstant('{app}') + '\ConfigService', 'Direct Config Service');
       end;
     //Config UI web application component selected and Not installing development type
     if (pos( 'configui', WizardSelectedComponents( false)) > 0)  and (pos( 'development', WizardSetupType( false)) = 0) then  
       begin
-        CreateIISVirtualDir('ConfigUI', ExpandConstant('{app}') + '\ConfigUI', 'Direct Config Admin');
+        CreateIIS4VirtualDir('ConfigUI', ExpandConstant('{app}') + '\ConfigUI', 'Direct Config Admin');
       end;
    
   end;

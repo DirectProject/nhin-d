@@ -184,6 +184,8 @@ namespace Health.Direct.Tools.Agent
             return true;
         }
 
+      
+
         void resolver_Error(ICertificateResolver arg1, Exception arg2)
         {
             Console.WriteLine(arg2.Message);

@@ -27,9 +27,9 @@
     <xs:sequence>
       <xs:element name="CreateDate" type="xs:dateTime" />
       <xs:element name="DomainName" nillable="true" type="xs:string" />
+      <xs:element name="ID" type="xs:long" />
       <xs:element minOccurs="0" name="Notes" nillable="true" type="xs:string" />
       <xs:element name="RecordData" nillable="true" type="xs:base64Binary" />
-      <xs:element name="ID" type="xs:long" />
       <xs:element name="TypeID" type="xs:int" />
       <xs:element name="UpdateDate" type="xs:dateTime" />
     </xs:sequence>

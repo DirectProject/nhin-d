@@ -362,7 +362,7 @@ namespace Health.Direct.Common.Mime
         /// This is the main parser interface. The <see cref="MimePart"/> instances expected to be returned are <see cref="Header"/> (one for each header), and <see cref="Body"/>
         /// </remarks>
         /// <param name="lines">The enumeration of <see cref="StringSegment"/> lines to parse</param>
-        /// <returns>An enumeration of the constituent <see cref="MimePart"/> instances parsed from the <paramref name="entity"/></returns>
+        /// <returns>An enumeration of the constituent <see cref="MimePart"/> instances parsed from the <paramref name="lines"/></returns>
         public static IEnumerable<MimePart> ReadMimeParts(IEnumerable<StringSegment> lines)
         {
             if (lines == null)

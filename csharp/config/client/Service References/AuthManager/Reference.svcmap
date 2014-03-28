@@ -11,6 +11,7 @@
     <CollectionMappings />
     <GenerateSerializableTypes>true</GenerateSerializableTypes>
     <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
     <ReferenceAllAssemblies>false</ReferenceAllAssemblies>
     <ReferencedAssemblies>
       <ReferencedAssembly AssemblyName="Health.Direct.Config.Store" />
@@ -32,12 +33,12 @@
     <MetadataSource Address="http://localhost:6692/AuthManagerService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="AuthManagerService.wsdl" MetadataType="Wsdl" ID="1ab007e1-bd66-45f8-b8d0-367cdd3c65d6" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?wsdl" />
-    <MetadataFile FileName="AuthManagerService.xsd" MetadataType="Schema" ID="badf8f5d-0e79-4217-b28a-ee7661e96001" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd2" />
-    <MetadataFile FileName="AuthManagerService.disco" MetadataType="Disco" ID="7fa21286-1ddd-49fe-be05-d8fc8f5c5458" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?disco" />
     <MetadataFile FileName="AuthManagerService1.xsd" MetadataType="Schema" ID="f9df0142-f611-4276-9d92-5748eeac43e7" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd1" />
-    <MetadataFile FileName="AuthManagerService2.xsd" MetadataType="Schema" ID="9a48d8e1-4aaf-421d-a283-a57cbbeb98d2" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd0" />
+    <MetadataFile FileName="AuthManagerService.wsdl" MetadataType="Wsdl" ID="1ab007e1-bd66-45f8-b8d0-367cdd3c65d6" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?wsdl" />
+    <MetadataFile FileName="AuthManagerService.disco" MetadataType="Disco" ID="7fa21286-1ddd-49fe-be05-d8fc8f5c5458" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?disco" />
+    <MetadataFile FileName="AuthManagerService.xsd" MetadataType="Schema" ID="badf8f5d-0e79-4217-b28a-ee7661e96001" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd2" />
     <MetadataFile FileName="AuthManagerService1.wsdl" MetadataType="Wsdl" ID="d99cedaf-960c-48e8-ab2c-b461971ff4ff" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="AuthManagerService2.xsd" MetadataType="Schema" ID="9a48d8e1-4aaf-421d-a283-a57cbbeb98d2" SourceId="1" SourceUrl="http://localhost:6692/AuthManagerService.svc?xsd=xsd0" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

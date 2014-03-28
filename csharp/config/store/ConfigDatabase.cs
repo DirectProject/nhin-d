@@ -14,12 +14,12 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
+
 using System.Data;
 using System.Data.Common;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
-using Health.Direct.Common.Mail.Notifications;
+using System.Linq;
 
 namespace Health.Direct.Config.Store
 {
@@ -37,15 +37,39 @@ namespace Health.Direct.Config.Store
         Table<Property> m_properties;
         Table<NamedBlob> m_blobs;
         Table<Mdn> m_mdns;
+        Table<CertPolicy> m_certPolicies;
+        Table<CertPolicyGroupMap> m_certPolicyGroupMap;
+        Table<CertPolicyGroupDomainMap> m_certPolicyGroupDomainMap;
+        Table<CertPolicyGroup> m_certPolicyGroups;
         Table<Bundle> m_bundles;
         
         DbTransaction m_transaction;
-                          
+
+        private static string m_removeRecordMtoMConnectionString ;    
+        
         public ConfigDatabase(string connectString)
             : base(connectString, s_mappingSource)
         {
+            m_removeRecordMtoMConnectionString = connectString;
+            //LoadOptions = _dataLoadOptions;
         }
 
+        public ConfigDatabase(string connectString, DataLoadOptions dataLoadOptions)
+            : base(connectString, s_mappingSource)
+        {
+            m_removeRecordMtoMConnectionString = connectString;
+            LoadOptions = dataLoadOptions;
+        }
+         
+        //static readonly DataLoadOptions _dataLoadOptions = new DataLoadOptions();
+
+        //static ConfigDatabase()
+        //{
+        //    _dataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMap);
+        //    _dataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
+        //    _dataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMap);
+        //}
+        
         public Table<Address> Addresses
         {
             get
@@ -172,6 +196,76 @@ namespace Health.Direct.Config.Store
                 }
 
                 return m_mdns;
+            }
+        }
+
+        public Table<CertPolicy> CertPolicies
+        {
+            get
+            {
+                if (m_certPolicies == null)
+                {
+                    m_certPolicies = this.GetTable<CertPolicy>();
+                }
+
+                return m_certPolicies;
+            }
+        }
+
+        public Table<CertPolicyGroupMap> CertPolicyGroupMaps
+        {
+            get
+            {
+                if (m_certPolicyGroupMap == null)
+                {
+                    m_certPolicyGroupMap = this.GetTable<CertPolicyGroupMap>();
+                }
+
+                return m_certPolicyGroupMap;
+            }
+        }
+
+        public Table<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps
+        {
+            get
+            {
+                if (m_certPolicyGroupDomainMap == null)
+                {
+                    m_certPolicyGroupDomainMap = this.GetTable<CertPolicyGroupDomainMap>();
+                }
+
+                return m_certPolicyGroupDomainMap;
+            }
+        }
+        
+        
+        public Table<CertPolicyGroup> CertPolicyGroups
+        {
+            get
+            {
+                if (m_certPolicyGroups == null)
+                {
+                    m_certPolicyGroups = this.GetTable<CertPolicyGroup>();
+                }
+
+                return m_certPolicyGroups;
+            }
+        }
+
+        //
+        // datacontext for many to many relationship 
+        //
+        private static ConfigDatabase removeRecordContext = null;
+        public static void RemoveAssociativeRecord<T>(T association) where T : class
+        {
+            if (removeRecordContext == null)
+                removeRecordContext = new ConfigDatabase(m_removeRecordMtoMConnectionString);
+
+            Table<T> tableData = removeRecordContext.GetTable<T>();
+            var record = tableData.SingleOrDefault(r => r == association);
+            if (record != null)
+            {
+                tableData.DeleteOnSubmit(record);
             }
         }
 

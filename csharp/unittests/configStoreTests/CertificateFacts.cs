@@ -109,7 +109,6 @@ namespace Health.Direct.Config.Store.Tests
             target.Thumbprint = expected;
             string actual = target.Thumbprint;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>

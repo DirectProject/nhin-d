@@ -209,7 +209,7 @@ namespace Health.Direct.Config.Client
             return new DomainManagerClient(this.Binding, this.Endpoint);
         }
 
-        public AddressManagerClient CreateAddressManagerClient()
+        public virtual IAddressManager CreateAddressManagerClient()
         {
             return new AddressManagerClient(this.Binding, this.Endpoint);
         }
@@ -250,9 +250,14 @@ namespace Health.Direct.Config.Client
             return new BlobManagerClient(this.Binding, this.Endpoint);
         }
 
-        public MdnMonitorClient CreateMdnMonitorClient()
+        public virtual IMdnMonitor CreateMdnMonitorClient()
         {
             return new MdnMonitorClient(this.Binding, this.Endpoint);
+        }
+
+        public virtual ICertPolicyStore CreateCertPolicyStoreClient()
+        {
+            return new CertPolicyStoreClient(this.Binding, this.Endpoint);
         }
     }
 }

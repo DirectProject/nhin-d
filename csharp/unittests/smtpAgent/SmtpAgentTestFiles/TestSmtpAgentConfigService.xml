@@ -9,10 +9,10 @@
   <Domain>nhind.hsgincubator.com</Domain>
   <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
   <DomainManager>
-    <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
   <AddressManager>
-    <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
     <Settings>
       <EnableDomainSearch>true</EnableDomainSearch>
     </Settings>
@@ -30,7 +30,7 @@
   <PrivateCerts>
     <ServiceResolver>
       <ClientSettings>
-        <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Certificates</Url>
       </ClientSettings>
     </ServiceResolver>
     <!--
@@ -53,7 +53,7 @@
   <Anchors>
     <ServiceResolver>
       <ClientSettings>
-        <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
       </ClientSettings>
     </ServiceResolver>
     <!--
@@ -67,6 +67,38 @@
     </MachineResolver>
    -->
   </Anchors>
+  <CertPolicies>
+    <Public>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <NegativeCache>true</NegativeCache>
+        <CacheTTLSeconds>60</CacheTTLSeconds>
+      </CacheSettings>
+    </Public>
+    <Private>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <NegativeCache>true</NegativeCache>
+        <CacheTTLSeconds>60</CacheTTLSeconds>
+      </CacheSettings>
+    </Private>
+    <Trust>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <NegativeCache>true</NegativeCache>
+        <CacheTTLSeconds>60</CacheTTLSeconds>
+      </CacheSettings>
+    </Trust>
+  </CertPolicies>
   <IncomingRoutes>
     <Route>
       <AddressType>XDR</AddressType>
