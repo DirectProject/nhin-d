@@ -28,8 +28,7 @@ namespace Health.Direct.Agent.Tests
     public class TrustModelWithPolicyTests
     {
         readonly Mock<TrustChainValidator> mockTrustChainValidator = new Mock<TrustChainValidator>();
-
-        //DefaultPolicyFilter(ICompiler compiler, IExecutionEngine engine, IPolicyLexiconParser parser)
+        
         
         readonly Mock<IPolicyFilter> mockPolicyFilter = new Mock<IPolicyFilter>();
         readonly Mock<IPolicyResolver> mockPolicyResolver = new Mock<IPolicyResolver>();

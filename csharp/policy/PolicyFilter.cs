@@ -19,27 +19,58 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Policies;
+using Health.Direct.Policy.Impl;
+using Health.Direct.Policy.Machine;
 
 namespace Health.Direct.Policy
 {
-    public class DefaultPolicyFilter : IPolicyFilter
+    public class PolicyFilter : IPolicyFilter
     {
         readonly ICompiler m_compiler;
         readonly IExecutionEngine m_executionEngine;
         private readonly IPolicyLexiconParser m_parser;
 
-        public DefaultPolicyFilter(ICompiler compiler, IExecutionEngine engine, IPolicyLexiconParser parser)
+        public PolicyFilter(ICompiler compiler, IExecutionEngine engine, IPolicyLexiconParser parser)
         {
             m_compiler = compiler;
             m_executionEngine = engine;
             m_parser = parser;
         }
 
-        public DefaultPolicyFilter(ICompiler compiler, IExecutionEngine engine)
+        public PolicyFilter(ICompiler compiler, IExecutionEngine engine)
         {
             m_compiler = compiler;
             m_executionEngine = engine;
         }
+
+        /// <summary>
+        /// The default policy filter.
+        /// </summary>
+        static IPolicyFilter _defaultPolicyFilter = new PolicyFilter(
+            new StackMachineCompiler(), 
+            new StackMachine(),
+            new SimpleTextV1LexiconPolicyParser());
+
+        /// <summary>
+        /// Gets and sets the default policy filter.
+        /// </summary>
+        public static IPolicyFilter Default
+        {
+            get
+            {
+                return _defaultPolicyFilter;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("value");
+                }
+
+                System.Threading.Interlocked.Exchange(ref _defaultPolicyFilter, value);
+            }
+        }
+
 
         public bool IsCompliant(X509Certificate2 cert, Stream policyStream)
         {

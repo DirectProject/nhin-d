@@ -95,15 +95,16 @@ namespace Health.Direct.Agent.Config
         /// <returns>TrustModel</returns>
         public TrustModel CreateTrustModel()
         {
-            return CreateTrustModel(null);
+            return CreateTrustModel(null, null);
         }
-        
+
         /// <summary>
         /// Create a Trust Model from the given settings
         /// </summary>
         /// <param name="trustPolicyResolver"><see cref="IPolicyResolver"/> injected for trust policy resolution.</param>
+        /// <param name="policyFilter"><see cref="IPolicyFilter"/></param>
         /// <returns>TrustModel</returns>
-        public TrustModel CreateTrustModel(IPolicyResolver trustPolicyResolver)
+        public TrustModel CreateTrustModel(IPolicyResolver trustPolicyResolver, IPolicyFilter policyFilter)
         {
             TrustChainValidator validator = new TrustChainValidator();
             validator.RevocationCheckMode = this.RevocationCheckMode;
@@ -116,8 +117,8 @@ namespace Health.Direct.Agent.Config
             {
                 validator.ValidationPolicy.UrlRetrievalTimeout = TimeSpan.FromMilliseconds(this.TimeoutMilliseconds);
             }
-            
-            TrustModel trustModel = new TrustModel(validator);
+
+            TrustModel trustModel = new TrustModel(validator, trustPolicyResolver, policyFilter);
             if (this.ProblemFlags != null)
             {
                 X509ChainStatusFlags flags = X509ChainStatusFlags.NoError;
