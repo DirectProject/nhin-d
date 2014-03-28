@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>NHIN Direct XD Mail</title>
+        <author>Vince Lewis</author>
+    </properties>
+    <head>
+       <title>NHIN Direct XD Mail</title>
+    </head>    
+    <body>
+        <section name="Overview">
+            <p>
+               The NHIN Direct XD Mail component consists of a protocol bridge between the NHIN Direct backbone protocol
+               and the XD Mail component, and the XD Mail logic.  Bridges integrate with the protocol implementation
+               using implementation specific configuration methods.  Take, for example, the Apache James SMTP implementation.
+               The XD Mail component provides a James bridge in the form of a James mailet called NHINDMailet.  The mailet
+               is configured using the Apache James config.xml file which is part of a standard James deployment.
+            </p>
+            <p>
+               The XD Mail component handles the transformation and forwarding of a protocol specific message, SMTP by
+               default, to an XDS message. The XDS request is sent via SOAP to a configured XDR endpoint which will then
+               handle any additional routing.  
+            </p>
+            <p>
+               The transformation component handles CDA/CCD attachments, CDA/CCD in body, and XDM.zip attachments.
+            </p>
+            <p>
+               For more detail on developing, deploying, and configuring, refer to the 
+               <a href="users-guide/index.html">users guide.</a>           
+            </p>
+        </section>
+    </body>
+</document>

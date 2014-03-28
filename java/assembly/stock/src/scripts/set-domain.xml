@@ -1,0 +1,40 @@
+<project name="set-domain" default="default" basedir=".">
+	<description>
+	    Set the domain for Direct
+	</description>
+	
+	<!-- set global properties for this build -->
+	<property environment="env" />
+	<property name="direct.home.dir" value="${env.DIRECT_HOME}" />
+	<property name="james.dir" value="${direct.home.dir}/james-2.3.2" />
+	<property name="james.bin.dir" value="${james.dir}/bin" />
+	<property name="set.domain.stylesheet" value="${james.bin.dir}/set-domain.xsl" />
+	<property name="james.config" value="${james.dir}/apps/james/SAR-INF/config.xml" />
+	<property name="james.config.save" value="${james.dir}/apps/james/SAR-INF/config.xml.save" />
+	<property name="james.config.new" value="${james.dir}/apps/james/SAR-INF/config.xml.new" />
+		
+	<!-- Fail if we can't find DIRECT_HOME -->
+	<target name="fail-if-direct-home-missing" unless="env.DIRECT_HOME">
+		<fail message="DIRECT_HOME is not defined in the environment"></fail>
+	</target>
+	
+	<!-- Fail if we can't find DIRECT_DOMAIN -->
+	<target name="fail-if-direct-domain-missing" unless="env.DIRECT_DOMAIN">
+		<fail message="DIRECT_DOMAIN is not defined in the environment"></fail>
+	</target>
+
+	<!-- Initialization -->
+	<target name="init" depends="fail-if-direct-home-missing,fail-if-direct-domain-missing">
+	    <tstamp></tstamp>
+ 	</target>
+
+	<!-- Set the domain -->
+	<target name="default" depends="init">
+		<xslt style="${set.domain.stylesheet}" in="${james.config}" out="${james.config.new}">
+		    <param name="domain" expression="${env.DIRECT_DOMAIN}"></param>
+		</xslt>
+		<copy file="${james.config}" tofile="${james.config.save}" overwrite="true"></copy>
+		<copy file="${james.config.new}" tofile="${james.config}" overwrite="true"></copy>
+	</target>
+
+</project>

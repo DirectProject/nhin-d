@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?> 
+<!--
+  SAMPLE CONFIG FILE
+  Compliant with schema parsed by: NHINDirect.ScriptAgent.SmtpAgentSettings 
+  Customize as per your needs
+-->
+<SmtpAgentConfig>
+  <Domain>dev.Direct.Lab</Domain>
+
+   <Log>
+    <DirectoryPath>C:\Program Files\Direct Project .NET Gateway\log</DirectoryPath>
+    <NamePrefix>dev.direct.lab</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Trace</Level>
+  </Log>
+
+  <DomainManager>
+    <Url>http://192.168.137.149/ConfigService/DomainManagerService.svc/Domains</Url>
+  </DomainManager>
+  <AddressManager>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
+  </AddressManager>
+ 
+  <InternalMessage>
+    <PickupFolder>C:\inetpub\mailroot\pickup</PickupFolder>
+    <EnableRelay>false</EnableRelay>
+  </InternalMessage> 
+  <Notifications>
+    <AutoResponse>false</AutoResponse>
+    <AlwaysAck>true</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+  
+  <PrivateCerts>
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Certificates</Url>
+      </ClientSettings>
+    </ServiceResolver>    
+  </PrivateCerts>
+
+  <PublicCerts>
+    <DnsResolver>
+      <ServerIP>127.0.0.1</ServerIP>
+      <Timeout>10000</Timeout>
+    </DnsResolver>
+    <!--
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+    -->
+  </PublicCerts>
+  <Anchors>
+    <ServiceResolver>
+      <ClientSettings>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
+      </ClientSettings>
+    </ServiceResolver>
+  </Anchors>
+  <RawMessage>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\raw</CopyFolder>
+  </RawMessage>
+  <BadMessage>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\badMail</CopyFolder>
+  </BadMessage>
+  <ProcessIncoming>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\incoming</CopyFolder>
+    <EnableRelay>false</EnableRelay>
+  </ProcessIncoming>
+  <ProcessOutgoing>
+    <CopyFolder>C:\inetpub\mailroot\Gateway\outgoing</CopyFolder>
+    <EnableRelay>true</EnableRelay>
+  </ProcessOutgoing>
+</SmtpAgentConfig>

@@ -1,0 +1,266 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8E284E54-B6E7-4F16-B362-719C34E95762}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Health.Direct.Admin.Console</RootNamespace>
+    <AssemblyName>Health.Direct.Admin.Console</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\autofac\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Web, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\autofac\Autofac.Integration.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.Web.Mvc, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\autofac\Autofac.Integration.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\automapper\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="MvcContrib, Version=2.0.96.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\external\mvcContrib\MvcContrib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft ASP.NET\ASP.NET MVC 2\\Assemblies\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Common\DirectMembershipProvider.cs" />
+    <Compile Include="Common\DomainNameAttribute.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AddressesController.cs" />
+    <Compile Include="Controllers\AnchorsController.cs" />
+    <Compile Include="Controllers\CertificatesController.cs" />
+    <Compile Include="Controllers\ControllerBase.cs" />
+    <Compile Include="Controllers\ControllerErrorBase.cs" />
+    <Compile Include="Controllers\MdnRecordsController.cs" />
+    <Compile Include="Controllers\DnsRecordsController.cs" />
+    <Compile Include="Controllers\DomainsController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Models\AddressRecordModel.cs" />
+    <Compile Include="Models\MdnModel.cs" />
+    <Compile Include="Models\DnsRecordModel.cs" />
+    <Compile Include="Models\Repositories\MdnRecordRepository.cs" />
+    <Compile Include="Models\Repositories\IMdnRecordRepository.cs" />
+    <Compile Include="Models\ResolveModel.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AnchorModel.cs" />
+    <Compile Include="Common\Formatter.cs" />
+    <Compile Include="Models\AnchorUploadModel.cs" />
+    <Compile Include="Models\CertificateModel.cs" />
+    <Compile Include="Models\CertificateUploadModel.cs" />
+    <Compile Include="Models\MxRecordModel.cs" />
+    <Compile Include="Models\ModelProfiles.cs" />
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\AddressModel.cs" />
+    <Compile Include="Models\DomainModel.cs" />
+    <Compile Include="Models\PropertiesMustMatchAttribute.cs" />
+    <Compile Include="Models\Repositories\AddressRepository.cs" />
+    <Compile Include="Models\Repositories\AnchorRepository.cs" />
+    <Compile Include="Models\Repositories\AuthRepository.cs" />
+    <Compile Include="Models\Repositories\CertificateRepository.cs" />
+    <Compile Include="Models\Repositories\DnsRecordRepository.cs" />
+    <Compile Include="Models\Repositories\DomainRepository.cs" />
+    <Compile Include="Models\Repositories\IAddressRepository.cs" />
+    <Compile Include="Models\Repositories\IAnchorRepository.cs" />
+    <Compile Include="Models\Repositories\IAuthRepository.cs" />
+    <Compile Include="Models\Repositories\ICertificateRepository.cs" />
+    <Compile Include="Models\Repositories\IDnsRecordRepository.cs" />
+    <Compile Include="Models\Repositories\IDomainRepository.cs" />
+    <Compile Include="Models\Repositories\IRepository.cs" />
+    <Compile Include="Models\Repositories\RepositoryModule.cs" />
+    <Compile Include="Models\SoaRecordModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\HtmlHelperExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Global.asax" />
+    <Content Include="Views\DnsRecords\AnameDetails.ascx" />
+    <Content Include="Views\DnsRecords\DnsRecordDetailsDialog.ascx" />
+    <Content Include="Views\DnsRecords\MxDetails.ascx" />
+    <Content Include="Views\DnsRecords\SoaDetails.ascx" />
+    <Content Include="Views\DnsRecords\EditAname.aspx" />
+    <Content Include="Views\DnsRecords\EditMx.aspx" />
+    <Content Include="Views\DnsRecords\EditSoa.aspx" />
+    <Content Include="Views\Domains\NotFound.aspx" />
+    <Content Include="Views\MdnRecords\Index.aspx" />
+    <Content Include="Views\MdnRecords\MdnList.ascx" />
+    <Content Include="Web.config" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Views\Account\LogOn.aspx" />
+    <Content Include="Views\Home\Index.aspx" />
+    <Content Include="Views\Shared\Error.aspx" />
+    <Content Include="Views\Shared\LogOnUserControl.ascx" />
+    <Content Include="Views\Shared\Site.Master" />
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\common.VS2012.csproj">
+      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\config\client\config.client.VS2012.csproj">
+      <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
+      <Name>config.client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\config\store\config.store.VS2012.csproj">
+      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
+      <Name>config.store</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
+      <Name>diagnostics.nlog</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\dev.client.config" />
+    <Content Include="Content\calendar.gif" />
+    <Content Include="Content\logo.png" />
+    <Content Include="Scripts\Common.js" />
+    <Content Include="Views\Addresses\Add.aspx" />
+    <Content Include="Views\Addresses\AddressDetailsDialog.ascx" />
+    <Content Include="Views\Addresses\AddressList.ascx" />
+    <Content Include="Views\Addresses\Edit.aspx" />
+    <Content Include="Views\Addresses\Index.aspx" />
+    <Content Include="Views\Addresses\NotFound.aspx" />
+    <Content Include="Views\Anchors\Add.aspx" />
+    <Content Include="Views\Anchors\AnchorList.ascx" />
+    <Content Include="Views\Anchors\AnchorDetailsDialog.ascx" />
+    <Content Include="Views\Certificates\Add.aspx" />
+    <Content Include="Views\Certificates\CertificateList.ascx" />
+    <Content Include="Views\Certificates\CertificateDetailsDialog.ascx" />
+    <Content Include="Views\DnsRecords\DnsRecordList.ascx" />
+    <Content Include="Views\DnsRecords\Index.aspx" />
+    <Content Include="Views\DnsRecords\NotFound.aspx" />
+    <Content Include="Views\Shared\AllItemsReminder.ascx" />
+    <Content Include="Views\Shared\FilterReminder.ascx" />
+    <Content Include="Views\Anchors\Index.aspx" />
+    <Content Include="Views\Certificates\Index.aspx" />
+    <Content Include="Views\Certificates\NotFound.aspx" />
+    <Content Include="Views\Domains\Add.aspx" />
+    <Content Include="Views\Domains\DomainDetailsDialog.ascx" />
+    <Content Include="Views\Domains\DomainList.ascx" />
+    <Content Include="Views\Domains\Index.aspx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\favicon.ico" />
+    <Content Include="Scripts\Master.js" />
+    <Content Include="Scripts\OwnerAutocomplete.js" />
+    <Content Include="Views\Anchors\NotFound.aspx" />
+    <Content Include="Views\Certificates\Resolve.aspx" />
+    <Content Include="Views\Certificates\ResolveResult.aspx" />
+    <Content Include="Views\DnsRecords\AddMx.aspx" />
+    <Content Include="Views\DnsRecords\AddAname.aspx" />
+    <Content Include="Views\DnsRecords\AddSoa.aspx" />
+    <Content Include="Views\Shared\ConfigStoreError.aspx" />
+    <Content Include="Views\Shared\ServiceDownError.aspx" />
+    <Content Include="Views\Shared\UnAuthSite.Master" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target> -->
+  <Target Name="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(ProjectDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>57108</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:53320/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

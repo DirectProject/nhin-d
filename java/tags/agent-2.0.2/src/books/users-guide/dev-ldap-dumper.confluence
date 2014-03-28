@@ -1,0 +1,41 @@
+h1. DNS Certificate Dumper
+
+The reference implementation source tree provides a tool retrieving user and organizational certificates by email address or domain using LDAP and writing the certificate to a DER encoded file.  The tool is located under the /java/agent/tools directory in the source tree and is named ldapCertDumper.sh for unix/linux based systems and ldapCertDumper.bat for Windows.
+
+h2. DNS Certificate Resolution
+
+The Direct Project defines a method for resolving public certificates using LDAP.  In some cases, it may be desirable to manually download a public certificate using LDAP and dump it to a file.  The ldapCertDumper tool uses the LDAPCertificateResolver with the public SRV resolver to locate certificates using an email address or a domain name.  Certificates are located using the resolution algorithms defined by the Direct Project meaning the resolver will look for user level certificates first then fall back to searching for organizational certificates if a user level certificate can not be found. 
+
+h2. ldapCertDumper
+
+To run the tool, run the following command in the /java/agent/tools directory:
+
+Windows:
+{code}
+ldapCertDumper.bat
+{code}
+
+Unix/Linux/MAC
+
+{code}
+./ldapCertDumper.sh
+{code}
+
+Running the tools without and parameters will display the options:
+
+{code}
+Usage:
+java LDAPCertDumper (options)...
+
+options:
+-add address		Email address of org/domain to retrieve certs for.
+
+-out  Out File		Optional output file name for the cert.
+			Default: <email address>(<cert num>).der
+
+{code}
+
+* *Address:* This is the email address associated to the certificate that you are search for.  This can also be a domain name if you are searching for an org level certificate only.
+* *Out:* The name of the file that will be generated.  By default the tool uses the email or domain name followed by the *_.der_* extension.  In some cases multiple certificates may be discovered.  In this case The tool will append a incrementing number starting with 1 enclosed in parenthesis to the out file name.
+
+If one or more certificates are discovered, the files are written to DER encoded files.  If a file with the same name as the out file already exists, the tool will over write the file with a new file.

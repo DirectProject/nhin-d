@@ -1,0 +1,149 @@
+h1. SMTP Agent XML Configuration
+
+XML configuration for the SMTP protocol consists of an XML file that sets parameters for both the SMTP agent and the security and trust agent.  Below is a sample configuration file.
+
+{code}
+<SmtpAgentConfig>
+   <Domains>
+      <AnchorStore type="multidomain" storeType="LDAP" ldapURL="ldap://localhost:1024/" ldapUser="" ldapPassword="" ldapConnTimeout="10000" ldapSearchBase="cn=lookupTest" ldapSearchAttr="email" ldapCertAttr="privKeyStore" ldapCertPassphrase="1kingpuff" ldapCertFormat="PKCS12"/>    
+      <Domain name="cerner.com" postmaster="postmaster@cerner.com">
+         <IncomingTrustAnchors> 
+             <Anchor name="microsoft.com"/>   
+             <Anchor name="securehealthemail.com"/>              
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+             <Anchor name="microsoft.com"/>   
+             <Anchor name="securehealthemail.com"/>              
+         </OutgoingTrustAnchors>           
+      </Domain>      
+      <Domain name="securehealthemail.com" postmaster="postmaster@securehealthemail.com">    
+          <IncomingTrustAnchors> 
+             <Anchor name="cerner.com"/>              
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+             <Anchor name="cerner.com"/>              
+         </OutgoingTrustAnchors>
+      </Domain>     
+   </Domains>
+   <PublicCertStore type="DNS"/>
+   <PrivateCertStore type="LDAP" ldapURL="ldap://localhost:1024/" ldapUser="" ldapPassword="" ldapConnTimeout="10000" ldapSearchBase="cn=lookupTest" ldapSearchAttr="email" ldapCertAttr="privKeyStore" ldapCertPassphrase="1kingpuff" ldapCertFormat="PKCS12"/>
+   <RawMessageSettings saveFolder="RawMsgFolder"/>
+   <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
+   <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
+   <BadMessagesSettings saveFolder="BadMsgFolder"/>
+   <MDNSettings autoResponse="true" productName="NHIN Direct Security Agent">
+       <Text><![CDATA[Your message was processed successfully.]]></Text>
+   </MDNSettings>   
+</SmtpAgentConfig>
+{code}
+
+h2. Domains
+
+The domains element describes the list of domains that will be managed by the agent.  Each domain is configured as a child domain element.
+
+h3. AnchorStore
+
+Describes the storage mechanism for trust anchors.
+
+Attributes:
+
+||Attribute||Description||
+|type|The type of the anchor store.  Uniform: All domains use the same anchors for all addresses.  Multidomain: Each domain defines its own discrete set of trust anchors.|
+|storeType|The storage media of the trust anchors.  Valid types: LDAP, Keystore|
+|ldapURL|The url to the LDAP server.  Consists of the protocol, host, and port.  Multiple URLs can be define and are comma delimeted.  Example: ldap://somehost:389|
+|ldapUser|The user name credential for connecting to the LDAP store.  May be empty if the LDAP server allows anonymous binding.|
+|ldapPassword|The password credential for connecting to the LDAP store.|
+|ldapConnTimeout|Optional timeout in seconds before the connection is failed.|
+|ldapSearchBase|The distinguished name used as the base of LDAP searches.|
+|ldapSearchAttribute|The attribute in the LDAP store that is used to match a search query.| 
+|ldapCertAttr|The attribute in the search query result that holds the certificate file.|
+|ldapCertPassPhrase|For pkcs12 files, the pass phrase used to encrypt the certificate.|
+|ldapCertFormat|The format of the certificate in the LDAP store.  Valid formats: pkcs12, X.509|
+|file|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
+|filePass|For keystore store types, an optional password used to encrypt the file.|
+|privKeyPass|For keystore store types, an optional password used to encrypt private keys.|
+
+h3. Domain
+
+Attributes:
+
+||Attribute||Description||
+|name|The name of the domain|
+|postmaster|The postmaster email address for the domain|
+
+Elements:
+
+||Element||Type||Description||
+|IncomingTrustAnchors|List<Anchor>|The trust anchors used for outgoing messages|
+|OutgoingTrustAnchors|List<Anchor>|The trust anchors used for incoming messages|
+
+h4. Anchor
+
+Anchors define the certificates that determine trust between domains.
+
+Attributes:
+
+||Attribute||Description||
+|name|The name has different semantics depending on the AnchorStore type.  LDAP: The domain name of the trusted domain.  Keystore: The alias name of the trust anchor in the keystore.|
+
+h2. PublicCertStore
+
+The PublicCertStore element describes the medium used to store public certificates.
+
+Attributes:  
+
+||Attribute||Description||
+|type|The storage media of the public certs.  Valid types: DNS, Keystore|
+|file|For keystore store types, the name of the file that contains the certificates|
+|filePass|For keystore store types, an optional password used to encrypt the file.|
+|privKeyPass|For keystore store types, an optional password used to encrypt private keys.|
+
+h2. PrivateCertStore
+
+The PrivateCertStore element describes the medium used to store private certificates.
+
+Attributes:  
+
+||Attribute||Description||
+|type|The storage media of the private certs.  Valid types: LDAP, Keystore|
+|ldapUser|The user name credential for connecting to the LDAP store.  May be empty if the LDAP server allows anonymous binding.|
+|ldapPassword|The password credential for connecting to the LDAP store.|
+|ldapConnTimeout|Optional timeout in seconds before the connection is failed.|
+|ldapSearchBase|The distinguished name used as the base of LDAP searches.|
+|ldapSearchAttribute|The attribute in the LDAP store that is used to match a search query.| 
+|ldapCertAttr|The attribute in the search query result that holds the certificate file.|
+|ldapCertPassPhrase|For pkcs12 files, the pass phrase used to encrypt the certificate.|
+|ldapCertFormat|The format of the certificate in the LDAP store.  Valid formats: pkcs12, X.509|
+|file|For keystore store types, the name of the file that contains the certificates.  This can be just a file name, a fully qualified path, or a relative path.|
+|filePass|For keystore store types, an optional password used to encrypt the file.|
+|privKeyPass|For keystore store types, an optional password used to encrypt private keys.|
+
+h2. XXMessageSettings
+
+Describes the location where processed messages should be stored.  This is intended for debug purposes only and should not be set in a production environment.  
+
+Supported message settings elements:
+
+* RawMessageSettings: The raw message that entered the SMTP agent.
+* OutgoingMessagesSettings: If the message is determined to be an outgoing message, the security and trust processed outgoing message.
+* IncomingMessagesSettings: If the message is determined to be an incoming message, the security and trust processed incoming message.
+* BadMessagesSettings: Messages that failed to be processed or caused other errors to be the thrown.
+
+Attributes:
+
+||Attribute||Description||
+|saveFolder|The folder where the messages will be stored.  If the folder does not exist, the system will automatically created it as long as the agent's process has permission to do so.|
+
+h2. MDN Settings
+
+The agent can automatically produce MDN message in response to MDN requests with a disposition of _Processed_.  MDN is described in [RFC3798|http://tools.ietf.org/html/rfc3798] and is intended (for the SMTP Agent purposes) to indicate the successful reception and processing of message by the security and trust agent. 
+
+Attributes:
+
+||Attribute||Description||
+|autoResponse|Indicates if the SMTP agent should produce MDN messages for MDN requests.  The default setting is false if this attribute is not present.| 
+|productName|The product name used in the user agent header of the MDN message.  Defaults to _Security Agent_ if this attribute is not present.|
+
+Elements:
+||Element||Type||Description||
+|Text|String or CDATA|Human readable response text sent back to the sender indicating a successful reception of the senders message.  The text may either be a simple string or may be contained in a CDATA section for more sophisticated encoding and formatting.|

@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SmtpAgentConfig>
+  <Domain>redmond.hsgincubator.com</Domain>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>testSmtpAgent</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Debug</Level>
+  </Log>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <IncomingRoutes>
+    <PluginRoute>
+      <AddressType>FOO</AddressType>
+      <Receiver>
+        <TypeName>Health.Direct.SmtpAgent.Tests.HttpReceiver, Health.Direct.SmtpAgent.Tests</TypeName>
+        <Settings>
+          <Url>http://foo/one</Url>
+          <Timeout>1000</Timeout>
+          <Succeed>false</Succeed>
+        </Settings>
+      </Receiver>
+      <Receiver>
+        <TypeName>Health.Direct.SmtpAgent.Tests.HttpReceiver, Health.Direct.SmtpAgent.Tests</TypeName>
+        <Settings>
+          <Url>http://foo/two</Url>
+          <Timeout>1000</Timeout>
+          <Succeed>true</Succeed>
+        </Settings>
+      </Receiver>
+    </PluginRoute>
+    <PluginRoute>
+      <AddressType>BAR</AddressType>
+      <Receiver>
+        <TypeName>Health.Direct.SmtpAgent.Tests.HttpReceiver, Health.Direct.SmtpAgent.Tests</TypeName>
+        <Settings>
+          <Url>http://bar/one</Url>
+          <Timeout>1000</Timeout>
+        </Settings>
+      </Receiver>
+    </PluginRoute>
+    <PluginRoute>
+      <AddressType>SMTP</AddressType>
+      <Receiver>
+        <TypeName>Health.Direct.SmtpAgent.SmtpMessageForwarder, Health.Direct.SmtpAgent</TypeName>
+        <Settings>
+          <AddressType>SMTP</AddressType>
+          <Server>foo.xyz</Server>
+          <Port>33</Port>
+        </Settings>
+      </Receiver>
+      <Receiver>
+        <TypeName>Health.Direct.SmtpAgent.SmtpMessageForwarder, Health.Direct.SmtpAgent</TypeName>
+        <Settings>
+          <AddressType>SMTP</AddressType>
+          <Server>bar.xyz</Server>
+          <Port>39</Port>
+        </Settings>
+      </Receiver>
+    </PluginRoute>
+  </IncomingRoutes>
+  <Container>
+    <Component>
+      <Service>Health.Direct.Common.Diagnostics.IAuditor, Health.Direct.Common</Service>
+      <Type>Health.Direct.SmtpAgent.Tests.DummyAuditor, Health.Direct.SmtpAgent.Tests</Type>
+      <Scope>Singleton</Scope>
+    </Component>
+  </Container>
+</SmtpAgentConfig>

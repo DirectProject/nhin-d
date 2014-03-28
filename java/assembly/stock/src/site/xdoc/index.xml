@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Stock Deployment Assembly</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Stock Deployment Assembly</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+               The stock deployment is an Java assembly based on the Java Reference Implementation 
+               <a href="http://wiki.directproject.org/Bare+Metal+Project">Bare Metal</a> project.  It consists of 
+               pre-assembled and partly configured instances of core reference implementation components.  Instructions
+               for installing and configuring the stock assembly are available in the 
+               <a href="users-guide/index.html">users guide</a>. 
+            </p>
+            <p>
+               The Java Reference Implementation and Bare Metal projects are not intended to be full blown, production ready
+               HISP.  Instead it is a starting point from which a production HISP can be derived and deployed.
+            </p>           
+        </section>
+    </body>
+</document>

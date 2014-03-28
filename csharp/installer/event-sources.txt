@@ -1,0 +1,7 @@
+; Add any new event sources to this file. The format is <source-name>,<description>.
+Health.Direct,Direct Project - Default Source
+Health.Direct.MessageSink,Direct Project - MessageSink Source
+Health.Direct.Audit,Direct Project - Audit Source
+Health.Direct.Config.Service,Direct Project - Config Service Source
+Health.Direct.DnsResponder.WinSrv,Direct Project - DNS Responder Service
+Health.Direct.Monitor.WinSrv,Direct Project - Direct Monitor Service

@@ -1,0 +1,141 @@
+h1. Writing A Protocol Bridge
+
+h2. Overview
+
+Protocol bridges are specific to two variables:
+
+* *Backbone Protocol* Example: SMTP
+
+* *Protocol Implementation* Example: Apache James
+
+Protocols bridges intercept messages as they flow through the protocol implementation's stack and hand the messages off to lower layers of the architecture for security and trust processing.  Each protocol implementation will more than likely provide its own architecture, API set, and configuration for adding custom processing logic into its stack.  For example: the Apache James SMTP server provides the [Mailet|http://james.apache.org/mailet/index.html] API to write custom mail processing logic and deploys the Mailet using an XML based configuration file.
+
+Generally messages intercepted by a protocol bridge are in a format or structure specific to the protocol implementation.  For example the Apache James hands off a message to a mailet using the [Mail|http://james.apache.org/mailet/api/apidocs/org/apache/mailet/Mail.html] interface.  In most cases, the bridge will need to convert the message into a common structure supported by the protocol agent.  For example, the [SMTPAgent|http://api.nhindirect.org/java/site/gateway/1.5/apidocs/org/nhindirect/gateway/smtp/SmtpAgent.html] requires that all messages are passed to it using a [MimeMessage|http://java.sun.com/products/javamail/javadocs/javax/mail/internet/MimeMessage.html] structure.  After the message is processed by the protocol and subsequently the security and trust agent, the bridge must inject the processed message back into the protocol implementation's stack according the implemntation's specification.
+
+The Direct Project gateway module provides protocol agent for the following backbone protocols:
+
+* SMTP
+
+h2. Writing an SMTP Protocol Bridge
+
+SMTP bridges interact with the system through the [SMTPAgent|http://api.nhindirect.org/java/site/gateway/1.5/apidocs/org/nhindirect/gateway/smtp/SmtpAgent.html] interface.  Although concrete implementations of the SMTPAgent interface can be instantiated directly, the agent architecture implements a dependency injection (DI) paradigm.  Specifically it uses the google [Guice|http://code.google.com/p/google-guice/] DI framework.  Guice provides a high level of custom configuration using Java classes (as opposed to XML or other declarative configurations files used in other DI frameworks such as Spring) to inject dependencies into other components.  To facilitate the instantiation of an agent, the gateway module provides the [SmtpAgentFactory|http://api.nhindirect.org/java/site/gateway/1.5/apidocs/org/nhindirect/gateway/smtp/SmtpAgentFactory.html] to configure and create instances of the SMTPAgent.  The factory has two static methods for creating instances:
+
+{code}
+  static SmtpAgent createAgent(URL configLocation)
+  static SmtpAgent createAgent(URL configLocation, Provider<SmtpAgentConfig> configProvider, Provider<NHINDAgent> agentProvider)    
+{code}
+
+The first and simplest method only required that configuration URL is passed.  It determines how to fetch the configuration based on the information in the configLocation parameter.  The second allows a bridge developer to override how configuration information is retrieved and parsed and to provide custom instantiations of the security and trust agent.  Unless your bridge has very specific needs, you should use the first method.
+
+As you can see, the only piece of information the factory needs is the location of agent configuration information.  *NOTE* This is different that the protocol implementations configuration.  The agent configuration takes the same config format regardless of the protocol implementation.  How the configuration location is passed to your bridge is completely dependent on how your bridge is deployed and configured relative to the protocol implementation it is intercepting message from.  For example, the NHINDirect mailet used with Apache James is passed the configuration URL in mailets init() method.  The agent configuration location is set in the Mailets configuration section of James's configuration file.
+
+James Configuration Example:
+
+{code}
+ <mailet match="RecipAndSenderIsNotLocal=securehealthemail.com" class="NHINDSecurityAndTrustMailet">
+   <ConfigURL>file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>
+ </mailet>
+{code}
+
+h3. Getting an SMTPAgent Instance
+
+To get an instance of the SMTPAgent, simply call SmtpAgentFactory.createAgent.
+
+
+Pseudo Example:
+
+{code}
+  // probably declared as a class instance variable.. depends on the protocol implementation API
+  SmtpAgent agent = null;
+  .
+  .
+  // get the config location... specific to the protocol implementation... 
+  // assuming the location is passed as a string as is well formed
+  URL configLocation = new URL(getConfigLocation());
+  
+  // get an instance of the agent
+  agent = SmtpAgentFactory.createAgent(configLocation);
+{code}
+
+h3. Processing Messages
+
+When your bridge received messages from the protocol implementation, it calls the processMessage() method on the SmtpAgent instance.  The method takes 3 parameters: the actual message, a collection of recipients, and the sender.  processMessage requires that message be passed as a MimeMessage.  If your implementation does not provide the message as a MimeMessage, you can use the static utility method org.nhindirect.stagent.parser.EntitySerializer.deserialize() if the message is provided as a raw string or an input stream.  
+
+For the recipient list and sender, you should use the SMTP envelope's MAIL FROM and RCTP TO headers.  If these headers are not provided or not available through the protocol implementation API, then you should fall back to the routing headers in the message.  *NOTE*  You should only use the messages routing headers as a last resort.  
+
+
+Pseudo Example:
+
+{code}
+    public void handleSMTPMessage(String rawMessage)
+    {
+       String theRawMessage = getRawMessageFromHandler();
+       NHINDAddressCollection recips = getRecipsFromMessage(theRawMessage);
+       NHINDAddress sender = getSenderFromMessage( theRawMessage);
+       
+       MimeMessage msg = EntitySerialize.deserialize(theRawMessage);
+       
+       MessageProcessResult result = agent.processMessage(msg, recips, sender);
+       
+       if (result.getProcessedMessage() != null)
+       {
+      		moveProcessedMessageBackIntoSMTPStack(result.getProcessedMessage());
+       }
+    }  
+{code}
+
+
+h4. MDN Messages
+
+By default the SMTP agent automatically produces a collection of MDN messages with a _Disposition_ of _Processed_ for processed messages.  The purpose is to indicate to the sender that the security and trust sub system of the Direct Project network received and successfully processed the sender's message.  MDN is described in [RFC3798|http://tools.ietf.org/html/rfc3798].
+
+The SMTP agent returns generate MDN messages in the MessageProcessResult object's notificationMessages attribute.  Because the SMTP agent is unaware of the SMTP protocol implementation, the protocol bridge is responsible for sending the messages using the appropriate process as specified by the protocol implementation.  MDN messages produced by the SMTP bridge are not encrypted and signed per the security and trust agent specification and should placed on the protocol implementation's outgoing queue or whatever process will result in the MDN messages being encrypted and signed before being sent.
+
+Pseduo James Example:
+
+{code}
+    public void service(Mail mail) throws MessagingException 
+    { 
+       MimeMessage msg = mail.getMessage();
+       // get recipients and sender
+       .
+       .
+       .
+       .
+       MessageProcessResult result = agent.processMessage(msg, recipients, sender);
+       //  check result and processed message for errors and move the processed message
+       //  through the James stack
+       .
+       .
+       .
+       .       
+
+       // send the MDN messages
+       Collection<NotificationMessage> notifications = result.getNotificationMessages();
+       if (notifications != null && notifications.size() > 0)
+       {
+           // create a message for each notification and put it on James "stack"
+           for (NotificationMessage message : notifications)
+           {
+              try
+              {
+                  this.getMailetContext().sendMail(message);
+              }
+              catch (Throwable t)
+              {
+                  // don't kill the process if this fails
+                  // but handle the exception
+              }
+           }
+        }
+    }  
+{code}
+
+h3. Dependencies
+
+The following jars are direct dependencies for writing protocol bridges.
+
+* agent-1.x.jar
+* gateway-1.x.jar
+
+Transitive dependencies of these libraries may be required for development, testing, and deployment.  These libraries are available in the public mavne repository under the group [org.nhind|http://repo1.maven.org/maven2/org/nhind/].
