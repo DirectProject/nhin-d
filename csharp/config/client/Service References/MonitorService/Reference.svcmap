@@ -31,12 +31,12 @@
     <MetadataSource Address="http://localhost:6692/MonitorService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="MonitorService.xsd" MetadataType="Schema" ID="7531bba8-e0ea-42a2-9dc6-ded2362115da" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?xsd=xsd0" />
-    <MetadataFile FileName="MonitorService.wsdl" MetadataType="Wsdl" ID="de7c0e6b-6fa8-43a9-ad02-855bf4f5e4a4" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?wsdl=wsdl0" />
-    <MetadataFile FileName="MonitorService1.xsd" MetadataType="Schema" ID="e8afc8db-1818-413c-b72d-1e5fd6bd6ea2" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?xsd=xsd1" />
     <MetadataFile FileName="MonitorService.disco" MetadataType="Disco" ID="21654965-b0e8-45a7-8aef-f7365dc723f6" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?disco" />
-    <MetadataFile FileName="MonitorService1.wsdl" MetadataType="Wsdl" ID="f662e4fb-6bb4-48af-aa42-efff50af051c" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?wsdl" />
     <MetadataFile FileName="MonitorService2.xsd" MetadataType="Schema" ID="ba4c9cae-ec00-467c-b65b-da7da7699b96" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?xsd=xsd2" />
+    <MetadataFile FileName="MonitorService.wsdl" MetadataType="Wsdl" ID="de7c0e6b-6fa8-43a9-ad02-855bf4f5e4a4" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="MonitorService.xsd" MetadataType="Schema" ID="7531bba8-e0ea-42a2-9dc6-ded2362115da" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?xsd=xsd0" />
+    <MetadataFile FileName="MonitorService1.xsd" MetadataType="Schema" ID="e8afc8db-1818-413c-b72d-1e5fd6bd6ea2" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?xsd=xsd1" />
+    <MetadataFile FileName="MonitorService1.wsdl" MetadataType="Wsdl" ID="f662e4fb-6bb4-48af-aa42-efff50af051c" SourceId="1" SourceUrl="http://localhost:6692/MonitorService.svc?wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

@@ -37,6 +37,7 @@ namespace Health.Direct.Admin.Console.Models
             CreateBidirectionalMap<Certificate, CertificateModel>();
             CreateBidirectionalMap<DnsRecord, DnsRecordModel>();
             CreateBidirectionalMap<Domain, DomainModel>();
+            CreateBidirectionalMap<Mdn, MdnModel>();
         }
 
         private void CreateBidirectionalMap<TSource,TDestination>()

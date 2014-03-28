@@ -74,6 +74,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AddressManagerSettings.cs" />
     <Compile Include="AgentDiagnostics.cs" />
     <Compile Include="AgentSetup.cs" />
     <Compile Include="CDOSmtpMessage.cs" />
@@ -82,7 +83,7 @@
     <Compile Include="ConfigService.cs" />
     <Compile Include="DomainServiceResolver.cs" />
     <Compile Include="DomainServiceResolverSettings.cs" />
-    <Compile Include="MessageRoute.cs" />
+    <Compile Include="FolderRoute.cs" />
     <Compile Include="InternalMessageSettings.cs" />
     <Compile Include="ISmtpMessage.cs" />
     <Compile Include="MonitorService.cs" />

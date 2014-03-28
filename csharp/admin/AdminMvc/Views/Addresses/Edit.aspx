@@ -26,7 +26,8 @@
             <br class="clear" />
 
             <span class="display-label"><%= Html.LabelFor(m => m.Type) %></span>
-            <span class="display-field"><%= Html.DisplayFor(m => m.Type, new { @class = "ui-widget-content" })%></span>
+            <span class="display-field"><%= Html.EditorFor(m => m.Type, new { @class = "ui-widget-content" })%></span>
+            <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Type, "*", new { @class = "ui-state-error-text" })%></span>
             <br class="clear" />
 
             <span class="display-label"><%= Html.LabelFor(m => m.Status) %></span>

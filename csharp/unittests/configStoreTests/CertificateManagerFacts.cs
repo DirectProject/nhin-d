@@ -23,11 +23,29 @@ using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class CertificateManagerFacts : ConfigStoreTestBase
+    public class CertificateManagerTestFixture : ConfigStoreTestBase, IDisposable
+    {
+        public CertificateManagerTestFixture()
+        {
+            InitCertRecords();
+        }
+
+        public void Dispose()
+        {
+            // Do "global" teardown here; Only called once.
+        }
+    }
+
+    public class CertificateManagerFacts : ConfigStoreTestBase, IUseFixture<CertificateManagerTestFixture>
     {
         private static new CertificateManager CreateManager()
         {
             return new CertificateManager(CreateConfigStore());
+        }
+
+        public void SetFixture(CertificateManagerTestFixture data)
+        {
+
         }
 
         /// <summary>
@@ -77,7 +95,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Store
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void StoreTest()
         {
             CertificateManager mgr = CreateManager();
@@ -88,10 +106,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Item
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void ItemTest()
         {
-            InitCertRecords();
             foreach (string domain in TestDomainNames)
             {
 
@@ -109,10 +126,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest4()
         {
-            InitCertRecords();
             foreach (string domain in TestDomainNames)
             {
 
@@ -157,11 +173,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest3()
         {
-
-            InitCertRecords();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 foreach (string domain in TestDomainNames)
@@ -199,10 +213,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest2()
         {
-            InitCertRecords();
             for (long i = 1; i <= MAXCERTPEROWNER * MAXDOMAINCOUNT; i++)
             {
                 CertificateManager target = CreateManager();
@@ -221,10 +234,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest1()
         {
-            InitCertRecords();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 for (long i = 1; i <= MAXCERTPEROWNER * MAXDOMAINCOUNT; i++)
@@ -246,10 +258,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for SetStatus
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void SetStatusTest()
         {
-            InitCertRecords();
             long t = 1;
             for (long i = 1; i <= MAXDOMAINCOUNT; i++)
             {
@@ -287,10 +298,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for RemoveAll
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveAllTest1()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             using (ConfigDatabase db = CreateConfigDatabase())
@@ -304,10 +314,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for RemoveAll
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveAllTest()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
 
@@ -320,11 +329,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest5()
         {
-
-            InitCertRecords();
             CertificateManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
 
@@ -340,11 +347,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest4()
         {
-
-            InitCertRecords();
             CertificateManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             string ownerName = string.Format("CN={0}", BuildDomainName(1));
@@ -356,10 +361,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest3()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
@@ -370,10 +374,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest2()
         {
-            InitCertRecords();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 CertificateManager target = CreateManager();
@@ -387,10 +390,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest1()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             const long certID = 1;
             Assert.NotNull(target.Get(certID));
@@ -402,10 +404,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Remove
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void RemoveTest()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             const long certID = 1;
             Assert.NotNull(target.Get(certID));
@@ -420,10 +421,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest10()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
@@ -438,10 +438,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest9()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             List<Certificate> certs = this.GetCleanEnumerable<Certificate>(TestCertificates);
             string owner = certs[GetRndCertID()].Owner;
@@ -455,10 +454,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest8()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             const long lastCertID = 0;
             const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
@@ -469,10 +467,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest7()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             long[] certIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
             Certificate[] actual = target.Get(certIDs);
@@ -487,10 +484,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest6()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             long certID = GetRndCertID();
 
@@ -505,32 +501,27 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest5()
         {
-
-            InitCertRecords();
-            using (ConfigDatabase db = CreateConfigDatabase())
-            {
-                CertificateManager target = CreateManager();
-                List<Certificate> certs = this.GetCleanEnumerable<Certificate>(TestCertificates);
-                string owner = certs[GetRndCertID()].Owner;
-                string thumbprint = certs[GetRndCertID()].Thumbprint;
-                Certificate expected = certs[GetRndCertID()];
-                Certificate actual = target.Get(db, owner, thumbprint);
-                Assert.Equal(expected.Owner, actual.Owner);
-                Assert.Equal(expected.Thumbprint, actual.Thumbprint);
-            }
+            
+            CertificateManager target = CreateManager();
+            List<Certificate> certs = this.GetCleanEnumerable<Certificate>(TestCertificates);
+            string owner = certs[GetRndCertID()].Owner;
+            string thumbprint = certs[GetRndCertID()].Thumbprint;
+            Certificate expected = certs[GetRndCertID()];
+            Certificate actual = target.Get(owner, thumbprint);
+            Assert.Equal(expected.Owner, actual.Owner);
+            Assert.Equal(expected.Thumbprint, actual.Thumbprint);
+            
         }
 
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
-        public void GetTest4()
-        {
-
-            InitCertRecords();
+        [Fact, AutoRollback]
+        public void GetTest4(){
+            
             CertificateManager target = CreateManager();
             long certID = GetRndCertID();
             Certificate cert = target.Get( certID);
@@ -542,10 +533,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest3()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
@@ -567,10 +557,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest2()
         {
-            InitCertRecords();
             CertificateManager target = CreateManager();
             string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             EntityStatus? status = EntityStatus.New;
@@ -590,11 +579,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest1()
         {
-
-            InitCertRecords();
             CertificateManager target = CreateManager();
             string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
             Certificate[] actual = target.Get(owner).ToArray();
@@ -609,10 +596,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Get
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void GetTest()
         {
-            InitCertRecords();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 CertificateManager target = CreateManager();
@@ -629,7 +615,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Theory]
+        [Theory, AutoRollback]
         [PropertyData("TestCertificates")]
         public void AddTest2(Certificate cert)
         {
@@ -646,7 +632,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Fact]
+        [Fact, AutoRollback]
         public void AddTest1()
         {
             CertificateManager target = CreateManager();
@@ -662,7 +648,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Theory]
+        [Theory, AutoRollback]
         [PropertyData("TestCertificates")]
         public void AddTest(Certificate cert)
         {

@@ -332,7 +332,14 @@ namespace Health.Direct.Config.Service
 
         public void UpdateDnsRecord(DnsRecord dnsRecord)
         {
-            Store.DnsRecords.Remove(dnsRecord);
+            try
+            {
+                Store.DnsRecords.Update(dnsRecord);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("UpdateDnsRecord", ex);
+            }
         }
 
         public void UpdateDnsRecords(System.Collections.Generic.IEnumerable<DnsRecord> dnsRecords)

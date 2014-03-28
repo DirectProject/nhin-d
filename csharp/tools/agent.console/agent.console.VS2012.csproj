@@ -74,6 +74,10 @@
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ResolverPlugin\resolverPlugins.VS2012.csproj">
+      <Project>{3b166914-a175-4248-b281-ea16afcfd550}</Project>
+      <Name>resolverPlugins.VS2012</Name>
+    </ProjectReference>
     <ProjectReference Include="..\toolutil\config.tools.VS2012.csproj">
       <Project>{D46A743B-E82F-45F7-87CB-29DBBFF9B9A0}</Project>
       <Name>config.tools</Name>

@@ -202,7 +202,7 @@ namespace Health.Direct.ResolverPlugins.Tests
             X509ChainStatusFlags.CtlNotSignatureValid;
 
 
-        [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
+        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
         [InlineData("direct.securehealthemail.com")]
         public void TestLdapCertResolverPlugin(string subject)
         {
@@ -217,7 +217,7 @@ namespace Health.Direct.ResolverPlugins.Tests
             Assert.True(certs.Count > 0);
         }
 
-        [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
+        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
         [InlineData("gm2552@direct.securehealthemail.com")]
         public void TestDnsFallbackToLdapCertResolverPlugin(string subject)
         {
@@ -234,7 +234,7 @@ namespace Health.Direct.ResolverPlugins.Tests
         }
 
 
-        [Theory]//(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
+        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
         [InlineData("gm2552@direct.securehealthemail.com")]
         public void TestDnsFallbackToLdapCertResolverBackupIPPlugin(string subject)
         {

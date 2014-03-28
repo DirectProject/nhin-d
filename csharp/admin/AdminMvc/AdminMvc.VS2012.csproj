@@ -1,17 +1,24 @@
-﻿<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8E284E54-B6E7-4F16-B362-719C34E95762}</ProjectGuid>
-    <ProjectTypeGuids>{F85E285D-A4E0-4152-9332-AB1D724D3325};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Health.Direct.Admin.Console</RootNamespace>
     <AssemblyName>Health.Direct.Admin.Console</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,7 +38,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Accessibility" />
     <Reference Include="Autofac, Version=2.3.2.632, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\external\autofac\Autofac.dll</HintPath>
@@ -100,15 +106,15 @@
     <Compile Include="Controllers\CertificatesController.cs" />
     <Compile Include="Controllers\ControllerBase.cs" />
     <Compile Include="Controllers\ControllerErrorBase.cs" />
+    <Compile Include="Controllers\MdnRecordsController.cs" />
     <Compile Include="Controllers\DnsRecordsController.cs" />
     <Compile Include="Controllers\DomainsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\MdnRecordsController.cs" />
     <Compile Include="Models\AddressRecordModel.cs" />
-    <Compile Include="Models\DnsRecordModel.cs" />
     <Compile Include="Models\MdnModel.cs" />
-    <Compile Include="Models\Repositories\IMdnRecordRepository.cs" />
+    <Compile Include="Models\DnsRecordModel.cs" />
     <Compile Include="Models\Repositories\MdnRecordRepository.cs" />
+    <Compile Include="Models\Repositories\IMdnRecordRepository.cs" />
     <Compile Include="Models\ResolveModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -144,7 +150,16 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="Views\DnsRecords\AnameDetails.ascx" />
+    <Content Include="Views\DnsRecords\DnsRecordDetailsDialog.ascx" />
+    <Content Include="Views\DnsRecords\MxDetails.ascx" />
+    <Content Include="Views\DnsRecords\SoaDetails.ascx" />
+    <Content Include="Views\DnsRecords\EditAname.aspx" />
+    <Content Include="Views\DnsRecords\EditMx.aspx" />
+    <Content Include="Views\DnsRecords\EditSoa.aspx" />
     <Content Include="Views\Domains\NotFound.aspx" />
+    <Content Include="Views\MdnRecords\Index.aspx" />
+    <Content Include="Views\MdnRecords\MdnList.ascx" />
     <Content Include="Web.config" />
     <Content Include="Content\Site.css" />
     <Content Include="Views\Account\LogOn.aspx" />
@@ -155,15 +170,15 @@
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\common.csproj">
+    <ProjectReference Include="..\..\common\common.VS2012.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\config\client\config.client.csproj">
+    <ProjectReference Include="..\..\config\client\config.client.VS2012.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
       <Name>config.client</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\config\store\config.store.csproj">
+    <ProjectReference Include="..\..\config\store\config.store.VS2012.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
     </ProjectReference>
@@ -212,21 +227,17 @@
     <Content Include="Views\DnsRecords\AddMx.aspx" />
     <Content Include="Views\DnsRecords\AddAname.aspx" />
     <Content Include="Views\DnsRecords\AddSoa.aspx" />
-    <Content Include="Views\DnsRecords\AnameDetails.ascx" />
-    <Content Include="Views\DnsRecords\DnsRecordDetailsDialog.ascx" />
-    <Content Include="Views\DnsRecords\EditAname.aspx" />
-    <Content Include="Views\DnsRecords\EditMx.aspx" />
-    <Content Include="Views\DnsRecords\EditSoa.aspx" />
-    <Content Include="Views\DnsRecords\MxDetails.ascx" />
-    <Content Include="Views\DnsRecords\SoaDetails.ascx" />
-    <Content Include="Views\MdnRecords\Index.aspx" />
-    <Content Include="Views\MdnRecords\MdnList.ascx" />
     <Content Include="Views\Shared\ConfigStoreError.aspx" />
     <Content Include="Views\Shared\ServiceDownError.aspx" />
     <Content Include="Views\Shared\UnAuthSite.Master" />
   </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -242,8 +253,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>57108</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>
-          </IISUrl>
+          <IISUrl>http://localhost:53320/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

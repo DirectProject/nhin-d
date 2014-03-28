@@ -37,7 +37,7 @@ function confirmDelete(event, dialog, link, message, objectName) {
         buttons: {
             "Delete": function() {
                 $.post(link[0].href, function(data) {
-                    if (data == '<%= Boolean.TrueString %>') {
+                    if (data == 'True') {
                         link.closest('tr').hide('fast');
                     } else if (data == 'NotFound') {
                         alert(objectName + ' was not found.');
