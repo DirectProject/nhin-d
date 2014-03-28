@@ -55,7 +55,8 @@ namespace Health.Direct.Config.Store
         {
         }
 
-        [Column(Name = "RecordID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never), DataMember(IsRequired = true)]
+        [Column(Name = "RecordID", IsPrimaryKey = true, IsDbGenerated = true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = true)]
         public long ID { get; set; }
 
         [Column(Name = "DomainName", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
@@ -82,7 +83,7 @@ namespace Health.Direct.Config.Store
             }
         }
 
-        [Column(Name = "Notes", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "Notes", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = false)]
         public string Notes
         {
@@ -105,14 +106,14 @@ namespace Health.Direct.Config.Store
         [DataMember(IsRequired = true)]
         public int TypeID { get; set; }
 
-        [Column(Name = "RecordData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged), DataMember(IsRequired = true)]
+        [Column(Name = "RecordData", DbType = "varbinary(MAX)", CanBeNull = false, UpdateCheck = UpdateCheck.Never), DataMember(IsRequired = true)]
         public byte[] RecordData { get; set; }
 
         [Column(Name = "CreateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public DateTime CreateDate { get; set; }
 
-        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.WhenChanged)]
+        [Column(Name = "UpdateDate", CanBeNull = false, UpdateCheck = UpdateCheck.Always)]
         [DataMember(IsRequired = true)]
         public DateTime UpdateDate { get; set; }
         
@@ -135,9 +136,10 @@ namespace Health.Direct.Config.Store
         internal void CopyFixed(DnsRecord source)
         {
             this.ID = source.ID;
-            this.DomainName = source.DomainName;
             this.CreateDate = source.CreateDate;
             this.TypeID = source.TypeID;
+            this.UpdateDate = source.UpdateDate;
+            this.DomainName = source.DomainName;
         }
 
         /// <summary>
@@ -148,6 +150,10 @@ namespace Health.Direct.Config.Store
             if (source == null)
             {
                 throw new ArgumentNullException("source");
+            }
+            if (!string.IsNullOrEmpty(source.DomainName))
+            {
+                this.DomainName = source.DomainName;
             }
             this.RecordData = source.RecordData;
             this.Notes = source.Notes;

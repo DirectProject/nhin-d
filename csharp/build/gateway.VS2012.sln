@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Web
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent.VS2012", "..\gateway\smtpAgent\smtpAgent.VS2012.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent.tests.VS2012", "..\unittests\smtpAgent\smtpAgent.tests.VS2012.csproj", "{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}"
@@ -59,6 +59,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdnMonitor.VS2012", "..\mdnMonitor\mdnMonitor.VS2012.csproj", "{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdnMonitor.tests.VS2012", "..\unittests\mdnMonitor.tests\mdnMonitor.tests.VS2012.csproj", "{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent.integration.tests.VS2012", "..\unittests\smtpAgent.integration\smtpAgent.integration.tests.VS2012.csproj", "{CBA6088A-9425-4948-B046-0E0EABF07E5D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -626,6 +628,24 @@ Global
 		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|Win32.Build.0 = Release|Any CPU
 		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|x64.ActiveCfg = Release|Any CPU
 		{B4B54142-F50E-4A71-BC3A-09EF77EBD0AC}.Release|x64.Build.0 = Release|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|Any CPU.Build.0 = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|Win32.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|x64.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

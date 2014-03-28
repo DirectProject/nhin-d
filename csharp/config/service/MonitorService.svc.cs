@@ -81,5 +81,17 @@ namespace Health.Direct.Config.Service
                throw CreateFault("SweepTimouts", ex);
            }
        }
+
+       public Mdn[] EnumerateMdns(string lastMdnName, int maxResults)
+       {
+           try
+           {
+               return Store.Mdns.Get(lastMdnName, maxResults);
+           }
+           catch (Exception ex)
+           {
+               throw CreateFault("EnumerateMdns", ex);
+           }
+       }
     }
 }

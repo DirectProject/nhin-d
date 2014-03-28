@@ -5,6 +5,7 @@ using AutoMapper;
 
 using Health.Direct.Admin.Console.Models;
 using Health.Direct.Admin.Console.Models.Repositories;
+using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
 
 using MvcContrib.Pagination;
@@ -81,42 +82,107 @@ namespace Health.Direct.Admin.Console.Controllers
 
         }
 
-        //public ActionResult Details(long id)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+		[Authorize]
+		public ActionResult AnameDetails(long id)
+		{
+			return Details<AddressRecordModel>(id);
+		}
 
-        //    return Json(Mapper.Map<Address, AddressModel>(address), "text/json", JsonRequestBehavior.AllowGet);
-        //}
+		[Authorize]
+		public ActionResult MxDetails(long id)
+		{
+			return Details<MxRecordModel>(id);
+		}
 
-        //public ActionResult Edit(long id)
-        //{
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+		[Authorize]
+		public ActionResult SoaDetails(long id)
+		{
+			return Details<SoaRecordModel>(id);
+		}
 
-        //    return View(Mapper.Map<Address,AddressModel>(address));
-        //}
+		private ActionResult Details<T>(long id)
+			where T : DnsRecordModel, new()
+		{
+			var dnsRecord = Repository.Get(id);
+			if (dnsRecord == null) return View("NotFound");
+			
+			var recordModel = new T();
+			Mapper.Map(dnsRecord, recordModel, typeof(DnsRecord), typeof(DnsRecordModel));
+			return PartialView(recordModel);
+		}
 
-        //[HttpPost]
-        //public ActionResult Edit(FormCollection formValues)
-        //{
-        //    long id;
-        //    long.TryParse(formValues["id"], out id);
+		[Authorize]
+		public ActionResult EditAname(long id)
+		{
+			return Edit<AddressRecordModel>(id);
+		}
 
-        //    var address = Repository.Get(id);
-        //    if (address == null) return View("NotFound");
+		[Authorize]
+		public ActionResult EditMx(long id)
+		{
+			return Edit<MxRecordModel>(id);
+		}
 
-        //    var model = Mapper.Map<Address, AddressModel>(address);
+		[Authorize]
+		public ActionResult EditSoa(long id)
+		{
+			return Edit<SoaRecordModel>(id);
+		}
 
-        //    if (TryUpdateModel(model))
-        //    {
-        //        address.DisplayName = model.DisplayName;
-        //        Repository.Update(address);
-        //        return RedirectToAction("Index", new { domainID = address.DomainID });
-        //    }
+		private ActionResult Edit<T>(long id)
+			where T : DnsRecordModel, new()
+		{
+			var dnsRecord = Repository.Get(id);
+			if (dnsRecord == null) return View("NotFound");
 
-        //    return View(model);
-        //}
+			var recordModel = new T();
+			Mapper.Map(dnsRecord, recordModel, typeof(DnsRecord), typeof(DnsRecordModel));
+			return PartialView(recordModel);
+		}
+
+		[Authorize]
+		[HttpPost]
+		public ActionResult EditAname(FormCollection formValues)
+		{
+			return Edit<AddressRecordModel>(formValues);
+		}
+
+		[Authorize]
+		[HttpPost]
+		public ActionResult EditMx(FormCollection formValues)
+		{
+			return Edit<MxRecordModel>(formValues);
+		}
+
+		[Authorize]
+		[HttpPost]
+		public ActionResult EditSoa(FormCollection formValues)
+		{
+			return Edit<SoaRecordModel>(formValues);
+		}
+
+		private ActionResult Edit<T>(FormCollection formValues)
+			where T : DnsRecordModel, new()
+		{
+			long id;
+			long.TryParse(formValues["id"], out id);
+
+			var dnsRecord = Repository.Get(id);
+			if (dnsRecord == null) return View("NotFound");
+
+			var recordModel = new T();
+            
+            Mapper.Map(dnsRecord, recordModel, typeof(DnsRecord), typeof(DnsRecordModel));
+
+			if (TryUpdateModel(recordModel))
+			{
+				Mapper.Map(recordModel, dnsRecord, typeof(DnsRecordModel), typeof(DnsRecord));
+				Repository.Update(dnsRecord);
+				return RedirectToAction("Index");
+			}
+
+			return View("Edit" + recordModel.TypeString, recordModel);
+		}
 
         protected override void SetStatus(DnsRecord item, EntityStatus status)
         {

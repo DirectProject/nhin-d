@@ -15,5 +15,6 @@
     </div>
 
     <%= Html.Partial("DnsRecordList", Model) %>
+    <%= Html.Partial("DnsRecordDetailsDialog", Model) %>
     
 </asp:Content>

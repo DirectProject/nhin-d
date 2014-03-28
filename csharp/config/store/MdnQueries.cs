@@ -167,6 +167,8 @@ namespace Health.Direct.Config.Store
                 Where MdnIdentifier= {0}
                 ";
 
+        const string Sql_EnumMdnFirst = "SELECT TOP ({0}) * from Mdns order by CreateDate desc";
+        const string Sql_EnumMdnNext = "SELECT TOP ({0}) * from Mdns where CreateDate > {1} order by CreateDate asc";
 
         
         static readonly Func<ConfigDatabase, IQueryable<Mdn>> TimedOutMdns = CompiledQuery.Compile(
@@ -186,6 +188,16 @@ namespace Health.Direct.Config.Store
         public static Mdn Get(this Table<Mdn> table, string mdnIdentifier)
         {
             return table.GetDB().ExecuteQuery<Mdn>(Sql_GetMdn, mdnIdentifier).FirstOrDefault();
+        }
+
+        public static IEnumerable<Mdn> ExecGet(this Table<Mdn> table, string lastMdn, int maxResults)
+        {
+            if (string.IsNullOrEmpty(lastMdn))
+            {
+                return table.GetDB().ExecuteQuery<Mdn>(Sql_EnumMdnFirst, maxResults);
+            }
+
+            return table.GetDB().ExecuteQuery<Mdn>(Sql_EnumMdnNext, maxResults, lastMdn);
         }
 
         public static IEnumerable<Mdn> GetTimedOut(this Table<Mdn> table)
@@ -233,5 +245,6 @@ namespace Health.Direct.Config.Store
 
             table.Context.ExecuteCommand(Sql_DeleteAllMdn);
         }
+
     }
 }

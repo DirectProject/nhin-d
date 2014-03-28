@@ -18,7 +18,7 @@
 		<gateway_solution>.\build\gateway.VS2012.sln</gateway_solution>
 		<smtpEventHandler_solution>.\build\smtpEventHandler.sln</smtpEventHandler_solution>
 		<xd_solution>.\build\xd.VS2012.sln</xd_solution>
-		<configui_solution>.\admin\AdminUI.sln</configui_solution>
+		<configui_solution>.\admin\AdminUI.VS2012.sln</configui_solution>
 	</PropertyGroup>
 
 	<!-- Aliases -->
@@ -49,6 +49,7 @@
 	</Target>
 
 	<Target Name="build-smtpEventHandler" DependsOnTargets="Clean">
+		<CallTarget Targets="build-smtpEventHandler32"  />
 		<CallTarget Targets="build-smtpEventHandler32"  />
 		<CallTarget Targets="build-smtpEventHandler64"  />
 	</Target>	

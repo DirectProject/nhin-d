@@ -41,6 +41,7 @@
                 <li id="tab-anchors" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Anchors", "Index", "Anchors")%></li>
                 <li id="tab-certificates" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Certificates", "Index", "Certificates")%></li>
                 <li id="tab-dnsrecords" class="ui-state-default ui-corner-top"><%= Html.ActionLink("DNS Records", "Index", "DnsRecords")%></li>
+                <li id="tab-mdnrecords" class="ui-state-default ui-corner-top"><%= Html.ActionLink("MDN Records", "Index", "MdnRecords")%></li>
                 <!-- <li id="tab-users" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Users", "Index", "Users")%></li> -->
             </ul>
         </div>
@@ -50,7 +51,7 @@
     </div>
 
     <script type="text/javascript" language="javascript">
-        $(function() { $('#switcher').themeswitcher({ expires: 30, path: '/' }); });
+        //$(function() { $('#switcher').themeswitcher({ expires: 30, path: '/' }); });
         var controllerName = '<%= ViewContext.RouteData.Values["Controller"].ToString().ToLower() %>';
     </script>
 </body>

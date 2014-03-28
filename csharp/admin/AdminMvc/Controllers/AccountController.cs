@@ -43,7 +43,8 @@ namespace Health.Direct.Admin.Console.Controllers
 
         public ActionResult LogOn()
         {
-            return View();
+            var model = new LogOnModel();
+            return View(model);
         }
 
         [HttpPost]

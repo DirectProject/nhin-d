@@ -222,16 +222,14 @@ namespace Health.Direct.Config.Store.Tests
         {
 
             InitAddressRecords();
-            using (ConfigDatabase db = CreateConfigDatabase())
-            {
-
-                AddressManager mgr = CreateManager();
-                string emailAddress = BuildEmailAddress(1, 1);
-                mgr.Get(db,emailAddress);
-                Assert.NotNull(emailAddress);
-                mgr.Remove(db, emailAddress);
-                Assert.Null(mgr.Get(db, emailAddress));
-            }
+            
+            AddressManager mgr = CreateManager();
+            string emailAddress = BuildEmailAddress(1, 1);
+            mgr.Get(emailAddress);
+            Assert.NotNull(emailAddress);
+            mgr.Remove(emailAddress);
+            Assert.Null(mgr.Get(emailAddress));
+            
             
         }
 
@@ -808,9 +806,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest()
         {
+            InitAddressRecords();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
-                InitAddressRecords();
                 AddressManager mgr = CreateManager();
 
                 //----------------------------------------------------------------------------------------------------
