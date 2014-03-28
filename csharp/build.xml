@@ -153,7 +153,7 @@
 	</Target>
 
 	<Target Name="create-db" >
-		<Exec Command="SqlLocalDb stop Projects " />
+		<Exec Command="SqlLocalDb stop Projects " IgnoreExitCode="true"/>
 		<Exec Command="SqlLocalDb create Projects -s" />
 		<Exec Command="SqlLocalDb share Projects ProjectsShare" />
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
