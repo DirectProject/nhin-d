@@ -19,14 +19,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using Health.Direct.Agent;
+using Health.Direct.Agent.Config;
 using Health.Direct.Agent.Tests;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Policies;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Store;
 using Health.Direct.SmtpAgent.Config;
+using Health.Direct.SmtpAgent.Policy;
 using Moq;
 using Xunit;
 
@@ -182,9 +185,5 @@ namespace Health.Direct.SmtpAgent.Tests
                 }
             }
         }
-
-        
     }
-
-   
 }

@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy;
 
 namespace Health.Direct.Common.Policies
 {
@@ -24,6 +25,7 @@ namespace Health.Direct.Common.Policies
     /// Policy filters are the core constructs of the policy engine as they determine if an X509 certificate is compliant with a given policy.  Internally
     /// they encapsulate the functional components of the engine (parser, compiler, and execution engine), and orchestrate the flow of a certificate and 
     /// policy through the engine's components.
+    /// See <see cref="Health.Direct.Policy.PolicyFilter"/> for the default implementation.
     /// </para>
     /// <para>
     /// Filters are aggregate objects.  Each functional component of the policy engine can be used independently to perform specific tasks, but filters combine

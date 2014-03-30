@@ -122,7 +122,7 @@ Bad message?", Guid.NewGuid());
 
         public static string UnknownUsersMessage =
             string.Format(
-            @"From: <toby@redmond.hsgincubator.com>
+            @"From: <toby@redmond.hsgincubator.bad>
 To: <frank@nhind.hsgincubator.com>, <joe@nhind.hsgincubator.com>
 Subject: Unknown Users Text Message
 Message-ID: {0}
@@ -146,6 +146,7 @@ Yo. Wassup?";
 
         public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
         public const string TestIncomingFolder = @"c:\inetpub\mailroot\incoming";
+        public const string TestBadMessageFolder = @"c:\inetpub\mailroot\badMail";
 
         public SmtpAgentTester(){
             
@@ -158,6 +159,7 @@ Yo. Wassup?";
             CleanMessages(settings.Incoming);
             CleanMessages(settings.Outgoing);
             CleanMessages(settings.RawMessage);
+            CleanMessages(settings.BadMessage);
             settings.IncomingRoutes.ToList().ForEach(
                 route => {
                             if(route as FolderRoute != null)
@@ -206,6 +208,15 @@ Yo. Wassup?";
         public IEnumerable<string> IncomingMessages()
         {
             foreach (var file in Directory.GetFiles(TestIncomingFolder))
+            {
+                yield return file;
+                File.Delete(file);
+            }
+        }
+
+        public IEnumerable<string> BadMessages()
+        {
+            foreach (var file in Directory.GetFiles(TestBadMessageFolder))
             {
                 yield return file;
                 File.Delete(file);

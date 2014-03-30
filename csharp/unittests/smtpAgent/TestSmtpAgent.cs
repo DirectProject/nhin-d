@@ -80,7 +80,7 @@ namespace Health.Direct.SmtpAgent.Tests
         }
 
         
-        [Fact (Skip="Need Config Service to run this")]
+        [Fact]// (Skip="Need Config Service to run this")]
         public void TestEndToEndBad()
         {
             m_agent.Settings.InternalMessage.EnableRelay = true;
