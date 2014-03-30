@@ -32,6 +32,8 @@ namespace Health.Direct.SmtpAgent.Policy
         readonly IPolicyResolver m_incomingResolver;
         readonly IPolicyResolver m_outgoingResolver;
 
+        public PrivatePolicyResolver(){}
+
         public PrivatePolicyResolver(PrivatePolicyServiceResolverSettings settings)
         {
             PrivatePolicyServiceResolverSettings settings1 = settings;
@@ -49,13 +51,13 @@ namespace Health.Direct.SmtpAgent.Policy
                 new PolicyResolver(new CertPolicyIndex(settings1.ClientSettings, false, CertPolicyUse.PRIVATE_RESOLVER), outgoingCacheSettings);
 
         }
-        public IList<IPolicyExpression>
+        public virtual IList<IPolicyExpression>
             GetOutgoingPolicy(MailAddress address)
         {
             return m_outgoingResolver.GetOutgoingPolicy(address);
         }
 
-        public IList<IPolicyExpression> GetIncomingPolicy(MailAddress address)
+        public virtual IList<IPolicyExpression> GetIncomingPolicy(MailAddress address)
         {
             return m_incomingResolver.GetIncomingPolicy(address);
         }
