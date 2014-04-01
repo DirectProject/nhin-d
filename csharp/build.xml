@@ -33,7 +33,7 @@
 		<PsListTargets>powershell -Command "$build = [xml](Get-Content $(MSBuildProjectFile)); $build.Project.Target| Select-Object Name | Sort-Object Name "</PsListTargets>
 	</PropertyGroup>
 
-	<Target Name="Targets">
+	<Target Name="targets">
 		<Exec Command='$(PsListTargets)' />
 	</Target>
 	
@@ -138,7 +138,7 @@
 		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
 		
-	<Target Name="test-smtp-integration" DependsOnTargets="create-db;create-config-webservice;Create-TestData">	    
+	<Target Name="test-smtp-integration" DependsOnTargets="create-db;create-config-webservice;create-testData">	    
 		<xunitproject ProjectFile="unittests\smtpAgent.integration.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
 		<xunitproject ProjectFile="unittests\smtpAgent.integration.xunit" Condition=" $(Configuration) == 'Debug' "/>
 	</Target>
@@ -162,7 +162,7 @@
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="IIS APPPOOL\ASP.NET v4.0"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 	</Target>
 	
-	<Target Name="Create-TestData">
+	<Target Name="create-testData">
 		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdns.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>

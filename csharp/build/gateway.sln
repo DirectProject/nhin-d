@@ -63,8 +63,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mdnMonitor.tests", "..\unit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent.integration.tests", "..\unittests\smtpAgent.integration\smtpAgent.integration.tests.csproj", "{CBA6088A-9425-4948-B046-0E0EABF07E5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plugins", "..\plugins\plugins.csproj", "{A7A719A4-9817-48D2-A450-0814817EB3CC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "policy", "..\policy\policy.csproj", "{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "policy.tests", "..\unittests\policy.tests\policy.tests.csproj", "{0F787328-E1BD-418E-AA6C-F412FD1C1F70}"
@@ -644,26 +642,6 @@ Global
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|Win32.ActiveCfg = Release|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|x64.ActiveCfg = Release|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Release|x64.Build.0 = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Debug|x64.Build.0 = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Development|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Development|Any CPU.Build.0 = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Development|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Development|Mixed Platforms.Build.0 = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Development|Win32.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Development|x64.ActiveCfg = Debug|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|Win32.ActiveCfg = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|x64.ActiveCfg = Release|Any CPU
-		{A7A719A4-9817-48D2-A450-0814817EB3CC}.Release|x64.Build.0 = Release|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
