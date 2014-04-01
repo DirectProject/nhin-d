@@ -39,7 +39,7 @@ namespace Health.Direct.Install.Tools
     {
         public bool TestWcfSoapConnection(string endpoint)
         {
-            if(endpoint.Trim().Length == 0)
+            if(string.IsNullOrEmpty(endpoint))
             {
                 return false;
             }

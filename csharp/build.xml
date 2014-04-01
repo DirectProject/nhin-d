@@ -13,6 +13,7 @@
 
 	<!-- place any strings/properties here that are likely to be used more than once -->
 	<PropertyGroup>
+		<VisualStudioVersion>12.0</VisualStudioVersion>
 	    <Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
 		<agent_solution>.\build\agent.sln</agent_solution>
 		<gateway_solution>.\build\gateway.sln</gateway_solution>
@@ -55,11 +56,11 @@
 	
 	
 	<Target Name="build-agent">
-		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
+		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration);VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 
 	<Target Name="clean-agent">
-		<MSBuild Projects="$(agent_solution)" Targets="Clean" />
+		<MSBuild Projects="$(agent_solution)" Targets="Clean" Properties="VisualStudioVersion=$(VisualStudioVersion)"/>
 	</Target>
 
 	<Target Name="build-agent-help" DependsOnTargets="build-agent">
@@ -77,42 +78,42 @@
 	</Target>	
 	
 	<Target Name="build-gateway32" DependsOnTargets="get-smtpEventHandlerBin">
-		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="build-gateway64" DependsOnTargets="get-smtpEventHandlerBin">
-		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 		
 	<Target Name="build-smtpEventHandler32" DependsOnTargets="build-gateway32">
-		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="build-smtpEventHandler64" DependsOnTargets="build-gateway64">
-		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 
 	<Target Name="clean-gateway">
 		<!-- common files may have been removed, so... ugly but rebuild them and then clean them! The pain of a
 		     shared bin folder. -->
 		<!-- <MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=$(Configuration);Architecture=Any CPU" /> -->
-		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=$(Configuration);Architecture=Any CPU" />
+		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=$(Configuration);Architecture=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="build-configui">
-		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="clean-configui">
-		<MSBuild Projects="$(configui_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+		<MSBuild Projects="$(configui_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="clean-xd">
-		<MSBuild Projects="$(xd_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+		<MSBuild Projects="$(xd_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="build-xd">
-		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 
 	
@@ -221,7 +222,7 @@
 	</Target>
 	
 	<Target Name="update-nuget">
-		<Exec Command="$(MSBuildProjectDirectory)\..\build\.nuget\nuget restore $(gateway_solution)" /> 
+		<Exec Command="$(MSBuildProjectDirectory)\build\.nuget\nuget restore $(gateway_solution)" /> 
 	</Target>
 	
 </Project>
