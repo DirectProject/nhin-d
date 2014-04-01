@@ -567,7 +567,7 @@ begin
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
     textBox := TCustomEdit(wizardPage.FindComponent(objectName));   
-    labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
+    //labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
     if not (textBox = nil) then
     begin
       value := Trim(textBox.text);
@@ -613,7 +613,7 @@ begin
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
     textBox := TCustomEdit(wizardPage.FindComponent(objectName));   
-    labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
+     
     if not (textBox = nil) then
     begin
       value := Trim(textBox.text);
