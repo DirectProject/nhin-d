@@ -1,0 +1,227 @@
+<Project ToolsVersion="4.0" DefaultTargets="build-all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<!-- MSBuild documentation found at http://msdn.microsoft.com/en-us/library/0k6kkbsd.aspx -->
+	
+	<!-- Tigris - external\Tigris\MSBuildTasks.msi be installed http://msbuildtasks.tigris.org/ -->
+	<!-- After installation the help file is at [Program Files]\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.chm -->
+	<!-- ON 64-bit machines you may need to change line 6 in the MSBuild.Community.Tasks.Targets 
+			 to $(MSBuildExtensionsPath32)\MSBuildCommunityTasks -->
+	<!--<Import Project=""$(MSBuildProjectDirectory)\.build\MSBuild.Community.Tasks" /> -->
+	
+	<!-- this imports the xunit and xunitproject tasks -->
+	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
+
+	<!-- place any strings/properties here that are likely to be used more than once -->
+	<PropertyGroup>
+		<Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
+		<agent_solution>.\build\agent.sln</agent_solution>
+		<gateway_solution>.\build\gateway.sln</gateway_solution>
+		<smtpEventHandler_solution>.\build\smtpEventHandler.sln</smtpEventHandler_solution>
+		<xd_solution>.\build\xd.sln</xd_solution>
+		<configui_solution>.\build\AdminUI.sln</configui_solution>
+		
+		<!-- need to place this here to get around some sticky quote issues -->
+		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content ..\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content ..\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
+		<PsInstallerFile>powershell -Command "(Get-Content .installer\Direct.iss) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\Direct.iss"</PsInstallerFile>
+		<installer_tools_solution>$(MSBuildProjectDirectory)\toolutil\install.tools\install.tools.sln</installer_tools_solution>
+		<SqlCmd2012>"C:\Program Files\Microsoft SQL Server\110\Tools\Binn\sqlcmd.exe"</SqlCmd2012>
+		<WebSiteName>Default Web Site</WebSiteName>
+		<AppPoolName>ASP.NET v4.0</AppPoolName>
+		<ConfigServicName>ConfigService</ConfigServicName>
+		<ConfigServicPath>$(MSBuildProjectDirectory)\Config\Service</ConfigServicPath>
+		<CreateConfigServiceWebApp>powershell -Command "set-executionpolicy remotesigned; Import-Module WebAdministration; New-WebApplication -Name '$(ConfigServicName)' -Site '$(WebSiteName)'  -PhysicalPath '$(ConfigServicPath)' -ApplicationPool '$(AppPoolName)' -Force" ;</CreateConfigServiceWebApp>
+		<PsListTargets>powershell -Command "$build = [xml](Get-Content $(MSBuildProjectFile)); $build.Project.Target| Select-Object Name | Sort-Object Name "</PsListTargets>
+	</PropertyGroup>
+
+	<Target Name="targets">
+		<Exec Command='$(PsListTargets)' />
+	</Target>
+	
+	<Target Name="update-version-info">
+		<Exec Command='$(PsGlobalAssemblyInfo)' />
+		<Exec Command='$(PsInstallerFile)' />
+	</Target>
+	
+	<!-- Aliases -->
+	<Target Name="build" DependsOnTargets="update-version-info;build-all" />
+	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xd;build-configui" />
+
+	<Target Name="clean" DependsOnTargets="clean-all" />
+	<Target Name="clean-all" DependsOnTargets="clean-gateway;clean-agent;clean-xd;clean-configui;clean-configui" />
+
+	<Target Name="test" DependsOnTargets="test-all" />
+	<Target Name="test-all" DependsOnTargets="test-agent;test-gateway;test-xd;test-certPolicy;test-store;" />
+
+	
+	
+	<Target Name="build-agent">
+		<MSBuild Projects="$(agent_solution)" Targets="build" Properties="Configuration=$(Configuration)" />
+	</Target>
+
+	<Target Name="clean-agent">
+		<MSBuild Projects="$(agent_solution)" Targets="Clean" Properties="VisualStudioVersion=$(VisualStudioVersion)"/>
+	</Target>
+
+	<Target Name="build-agent-help" DependsOnTargets="build-agent">
+		<Exec Command="build\sc_help.bat bin\debug\Health.Direct.Agent.dll" />
+	</Target>
+
+	<Target Name="build-gateway">
+		<CallTarget Targets="build-gateway32" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'x86' " />
+		<CallTarget Targets="build-gateway64" Condition=" '$(PROCESSOR_ARCHITECTURE)' == 'AMD64' " />
+	</Target>
+
+	<Target Name="build-smtpEventHandler" DependsOnTargets="Clean">
+		<CallTarget Targets="build-smtpEventHandler32"  />
+		<CallTarget Targets="build-smtpEventHandler64"  />
+	</Target>	
+	
+	<Target Name="build-gateway32" DependsOnTargets="get-smtpEventHandlerBin">
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
+	</Target>
+	
+	<Target Name="build-gateway64" DependsOnTargets="get-smtpEventHandlerBin">
+		<MSBuild Projects="$(gateway_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
+	</Target>
+		
+	<Target Name="build-smtpEventHandler32" DependsOnTargets="build-gateway32">
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=Win32" />
+	</Target>
+	
+	<Target Name="build-smtpEventHandler64" DependsOnTargets="build-gateway64">
+		<MSBuild Projects="$(smtpEventHandler_solution)" Targets="rebuild" Properties="Configuration=$(Configuration);Platform=x64" />
+	</Target>
+
+	<Target Name="clean-gateway">
+		<!-- common files may have been removed, so... ugly but rebuild them and then clean them! The pain of a
+		     shared bin folder. -->
+		<!-- <MSBuild Projects="$(gateway_solution)" Targets="build" Properties="Configuration=$(Configuration);Architecture=Any CPU" /> -->
+		<MSBuild Projects="$(gateway_solution)" Targets="clean" Properties="Configuration=$(Configuration);Architecture=Any CPU" />
+	</Target>
+	
+	<Target Name="build-configui">
+		<MSBuild Projects="$(configui_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+	</Target>
+	
+	<Target Name="clean-configui">
+		<MSBuild Projects="$(configui_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+	</Target>
+	
+	<Target Name="clean-xd">
+		<MSBuild Projects="$(xd_solution)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+	</Target>
+	
+	<Target Name="build-xd">
+		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+	</Target>
+
+	
+	
+	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
+	<Target Name="test-agent" >
+		<xunitproject ProjectFile="unittests\agent.release.xunit" Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\agent.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+	
+	<Target Name="test-gateway" >
+		<xunitproject ProjectFile="unittests\gateway.release.xunit" Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\gateway.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+
+	<Target Name="test-certPolicy" >
+		<xunitproject ProjectFile="unittests\certPolicy.release.xunit" Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\certPolicy.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+	
+	<Target Name="test-xd" >
+		<xunitproject ProjectFile="unittests\xd.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+		
+	<Target Name="test-smtp-integration" DependsOnTargets="create-db;create-config-webservice;create-testData">	    
+		<xunitproject ProjectFile="unittests\smtpAgent.integration.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\smtpAgent.integration.xunit" Condition=" $(Configuration) == 'Debug' "/>
+	</Target>
+		
+	<Target Name="create-config-webservice">	    
+		<Exec Command='$(CreateConfigServiceWebApp)' />
+	</Target>
+	
+     <Target Name="test-store" DependsOnTargets="create-db;">
+		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
+		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' " Verbose="true" /> 
+	</Target>
+
+	<Target Name="create-db" >
+		<Exec Command="SqlLocalDb stop Projects " IgnoreExitCode="true"/>
+		<Exec Command="SqlLocalDb create Projects -s" />
+		<Exec Command="SqlLocalDb share Projects ProjectsShare" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i createdatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />		
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="IIS APPPOOL\ASP.NET v4.0"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+	</Target>
+	
+	<Target Name="create-testData">
+		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdns.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+		<Exec Command="AdminConsole.exe USER_REMOVE admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
+		<Exec Command="AdminConsole.exe USER_ADD admin admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
+		<Exec Command="AdminConsole.exe USER_STATUS_SET admin Enabled " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
+	</Target>
+	
+	<Target Name="publish-configui">
+		<MSBuild Targets="clean-configui-install" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
+		<CallTarget Targets="build-configui" />
+		
+		<AspNetCompiler
+				VirtualPath="/ConfigUI"
+				PhysicalPath="admin\adminmvc\"
+				TargetPath=".\installer\configui\"
+				Clean="true"
+				Force="true"
+				Updateable="true"
+				ToolPath="C:\Windows\Microsoft.NET\Framework\v4.0.30319\"
+				/>
+				
+		<!-- Clean up after ourselves -->
+		<ItemGroup>
+			<FilesToDelete Include=".\installer\configui\AdminMvc.*" />
+		</ItemGroup>
+		<RemoveDir Directories=".\installer\configui\common;.\installer\configui\controllers;.\installer\configui\models;.\installer\configui\obj;.\installer\configui\properties" />
+		<Delete Files="@(FilesToDelete)" /> 
+	</Target>
+
+	<Target Name="clean-configui-install">
+		<RemoveDir Directories=".\installer\configui" />
+	</Target>
+
+	<!--<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway32;build-gateway64;publish-configui" />-->
+	<Target Name="prepare-installer" DependsOnTargets="clean;build-gateway64;publish-configui" />
+
+	<Target Name="get-smtpEventHandlerBin" >
+		<ItemGroup>
+			<smtpEventHandler32 Include="$(MSBuildProjectDirectory)\gateway\smtpEventHandler\bin\$(Configuration)\Win32\**\*.*"/>
+			<smtpEventHandler64 Include="$(MSBuildProjectDirectory)\gateway\smtpEventHandler\bin\$(Configuration)\x64\**\*.*"/>
+		</ItemGroup>
+		
+		<Copy
+            SourceFiles="@(smtpEventHandler32)"
+            DestinationFiles="@(smtpEventHandler32->'$(MSBuildProjectDirectory)\bin\$(Configuration)\Win32\%(Filename)%(Extension)')"
+        />
+		<Copy
+            SourceFiles="@(smtpEventHandler64)"
+            DestinationFiles="@(smtpEventHandler64->'$(MSBuildProjectDirectory)\bin\$(Configuration)\x64\%(Filename)%(Extension)')"
+        />
+	</Target>
+	
+	<Target Name="build-installer">
+		<Error Text="Use the build-installer.bat script found in the installer directory." />
+	</Target>
+	
+	<Target Name="update-nuget">
+		<Exec Command="$(MSBuildProjectDirectory)\build\.nuget\nuget restore $(gateway_solution)" /> 
+	</Target>
+	
+</Project>

@@ -1,0 +1,59 @@
+Received: from localhost.localdomain ([127.0.0.1])
+          by cernhsvmail03 (JAMES SMTP Server 2.3.2) with SMTP ID 101
+          for <gm2552@securehealthemail.com>;
+          Mon, 7 Jun 2010 11:34:11 -0500 (CDT)
+Received: from CERNHSVWAS11.cmsext.com (unknown [10.137.8.26])
+	by ipvmhemail01.northamerica.cerner.net (Postfix) with ESMTP id BC3704C002
+	for <gm2552@securehealthemail.com>; Mon,  7 Jun 2010 11:34:11 -0500 (CDT)
+Date: Mon, 7 Jun 2010 11:34:11 -0500 (CDT)
+From: "Lindsey, Leslie" <llindsey@messaging.cernerdemos.com>
+To: "gm2552@securehealthemail.com" <gm2552@securehealthemail.com>
+Message-ID: <928790364.150.1275928451709.JavaMail.llindsey@cernhsvmail03.cernerasp.com>
+Subject: test image
+MIME-Version: 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_152_812658800.1275928451709"
+X-CHE-RECIPIENT_ATTRIBUTE_0: EntityType=ENTITY|
+Disposition-Notification-To: "Lindsey, Leslie" <llindsey+readreceipt@messaging.cernerdemos.com>
+X-PRIORITY: 3
+
+------=_Part_152_812658800.1275928451709
+Content-Type: image/png; name=iMac-icon.png
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=iMac-icon.png
+
+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
+AAAASUVORK5CYII=
+------=_Part_152_812658800.1275928451709
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+<p>test image</p>
+------=_Part_152_812658800.1275928451709--

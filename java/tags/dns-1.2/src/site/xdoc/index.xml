@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Security And Trust Agent</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: DNS Services</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+               The DNS services implement a simple authoritative only DNS server for hosting DNS records for a Direct 
+               messaging domain. It is intentionally tuned to handle only certain type of DNS records including CERT 
+               type records as defined by the security and trust 
+               <a href="http://nhindirect.org/Content+Security+for+Simple+Health+Trans">specification.</a>              
+            </p>
+            <p>
+               The server can be run as a stand alone application or may be deployed as an operating system service. 
+            </p>           
+            <p>
+               For details on deploying and configuring the DNS server, see the DNS server 
+               <a href="users-guide/index.html">users guide.</a>                               
+            </p> 
+        </section>
+    </body>
+</document>

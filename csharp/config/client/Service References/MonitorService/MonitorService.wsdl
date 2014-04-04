@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="urn:directproject:config/store/082010" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:directproject:config/store/082010" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="urn:directproject:config/store/082010/Imports">
+      <xsd:import schemaLocation="http://localhost:6692/MonitorService.svc?xsd=xsd0" namespace="urn:directproject:config/store/082010" />
+      <xsd:import schemaLocation="http://localhost:6692/MonitorService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:6692/MonitorService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IMdnMonitor_Start_InputMessage">
+    <wsdl:part name="parameters" element="tns:Start" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_Start_OutputMessage">
+    <wsdl:part name="parameters" element="tns:StartResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_Start_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_Update_InputMessage">
+    <wsdl:part name="parameters" element="tns:Update" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_Update_OutputMessage">
+    <wsdl:part name="parameters" element="tns:UpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_Update_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredProcessed_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredProcessed" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredProcessed_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredProcessedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredProcessed_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredDispatched_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredDispatched" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredDispatched_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetExpiredDispatchedResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_GetExpiredDispatched_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_SweepTimouts_InputMessage">
+    <wsdl:part name="parameters" element="tns:SweepTimouts" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_SweepTimouts_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SweepTimoutsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_SweepTimouts_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_EnumerateMdns_InputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateMdns" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_EnumerateMdns_OutputMessage">
+    <wsdl:part name="parameters" element="tns:EnumerateMdnsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IMdnMonitor_EnumerateMdns_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
+  <wsdl:portType name="IMdnMonitor">
+    <wsdl:operation name="Start">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/Start" message="tns:IMdnMonitor_Start_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/StartResponse" message="tns:IMdnMonitor_Start_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/StartConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_Start_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="Update">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/Update" message="tns:IMdnMonitor_Update_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/UpdateResponse" message="tns:IMdnMonitor_Update_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/UpdateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_Update_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetExpiredProcessed">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessed" message="tns:IMdnMonitor_GetExpiredProcessed_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessedResponse" message="tns:IMdnMonitor_GetExpiredProcessed_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredProcessedConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_GetExpiredProcessed_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetExpiredDispatched">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatched" message="tns:IMdnMonitor_GetExpiredDispatched_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatchedResponse" message="tns:IMdnMonitor_GetExpiredDispatched_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/GetExpiredDispatchedConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_GetExpiredDispatched_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SweepTimouts">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimouts" message="tns:IMdnMonitor_SweepTimouts_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsResponse" message="tns:IMdnMonitor_SweepTimouts_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/SweepTimoutsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_SweepTimouts_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="EnumerateMdns">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/EnumerateMdns" message="tns:IMdnMonitor_EnumerateMdns_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/EnumerateMdnsResponse" message="tns:IMdnMonitor_EnumerateMdns_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/IMdnMonitor/EnumerateMdnsConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:IMdnMonitor_EnumerateMdns_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>

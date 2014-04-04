@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="TrustBundle">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Profile" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="DistributionPoint" minOccurs="1" maxOccurs="unbounded"/>
+        <xs:element ref="ValidFrom" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="ValidTo" minOccurs="0" maxOccurs="1"/>
+        <xs:element ref="Anchors" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Profile" type="xs:string"/>
+  <xs:element name="Anchors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Anchor" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Anchor">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="X509IssuerSerial" minOccurs="1" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="X509IssuerSerial">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="X509IssuerName" minOccurs="1" maxOccurs="1"/>
+        <xs:element ref="X509SerialNumber" minOccurs="1" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="X509IssuerName" type="xs:string"/>
+  <xs:element name="X509SerialNumber" type="xs:integer"/>
+  <xs:element name="ValidFrom" type="xs:dateTime"/>
+  <xs:element name="ValidTo" type="xs:dateTime"/>
+  <xs:element name="DistributionPoint" type="xs:anyURI"/>
+</xs:schema>
+

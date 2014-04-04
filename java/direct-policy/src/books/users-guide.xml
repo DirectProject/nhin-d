@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<book xmlns="http://maven.apache.org/BOOK/1.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/BOOK/1.0.0 ../../../doxia/doxia-book/target/generated-site/xsd/book-1.0.0.xsd">
+  <id>users-guide</id>
+  <title>DirectProject Policy Enablement Users Guide</title>
+  <chapters>
+    <chapter>
+      <id>preface</id>
+      <title>Preface</title>
+      <sections>
+        <section>
+          <id>preface</id>
+        </section>
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>dev</id>
+      <title>Technical Guide</title>
+      <sections>
+        <section>
+          <id>dev-intro</id>     
+        </section>   
+        <section>
+          <id>dev-arch</id>     
+        </section>         
+        <section>
+          <id>dev-sta</id>     
+        </section>                                                   
+      </sections>
+    </chapter>  
+    <chapter>
+      <id>tools</id>
+      <title>Policy Development And Tools</title>
+      <sections>
+        <section>
+          <id>tools-intro</id>     
+        </section>   
+        <section>
+          <id>tools-simpleTextV1</id>     
+        </section>   
+        <section>
+          <id>tools-policyBuilder</id>     
+        </section>  
+        <section>
+          <id>tools-examplePolicies</id>     
+        </section>                  
+      </sections>
+    </chapter>    
+  </chapters>
+</book>

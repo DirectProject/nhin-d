@@ -1,0 +1,39 @@
+<Project DefaultTargets="build-installer" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	
+	<PropertyGroup>
+		<VisualStudioVersion>12.0</VisualStudioVersion>
+		<Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
+		<ProductName>Direct Project</ProductName>
+		<Copyright>Copyright 2010 &#169;</Copyright>
+		<Version>0.0.0.0</Version>
+		<!-- need to place this here to get around some sticky quote issues -->
+		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content ..\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content ..\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
+		<PsInstallerFile>powershell -Command "(Get-Content .\Direct.iss) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\Direct.iss"</PsInstallerFile>
+		<installer_tools_solution>$(MSBuildProjectDirectory)\toolutil\install.tools\install.tools.sln</installer_tools_solution>
+		<gateway_solution>$(MSBuildProjectDirectory)\..\build\gateway.sln</gateway_solution>
+	</PropertyGroup>
+	<Target Name="update-version-info">
+		<Exec Command='$(PsGlobalAssemblyInfo)' />
+		<Exec Command='$(PsInstallerFile)' />
+	</Target>
+
+	<Target Name="build-installer-tools">
+		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
+	</Target>
+	
+	<Target Name="build-installer" DependsOnTargets="update-nuget;build-installer-tools;update-version-info">
+		<Exec Command='"$(MSBuildProjectDirectory)\..\build\packages\Tools.InnoSetup.5.5.4\tools\iscc.exe" /Q .\Direct.iss /DConfiguration=$(Configuration)' />		
+		<MSBuild Targets="clean-configui" Projects="..\build.xml" Properties="state=post" />
+	</Target>
+	
+	<!--This will load nuget dependancie assoicated to only the solution and not in any project 
+	    such as the Tools.InnoSetup.x.x.x project-->
+	<Target Name="update-nuget">
+		<Exec Command="$(MSBuildProjectDirectory)\..\build\.nuget\nuget restore $(gateway_solution)" /> 
+	</Target>
+	
+	<Target Name="publish-configui">
+		<MSBuild Targets="publish-configui" Projects="..\build.xml" />
+	</Target>
+	
+</Project>

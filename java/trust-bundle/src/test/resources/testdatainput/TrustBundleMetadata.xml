@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- MetaData File For LoA 3 TrustBundle -->
+<TrustBundle xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="TrustBundleMetaData.xsd">
+    <Profile>DirectTrust LoA-3</Profile>
+    <DistributionPoint>http://www.trust.org/trustbundle1.p7b</DistributionPoint>
+    <ValidFrom>2013-02-12T00:00:00</ValidFrom>
+    <ValidTo>2014-02-12T00:00:00</ValidTo>
+    <Anchors>
+        <Anchor>
+            <X509IssuerSerial>
+                <X509IssuerName>CN=Direct L3 CA, OU=Issued By DigiCert, O=HISP Name, L=Town, ST=UT, C=US</X509IssuerName>
+                <X509SerialNumber>12345678</X509SerialNumber>
+            </X509IssuerSerial>
+        </Anchor>
+    </Anchors>
+</TrustBundle>

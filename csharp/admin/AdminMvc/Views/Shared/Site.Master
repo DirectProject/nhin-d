@@ -1,0 +1,58 @@
+﻿<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
+<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <link rel="shortcut icon" href="~/content/favicon.ico" />
+    <link rel="icon" type="image/vnd.microsoft.icon" href="~/content/favicon.ico" />
+    <title>The Direct Project Console - <asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
+    <%= Html.JQueryUITheme("redmond") %>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
+    <script src="<%= Url.Content("~/Scripts/Common.js") %>" type="text/javascript" language="javascript"></script>
+    <script src="<%= Url.Content("~/Scripts/Master.js") %>" type="text/javascript" language="javascript"></script>
+</head>
+
+<body class="ui-widget-content">
+    <div>
+
+        <div class="ui-widget-header border-none">
+            <a href="http://nhindirect.org"><img src="<%= Url.Content("~/Content/logo.png") %>" alt="Direct Project link" border="0" style="padding: 2px 5px;" /></a>
+            <ul style="float: right; font-size: 10px; height: 30px; line-height: 30px; font-weight: normal; margin-right: 30px;">
+                <li style="display: inline; margin: 0; padding: 0; text-transform: lowercase;"><%= HttpContext.Current.User.Identity.Name %></li>
+                <li style="border-left: solid 1px; padding-left: 10px; margin-left: 8px; display: inline;"><%= Html.ActionLink("Log Out", "LogOff", "Account") %></li>
+            </ul>
+        </div>
+
+        <div class="clear"></div>
+
+        <script type="text/javascript" src="http://jqueryui.com/themeroller/themeswitchertool/"></script>
+        <div id="switcher" style="float: right; margin: 5px;"></div>
+        <br class="clear" />
+
+        <div class="ui-tabs ui-widget ui-widget-content border-none">
+            <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header border-none ui-corner-all">
+                <li id="tab-home" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Home", "Index", "Home")%></li>
+                <li id="tab-domains" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Domains", "Index", "Domains")%></li>
+                <li id="tab-addresses" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Addresses", "Index", "Addresses")%></li>
+                <li id="tab-anchors" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Anchors", "Index", "Anchors")%></li>
+                <li id="tab-certificates" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Certificates", "Index", "Certificates")%></li>
+                <li id="tab-dnsrecords" class="ui-state-default ui-corner-top"><%= Html.ActionLink("DNS Records", "Index", "DnsRecords")%></li>
+                <li id="tab-mdnrecords" class="ui-state-default ui-corner-top"><%= Html.ActionLink("MDN Records", "Index", "MdnRecords")%></li>
+                <!-- <li id="tab-users" class="ui-state-default ui-corner-top"><%= Html.ActionLink("Users", "Index", "Users")%></li> -->
+            </ul>
+        </div>
+        <div id="main" class="ui-tabs-panel ui-widget-content border-none" style="padding: 10px;">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+    </div>
+
+    <script type="text/javascript" language="javascript">
+        //$(function() { $('#switcher').themeswitcher({ expires: 30, path: '/' }); });
+        var controllerName = '<%= ViewContext.RouteData.Values["Controller"].ToString().ToLower() %>';
+    </script>
+</body>
+</html>

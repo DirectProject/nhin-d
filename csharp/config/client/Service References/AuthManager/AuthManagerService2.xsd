@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:6692/AuthManagerService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+  <xs:element name="GetUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="GetUserResult" nillable="true" type="tns:Administrator" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Administrator">
+    <xs:sequence>
+      <xs:element name="CreateDate" type="xs:dateTime" />
+      <xs:element name="ID" type="xs:long" />
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="PasswordHash" nillable="true" type="q1:PasswordHash" />
+      <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" name="Status" type="q2:EntityStatus" />
+      <xs:element name="UpdateDate" type="xs:dateTime" />
+      <xs:element name="Username" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Administrator" nillable="true" type="tns:Administrator" />
+  <xs:complexType name="ConfigStoreFault">
+    <xs:sequence>
+      <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="Error" type="q3:ConfigStoreError" />
+      <xs:element minOccurs="0" name="Message" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="ValidateUser">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="username" nillable="true" type="xs:string" />
+        <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" minOccurs="0" name="passwordHash" nillable="true" type="q4:PasswordHash" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ValidateUserResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="ValidateUserResult" type="xs:boolean" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

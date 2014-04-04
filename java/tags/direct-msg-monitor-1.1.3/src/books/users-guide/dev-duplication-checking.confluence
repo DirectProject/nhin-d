@@ -1,0 +1,47 @@
+h1. Notification Duplication Checking
+
+The implementation guide for delivery notification specifies that once a delivery notification message is delivered to the edge client, no other notifications should be sent.  This essentially 'closes' the notification state.  NOTE:  This does not apply to MDNs for display purposes (read receipts).  Read receipts are explicitly requested for knowing when the recipients read the message and are not considered a delivery notification by the implementation guide.
+
+h2. Duplicate Notification State Manager
+
+As messages are processed by the gateway and tracked by the monitor, they are submitted to the duplicate state manager which is responsible for determining if a success of failure notification message has been delivered to the edge client.  The state manager is defined by the DuplicateNotificationStateManager interface and by default implemented by the DefaultDuplicateNotificationStateManager class.
+
+{code}
+package org.nhindirect.monitor.processor;
+
+public interface DuplicateNotificationStateManager 
+{
+	public void addNotification(Tx notificationMessage) throws DuplicateNotificationStateManagerException;
+	
+	public boolean suppressNotification(Tx notificationMessage) throws DuplicateNotificationStateManagerException;
+
+	public void purge() throws DuplicateNotificationStateManagerException;
+}
+{code}
+
+As the gateway processes a message, it submits the message the tracking service.  The tracking service determines if the message is subject to the timely and reliable messaging rules.  If so, the message is placed in the duplicate state manager.  In the default deployment, this is handled by the TimelyAndReliableCompletionCondition class.
+
+Before the gateway issues a notification message to the edge client, it asks the monitoring service (via the monitoring service client) if the notification message should be suppressed according to timely and reliable duplication rules.  This 'ask' is delegated to the state manager which determines if a notification message has already been sent by calling the suppressNotification method.  If the notification should be suppressed, then true is returned.  Otherwise it responds with false, and the gateway sends the notification onto the edge client.
+
+h2. State Manager Purge
+
+Because notification may delayed for some time, the state manager must maintain state information for a relatively long period.  This can result in the size of the state manager's store to become quite large over time.  However, state does not need to be maintained forever, so the state manager allows message state to be purged after a configurable amount of time.  The default time is seven days.  After this time period, the state is purged from the store.
+
+To execute the purge operation, the default deployment uses a Camel timer component that executed on a scheduled and configurable interval.  Like all other components in Camel, it is defined using the DSL.  The following excerpt defines the time that purges the state manager store:
+
+{code}
+  <camelContext xmlns="http://camel.apache.org/schema/spring">      
+    <!--  Simple timer to purge exchanges in the duplication data base.
+          This can replaced more sophisticated quartz configuration using 
+          the Camel Quartz component and cron expressions.  Default configuration
+          purges the table once every 6 hours.
+     -->    
+    <route id="duplicate-store-purge">
+      <from uri="timer://purgeTimer?period=6h"/>
+      <bean ref="duplicationStateManager" method="purge"/>
+    </route> 
+  </camelContext>
+{code}
+
+
+
