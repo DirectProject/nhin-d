@@ -21,9 +21,7 @@
 		<configui_solution>.\build\AdminUI.sln</configui_solution>
 		
 		<!-- need to place this here to get around some sticky quote issues -->
-		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content ..\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content ..\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
-		<PsInstallerFile>powershell -Command "(Get-Content .installer\Direct.iss) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\Direct.iss"</PsInstallerFile>
-		<installer_tools_solution>$(MSBuildProjectDirectory)\toolutil\install.tools\install.tools.sln</installer_tools_solution>
+		<PsGlobalAssemblyInfo>powershell -Command "(Get-Content .\GlobalAssemblyInfo.cs) | Foreach-Object {$_ -replace '\d+\.\d+\.\d+\.\d+', '$(Version)'} | Set-Content .\GlobalAssemblyInfo.cs"</PsGlobalAssemblyInfo>
 		<SqlCmd2012>"C:\Program Files\Microsoft SQL Server\110\Tools\Binn\sqlcmd.exe"</SqlCmd2012>
 		<WebSiteName>Default Web Site</WebSiteName>
 		<AppPoolName>ASP.NET v4.0</AppPoolName>
@@ -39,11 +37,10 @@
 	
 	<Target Name="update-version-info">
 		<Exec Command='$(PsGlobalAssemblyInfo)' />
-		<Exec Command='$(PsInstallerFile)' />
 	</Target>
 	
 	<!-- Aliases -->
-	<Target Name="build" DependsOnTargets="update-version-info;build-all" />
+	<Target Name="build" DependsOnTargets="build-all" />
 	<Target Name="build-all" DependsOnTargets="build-agent;build-gateway;build-xd;build-configui" />
 
 	<Target Name="clean" DependsOnTargets="clean-all" />
@@ -221,7 +218,7 @@
 	</Target>
 	
 	<Target Name="update-nuget">
-		<Exec Command="$(MSBuildProjectDirectory)\..\build\.nuget\nuget restore $(gateway_solution)" /> 
+		<Exec Command="$(MSBuildProjectDirectory)\build\.nuget\nuget restore $(gateway_solution)" /> 
 	</Target>
 	
 </Project>
