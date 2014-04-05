@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Policy Enablement Engine</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Policy Enablement Engine</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+               The direct-policy module is a library containing the policy enable engine for the DirectProject Java reference implementation.  It implements
+               the ideas and constructs introduced in the Policy Enablement proposal <a href="http://wiki.directproject.org/file/detail/Direct+%2B+Policy+Enablement.docx">document</a>  
+               and contain APIs to create and validate policies for x509 certificates.
+            </p>    
+            <p>
+               For more detail on developing and configuring policy definitions, refer to the
+               <a href="users-guide/index.html">users guide.</a>                
+            </p>                  
+        </section>
+    </body>
+</document>

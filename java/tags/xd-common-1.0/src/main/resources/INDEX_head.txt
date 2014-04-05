@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>XDM Message</title>
+  </head>
+  <body>
+    <h1>XDM Message</h1>
+    <p>
+       This package contains an XDS message. The message was created by
+       Happy Valley Clinic and is solely intended for the intended recipients
+       listed in the XDS Metadata. Any other use is forbidden.
+    </p>
+    <h2>Package Contents</h2>
+    <ul>
+      <li>
+        <a href="README.txt">README.txt</a> - 
+          creator contact information and other general information
+      </li>
+      <li>
+        <a href="SUBSET01/">SUBSET01/</a> - 
+          XDS Submission Set 1
+        <ul>
+          <li>
+            <a href="SUBSET01/METADATA.xml">SUBSET01/METADATA.xml</a> -
+              XDS information about the content, recipient, author, etc.
+          </li>

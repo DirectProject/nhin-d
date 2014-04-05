@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="SmtpAgentConfig" nillable="true" type="SmtpAgentConfig" />
+  <xs:complexType name="SmtpAgentConfig">
+    <xs:complexContent mixed="false">
+      <xs:extension base="AgentSettings">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Log" type="LogSettings" />
+          <xs:element minOccurs="0" maxOccurs="1" name="LogVerbose" type="xs:boolean" />
+          <xs:element minOccurs="0" maxOccurs="1" name="DomainManager" type="ClientSettings" />
+          <xs:element minOccurs="0" maxOccurs="1" name="AddressManager" type="ClientSettings" />
+          <xs:element minOccurs="0" maxOccurs="1" name="Notifications" type="NotificationSettings" />
+          <xs:element minOccurs="0" maxOccurs="1" name="InternalMessage" type="InternalMessageSettings" />
+          <xs:element minOccurs="0" maxOccurs="1" name="IncomingRoutes" type="ArrayOfMessageRoute" />
+          <xs:element minOccurs="0" maxOccurs="1" name="RawMessage" type="RawMessage" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ProcessIncoming" type="ProcessIncoming" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ProcessOutgoing" type="ProcessOutgoing" />
+          <xs:element minOccurs="0" maxOccurs="1" name="BadMessage" type="ProcessBadMessage" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="AgentSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Domain" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PrivateCerts" type="certificateStore" />
+      <xs:element minOccurs="0" maxOccurs="1" name="PublicCerts" type="certificateStore" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Anchors" type="TrustAnchorSettings" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Cryptographer" type="CryptographerSettings" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="certificateStore">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="1">
+        <xs:element minOccurs="0" maxOccurs="1" name="MachineResolver" type="MachineCertificateStore" />
+        <xs:element minOccurs="0" maxOccurs="1" name="DnsResolver" type="DnsCertificateStore" />
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MachineCertificateStore">
+    <xs:complexContent mixed="false">
+      <xs:extension base="CertResolverSettings">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Location" type="StoreLocation" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CertResolverSettings" abstract="true" />
+  <xs:complexType name="DnsCertificateStore">
+    <xs:complexContent mixed="false">
+      <xs:extension base="CertResolverSettings">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="ServerIP" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Timeout" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="1" name="FallbackDomain" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="AssumeWildcardSupport" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="StoreLocation">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="CurrentUser" />
+      <xs:enumeration value="LocalMachine" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="TrustAnchorSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="MachineResolver" type="MachineAnchorStore" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MachineAnchorStore">
+    <xs:complexContent mixed="false">
+      <xs:extension base="TrustAnchorResolverSettings">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="Incoming" type="MachineCertificateStore" />
+          <xs:element minOccurs="0" maxOccurs="1" name="Outgoing" type="MachineCertificateStore" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="TrustAnchorResolverSettings" abstract="true" />
+  <xs:complexType name="CryptographerSettings">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="DefaultEncryption" type="EncryptionAlgorithm" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DefaultDigest" type="DigestAlgorithm" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="EncryptionAlgorithm">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="RSA_3DES" />
+      <xs:enumeration value="AES128" />
+      <xs:enumeration value="AES192" />
+      <xs:enumeration value="AES256" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="DigestAlgorithm">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SHA1" />
+      <xs:enumeration value="SHA256" />
+      <xs:enumeration value="SHA384" />
+      <xs:enumeration value="SHA512" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="LogSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="DirectoryPath" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="NamePrefix" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Ext" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RolloverFrequency" type="RolloverMode" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="RolloverMode">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="None" />
+      <xs:enumeration value="Minute" />
+      <xs:enumeration value="Hour" />
+      <xs:enumeration value="Day" />
+      <xs:enumeration value="Month" />
+      <xs:enumeration value="Year" />
+    </xs:restriction>
+	</xs:simpleType>
+  <xs:complexType name="ClientSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Url" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="MaxReceivedMessageSize" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Secure" type="xs:boolean" />
+      <xs:element minOccurs="1" maxOccurs="1" name="ReceiveTimeoutSeconds" type="xs:int" />
+      <xs:element minOccurs="1" maxOccurs="1" name="SendTimeoutSeconds" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="NotificationSettings">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="AutoResponse" type="xs:boolean" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Text" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="InternalMessageSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="PickupFolder" type="xs:string" />
+      <xs:element minOccurs="1" maxOccurs="1" name="EnableRelay" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfMessageRoute">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Route" nillable="true" type="MessageRoute" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="MessageRoute">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MessageProcessingSettings">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="AddressType" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="MessageProcessingSettings">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="CopyFolder" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ProcessBadMessage">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MessageProcessingSettings" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ProcessOutgoing">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MessageProcessingSettings">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="EnableRelay" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ProcessIncoming">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MessageProcessingSettings">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="EnableRelay" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="RawMessage">
+    <xs:complexContent mixed="false">
+      <xs:extension base="MessageProcessingSettings" />
+    </xs:complexContent>
+  </xs:complexType>
+</xs:schema>

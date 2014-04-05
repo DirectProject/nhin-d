@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl" uri="wsdl/XDS.b_DocumentRepositoryWSDLSynchMTOM.wsdl"/>
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/IHE/XDS.b_DocumentRepositoryMTOM.xsd" uri="schema/IHE/XDS.b_DocumentRepositoryMTOM.xsd"/>
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/rs.xsd" uri="schema/ebRS/rs.xsd"/>
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/rim.xsd" uri="schema/ebRS/rim.xsd"/>
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/lcm.xsd" uri="schema/ebRS/lcm.xsd"/>
+    <system systemId="file:/C:/NBProjects/WebServices/PIXXDS/schema/ebRS/query.xsd" uri="schema/ebRS/query.xsd" />
+    <system systemId="http://www.w3.org/2001/xml.xsd" uri="wsdl/www.w3.org/2001/xml.xsd"/>
+</catalog>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+            <Class name="~.*Test.*" />   
+    </Match>      
+    <Match>
+        <Bug pattern="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS" />    
+    </Match>   
+    <Match>
+        <Bug pattern="NP_GUARANTEED_DEREF_ON_EXCEPTION_PATH" />    
+    </Match>   
+    <Match>
+        <Bug pattern="DL_SYNCHRONIZATION_ON_BOOLEAN" />    
+    </Match>   
+    <Match>
+        <Bug pattern="ML_SYNC_ON_FIELD_TO_GUARD_CHANGING_THAT_FIELD" />    
+    </Match>                            
+</FindBugsFilter>

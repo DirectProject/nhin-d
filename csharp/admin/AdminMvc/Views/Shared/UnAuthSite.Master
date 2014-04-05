@@ -1,0 +1,39 @@
+﻿<%@ Import Namespace="Health.Direct.Admin.Console.Common"%>
+<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <link rel="shortcut icon" href="~/content/favicon.ico" />
+    <link rel="icon" type="image/vnd.microsoft.icon" href="~/content/favicon.ico" />
+    <title>The Direct Project Console - <asp:ContentPlaceHolder ID="TitleContent" runat="server" /></title>
+    <%= Html.JQueryUITheme("redmond") %>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js" type="text/javascript" language="javascript"></script>
+</head>
+
+<body class="ui-widget-content">
+    <div>
+
+        <div class="ui-widget-header border-none">
+            <span id="title">
+                <img src="<%= Url.Content("~/Content/logo.png") %>" alt="logo" />
+            </span>
+        </div>
+
+        <div class="clear"></div>
+
+        <div id="main" class="ui-tabs-panel ui-widget-content border-none" style="padding: 10px;">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+    </div>
+
+    <script type="text/javascript" language="javascript">
+        $(function() {
+            $(':submit').button().click(function() { $(this).button("disable"); $('form').submit(); });
+            $(".input-validation-error").addClass("ui-state-error");
+        });
+    </script>
+</body>
+</html>

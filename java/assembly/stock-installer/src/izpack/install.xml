@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes" ?>
+
+<installation version="1.0">
+
+    <!-- 
+        The info section.
+        The meaning of the tags should be natural ...
+    -->
+    <info>
+        <appname>Direct Project Java Reference Implementation</appname>
+        <appversion>@{project.version}</appversion>
+        <authors>
+            <author name="Greg Meyer" email="gmeyer@cerner.com"/>
+        </authors>
+        <url>http://directproject.org/</url>
+    </info>
+
+    <!-- 
+        The gui preferences indication.
+        Sets the installer window to 640x480. It will not be able to change the size.
+    -->
+    <guiprefs width="640" height="480" resizable="no">
+          <modifier key="useHeadingPanel" value="no"/>
+    </guiprefs>
+
+    <!-- 
+        The locale section.
+        Asks here to include the English and French langpacks.
+    -->
+    <locale>
+        <langpack iso3="eng"/>
+    </locale>
+    
+    <conditions>
+	    <condition type="com.izforge.izpack.rules.VariableExistenceCondition" id="isJavaHomeDefined">
+	       <variable>${ENV[JAVA_HOME]}</variable>
+	    </condition>  
+	</conditions>  
+   
+    <!-- 
+        The resources section.
+        The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
+    -->
+    <resources>
+        <res id="LicencePanel.licence" src="Licence.txt"/>
+        <res id="InfoPanel.info" src="Readme.txt"/>
+        <res id="TargetPanel.dir.mac" src="MacOSInstallLoc.txt"/>  
+        <res id="TargetPanel.dir.macosx" src="MacOSInstallLoc.txt"/>     
+        <res id="TargetPanel.dir.unix" src="UnixOSInstallLoc.txt"/>                                
+        <res id="TargetPanel.dir.windows" src="WindwsOSInstallLoc.txt"/>   
+        <res id="userInputSpec.xml" src="userInputSpec.xml"/>     
+        <res id="ProcessPanel.Spec.xml" src="ProcessPanel.Spec.xml"/>                                        
+    </resources>
+
+    <!-- 
+        The panels section.
+        We indicate here which panels we want to use. The order will be respected.
+    -->
+    <panels>
+        <panel classname="InfoPanel"/>
+        <panel classname="LicencePanel"/>
+        <panel classname="TargetPanel"/>     
+        <panel classname="InstallationGroupPanel"/>
+        <panel classname="PacksPanel"/>
+        <panel classname="UserInputPanel"/>            
+        <panel classname="UserInputPanel"/>         
+        <panel classname="UserInputPanel"/>    
+        <panel classname="UserInputPanel"/>  
+        <panel classname="InstallPanel"/>        
+        <panel classname="ProcessPanel"/>                                        
+        <panel classname="FinishPanel"/>
+    </panels>
+
+
+    <!-- 
+        The packs section.
+        We specify here our packs.
+    -->
+    <packs>
+        <pack name="Apache Tomcat" required="no" preselected="yes" installGroups="James 3,James 2">
+            <description>Apache Tomcat 7</description>
+            <fileset dir="@{project.build.directory}/direct/apache-tomcat-7.0.41" targetdir="$INSTALL_PATH/apache-tomcat-7.0.41"/>
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-tomcat-7.0.41/bin/startup.sh" />
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-tomcat-7.0.41/bin/shutdown.sh" />        
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-tomcat-7.0.41/bin/catalina.sh" />      
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-tomcat-7.0.41/bin/daemon.sh" />  
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-tomcat-7.0.41/bin/setclasspath.sh" />      
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-tomcat-7.0.41/bin/tool-wrapper.sh" />                                                
+        </pack>
+        <pack name="Apache James 2.3.2" required="yes" preselected="no" installGroups="James 2">
+            <description>Apache James 2.3.2</description>
+            <fileset dir="@{project.build.directory}/direct/james-2.3.2" targetdir="$INSTALL_PATH/james-2.3.2"/>
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/james-2.3.2/bin/phoenix.sh" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/james-2.3.2/bin/run.sh" />  
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/james-2.3.2/bin/setdomain.sh" />                                       
+        </pack>
+        <pack name="Apache James 3" required="yes" preselected="no" installGroups="James 3">
+            <description>Apache James 3-beta4</description>>
+            <fileset dir="@{project.build.directory}/direct/apache-james-3.0-beta4" targetdir="$INSTALL_PATH/apache-james-3.0-beta4"/>
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/james" />              
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/james-cli.sh" />  
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/run.sh" />                    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/setdomain.sh" />       
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/setenv.sh" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper" />  
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-linux-ppc-64" />      
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-linux-x86-32" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-linux-x86-64" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-macosx-ppc-32" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-macosx-universal-32" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-sparc-32" /> 
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-sparc-64" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-solaris-x86-32" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-freebsd-x86-32" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/apache-james-3.0-beta4/bin/wrapper-freebsd-x86-64" />                                                                                                                                                                            
+        </pack>
+        <pack name="DNS" required="no" preselected="yes" installGroups="James 3,James 2">
+            <description>Direct Project DNS Services</description>>
+            <fileset dir="@{project.build.directory}/direct/DirectDNSServices" targetdir="$INSTALL_PATH/DirectDNSServices"/>
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/DirectDNSServer" />              
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-linux-x86-32" /> 
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-linux-x86-64" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-freebsd-x86-32" /> 
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/DirectDNSServices/DirectDNSServer/bin/wrapper-freebsd-x86-64" />                           
+            <fileset dir="@{project.build.directory}/direct/ConfigTools" targetdir="$INSTALL_PATH/ConfigTools"/>    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/ConfigTools/ConfigMgmtConsole/bin/ConfigMgmtConsole" />                         
+        </pack>       
+        <pack name="Tools" required="no" preselected="yes" installGroups="James 3,James 2">
+            <description>Tools</description>>
+            <fileset dir="@{project.build.directory}/direct/tools" targetdir="$INSTALL_PATH/tools"/>
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/tools/certGen.sh" /> 
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/tools/createPKCS12.sh" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/tools/dnsCertDumper.sh" />         
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/tools/ldapCertDumper.sh" />    
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/tools/stripP12Pass.sh" />      
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/tools/policyBuilder.sh" />                                                                     
+        </pack>  
+        <pack name="Setup Scripts" required="yes" preselected="yes" installGroups="James 3,James 2">
+            <description>Tools</description>>
+            <fileset dir="@{project.build.directory}/scripts" targetdir="$INSTALL_PATH/scripts"/>
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/setJavaHomeUnix.sh" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/setJavaHomeMac.sh" />               
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/runSetDomain.sh" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/launchTomcatUnix.sh" />                                                                                  
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/launchJames2.sh" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/launchJames3.sh" />   
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/toolRunnerUnix.sh" />
+            <executable stage="never" keep="true" targetfile="$INSTALL_PATH/scripts/addUserJames3Unix.sh" />  
+                                                              
+        </pack>                           
+    </packs>
+</installation>
