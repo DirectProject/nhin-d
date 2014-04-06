@@ -56,7 +56,7 @@
 	</Target>
 
 	<Target Name="clean-agent">
-		<MSBuild Projects="$(agent_solution)" Targets="Clean" Properties="VisualStudioVersion=$(VisualStudioVersion)"/>
+		<MSBuild Projects="$(agent_solution)" Targets="Clean" />
 	</Target>
 
 	<Target Name="build-agent-help" DependsOnTargets="build-agent">
