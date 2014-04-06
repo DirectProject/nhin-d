@@ -22,6 +22,20 @@
             <Setter Property="Margin" Value="2,2,2,2"></Setter>
         </Style>
     </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="New" Executed="NewCommandBinding_Executed"></CommandBinding>
+        <CommandBinding Command="Open" Executed="OpenCommandBinding_Executed"></CommandBinding>
+        <CommandBinding Command="Save" Executed="SaveCommandBinding_Executed"></CommandBinding>
+        <CommandBinding Command="SaveAs" Executed="SaveAsCommandBinding_Executed"></CommandBinding>
+        <CommandBinding Command="Close"  Executed="CloseCommandBinding_Executed"></CommandBinding>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Control" Command="New"></KeyBinding>
+        <KeyBinding Key="O" Modifiers="Control" Command="Open"></KeyBinding>
+        <KeyBinding Key="S" Modifiers="Control" Command="Save"></KeyBinding>
+        <KeyBinding Key="A" Modifiers="Control" Command="SaveAs"></KeyBinding>
+        <KeyBinding Key="E" Modifiers="Control" Command="Close"></KeyBinding>
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -31,14 +45,14 @@
         </Grid.RowDefinitions>
         <Menu Name="MainMenu" VerticalAlignment="Top" IsMainMenu="True" Height="21">
             <MenuItem Header="_File">
-                <MenuItem Header="_New..." HorizontalAlignment="Left" InputGestureText="Ctrl+N"/>
+                <MenuItem Header="_New..." HorizontalAlignment="Left" InputGestureText="Ctrl+N" Command="New"/>
                 <Separator />
-                <MenuItem Header="_Open" HorizontalAlignment="Left" InputGestureText="Ctrl+O" Click="FileOpen_Click"/>
+                <MenuItem Header="_Open" HorizontalAlignment="Left" InputGestureText="Ctrl+O" Command="Open"/>
                 <Separator />
-                <MenuItem Header="_Save" HorizontalAlignment="Left"  InputGestureText="Ctrl+S"/>
-                <MenuItem Header="Save _As..." HorizontalAlignment="Left"  InputGestureText="Ctrl+A"/>
+                <MenuItem Header="_Save"  InputGestureText="Ctrl+S" HorizontalAlignment="Left" Width="151" Command="Save"/>
+                <MenuItem Header="Save _As..." HorizontalAlignment="Left"  InputGestureText="Ctrl+A" Command="SaveAs"/>
                 <Separator />
-                <MenuItem Header="_Exit" HorizontalAlignment="Left" InputGestureText="Ctrl+E"/>
+                <MenuItem Header="_Exit" HorizontalAlignment="Left" InputGestureText="Ctrl+E" Command="Close"/>
             </MenuItem>
         </Menu>
         <Grid Grid.Row="1">
