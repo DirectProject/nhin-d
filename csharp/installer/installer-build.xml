@@ -1,6 +1,7 @@
 <Project DefaultTargets="build-installer" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	
 	<PropertyGroup>
+		<VisualStudioVersion>12.0</VisualStudioVersion>
 		<Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
 		<ProductName>Direct Project</ProductName>
 		<Copyright>Copyright 2010 &#169;</Copyright>
@@ -17,7 +18,7 @@
 	</Target>
 
 	<Target Name="build-installer-tools">
-		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
+		<MSBuild Projects="$(installer_tools_solution)" Targets="build" Properties="Configuration=$(Configuration);Platform=Any CPU;VisualStudioVersion=$(VisualStudioVersion)" />
 	</Target>
 	
 	<Target Name="build-installer" DependsOnTargets="update-nuget;build-installer-tools;update-version-info">

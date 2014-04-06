@@ -19,46 +19,52 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.common.crypto;
+package org.nhindirect.common.crypto.impl;
 
-import java.security.Key;
-import java.util.Map;
-
-import org.nhindirect.common.crypto.exceptions.CryptoException;
+import org.nhindirect.common.crypto.PKCS11Credential;
 
 /**
- * Interface definition for accessing key store pass phrases.  PKCS12 keystores generally have two layers of protection with each being options:
- * <br>
- * <ul>
- * <li>Pass phrase protection for the entire key store.</li>
- * <li>Pass phrase protection for private keys associated with a public key</li>
- * <br>
- * This interface assumes that all private keys are stores with the same pass phrase.  Pass phrases may stored in a multitude of mediums such as protected files,
- * databases, or PKCS11 tokens.
+ * Implementation of a PKCS11 credential where the pin is provided as an injected parameter.  This class is useful if the 
+ * pin is stored in configuration files and can be provided as declarative config statements.
  * @author Greg Meyer
  * @since 1.3
- *
  */
-public interface KeyStoreProtectionManager 
+public class BootstrappedPKCS11Credential implements PKCS11Credential
 {
-	/**
-	 * Gets the key protecting the key store as a whole.
-	 * @return The key protecting the key store as a whole.
-	 * @throws CryptoException
-	 */
-	public Key getPrivateKeyProtectionKey() throws CryptoException;
+	protected String pin;
 	
 	/**
-	 * Gets the key protecting private keys in the key store.
-	 * @return The key protecting private keys in the key store.
-	 * @throws CryptoException
+	 * Empty constructor
 	 */
-	public Key getKeyStoreProtectionKey() throws CryptoException;
+	public BootstrappedPKCS11Credential()
+	{
+
+	}
 	
 	/**
-	 * Gets a Map of all keys managed by the token.
-	 * @return Returns a map of all keys in the token.  The mapping is key alias to key.
-	 * @throws CryptoException
+	 * Constructor
+	 * @param pin The PKCS11 pin used to login to the token
 	 */
-	public Map<String, Key> getAllKeys() throws CryptoException;
+	public BootstrappedPKCS11Credential(String pin)
+	{
+		this.pin = pin;
+	}
+
+	/**
+	 * Sets the pin 
+	 * @param pin The PKCS11 pin used to login to the tokens
+	 */
+	public void setPin(String pin)
+	{
+		this.pin = pin;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public char[] getPIN() 
+	{
+		return pin.toCharArray();
+	}
 }
