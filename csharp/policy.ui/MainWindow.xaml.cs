@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,25 +21,33 @@ namespace Health.Direct.Policy.UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const string DirectPolicyDataFolder = @"DirectProject\Policy\Policies";
+        private const string DirectPolicyCertFolder = @"DirectProject\Policy\Certs";
+        private const string DirectPolicyFileExtFilter = "Direct Policy files (*.dpol, *.txt)|*.dpol;*.txt";
+
         public MainWindow()
         {
             InitializeComponent();
             ClearDesignerText();
-            LoadSettings();
-
 
             var textChangedObservable = Observable
                 .FromEventPattern<TextChangedEventArgs>(PolicyRichTextBox, "TextChanged")
                 .Throttle(TimeSpan.FromMilliseconds(500))
-                .Select(evt => ((RichTextBox) evt.Sender));
+                .Select(evt => ((RichTextBox)evt.Sender));
 
             textChangedObservable.ObserveOnDispatcher().Subscribe(rtxBox => ParseLexicon(rtxBox));
-            }
+
+            LoadSettings();
+        }
 
 
         private void ParseLexicon(RichTextBox rtxBox)
         {
             var textRange = new TextRange(rtxBox.Document.ContentStart, rtxBox.Document.ContentEnd);
+            if (string.IsNullOrEmpty(textRange.Text))
+            {
+                return;
+            }
             CallLexiconParser(textRange.Text, rtxBox);
         }
 
@@ -93,22 +100,20 @@ namespace Health.Direct.Policy.UI
                 PolicyFileLocation.Text = Properties.Settings.Default.PolicyFile;
                 if (File.Exists(Properties.Settings.Default.PolicyFile))
                 {
-                    var fs = new FileStream(PolicyFileLocation.Text.ToString(), FileMode.Open, FileAccess.Read);
+                    var fs = new FileStream(PolicyFileLocation.Text, FileMode.Open, FileAccess.Read);
                     using (fs)
                     {
                         var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
                             PolicyRichTextBox.Document.ContentEnd);
                         textRange.Load(fs, DataFormats.Text);
+                        return;
                     }
                 }
             }
-            else
-            {
-                PolicyFileLocation.Text = string.Empty;
-            }
+            PolicyFileLocation.Text = string.Empty;
         }
 
-        
+
         private void SaveSettings()
         {
             Properties.Settings.Default.PolicyFile = PolicyFileLocation.Text;
@@ -116,29 +121,7 @@ namespace Health.Direct.Policy.UI
             Properties.Settings.Default.Save();
         }
 
-        private void FileOpen_Click(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog();
-            var fileInfo = GetFileInfo(PolicyFileLocation.Text);
-            if (fileInfo != null 
-                && fileInfo.DirectoryName != null 
-                && Directory.Exists(fileInfo.DirectoryName))
-            {
-                openFileDialog.InitialDirectory = fileInfo.DirectoryName;
-            }
-            openFileDialog.Filter = "Direct Policy files (*.dpol, *.txt)|*.dpol;*.txt";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                PolicyFileLocation.Text = openFileDialog.FileName;
-                var fs = new FileStream(PolicyFileLocation.Text, FileMode.Open, FileAccess.Read);
-                using (fs)
-                {
-                    var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
-                        PolicyRichTextBox.Document.ContentEnd);
-                    textRange.Load(fs, DataFormats.Text);
-                }
-            }
-        }
+
 
         private FileInfo GetFileInfo(string path)
         {
@@ -153,11 +136,15 @@ namespace Health.Direct.Policy.UI
         {
             var openFileDialog = new OpenFileDialog();
             var fileInfo = GetFileInfo(CertificateLocation.Text);
-            if (fileInfo != null 
-                && fileInfo.DirectoryName != null 
+            if (fileInfo != null
+                && fileInfo.DirectoryName != null
                 && Directory.Exists(fileInfo.DirectoryName))
             {
                 openFileDialog.InitialDirectory = fileInfo.DirectoryName;
+            }
+            else
+            {
+                openFileDialog.InitialDirectory = ProgramDataCertsFolder;
             }
             openFileDialog.ReadOnlyChecked = true;
             openFileDialog.Filter = "Certificate files (*.der, *.cer)|*.der;*.cer";
@@ -169,8 +156,12 @@ namespace Health.Direct.Policy.UI
 
         private void ValidateCertButton_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(CertificateLocation.Text))
+            {
+                return;
+            }
             var ms = new MemoryStream();
-            
+
             var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
                 PolicyRichTextBox.Document.ContentEnd);
             textRange.Save(ms, DataFormats.Text);
@@ -217,9 +208,140 @@ namespace Health.Direct.Policy.UI
                 .AppendLine("Error compiling or proccessing policy\t" + ex.Message)
                 .AppendLine(ex.StackTrace);
             }
-            
+
             ValidationResults.Text = sb.ToString();
         }
 
+        private void OpenCommandBinding_Executed(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+            var fileInfo = GetFileInfo(PolicyFileLocation.Text);
+            if (fileInfo != null
+                && fileInfo.DirectoryName != null
+                && Directory.Exists(fileInfo.DirectoryName))
+            {
+                openFileDialog.InitialDirectory = fileInfo.DirectoryName;
+            }
+            else
+            {
+                openFileDialog.InitialDirectory = ProgramDataPoliciesFolder;
+            }
+            openFileDialog.Filter = DirectPolicyFileExtFilter;
+            if (openFileDialog.ShowDialog() == true)
+            {
+                PolicyFileLocation.Text = openFileDialog.FileName;
+                var fs = new FileStream(PolicyFileLocation.Text, FileMode.Open, FileAccess.Read);
+                using (fs)
+                {
+                    var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
+                        PolicyRichTextBox.Document.ContentEnd);
+                    textRange.Load(fs, DataFormats.Text);
+                }
+            }
+        }
+
+        private void SaveCommandBinding_Executed(object sender, RoutedEventArgs e)
+        {
+            if (!GetSaveFileLocation(PolicyFileLocation.Text))
+            {
+                return;
+            }
+
+            var fs = new FileStream(PolicyFileLocation.Text, FileMode.Create, FileAccess.Write);
+            using (fs)
+            {
+                var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
+                    PolicyRichTextBox.Document.ContentEnd);
+                textRange.Save(fs, DataFormats.Text);
+            }
+        }
+
+        bool GetSaveFileLocation(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName) || !File.Exists(fileName))
+            {
+                var saveFileDialog = new SaveFileDialog();
+
+                saveFileDialog.InitialDirectory = ProgramDataPoliciesFolder;
+                saveFileDialog.Filter = DirectPolicyFileExtFilter;
+
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    PolicyFileLocation.Text = saveFileDialog.FileName;
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        private static string ProgramDataPoliciesFolder
+        {
+            get
+            {
+                string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    DirectPolicyDataFolder);
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                return folderPath;
+            }
+        }
+
+        private static string ProgramDataCertsFolder
+        {
+            get
+            {
+                string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    DirectPolicyCertFolder);
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+                return folderPath;
+            }
+        }
+
+        private void CloseCommandBinding_Executed(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void NewCommandBinding_Executed(object sender, RoutedEventArgs e)
+        {
+            var fileInfo = GetFileInfo(PolicyFileLocation.Text);
+            if (!GetSaveFileLocation(fileInfo.DirectoryName))
+            {
+                return;
+            }
+
+            var fs = new FileStream(PolicyFileLocation.Text, FileMode.Create, FileAccess.Write);
+            using (fs)
+            {
+                PolicyRichTextBox.Document.Blocks.Clear();
+                var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
+                    PolicyRichTextBox.Document.ContentEnd);
+                textRange.Save(fs, DataFormats.Text);
+            }
+
+        }
+
+        private void SaveAsCommandBinding_Executed(object sender, RoutedEventArgs e)
+        {
+            var fileInfo = GetFileInfo(PolicyFileLocation.Text);
+            if (!GetSaveFileLocation(fileInfo.DirectoryName))
+            {
+                return;
+            }
+
+            var fs = new FileStream(PolicyFileLocation.Text, FileMode.Create, FileAccess.Write);
+            using (fs)
+            {
+                var textRange = new TextRange(PolicyRichTextBox.Document.ContentStart,
+                    PolicyRichTextBox.Document.ContentEnd);
+                textRange.Save(fs, DataFormats.Text);
+            }
+        }
     }
 }

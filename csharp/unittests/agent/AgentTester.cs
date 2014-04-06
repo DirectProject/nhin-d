@@ -110,7 +110,8 @@ namespace Health.Direct.Agent.Tests
         public string ProcessEndToEnd(string messageText)
         {
             string outgoingText = this.ProcessOutgoingToString(messageText);
-            string incomingText = this.ProcessIncomingToString(outgoingText);            
+            string incomingText = this.ProcessIncomingToString(outgoingText);  
+            Assert.Equal(messageText.Trim(), incomingText.Trim());
             return incomingText;
         }
 
