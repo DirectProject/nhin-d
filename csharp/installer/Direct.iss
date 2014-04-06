@@ -173,6 +173,7 @@ Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"" ""{app}\SQL\createReadOnlyuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
+Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway;
 Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
 Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
 Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver and not developergateway;
@@ -180,7 +181,6 @@ Filename: {dotnet4032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /
 Filename: {dotnet4064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
 Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\Log\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway;
 Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
-Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway;
 
 
 [UninstallRun]
@@ -567,7 +567,7 @@ begin
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
     textBox := TCustomEdit(wizardPage.FindComponent(objectName));   
-    labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
+    //labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
     if not (textBox = nil) then
     begin
       value := Trim(textBox.text);
@@ -613,7 +613,7 @@ begin
     RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
   end;
     textBox := TCustomEdit(wizardPage.FindComponent(objectName));   
-    labelText := TNewStaticText(wizardPage.FindComponent(objectName));   
+     
     if not (textBox = nil) then
     begin
       value := Trim(textBox.text);
