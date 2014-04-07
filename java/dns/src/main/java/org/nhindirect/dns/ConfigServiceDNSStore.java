@@ -46,6 +46,7 @@ import org.xbill.DNS.DClass;
 import org.xbill.DNS.Flags;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
+import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Opcode;
 import org.xbill.DNS.RRset;
@@ -233,25 +234,32 @@ public class ConfigServiceDNSStore implements DNSStore
         
         if (lookupRecords == null || lookupRecords.size() == 0)
         {
-        	LOGGER.debug("No records found.");
-        	return null;
+        	LOGGER.debug("No records found.  Searching for NS delegation.");
+        	
+        	// check to see if there is subzone delegation to another server(s)
+        	lookupRecords = searchForSubzoneDelation(name.toString());
+        	if (lookupRecords == null || lookupRecords.size() == 0)
+        		return null;
+        	
+        	// now delegate the call
+        	return delegateSubZoneLookup(lookupRecords, request);
         }
         	
-        Message response = new Message(request.getHeader().getID());
+        final Message response = new Message(request.getHeader().getID());
         response.getHeader().setFlag(Flags.QR);
     	if (request.getHeader().getFlag(Flags.RD))
     		response.getHeader().setFlag(Flags.RD);
     	response.addRecord(queryRecord, Section.QUESTION);
     	
     	
-		Iterator<Record> iter = lookupRecords.iterator();
+		final Iterator<Record> iter = lookupRecords.iterator();
 		while (iter.hasNext())
 			response.addRecord(iter.next(), Section.ANSWER);
     	
     	// we are authoritative only
     	response.getHeader().setFlag(Flags.AA);
     	// look for an SOA record
-    	Record soaRecord = checkForSoaRecord(name.toString());
+    	final Record soaRecord = checkForSoaRecord(name.toString());
     	if (soaRecord != null)
     		response.addRecord(soaRecord, Section.AUTHORITY);		
 		
@@ -260,6 +268,60 @@ public class ConfigServiceDNSStore implements DNSStore
     	return response;
 	}
 
+	protected Message delegateSubZoneLookup(Collection<Record> servers, Message request) throws DNSException
+	{
+		final Collection<String> nameServers = new ArrayList<String>();
+		
+		for (Record server : servers)
+		{	
+			String serverNameOrIP = ((NSRecord)server).getTarget().toString();
+			if (serverNameOrIP.endsWith("."))
+				serverNameOrIP = serverNameOrIP.substring(0, serverNameOrIP.length() - 1);
+			
+			nameServers.add(serverNameOrIP);
+		}
+		
+		final ProxyDNSStore proxyStore = new ProxyDNSStore(nameServers);
+		
+		return proxyStore.get(request);
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected Collection<Record> searchForSubzoneDelation(String name) throws DNSException
+	{	
+		Collection<Record> lookupRecords = null;
+		
+		// first check if this server is an authority for this record
+		RRset set = processGenericRecordRequest(name, Type.SOA);
+		if (set != null)
+			// we are the authority, so can't delegate
+			return null;
+		
+		// check to see if an NS record exists for this domain
+		set = processGenericRecordRequest(name, Type.NS);
+		if (set != null)
+		{
+			lookupRecords = new ArrayList<Record>();
+			Iterator<Record> iter = set.rrs();
+			while (iter.hasNext())
+				lookupRecords.add(iter.next());			
+			
+			return lookupRecords;
+		}
+		
+		// go from left to right and cut down the name between each "."
+		int idx = name.indexOf(".");
+		if (idx == -1 || idx == (name.length() + 1))
+			return null;
+		
+		final String dmName = name.substring(idx + 1);
+		if (dmName.length() == 0)
+			return null;
+
+		return searchForSubzoneDelation(dmName);
+	}
+	
+	
 	/**
 	 * Processes all DNS requests except CERT records.
 	 * @param name The record name.

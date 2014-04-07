@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xbill.DNS.ExtendedResolver;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.ResolverConfig;
@@ -39,6 +41,8 @@ public class ProxyDNSStore implements DNSStore
 	private final String[] servers;
 	private final int port;
 
+	protected static final Log LOGGER = LogFactory.getFactory().getInstance(ProxyDNSStore.class);
+	
 	/**
 	 * Creates a default proxy store.
 	 */
@@ -99,7 +103,7 @@ public class ProxyDNSStore implements DNSStore
 	@Override
 	public Message get(Message dnsMsg) throws DNSException
 	{
-		ExtendedResolver resolver = createExResolver(servers, port, 2, 2000);
+		ExtendedResolver resolver = createExResolver(servers, port, 2, 6);
 		// try UPD first
 		
 		Message response = null;
@@ -141,7 +145,10 @@ public class ProxyDNSStore implements DNSStore
 			retVal.setRetries(retries);
 			retVal.setTimeout(timeout);
 		}
-		catch (UnknownHostException e) {/* no-op */}
+		catch (UnknownHostException e) 
+		{	
+			LOGGER.warn("Proxy store resolver could not be created: " + e.getMessage(), e);
+		}
 		return retVal;
 	}
 }
