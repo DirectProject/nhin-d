@@ -48,6 +48,7 @@ import org.nhindirect.config.model.exceptions.CertificateConversionException;
  * @author Greg Meyer
  * @since 1.0
  */
+///CLOVER:OFF
 public class CertUtils 
 {
 	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
@@ -168,12 +169,24 @@ public class CertUtils
      */
 	public static byte[] pkcs12ToStrippedPkcs12(byte[] bytes, String passphrase)
 	{
+		return changePkcs12Protection(bytes, passphrase.toCharArray(), passphrase.toCharArray(), "".toCharArray(), "".toCharArray());
+	}
+	
+	
+    /**
+     * Modifies the keystore and private key protection on a PKCS12 keystore. 
+     * @param bytes The PKCS12 encoded as byte array that will be modified.
+     * @param oldKeyStorePassPhrase The current pass phrase protecting the keystore file.
+     * @param oldPrivateKeyPassPhrase The current pass phrase protecting the private key.
+     * @param newKeystorePassPhrase The new pass phrase protecting the keystore file.
+     * @param newPrivateKeyPassPhrase The new pass phrase protecting the private key.
+     * @return The modified PKCS12 key store encoded as a byte array/ 
+     */
+	public static byte[] changePkcs12Protection(byte[] bytes, char[] oldKeyStorePassPhrase,
+			char[] oldPrivateKeyPassPhrase, char[] newKeystorePassPhrase, char[] newPrivateKeyPassPhrase)
+	{
 		if (bytes == null || bytes.length == 0)
 			throw new IllegalArgumentException("Pkcs byte stream cannot be null or empty.");
-		
-		if (passphrase == null)
-			throw new IllegalArgumentException("Passphrase cannot be null.");
-		
 		
 		byte[] retVal = null;
         final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
@@ -183,7 +196,7 @@ public class CertUtils
         {
         	final KeyStore localKeyStore = KeyStore.getInstance("PKCS12", getJCEProviderName());
         	
-        	localKeyStore.load(bais, passphrase.toCharArray());
+        	localKeyStore.load(bais, oldKeyStorePassPhrase);
         	final Enumeration<String> aliases = localKeyStore.aliases();
 
 
@@ -195,15 +208,14 @@ public class CertUtils
     			X509Certificate cert = (X509Certificate)localKeyStore.getCertificate(alias);
     			
 				// check if there is private key
-				final Key key = localKeyStore.getKey(alias, "".toCharArray());
+				final Key key = localKeyStore.getKey(alias, oldPrivateKeyPassPhrase);
 				if (key != null && key instanceof PrivateKey) 
 				{
-					// now convert to a pcks12 format without the passphrase
-					final char[] emptyPass = "".toCharArray();
+					// now convert to a pcks12 format without the new passphrase
 					
-					localKeyStore.setKeyEntry("privCert", key, emptyPass,  new java.security.cert.Certificate[] {cert});
+					localKeyStore.setKeyEntry("privCert", key, newPrivateKeyPassPhrase,  new java.security.cert.Certificate[] {cert});
 
-					localKeyStore.store(outStr, emptyPass);	
+					localKeyStore.store(outStr, newKeystorePassPhrase);	
 					
 					retVal = outStr.toByteArray();
 					
@@ -225,7 +237,6 @@ public class CertUtils
 
         return retVal;
 	}
-	
 	
 	/**
 	 * Converts a byte stream to an X509Certificate.  The byte stream can either be an encoded X509Certificate or a PKCS12 byte stream.  
@@ -333,13 +344,18 @@ public class CertUtils
     	}
     }
     
+    public static CertContainer toCertContainer(byte[] data) throws CertificateConversionException 
+    {
+    	return toCertContainer(data, "".toCharArray(), "".toCharArray());
+    }
+    
     /**
      * Creates a certificate container that consists of the X509 certificate and its private key (if it exists).
      * @param data A DER encoded representation of either an X509 certificate or an unencrypted PKCS12 container.
      * @return A container object with the X509 certificate and private key (it it exists).
      * @throws CertificateConversionException
      */
-    public static CertContainer toCertContainer(byte[] data) throws CertificateConversionException 
+    public static CertContainer toCertContainer(byte[] data, char[] keyStorePassPhrase, char[] privateKeyPassPhrase) throws CertificateConversionException 
     {
     	CertContainer certContainer = null;
         try 
@@ -351,7 +367,7 @@ public class CertUtils
             {
             	KeyStore localKeyStore = KeyStore.getInstance("PKCS12", getJCEProviderName());
             	
-            	localKeyStore.load(bais, "".toCharArray());
+            	localKeyStore.load(bais, keyStorePassPhrase);
             	Enumeration<String> aliases = localKeyStore.aliases();
 
 
@@ -362,7 +378,7 @@ public class CertUtils
         			X509Certificate cert = (X509Certificate)localKeyStore.getCertificate(alias);
         			
     				// check if there is private key
-    				Key key = localKeyStore.getKey(alias, "".toCharArray());
+    				Key key = localKeyStore.getKey(alias, privateKeyPassPhrase);
     				if (key != null && key instanceof PrivateKey) 
     				{
     					certContainer = new CertContainer(cert, key);
@@ -418,3 +434,4 @@ public class CertUtils
     
     
 }
+///CLOVER:ON

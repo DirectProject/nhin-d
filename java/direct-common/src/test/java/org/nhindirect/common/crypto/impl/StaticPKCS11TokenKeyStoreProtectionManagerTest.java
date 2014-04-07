@@ -8,6 +8,7 @@ import java.security.Key;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,8 +18,6 @@ import javax.crypto.SecretKey;
 
 import org.junit.Test;
 import org.nhindirect.common.crypto.PKCS11Credential;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class StaticPKCS11TokenKeyStoreProtectionManagerTest 
 {

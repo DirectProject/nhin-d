@@ -40,7 +40,7 @@ import org.nhindirect.common.rest.exceptions.ServiceMethodException;
 /**
  * Abstract implementation of an unsecured service request.  Includes HTTP request execution, JSON marshalling/unmarshalling, and error
  * status handling.
- * @author gm2552
+ * @author Greg Meyer
  * @since 1.0
  * @param <T> Return type of the request.
  * @param <E> Error type specific to the request.
@@ -57,7 +57,7 @@ public abstract class UnsecuredServiceRequestBase<T, E extends Exception> implem
      * 
      * @param httpClient
      *            the {@link HttpClient} to use to make requests.
-     * @param certServerUrl
+     * @param serviceUrl
      *            the base URL of the target service.
      * @param jsonMapper
      *            the {@link ObjectMapper} to use for (de)serialization of request/response objects.
