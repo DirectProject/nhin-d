@@ -21,12 +21,6 @@ import org.nhindirect.common.crypto.PKCS11Credential;
 
 public class StaticPKCS11TokenKeyStoreProtectionManagerTest 
 {
-	static
-	{
-		final String configName = "./src/test/resources/pkcs11Config/pkcs11.cfg";
-		final Provider p = new sun.security.pkcs11.SunPKCS11(configName);
-		Security.addProvider(p);
-	}
 	
 	@Test
 	public void testDummy()
@@ -39,6 +33,13 @@ public class StaticPKCS11TokenKeyStoreProtectionManagerTest
 	 */
 	
 	/*
+	static
+	{
+		final String configName = "./src/test/resources/pkcs11Config/pkcs11.cfg";
+		final Provider p = new sun.security.pkcs11.SunPKCS11(configName);
+		Security.addProvider(p);
+	}
+	
 	@Test
 	public void testSetKeysAsKeyAndGetFromToken() throws Exception
 	{
