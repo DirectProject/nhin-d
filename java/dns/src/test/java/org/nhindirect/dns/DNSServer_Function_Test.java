@@ -18,6 +18,7 @@ import org.nhind.config.EntityStatus;
 import org.nhindirect.dns.util.BaseTestPlan;
 import org.nhindirect.dns.util.ConfigServiceRunner;
 import org.nhindirect.dns.util.DNSRecordUtil;
+import org.nhindirect.dns.util.IPUtils;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.Cache;
 import org.xbill.DNS.DClass;
@@ -91,8 +92,7 @@ public class DNSServer_Function_Test extends TestCase
 		@Override
 		protected void performInner() throws Exception
 		{
-			Inet4Address.getLocalHost();
-			ExtendedResolver resolver = new ExtendedResolver(new String[] {"127.0.0.1", Inet4Address.getLocalHost().getHostAddress()});
+			ExtendedResolver resolver = new ExtendedResolver(IPUtils.getDNSLocalIps());
 			resolver.setTimeout(300);
 
 			resolver.setTCP(true);
@@ -226,6 +226,44 @@ public class DNSServer_Function_Test extends TestCase
 		}.perform();
 	}
 
+/*
+	public void testQueryARecord_noRecordInDNSServer_assertDelegation() throws Exception
+	{
+		new TestPlan()
+		{
+			protected void addRecords() throws Exception
+			{
+				ArrayList<DnsRecord> recs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createARecord("example.domain.com", "127.0.0.1");
+				recs.add(rec);
+
+				rec = DNSRecordUtil.createNSRecord("sub.example.domain.com", "127.0.0.3");
+				recs.add(rec);
+
+				proxy.addDNS(recs.toArray(new DnsRecord[recs.size()]));
+
+			}
+
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("sub.example.domain.com", Type.A));
+
+				return queries;
+			}
+
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(1, records.size());
+				Record rec = records.iterator().next();
+				assertEquals("sub.example.domain.com.", rec.getName().toString());
+				assertEquals(Type.NS, rec.getType());
+			}
+		}.perform();
+	}
+*/
+	
 	public void testQueryARecordByAny_AssertRecordsRetrieved() throws Exception
 	{
 		new TestPlan()

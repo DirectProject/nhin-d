@@ -1,8 +1,8 @@
 package org.nhindirect.dns;
 
-import java.net.Inet4Address;
 
 import org.apache.mina.util.AvailablePortFinder;
+import org.nhindirect.dns.util.IPUtils;
 import org.xbill.DNS.Cache;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.ExtendedResolver;
@@ -191,8 +191,9 @@ public class DNSConnectionTest extends TestCase
 		Options.set("verbose", "true");
 		
 		Lookup lu = new Lookup(new Name("google.com"), Type.A);
-		Inet4Address.getLocalHost();
-		ExtendedResolver resolver = new ExtendedResolver(new String[] {"127.0.0.1", Inet4Address.getLocalHost().getHostAddress()});
+		
+		
+		ExtendedResolver resolver = new ExtendedResolver(IPUtils.getDNSLocalIps());
 		resolver.setTCP(true);
 		resolver.setPort(settings.getPort());
 		lu.setResolver(resolver); // default retries is 3, limite to 2
@@ -228,8 +229,8 @@ public class DNSConnectionTest extends TestCase
 		Options.set("verbose", "true");
 		
 		Lookup lu = new Lookup(new Name("google.com"), Type.A);
-		Inet4Address.getLocalHost();
-		ExtendedResolver resolver = new ExtendedResolver(new String[] {"127.0.0.1", Inet4Address.getLocalHost().getHostAddress()});
+
+		ExtendedResolver resolver = new ExtendedResolver(IPUtils.getDNSLocalIps());
 		resolver.setTCP(false);
 		resolver.setPort(settings.getPort());
 		lu.setResolver(resolver); // default retries is 3, limite to 2
