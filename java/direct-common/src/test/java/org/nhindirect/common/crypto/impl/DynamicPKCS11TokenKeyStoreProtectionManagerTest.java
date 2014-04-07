@@ -5,13 +5,13 @@ import static org.junit.Assert.assertTrue;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.util.Arrays;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class DynamicPKCS11TokenKeyStoreProtectionManagerTest 
 {

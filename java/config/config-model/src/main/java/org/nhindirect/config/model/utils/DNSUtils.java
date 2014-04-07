@@ -43,6 +43,7 @@ import org.xbill.DNS.Section;
  * @author Greg Meyer
  * @since 1.0
  */
+///CLOVER:OFF
 public class DNSUtils 
 {
 	/**
@@ -240,3 +241,4 @@ public class DNSUtils
 		return retVal;
 	}	
 }
+///CLOVER:ON

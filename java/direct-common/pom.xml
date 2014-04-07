@@ -116,7 +116,14 @@
             <version>4.1</version>
             <type>jar</type>
             <scope>compile</scope>
-        </dependency>         		                  
+        </dependency>   
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>               		                  
 	    <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -307,7 +314,7 @@
 	          <source>1.6</source>
 	          <show>public</show>   
 	          <excludePackageNames>
-	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module:org.nhindirect.common.tooling
+	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module:org.nhindirect.common.tooling:org.nhindirect.common.crypto.tools
 	          </excludePackageNames>   	                      	          
 	        </configuration>
 	        <executions>
@@ -391,7 +398,7 @@
 	          <source>1.6</source>
 	          <show>public</show>    
 	          <excludePackageNames>
-	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module:org.nhindirect.common.tooling
+	              org.nhindirect.common.mail.dsn.impl:org.nhindirect.common.tx.impl:org.nhindirect.common.tx.provider:org.nhindirect.common.tx.module:org.nhindirect.common.tooling:org.nhindirect.common.crypto.tools
 	          </excludePackageNames>      	           	          
 	        </configuration>
 	      </plugin>

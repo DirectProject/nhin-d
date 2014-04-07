@@ -42,7 +42,7 @@ public abstract class AbstractUnsecuredService
      protected final ObjectMapper jsonMapper;
      
      /**
-      * Constructs an instance with the service URL and an {@link OAuthManager instance}.
+      * Constructs an instance with the service URL.
       * @param serviceUrl The URL to the target service.
       * @param httpClient An {@link HttpClient} instance used to communicate over http.
       */

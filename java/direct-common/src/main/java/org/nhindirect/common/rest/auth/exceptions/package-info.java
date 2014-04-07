@@ -19,55 +19,8 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.common.rest;
-
-import org.apache.http.client.methods.HttpUriRequest;
-
 /**
- * Security manager implementation that is essentially a no-op and does not provide any security operations.  This class is mainly
- * useful for unit and functional testing when resources a instanciated without security.
- * @author Greg Meyer
- * @since 1.3
+ * Exceptions for authorizing REST transactions. 
  */
-public class OpenServiceSecurityManager implements ServiceSecurityManager
-{
 
-	/**
-	 * Constructor
-	 */
-	public OpenServiceSecurityManager()
-	{
-		
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void init() 
-	{
-		// do nothing
-		
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void authenticateSession() 
-	{
-		// do nothing
-		
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public HttpUriRequest createAuthenticatedRequest(HttpUriRequest request) 
-	{
-		// just return back the request
-		return request;
-	}
-
-}
+package org.nhindirect.common.rest.auth.exceptions;

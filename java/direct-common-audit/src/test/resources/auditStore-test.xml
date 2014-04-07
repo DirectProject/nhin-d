@@ -14,6 +14,15 @@
 	<context:component-scan base-package="org.nhindirect.common.audit.impl" />
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
+<!--  
+   <context:property-placeholder ignore-resource-not-found="true" location="classpath*:properties/auditStore.properties"/>	
+-->
+   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location">
+                <value>classpath:properties/auditStore.properties</value>
+        </property> 
+    </bean>
+
 	<!-- Exception translation bean post processor -->
 	<bean
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
@@ -25,7 +34,7 @@
 				<property name="showSql" value="true" />
 				<property name="generateDdl" value="true" />
 				<!--  <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQLDialect" /> -->
-				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+				<property name="databasePlatform" value='${auditStore.db.databasePlatform}' />
 			</bean>
 		</property>
 		<property name="dataSource" ref="dataSource"/>
@@ -35,10 +44,10 @@
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
-		<property name="url" value="jdbc:derby:nhindconfig;create=true" />
-		<property name="username" value="nhind" />
-		<property name="password" value="nhind" />
+		<property name="driverClassName" value='${auditStore.db.databaseDriver}' />
+		<property name="url" value='${auditStore.db.databaseURL}' />
+		<property name="username" value='${auditStore.db.username}' />
+		<property name="password" value='${auditStore.db.password}' />
 	</bean> 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
 	
