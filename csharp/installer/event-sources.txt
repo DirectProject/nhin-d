@@ -5,3 +5,4 @@ Health.Direct.Audit,Direct Project - Audit Source
 Health.Direct.Config.Service,Direct Project - Config Service Source
 Health.Direct.DnsResponder.WinSrv,Direct Project - DNS Responder Service
 Health.Direct.Monitor.WinSrv,Direct Project - Direct Monitor Service
+Health.Direct.Admin.Console,Direct Project - Direct Web Admin Console
