@@ -20,6 +20,7 @@ using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Diagnostics.NLog;
 using Health.Direct.SmtpAgent.Config;
+using Health.Direct.SmtpAgent.Diagnostics;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -28,8 +29,14 @@ namespace Health.Direct.SmtpAgent
         private static readonly object m_initSync = new object();
         private static bool m_initialized;
 
+        /// <summary>
+        /// Only use for test harness.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         public static SmtpAgent Create(SmtpAgentSettings settings)
         {
+            m_initialized = false;
             InitializeContainer(settings);
             Log.For<MessageArrivalEventHandler>().Debug(settings);
             return new SmtpAgent(settings);
@@ -97,9 +104,17 @@ namespace Health.Direct.SmtpAgent
             {
                 dependencyResolver.Register<ILogFactory>(new NLogFactory(settings.LogSettings));
             }
-            if (!dependencyResolver.IsRegistered<IAuditor>())
+            if (!dependencyResolver.IsRegistered<IAuditor<IBuildAuditLogMessage>>() && !dependencyResolver.IsRegistered<IAuditor>())
             {
-                dependencyResolver.Register<IAuditor>(new EventLogAuditor());
+                dependencyResolver.Register<IAuditor<IBuildAuditLogMessage>>(new SmtpAgentEventLogAuditor(new EventLogAuditor()));
+            }
+            if (dependencyResolver.IsRegistered<IAuditor>())
+            {
+                //
+                // wrap legacy IAuditor
+                //
+                dependencyResolver.Register<IAuditor<IBuildAuditLogMessage>>(new SmtpAgentEventLogAuditor(dependencyResolver.Resolve<IAuditor>()));
+                dependencyResolver.UnRegister<IAuditor>();
             }
         }
     }

@@ -98,6 +98,21 @@ namespace Health.Direct.Common.Container
             return this;
         }
 
+        /// <summary>
+        /// UnRegisters a specific instance <paramref name="obj"/> type <typeparamref name="T"/>
+        /// with the container.
+        /// </summary>
+        /// <typeparam name="T">The type to register</typeparam>
+        /// <param name="obj">The specific instance to register</param>
+        /// <returns>An instance of self so the Register calls can be chained.</returns>
+        public IDependencyContainer UnRegister<T>()
+        {
+            m_types.Remove(typeof(T));
+            return this;
+        }
+
+
+
         ///<summary>
         /// Register all of the components found in the <see cref="SimpleContainerSection"/>
         ///</summary>

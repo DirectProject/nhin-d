@@ -107,6 +107,10 @@
     <Compile Include="Config\PluginProducerSettings.cs" />
     <Compile Include="Config\PolicyServiceResolverSettings.cs" />
     <Compile Include="Config\SmtpAgentSettings.cs" />
+    <Compile Include="Diagnostics\IAuditor.cs" />
+    <Compile Include="Diagnostics\IBuildAuditLogMessage.cs" />
+    <Compile Include="Diagnostics\SimpleAuditLogBuilder.cs" />
+    <Compile Include="Diagnostics\SmtpAgentEventLogAuditor.cs" />
     <Compile Include="DomainServiceResolver.cs" />
     <Compile Include="FolderRoute.cs" />
     <Compile Include="INotificationProducer.cs" />

@@ -1,0 +1,4 @@
+﻿<AuditorSettings>
+    <ConnectionString>Data Source=(localdb)\.\ProjectsShare;Initial Catalog=DirectAudit;Integrated Security=SSPI;</ConnectionString>
+  <QueryTimeout>5</QueryTimeout>
+</AuditorSettings>
