@@ -86,7 +86,7 @@ namespace Health.Direct.Common.Container
         }
 
         ///<summary>
-        /// A convience property that loads a the type specified in <see cref="Service"/>.
+        /// A convenience property that loads a the type specified in <see cref="Service"/>.
         ///</summary>
         [XmlIgnore]
         public Type ServiceType
@@ -115,7 +115,7 @@ namespace Health.Direct.Common.Container
         /// Create an instance of the type <see cref="Type"/>.
         ///</summary>
         ///<returns>A new instance of the type specified by <see cref="Type"/></returns>
-        public object CreateInstance()
+        public virtual object CreateInstance()
         {
             return Activator.CreateInstance(LoadType(Type));
         }

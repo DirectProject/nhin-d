@@ -34,6 +34,7 @@ using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.SmtpAgent.Config;
+using Health.Direct.SmtpAgent.Diagnostics;
 
 namespace Health.Direct.SmtpAgent
 {
@@ -48,8 +49,8 @@ namespace Health.Direct.SmtpAgent
             public const string Receivers = "X-Receiver";
             public const string Sender = "X-Sender";
         }
-        
-        IAuditor m_auditor;
+
+        IAuditor<IBuildAuditLogMessage> m_auditor;
         ILogger m_logger;
 
         SmtpAgentSettings m_settings;
@@ -138,7 +139,8 @@ namespace Health.Direct.SmtpAgent
             m_settings = settings;
             m_settings.Validate();
 
-            m_auditor = IoC.Resolve<IAuditor>();
+            m_auditor = IoC.Resolve<IAuditor<IBuildAuditLogMessage>>();
+            
             m_logger = Log.For(this);
 
             m_diagnostics = new AgentDiagnostics(this);
@@ -174,6 +176,7 @@ namespace Health.Direct.SmtpAgent
                 }
             }
         }
+
         
         void InitAgent()
         {
@@ -848,16 +851,16 @@ namespace Health.Direct.SmtpAgent
         {
             message.Accept();
 
-            m_auditor.Log(AuditNames.Message.GetAcceptedMessage(incoming), this.BuildAuditLogString(message));
+            m_auditor.Log(AuditNames.Message.GetAcceptedMessage(incoming), m_auditor.BuildAuditLogMessage.Build(message));
         }
-        
-        protected virtual void RejectMessage(ISmtpMessage message, bool? isIncoming)
+
+        protected virtual void RejectMessage(ISmtpMessage message, bool? incoming)
         {
             try
             {
                 message.Reject();
 
-                m_auditor.Log(AuditNames.Message.GetRejectedMessage(isIncoming), this.BuildAuditLogString(message));
+                m_auditor.Log(AuditNames.Message.GetRejectedMessage(incoming), m_auditor.BuildAuditLogMessage.Build(message));
                 
                 Logger.Debug("Rejected Message");
                 
@@ -868,18 +871,18 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        protected virtual void RejectMessage(ISmtpMessage message, MessageEnvelope envelope, bool? isIncoming)
+        protected virtual void RejectMessage(ISmtpMessage message, MessageEnvelope envelope, bool? incoming)
         {
             try
             {
                 message.Reject();
 
-                m_auditor.Log(AuditNames.Message.GetRejectedMessage(isIncoming), this.BuildAuditLogString(message));
+                m_auditor.Log(AuditNames.Message.GetRejectedMessage(incoming), m_auditor.BuildAuditLogMessage.Build(message));
                 
                 Logger.Debug("Rejected Message");
-                
 
-                if (!isIncoming.GetValueOrDefault(false) && envelope.ShouldDeliverFailedStatus(m_settings.Notifications))
+
+                if (!incoming.GetValueOrDefault(false) && envelope.ShouldDeliverFailedStatus(m_settings.Notifications))
                 {
                     var outgoingMessage = BuildFailedOutgoingMessage(envelope);
                     SendDeliveryStatus(outgoingMessage);
@@ -925,11 +928,6 @@ namespace Health.Direct.SmtpAgent
                 Logger.Error("While copying message {0}", ex.ToString());
                 Logger.Debug(ex);
             }
-        }
-        
-        string BuildAuditLogString(ISmtpMessage message)
-        {
-            return string.Format("MAILFROM={0};RCPTTO={1}", message.GetMailFrom(), message.GetRcptTo());
         }
     }
 }

@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace Health.Direct.Common.Diagnostics
 {
     ///<summary>
-    /// AuditNames is a convience class containing the category names used with
+    /// AuditNames is a convenience class containing the category names used with
     /// the <see cref="IAuditor.Log(string)"/> and <see cref="IAuditor.Log(string,string)"/> methods.
     ///</summary>
     /// <example>

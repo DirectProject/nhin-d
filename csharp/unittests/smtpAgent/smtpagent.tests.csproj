@@ -61,11 +61,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\build\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\build\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\build\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Moq, Version=4.2.1402.2112, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\build\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -93,6 +101,7 @@
     <Compile Include="SmtpAgentMocks.cs" />
     <Compile Include="SmtpAgentTester.cs" />
     <Compile Include="TestAgentInit.cs" />
+    <Compile Include="TestAuditor.cs" />
     <Compile Include="TestDomainServiceResolver.cs" />
     <Compile Include="TestHandler.cs" />
     <Compile Include="TestNotifications.cs" />
@@ -108,6 +117,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="SmtpAgentTestFiles\TestPlugin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig_BadAuditor_Defaults.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigServiceProd.xml">
@@ -145,6 +160,10 @@
     <ProjectReference Include="..\..\agent\agent.csproj">
       <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
       <Name>agent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\auditors\DatabaseAuditor\DatabaseAuditor.csproj">
+      <Project>{7f3d3daf-d5b3-44fc-bee8-716b49cbb4aa}</Project>
+      <Name>DatabaseAuditor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
@@ -193,6 +212,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
