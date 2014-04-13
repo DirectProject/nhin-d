@@ -1,0 +1,35 @@
+To: Alice@Example.ORG
+From: postmaster@mail.Example.COM
+Subject: Delivery Notification (success) for Bob@Example.COM
+Content-Type: multipart/report; report-type=delivery-status;
+    boundary=abcde
+MIME-Version: 1.0
+message-id: 0c796d0e-4c76-43e8-be40-2cd5e30c1006
+
+--abcde
+Content-type: text/plain; charset=us-ascii
+
+Your message (id QQ314159) could not be delivered to
+Carol@Ivory.EDU.
+
+A transcript of the session follows:
+
+(while talking to Ivory.EDU)
+>>> RCPT TO:<Carol@Ivory.EDU> NOTIFY=FAILURE
+<<< 550 error - no such recipient
+
+--abcde
+Content-type: message/delivery-status
+
+Reporting-MTA: dns; Example.ORG
+Original-Envelope-ID: QQ314159
+X-Original-Message-Id: <9501051053.aa04167@IETF.CNR I.Reston.VA.US>
+
+Original-Recipient: rfc822;Carol@Ivory.EDU
+Final-Recipient: rfc822;Carol@Ivory.EDU
+SMTP-Remote-Recipient: Carol@Ivory.EDU
+Diagnostic-Code: smtp; 550 error - no such recipient
+Action: failed
+Status: 5.0.0
+
+--abcde--

@@ -1,0 +1,132 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://camel.apache.org/schema/spring 
+       http://camel.apache.org/schema/spring/camel-spring.xsd"       
+       default-autowire="byName">
+       
+   	<context:annotation-config />
+    <context:component-scan base-package="org.nhindirect.monitor.providers"/>
+    <context:component-scan base-package="org.nhindirect.monitor.resources"/>
+    <context:component-scan base-package="org.nhindirect.monitor.dao"/>
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+
+
+  <bean id="springApplicationContext" class="org.nhindirect.monitor.TestApplicationContext"/>
+
+  <!-- Exception translation bean post processor -->
+  <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+  <bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+				<property name="showSql" value="false" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+			</bean>
+		</property>
+		<property name="dataSource" ref="dataSource"/>
+		<property name="persistenceUnitName" value="direct-msg-monitor-store" />
+  </bean>
+	
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
+		<property name="url" value="jdbc:derby:target/msg-monitor-service;create=true" />
+		<property name="username" value="notification" />
+		<property name="password" value="service" />
+  </bean>
+   
+  <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />   
+
+  <bean id="notificationDuplicationDAO" class="org.nhindirect.monitor.dao.impl.NotificationDuplicationDAOImpl" />
+
+  <bean id="duplicationStateManager" class="org.nhindirect.monitor.processor.impl.DefaultDuplicateNotificationStateManager" >
+        <property name="messageRetention" value="7" />
+		<property name="dao" ref="notificationDuplicationDAO" />
+  </bean>
+
+  <bean id="generalTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="3600000"/>
+  </bean>
+
+  <bean id="reliableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.DecayingTimeoutCondition">
+        <constructor-arg value="3600000"/>
+  </bean>
+
+  <bean id="varaiableTimeoutCondition" class="org.nhindirect.monitor.condition.impl.VariableTimeoutCondition">
+		<constructor-arg ref="generalTimeoutCondition" />
+		<constructor-arg ref="reliableTimeoutCondition" />
+  </bean>
+
+  <bean id="generalCompletionCondition" class="org.nhindirect.monitor.condition.impl.GeneralCompletionCondition" />
+
+  <bean id="reliableCompletionCondition" class="org.nhindirect.monitor.condition.impl.TimelyAndReliableCompletionCondition" >
+        <property name="dupDAO" ref="notificationDuplicationDAO" />
+  </bean>
+
+  <bean id="variableCompletionCondition" class="org.nhindirect.monitor.condition.impl.VariableCompletionCondition">
+		<constructor-arg ref="reliableCompletionCondition" />
+		<constructor-arg ref="generalCompletionCondition" />
+  </bean>
+
+  <bean id="aggregationStrategy" class="org.nhindirect.monitor.aggregator.BasicTxAggregator">
+		<constructor-arg ref="variableCompletionCondition" />  
+		<constructor-arg ref="varaiableTimeoutCondition" />  		
+  </bean>
+
+  <bean id="msgIdCorrelator" class="org.nhindirect.monitor.expression.MessageIdCorrelationExpression" />
+
+  <!-- a persistent aggregation repository using camel-hawtdb -->
+  <bean id="directMonitoringRepo" class="org.apache.camel.component.hawtdb.HawtDBAggregationRepository">
+    <!-- store the repo in the hawtdb.dat file -->
+    <property name="persistentFileName" value="target/data/hawtdb.dat"/>
+    <!-- and use directMonitoring as the repository name -->
+    <property name="repositoryName" value="directMonitoring"/>
+  </bean>
+
+
+  <camelContext id="web-camel-context" xmlns="http://camel.apache.org/schema/spring">  
+    <template id="testProducerTemplate" defaultEndpoint="direct:start"/>
+    
+    
+    <route id="direct-reliable">
+
+      <from uri="direct:start"/>
+      <aggregate strategyRef="aggregationStrategy" ignoreInvalidCorrelationKeys="true"
+           aggregationRepositoryRef="directMonitoringRepo">
+        <correlationExpression>
+            <ref>msgIdCorrelator</ref>
+        </correlationExpression>
+        <completionPredicate>
+          <method bean="aggregationStrategy" method="isAggregationComplete"/>
+        </completionPredicate>     
+        <completionTimeout>
+          <method bean="aggregationStrategy" method="getAggregationTime"/>
+        </completionTimeout>           
+        <to uri="mock:result"/>
+      </aggregate>
+    </route>
+ 
+    <!--  Simple timer to purge exchanges in the duplication data base.
+          This can replaced more sophisticated quartz configuration using 
+          the Camel Quartz component and cron expressions.  Default configuration
+          purges the table once every 6 hours.
+     -->
+     <route id="duplicate-store-purge">
+       <from uri="timer://purgeTimer?period=6h"/>
+       <bean ref="duplicationStateManager" method="purge"/>
+     </route>
+  </camelContext>
+
+</beans>

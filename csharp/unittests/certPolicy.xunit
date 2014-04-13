@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xunit>
+  <assemblies>
+    <assembly filename=".\policy.tests\bin\debug\Health.Direct.Policy.Tests.dll" shadow-copy="true" />
+  </assemblies>
+</xunit>

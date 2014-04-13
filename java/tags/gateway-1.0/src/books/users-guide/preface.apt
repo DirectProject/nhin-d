@@ -1,0 +1,13 @@
+    -----
+    Introduction
+    -----
+    Greg Meyer
+    -----
+
+About this Document
+
+  This document describes how to implement an NHIN Direct protocol bridge and how to configure protocol bridges provided by the gateway module.
+  
+  * {{{./dev-intro.html}Development Guide}} - This section describes how to develop a protocol bridge specific to a protocol and protocol implementation.
+  
+  * {{{./deploy-intro.html}Deployment Guide}} - This section describes how deploy and configure a protocol bridges provided by the gateway module.

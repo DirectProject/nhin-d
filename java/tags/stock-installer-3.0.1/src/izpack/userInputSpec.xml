@@ -1,0 +1,98 @@
+<userInput>
+   <panel order="0">
+     <field type="title" txt="Configuration and Certificate Services" bold="true" size="1" />
+     <field type="divider" align="top"/>   
+     <field type="text" align="left" variable="config.service.url" >
+        <spec txt="URL:" size="40" set="http://localhost:8081/config-service/ConfigurationService" />
+     </field>
+   </panel>
+   <panel order="1">
+     <field type="title" txt="Email Domain And User Setup" bold="true" size="1" />
+     <field type="divider" align="top"/>   
+     <field type="staticText" txt="Initial Email Domain (Required)" bold="true" size="1" />     
+     <field type="text" align="left" variable="email.domain.name" >
+        <spec txt="Domain Name:" size="25" set="" />
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Domain name cannot be empty." />     
+     </field>
+     <field type="space" align="top"/>       
+     <field type="divider" align="top"/>     
+         
+     <field type="staticText" txt="Initial Email Account" bold="true" size="1" />           
+     <field type="text" align="left" variable="email.address" >
+        <spec txt="Email Address:" size="25" set="" />
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Email address cannot be empty." />            
+     </field>    
+     <field type="text" align="left" variable="email.username" >
+        <spec txt="Username:" size="25" set="" />
+     </field>     
+     <field type="password" align="left" variable="email.password">
+          <spec>
+            <pwd txt="Password:" size="25" set=""/>
+            <pwd txt="Retype Password:" size="25" set=""/>
+          </spec>
+          <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Passwords cannot be empty." />                
+          <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Both passwords must match." />    
+      </field>     
+   </panel>   
+   <panel order="2">
+     <field type="title" txt="Certificate Authority Creation" bold="true" size="1" />
+     <field type="divider" align="top"/>     
+     <field type="text" align="left" variable="ca.commonname" >
+        <spec txt="Common Name:" size="25" set="" />
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Certificate authority common name cannot be empty." />             
+     </field>
+     <field type="password" align="left" variable="ca.privkey.passphrase" >
+        <spec>
+           <pwd txt="Private Key Passphrase" size="25" set="" />
+           <pwd txt="Retype Passphrase:" size="25" set="" />           
+        </spec>
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Passwords cannot be empty." />            
+        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Both passwords must match." />        
+     </field>     
+     <field type="combo" align="left" variable="ca.expiration">
+        <spec txt="Validity (Years)" >
+           <choice txt="1" value="1" />
+           <choice txt="5" value="5" />  
+           <choice txt="10" value="10" set="true" />             
+       </spec>
+     </field>       
+     <field type="combo" align="left" variable="ca.keysize">
+        <spec txt="Key Size" >
+           <choice txt="2048" value="2048" set="true" />
+           <choice txt="4096" value="4096" />  
+       </spec>
+     </field>   
+   </panel>     
+   <panel order="3">
+     <field type="title" txt="User/Organizational Certificate Creation" bold="true" size="1" />
+     <field type="divider" align="top"/>     
+     <field type="text" align="left" variable="cert.email" >
+        <spec txt="Email Address or Domain Name:" size="25" set="$email.domain.name" />
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Email address/domain name cannot be empty." />             
+     </field>     
+     <field type="password" align="left" variable="cert.privkey.passphrase" >
+        <spec>
+           <pwd txt="Private Key Passphrase:" size="25" set="" />
+           <pwd txt="Retype Passphrase:" size="25" set="" />           
+        </spec>
+        <validator class="com.izforge.izpack.util.NotEmptyValidator" txt="Email address/domain name cannot be empty." />              
+        <validator class="com.izforge.izpack.util.PasswordEqualityValidator" txt="Both passwords must match." />        
+     </field>  
+     <field type="combo" align="left" variable="cert.expiration">
+        <spec txt="Validity (Years)" >
+           <choice txt="1" value="1" set="true" />
+           <choice txt="2" value="2" />  
+           <choice txt="3" value="3"  />   
+           <choice txt="5" value="5"  />      
+           <choice txt="10" value="10"  />                                 
+       </spec>
+     </field>         
+     <field type="combo" align="left" variable="cert.keysize">
+        <spec txt="Key Size" >
+           <choice txt="1024" value="1024" />        
+           <choice txt="2048" value="2048" set="true" />
+           <choice txt="4096" value="4096" />  
+       </spec>
+     </field>   
+   </panel>       
+</userInput>	
