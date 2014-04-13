@@ -22,6 +22,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Health.Direct.Common.Policies;
 using Health.Direct.SmtpAgent.Config;
+using Health.Direct.SmtpAgent.Diagnostics;
 using Xunit;
 using Xunit.Extensions;
 using Health.Direct.Common.Container;
@@ -77,7 +78,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.DoesNotThrow(() => logFactory = IoC.Resolve<ILogFactory>());
 
             IAuditor auditor = null;
-            Assert.DoesNotThrow(() => auditor = IoC.Resolve<IAuditor>());
+            Assert.DoesNotThrow(() => auditor = IoC.Resolve<IAuditor<IBuildAuditLogMessage>>());
             Assert.True(auditor is DummyAuditor);
         }
 
@@ -290,7 +291,7 @@ namespace Health.Direct.SmtpAgent.Tests
         }
     }
 
-    public class DummyAuditor : IAuditor
+    public class DummyAuditor : IAuditor<IBuildAuditLogMessage>
     {
         public void Log(string category)
         {
@@ -299,5 +300,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public void Log(string category, string message)
         {
         }
+
+        public IBuildAuditLogMessage BuildAuditLogMessage { get; private set; }
     }
 }

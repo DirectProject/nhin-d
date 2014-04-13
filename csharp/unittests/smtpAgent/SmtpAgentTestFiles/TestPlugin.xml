@@ -79,7 +79,7 @@
   </IncomingRoutes>
   <Container>
     <Component>
-      <Service>Health.Direct.Common.Diagnostics.IAuditor, Health.Direct.Common</Service>
+      <Service>Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent</Service>
       <Type>Health.Direct.SmtpAgent.Tests.DummyAuditor, Health.Direct.SmtpAgent.Tests</Type>
       <Scope>Singleton</Scope>
     </Component>
