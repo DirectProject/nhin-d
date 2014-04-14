@@ -25,7 +25,10 @@ package org.nhindirect.stagent;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
+import java.security.Provider.Service;
 import java.security.Security;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
@@ -40,14 +43,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.cms.SignerId;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.nhindirect.stagent.cert.SignerCertPair;
 import org.nhindirect.stagent.cert.Thumbprint;
 import org.nhindirect.stagent.options.OptionsManager;
@@ -61,14 +68,20 @@ import org.nhindirect.stagent.options.OptionsParameter;
 @SuppressWarnings("unchecked")
 public class CryptoExtensions 
 {
-	private static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
+	private static final String DEFAULT_JCE_PROVIDER_STRING = BouncyCastleProvider.PROVIDER_NAME;
+
+	private static final String DEFAULT_SENSITIVE_JCE_PROVIDER_STRING = BouncyCastleProvider.PROVIDER_NAME;
 	
 	private static final String DEFAULT_JCE_PROVIDER_CLASS = "org.bouncycastle.jce.provider.BouncyCastleProvider";
+
+	private static final String DEFAULT_SENSITIVE_JCE_PROVIDER_CLASS = "org.bouncycastle.jce.provider.BouncyCastleProvider";
 	
 	private static final int RFC822Name_TYPE = 1; // name type constant for Subject Alternative name email address
 	private static final int DNSName_TYPE = 2; // name type constant for Subject Alternative name domain name	
 	
 	private static CertificateFactory certFactory;		
+	
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(CryptoExtensions.class);	
 	
 	static 
 	{
@@ -91,12 +104,12 @@ public class CryptoExtensions
 	 * <p>
 	 * If a provider is not configured via the {@link OptionsManager}, then the default BouncyCastle provider is registered (if it has not been
 	 * already registered).
-	 * @param jceProviderClasses Comma delimited list of the fully qualified class name of the JCE provider.
 	 */
 	public static void registerJCEProviders()
 	{
+		// registering the default JCE providers
 		String[] providerClasses = null;
-		final OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_PROVIDER_CLASSES);
+		OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_PROVIDER_CLASSES);
 		
 		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
 			providerClasses = new String[] {DEFAULT_JCE_PROVIDER_CLASS};
@@ -122,6 +135,70 @@ public class CryptoExtensions
 			}
 		}
 		
+		// registering the default sensitive JCE providers
+		providerClasses = null;
+		param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_SENSITIVE_PROVIDER_CLASSES);
+		
+		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
+			providerClasses = new String[] {DEFAULT_SENSITIVE_JCE_PROVIDER_CLASS};
+		else
+			providerClasses = param.getParamValue().split(",");
+
+		// register the provider classes
+		for (String providerClass : providerClasses)
+		{
+			try
+			{
+				
+				Provider provider = null;
+				Class<?> providerClazz = null;
+				// check to see if the provider class string has parameters
+				final String provParams[] = providerClass.split(";");
+				if (provParams.length > 1)
+				{
+					providerClazz = CryptoExtensions.class.getClassLoader().loadClass(provParams[0]);
+					try
+					{
+						Constructor<Provider> constr = Constructor.class.cast(providerClazz.getConstructor(String.class));
+						provider = constr.newInstance(provParams[1]);
+					}
+					catch (InvocationTargetException e)
+					{
+						
+						if (e.getTargetException() instanceof IllegalStateException)
+						{
+							LOGGER.warn("Could not create a JCE Provider with the specific parameter: " + provParams[1], e);
+						}
+						else
+							LOGGER.warn("JCE Provider param  " + provParams[1] + " provided but not supported by JCE Provider implementation:" + e.getMessage(), e);
+					}
+				}
+				else
+				{
+					providerClazz = CryptoExtensions.class.getClassLoader().loadClass(providerClass);
+				}
+				
+				if (provider == null)
+				{
+					provider = Provider.class.cast(providerClazz.newInstance());	
+				}
+				
+				// check to see if the provider is already registered
+				if (Security.getProvider(provider.getName()) == null)
+					Security.addProvider(provider);
+				
+				Set<Service> services = provider.getServices();
+				for (Service service : services)
+				{
+					System.out.println("Service: " + service.getAlgorithm() + "   Type:" + service.getType() + "\r\n\t" + service.toString());
+				}
+				System.out.println("\r\n\r\n\r\n");
+			}
+			catch (Exception e)
+			{
+				throw new IllegalStateException("Could not load and/or register sensitive JCE provider " + providerClass, e);
+			}
+		}		
 	}
 	
 	/**
@@ -137,6 +214,28 @@ public class CryptoExtensions
 		
 		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
 			retVal = DEFAULT_JCE_PROVIDER_STRING;
+		else
+		{
+			final String[] JCEString = param.getParamValue().split(",");
+			retVal = JCEString[0];
+		}
+		return retVal;
+	}
+	
+	/**
+	 * Gets the configured JCE sensitive crypto provider string for crypto operations that need access to sensitive cryptogrophy information
+	 * such as secret and private keys.  This is configured using the
+	 * -Dorg.nhindirect.stagent.cryptography.JCESensitiveProviderName JVM parameters.  If the parameter is not set or is empty,
+	 * then the default string "BC" (BouncyCastle provider) is returned.  By default the agent installs the BouncyCastle provider.
+	 * @return The name of the JCE provider string.
+	 */
+	public static String getJCESensitiveProviderName()
+	{
+		String retVal = "";
+		OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.JCE_SENTITIVE_PROVIDER);
+		
+		if (param == null || param.getParamValue() == null || param.getParamValue().isEmpty())
+			retVal = DEFAULT_SENSITIVE_JCE_PROVIDER_STRING;
 		else
 		{
 			final String[] JCEString = param.getParamValue().split(",");
