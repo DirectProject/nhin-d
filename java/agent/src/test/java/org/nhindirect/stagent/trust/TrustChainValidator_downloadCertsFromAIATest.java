@@ -2,13 +2,14 @@ package org.nhindirect.stagent.trust;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
+import java.util.Collection;
+
+import junit.framework.TestCase;
 
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.utils.TestUtils;
 
-import junit.framework.TestCase;
-
-public class TrustChainValidator_downloadCertFromAIATest extends TestCase
+public class TrustChainValidator_downloadCertsFromAIATest extends TestCase
 {
 	protected String filePrefix;
 	
@@ -23,22 +24,34 @@ public class TrustChainValidator_downloadCertFromAIATest extends TestCase
 			filePrefix = "file:///";
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void testDownloadCertFromAIA_validURL_assertDownloaded() throws Exception
+	public void testDownloadCertsFromAIA_validURL_singleCert_assertDownloaded() throws Exception
 	{
 		final TrustChainValidator validator = new TrustChainValidator();
 		
 		final File fl = new File("src/test/resources/certs/bob.der");
 		
-		final X509Certificate downloadedCert = validator.downloadCertFromAIA(filePrefix + fl.getAbsolutePath());
+		final X509Certificate downloadedCert = validator.downloadCertsFromAIA(filePrefix + fl.getAbsolutePath()).iterator().next();
 		
 		assertNotNull(downloadedCert);
 		
 		assertEquals(TestUtils.loadCertificate("bob.der"), downloadedCert);
 	}
 	
-	@SuppressWarnings("deprecation")
-	public void testDownloadCertFromAIA_certNotAtURL_assertException() throws Exception
+	public void testDownloadCertsFromAIA_validURL_collectionCert_assertDownloaded() throws Exception
+	{
+		final TrustChainValidator validator = new TrustChainValidator();
+		
+		final File fl = new File("src/test/resources/certs/cmsRandomizer.p7b");
+		
+		final Collection<X509Certificate> downloadedCerts = validator.downloadCertsFromAIA(filePrefix + fl.getAbsolutePath());
+		
+		assertNotNull(downloadedCerts);
+		
+		
+		assertEquals(6, downloadedCerts.size());
+	}
+	
+	public void testDownloadCertsFromAIA_certNotAtURL_assertException() throws Exception
 	{
 		final TrustChainValidator validator = new TrustChainValidator();
 		
@@ -48,7 +61,7 @@ public class TrustChainValidator_downloadCertFromAIATest extends TestCase
 		
 		try
 		{
-			validator.downloadCertFromAIA(filePrefix + fl.getAbsolutePath());
+			validator.downloadCertsFromAIA(filePrefix + fl.getAbsolutePath());
 		}
 		catch (NHINDException e)
 		{

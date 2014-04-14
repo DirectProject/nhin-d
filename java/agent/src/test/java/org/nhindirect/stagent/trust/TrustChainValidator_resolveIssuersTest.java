@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -45,7 +46,7 @@ public class TrustChainValidator_resolveIssuersTest extends TestCase
 		assertEquals(1, resolvedIssuers.size());
 		assertEquals(TestUtils.loadCertificate("CernerDirect Cert Professional Community CA.der"), resolvedIssuers.iterator().next());
 		
-		verify(spyValidator, times(2)).downloadCertFromAIA((String)any());
+		verify(spyValidator, times(2)).downloadCertsFromAIA((String)any());
 	}
 	
 	public void testResolveIssuers_AIAExists_resolveToRoot_validateResolved() throws Exception
@@ -53,14 +54,14 @@ public class TrustChainValidator_resolveIssuersTest extends TestCase
 	
 		final TrustChainValidatorWrapper validator = new TrustChainValidatorWrapper()
 		{
-			protected X509Certificate downloadCertFromAIA(String url) throws NHINDException
+			protected Collection<X509Certificate> downloadCertsFromAIA(String url) throws NHINDException
 			{
 				try
 				{
 					if (url.contains("sandbox"))
-						return TestUtils.loadCertificate("CernerDirect Cert Professional Community CA.der");
+						return Arrays.asList(TestUtils.loadCertificate("CernerDirect Cert Professional Community CA.der"));
 					else
-						return TestUtils.loadCertificate("CernerRoot.der");
+						return Arrays.asList(TestUtils.loadCertificate("CernerRoot.der"));
 				}
 				catch (Exception e){throw new NHINDException(e);}
 			}
@@ -78,7 +79,7 @@ public class TrustChainValidator_resolveIssuersTest extends TestCase
 		assertEquals(TestUtils.loadCertificate("CernerDirect Cert Professional Community CA.der"), iter.next());
 		assertEquals(TestUtils.loadCertificate("CernerRoot.der"), iter.next());
 		
-		verify(spyValidator, times(2)).downloadCertFromAIA((String)any());
+		verify(spyValidator, times(2)).downloadCertsFromAIA((String)any());
 	}
 	
 	public void testResolveIssuers_noAIAExists_notAvailViaResolver_validateNotResolved() throws Exception
@@ -103,6 +104,6 @@ public class TrustChainValidator_resolveIssuersTest extends TestCase
 		
 		assertEquals(0, resolvedIssuers.size());
 		
-		verify(spyValidator, times(0)).downloadCertFromAIA((String)any());
+		verify(spyValidator, times(0)).downloadCertsFromAIA((String)any());
 	}
 }

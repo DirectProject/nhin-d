@@ -311,7 +311,7 @@ public class SMIMECryptographerImpl implements Cryptographer
         {
         	final String encryAlgOID = toEncyAlgorithmOid(this.m_encryptionAlgorithm);
         	retVal =  gen.generate(bodyPart, encryAlgOID, 
-        			CryptoExtensions.getJCEProviderNameForTypeAndAlgorithm("KeyGenerator", encryAlgOID));
+        			CryptoExtensions.getJCEProviderNameForTypeAndAlgorithm("Cipher", encryAlgOID));
         }
         catch (Exception e)
         {
@@ -403,7 +403,7 @@ public class SMIMECryptographerImpl implements Cryptographer
 		        if (recipient == null)
 		        	continue;
 	
-		        byte[] decryptedPayload = recipient.getContent(decryptCert.getPrivateKey(), CryptoExtensions.getJCEProviderName());
+		        byte[] decryptedPayload = recipient.getContent(decryptCert.getPrivateKey(), CryptoExtensions.getJCESensitiveProviderName());
 		        
 	            if (LOGGER.isDebugEnabled())
 	            {	
@@ -577,7 +577,7 @@ public class SMIMECryptographerImpl implements Cryptographer
 	    	generator.addCertificatesAndCRLs(certsAndcrls);
 	    	CMSProcessableBodyPart content = new CMSProcessableBodyPart(signedContent);
 	    	
-	    	CMSSignedData signedData = generator.generate(content, false, CryptoExtensions.getJCEProviderName());
+	    	CMSSignedData signedData = generator.generate(content, false, CryptoExtensions.getJCESensitiveProviderName());
 	    	  	    	
 	        String  header = "signed; protocol=\"application/pkcs7-signature\"; micalg=" + toDigestAlgorithmMicalg(this.m_digestAlgorithm);           
 	        

@@ -36,11 +36,30 @@ public class OptionsParameter
 	public final static String JCE_PROVIDER = "JCE_PROVIDER";
 
 	/**
+	 * String value that specifies the JCE provider that should be used for cryptography and certificate operations that require
+	 * access to sensitive cryptographic information such as secret and private keys.
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptography.JCESensitiveProviderName
+	 */
+	public final static String JCE_SENTITIVE_PROVIDER = "JCE_SENTITIVE_PROVIDER";
+	
+	/**
 	 * String value that specifies a comma delimited list of JCE provider classes that should be registered.  Each
 	 * class in the list should be fully qualified with the package name.
 	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptography.JCEProviderClassNames
 	 */
 	public final static String JCE_PROVIDER_CLASSES = "JCE_PROVIDER_CLASSES";
+	
+	/**
+	 * String value that specifies a comma delimited list of JCE provider classes that require
+	 * access to sensitive cryptographic information such as secret and private keys.  Each
+	 * class in the list should be fully qualified with the package name.  If the provider class requires additional
+	 * qualifier information, it should be delimited by a semicolon.  Example using BouncyCastle and the SunPKCS11 provider:
+	 * <br>
+	 * <i>org.bouncycastle.jce.provider.BouncyCastleProvider,sun.security.pkcs11.SunPKCS11;pkcs11Config/pkcs11.cfg</i>
+	 * 
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptography.JCESensitiveProviderClassNames
+	 */
+	public final static String JCE_SENSITIVE_PROVIDER_CLASSES = "JCE_SENSITIVE_PROVIDER_CLASSES";
 	
 	/**
 	 * String value that specifies the directory where CRLs will be cached.  The directory may a full or relative path.

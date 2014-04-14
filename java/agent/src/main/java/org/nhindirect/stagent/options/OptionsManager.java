@@ -74,6 +74,9 @@ public class OptionsManager
 		JVM_PARAMS = new HashMap<String, String>();
 		JVM_PARAMS.put(OptionsParameter.JCE_PROVIDER, "org.nhindirect.stagent.cryptography.JCEProviderName");
 		JVM_PARAMS.put(OptionsParameter.JCE_PROVIDER_CLASSES, "org.nhindirect.stagent.cryptography.JCEProviderClassNames");
+		JVM_PARAMS.put(OptionsParameter.JCE_SENTITIVE_PROVIDER, "org.nhindirect.stagent.cryptography.JCESensitiveProviderName");
+		JVM_PARAMS.put(OptionsParameter.JCE_PROVIDER_CLASSES, "org.nhindirect.stagent.cryptography.JCEProviderClassNames");		
+		JVM_PARAMS.put(OptionsParameter.JCE_SENSITIVE_PROVIDER_CLASSES, "org.nhindirect.stagent.cryptography.JCESensitiveProviderClassNames");		
 		JVM_PARAMS.put(OptionsParameter.CRL_CACHE_LOCATION, "org.nhindirect.stagent.cert.CRLCacheLocation");
 		
 		/*

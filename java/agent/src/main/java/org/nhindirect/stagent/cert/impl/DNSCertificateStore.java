@@ -610,6 +610,13 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	protected ExtendedResolver createExResolver(String[] servers, int retries, int timeout)
 	{
 		ExtendedResolver retVal = null;
+		
+		// support for IP addresses instead of names
+        for (int i = 0; servers != null && i < servers.length; i++) 
+        {
+            servers[i] = servers[i].replaceFirst("\\.$", "");
+        }
+		
 		try
 		{
 			retVal = new ExtendedResolver(servers);

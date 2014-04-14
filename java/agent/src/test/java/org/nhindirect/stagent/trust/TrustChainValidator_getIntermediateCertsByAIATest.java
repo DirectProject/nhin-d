@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Matchers.any;
 
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.nhindirect.stagent.NHINDException;
@@ -26,12 +27,12 @@ public class TrustChainValidator_getIntermediateCertsByAIATest extends TestCase
 	
 		final TrustChainValidatorWrapper validator = new TrustChainValidatorWrapper()
 		{
-			protected X509Certificate downloadCertFromAIA(String url) throws NHINDException
+			protected Collection<X509Certificate> downloadCertsFromAIA(String url) throws NHINDException
 			{
 				try
 				{
 					retrievedURL = url;
-					return TestUtils.loadCertificate("bob.der");
+					return Arrays.asList(TestUtils.loadCertificate("bob.der"));
 				}
 				catch (Exception e){throw new NHINDException(e);}
 			}
@@ -45,7 +46,7 @@ public class TrustChainValidator_getIntermediateCertsByAIATest extends TestCase
 		assertEquals(1, downloadedCerts.size());
 		assertEquals(TestUtils.loadCertificate("bob.der"), downloadedCerts.iterator().next());
 		
-		verify(spyValidator, times(1)).downloadCertFromAIA((String)any());
+		verify(spyValidator, times(1)).downloadCertsFromAIA((String)any());
 	}
 	
 	public void testGetIntermediateCertsByAIA_emptyAIA_validateNotResolved() throws Exception
@@ -53,12 +54,12 @@ public class TrustChainValidator_getIntermediateCertsByAIATest extends TestCase
 	
 		final TrustChainValidatorWrapper validator = new TrustChainValidatorWrapper()
 		{
-			protected X509Certificate downloadCertFromAIA(String url) throws NHINDException
+			protected Collection<X509Certificate> downloadCertsFromAIA(String url) throws NHINDException
 			{
 				try
 				{
 					retrievedURL = url;
-					return TestUtils.loadCertificate("bob.der");
+					return Arrays.asList(TestUtils.loadCertificate("bob.der"));
 				}
 				catch (Exception e){throw new NHINDException(e);}
 			}
@@ -71,7 +72,7 @@ public class TrustChainValidator_getIntermediateCertsByAIATest extends TestCase
 		assertNull(spyValidator.retrievedURL);
 		assertEquals(0, downloadedCerts.size());
 		
-		verify(spyValidator, never()).downloadCertFromAIA((String)any());
+		verify(spyValidator, never()).downloadCertsFromAIA((String)any());
 	}
 	
 	public void testGetIntermediateCertsByAIA_errorInDownload_validateEmpty() throws Exception
@@ -79,7 +80,7 @@ public class TrustChainValidator_getIntermediateCertsByAIATest extends TestCase
 	
 		final TrustChainValidatorWrapper validator = new TrustChainValidatorWrapper()
 		{
-			protected X509Certificate downloadCertFromAIA(String url) throws NHINDException
+			protected Collection<X509Certificate> downloadCertsFromAIA(String url) throws NHINDException
 			{
 				throw new NHINDException();
 			}
@@ -92,6 +93,6 @@ public class TrustChainValidator_getIntermediateCertsByAIATest extends TestCase
 		assertNull(spyValidator.retrievedURL);
 		assertEquals(0, downloadedCerts.size());
 		
-		verify(spyValidator, times(1)).downloadCertFromAIA((String)any());
+		verify(spyValidator, times(1)).downloadCertsFromAIA((String)any());
 	}
 }
