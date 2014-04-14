@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Security And Trust Agent</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Security And Trust Agent</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+               The security and trust agent is responsible for implementing the policies of the security and trust
+               <a href="http://nhindirect.org/Content+Security+for+Simple+Health+Trans">specification.</a>  It
+               contains interfaces and implementations for resolving private and public certificates, message signing
+               and validating message signatures, message encryption, and enforcing trust policies.
+            </p>
+            <p>
+               The agent is typically embedded in an application or service stack interfacing directly with an NHINDAgent
+               implementation.  However, because the agent is comprised of componentized sub systems, it is possible to view
+               the agent as a library of publicly consumable components and interfaces.  
+            </p>           
+            <p>
+               For more detail on developing directly against the agent API and other library components, refer to the
+               <a href="users-guide/index.html">users guide.</a>                
+            </p> 
+        </section>
+    </body>
+</document>

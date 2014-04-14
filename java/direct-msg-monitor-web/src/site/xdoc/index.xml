@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Message Monitoring Web Application</title>    
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Message Monitoring Web Application<</title>
+    </head>
+    <body>
+        <section name="Overview">
+            <p>
+               The message monitoring web application is a J2EE package for the Direct Project message monitoring
+               service.
+            </p>
+        </section>
+    </body>
+</document>

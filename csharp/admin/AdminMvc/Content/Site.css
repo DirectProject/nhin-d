@@ -1,0 +1,195 @@
+﻿body
+{
+    padding: 0;
+    font-family: Verdana, Arial, Sans-Serif;
+    font-size: 12px;
+}
+
+a
+{
+    text-decoration: none;
+}
+
+a:hover
+{
+    text-decoration: underline;
+}
+
+a.ui-state-disabled:hover
+{
+    text-decoration: none;
+}
+
+.border-none
+{
+    border: none !important;
+}
+
+/* FORM LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+fieldset 
+{
+    margin: 1em 0;
+    padding: 1em;
+}
+
+fieldset p 
+{
+    margin: 2px 12px 10px 10px;
+}
+
+input[type="text"],
+input[type="password"] 
+{
+    width: 200px;
+}
+
+input[type="file"]
+{
+    width: 400px;
+}
+
+
+/* TABLE
+----------------------------------------------------------*/
+
+table 
+{
+  border-collapse: collapse;
+}
+
+table.ui-widget
+{
+    border-style: solid;
+    border-width: 1px;
+}
+
+table td 
+{
+  padding: 2px 5px;
+  word-break:break-all;
+}
+
+table th
+{
+  padding: 6px 5px;
+  text-align: left;
+}
+
+tr.ui-state-highlight
+{
+    border-style: none !important;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+.clear
+{
+    clear: both;
+}
+
+.error
+{
+    color:Red;
+}
+
+#menucontainer
+{
+    margin-top:50px;
+}
+
+/* Styles for validation helpers
+-----------------------------------------------------------*/
+.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error
+{
+}
+
+.validation-summary-errors
+{
+    font-weight: bold;
+}
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+/* Styles for editor and display helpers
+----------------------------------------------------------*/
+.display-label,
+.display-field,
+.editor-validator
+{
+    margin: 0.5em 0 0.5em 1em;
+    float: left;
+}
+
+.display-label
+{
+    font-weight: bold;
+    width: 10em;
+    text-align: right;
+}
+
+.text-box
+{
+    width: 30em;
+}
+
+.action-bar
+{
+    padding: 0 0 1em 0;
+}
+
+.toolbar-button
+{
+    font-size: 0.5em;
+    margin: 3px 0;
+}
+
+.action-buttons
+{
+    margin: 1em 0 0 12em;
+}
+
+p.thumbprint
+{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 10em;
+}
+
+div.flash
+{
+    margin-bottom: 1em; 
+    float: left;
+}
+
+div.flash a
+{
+    text-decoration: underline !important;
+    cursor: pointer;
+}
+
+div.flash div.ui-state-highlight
+{
+    padding: .3em .7em;
+    min-height: 1em;
+}
+
+div.flash span.flash-text,
+div.flash span.ui-icon-close
+{
+    line-height: 1em;
+    float: left;
+}

@@ -1,0 +1,50 @@
+<project name="set-domain" default="default" basedir=".">
+	<description>
+	    Set the domain for Direct
+	</description>
+	
+	<!-- set global properties for this build -->
+	<property environment="env" />
+	<property name="direct.home.dir" value="${env.DIRECT_HOME}" />
+	<property name="james.dir" value="${direct.home.dir}/apache-james-3.0-beta4" />
+	<property name="james.bin.dir" value="${james.dir}/bin" />
+	<property name="set.domain-domainlist.stylesheet" value="${james.bin.dir}/set-domain-domainlist.xsl" />
+	<property name="james.domainlist" value="${james.dir}/conf/domainlist.conf" />
+	<property name="james.domainlist-new" value="${james.dir}/conf/domainlist-new.conf" />
+	<property name="set.domain-mailetcontainer.stylesheet" value="${james.bin.dir}/set-domain-mailetcontainer.xsl" />
+	<property name="james.mailetcontainer" value="${james.dir}/conf/mailetcontainer.conf" />
+	<property name="james.mailetcontainer-new" value="${james.dir}/conf/mailetcontainer-new.conf" />
+		
+	<!-- Fail if we can't find DIRECT_HOME -->
+	<target name="fail-if-direct-home-missing" unless="env.DIRECT_HOME">
+		<fail message="DIRECT_HOME is not defined in the environment"></fail>
+	</target>
+	
+	<!-- Fail if we can't find DIRECT_DOMAIN -->
+	<target name="fail-if-direct-domain-missing" unless="env.DIRECT_DOMAIN">
+		<fail message="DIRECT_DOMAIN is not defined in the environment"></fail>
+	</target>
+
+	<!-- Initialization -->
+	<target name="init" depends="fail-if-direct-home-missing,fail-if-direct-domain-missing">
+	    <tstamp></tstamp>
+ 	</target>
+
+	<!-- Set the domain -->
+	<target name="default" depends="init">
+	    <!-- Edit the domain list file -->
+		<xslt style="${set.domain-domainlist.stylesheet}" in="${james.domainlist}" out="${james.domainlist-new}">
+		    <param name="domain" expression="${env.DIRECT_DOMAIN}"></param>
+		</xslt>
+		<copy file="${james.domainlist-new}" tofile="${james.domainlist}" overwrite="true"></copy>
+		<delete file="${james.domainlist-new}" failonerror="false"></delete>	
+	    
+	    <!-- Edit the mailet container file -->
+		<xslt style="${set.domain-mailetcontainer.stylesheet}" in="${james.mailetcontainer}" out="${james.mailetcontainer-new}">
+		    <param name="domain" expression="${env.DIRECT_DOMAIN}"></param>
+		</xslt>
+		<copy file="${james.mailetcontainer-new}" tofile="${james.mailetcontainer}" overwrite="true"></copy>
+		<delete file="${james.mailetcontainer-new}" failonerror="false"></delete>				
+	</target>
+
+</project>

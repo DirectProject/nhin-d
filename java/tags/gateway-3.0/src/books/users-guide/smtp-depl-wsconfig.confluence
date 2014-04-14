@@ -1,0 +1,217 @@
+h1. SMTP Agent WebService Configuration
+
+WebService configuration for the SMTP protocol consists of an retrieving configuration parameters for both the SMTP agent and the security and trust agent from the configuration service.  The configuration service exposes a web interface using the WSI basic profile (i.e. SOAP over HTTP) and can be accessed using a simple URL.  Example:
+
+{code}
+	http://myserver/config-service/ConfigurationService
+{code}
+
+Many configuration settings is persisted in the config-store implementation of the web service, typically in a database.  Unlike the XML configuration where settings are managed by editing raw XML, the settings in the web service are configuration via tooling through a web application.
+
+!images/WSConfigUIHome.png! 
+
+Several aspects of the SMTP agent from domains to certificate storage locations can be configured through configuration web UI.  Certificates, trust anchors, and trust bundles themselves can be stored in the configuration service and accessed through the web service interface.
+
+Configuration or the SMTP agent is separated into five components, however they are related to each other:
+* Domains - The list of domains managed by the agent.
+* Certificates - Private and optionally public certificate storage.
+* Trust Anchors - Trust anchor certificate storage for course grain anchor configuration.
+* Trust Bundles - Collections of anchors published by trust communities.
+* Settings - Configuration settings for numerous components of a HISP.  These are generally higher level configuration settings.  Fine grained tuning is available via the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5.4/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
+
+Domains, certificates, trust anchors, and trust bundles have specific configuration elements stored in the settings component.
+
+h2. Trust Bundles
+
+Trust bundles are a collection of trust anchors that are intended to represent a trust community and generally meet a common set of criteria to be included in the bundle.  Trust bundles are packaged into a single file using the PKCS7 standard and distributed via a known URL (the location is discovered out of band).  Trust bundles are configured in the _Trust Bundles_ tab of the configuration UI tool.
+
+The Java reference implementation treats bundles as wholistic objects and does not support  exclusion of anchors within the bundle.  This is partly because the definition of a bundle indicates that each anchor within the bundle meets the same minimal requirements.  The decision to include a bundle becomes a simple binary decision, you either trust the bundle or you don't.
+
+Bundles are configured separately from domains as opposed to the importing of anchors per domain (as you will see in the next section).  Each bundle is identified by a name and its URL.
+
+To add a trust bundle, click the *_Add New Bundle_* link from the configuration UI TrustBundles tab.
+
+!images/WSConfigEmptyBundles.png!
+
+The Add New Trust Bundle dialog will display waiting for you enter in the following information:
+
+* Name (Required): A unique name of the bundle that describes the trust community of the bundle. 
+* Trust Bundle URL (Required): The fully qualified URL where the trust bundle can be retrieved.
+* Signing Certificate (Optional): If the bundle has been signed, this is the certificate that signed the bundle to validate the integrity of the bundle.  *NOTE:*  It is completely optional to validate the bundle integrity against a signing certificate.  If the bundle has not been signed, the signing certificate is ignored.
+* Refresh Interval (Required): Indicates the frequency that the system will look for updates to the bundle.  If this value is 0, then the system will never automatically look for updates, however you can always check for updates manually by clicking the refresh button.
+
+!images/WSConfigAddBundle.png!
+
+Once the bundle has been added, it will appear in the table of bundles; however, some of the fields will be empty.  This is because the bundle is downloaded from the provided URL in the background and information is updated in the table at a later time.
+
+!images/WSConfigAddedBundle.png!
+
+If the bundle is successfully downloaded and optionally validated, the table will be updated (you may need to click on another tab and come back to the trust bundle tab to see the updates).
+
+!images/WSConfigDownloadedBundle.png!
+
+The table contains the following information:
+
+||Column||Description||
+|Bundle Name|The bundle name|
+|URL|The URL where the bundle is downloaded from|
+|Checksum|A SHA1 hash of the bundle|
+|Created|Date and time when the bundle was configured in the system}
+|Current As Of|The date when the bundle was last updated in the system|
+|Last Refresh|The date and time when the system last checked for an update.  If a newer/different bundle was found, the Current As Of date is also updated.  If not updates were found, then the Current As Of date does not change.|
+|Refresh Interval|How often (in hours) updates are automatically check|
+
+If you would like to see the anchor within a bundle, simply click the _View Anchors_ link under the bundle name.  This will display a list with the _Distinguished Name_ of each anchor.
+
+!images/WSConfigBundleAnchors.png!
+
+
+To remove a bundle from the system, check the box next to the name of each bundles that you want to remove and click the _Delete_ button.  If you delete a bundle that has been associated to a domain, the association is automatically removed.
+
+During the operation of your HISP, it may be necessary to updated bundles in between their configure refresh cycle.  To manually refresh/update a bundle, check the box next to the name of the bundles you want to update.  The update operation is a background procedure, so the information in the table will not be updated immediately.  You may need to click on another tab and come back to the trust bundle tab to see updates.
+
+h2. Domains
+
+The domains component describes the list of domains that will be managed by the agent.  Domains are created and maintained in the configuration UI tool.
+
+To create a new domain, click the new *_Create New Domain_* link from the configuration UI Manage Domains tab (the first page after logging in).
+
+!images/WSConfigDomainSearch.png!
+
+Each domain requires the domain name and an option postmaster address.  Enter the domain name, postmaster address, set the status to enabled, and click add.  Optionally, trust bundle can be added at this time by clicking _Select Trust Bundles_.  If you choose not to add bundles at this time, you may do so later.  *NOTE* If the postmaster address is not specified, the SMPT Agent will default it to postmaster@<domain name>.
+
+
+!images/WSConfigAddDomain.png!
+
+h3. Anchors
+
+Anchors define the certificates that create trust between domains.
+
+Each domain must have at least one outgoing or incoming trust anchors.  Anchors can be retrieved from different source mediums including the configuration service.  The anchor storage medium is configured in the settings page of the configuration UI.  All settings are configured as simple name/value pairs.
+
+!images/WSConfigAddSetting.png!
+
+*Anchor Store Settings*
+
+||Setting||Description||
+|AnchorStoreType|The storage type of the anchor store.  Valid types: \\ \\WS (default): Anchors are stored in the configuration service.\\LDAP: Anchors are stored in an LDAP server.\\KEYSTORE: Anchors are stored in a local keystore file.|
+|AnchorResolverType|The type of the anchor resolver.  Valid types:\\Uniform: All domains use the same anchors for all addresses.\\Multidomain: Each domain defines its own discrete set of trust anchors.|
+|AnchorKeyStoreFile|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
+|AnchorKeyStoreFilePass|For keystore store types, an optional password used to encrypt the file.|
+|AnchorKeyStorePrivKeyPass|For keystore store types, an optional password used to encrypt private keys.|
+|TrustAnchorLDAPUrl|For LDAP store types, the url to the LDAP server.  Consists of the protocol, host, and port.  Multiple URLs can be define and are comma delimeted.  Example: ldap://somehost:389|
+|TrustAnchorLDAPUser|For LDAP store types, the user name credential for connecting to the LDAP store.  May be empty if the LDAP server allows anonymous binding.|
+|TrustAnchorLDAPPassword|For LDAP store types, The password credential for connecting to the LDAP store.|
+|TrustAnchorLDAPConnTimeout|For LDAP store types, an optional timeout in seconds before the connection is failed.|
+|TrustAnchorLDAPSearchBase|For LDAP store types, the distinguished name used as the base of LDAP searches.|
+|TrustAnchorLDAPSearchAttr|For LDAP store types, the attribute in the LDAP store that is used to match a search query.|
+|TrustAnchorLDAPCertAttr|For LDAP store types, the attribute in the search query result that holds the certificate file.|
+|TrustAnchorLDAPCertFormat|For LDAP store types, the format of the certificate in the LDAP store.  Valid formats: pkcs12, X.509|
+|TrustAnchorLDAPCertPassphrase|For LDAP store types and pkcs12 files, the pass phrase used to encrypt the certificate.|
+
+*Web Service Anchor Storage*
+
+Anchors stored in the configuration service are added and maintained in the *_Anchors_* tab of the configuration service *_Manage Domains_* page.
+
+!images/WSConfigAddAnchor.png!
+
+The certificate field is the location of the DER encoded certificate file that represents the trust anchor.  Incoming and outgoing indicates if the trust anchor should be used for incoming or outgoing anchors.  Clicking *_Add Anchor_* will add the anchor to the domain indicated by the *_Domain Name*_ field and upload the anchor to the configuration service.
+
+*Non Web Service Anchor Storage*
+
+Anchors stored in now web service mediums such as LDAP or a keystore require a list of aliases or search criteria to locate the certificates in the anchor store.  Each domain requires on of two entries in the settings component: one for a list of outgoing anchors and/or one for a list of incoming anchors.  The settings use the following format:
+
+* <domainName>IncomingAnchorAliases
+* <domainName>OutgoingAnchorAliases
+
+The value for each setting is a comma delimited list of the aliases or search criteria that identify the anchor in the anchor store.  The following example would be used for an LDAP anchor store:
+
+* cerner.com,securehealthemail.com,microsoft.com 
+
+Example settings for the domain cerner.com using an LDAP store:
+
+||Setting Name||Value||
+|cerner.comIncomingAnchorAliases|cerner.com,securehealthemail.com,microsoft.com|
+|cerner.comOutgoingAnchorAliases|cerner.com,securehealthemail.com,microsoft.com|
+
+*NOTE* Regardless of the storage mechanism, a domain should always add its own trust anchor to its list or trusted anchors.  This is a security precaution to ensure only users with valid certificates signed by the trust anchor can send from the agent's managed domain(s).
+
+h3. Trust Bundles
+
+Configured trust bundles can be added to a domain from the *_Trust Bundles_* tab of the configuration service *_Manage Domains_* page.  Each anchor in the bundle is used to create trust between the domain and the system represented by the anchor.  Similar to configuring anchors, each bundle can be set to incoming or outgoing to control the direction of trust.
+
+!images/WSConfigAssociateTrustBundle.png!
+
+To associate one or more bundles to a domain, click the *Assign Additional Trust Bundles* link.  Select each bundle and select if the bundle should be incoming, outgoing, or both.
+
+!images/WSConfigSelectBundle.png!
+
+h2. PublicCertStore
+
+Similar to anchors, public certificates can be retrieved from different source mediums.  The public certificate storage medium is configured in the settings page of the configuration UI.
+
+*Public Certificate Store Settings*
+
+||Setting||Description||
+|PublicStoreType|The storage type of the public certificate store.  Valid types: \\ \\DNS: Certificates are resolved using DNS.\\KEYSTORE: Certificates are stored in a local keystore file.  \\WS: Public certificates are stored in the configuration service. \\PublicLDAP: Certificates are resolved from publicly accessible LDAP servers.  LDAP servers are resolved dynamically using DNS SRV.  \\ \\In some cases, multiple store types may be necessary to resolve a public certificate.  For example some HISPs use DNS to distributed public CERT while others may use out of band processes and require a HISP to manually import the CERT(s) into the storage medium.  Multiple store types are separated by a comma (,). \\ \\Default Value: DNS,PublicLDAP|
+|PublicStoreFile|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
+|PublicStoreFilePass|For keystore store types, an optional password used to encrypt the file.|
+|PublicStorePrivKeyPass|For keystore store types, an optional password used to encrypt private keys.|
+
+h2. PrivateCertStore
+
+The private certificate storage medium is configured in the settings page of the configuration UI.
+
+*Private Certificate Store Settings*
+
+||Setting||Description||
+|PrivateStoreType|The storage type of the private certificate store.   Valid types: \\ \\WS (default): Certificates are stored in the configuration service.\\LDAP: Certificates are stored in an LDAP server.\\KEYSTORE: Certificates are stored in a local keystore file.|
+|PrivateStoreFile|For keystore store types, the name of the file that contains the certificates. This can be just a file name, a fully qualified path, or a relative path.|
+|PrivateStoreFilePass|For keystore store types, an optional password used to encrypt the file.|
+|PrivateStorePrivKeyPass|For keystore store types, an optional password used to encrypt private keys.|
+|PrivateStoreLDAPUrl|For LDAP store types, the url to the LDAP server.  Consists of the protocol, host, and port.  Multiple URLs can be define and are comma delimeted.  Example: ldap://somehost:389|
+|PrivateStoreLDAPUser|For LDAP store types, the user name credential for connecting to the LDAP store.  May be empty if the LDAP server allows anonymous binding.|
+|PrivateStoreLDAPPassword|For LDAP store types, The password credential for connecting to the LDAP store.|
+|PrivateStoreLDAPConnTimeout|For LDAP store types, an optional timeout in seconds before the connection is failed.|
+|PrivateStoreLDAPSearchBase|For LDAP store types, the distinguished name used as the base of LDAP searches.|
+|PrivateStoreLDAPSearchAttr|For LDAP store types, the attribute in the LDAP store that is used to match a search query.|
+|PrivateStoreLDAPCertAttr|For LDAP store types, the attribute in the search query result that holds the certificate file.|
+|PrivateStoreLDAPCertFormat|For LDAP store types, the format of the certificate in the LDAP store.  Valid formats: pkcs12, X.509|
+|PrivateStoreLDAPCertPassphrase|For LDAP store types and pkcs12 files, the pass phrase used to encrypt the certificate.|
+
+
+*Web Service Private/Public Certificate Storage*
+
+Private and public certificates stored in the configuration service are added and maintained in the *_Manage Certificates_* page of the configuration service application.
+
+!images/WSConfigAddCertificate.png!
+
+The certificate field is the location of the DER encoded certificate file that represents the private or public certificate.  Clicking *_Add Certificate_* will add the certificate to the configuration service.  *NOTE* The owner is automatically populated by the service when the certificate is added.  
+
+*NOTE:* Private certificate files should be pkcs12 encoded files with no encryption on both the file and private key stored in the file.  Although pkcs12 files can be created from open source tools such as openssl, the Java Reference implementation agent module contains a tool for creating pkcs12 files in the expected format from DER encoded X509 certificates and pkcs8 DER encoded private key files.  It also contains a tool for stripping encryption from existing pkcs12 files.
+
+h2. XXMessageSettings
+
+The following settings describes the location where processed messages should be stored.  This is intended for debug purposes only and should not be set in a production environment.
+
+MessageTypes:
+* Raw: The raw message that entered the SMTP agent.
+* Outgoing: If the message is determined to be an outgoing message, the security and trust processed outgoing message.
+* Incoming: If the message is determined to be an incoming message, the security and trust processed incoming message.
+* Bad: Messages that failed to be processed or caused other errors to be the thrown.
+
+||Setting||Description||
+|RawMessageSaveFolder|The folder where raw messages will be stored.  If the folder does not exist, the system will automatically created it as long as the agent's process has permission to do so.|  
+|OutgoingMessageSaveFolder|The folder where outgoing messages will be stored.  If the folder does not exist, the system will automatically created it as long as the agent's process has permission to do so.|  
+|IncomingMessageSaveFolder|The folder where incoming messages will be stored.  If the folder does not exist, the system will automatically created it as long as the agent's process has permission to do so.|  
+|BadMessageSaveFolder|The folder where bad messages will be stored.  If the folder does not exist, the system will automatically created it as long as the agent's process has permission to do so.|
+
+h2. MDN Settings
+
+The agent automatically produce MDN message for all successfully processed messages with a disposition of _Processed_.  MDN is described in [RFC3798|http://tools.ietf.org/html/rfc3798] and is intended (for the SMTP Agent purposes) to indicate the successful reception and processing of message by the security and trust agent. 
+
+||Setting||Description||
+|MDNAutoResponse|Indicates if the SMTP agent should produce MDN messages for MDN requests.  The default setting is true if this attribute is not present.|  
+|MDNProdName|The product name used in the user agent header of the MDN message.  Defaults to _Security Agent_ if this attribute is not present.|  
+|MDNText|Human readable response text sent back to the sender indicating a successful reception of the senders message.|  
+

@@ -1,0 +1,93 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.1.4}
+
+    Changes included with release 1.1.4
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=196}196}}: Resolved issues with duplicate message suppression for timely and reliable messaging.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=193}193}}: Fixed issue where DSN messages did not have a date field.    
+
+{1.1.3}
+
+    Changes included with release 1.1.3
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with notifications not being mapped to the original message and being marked as complete.
+
+{1.1.2}
+
+    Changes included with release 1.1.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Updated to latest direct-common components.
+
+
+{1.1.1}
+
+    Changes included with release 1.1.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue where MDN final recipients with rfc822; prefixes were not matching up to the original recipient list causing incorrect completion failure conditions.
+
+{1.1}
+
+    Changes included with release 1.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Enhancements
+
+    * Added distributed state AggregationRepository to support scalability, fail over, and high availability of the monitoring service across multiple service instances, JVMs, and clustered nodes.
+
+{1.0}
+
+    Changes included with release 1.0
+
+    []
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=187}187}}: Added message monitoring to support implementation guide for delivery notification.
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	

@@ -1,0 +1,325 @@
+h1. Apache James Deployment
+
+[James|http://james.apache.org/] is an open source Java based mail and news server supported by the [Apache|http://www.apache.org/index.html] software foundation.  It is implemented using a modular pattern and can extended by adding new modules and components.  It can run either as a completely stand alone email system, or can be integrated into a more complex mail deployment acting as either the final mail destination or a smart relay.  
+
+This section is not intended to be a full fledged James configuration and deployment guide, but to explain how the NHIN Direct gateway module integrates with the James platform.  
+
+h2. NHINDSecurityAndTrustMailet
+
+As stated earlier, James is modular platform that facilitates easy integration of custom processing modules into the SMTP stack.  The most common modular constructs of James are the Mailet and Matcher interfaces.  In fact the default James configuration consists mainly of pre-configured Mailets and Matchers.  The NHIN Direct gateway module provides the NHINDSecurityAndTrustMailet as protocol bridge for James.  This custom mailet intercepts messages as they pass through the James *transport* processor, extracts the sender and recipients from the SMTP envelope, and calls the SMTPAgent to process the messages according the security and trust policy.  After processing, the bridge either allows the message to continue through the James stack or calls appropriate error handling routines if the message cannot be processed correctly.
+
+h3. Mailet installation
+
+All custom modules are deployed in jar files and placed in the James lib directory:
+
+_%jamesInstallRoot%/apps/james/SAR-INF/lib_
+
+All jars and transient dependencies must be placed in this directory.
+
+The following is a list of minimum dependencies to run the security and trust agent within James using keystore based certificate store.
+
+All of these will be in your Maven cache from building source (~/.m2 or equivalent on Windows).
+
+* activation-1.1.jar [http://java.sun.com/products/archive/javabeans/jaf11.html]
+* aopalliance-1.0.jar [http://sourceforge.net/projects/aopalliance/files/]
+* apache-mailet-2.4.jar [http://james.apache.org/download.cgi] 
+* apache-mailet-base-1.1.jar [http://james.apache.org/download.cgi]
+* bcmail-jdk15-140.jar [http://www.bouncycastle.org/latest_releases.html]      
+* bcprov-jdk15-140.jar [http://www.bouncycastle.org/latest_releases.html]    
+* commons-codec-1.4.jar [http://commons.apache.org/codec/download_codec.cgi]
+* commons-io-1.4.jar [http://commons.apache.org/io/download_io.cgi]
+* commons-logging-1.1.1.jar [http://commons.apache.org/logging/download_logging.cgi]
+* guice-2.0.jar [http://code.google.com/p/google-guice/]
+* mail-1.4.1.jar [http://www.oracle.com/technetwork/java/javamail-1-4-1-141959.html]
+
+In addition, the following files that were created during the Direct build process must be placed in the same directory
+
+* agent-1.1.2.jar
+* gateways-1.2.jar
+* config-service-1.1.jar
+
+If you are using the LDAP, DNS, or WebService certificate storage, you will need to add the JCS libraries and its transient dependencies.
+
+* jcs-1.3.jar [http://repo1.maven.org/maven2/org/apache/jcs/jcs/1.3/]
+* concurrent-1.0.jar [http://repo1.maven.org/maven2/concurrent/concurrent/1.0/]
+
+If you are using the configuration service to retrieve the SMTP agent settings, you will need the config-service-client library and its transient dependencies.
+
+* config-service-client-1.1-SNAPSHOT.jar [created during the build process]
+* axis-1.4.jar [http://repo1.maven.org/maven2/org/apache/axis/axis/1.4/]
+* commons-discovery-0.4.jar [http://repo1.maven.org/maven2/commons-discovery/commons-discovery/0.4/]
+* jaxrpc-api-1.1.jar [http://repo1.maven.org/maven2/javax/xml/jaxrpc-api/1.1/]
+* saaj-api-1.3.jar [http://repo1.maven.org/maven2/javax/xml/soap/saaj-api/1.3/]
+* wsdl4j-1.6.2.jar [http://repo1.maven.org/maven2/wsdl4j/wsdl4j/1.6.2/]
+
+
+h3. Mailet Configuration
+
+The NHINDSecurityAndTrustMailet is added to the James processing stack by adding specific lines into the James configuration file:
+
+_%jamesInstallRoot%/apps/james/SAR-INF/config.xml_
+
+All configuration examples in this section are located in the config.xml file. 
+
+All custom Matchers and Mailet packages must be registered with James in the <mailetpackages> and <matcherpackages> elements.
+
+{code}
+   <mailetpackages>
+      <mailetpackage>org.apache.james.transport.mailets</mailetpackage>
+      <mailetpackage>org.apache.james.transport.mailets.smime</mailetpackage>
+      <mailetpackage>org.nhindirect.gateway.smtp.james.mailet</mailetpackage>
+   </mailetpackages>
+   <matcherpackages>
+      <matcherpackage>org.apache.james.transport.matchers</matcherpackage>
+      <matcherpackage>org.apache.james.transport.matchers.smime</matcherpackage>
+      <matcherpackage>org.nhindirect.gateway.smtp.james.matcher</matcherpackage>
+   </matcherpackages>
+{code}
+
+To install the security and trust mailet into the James stack, you need to a mailet element under the transport processor.  *NOTE* James executes mailets in the order that they are listed in the configuration file, so place your mailet appropriately if you have other custom processing that needs to be executed before or after the security and trust mailet.
+
+Example:
+
+{code}
+   <mailet match="All" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>       
+   </mailet>
+{code}
+
+
+*Mailet*
+
+Attributes:
+
+||Attribute||Description||
+|match|The matcher used to decide if the message should be processed by the mailet.|
+|class|The class name of the mailet.  James searches through all the mailetpackages to find a fully qualified class name.|
+
+Elements:
+
+||Element||Type||Description||
+|ConfigURL|URL|A URL to the location of the SMTPAgent configuration information.  This information is forwarded to the SmtpAgentFactory to locate and parse the configuration|
+
+The above example tell James to send all messages to the agent using the *All* matcher.  More on matchers later.
+
+The ConfigURL must be a valid and well formed URL that is addressable by the James application.
+
+*Matchers*
+
+Every mailet is required to provide a matcher.  A matcher is a thin piece of logic that determines if the message should be processed by the mailet.  The result of matcher is a list of recipients that should be processed by the mailet.  James provides a stock set of out of the box matchers, so may use any of them for the security and trust mailet if they suit your needs.  
+
+Depending on your SMTP deployment, you may want to use simple local delivery for outgoing messages when the recipients are in the same domain as your HISP.  In this case you will not want the messages to be processed by the security and trust agent unless your HISP configuration allows users to not trust other users inside the same domain (i.e. user1@sample.com does not trust user2@sample.com).  The gateway module provides a custom matcher called RecipAndSenderIsNotLocal which takes one parameter: a list of domains managed by your HISP.  *NOTE*  Multiple domains are comma delimited.
+
+Example:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=securehealthemail.com,cerner.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>http://localhost:8081/config/ConfigurationService.l</ConfigURL>       
+   </mailet>
+{code}
+
+When James reaches this mailet, the matcher determines if the message is incoming from an external domain or an outgoing message.  If the message is incoming, all recipients are sent to the mailet.  If the message is outgoing, all external recipients are processed by the agent while all local recipients are not processed and remain unencrypted for local delivery.  *NOTE*  When deploying James in multi domain environment, unless all domains within a HISP mutually trust each other, all messages and recipients should be processed by the agent.
+
+h4. Configuration URL
+
+The configuration URL can either reference an XML file that contains configuration that adheres the XML SMTP Agent configuration [specification|smtp-depl-xmlconfig.html] or and http(s) address that reference the configuration [service|smtp-depl-wsconfig.html].
+
+Examples:
+* File: file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml
+* HTTP: http://configServer/config/ConfigurationService
+
+When using the HTTP based configuration service, it is assumed the service has been deployed and settings such as domains, anchors, and certificates have been configured.  
+
+When running in an development environment, you can launch the configuration service and configuration UI directly from the command line using maven.  From the nhind build directory, open two command or terminal windows and run the _mvn jetty:run_ command from the config-service directory first, then the config-ui service.  The services use an embedded database called _Derby_ to persist all settings.  The configuration ui can be accessed from a browser at http://localhost:8080/config-ui using nhind as the username as password.  The configuration service URL for the mailet configuration will be at http://localhost:8081/config/ConfigurationService.
+
+h3. Prebuilt Assembly Configuration
+
+A full [stock|http://repo1.maven.org/maven2/org/nhind/direct-project-stock/1.0/direct-project-stock-1.0.tar.gz] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|http://api.nhindirect.org/java/site/assembly/stock/1.0/] for installation and configuration details.
+
+h2. Deployment Configuration Scenarios
+
+The following scenarios are not at all an exhaustive list of deployment configurations, but some identified use cases and suggested best practice deployments.
+
+*Development Testing Configuration*
+
+This use case describes a scenario where the HISP is only used for development testing.  See the Bare Metal Project Java source [wiki|http://wiki.directproject.org/Bare+Metal+Project+-+Java+%28source%29] for details.
+
+*Single Domain Standalone*
+
+This use case describes a scenario where the HISP consists of only one domain, and a deployed instance of James comprises the entire SMTP server stack.
+
+!images/JamesStandAlone.png!
+
+Mailet configuration in this use case is fairly simple. 
+
+Example:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+{code}  
+
+Because all messages sent from within the domain are delivered locally, the matcher is necessary to ensure local outgoing messages are not processed by the agent.
+
+*Single Domain Standalone With EMAIL Gateway*
+
+This use case describes a scenario where the HSIP consists of only one domain, mail is stored and retrieve using James, but all incoming and outgoing messages going to and coming from the backbone are handled by an email gateway.  
+
+!images/JamesStandAloneWithGateway.png!
+
+This model assumes that the gateway is configured to send all incoming messages to James' configured incoming port (default 25).  The mailet configuration is still fairly simple.
+
+Example:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+{code}  
+
+As with the previous configuration, all local mail is delivered locally.  However all outgoing mail needs to be forwarded to the email gateway.  The RemoteDelivery mailet handles forwarding out bound messages to a configured location.  In this scenario we want local messages to stay local and all externally bound messages to be forwarded to the gateway.  The mailet can be configured immediately following the security and trust mailet if no other processing is necessary in the transport processor.
+
+Example:
+
+{code}
+         <mailet match="RecipientIsRegex=(?!mydomain.com)"  class="RemoteDelivery">
+            <gateway>mygatewayhostname:25</gateway>
+         </mailet>
+{code} 
+
+Note the use of negative look arounds in the regex.  James does not provide a matcher for remote recipients, but a negative look around regular expression can be used to mimic the desired affect.  The RecipAndSenderIsNotLocal should not be used because it would send all incoming messages to the gateway.
+
+*Single Domain James as Processing Relay*
+
+This use case describes a scenario where the HISP has an existing stand alone email solution such as Postfix.  The email server may not have the ability to inject custom processing modules into the server, but can relay messages to other servers for custom processing.  After the custom email server finishes processing the message, the custom server must send the message back to the original email server (typically on port separate from the main incoming email port).  In this scenario, James is the custom email server.  The standalone email server may or may not be configured to handle local delivery before the custom processor is executed, but an identical mailet configuration can be used for both cases.
+
+!images/JamesStandAloneProcessingRelay.png!
+
+Example:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+{code}
+
+The mailet will still want to ensure that local outbound messages remain unprocessed because the standalone email server will still deliver these messages locally.  Howerver, the relay matcher will need to match all messages so all messages are sent back to the standalone email server.
+
+{code}
+         <mailet match="All"  class="RemoteDelivery">
+            <gateway>mystandaloneemailserver:10026</gateway>
+         </mailet>
+{code} 
+
+Note the custom port on the remote delivery email server.  This is because the email server will more than likely accept processed messages on a separte port than incoming messages.
+
+If the standalone email server and James are deployed on the same OS instance, you will probably need to change James' incoming port.
+
+Example:
+
+{code}
+   <smtpserver enabled="true">
+      <port>10025</port>
+
+   .
+   .
+   .
+   <smtpserver>
+{code}
+
+This assumes that the standalone email server is configured to forward messages to James on port 10025 for message processing.
+
+*Single Domain James as Injected Into Relay/Gateway Flow*
+
+This use case describes a scenario where the HISP already uses a relay or email gateway for incoming and outgoing messages.  James is injected between the email server and gateway.  The email server is configured to send all outgoing messages to James incoming port, and James RemoteDelivery mailet is configured to send all messages to the relay/gateway.
+
+!images/JamesStandAloneRelayFlow.png!
+
+Example:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-outgoing/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+
+   <mailet match="All"  class="RemoteDelivery">
+      <gateway>mygateway:25</gateway>
+   </mailet>
+{code} 
+
+As with the previous use case, James' incoming SMTP port may need to be changed if the email server and James are deployed on the same OS instance.
+
+What about incoming messages from the email gateway that need to go the server?  How do you configue the RemoteDelivery mailet to deliver outgoing messages to the gateway and incoming messages to the email server.  The answer is you can't.  That's not entirely true.  The problem is that there is not matcher that can determine if the messages are outbound or inbound.  If they did exist (and someone is entirely free to write them), the configuration could look like this.
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-handle-it-all/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+
+   <mailet match="MesssageIsOutbound"  class="RemoteDelivery">
+      <gateway>mygateway:25</gateway>
+   </mailet>
+   
+   <mailet match="MesssageIsInbound"  class="RemoteDelivery">
+      <gateway>mygateway:25</gateway>
+   </mailet>
+{code} 
+
+Something missing in this configuration is that the RemoteDelivery mailet requires a different mail repository URL for each mailet instance.
+
+Another option is to deploy to sepearte James instances.  One to handle incoming messages and the other to handle outgoing messages.  The outgoing instance would be configured similar to the first example in this use case.  The incoming instance would be configured similar to the following:
+
+Example:
+
+{code}
+   <mailet match="All" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-incoming/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+
+   <mailet match="All"  class="RemoteDelivery">
+      <gateway>myemailserver:25</gateway>
+   </mailet>
+{code}
+
+The gateway would forward all incoming email to the inbound instance's SMTP port (needs to be different than the outgoing instance's port) and James forwards all messages on to the email server.
+
+*Multi Domain James as Injected Into Relay/Gateway Flow*
+
+This use case describes a scenario where the HISP already uses a relay or email gateway for incoming and outgoing messages and supports multiple domains on the its email server.  James is injected between the email server and gateway.  The email server is configured to send all outgoing messages to James incoming port, and James RemoteDelivery mailet is configured to send all messages to the relay/gateway.
+
+In this scenario, it is suggested that the email server not use local delivery for messages coming from email clients.  The reason is that each domain may have a sepearate trust policy and local delivered messages would never be sent to the agent for trust policy processing.  If all domains in the HISP mutually trust each other, then local is an acceptable configuration option.
+
+The James and mailet configurations are exactly the same as the previous scenario with one exception.  The outgoing James instance should list all domains managed by the HISP in its matcher.
+
+Example:
+
+{code}
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com,myotherdomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>file:///home/ubuntu/james-outgoing/james-2.3.2/apps/james/SAR-INF/STConfig.xml</ConfigURL>       
+   </mailet>
+
+   <mailet match="All"  class="RemoteDelivery">
+      <gateway>mygateway:25</gateway>
+   </mailet>
+{code}
+
+h2. Logging
+
+James uses the Avalon logging system and NHIN Direct components use [apache-commons-logging|http://commons.apache.org/logging/index.html] (JCL).  Generally JCL will try to discover an application's configured logging mechanism, so you may be OK with the James logging configuration found in _%jamesInstallRoot%/apps/james/SAR-INF/environment.xml_.  However you are free to change this and set custom log levels and formats.  You can also override JCL to use a different logging sub system such as log4j or JDK 1.4.  Details for configuring JCL can be found on the JCL [guide|http://commons.apache.org/logging/commons-logging-1.1/guide.html].
+
+A quick way to turn on TRACE logging for debugging purposes is to add the following lines to the phoenix.sh shell script and run James interactively with run.sh.
+
+Search the phoenix.sh file for the following text:
+
+{code}
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS" 
+{code}
+
+and change it to: 
+
+{code}
+JVM_OPTS="-Djava.ext.dirs=$JVM_EXT_DIRS -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog -Dorg.apache.commons.logging.simplelog.defaultlog=trace"
+{code}
+
+This will configure JCL to output all logging to the console and sets the threshold to trace.

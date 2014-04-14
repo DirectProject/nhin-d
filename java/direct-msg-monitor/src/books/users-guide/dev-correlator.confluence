@@ -1,0 +1,13 @@
+h1. Correlation Component
+
+The correlation component is responsible for determining which messages should be aggregate together.  The default monitoring deployment uses MessageIdCorrelationExpression class correlate direct messages and notifications together.  
+
+The monitoring system divides each message into a specific type:
+
+* IMF : Internet Message Format - Normal direct messages
+* MDN : Message Disposition Notification - Used for processed and dispatched notification messages
+* DSN : Delivery Status Notifications - Generally used for bounce messages
+
+During the correlation process, the MessageIdCorrelationExpression looks at the message type and determines which attribute to use as the correlation id.  For IMF messages, it uses the message id.  For MDN and DSN messages, it uses the parent message id.  Using these IDs, normal direct messages and notification messages are properly correlated together to be aggregated as a group.
+
+Because the completion condition is checked each time a message is correlated and added to a group of correlated messages, the order in which the messages are received is irrelevant.  In fact, several notification messages could be received by the monitor before the original message.
