@@ -60,7 +60,10 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestEndToEndInternalMessage()
         {
-            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentAuditConfig.xml"));
+            string configPath = GetSettingsPath("TestSmtpAgentAuditConfig.xml");
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
+            m_agent = SmtpAgentFactory.Create(settings);
+
             Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() != null);
             Assert.Equal(0, AuditEventCount);
             m_agent.Settings.InternalMessage.EnableRelay = true;
@@ -98,8 +101,8 @@ namespace Health.Direct.SmtpAgent.Tests
             auditComponentMock.SetupAllProperties();
             components[0] = auditComponentMock.Object;
             components[0].Scope = InstanceScope.Singleton;
-            components[0].Service = "Health.Direct.Common.Diagnostics.IAuditor, Health.Direct.Common";
-            components[0].Type = "Health.Direct.SmtpAgent.Tests.LocalTestAuditorSettingsMissing, Health.Direct.SmtpAgent.Tests";
+            components[0].Service = "Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent";
+            components[0].Type = "Health.Direct.SmtpAgent.Tests.LocalTestAuditorSettingsMissing`1[[Health.Direct.SmtpAgent.Tests.LocalBuildAuditLogMessage, Health.Direct.SmtpAgent.Tests]], Health.Direct.SmtpAgent.Tests";
             settings.Container.Components = components;
             
 
@@ -143,12 +146,12 @@ namespace Health.Direct.SmtpAgent.Tests
             SimpleComponentSettings localAuditComponent = new SimpleComponentSettings();
             localAuditComponent.Scope = InstanceScope.Singleton;
             localAuditComponent.Service = "Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent";
-            localAuditComponent.Type = "Health.Direct.SmtpAgent.Tests.LocalTestAuditor, Health.Direct.SmtpAgent.Tests";
+            localAuditComponent.Type = "Health.Direct.SmtpAgent.Tests.LocalTestAuditor`1[[Health.Direct.SmtpAgent.Tests.LocalBuildAuditLogMessage, Health.Direct.SmtpAgent.Tests]], Health.Direct.SmtpAgent.Tests";
             components[0] = localAuditComponent;
             
             settings.Container.Components = components;
             m_agent = SmtpAgentFactory.Create(settings);
-            Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() is LocalTestAuditor);
+            Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() is LocalTestAuditor<LocalBuildAuditLogMessage>);
             
             Assert.Equal(0, AuditEventCount);
             m_agent.Settings.InternalMessage.EnableRelay = true;
@@ -157,6 +160,43 @@ namespace Health.Direct.SmtpAgent.Tests
             m_agent.Settings.InternalMessage.EnableRelay = false;
             Assert.Equal(4, AuditEventCount);
         }
+
+
+        [Fact]
+        public void TestEndToEndInternalMessage_WithMultipleAuditors()
+        {
+            string configPath = GetSettingsPath("TestSmtpAgentAuditConfig.xml");
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
+
+            SimpleComponentSettings[] components = new SimpleComponentSettings[2];
+
+            //
+            // Retain configured
+            //
+            components[0] = settings.Container.Components[0];
+
+            //
+            // Add a second auditor
+            //
+            SimpleComponentSettings localAuditComponent = new SimpleComponentSettings();
+            localAuditComponent.Scope = InstanceScope.Singleton;
+            localAuditComponent.Service = "Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent";
+            localAuditComponent.Type = "Health.Direct.SmtpAgent.Tests.LocalTestAuditor`1[[Health.Direct.SmtpAgent.Tests.LocalBuildAuditLogMessage, Health.Direct.SmtpAgent.Tests]], Health.Direct.SmtpAgent.Tests";
+            components[1] = localAuditComponent;
+
+            settings.Container.Components = components;
+            m_agent = SmtpAgentFactory.Create(settings);
+
+            Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() != null);
+            Assert.Equal(0, AuditEventCount);
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+            Assert.Equal(8, AuditEventCount);
+        }
+
+
 
         CDO.Message RunEndToEndTest(CDO.Message message)
         {
@@ -198,14 +238,14 @@ namespace Health.Direct.SmtpAgent.Tests
         }
     }
 
-    public class LocalTestAuditorSettingsMissing : IAuditor<IBuildAuditLogMessage>
+    public class LocalTestAuditorSettingsMissing<T> : IAuditor<IBuildAuditLogMessage> where T : IBuildAuditLogMessage, new()
     {
         static AuditorSettings m_settings;
 
         public LocalTestAuditorSettingsMissing()
         {
             m_settings = AuditorSettings.Load("DatabaseAuditorSettingsMissing.xml");
-            BuildAuditLogMessage = new LocalBuildAuditLogMessage();
+            BuildAuditLogMessage = new T();
         }
 
         public void Log(string category)
@@ -232,7 +272,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public IBuildAuditLogMessage BuildAuditLogMessage { get; private set; }
     }
 
-    public class LocalTestAuditor : IAuditor<IBuildAuditLogMessage>
+    public class LocalTestAuditor<T> : IAuditor<IBuildAuditLogMessage> where T : IBuildAuditLogMessage, new()
     {
         static AuditorSettings m_settings;
 
@@ -240,7 +280,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public LocalTestAuditor()
         {
             m_settings = AuditorSettings.Load("DatabaseAuditorSettings.xml");
-            BuildAuditLogMessage = new LocalBuildAuditLogMessage();
+            BuildAuditLogMessage = new T();
         }
 
         public void Log(string category)

@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace Health.Direct.SmtpAgent.Diagnostics
 {
-    public interface IBuildAuditLogMessage
+    public interface IBuildAuditLogMessage  
     {
         string Build(ISmtpMessage message);
     }
