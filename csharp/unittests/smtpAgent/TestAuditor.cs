@@ -52,7 +52,9 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void Test()
         {
-            m_agent = SmtpAgentFactory.Create(base.GetSettingsPath("TestSmtpAgentAuditConfig.xml"));
+            string configPath = GetSettingsPath("TestSmtpAgentAuditConfig.xml");
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
+            m_agent = SmtpAgentFactory.Create(settings);
             Assert.DoesNotThrow(() => m_agent.ProcessMessage(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
             Assert.Throws<OutgoingAgentException>(() => m_agent.ProcessMessage(this.LoadMessage(BadMessage)));
         }
