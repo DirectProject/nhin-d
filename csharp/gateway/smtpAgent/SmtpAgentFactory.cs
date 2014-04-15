@@ -114,7 +114,6 @@ namespace Health.Direct.SmtpAgent
                 // wrap legacy IAuditor
                 //
                 dependencyResolver.Register<IAuditor<IBuildAuditLogMessage>>(new SmtpAgentEventLogAuditor(dependencyResolver.Resolve<IAuditor>()));
-                dependencyResolver.UnRegister<IAuditor>();
             }
         }
     }

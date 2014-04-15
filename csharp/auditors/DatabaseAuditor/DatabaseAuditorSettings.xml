@@ -1,4 +1,4 @@
 ﻿<AuditorSettings>
-    <ConnectionString>Data Source=(localdb)\.\ProjectsShare;Initial Catalog=DirectAudit;Integrated Security=SSPI;</ConnectionString>
-  <QueryTimeout>5</QueryTimeout>
+    <ConnectionString>Data Source=(localdb)\Projects;Initial Catalog=DirectAudit;Integrated Security=SSPI;</ConnectionString>
+  <QueryTimeout>00:03</QueryTimeout>
 </AuditorSettings>

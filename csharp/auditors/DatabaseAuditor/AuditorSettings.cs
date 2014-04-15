@@ -23,8 +23,7 @@ namespace Health.Direct.DatabaseAuditor
     [XmlRoot("AuditorSettings")]
     public class AuditorSettings
     {
-        TimeSpan m_queryTimeout;
-
+        
         [XmlElement]
         public string ConnectionString
         {
