@@ -14,20 +14,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+
 using System;
-using Health.Direct.Common.Diagnostics;
 using Health.Direct.SmtpAgent;
 using Health.Direct.SmtpAgent.Diagnostics;
 
 namespace Health.Direct.DatabaseAuditor
 {
-    public class Auditor : IAuditor
+    public class Auditor<T> : IAuditor<IBuildAuditLogMessage> where T : IBuildAuditLogMessage, new ()
     {
-        static AuditorSettings m_settings;
+        readonly AuditorSettings m_settings;
         
-        static Auditor()
+        public Auditor()
         {
             m_settings = AuditorSettings.Load("DatabaseAuditorSettings.xml");
+            BuildAuditLogMessage = new T();
         }
 
         public void Log(string category)
@@ -50,9 +51,11 @@ namespace Health.Direct.DatabaseAuditor
                 db.SaveChanges();
             }
         }
+
+        public IBuildAuditLogMessage BuildAuditLogMessage { get; private set; }
     }
 
-    public class SimpleBuilder : IBuildAuditLogMessage
+    public class SimpleAuditMessageBuilder : IBuildAuditLogMessage
     {
         /// <summary>
         /// Convert <see cref="ISmtpMessage"/> into a audit string.
@@ -65,7 +68,7 @@ namespace Health.Direct.DatabaseAuditor
         }
     }
 
-    public class FullBuilder : IBuildAuditLogMessage
+    public class FullAuditMessageBuilder : IBuildAuditLogMessage
     {
         /// <summary>
         /// Convert <see cref="ISmtpMessage"/> into a audit string.

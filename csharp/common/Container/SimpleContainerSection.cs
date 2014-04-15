@@ -137,8 +137,9 @@ namespace Health.Direct.Common.Container
             }
         }
 
+        
         ///<summary>
-        /// A convience property that loads a the type specified in <see cref="Service"/>.
+        /// A convenience property that loads a the type specified in <see cref="Service"/>.
         ///</summary>
         public Type ServiceType
         {
@@ -161,6 +162,8 @@ namespace Health.Direct.Common.Container
         {
             return System.Type.GetType(typeName, true);
         }
+
+        
     }
 
     ///<summary>
