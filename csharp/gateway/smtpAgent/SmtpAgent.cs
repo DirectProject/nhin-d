@@ -29,8 +29,6 @@ using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.DSN;
-using Health.Direct.Config.Client;
-using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.SmtpAgent.Config;
@@ -50,7 +48,7 @@ namespace Health.Direct.SmtpAgent
             public const string Sender = "X-Sender";
         }
 
-        IAuditor<IBuildAuditLogMessage> m_auditor;
+        List<IAuditor<IBuildAuditLogMessage>> m_auditor;
         ILogger m_logger;
 
         SmtpAgentSettings m_settings;
@@ -88,7 +86,7 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
-        private IAuditor Auditor
+        private List<IAuditor<IBuildAuditLogMessage>> Auditor
         {
             get
             {
@@ -139,7 +137,7 @@ namespace Health.Direct.SmtpAgent
             m_settings = settings;
             m_settings.Validate();
 
-            m_auditor = IoC.Resolve<IAuditor<IBuildAuditLogMessage>>();
+            m_auditor = IoC.ResolveAll<IAuditor<IBuildAuditLogMessage>>().ToList();
             
             m_logger = Log.For(this);
 
@@ -851,7 +849,7 @@ namespace Health.Direct.SmtpAgent
         {
             message.Accept();
 
-            m_auditor.Log(AuditNames.Message.GetAcceptedMessage(incoming), m_auditor.BuildAuditLogMessage.Build(message));
+            Auditor.ForEach(a => a.Log(AuditNames.Message.GetAcceptedMessage(incoming), a.BuildAuditLogMessage.Build(message)));
         }
 
         protected virtual void RejectMessage(ISmtpMessage message, bool? incoming)
@@ -860,7 +858,7 @@ namespace Health.Direct.SmtpAgent
             {
                 message.Reject();
 
-                m_auditor.Log(AuditNames.Message.GetRejectedMessage(incoming), m_auditor.BuildAuditLogMessage.Build(message));
+                Auditor.ForEach(a => a.Log(AuditNames.Message.GetRejectedMessage(incoming), a.BuildAuditLogMessage.Build(message)));
                 
                 Logger.Debug("Rejected Message");
                 
@@ -877,7 +875,7 @@ namespace Health.Direct.SmtpAgent
             {
                 message.Reject();
 
-                m_auditor.Log(AuditNames.Message.GetRejectedMessage(incoming), m_auditor.BuildAuditLogMessage.Build(message));
+                Auditor.ForEach(a => a.Log(AuditNames.Message.GetRejectedMessage(incoming), a.BuildAuditLogMessage.Build(message)));
                 
                 Logger.Debug("Rejected Message");
 

@@ -23,7 +23,7 @@ namespace Health.Direct.SmtpAgent.Diagnostics
     /// A wrapper version of the <see cref="EventLogAuditor"/>.
     /// Allows compatibility with the bare <see cref="IAuditor"/> interface. 
     ///</summary>
-    public class SmtpAgentEventLogAuditor : IAuditor<IBuildAuditLogMessage>
+    public class SmtpAgentEventLogAuditor : IAuditor<IBuildAuditLogMessage> 
     {
         readonly IAuditor m_wrappedAuditor;
 

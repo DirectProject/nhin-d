@@ -130,13 +130,8 @@
 
   <Container>
     <Component>
-      <Service>Health.Direct.Common.Diagnostics.IAuditor, Health.Direct.Common</Service>
-      <Type>Health.Direct.DatabaseAuditor.Auditor, Health.Direct.DatabaseAuditor</Type>
-      <Scope>Singleton</Scope>
-    </Component>
-    <Component>
-      <Service>Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent</Service>
-      <Type>Health.Direct.DatabaseAuditor.SimpleBuilder, Health.Direct.DatabaseAuditor</Type>
+      <Service>Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent</Service>
+      <Type>Health.Direct.DatabaseAuditor.Auditor`1[[Health.Direct.DatabaseAuditor.SimpleAuditMessageBuilder, Health.Direct.DatabaseAuditor]], Health.Direct.DatabaseAuditor</Type>
       <Scope>Singleton</Scope>
     </Component>
   </Container>

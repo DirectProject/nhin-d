@@ -14,7 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-
+using System.Collections.Generic;
 using Health.Direct.Common.Diagnostics;
 
 namespace Health.Direct.Common.Container
@@ -90,6 +90,27 @@ namespace Health.Direct.Common.Container
             }
 
             return m_resolver.Resolve<T>();
+        }
+
+        ///<summary>
+        /// Returns an instance of type <typeparamref name="T"/>.
+        ///</summary>
+        ///<typeparam name="T"></typeparam>
+        ///<returns></returns>
+        ///<exception cref="InvalidOperationException">Is throws if <see cref="Initialize{T}"/> was </exception>
+        public static IList<T> ResolveAll<T>()
+        {
+            if (m_resolver == null)
+            {
+                m_resolver = Initialize("ioc");
+
+                if (m_resolver == null)
+                {
+                    throw new InvalidOperationException("Resolve was called before Initialize");
+                }
+            }
+
+            return m_resolver.ResolveAll<T>();
         }
     }
 }
