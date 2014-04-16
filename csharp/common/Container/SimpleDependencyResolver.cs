@@ -5,7 +5,8 @@
  Authors:
     John Theisen
     Umesh Madan
-  
+    Joe Shook   Joseph.Shook@Surescripts.com (Added ResolveAll per service type)
+ * 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -20,10 +21,18 @@ using System.Linq;
 
 namespace Health.Direct.Common.Container
 {
-
+    /// <summary>
+    /// Registration record
+    /// </summary>
     public class Registration
     {
+        /// <summary>
+        /// Service Type
+        /// </summary>
         public Type Type { get; set; }
+        /// <summary>
+        /// Service implementation.
+        /// </summary>
         public Func<object> Component { get; set; }
     }
 

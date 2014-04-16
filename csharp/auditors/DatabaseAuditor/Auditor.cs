@@ -36,7 +36,7 @@ namespace Health.Direct.DatabaseAuditor
             using (var db = new AuditContext().CreateContext(m_settings))
             {
                 AuditEvent auditEvent = new AuditEvent(category);
-                db.Events.Add(auditEvent);
+                db.AuditEvents.Add(auditEvent);
                 db.SaveChanges();
             }
         }
@@ -47,7 +47,7 @@ namespace Health.Direct.DatabaseAuditor
             using (var db = new AuditContext().CreateContext(m_settings))
             {
                 AuditEvent auditEvent = new AuditEvent(category, message);
-                db.Events.Add(auditEvent);
+                db.AuditEvents.Add(auditEvent);
                 db.SaveChanges();
             }
         }
@@ -68,6 +68,19 @@ namespace Health.Direct.DatabaseAuditor
         }
     }
 
+    public class HeaderAuditMessageBuilder : IBuildAuditLogMessage
+    {
+        /// <summary>
+        /// Convert <see cref="ISmtpMessage"/> into a audit string.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public string Build(ISmtpMessage message)
+        {
+            return message.GetEnvelope().Message.Headers.ToString();
+        }
+    }
+
     public class FullAuditMessageBuilder : IBuildAuditLogMessage
     {
         /// <summary>
@@ -77,7 +90,7 @@ namespace Health.Direct.DatabaseAuditor
         /// <returns></returns>
         public string Build(ISmtpMessage message)
         {
-            return message.ToString();
+            return message.GetMessageText();
         }
     }
 }
