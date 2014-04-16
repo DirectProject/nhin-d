@@ -198,6 +198,74 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Equal(8, AuditEventCount);
         }
 
+        [Fact]
+        public void Test_DatabaseAuditor_FullAuditMessageBuilder()
+        {
+            string configPath = GetSettingsPath("TestSmtpAgentAuditConfig.xml");
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
+            SimpleComponentSettings[] components = new SimpleComponentSettings[1];
+
+
+            SimpleComponentSettings localAuditComponent = new SimpleComponentSettings();
+            localAuditComponent.Scope = InstanceScope.Singleton;
+            localAuditComponent.Service = "Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent";
+            localAuditComponent.Type = "Health.Direct.DatabaseAuditor.Auditor`1[[Health.Direct.DatabaseAuditor.FullAuditMessageBuilder, Health.Direct.DatabaseAuditor]], Health.Direct.DatabaseAuditor";
+            components[0] = localAuditComponent;
+
+            settings.Container.Components = components;
+            m_agent = SmtpAgentFactory.Create(settings);
+            Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() is DatabaseAuditor.Auditor<FullAuditMessageBuilder>);
+
+            Assert.Equal(0, AuditEventCount);
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+            Assert.Equal(4, AuditEventCount);
+
+            using (var db = new AuditContext().CreateContext(m_settings))
+            {
+                foreach (AuditEvent auditEvent in db.AuditEvents)
+                {
+                    Console.WriteLine(auditEvent.Message);
+                }
+            }
+        }
+
+        [Fact]
+        public void Test_DatabaseAuditor_HeaderAuditMessageBuilder()
+        {
+            string configPath = GetSettingsPath("TestSmtpAgentAuditConfig.xml");
+            SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
+            SimpleComponentSettings[] components = new SimpleComponentSettings[1];
+
+
+            SimpleComponentSettings localAuditComponent = new SimpleComponentSettings();
+            localAuditComponent.Scope = InstanceScope.Singleton;
+            localAuditComponent.Service = "Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent";
+            localAuditComponent.Type = "Health.Direct.DatabaseAuditor.Auditor`1[[Health.Direct.DatabaseAuditor.HeaderAuditMessageBuilder, Health.Direct.DatabaseAuditor]], Health.Direct.DatabaseAuditor";
+            components[0] = localAuditComponent;
+
+            settings.Container.Components = components;
+            m_agent = SmtpAgentFactory.Create(settings);
+            Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() is DatabaseAuditor.Auditor<HeaderAuditMessageBuilder>);
+
+            Assert.Equal(0, AuditEventCount);
+            m_agent.Settings.InternalMessage.EnableRelay = true;
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(string.Format(TestMessage, Guid.NewGuid()))));
+            Assert.DoesNotThrow(() => RunEndToEndTest(this.LoadMessage(CrossDomainMessage)));
+            m_agent.Settings.InternalMessage.EnableRelay = false;
+            Assert.Equal(4, AuditEventCount);
+
+            using (var db = new AuditContext().CreateContext(m_settings))
+            {
+                foreach (AuditEvent auditEvent in db.AuditEvents)
+                {
+                    Console.WriteLine(auditEvent.Message);
+                }
+            }
+        }
+
 
 
         CDO.Message RunEndToEndTest(CDO.Message message)
@@ -226,7 +294,7 @@ namespace Health.Direct.SmtpAgent.Tests
             {
                 using (var db = new AuditContext().CreateContext(m_settings))
                 {
-                    return db.Events.Count();
+                    return db.AuditEvents.Count();
                 }
             }
         }
@@ -255,7 +323,7 @@ namespace Health.Direct.SmtpAgent.Tests
             using (var db = new AuditContext().CreateContext(m_settings))
             {
                 AuditEvent auditEvent = new AuditEvent(category);
-                db.Events.Add(auditEvent);
+                db.AuditEvents.Add(auditEvent);
                 db.SaveChanges();
             }
         }
@@ -266,7 +334,7 @@ namespace Health.Direct.SmtpAgent.Tests
             using (var db = new AuditContext().CreateContext(m_settings))
             {
                 AuditEvent auditEvent = new AuditEvent(category, message);
-                db.Events.Add(auditEvent);
+                db.AuditEvents.Add(auditEvent);
                 db.SaveChanges();
             }
         }
@@ -290,7 +358,7 @@ namespace Health.Direct.SmtpAgent.Tests
             using (var db = new AuditContext().CreateContext(m_settings))
             {
                 AuditEvent auditEvent = new AuditEvent(category);
-                db.Events.Add(auditEvent);
+                db.AuditEvents.Add(auditEvent);
                 db.SaveChanges();
             }
         }
@@ -301,7 +369,7 @@ namespace Health.Direct.SmtpAgent.Tests
             using (var db = new AuditContext().CreateContext(m_settings))
             {
                 AuditEvent auditEvent = new AuditEvent(category, message);
-                db.Events.Add(auditEvent);
+                db.AuditEvents.Add(auditEvent);
                 db.SaveChanges();
             }
         }

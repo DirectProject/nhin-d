@@ -25,8 +25,8 @@ namespace Health.Direct.SmtpAgent.Diagnostics
     /// Includes a <see cref="IBuildAuditLogMessage"/> interface allowing injection of a 
     /// custom audit builder.
     ///</summary>
-    public interface IAuditor<IBuildAuditLogMessage> : IAuditor 
+    public interface IAuditor<out T> : IAuditor where T : IBuildAuditLogMessage
     {
-        IBuildAuditLogMessage BuildAuditLogMessage { get; }
+        T BuildAuditLogMessage { get; }
     }
 }

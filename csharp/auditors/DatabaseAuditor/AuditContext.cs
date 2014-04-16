@@ -6,7 +6,7 @@ namespace Health.Direct.DatabaseAuditor
 {
     public class AuditContext : DbContext
     {
-        public DbSet<AuditEvent> Events { get; set; }
+        public DbSet<AuditEvent> AuditEvents { get; set; }
 
         public AuditContext()
         {
