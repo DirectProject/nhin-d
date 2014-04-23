@@ -296,7 +296,7 @@
 				<configuration>
 					<dates>
 						<!-- Insert the date of the most recent release -->
-						<date>2007-01-01</date>
+						<date>2014-01-01</date>
 					</dates>
 					<outputEncoding>UTF-8</outputEncoding>
 					<type>date</type>
@@ -339,14 +339,6 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	<properties>
-		<driver>org.postgresql.Driver</driver>
-		<url>jdbc:postgres://localhost:5432:nhindconfig</url>
-		<username>nhind</username>
-		<password>nhind</password>
-		<originalDataSetFile>../../src/test/data/sample-data.xml</originalDataSetFile>
-		<exportedDataSetFile>${project.build.directory}/dbunit/exported-dataset.xml</exportedDataSetFile>
-	</properties>
 	<distributionManagement>
 		<site>
 			<id>nhind-site</id>

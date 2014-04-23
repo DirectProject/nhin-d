@@ -60,6 +60,13 @@
        </repository>       
     </repositories>   
     <dependencies>  
+        <dependency>
+           <groupId>org.apache.openjpa</groupId>
+           <artifactId>openjpa</artifactId>
+           <version>2.2.0</version>	
+		   <type>jar</type>
+		   <scope>compile</scope>
+		</dependency>      
 	   <dependency>
 	      <groupId>commons-logging</groupId>
 	      <artifactId>commons-logging</artifactId>
