@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.security.Provider;
-import java.security.Provider.Service;
 import java.security.Security;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
@@ -43,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.security.auth.x500.X500Principal;
 
@@ -187,12 +185,14 @@ public class CryptoExtensions
 				if (Security.getProvider(provider.getName()) == null)
 					Security.addProvider(provider);
 				
+				/*
 				Set<Service> services = provider.getServices();
 				for (Service service : services)
 				{
 					System.out.println("Service: " + service.getAlgorithm() + "   Type:" + service.getType() + "\r\n\t" + service.toString());
 				}
 				System.out.println("\r\n\r\n\r\n");
+				*/
 			}
 			catch (Exception e)
 			{

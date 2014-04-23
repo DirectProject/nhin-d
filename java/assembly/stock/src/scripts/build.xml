@@ -37,7 +37,7 @@
 	<property name="apache.james.binary.url" value="http://www.gtlib.gatech.edu/pub/apache/james/server/apache-james-2.3.2.zip"></property>
 	<property name="apache.james.binary.zip" value="${build.download.dir}/apache-james-2.3.2.zip"></property>
 
-	<property name="apache.james3.binary.url" value="http://apache.claz.org//james/apache-james/3.0beta4/apache-james-3.0-beta4-app.tar.gz"></property>
+	<property name="apache.james3.binary.url" value="http://mirrors.gigenet.com/apache//james/apache-james/3.0beta4/apache-james-3.0-beta4-app.tar.gz"></property>
 	<property name="apache.james3.binary.tar.gz" value="${build.download.dir}/apache-james-3.0-beta4-app.tar.gz"></property>	
 	
 	<property name="james.stage.dir" value="${env.DIRECT_INSTALL_DIR}/james-2.3.2"></property>
@@ -54,14 +54,19 @@
 	<property name="james3.stage.conf.dir" value="${james3.stage.dir}/conf"></property>
 	<property name="james3.stage.domainlist" value="${james3.stage.conf.dir}/domainlist.conf"></property>
 	<property name="james3.stage.mailetcontainer" value="${james3.stage.conf.dir}/mailetcontainer.conf"></property>
+	<property name="james3.stage.pop3server" value="${james3.stage.conf.dir}/pop3server.conf"></property>	
+	<property name="james3.stage.imapserver" value="${james3.stage.conf.dir}/imapserver.conf"></property>	
+	<property name="james3.stage.keystore" value="${james3.stage.conf.dir}/cakeystore.jks"></property>		
 	<property name="james3.stage.wrapper" value="${james3.stage.conf.dir}/wrapper.conf"></property>	
 	<property name="james3.stage.logging" value="${james3.stage.conf.dir}/log4j.properties"></property>		
 	<property name="james3.stage.lib.dir" value="${james3.stage.conf.dir}/lib"></property>
+	<property name="james3.stage.persistence" value="${james3.stage.conf.dir}/META-INF/persistence_james.xml"></property>	
+	<property name="james3.stage.springserver" value="${james3.stage.conf.dir}/META-INF/org/apache/james/spring-server.xml"></property>	
 	
 	<!-- tomcat properties -->
-	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.52/bin/apache-tomcat-7.0.52.tar.gz"></property>
-	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.52.tar.gz"></property>
-	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.52"></property>
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.53/bin/apache-tomcat-7.0.53.tar.gz"></property>
+	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.53.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.53"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.bin.dir" value="${tomcat.stage.dir}/bin"></property>	
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
@@ -107,7 +112,7 @@
 	<property name="lib.commons-codec" value="${install.root.dir}/lib/commons-codec-1.4.jar"></property>
 	<property name="lib.commons-io" value="${install.root.dir}/lib/commons-io-1.4.jar"></property>
 	<property name="lib.commons-logging" value="${install.root.dir}/lib/commons-logging-1.1.1.jar"></property>
-	<property name="lib.commons-lang" value="${install.root.dir}/lib/commons-lang-2.5.jar"></property>
+	<property name="lib.commons-lang" value="${install.root.dir}/lib/commons-lang-2.4.jar"></property>	
 	<property name="lib.mail" value="${install.root.dir}/lib/mail-1.4.3.jar"></property>
 	<property name="lib.dsn" value="${install.root.dir}/lib/dsn-1.4.3.jar"></property>	
 	<property name="lib.guice" value="${install.root.dir}/lib/guice-2.0.jar"></property>
@@ -316,7 +321,7 @@
 		<copy file="${lib.commons-codec}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-io}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.commons-lang}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
-		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.commons-logging}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
 		<copy file="${lib.guice}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.mail}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
 		<copy file="${lib.dsn}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>		
@@ -388,9 +393,12 @@
 		<!-- delete the template files that aren't needed -->
 		<delete file="${james3.stage.conf.dir}/domainlist-template.conf"></delete>
 		<delete file="${james3.stage.conf.dir}/mailetcontainer-template.conf"></delete>
+		<delete file="${james3.stage.conf.dir}/pop3server-template.conf"></delete>
+	    <delete file="${james3.stage.conf.dir}/imapserver-template.conf"></delete>
+	    <delete file="${james3.stage.conf.dir}/META-INF/persistence.xml"></delete>
 		
 		<!-- make the directory for the audit DB prop files -->
-		<mkdir dir="${james3.stage.lib.dir}/properties"></mkdir>
+		<mkdir dir="${james3.stage.conf.dir}/properties"></mkdir>
 		
 		<!-- populate new libraries -->
 		<copy file="${lib.activation}" todir="${james3.stage.lib.dir}"></copy>
@@ -445,15 +453,20 @@
 		<!-- copy the new config files -->
 		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/mailetcontainer.conf" tofile="${james3.stage.mailetcontainer}" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/pop3server.conf" tofile="${james3.stage.pop3server}" overwrite="true"></copy>		
+		<copy file="${src}/scripts/james3/imapserver.conf" tofile="${james3.stage.imapserver}" overwrite="true"></copy>		
+		<copy file="${src}/scripts/james3/cakeystore.jks" tofile="${james3.stage.keystore}" overwrite="true"></copy>				
 		<copy file="${src}/scripts/james3/wrapper.conf" tofile="${james3.stage.wrapper}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/log4j.properties" tofile="${james3.stage.logging}" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/persistence_james.xml" tofile="${james3.stage.persistence}" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/spring-server.xml" tofile="${james3.stage.springserver}" overwrite="true"></copy>
 		
 		<copy file="${src}/scripts/james3/setdomain.sh" todir="${james3.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/set-domain.xml" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/james3/set-domain-domainlist.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/james3/set-domain-mailetcontainer.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 
-		<copy file="${src}/scripts/auditStore.properties" todir="${james3.stage.lib.dir}/properties" overwrite="true"></copy> 		
+		<copy file="${src}/scripts/auditStore.properties" todir="${james3.stage.conf.dir}/properties" overwrite="true"></copy> 		
 	</target>	
 	
 	<target name="configure-tomcat">
