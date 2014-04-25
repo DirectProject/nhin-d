@@ -299,10 +299,27 @@ public class TrustChainValidator
 		if (issuerCerts.size() == 0)
 			return; // no intermediates.. just return
 		
+		boolean issuerFoundInAnchors = false;
+		Collection<X509Certificate> searchForParentIssuers  = new ArrayList<X509Certificate>();
 		for (X509Certificate issuerCert : issuerCerts)
 		{
 			if (issuerCert.getSubjectX500Principal().equals(issuerPrin) && !isIssuerInCollection(issuers, issuerCert)
 					&& !isIssuerInAnchors(anchors, issuerCert) /* if we hit an anchor then stop */)
+			{
+				searchForParentIssuers.add(issuerCert);
+
+			}
+			else if (isIssuerInAnchors(anchors, issuerCert))
+			{
+				issuerFoundInAnchors = true;
+				break;
+			}
+		}
+		// if the issuer was not found in the list of anchors,
+		// the go up the next level in the chain
+		if (!issuerFoundInAnchors)
+		{
+			for (X509Certificate issuerCert : searchForParentIssuers)
 			{
 				issuers.add(issuerCert);
 				

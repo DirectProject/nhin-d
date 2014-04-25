@@ -13,6 +13,7 @@ import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
 
 import org.apache.commons.io.FileUtils;
+import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.X509CertificateEx;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 import org.nhindirect.stagent.utils.TestUtils;
@@ -27,6 +28,8 @@ public class KeyStoreCreate
 	
 	static 
 	{
+		CryptoExtensions.registerJCEProviders();
+		
 		File fl = new File("testfile");
 		int idx = fl.getAbsolutePath().lastIndexOf("testfile");
 		
@@ -80,7 +83,6 @@ public class KeyStoreCreate
 			importCert("testemailPubOrgCert", "test.email.com.der", "test.email.comKey.der");
 			importCert("expiredTest", "expired.der", "expiredKey.der");
 			importCert("altnameonly", "altNameOnly.der", "altNameOnlyKey.der");		
-			
 		}
 		catch (Exception e)
 		{
