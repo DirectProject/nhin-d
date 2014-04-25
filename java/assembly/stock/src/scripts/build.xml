@@ -56,6 +56,7 @@
 	<property name="james3.stage.mailetcontainer" value="${james3.stage.conf.dir}/mailetcontainer.conf"></property>
 	<property name="james3.stage.pop3server" value="${james3.stage.conf.dir}/pop3server.conf"></property>	
 	<property name="james3.stage.imapserver" value="${james3.stage.conf.dir}/imapserver.conf"></property>	
+	<property name="james3.stage.smtpserver" value="${james3.stage.conf.dir}/smtpserver.conf"></property>		
 	<property name="james3.stage.keystore" value="${james3.stage.conf.dir}/cakeystore.jks"></property>		
 	<property name="james3.stage.wrapper" value="${james3.stage.conf.dir}/wrapper.conf"></property>	
 	<property name="james3.stage.logging" value="${james3.stage.conf.dir}/log4j.properties"></property>		
@@ -395,6 +396,7 @@
 		<delete file="${james3.stage.conf.dir}/mailetcontainer-template.conf"></delete>
 		<delete file="${james3.stage.conf.dir}/pop3server-template.conf"></delete>
 	    <delete file="${james3.stage.conf.dir}/imapserver-template.conf"></delete>
+	    <delete file="${james3.stage.conf.dir}/smtpserver-template.conf"></delete>		
 	    <delete file="${james3.stage.conf.dir}/META-INF/persistence.xml"></delete>
 		
 		<!-- make the directory for the audit DB prop files -->
@@ -455,6 +457,7 @@
 		<copy file="${src}/scripts/james3/mailetcontainer.conf" tofile="${james3.stage.mailetcontainer}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/pop3server.conf" tofile="${james3.stage.pop3server}" overwrite="true"></copy>		
 		<copy file="${src}/scripts/james3/imapserver.conf" tofile="${james3.stage.imapserver}" overwrite="true"></copy>		
+		<copy file="${src}/scripts/james3/smtpserver.conf" tofile="${james3.stage.smtpserver}" overwrite="true"></copy>				
 		<copy file="${src}/scripts/james3/cakeystore.jks" tofile="${james3.stage.keystore}" overwrite="true"></copy>				
 		<copy file="${src}/scripts/james3/wrapper.conf" tofile="${james3.stage.wrapper}" overwrite="true"></copy>
 		<copy file="${src}/scripts/james3/log4j.properties" tofile="${james3.stage.logging}" overwrite="true"></copy>
