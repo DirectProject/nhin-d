@@ -671,6 +671,515 @@ namespace Health.Direct.SmtpAgent.Tests
         }
 
 
+        /// <summary>
+        /// This test case verifies that your system can query DNS for address-bound CERT records and discover a valid address-bound X.509 certificate for a Direct address.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d1@domain1.demo30.direct-test.com")]
+        public void TestD1(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.NotNull(certs);
+            Assert.True(certs.Count == 1);
+            Assert.Equal(subject, certs[0].ExtractEmailNameOrName());
+            AssertCert(certs[0], true);
+
+            //
+            // Now prove the standard dns resolver will also return the Address Cert.
+            //
+            resolver = new DnsCertResolver(IPAddress.Parse(Dns_Server));
+            Assert.NotNull(resolver);
+
+            certs = resolver.GetCertificates(email);
+            Assert.NotNull(certs);
+            Assert.True(certs.Count == 1);
+            Assert.Equal(subject, certs[0].ExtractEmailNameOrName());
+
+            AssertCert(certs[0], true);
+
+        }
+
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for domain-bound CERT records and discover a valid domain-bound X.509 certificate for a Direct address.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d2@domain1.demo30.direct-test.com")]
+        public void TestD2(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnostics = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnostics.OnResolverError;
+
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(2, certs.Count);
+
+            //
+            // find invalid cert
+            //
+            var cert = certs.FindByName("D1_invB");
+            Assert.Equal("domain1.demo30.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            AssertCert(cert, false);
+
+            cert = certs.FindByName("D2_valB");
+            Assert.Equal("domain1.demo30.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            AssertCert(cert, true);
+
+
+            //
+            // Now prove we can get it as a domain with no fail over.
+            //
+            certs = resolver.GetCertificatesForDomain(email.Host);
+            cert = certs.FindByName("D1_invB");
+            Assert.Equal("domain1.demo30.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            AssertCert(cert, false);
+
+            cert = certs.FindByName("D2_valB");
+            Assert.Equal("domain1.demo30.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            AssertCert(cert, true);
+
+        }
+
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and discover a valid address-bound X.509 certificate for a Direct address in the associated LDAP server.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d3@domain2.demo30.direct-test.com")]
+        public void TestD3(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.NotNull(certs);
+            Assert.True(certs.Count == 1);
+            Assert.Equal(subject, certs[0].ExtractEmailNameOrName());
+
+            AssertCert(certs[0], true);
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and discover a valid domain-bound X.509 certificate for a Direct address in the associated LDAP server.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d4@domain2.demo30.direct-test.com")]
+        public void TestD4(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+
+            var cert = certs.FindByName("D4_valD");
+            Assert.Equal("domain2.demo30.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            AssertCert(cert, true);
+
+
+
+            Assert.Equal(0, diagnosticsForDnsCertResolver.ActualErrorMessages.Count);
+            Assert.Equal(0, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+
+
+
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for address-bound CERT records and finds, but does not select the associated invalid address-bound X.509 certificate.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d5@domain1.demo30.direct-test.com")]
+        public void TestD5(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D5_invA");
+            //
+            // Assert cert chain fails
+            //
+            AssertCert(cert, false);
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for domain-bound CERT records and finds, but does not select the associated invalid domain-bound X.509 certificate.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d6@domain4.demo30.direct-test.com")]
+        public void TestD6(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D6_invB");
+            //
+            // Assert cert chain fails
+            //
+            AssertCert(cert, false);
+        }
+
+
+        /// <summary>
+        /// Verify that your system did NOT send an email because it could not find a certificate for the Direct address. To pass this test case, you must NOT receive an email in response.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d7@domain2.demo30.direct-test.com")]
+        public void TestD7(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D7_invC");
+            //
+            // Assert cert chain fails
+            //
+            AssertCert(cert, false);
+        }
+
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and finds, but does not select the invalid domain-bound X.509 certificate in the associated LDAP server.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d8@domain5.demo30.direct-test.com")]
+        public void TestD8(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D8_invD");
+            //
+            // Assert cert chain fails
+            //
+            AssertCert(cert, false);
+        }
+
+        /// <summary>
+        ///  This test case verifies that your system can query DNS for address-bound CERT records and select the valid address-bound X.509 certificate instead of the invalid address-bound X.509 certificate.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d9@domain1.demo30.direct-test.com")]
+        public void TestD9(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(2, certs.Count);
+            var cert = certs.FindByName("D9_invA");
+            //
+            // Assert cert chain fails
+            //
+            AssertCert(cert, false);
+
+            cert = certs.FindByName("D9_valA");
+            //
+            // Assert cert chain fails
+            //
+            AssertCert(cert, true);
+        }
+
+
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and attempts to connect to an LDAP server based on the priority value specified in the SRV records until a successful connection is made. Your system should first attempt to connect to an LDAP server associated with an SRV record containing the lowest priority value (highest priority). Since this LDAP server is unavailable, your system should then attempt to connect to the LDAP server associated with an SRV record containing the second lowest priority value (second highest priority) and discover the valid address-bound X.509 certificate in the available LDAP server.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d10@domain3.demo30.direct-test.com")]
+        public void TestD10(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.NotNull(certs);
+            Assert.Equal(1, certs.Count);
+            Assert.Equal(subject, certs[0].ExtractEmailNameOrName());
+
+            AssertCert(certs[0], true);
+
+            Assert.Equal(1, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.domain3.demo30.direct-test.com:10389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
+        }
+
+
+        /// <summary>
+        /// This test case verifies that your system does not find any certificates when querying DNS for CERT records and does not find any SRV records in DNS.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d11@domain6.demo30.direct-test.com")]
+        public void TestD11(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Null(certs);
+
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and attempts to connect to an LDAP server associated with the only SRV record that should be found. Since this LDAP server is unavailable or does not exist and no additional SRV records should have been found, your system should not discover any X.509 certificates in either DNS CERT records or LDAP servers.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d12@domain7.demo30.direct-test.com")]
+        public void TestD12(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Null(certs);
+
+            Assert.Equal(1, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.domain7.demo30.direct-test.com:10389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
+        }
+
+        /// <summary>
+        /// This test case verifies that your system does not discover any certificates in DNS CERT records or LDAP servers when no certificates should be found.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d13@domain8.demo30.direct-test.com")]
+        public void TestD13(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Empty(certs);
+
+            Assert.Equal(0, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for address-bound CERT records and discover a valid address-bound X.509 certificate that is larger than 512 bytes using a TCP connection.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d14@domain1.demo30.direct-test.com")]
+        public void TestD14(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D14_valA");
+            //
+            // Assert cert chain is good
+            //
+            AssertCert(cert, true);
+        }
+
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and discover a valid address-bound X.509 certificate in the LDAP server associated with an SRV record containing the lowest priority value (highest priority).
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d15@domain2.demo30.direct-test.com")]
+        public void TestD15(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D15_valC");
+            //
+            // Assert cert chain is good
+            //
+            AssertCert(cert, true);
+
+            //
+            //  Note: this test has an invalid cert at priority 1, but the LDAP resolver does not retrieve it because it found one at priority 0
+            //
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for SRV records and discover a valid address-bound X.509 certificate in the LDAP server associated with an SRV record containing the lowest priority value (highest priority) and the highest weight value when SRV records with the same priority value exist.
+        /// /http://demo30.direct-test.com/dcdt-web/discovery
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d16@domain5.demo30.direct-test.com")]
+        public void TestD16(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+            Assert.NotNull(resolver);
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
+
+            var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
+            var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
+            ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
+
+            var email = new MailAddress(subject);
+            X509Certificate2Collection certs = resolver.GetCertificates(email);
+            Assert.Equal(1, certs.Count);
+            var cert = certs.FindByName("D16_valC");
+            //
+            // Assert cert chain is good
+            //
+            AssertCert(cert, true);
+
+            //
+            //  Note: this test has a second cert at priority 0 with a weight of 0, but the LDAP resolver does not retrieve it because it found one at priority 0, with a weight of 100
+            //
+        }
+
 
         private void AssertCert(X509Certificate2 cert, bool expectValidCert)
         {
