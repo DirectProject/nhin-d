@@ -16,6 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
+using System.IO;
+using Health.Direct.Common.Diagnostics;
 using Health.Direct.SmtpAgent;
 using Health.Direct.SmtpAgent.Diagnostics;
 
@@ -27,7 +29,8 @@ namespace Health.Direct.DatabaseAuditor
         
         public Auditor()
         {
-            m_settings = AuditorSettings.Load("DatabaseAuditorSettings.xml");
+            string location = HostLocation();
+            m_settings = AuditorSettings.Load(location);
             BuildAuditLogMessage = new T();
         }
 
@@ -53,6 +56,14 @@ namespace Health.Direct.DatabaseAuditor
         }
 
         public IBuildAuditLogMessage BuildAuditLogMessage { get; private set; }
+
+        private static string HostLocation()
+        {
+            string programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+            string myDataPath = Path.Combine(programData, Path.Combine(@"DirectProject\auditors", AuditorSettings.ConfigFile));
+            EventLogHelper.WriteInformation("Health.Direct.Audit", myDataPath);
+            return myDataPath;
+        }
     }
 
     public class SimpleAuditMessageBuilder : IBuildAuditLogMessage

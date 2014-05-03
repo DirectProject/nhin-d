@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Container
@@ -111,6 +112,7 @@ namespace Health.Direct.Common.Container
                 throw new ArgumentException("Type");
             }
         }
+
         ///<summary>
         /// Create an instance of the type <see cref="Type"/>.
         ///</summary>
@@ -122,6 +124,7 @@ namespace Health.Direct.Common.Container
 
         private static Type LoadType(string typeName)
         {
+            EventLogHelper.WriteInformation("Health.Direct", "Load Type:: " + typeName);
             return System.Type.GetType(typeName, true);
         }
     }
