@@ -23,7 +23,8 @@ namespace Health.Direct.DatabaseAuditor
     [XmlRoot("AuditorSettings")]
     public class AuditorSettings
     {
-        
+        public const string ConfigFile = @"DatabaseAuditorSettings.xml";
+
         [XmlElement]
         public string ConnectionString
         {
@@ -41,7 +42,7 @@ namespace Health.Direct.DatabaseAuditor
 
         public static AuditorSettings Load()
         {
-            return Load("DatabaseAuditorSettings.xml");
+            return Load(ConfigFile);
         }
 
         public static AuditorSettings Load(string path)
