@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-model</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI - Configuration Service Data Model</name>
     <description>NHIN Direct Java RI Configurstion Service Data Model</description>
