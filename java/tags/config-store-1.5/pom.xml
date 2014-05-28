@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-store</artifactId>
-	<version>1.6-SNAPSHOT</version>
+	<version>1.5</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI - Configuration Persistence Layer</name>
     <description>NHIN Direct Security And Trust Agent</description>
@@ -428,18 +428,36 @@
                  </execution>
                </executions>
             </plugin>
-            -->	
+-->
 		</plugins>
         <pluginManagement>
            <plugins>
-              <plugin>
-                 <groupId>org.apache.maven.plugins</groupId>
-                 <artifactId>maven-release-plugin</artifactId>
-                 <version>2.0</version>
-                 <configuration>
-                    <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
-                 </configuration>
-              </plugin>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-release-plugin</artifactId>
+             <version>2.0</version>
+             <configuration>
+                <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
+             </configuration>
+          </plugin>
+           <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-site-plugin</artifactId>
+             <version>2.1.1</version>
+             <dependencies>
+               <dependency>
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
+                <exclusions>
+                 <exclusion>
+                   <groupId>commons-logging</groupId>
+                   <artifactId>commons-logging</artifactId>
+                 </exclusion>
+               </exclusions>
+             </dependency>         
+            </dependencies>
+          </plugin>
            </plugins>
         </pluginManagement>		
 	</build>
