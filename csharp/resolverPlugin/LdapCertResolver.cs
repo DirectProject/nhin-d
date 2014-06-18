@@ -227,7 +227,7 @@ namespace Health.Direct.ResolverPlugins
             }
             return response.AnswerRecords.SRV
                 .OrderBy(r => r.Priority)
-                .ThemByDescending(r => r.Weight);
+                .ThenByDescending(r => r.Weight);
         }
 
         /// <summary>

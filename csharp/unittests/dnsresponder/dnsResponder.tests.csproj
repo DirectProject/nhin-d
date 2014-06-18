@@ -16,7 +16,6 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -58,9 +57,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -105,6 +104,10 @@
     <ProjectReference Include="..\..\dnsResponder\dnsResponder.csproj">
       <Project>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</Project>
       <Name>dnsResponder</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\smtpAgent\smtpAgent.tests.csproj">
+      <Project>{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}</Project>
+      <Name>smtpAgent.tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
