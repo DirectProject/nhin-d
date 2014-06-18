@@ -19,6 +19,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.SmtpAgent.Tests;
 using Xunit;
 using Xunit.Extensions;
 
@@ -104,6 +105,42 @@ namespace Health.Direct.DnsResponder.Tests
         public void TestTypeSRV()
         {
             this.TestType<SRVRecord>(DnsStandard.RecordType.SRV, "foo.com", r => (r.Port == 353 && r.Weight == 20 && r.Target == "x.y.z.com"));
+        }
+
+        /// <summary>
+        /// https://code.google.com/p/nhin-d/issues/detail?id=240
+        /// Demonstration of the correct LINQ query for sorting SRV records 
+        /// DCDT tests exercise actual LDAP queries here <see cref="LdapResolverTests"/>
+        /// </summary>
+        [Fact]
+        public void TestTypeSRVSort()
+        {
+            DnsResponse response = new DnsResponse();
+            response.AnswerRecords.Add(new SRVRecord("foo.order.com", 100, 389, "x.y.z.com", 50));
+            response.AnswerRecords.Add(new SRVRecord("foo.order.com", 100, 389, "x.y.z.com", 100));
+            response.AnswerRecords.Add(new SRVRecord("foo.order.com", 0, 389, "x.y.z.com", 0));
+            response.AnswerRecords.Add(new SRVRecord("foo.order.com", 0, 389, "x.y.z.com", 50));
+            response.AnswerRecords.Add(new SRVRecord("foo.order.com", 0, 389, "x.y.z.com", 100));
+
+
+            List<SRVRecord> responseList = response.AnswerRecords.SRV
+                .OrderBy(r => r.Priority)
+                .OrderByDescending(r => r.Weight)
+                .ToList();
+
+            Assert.NotEqual(responseList[0].ToString(), "foo.order.com:389 Priority:0 Weight:0");
+
+            responseList = response.AnswerRecords.SRV
+                .OrderBy(r => r.Priority)
+                .ThenByDescending(r => r.Weight)
+                .ToList();
+
+
+            Assert.Equal(responseList[0].ToString(), "foo.order.com:389 Priority:0 Weight:0");
+            Assert.Equal(responseList[1].ToString(), "foo.order.com:389 Priority:50 Weight:100");
+            Assert.Equal(responseList[2].ToString(), "foo.order.com:389 Priority:50 Weight:0");
+            Assert.Equal(responseList[3].ToString(), "foo.order.com:389 Priority:100 Weight:100");
+            Assert.Equal(responseList[4].ToString(), "foo.order.com:389 Priority:100 Weight:0");
         }
 
         [Fact]
