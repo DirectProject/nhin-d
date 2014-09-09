@@ -77,8 +77,10 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 	private static final Log LOGGER = LogFactory.getFactory().getInstance(LdapPublicCertUtilImpl.class);
 	
 	private static final String DEFAULT_LDAP_TIMEOUT = "5000";
+	private static final String DEFAULT_LDAP_CONNECT_TIMEOUT = "10000";
 	
 	private static final String LDAP_TIMEOUT = "com.sun.jndi.ldap.read.timeout";
+	private static final String LDAP_CONNECT_TIMEOUT = "com.sun.jndi.ldap.connect.timeout";	
 	private static final String LDAP_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
 	private static final String LDAP_SRV_PREFIX = "_ldap._tcp.";
 	private static final String CERT_ATTRIBUTE_BINARY = "userCertificate;binary";
@@ -221,6 +223,7 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 			env.put(Context.PROVIDER_URL, ldapURL);
 			env.put(Context.SECURITY_AUTHENTICATION, "none");
 			env.put(LDAP_TIMEOUT, DEFAULT_LDAP_TIMEOUT);
+			env.put(LDAP_CONNECT_TIMEOUT, DEFAULT_LDAP_CONNECT_TIMEOUT);
 			env.put("java.naming.ldap.attributes.binary", "userCertificate, usercertificate");
 			
 			ctx =  new InitialDirContext(env);
@@ -356,7 +359,12 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		public int compare(Record rec1, Record rec2) 
 		{
 			if (((SRVRecord)rec1).getPriority() == ((SRVRecord)rec2).getPriority())
-				return 0;
+			{
+				if (((SRVRecord)rec1).getWeight() < ((SRVRecord)rec2).getWeight())
+					return  1;
+				else
+					return (((SRVRecord)rec1).getWeight() > ((SRVRecord)rec2).getWeight()) ? -1 : 0;
+			}
 			
 			return (((SRVRecord)rec1).getPriority() < ((SRVRecord)rec2).getPriority()) ? -1 : 1;
 					
