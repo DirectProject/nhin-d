@@ -36,6 +36,7 @@ import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +50,9 @@ import javax.security.auth.x500.X500Principal;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.DERObject;
 import org.nhindirect.policy.PolicyProcessException;
 import org.nhindirect.policy.x509.AuthorityInfoAccessExtentionField;
 import org.nhindirect.policy.x509.AuthorityInfoAccessMethodIdentifier;
@@ -77,7 +81,7 @@ public class TrustChainValidator
 	
 	private static int DefaultMaxIssuerChainLength = 5;
 
-	private Collection<CertificateResolver> certResolvers;
+	private Collection<CertificateResolver> certResolvers = Collections.emptyList();
 	
 	private int maxIssuerChainLength = DefaultMaxIssuerChainLength;
 	
@@ -226,10 +230,19 @@ public class TrustChainValidator
     
     private boolean isIssuerInAnchors(Collection<X509Certificate> anchors, X509Certificate checkIssuer)
     {
+    	final DERObject checkIssuerExValue = getExtensionValue(checkIssuer, "2.5.29.14");
+    	
     	for (X509Certificate anchor : anchors)
     	{
     		if (Thumbprint.toThumbprint(anchor).equals(Thumbprint.toThumbprint(checkIssuer)))
     			return true; // already found the certificate issuer... done
+    		
+    		// thumbprint may not be enough... it is possible that there might be change of anchors but they keep the same subject key id
+    		final DERObject anchorExValue = getExtensionValue(anchor, "2.5.29.14");
+    		
+    		if (checkIssuerExValue != null && anchorExValue != null && anchorExValue.equals(checkIssuerExValue))
+    			return true;
+    		
     	}
     	return false;
     }
@@ -534,4 +547,38 @@ public class TrustChainValidator
 		
 		return address;
     }
+    
+    
+    private DERObject getExtensionValue(X509Certificate cert, String oid)
+    {	
+        byte[]  bytes = cert.getExtensionValue(oid);
+        if (bytes == null)
+        {
+            return null;
+        }
+
+        return getObject(bytes);
+    }
+    
+    private DERObject getObject(byte[] ext)
+    {
+    	ASN1InputStream aIn = null;
+        try
+        {
+            aIn = new ASN1InputStream(ext);
+            ASN1OctetString octs = (ASN1OctetString)aIn.readObject();
+        	IOUtils.closeQuietly(aIn);
+            
+            aIn = new ASN1InputStream(octs.getOctets());
+            return aIn.readObject();
+        }
+        catch (Exception e)
+        {
+            throw new IllegalArgumentException("Exception processing data ", e);
+        }
+        finally
+        {
+        	IOUtils.closeQuietly(aIn);
+        }
+    }	
 }

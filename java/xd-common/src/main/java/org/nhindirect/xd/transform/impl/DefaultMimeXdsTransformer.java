@@ -52,10 +52,10 @@ import org.nhindirect.xd.transform.util.type.MimeType;
  */
 public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
 
-    private byte[] xdsDocument = null;
-    private String xdsMimeType = null;
-    private FormatCodeEnum xdsFormatCode = null;
-    private DirectDocumentType documentType = null;
+//    private byte[] xdsDocument = null;
+//    private String xdsMimeType = null;
+//    private FormatCodeEnum xdsFormatCode = null;
+//    private DirectDocumentType documentType = null;
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMimeXdsTransformer.class);
 
     /**
@@ -74,6 +74,12 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
     public ProvideAndRegisterDocumentSetRequestType transform(MimeMessage mimeMessage) throws TransformationException {
         ProvideAndRegisterDocumentSetRequestType request;
         DirectDocuments documents = new DirectDocuments();
+        
+        byte[] xdsDocument = null;
+        String xdsMimeType = null;
+        FormatCodeEnum xdsFormatCode = null;
+        DirectDocumentType documentType = null;
+        
 
         try {
             Date sentDate = mimeMessage.getSentDate();
@@ -96,8 +102,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
                 xdsDocument = ((String) mimeMessage.getContent()).getBytes();
 
                 // Add document to the collection of documents
-                documents.getDocuments().add(getDocument(sentDate, from));
-                documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
+                documents.getDocuments().add(getDocument(sentDate, from, xdsMimeType, xdsFormatCode, xdsDocument, documentType));
+                documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients, xdsDocument, documentType));
             } // Multipart/mixed (attachments)
             else if (MimeType.MULTIPART.matches(mimeMessage.getContentType())) {
                 LOGGER.info("Handling multipart/mixed - " + mimeMessage.getContentType());
@@ -171,8 +177,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
                     xdsDocument = read(bodyPart);
 
                     // Add the document to the collection of documents
-                    documents.getDocuments().add(getDocument(sentDate, from));
-                    documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients));
+                    documents.getDocuments().add(getDocument(sentDate, from, xdsMimeType, xdsFormatCode, xdsDocument, documentType));
+                    documents.setSubmissionSet(getSubmissionSet(subject, sentDate, from, recipients, xdsDocument, documentType));
                 }
             } else {
                 if (LOGGER.isWarnEnabled()) {
@@ -221,8 +227,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
      * title                        O       O
      * uniqueId                     R       R
      */
-    private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth,
-            Address[] recipients) throws Exception {
+    private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth, Address[] recipients, 
+            byte[] xdsDocument, DirectDocumentType documentType) throws Exception {
         DirectDocuments.SubmissionSet submissionSet = new DirectDocuments.SubmissionSet();
 
         // (R) Minimal Metadata Source
@@ -264,7 +270,7 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
      * typeCode                     R       R2
      * uniqueId                     R       R
      */
-    private DirectDocument2 getDocument(Date sentDate, String auth) throws Exception {
+    private DirectDocument2 getDocument(Date sentDate, String auth, String xdsMimeType, FormatCodeEnum xdsFormatCode, byte[] xdsDocument, DirectDocumentType documentType) throws Exception {
         DirectDocument2 document = new DirectDocument2();
         DirectDocument2.Metadata metadata = document.getMetadata();
 
@@ -298,3 +304,4 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
         return outputStream.toByteArray();
     }
 }
+

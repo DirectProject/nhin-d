@@ -352,7 +352,17 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			Lookup lu = new Lookup(new Name(lookupName), Type.CERT);
 			lu.setResolver(createExResolver(servers.toArray(new String[servers.size()]), retries, timeout)); // default retries is 3, limite to 2
 			
-			Record[] retRecords = lu.run();
+			Record[] retRecords = null;
+			
+			try
+			{
+				retRecords = lu.run();
+			}
+			catch (Exception e)
+			{
+				LOGGER.warn("Error using recusive DNS CERT lookup for name " + lookupName + 
+						"\r\nFalling back to looking up NS record for a targeted search", e);
+			}
 			
 			if (retRecords == null || retRecords.length == 0)
 			{
@@ -397,6 +407,12 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				// search the name servers for the cert
 				lu = new Lookup(new Name(lookupName), Type.CERT);
 				lu.setResolver(createExResolver(remoteServers, 2, 3));
+				
+				// CLEAR THE CACHE!!!  We are seeing instances where an NXRRSET is cached because
+				// a DNS provider is trying to handle a request that it should be delegating
+				// The purpose of bypassing the DNS provider and going directly to the NS server
+				// is to avoid issues like this
+				lu.setCache(new Cache(DClass.IN));
 				
 				retRecords = lu.run();
 			}
