@@ -32,7 +32,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhindirect.xd.proxy.DocumentRepositoryProxy;
 import org.nhindirect.xd.soap.DirectSOAPHandlerResolver;
-import org.nhindirect.xd.soap.ThreadData;
+import org.nhindirect.xd.soap.SafeThreadData;
 
 /**
  * Document repository class for handling XDS webservice calls.
@@ -41,13 +41,6 @@ import org.nhindirect.xd.soap.ThreadData;
  */
 public class DocumentRepository
 {
-    private String to = null;
-    private String action = null;
-    private String messageId = null;
-    
-    private String directTo = null;
-    private String directFrom = null;
-
     /**
      * Class logger.
      */
@@ -72,14 +65,18 @@ public class DocumentRepository
 
         LOGGER.info(" SENDING TO ENDPOINT " + endpoint);
 
-        this.action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b";
-        this.messageId = UUID.randomUUID().toString();
-        this.to = endpoint;
-        
-        this.directTo = directTo;
-        this.directFrom = directFrom;
+        /**
+         * Get thread data by Thread ID
+         */
+        Long threadID = Thread.currentThread().getId();
+        SafeThreadData threadData = SafeThreadData.GetThreadInstance(threadID);
+        threadData.setAction("urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-b");
+        threadData.setMessageId(UUID.randomUUID().toString());
+        threadData.setTo(endpoint);
+        threadData.setDirectFrom(directFrom);
+        threadData.setDirectTo(directTo);
+        threadData.save();
 
-        setHeaderData();
 
         // Inspect the message
         //
@@ -89,39 +86,24 @@ public class DocumentRepository
         
         DocumentRepositoryProxy proxy = new DocumentRepositoryProxy(endpoint, new DirectSOAPHandlerResolver());
 
-        RegistryResponseType rrt = proxy.provideAndRegisterDocumentSetB(prds);
+        try{
+            RegistryResponseType rrt = proxy.provideAndRegisterDocumentSetB(prds);
 
-        String response = rrt.getStatus();
+            String response = rrt.getStatus();
 
-        if (StringUtils.contains(response, "Failure"))
-        {
-            throw new Exception("Failure Returned from XDR forward");
+            if (StringUtils.contains(response, "Failure"))
+            {
+                throw new Exception("Failure Returned from XDR forward");
+            }
+            SafeThreadData.clean(threadID);
+            LOGGER.info("Handling complete");
+
+            return response;
+        } catch (Exception ex){
+            SafeThreadData.clean(threadID);
+            throw ex;
         }
-
-        LOGGER.info("Handling complete");
-
-        return response;
     }
 
-    /**
-     * Set header data.
-     * 
-     * TODO: Investigate the usefulness of this method. It sets null known null
-     * values.
-     */
-    protected void setHeaderData()
-    {
-        Long threadId = Long.valueOf(Thread.currentThread().getId());
-        LOGGER.info("THREAD ID " + threadId);
-
-        ThreadData threadData = new ThreadData(threadId);
-        threadData.setTo(this.to);
-        threadData.setMessageId(this.messageId);
-        threadData.setAction(this.action);
-        
-        threadData.setDirectTo(this.directTo);
-        threadData.setDirectFrom(this.directFrom);
-
-        LOGGER.info(threadData.toString());
-    }
 }
+

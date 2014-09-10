@@ -52,10 +52,6 @@ import org.nhindirect.xd.transform.util.type.MimeType;
  */
 public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
 
-//    private byte[] xdsDocument = null;
-//    private String xdsMimeType = null;
-//    private FormatCodeEnum xdsFormatCode = null;
-//    private DirectDocumentType documentType = null;
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMimeXdsTransformer.class);
 
     /**
@@ -79,7 +75,6 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
         String xdsMimeType = null;
         FormatCodeEnum xdsFormatCode = null;
         DirectDocumentType documentType = null;
-        
 
         try {
             Date sentDate = mimeMessage.getSentDate();
@@ -227,8 +222,8 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
      * title                        O       O
      * uniqueId                     R       R
      */
-    private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth, Address[] recipients, 
-            byte[] xdsDocument, DirectDocumentType documentType) throws Exception {
+    private DirectDocuments.SubmissionSet getSubmissionSet(String subject, Date sentDate, String auth,
+            Address[] recipients, byte[] xdsDocument, DirectDocumentType documentType) throws Exception {
         DirectDocuments.SubmissionSet submissionSet = new DirectDocuments.SubmissionSet();
 
         // (R) Minimal Metadata Source
@@ -270,7 +265,9 @@ public class DefaultMimeXdsTransformer implements MimeXdsTransformer {
      * typeCode                     R       R2
      * uniqueId                     R       R
      */
-    private DirectDocument2 getDocument(Date sentDate, String auth, String xdsMimeType, FormatCodeEnum xdsFormatCode, byte[] xdsDocument, DirectDocumentType documentType) throws Exception {
+    private DirectDocument2 getDocument(Date sentDate, String auth,
+            String xdsMimeType, FormatCodeEnum xdsFormatCode, byte[] xdsDocument, DirectDocumentType documentType) throws Exception {
+        
         DirectDocument2 document = new DirectDocument2();
         DirectDocument2.Metadata metadata = document.getMetadata();
 

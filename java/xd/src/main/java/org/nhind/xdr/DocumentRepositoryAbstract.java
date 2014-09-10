@@ -69,6 +69,8 @@ import org.nhindirect.xd.transform.impl.DefaultXdsDirectDocumentsTransformer;
 import com.gsihealth.auditclient.AuditMessageGenerator;
 import com.gsihealth.auditclient.type.AuditMethodEnum;
 import org.nhindirect.xd.transform.parse.ParserHL7;
+import org.nhindirect.xd.soap.SafeThreadData;
+
 
 /* 
 Copyright (c) 2010, NHIN Direct Project
@@ -94,22 +96,6 @@ public abstract class DocumentRepositoryAbstract
 {
     @Resource
     protected WebServiceContext context;
-    
-    protected String endpoint = null;
-    protected String messageId = null;
-    protected String relatesTo = null;
-    protected String action = null;
-    protected String to = null;
-    
-    protected String directTo = null;
-    protected String directFrom = null;
-    
-    private String thisHost = null;
-    private String remoteHost = null;
-    private String pid = null;
-    private String from = null;
-    private String suffix = null;
-    private String replyEmail = null;
 
     private static final String PARAM_CONFIG_SERVICE = "configService";
     
@@ -152,13 +138,12 @@ public abstract class DocumentRepositoryAbstract
      * @return a RegistryResponseType object
      * @throws Exception
      */
-    protected RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst) throws Exception 
+    protected RegistryResponseType provideAndRegisterDocumentSet(ProvideAndRegisterDocumentSetRequestType prdst, SafeThreadData threadData) throws Exception 
     {
         RegistryResponseType resp = null;
         
         try 
         {
-            getHeaderData();
             @SuppressWarnings("unused")
             InitialContext ctx = new InitialContext();
 
@@ -167,8 +152,8 @@ public abstract class DocumentRepositoryAbstract
             List<String> forwards = new ArrayList<String>();
                         
             // Get endpoints (first check direct:to header, then go to intendedRecipients)
-            if (StringUtils.isNotBlank(directTo))
-                forwards = Arrays.asList((new URI(directTo).getSchemeSpecificPart()));
+            if (StringUtils.isNotBlank(threadData.getDirectTo()))
+                forwards = Arrays.asList((new URI(threadData.getDirectTo()).getSchemeSpecificPart()));
             else
             {
                 forwards = ParserHL7.parseDirectRecipients(documents);
@@ -179,16 +164,18 @@ public abstract class DocumentRepositoryAbstract
             //we should keep the message id of the original message for a lot of reasons vpl
             
             // TODO patID and subsetId  for atn
-            String patId = messageId;
-            String subsetId = messageId;
-            getAuditMessageGenerator().provideAndRegisterAudit( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+            String patId = threadData.getMessageId();
+            String subsetId = threadData.getMessageId();
+            getAuditMessageGenerator().provideAndRegisterAudit( threadData.getMessageId(), threadData.getRemoteHost(), threadData.getRelatesTo(), threadData.getTo(), 
+                    threadData.getThisHost(), patId, subsetId, threadData.getPid());
 
             // Send to SMTP endpoints
             if (getResolver().hasSmtpEndpoints(forwards)) 
             {
+                String replyEmail;
                 // Get a reply address (first check direct:from header, then go to authorPerson)
-                if (StringUtils.isNotBlank(directFrom))
-                    replyEmail = (new URI(directFrom)).getSchemeSpecificPart();
+                if (StringUtils.isNotBlank(threadData.getDirectFrom()))
+                    replyEmail = (new URI(threadData.getDirectFrom())).getSchemeSpecificPart();
                 else
                 {
                    // replyEmail = documents.getSubmissionSet().getAuthorPerson();
@@ -200,7 +187,7 @@ public abstract class DocumentRepositoryAbstract
                 }
 
                 LOGGER.info("SENDING EMAIL TO " + getResolver().getSmtpEndpoints(forwards) + " with message id "
-                        + messageId);
+                        + threadData.getMessageId());
 
                 // Construct message wrapper
                 DirectMessage message = new DirectMessage(replyEmail, getResolver().getSmtpEndpoints(forwards));
@@ -210,9 +197,10 @@ public abstract class DocumentRepositoryAbstract
 
                 // Send mail
                 MailClient mailClient = getMailClient();
-                String fileName = messageId.replaceAll("urn:uuid:", "");
-                mailClient.mail(message, fileName, suffix);
-                getAuditMessageGenerator().provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+                String fileName = threadData.getMessageId().replaceAll("urn:uuid:", "");
+                mailClient.mail(message, fileName, threadData.getSuffix());
+                getAuditMessageGenerator().provideAndRegisterAuditSource( threadData.getMessageId(), threadData.getRemoteHost(), threadData.getRelatesTo(), 
+                        threadData.getTo(), threadData.getThisHost(), patId, subsetId, threadData.getPid());
             }
 
             // Send to XD endpoints
@@ -222,10 +210,9 @@ public abstract class DocumentRepositoryAbstract
                 
                 String to = StringUtils.remove(endpointUrl, "?wsdl");
 
-                Long threadId = new Long(Thread.currentThread().getId());
-                LOGGER.info("THREAD ID " + threadId);
-                ThreadData threadData = new ThreadData(threadId);
                 threadData.setTo(to);
+                threadData.setDirectTo(to);
+                threadData.save();
 
                 List<Document> docs = prdst.getDocument();
                 
@@ -270,16 +257,18 @@ public abstract class DocumentRepositoryAbstract
                     throw new Exception("Failure Returned from XDR forward:" + error);
                 }
                 
-                getAuditMessageGenerator().provideAndRegisterAuditSource( messageId, remoteHost, endpoint, to, thisHost, patId, subsetId, pid);
+                getAuditMessageGenerator().provideAndRegisterAuditSource( threadData.getMessageId(), threadData.getRemoteHost(), threadData.getRelatesTo(), threadData.getTo(), 
+                        threadData.getThisHost(), patId, subsetId, threadData.getPid());
             }
 
-            resp = getRepositoryProvideResponse(messageId);
+            resp = getRepositoryProvideResponse(threadData.getMessageId());
 
-            relatesTo = messageId;
-            action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-            to = endpoint;
+            String relatesTo = threadData.getRelatesTo();
+            threadData.setRelatesTo( threadData.getMessageId() );
+            threadData.setAction( "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse" );
+            threadData.setTo(null);
+            threadData.save();
 
-            setHeaderData();
         } 
         catch (Exception e) 
         {
@@ -489,49 +478,5 @@ public abstract class DocumentRepositoryAbstract
         this.resolver = resolver;
     }
 
-    /**
-     * Extract header values from a ThreadData object.
-     */
-    protected void getHeaderData() {
-        Long threadId = new Long(Thread.currentThread().getId());
-        LOGGER.info("DTHREAD ID " + threadId);
-
-        ThreadData threadData = new ThreadData(threadId);
-        this.endpoint = threadData.getReplyAddress();
-        this.messageId = threadData.getMessageId();
-        this.to = threadData.getTo();
-        this.thisHost = threadData.getThisHost();
-        this.remoteHost = threadData.getRemoteHost();
-        this.pid = threadData.getPid();
-        this.action = threadData.getAction();
-        this.from = threadData.getFrom();
-        
-        this.directTo = threadData.getDirectTo();
-        this.directFrom = threadData.getDirectFrom();
-
-        LOGGER.info(threadData.toString());
-    }
-
-    /**
-     * Build a ThreadData object with header information.
-     */
-    protected void setHeaderData() {
-        Long threadId = new Long(Thread.currentThread().getId());
-        LOGGER.info("THREAD ID " + threadId);
-
-        ThreadData threadData = new ThreadData(threadId);
-        threadData.setTo(this.to);
-        threadData.setMessageId(this.messageId);
-        threadData.setRelatesTo(this.relatesTo);
-        threadData.setAction(this.action);
-        threadData.setThisHost(this.thisHost);
-        threadData.setRemoteHost(this.remoteHost);
-        threadData.setPid(this.pid);
-        threadData.setFrom(this.from);
-        
-        threadData.setDirectTo(this.directTo);
-        threadData.setDirectFrom(this.directFrom);
-
-        LOGGER.info(threadData.toString());
-    }
 }
+

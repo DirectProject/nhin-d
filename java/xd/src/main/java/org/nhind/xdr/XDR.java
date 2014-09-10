@@ -33,7 +33,7 @@ import javax.xml.ws.soap.SOAPBinding;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryError;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryErrorList;
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
-
+import org.nhindirect.xd.soap.SafeThreadData;
 
 /**
  *
@@ -55,15 +55,21 @@ public class XDR extends DocumentRepositoryAbstract{
      */
     public RegistryResponseType documentRepositoryProvideAndRegisterDocumentSetB(ProvideAndRegisterDocumentSetRequestType body) {
       RegistryResponseType resp = null;
+      /**
+       * Get thread data
+       */
+      Long threadID = Thread.currentThread().getId();
+      SafeThreadData threadData = SafeThreadData.GetThreadInstance(threadID);
         try {
-            resp = provideAndRegisterDocumentSet(body);
+            resp = provideAndRegisterDocumentSet(body, threadData);
         } catch (Exception x) {
 
-            relatesTo = messageId;
-            action = "urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse";
-            messageId = UUID.randomUUID().toString();
-            to = endpoint;
-            setHeaderData();
+            threadData.setRelatesTo(threadData.getMessageId());
+            threadData.setAction("urn:ihe:iti:2007:ProvideAndRegisterDocumentSet-bResponse");
+            threadData.setMessageId(UUID.randomUUID().toString());
+            threadData.setTo(threadData.getEndpoint());
+            threadData.save();
+            
             resp = new RegistryResponseType();
             resp.setStatus("urn:oasis:names:tc:ebxml-regrep:ResponseStatusType:Failure");
             RegistryErrorList rel = new RegistryErrorList();
@@ -74,7 +80,12 @@ public class XDR extends DocumentRepositoryAbstract{
             rel.setHighestSeverity(error);
             List<RegistryError> rl = rel.getRegistryError();
             RegistryError re = new RegistryError();
-            String[] mess = error.split(" ");
+            String[] mess;
+            if (error.contains(":"))
+                mess = error.split(":");
+            else
+                mess = error.split(" ");
+            
             String errorCode = mess[0];
             re.setErrorCode(errorCode);
             re.setSeverity("Error");
@@ -99,3 +110,4 @@ public class XDR extends DocumentRepositoryAbstract{
     }
 
 }
+
