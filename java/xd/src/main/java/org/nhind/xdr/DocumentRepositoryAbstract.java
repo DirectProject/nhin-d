@@ -388,19 +388,14 @@ public abstract class DocumentRepositoryAbstract
     
     private MailClient getMailClient()
     {
-        if (mailClient == null)
-        {
-            if(config==null){
-                config = getConfig();
-            }
-            String hostname = config.getMailHost();
-            String username = config.getMailUser();
-            String password = config.getMailPass();
-
-            mailClient = new SmtpMailClient(hostname, username, password);
+        if(config==null){
+            config = getConfig();
         }
+        String hostname = config.getMailHost();
+        String username = config.getMailUser();
+        String password = config.getMailPass();
 
-        return mailClient;
+        return new SmtpMailClient(hostname, username, password);
     }
     
     /**
@@ -479,4 +474,5 @@ public abstract class DocumentRepositoryAbstract
     }
 
 }
+
 
