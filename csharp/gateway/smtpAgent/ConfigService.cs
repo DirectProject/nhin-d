@@ -104,17 +104,26 @@ namespace Health.Direct.SmtpAgent
             return m_settings.AddressManager.CreateAddressManagerClient();
         }
 
+        private bool? _enabledDomainSearch;
+
         private bool AddressDomainSearchEnabled(ClientSettings addressManager)
         {
+            if (_enabledDomainSearch.HasValue)
+            {
+                return _enabledDomainSearch.Value;
+            }
             if (addressManager.HasSettings)
             {
                 using (XmlNodeReader reader = new XmlNodeReader(addressManager.Settings))
                 {
                     XmlSerializer serializer = new XmlSerializer(typeof(AddressManagerSettings), new XmlRootAttribute(addressManager.Settings.LocalName));
                     AddressManagerSettings addressManagerSettings = (AddressManagerSettings)serializer.Deserialize(reader);
-                    return addressManagerSettings.EnableDomainSearch;
+                    _enabledDomainSearch = addressManagerSettings.EnableDomainSearch;
+
+                    return _enabledDomainSearch.Value;
                 }
             }
+
             return false;
         }
     }
