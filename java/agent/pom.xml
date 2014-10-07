@@ -58,7 +58,7 @@
 		<dependency>
 		  <groupId>org.nhind</groupId>
 		  <artifactId>direct-common</artifactId>
-		  <version>1.3-SNAPSHOT</version>
+		  <version>1.3</version>
 			<exclusions>
 				<exclusion>
 					<groupId>bouncycastle</groupId>
