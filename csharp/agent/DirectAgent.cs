@@ -159,6 +159,7 @@ namespace Health.Direct.Agent
         /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
+        /// <param name="polciyFilter"></param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors
             , ICertPolicyResolvers certPolicyResolvers, IPolicyFilter polciyFilter)
             : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers, polciyFilter)

@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using Health.Direct.Policy;
+
 namespace Health.Direct.Common.Policies
 {
     /// <summary>

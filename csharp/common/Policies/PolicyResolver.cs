@@ -54,9 +54,9 @@ namespace Health.Direct.Common.Policies
             }
         }
 
-        //TODO: Don't like this.  Caching is not efficient and the comment about CertPolicyUse is not enforced in the interface. And more...
+        //TODO: Don't like this.  Caching is not efficient 
         /// <summary>
-        /// Resolve policy by usage outgoing and <see cref="Health.Direct.Config.Store.CertPolicyUse"/>
+        /// Resolve outgoing cert policy 
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>
@@ -66,7 +66,7 @@ namespace Health.Direct.Common.Policies
         }
 
         /// <summary>
-        /// Resolve policy by usage incoming and <see cref="Health.Direct.Config.Store.CertPolicyUse"/>
+        /// Resolve incoming cert policy
         /// </summary>
         /// <param name="address"></param>
         /// <returns></returns>

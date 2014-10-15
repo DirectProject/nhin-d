@@ -84,6 +84,7 @@ call :PrintHeading Copying BINS to "%dest%"
 call :CopyFiles Health.Direct.Common.dll ^
   Health.Direct.Agent.dll ^
   Health.Direct.SmtpAgent.dll ^
+  Health.Direct.Policy.dll ^
   Interop.ADODB.dll ^
   Interop.CDO.dll ^
   %platform_dir%\smtpEventHandler.dll ^
