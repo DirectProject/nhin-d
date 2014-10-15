@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Health.Direct.Agent;
@@ -47,6 +48,11 @@ namespace Health.Direct.SmtpAgent.Tests
         public TestAuditor()
         {
             CleanAuditEventTable();
+
+            string programData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), @"DirectProject\auditors");
+            string myDataPath = Path.Combine(programData, "DatabaseAuditorSettings.xml");
+            Directory.CreateDirectory(programData);
+            File.Copy("DatabaseAuditorSettings.xml", myDataPath, true);
         }
 
         [Fact]
@@ -211,10 +217,13 @@ namespace Health.Direct.SmtpAgent.Tests
             localAuditComponent.Service = "Health.Direct.SmtpAgent.Diagnostics.IAuditor`1[[Health.Direct.SmtpAgent.Diagnostics.IBuildAuditLogMessage, Health.Direct.SmtpAgent]], Health.Direct.SmtpAgent";
             localAuditComponent.Type = "Health.Direct.DatabaseAuditor.Auditor`1[[Health.Direct.DatabaseAuditor.FullAuditMessageBuilder, Health.Direct.DatabaseAuditor]], Health.Direct.DatabaseAuditor";
             components[0] = localAuditComponent;
-
+            
             settings.Container.Components = components;
             m_agent = SmtpAgentFactory.Create(settings);
-            Assert.True(IoC.Resolve<IAuditor<IBuildAuditLogMessage>>() is DatabaseAuditor.Auditor<FullAuditMessageBuilder>);
+
+            
+            var auditor = IoC.Resolve<IAuditor<IBuildAuditLogMessage>>();
+            Assert.True(auditor is DatabaseAuditor.Auditor<FullAuditMessageBuilder>);
 
             Assert.Equal(0, AuditEventCount);
             m_agent.Settings.InternalMessage.EnableRelay = true;
