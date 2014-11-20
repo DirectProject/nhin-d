@@ -1,0 +1,2 @@
+The war file that gets generated contains two versions of cglib.  In order to get this to work, cglib-n.n.n needs to be 
+removed from the /lib directory, leaving only cglib-nodep.x.x.x.

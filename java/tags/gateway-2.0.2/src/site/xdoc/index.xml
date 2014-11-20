@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+    <properties>
+        <title>The Direct Project: Gateway</title>
+        <author>Greg Meyer</author>
+    </properties>
+    <head>
+       <title>The Direct Project: Gateway</title>
+    </head>    
+    <body>
+        <section name="Overview">
+            <p>
+               The NHIN Direct Gateway module consists of protocol bridges between the NHIN Direct backbone protocol 
+               and security and trust agent.  Bridges integrate with the protocol implementation using implementation 
+               specific configuration methods.  Take, for example, the Apache James SMTP implementation.  The gateway
+               module provides a James bridge in the form of a James mailet called NHINDSecurityAndTrustMailet.  The 
+               mailet is configured using the Apache James config.xml file which is part of a standard James deployment.
+            </p>
+            <p>
+               Bridges communicate with a common protocol agent that performs protocol specific logic before delegating
+               the message to the security and trust protocol.  Protocol agents consume configuration information in the form
+               of a URL which references the configuration data.  Generally the configuration URL is part of the bridge
+               deployment configuration.  
+            </p>
+            <p>
+               For more detail on developing, deploying, and configuring protocol bridges, refer to the 
+               <a href="users-guide/index.html">users guide.</a>           
+            </p>
+        </section>
+    </body>
+</document>

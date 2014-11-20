@@ -1,0 +1,2169 @@
+﻿<ClinicalDocument xsi:schemaLocation=3D"urn:hl7-org:v3 =
+http://xreg2.nist.gov:8080/hitspValidation/schema/cdar2c32/infrastructure=
+/cda/C32_CDA.xsd" xmlns=3D"urn:hl7-org:v3" =
+xmlns:voc=3D"urn:hl7-org:v3/voc" =
+xmlns:xsi=3D"http://www.w3.org/2001/XMLSchema-instance">
+  <typeId root=3D"2.16.840.1.113883.1.3" extension=3D"POCD_HD000040" />
+  <templateId root=3D"2.16.840.1.113883.10.20.1" />
+  <templateId root=3D"2.16.840.1.113883.3.88.11.32.1" />
+  <id root=3D"6858a017-39c1-4153-bbd4-eaedac72a0e7" />
+  <code code=3D"34133-9" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Summarization of episode note" />
+  <title>Personal Physicians HealthCare Continuity of Care =
+Document</title>
+  <effectiveTime value=3D"20071103070000+0500" />
+  <confidentialityCode code=3D"N" codeSystem=3D"2.16.840.1.113883.5.25" =
+/>
+  <languageCode code=3D"en-US" />
+  <recordTarget>
+    <patientRole>
+      <id extension=3D"598-0478001" =
+root=3D"2.16.840.1.113883.4.6.1942405782" />
+      <addr use=3D"H">
+        <streetAddressLine>11 Alden Road</streetAddressLine>
+        <city>Wellesley</city>
+        <state>MA</state>
+        <postalCode>02481</postalCode>
+      </addr>
+      <telecom value=3D"tel:+1-781-239-9771" use=3D"H" />
+      <telecom value=3D"tel:+1-617-754-8002" use=3D"WP" />
+      <telecom value=3D"fax:+1-617-306-9886" use=3D"WP" />
+      <telecom value=3D"mailto://jhalamka@caregroup.harvard.edu" =
+use=3D"WP" />
+      <patient>
+        <name>
+          <given>John</given>
+          <given>D</given>
+          <family>Halamka</family>
+          <suffix>MD</suffix>
+        </name>
+        <administrativeGenderCode code=3D"M" =
+codeSystem=3D"2.16.840.1.113883.5.1" />
+        <birthTime value=3D"19620523" />
+        <raceCode code=3D"101" codeSystem=3D"2.16.840.1.113883.6.238" =
+displayName=3D"White" />
+        <languageCommunication>
+          <languageCode code=3D"en-US" />
+        </languageCommunication>
+      </patient>
+      <providerOrganization>
+        <id root=3D"2.16.840.1.113883.4.6.1942405782" />
+        <name>Personal Physicians HealthCare</name>
+      </providerOrganization>
+    </patientRole>
+  </recordTarget>
+  <author>
+    <time value=3D"20071103070000+0500" />
+    <assignedAuthor>
+      <id root=3D"2.16.840.1.113883.4.6.1013905751" />
+      <assignedPerson>
+        <name>
+          <prefix>Dr.</prefix>
+          <given>Steven</given>
+          <family>Flier</family>
+        </name>
+      </assignedPerson>
+      <representedOrganization>
+        <id root=3D"2.16.840.1.113883.4.6.1942405782" />
+        <name>Personal Physicians HealthCare</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <informant>
+    <assignedEntity>
+      <id extension=3D"598-0478001" =
+root=3D"2.16.840.1.113883.4.6.1942405782" />
+      <representedOrganization>
+        <id root=3D"2.16.840.1.113883.4.6.1942405782" />
+        <name>Personal Physicians HealthCare</name>
+      </representedOrganization>
+    </assignedEntity>
+  </informant>
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <id root=3D"2.16.840.1.113883.4.6.1942405782" />
+        <name>Personal Physicians HealthCare</name>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+  <legalAuthenticator>
+    <time value=3D"20071103070000+0500" />
+    <signatureCode code=3D"S" />
+    <assignedEntity>
+      <id nullFlavor=3D"NI" />
+      <representedOrganization>
+        <id root=3D"2.16.840.1.113883.4.6.1942405782" />
+        <name>Personal Physicians HealthCare</name>
+      </representedOrganization>
+    </assignedEntity>
+  </legalAuthenticator>
+  <documentationOf>
+    <serviceEvent classCode=3D"PCPR">
+      <effectiveTime>
+        <low value=3D"2002" />
+        <high value=3D"20071103" />
+      </effectiveTime>
+      <performer typeCode=3D"PRF">
+        <functionCode code=3D"PP" =
+codeSystem=3D"2.16.840.1.113883.12.443" displayName=3D"Primary Care =
+Provider" />
+        <time>
+          <low value=3D"2001" />
+        </time>
+        <assignedEntity>
+          <id root=3D"2.16.840.1.113883.4.6.1013905751" />
+          <assignedPerson>
+            <name>
+              <prefix>Dr.</prefix>
+              <given>Steven</given>
+              <given>R</given>
+              <family>Flier</family>
+            </name>
+          </assignedPerson>
+          <representedOrganization>
+            <id root=3D"2.16.840.1.113883.4.6.1942405782" />
+            <name>Personal Physicians HealthCare</name>
+          </representedOrganization>
+        </assignedEntity>
+      </performer>
+    </serviceEvent>
+  </documentationOf>
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.13" />
+          <code code=3D"48764-5" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Summary Purpose</title>
+          <text>Patient requested</text>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.30" />
+              <code code=3D"23745001" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Documentation =
+procedure" />
+              <statusCode code=3D"completed" />
+              <entryRelationship typeCode=3D"RSON">
+                <act classCode=3D"ACT" moodCode=3D"EVN">
+                  <code code=3D"183995001" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Patient requested" =
+/>
+                  <statusCode code=3D"completed" />
+                </act>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.9" />
+          <code code=3D"48768-6" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Payers</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Payer name</th>
+                  <th>Policy type</th>
+                  <th>Covered party ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Harvard Pilgrim Health Plan</td>
+                  <td>Care Group Preferred</td>
+                  <td>HPCG02815-00</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"DEF">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.20" />
+              <id extension=3D"HPCG02815-00" =
+root=3D"2.16.840.1.113883.19" />
+              <code code=3D"48768-6" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Payment sources" />
+              <statusCode code=3D"completed" />
+              <entryRelationship typeCode=3D"COMP">
+                <act classCode=3D"ACT" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.26" />
+                  <id extension=3D"HPCG02815-00" =
+root=3D"2.16.840.1.113883.19" />
+                  <code code=3D"CGP" codeSystem=3D"2.16.840.1.113883.19" =
+displayName=3D"Care Group Preferred" />
+                  <statusCode code=3D"completed" />
+                  <performer typeCode=3D"PRF">
+                    <assignedEntity>
+                      <id nullFlavor=3D"NI" />
+                      <code code=3D"PAYOR" =
+codeSystem=3D"2.16.840.1.113883.5.110" />
+                      <representedOrganization>
+                        <id root=3D"2.16.840.1.113883.19" />
+                        <name>Harvard Pilgrim Health Plan</name>
+                      </representedOrganization>
+                    </assignedEntity>
+                  </performer>
+                  <participant typeCode=3D"COV">
+                    <participantRole>
+                      <id extension=3D"HPCG02815-00" =
+root=3D"2.16.840.1.113883.19" />
+                      <code code=3D"SELF" =
+codeSystem=3D"2.16.840.1.113883.5.111" displayName=3D"Self" />
+                    </participantRole>
+                  </participant>
+                </act>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.1" />
+          <code code=3D"42348-3" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Advance Directives</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Directive</th>
+                  <th>Description</th>
+                  <th>Verification</th>
+                  <th>Supporting Document(s)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>No advance directives</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.5" />
+          <code code=3D"47420-5" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Functional Status</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Functional Condition</th>
+                  <th>Effective Dates</th>
+                  <th>Condition Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>No functional status limitations</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.11" />
+          <code code=3D"11450-4" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Problems</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Condition</th>
+                  <th>Condition Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td ID=3D"prob1">AV Nodal Reentry Tachycardia</td>
+                  <td>Resolved</td>
+                </tr>
+                <tr>
+                  <td ID=3D"prob2">Lyme Disease</td>
+                  <td>Resolved</td>
+                </tr>
+                <tr>
+                  <td ID=3D"prob3">Low HDL Cholesterol</td>
+                  <td>Resolved</td>
+                </tr>
+                <tr>
+                  <td ID=3D"prob4">Corneal Abrasion</td>
+                  <td>Resolved</td>
+                </tr>
+                <tr>
+                  <td ID=3D"prob5">Vegan</td>
+                  <td>Active</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.27" />
+              <id root=3D"ec8a6ff8-ed4b-4f7e-82c3-e98e58b45de7" />
+              <code nullFlavor=3D"NA" />
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.28" />
+                  <id root=3D"ab1791b0-5c71-11db-b0de-0800200c9a66" />
+                  <code code=3D"55607006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Problem" />
+                  <text>
+                    <reference value=3D"#prob1" />
+                  </text>
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"CD" code=3D"251166008" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"AV Nodal Reentry =
+Tachycardia" />
+                  <entryRelationship typeCode=3D"REFR">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.50" =
+/>
+                      <code code=3D"33999-4" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Status" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CE" code=3D"413322009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Resolved" />
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.27" />
+              <id root=3D"13e06a12-3f43-4256-802f-758ee2c8d6c8" />
+              <code nullFlavor=3D"NA" />
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.28" />
+                  <id root=3D"2c621374-333c-4c95-bdd6-1b811d849e9f" />
+                  <code code=3D"55607006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Problem" />
+                  <text>
+                    <reference value=3D"#prob2" />
+                  </text>
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"CD" code=3D"23502006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Lyme disease" />
+                  <entryRelationship typeCode=3D"REFR">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.50" =
+/>
+                      <code code=3D"33999-4" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Status" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CE" code=3D"413322009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Resolved" />
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.27" />
+              <id root=3D"e5a3e639-6e89-4e81-9dc2-8590d8be656c" />
+              <code nullFlavor=3D"NA" />
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.28" />
+                  <id root=3D"7ba66903-a054-4efb-8b65-7e1ac549376e" />
+                  <code code=3D"55607006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Problem" />
+                  <text>
+                    <reference value=3D"#prob3" />
+                  </text>
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"CD" code=3D"365793008" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Low HDL =
+Cholesterol">
+                    <qualifier>
+                      <name code=3D"363714003" =
+displayName=3D"interprets" />
+                      <value code=3D"17888004" displayName=3D"HDL =
+measurement" />
+                    </qualifier>
+                    <qualifier>
+                      <name code=3D"363713009" displayName=3D"has =
+interpretation" />
+                      <value code=3D"394843001" displayName=3D"below low =
+reference limit" />
+                    </qualifier>
+                  </value>
+                  <entryRelationship typeCode=3D"REFR">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.50" =
+/>
+                      <code code=3D"33999-4" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Status" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CE" code=3D"413322009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Resolved" />
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.27" />
+              <id root=3D"890d2c6e-5b2a-41bb-bc7e-b710d1fc9028" />
+              <code nullFlavor=3D"NA" />
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.28" />
+                  <id root=3D"574c483c-48fa-4db8-8920-cb749ef6ed66" />
+                  <code code=3D"55607006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Problem" />
+                  <text>
+                    <reference value=3D"#prob4" />
+                  </text>
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"CD" code=3D"85848002" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Corneal abrasion" =
+/>
+                  <entryRelationship typeCode=3D"REFR">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.50" =
+/>
+                      <code code=3D"33999-4" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Status" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CE" code=3D"413322009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Resolved" />
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.27" />
+              <id root=3D"6a2fa88d-4174-4909-aece-db44b60a3abb" />
+              <code nullFlavor=3D"NA" />
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.28" />
+                  <id root=3D"d11275e7-67ae-11db-bd13-0800200c9a66" />
+                  <code code=3D"55607006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Problem" />
+                  <text>
+                    <reference value=3D"#prob5" />
+                  </text>
+                  <statusCode code=3D"completed" />
+                  <effectiveTime>
+                    <low value=3D"1950" />
+                  </effectiveTime>
+                  <value xsi:type=3D"CD" code=3D"24930006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Vegan" />
+                  <entryRelationship typeCode=3D"REFR">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.50" =
+/>
+                      <code code=3D"33999-4" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Status" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CE" code=3D"55561003" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Active" />
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.4" />
+          <code code=3D"10157-6" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Family history</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Family member</th>
+                  <th>medical history</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Grandmother</td>
+                  <td>survived into her 90s</td>
+                </tr>
+                <tr>
+                  <td>Grandfather</td>
+                  <td>survived into his 90s</td>
+                </tr>
+                <tr>
+                  <td>Mother</td>
+                  <td>celiac disease</td>
+                </tr>
+                <tr>
+                  <td>Father</td>
+                  <td>multiple sclerosis</td>
+                </tr>
+                <tr>
+                  <td>Family</td>
+                  <td>no colorectal cancer, prostate cancer, diabetes, =
+hypertension</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.22" />
+              <id root=3D"32b95c7a-9855-11dc-8314-0800200c9a66" />
+              <code code=3D"ASSERTION" =
+codeSystem=3D"2.16.840.1.113883.5.4" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">survived into her 90s</value>
+              <subject>
+                <relatedSubject classCode=3D"PRS">
+                  <code code=3D"17945006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Biological =
+grandmother" />
+                </relatedSubject>
+              </subject>
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.22" />
+              <id root=3D"32b95c7b-9855-11dc-8314-0800200c9a66" />
+              <code code=3D"ASSERTION" =
+codeSystem=3D"2.16.840.1.113883.5.4" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">survived into his 90s</value>
+              <subject>
+                <relatedSubject classCode=3D"PRS">
+                  <code code=3D"62296006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Biological =
+grandfather" />
+                </relatedSubject>
+              </subject>
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.22" />
+              <id root=3D"2ba3ee87-41f1-49cf-89ed-a9370955eacc" />
+              <code code=3D"ASSERTION" =
+codeSystem=3D"2.16.840.1.113883.5.4" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">celiac disease</value>
+              <subject>
+                <relatedSubject classCode=3D"PRS">
+                  <code code=3D"9947008" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Biological father" =
+/>
+                </relatedSubject>
+              </subject>
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.22" />
+              <id root=3D"8dc4348c-cc60-47ad-aad3-b8f5760d30ea" />
+              <code code=3D"ASSERTION" =
+codeSystem=3D"2.16.840.1.113883.5.4" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">multiple sclerosis</value>
+              <subject>
+                <relatedSubject classCode=3D"PRS">
+                  <code code=3D"65656005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Biological mother" =
+/>
+                </relatedSubject>
+              </subject>
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.22" />
+              <id root=3D"a13c6160-5c8b-11db-b0de-0800200c9a66" />
+              <code code=3D"ASSERTION" =
+codeSystem=3D"2.16.840.1.113883.5.4" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">no colorectal cancer, prostate =
+cancer, diabetes, hypertension</value>
+              <subject>
+                <relatedSubject classCode=3D"PRS">
+                  <code code=3D"125679009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Biological =
+relative" />
+                </relatedSubject>
+              </subject>
+            </observation>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.15" />
+          <code code=3D"29762-2" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Social History</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Social History Element</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tobacco use</td>
+                  <td>never</td>
+                </tr>
+                <tr>
+                  <td>Passive smoke exposure</td>
+                  <td>no</td>
+                </tr>
+                <tr>
+                  <td>Alcohol use</td>
+                  <td>no</td>
+                </tr>
+                <tr>
+                  <td>Caffeine use (drinks/day)</td>
+                  <td>&lt;1</td>
+                </tr>
+                <tr>
+                  <td>Exercise (hours/week)</td>
+                  <td>10-20</td>
+                </tr>
+                <tr>
+                  <td>Sun exposure</td>
+                  <td>rarely</td>
+                </tr>
+                <tr>
+                  <td>Dietary restrictions</td>
+                  <td>vegan</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"c19a230b-c32b-48d1-9dec-e2368efb0261" />
+              <code code=3D"229819007" =
+codeSystem=3D"2.16.840.1.113883.6.96" codeSystemName=3D"SNOMED CT" =
+displayName=3D"Tobacco use" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">never</value>
+            </observation>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"3b5e0ca5-9167-439d-be27-c725cf92382b" />
+              <code codeSystem=3D"2.16.840.1.113883.6.96" =
+codeSystemName=3D"SNOMED CT" nullFlavor=3D"OTH">
+                <originalText>Passive smoke exposure</originalText>
+              </code>
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">no</value>
+            </observation>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"3bba7660-1e51-4c5a-a185-68a9eb27d633" />
+              <code code=3D"160573003" =
+codeSystem=3D"2.16.840.1.113883.6.96" codeSystemName=3D"SNOMED CT" =
+displayName=3D"Alcohol use" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">no</value>
+            </observation>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"3e061cc3-7b6e-43ed-81d9-684a12bd8742" />
+              <code codeSystem=3D"2.16.840.1.113883.6.96" =
+codeSystemName=3D"SNOMED CT" nullFlavor=3D"OTH">
+                <originalText>Caffeine use (drinks/day)</originalText>
+              </code>
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">&lt;1</value>
+            </observation>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"8324017c-a54d-43d6-a72f-32873d7dd85e" />
+              <code code=3D"228449008" =
+codeSystem=3D"2.16.840.1.113883.6.96" codeSystemName=3D"SNOMED CT" =
+displayName=3D"Exercise frequency (hours/week)" />
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">10-20</value>
+            </observation>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"e2f7289c-457b-48e2-9062-931726d57454" />
+              <code codeSystem=3D"2.16.840.1.113883.6.96" =
+codeSystemName=3D"SNOMED CT" nullFlavor=3D"OTH">
+                <originalText>Sun exposure</originalText>
+              </code>
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">rarely</value>
+            </observation>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.33" />
+              <id root=3D"37f76c51-6411-4e1d-8a37-957fd49d2cef" />
+              <code codeSystem=3D"2.16.840.1.113883.6.96" =
+codeSystemName=3D"SNOMED CT" nullFlavor=3D"OTH">
+                <originalText>Dietary restrictions</originalText>
+              </code>
+              <statusCode code=3D"completed" />
+              <value xsi:type=3D"ST">vegan</value>
+            </observation>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.2" />
+          <code code=3D"48765-2" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Allergies, Adverse Reactions, Alerts</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Substance</th>
+                  <th>Reaction</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Amoxicillin</td>
+                  <td>Rash</td>
+                  <td>Active</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <act classCode=3D"ACT" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.27" />
+              <id root=3D"36e3e930-7b14-11db-9fe1-0800200c9a66" />
+              <code nullFlavor=3D"NA" />
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.18" />
+                  <id root=3D"4adc1020-7b14-11db-9fe1-0800200c9a66" />
+                  <code code=3D"416098002" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Drug allergy" />
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"CD" code=3D"282100009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Adverse reaction to =
+substance" />
+                  <participant typeCode=3D"CSM">
+                    <participantRole classCode=3D"MANU">
+                      <playingEntity classCode=3D"MMAT">
+                        <code code=3D"372687004" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Amoxicillin" />
+                        <name>Amoxicillin</name>
+                      </playingEntity>
+                    </participantRole>
+                  </participant>
+                  <entryRelationship typeCode=3D"MFST" =
+inversionInd=3D"true">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.54" =
+/>
+                      <code code=3D"ASSERTION" =
+codeSystem=3D"2.16.840.1.113883.5.4" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CD" code=3D"271807003" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Rash" />
+                    </observation>
+                  </entryRelationship>
+                  <entryRelationship typeCode=3D"REFR">
+                    <observation classCode=3D"OBS" moodCode=3D"EVN">
+                      <templateId root=3D"2.16.840.1.113883.10.20.1.39" =
+/>
+                      <code code=3D"33999-4" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Status" />
+                      <statusCode code=3D"completed" />
+                      <value xsi:type=3D"CE" code=3D"55561003" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Active" />
+                    </observation>
+                  </entryRelationship>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.8" />
+          <code code=3D"10160-0" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Medications</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Medication</th>
+                  <th>Instructions</th>
+                  <th>Start Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Centrum silver tab (multiple =
+vitamins-minerals)</td>
+                  <td>1 PO qDay</td>
+                  <td>=C2=A0</td>
+                  <td>Active</td>
+                </tr>
+                <tr>
+                  <td>Vitamin D3 (cholecalciferol)</td>
+                  <td>1600 units PO qDay</td>
+                  <td>Oct 2007</td>
+                  <td>Active</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"cdbd5b05-6cde-11db-9fe1-0800200c9a66" />
+              <statusCode code=3D"active" />
+              <effectiveTime xsi:type=3D"IVL_TS" nullFlavor=3D"UNK" />
+              <effectiveTime xsi:type=3D"PIVL_TS" =
+institutionSpecified=3D"true" operator=3D"A">
+                <period value=3D"24" unit=3D"h" />
+              </effectiveTime>
+              <routeCode code=3D"C38288" =
+codeSystem=3D"2.16.840.1.113883.3.26.1.1" =
+codeSystemName=3D"RouteOfAdministration" displayName=3D"Oral" />
+              <doseQuantity value=3D"1" />
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"311810" =
+codeSystem=3D"2.16.840.1.113883.6.88" displayName=3D"Multivitamin oral =
+tablet">
+                      <originalText>Multivitamin</originalText>
+                    </code>
+                    <name>Centrum silver tab (multiple =
+vitamins-minerals)</name>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"a2738a02-006c-4812-a14d-87a6421ccc24" />
+              <statusCode code=3D"active" />
+              <effectiveTime xsi:type=3D"IVL_TS">
+                <low value=3D"200710" />
+              </effectiveTime>
+              <effectiveTime xsi:type=3D"PIVL_TS" =
+institutionSpecified=3D"true" operator=3D"A">
+                <period value=3D"24" unit=3D"h" />
+              </effectiveTime>
+              <routeCode code=3D"C38288" =
+codeSystem=3D"2.16.840.1.113883.3.26.1.1" =
+codeSystemName=3D"RouteOfAdministration" displayName=3D"Oral" />
+              <doseQuantity value=3D"1600" />
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"371481" =
+codeSystem=3D"2.16.840.1.113883.6.88" displayName=3D"Cholecalciferol =
+Oral Tablet">
+                      <originalText>Cholecalciferol</originalText>
+                    </code>
+                    <name>Vitamin D3 (cholecalciferol)</name>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.7" />
+          <code code=3D"46264-8" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Medical Equipment</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Supply/Device</th>
+                  <th>Date Supplied</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>No medical equipment</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.6" />
+          <code code=3D"11369-6" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Immunizations</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Vaccine</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Hepatitis A vaccine #1</td>
+                  <td>Sep 03, 2004</td>
+                  <td>Completed</td>
+                </tr>
+                <tr>
+                  <td>Hepatitis A vaccine #2</td>
+                  <td>Mar 01, 2005</td>
+                  <td>Completed</td>
+                </tr>
+                <tr>
+                  <td>Tetanus vaccine</td>
+                  <td>Jun 20, 2003</td>
+                  <td>Completed</td>
+                </tr>
+                <tr>
+                  <td>Pneumovax</td>
+                  <td>Sep 03, 2004</td>
+                  <td>Completed</td>
+                </tr>
+                <tr>
+                  <td>Influenza</td>
+                  <td>Oct 19, 2006</td>
+                  <td>Completed</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN" negationInd=3D"false">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"41755f58-d7c0-4aab-9f7c-a3a5d8df4581" />
+              <statusCode code=3D"completed" />
+              <effectiveTime xsi:type=3D"IVL_TS">
+                <center value=3D"20040903" />
+              </effectiveTime>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"52" =
+codeSystem=3D"2.16.840.1.113883.6.59" displayName=3D"Hepatitis A =
+vaccine">
+                      <originalText>Hepatitis A vaccine</originalText>
+                    </code>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <code code=3D"30973-2" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Dose number" />
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"INT" value=3D"1" />
+                </observation>
+              </entryRelationship>
+            </substanceAdministration>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN" negationInd=3D"false">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"115f0f70-1343-4938-b62f-631de9749a0a" />
+              <statusCode code=3D"completed" />
+              <effectiveTime xsi:type=3D"IVL_TS">
+                <center value=3D"20050301" />
+              </effectiveTime>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"52" =
+codeSystem=3D"2.16.840.1.113883.6.59" displayName=3D"Hepatitis A =
+vaccine">
+                      <originalText>Hepatitis A vaccine</originalText>
+                    </code>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+              <entryRelationship typeCode=3D"SUBJ">
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <code code=3D"30973-2" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Dose number" />
+                  <statusCode code=3D"completed" />
+                  <value xsi:type=3D"INT" value=3D"2" />
+                </observation>
+              </entryRelationship>
+            </substanceAdministration>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN" negationInd=3D"false">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"261e94a0-95fb-4975-b5a5-c8e12c01c1bc" />
+              <statusCode code=3D"completed" />
+              <effectiveTime xsi:type=3D"IVL_TS">
+                <center value=3D"20030620" />
+              </effectiveTime>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"112" =
+codeSystem=3D"2.16.840.1.113883.6.59" displayName=3D"Tetanus toxoid">
+                      <originalText>Tetanus toxoid</originalText>
+                    </code>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN" negationInd=3D"false">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"78598407-9f16-42d5-8ffd-09281a60fe33" />
+              <statusCode code=3D"completed" />
+              <effectiveTime xsi:type=3D"IVL_TS">
+                <center value=3D"20040903" />
+              </effectiveTime>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"33" =
+codeSystem=3D"2.16.840.1.113883.6.59" displayName=3D"Pneumococcal =
+polysaccharide vaccine">
+                      <originalText>Pneumococcal polysaccharide =
+vaccine</originalText>
+                    </code>
+                    <name>Pneumovax</name>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <substanceAdministration classCode=3D"SBADM" =
+moodCode=3D"EVN" negationInd=3D"false">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.24" />
+              <id root=3D"e6f1ba43-c0ed-4b9b-9f12-f435d8ad8f92" />
+              <statusCode code=3D"completed" />
+              <effectiveTime xsi:type=3D"IVL_TS">
+                <center value=3D"20061019" />
+              </effectiveTime>
+              <consumable>
+                <manufacturedProduct>
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.53" />
+                  <manufacturedMaterial>
+                    <code code=3D"88" =
+codeSystem=3D"2.16.840.1.113883.6.59" displayName=3D"Influenza virus =
+vaccine">
+                      <originalText>Influenza virus =
+vaccine</originalText>
+                    </code>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+            </substanceAdministration>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.16" />
+          <code code=3D"8716-3" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Vital Signs</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th align=3D"right">Date / Time: </th>
+                  <th>Oct 22, 2007</th>
+                  <th>Oct 19, 2006</th>
+                  <th>Sep 12, 2005</th>
+                  <th>Sep 03, 2004</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th align=3D"left">Height (in)</th>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Weight (lb)</th>
+                  <td>172.4</td>
+                  <td>174.8</td>
+                  <td>169</td>
+                  <td>173</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">BMI</th>
+                  <td>22.83</td>
+                  <td>23.15</td>
+                  <td>22.38</td>
+                  <td>22.91</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">BP Systolic (mm Hg)</th>
+                  <td>116</td>
+                  <td>128</td>
+                  <td>126</td>
+                  <td>116</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">BP Diastolic (mm Hg)</th>
+                  <td>72</td>
+                  <td>81</td>
+                  <td>82</td>
+                  <td>70</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Temperature (deg F)</th>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Pulse rate (/min)</th>
+                  <td>53</td>
+                  <td>51</td>
+                  <td>=C2=A0</td>
+                  <td>62</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Pulse rhythm</th>
+                  <td>regular</td>
+                  <td>regular</td>
+                  <td>regular</td>
+                  <td>regular</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Resp rate (/min)</th>
+                  <td>14</td>
+                  <td>13</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <organizer classCode=3D"CLUSTER" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.35" />
+              <id root=3D"c6f88320-67ad-11db-bd13-0800200c9a66" />
+              <code code=3D"46680005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Vital signs" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"c6f88322-67ad-11db-bd13-0800200c9a66" />
+                  <code code=3D"27113001" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body weight" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"PQ" value=3D"172.4" =
+unit=3D"[lb_av]" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"ec78a751-5994-4910-ada5-ef402937837d" />
+                  <code code=3D"60621009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body mass index" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"RTO_PQ_PQ">
+                    <numerator value=3D"22.83" unit=3D"kg" />
+                    <denominator value=3D"1" unit=3D"m2" />
+                  </value>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"c6f88323-67ad-11db-bd13-0800200c9a66" />
+                  <code code=3D"271649006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Systolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"PQ" value=3D"116" unit=3D"mm[Hg]" =
+/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"c6f88324-67ad-11db-bd13-0800200c9a66" />
+                  <code code=3D"271650006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Diastolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"PQ" value=3D"72" unit=3D"mm[Hg]" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"492f6ad3-db26-42f2-b493-ad17ab85cc9b" />
+                  <code code=3D"364075005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Heart rate" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"PQ" value=3D"53" unit=3D"1" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"91b934ab-e729-4c08-ba4a-bc43d9e37dbf" />
+                  <code code=3D"364095004" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Pulse rhythm" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"ST">regular</value>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"9d053eb0-bb9f-4397-8e7c-2e7ea252ea05" />
+                  <code code=3D"86290005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Respiratory rate" =
+/>
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20071022" />
+                  <value xsi:type=3D"PQ" value=3D"14" unit=3D"1" />
+                </observation>
+              </component>
+            </organizer>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <organizer classCode=3D"CLUSTER" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.35" />
+              <id root=3D"5dd75b31-1c1c-42ed-bcde-b85fc949ee9c" />
+              <code code=3D"46680005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Vital signs" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20061019" />
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"8a2f83ee-68e2-4223-87f8-b655508221ad" />
+                  <code code=3D"27113001" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body weight" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"PQ" value=3D"174.8" =
+unit=3D"[lb_av]" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"8bfb0657-f354-4be6-aa9e-6974b58db414" />
+                  <code code=3D"60621009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body mass index" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"RTO_PQ_PQ">
+                    <numerator value=3D"23.15" unit=3D"kg" />
+                    <denominator value=3D"1" unit=3D"m2" />
+                  </value>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"552b2244-1ce1-48d1-bbac-46ea5913e573" />
+                  <code code=3D"271649006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Systolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"PQ" value=3D"116" unit=3D"mm[Hg]" =
+/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"c49589b8-ce11-405e-9f4d-c0ef3fa4c588" />
+                  <code code=3D"271650006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Diastolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"PQ" value=3D"72" unit=3D"mm[Hg]" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"55b2672d-a163-41c8-892e-d6779003b6b3" />
+                  <code code=3D"364075005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Heart rate" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"PQ" value=3D"53" unit=3D"1" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"dc5a2f1a-0b4f-44c4-a42f-d45a9a8ca852" />
+                  <code code=3D"364095004" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Pulse rhythm" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"ST">regular</value>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"28e6ee5a-ca31-4d22-9da6-14d366aed75e" />
+                  <code code=3D"86290005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Respiratory rate" =
+/>
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20061019" />
+                  <value xsi:type=3D"PQ" value=3D"14" unit=3D"1" />
+                </observation>
+              </component>
+            </organizer>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <organizer classCode=3D"CLUSTER" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.35" />
+              <id root=3D"195c2e6b-cbf7-4823-8db0-25eae07dd022" />
+              <code code=3D"46680005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Vital signs" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20050912" />
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"d27cbd02-7389-467c-8e35-9ba38b6ab071" />
+                  <code code=3D"27113001" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body weight" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20050912" />
+                  <value xsi:type=3D"PQ" value=3D"169" unit=3D"[lb_av]" =
+/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"aaf9cd6b-dcea-48aa-86ed-8df8a6ca9a47" />
+                  <code code=3D"60621009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body mass index" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20050912" />
+                  <value xsi:type=3D"RTO_PQ_PQ">
+                    <numerator value=3D"22.38" unit=3D"kg" />
+                    <denominator value=3D"1" unit=3D"m2" />
+                  </value>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"1c46239c-3ce1-49e1-b344-452717480085" />
+                  <code code=3D"271649006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Systolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20050912" />
+                  <value xsi:type=3D"PQ" value=3D"126" unit=3D"mm[Hg]" =
+/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"c872fac0-89d6-4fde-af57-77c64d51f127" />
+                  <code code=3D"271650006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Diastolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20050912" />
+                  <value xsi:type=3D"PQ" value=3D"82" unit=3D"mm[Hg]" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"97fbb8cc-ce12-40c8-a7f4-3e265becbca3" />
+                  <code code=3D"364095004" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Pulse rhythm" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20050912" />
+                  <value xsi:type=3D"ST">regular</value>
+                </observation>
+              </component>
+            </organizer>
+          </entry>
+          <entry typeCode=3D"DRIV">
+            <organizer classCode=3D"CLUSTER" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.35" />
+              <id root=3D"53459040-b1b4-49ed-ae1f-a52c8c502df4" />
+              <code code=3D"46680005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Vital signs" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20040903" />
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"d3d74e77-ca5d-4b49-a070-6dfd373be862" />
+                  <code code=3D"27113001" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body weight" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20040903" />
+                  <value xsi:type=3D"PQ" value=3D"173" unit=3D"[lb_av]" =
+/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"53d2ab20-2737-4b12-9a97-4201b2c7b118" />
+                  <code code=3D"60621009" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Body mass index" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20040903" />
+                  <value xsi:type=3D"RTO_PQ_PQ">
+                    <numerator value=3D"22.91" unit=3D"kg" />
+                    <denominator value=3D"1" unit=3D"m2" />
+                  </value>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"c5da6635-37c4-46e2-b12d-72789fe9fa52" />
+                  <code code=3D"271649006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Systolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20040903" />
+                  <value xsi:type=3D"PQ" value=3D"116" unit=3D"mm[Hg]" =
+/>
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"e966c3e9-aaa8-4f64-9ee0-488719e0135a" />
+                  <code code=3D"271650006" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Diastolic BP" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20040903" />
+                  <value xsi:type=3D"PQ" value=3D"70" unit=3D"mm[Hg]" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"1ecbfc8f-0fe3-474e-b9d7-3c932e4d01ca" />
+                  <code code=3D"364075005" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Heart rate" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20040903" />
+                  <value xsi:type=3D"PQ" value=3D"62" unit=3D"1" />
+                </observation>
+              </component>
+              <component>
+                <observation classCode=3D"OBS" moodCode=3D"EVN">
+                  <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+                  <id root=3D"955d0a22-24fc-4d07-bc79-0defeb20652b" />
+                  <code code=3D"364095004" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Pulse rhythm" />
+                  <statusCode code=3D"completed" />
+                  <effectiveTime value=3D"20040903" />
+                  <value xsi:type=3D"ST">regular</value>
+                </observation>
+              </component>
+            </organizer>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.14" />
+          <code code=3D"30954-2" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Results</title>
+          <text>
+            <paragraph styleCode=3D"Bold">Lab results</paragraph>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th align=3D"right">Date / Time: </th>
+                  <th>Oct 22, 2007</th>
+                  <th>Oct 24, 2006</th>
+                  <th>Oct 19, 2006</th>
+                  <th>Sep 13, 2005</th>
+                  <th>Sep 07, 2004</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th align=3D"left">Hemoccult </th>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>negative</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Cholesterol (mg/dL)</th>
+                  <td>135</td>
+                  <td>143</td>
+                  <td>=C2=A0</td>
+                  <td>137</td>
+                  <td>127</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Triglyceride (mg/dL)</th>
+                  <td>121</td>
+                  <td>80</td>
+                  <td>=C2=A0</td>
+                  <td>59</td>
+                  <td>78</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">HDL (mg/dL)</th>
+                  <td>40</td>
+                  <td>47</td>
+                  <td>=C2=A0</td>
+                  <td>43</td>
+                  <td>42</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">LDL (mg/dL)</th>
+                  <td>71</td>
+                  <td>60</td>
+                  <td>=C2=A0</td>
+                  <td>62</td>
+                  <td>69</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Homocysteine (umol/L)</th>
+                  <td>=C2=A0</td>
+                  <td>9.6</td>
+                  <td>=C2=A0</td>
+                  <td>9.6</td>
+                  <td>=C2=A0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">CRP (mg/L)</th>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>0.6</td>
+                  <td>0.6</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">BG Random (mg/dL)</th>
+                  <td>86</td>
+                  <td>88</td>
+                  <td>=C2=A0</td>
+                  <td>79</td>
+                  <td>88</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">PSA (ng/mL)</th>
+                  <td>=C2=A0</td>
+                  <td>0.7</td>
+                  <td>=C2=A0</td>
+                  <td>0.5</td>
+                  <td>0.6</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">WBC (10*3/mm3)</th>
+                  <td>4.4</td>
+                  <td>5.1</td>
+                  <td>=C2=A0</td>
+                  <td>4.2</td>
+                  <td>5.0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">HGB (g/dL)</th>
+                  <td>13.9</td>
+                  <td>13.8</td>
+                  <td>=C2=A0</td>
+                  <td>14.6</td>
+                  <td>13.9</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">HCT (%)</th>
+                  <td>40.9</td>
+                  <td>42</td>
+                  <td>=C2=A0</td>
+                  <td>43</td>
+                  <td>40</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">MCV (fL)</th>
+                  <td>89.2</td>
+                  <td>88</td>
+                  <td>=C2=A0</td>
+                  <td>89</td>
+                  <td>89</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Platelets (10*3/mm3)</th>
+                  <td>277</td>
+                  <td>286</td>
+                  <td>=C2=A0</td>
+                  <td>256</td>
+                  <td>294</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">BUN (mg/dL)</th>
+                  <td>12</td>
+                  <td>9</td>
+                  <td>=C2=A0</td>
+                  <td>13</td>
+                  <td>16</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Creatinine (mg/dL)</th>
+                  <td>0.9</td>
+                  <td>0.9</td>
+                  <td>=C2=A0</td>
+                  <td>0.9</td>
+                  <td>1.0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Sodium (mmol/L)</th>
+                  <td>140</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Potassium (mmol/L)</th>
+                  <td>4.2</td>
+                  <td>4.6</td>
+                  <td>=C2=A0</td>
+                  <td>4.7</td>
+                  <td>4.5</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Calcium (mg/dL)</th>
+                  <td>9.7</td>
+                  <td>10.1</td>
+                  <td>=C2=A0</td>
+                  <td>10.2</td>
+                  <td>9.9</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Uric acid (mg/dL)</th>
+                  <td>=C2=A0</td>
+                  <td>6.1</td>
+                  <td>=C2=A0</td>
+                  <td>6.7</td>
+                  <td>7.0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">SGOT (AST) (U/L)</th>
+                  <td>16</td>
+                  <td>16</td>
+                  <td>=C2=A0</td>
+                  <td>17</td>
+                  <td>15</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">SGPT (ALT) (U/L)</th>
+                  <td>12</td>
+                  <td>14</td>
+                  <td>=C2=A0</td>
+                  <td>15</td>
+                  <td>17</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Alk Phos (U/L)</th>
+                  <td>62</td>
+                  <td>53</td>
+                  <td>=C2=A0</td>
+                  <td>58</td>
+                  <td>60</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">GGT (U/L)</th>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Bili Total (mg/dL)</th>
+                  <td>0.5</td>
+                  <td>0.4</td>
+                  <td>=C2=A0</td>
+                  <td>0.7</td>
+                  <td>0.6</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">TSH (uIU/mL)</th>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>1.8</td>
+                </tr>
+                <tr>
+                  <th align=3D"left">Vit D 25-OH, Total (ng/mL)</th>
+                  <td>16 (L)</td>
+                  <td>=C2=A0</td>
+                  <td>27</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+            <paragraph />
+            <paragraph styleCode=3D"Bold">Procedure results</paragraph>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Test</th>
+                  <th>Date</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td align=3D"left">Bone Density</td>
+                  <td>Oct 22, 2007</td>
+                  <td>Normal</td>
+                </tr>
+                <tr>
+                  <td align=3D"left">Exercise Treadmill Test</td>
+                  <td>Sep 11, 2007</td>
+                  <td>No objective evidence of myocardial ischemia by =
+EKG. No anginal symptoms. Trivial atrioventricular
+ectopic activity at a high workload.</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"57d07056-bd97-4c90-891d-eb716d3170c8" />
+              <code code=3D"2093-3" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Cholesterol" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"135" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"019e7797-45bf-40f3-85de-b32747f62335" />
+              <code code=3D"2571-8" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Triglyceride" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"121" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"b6226400-b05f-4144-b816-9813f60f6620" />
+              <code code=3D"2085-9" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"HDL" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"40" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"961b7343-1b58-4ba2-944e-4f261186b997" />
+              <code code=3D"2089-1" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"LDL" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"71" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"7a0c1b21-acef-4079-b543-aeb253fce62b" />
+              <code code=3D"2345-7" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"BG Random" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"86" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"356f1dcc-9fe5-44a5-907a-cfebe93f531b" />
+              <code code=3D"26464-8" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"WBC" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"4.4" unit=3D"10*3/uL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"5a850625-883e-4f04-a1c2-2b9c967953d0" />
+              <code code=3D"718-7" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"HGB" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"13.9" unit=3D"g/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"e60fa38e-167c-430e-92aa-a246e281fdf1" />
+              <code code=3D"4544-3" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"HCT" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"40.9" unit=3D"%" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"1ae1449b-c2e8-46ae-b0c0-4e02b8334bfc" />
+              <code code=3D"787-2" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"MCV" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"89.2" unit=3D"fL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"1d65305a-18e2-4773-8c21-43034dcdf113" />
+              <code code=3D"26515-7" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Platelets" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"277" unit=3D"10*3/uL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"99b43fb5-b1df-42b0-998b-722642883d7c" />
+              <code code=3D"3094-0" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"BUN" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"12" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"5a62c5ae-6f2b-4e6f-91f8-f297c165b68e" />
+              <code code=3D"2160-0" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Creatinine" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"0.9" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"2f67ee64-9deb-454e-b641-5ba2516e43fa" />
+              <code code=3D"2951-2" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Sodium" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"140" unit=3D"mmol/L" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"01487596-4396-4057-8ce0-b3a45d392cfc" />
+              <code code=3D"2823-3" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Potassium" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"4.2" unit=3D"mmol/L" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"626ee5dd-a1c9-4676-b0b6-2b6c36c8b06a" />
+              <code code=3D"17861-6" =
+codeSystem=3D"2.16.840.1.113883.6.1" displayName=3D"Calcium" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"9.7" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"67cc0831-d2e7-46c5-8cbc-f88fa6b64f94" />
+              <code code=3D"1920-8" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"SGOT (AST)" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"16" unit=3D"[iU]/L" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"6ba6dd94-c36d-42a2-bc48-ed7d67556689" />
+              <code code=3D"1742-6" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"SGPT (ALT)" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"12" unit=3D"[iU]/L" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"c7cc57e2-faa6-4bd3-89ac-5e30969a8b6f" />
+              <code code=3D"6768-6" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Alk Phos" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"62" unit=3D"[iU]/L" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"be18a06e-5e13-4d09-a9fd-6bc306571771" />
+              <code code=3D"1975-2" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Bili Total" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"0.5" unit=3D"mg/dL" />
+              <interpretationCode code=3D"N" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+            </observation>
+          </entry>
+          <entry>
+            <observation classCode=3D"OBS" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.31" />
+              <id root=3D"107c2dc0-67a5-11db-bd13-0800200c9a66" />
+              <code code=3D"1989-3" codeSystem=3D"2.16.840.1.113883.6.1" =
+displayName=3D"Vit D 25-0H" />
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"20071022" />
+              <value xsi:type=3D"PQ" value=3D"16" unit=3D"ng/mL" />
+              <interpretationCode code=3D"L" =
+codeSystem=3D"2.16.840.1.113883.5.83" />
+              <referenceRange>
+                <observationRange>
+                  <value xsi:type=3D"IVL_PQ">
+                    <low value=3D"20" unit=3D"ng/mL" />
+                    <high value=3D"100" unit=3D"ng/mL" />
+                  </value>
+                </observationRange>
+              </referenceRange>
+            </observation>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.12" />
+          <code code=3D"47519-4" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Procedures</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Procedure</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>VeriMed RFID microchip implantation</td>
+                  <td>Dec, 2004</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+          <entry typeCode=3D"DRIV">
+            <procedure classCode=3D"PROC" moodCode=3D"EVN">
+              <templateId root=3D"2.16.840.1.113883.10.20.1.29" />
+              <id root=3D"e401f340-7be2-11db-9fe1-0800200c9a66" />
+              <code code=3D"71861002" =
+codeSystem=3D"2.16.840.1.113883.6.96" displayName=3D"Implantation">
+                <qualifier>
+                  <name code=3D"363699004" displayName=3D"Direct device" =
+/>
+                  <value code=3D"52624007" displayName=3D"Radiofrequency =
+generator device" />
+                </qualifier>
+              </code>
+              <text>VeriMed RFID microchip implantation</text>
+              <statusCode code=3D"completed" />
+              <effectiveTime value=3D"200412" />
+            </procedure>
+          </entry>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.3" />
+          <code code=3D"46240-8" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Encounters</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Encounter</th>
+                  <th>Location</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+      <component>
+        <section>
+          <templateId root=3D"2.16.840.1.113883.10.20.1.10" />
+          <code code=3D"18776-5" codeSystem=3D"2.16.840.1.113883.6.1" />
+          <title>Plan</title>
+          <text>
+            <table border=3D"1" width=3D"100%">
+              <thead>
+                <tr>
+                  <th>Planned Activity</th>
+                  <th>Planned Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>=C2=A0</td>
+                  <td>=C2=A0</td>
+                </tr>
+              </tbody>
+            </table>
+          </text>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>

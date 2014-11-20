@@ -1,0 +1,11 @@
+// Command lines for setting up Dns records
+// You can run them as a script in ConfigConsole.exe
+// ConfigConsole.exe batch setupdns.txt. 
+
+// Ensure the records exist
+// Type commands dns for a full list
+// 
+DNS_SOA_ENSURE nhind.hsgincubator.com NS1.nhind.hsgincubator.com. foo.example.domain 20100602 3600
+DNS_ANAME_ENSURE nhind.hsgincubator.com 127.0.0.1 3600
+DNS_ANAME_ENSURE gateway.nhind.hsgincubator.com 127.0.0.1 3600
+DNS_MX_ENSURE nhind.hsgincubator.com gateway.nhind.hsgincubator.com 3600

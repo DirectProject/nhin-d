@@ -1,0 +1,31 @@
+<SmtpAgentConfig>
+   <Domains>
+      <AnchorStore type="Uniform" storeType="LDAP" ldapURL="ldap://localhost:1024/" ldapUser="" ldapPassword="" ldapConnTimeout="10000" 
+      			   ldapSearchBase="cn=lookupTest" ldapSearchAttr="email" ldapCertAttr="privKeyStore" ldapCertPassphrase="" ldapCertFormat="X509"/>    
+      <Domain name="cerner.com" postmaster="postmaster@cerner.com">
+         <IncomingTrustAnchors> 
+             <Anchor name="gm2552@cerner.com"/>   
+             <Anchor name="gm25@cerner.com"/>              
+         </IncomingTrustAnchors>  
+         <OutgoingTrustAnchors> 
+         	 <Anchor name="gm2552@cerner.com"/>
+         	 <Anchor name="gm25@cerner.com"/>   
+         </OutgoingTrustAnchors>           
+      </Domain>         
+   </Domains>
+   <PublicCertStore type="Keystore" file="KeyStore" filePass="h3||0 wor|d" privKeyPass="pKpa$$wd"/>
+   <PrivateCertStore type="LDAP" ldapURL="ldap://localhost:1024/" ldapUser="" ldapPassword="" ldapConnTimeout="10000" 
+      			   ldapSearchBase="cn=lookupTest" ldapSearchAttr="email" ldapCertAttr="privKeyStore" ldapCertPassphrase="" ldapCertFormat="X509"/>
+   <RawMessageSettings saveFolder="RawMsgFolder"/>
+   <OutgoingMessagesSettings saveFolder="OutgoingMsgFolder"/>
+   <IncomingMessagesSettings saveFolder="IncomingMsgFolder"/>
+   <BadMessagesSettings saveFolder="BadMsgFolder"/>
+   <OutgoingBounceMessage encrypt="true">
+      <Subject><![CDATA[This is a CDATA subject]]></Subject>
+      <Body><![CDATA[This is a CDATA body]]></Body>>
+   </OutgoingBounceMessage>	
+   <IncomingBounceMessage>
+      <Subject>This is a plain subject.</Subject>
+      <Body>this is a plain body.</Body>
+   </IncomingBounceMessage>	   
+</SmtpAgentConfig>

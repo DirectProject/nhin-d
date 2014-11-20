@@ -1,0 +1,33 @@
+Received: from ipvmhewas03.northamerica.cerner.net ([10.184.60.88])
+          by goonie.northamerica.cerner.net (JAMES SMTP Server 2.3.2) with SMTP ID 980;
+          Mon, 23 May 2011 14:41:50 -0500 (CDT)
+Date: Mon, 23 May 2011 14:41:50 -0500 (CDT)
+From: User1@Cerner.com
+To: externUser1@starugh-stateline.com
+Cc: User1@Cerner.com, gm2552@cerner.com
+Message-ID: <1926525652.21.1306179710708.JavaMail.javamailuser@localhost>
+Subject: testing removed
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+        boundary="----=_Part_23_845427300.1306179710770"
+X-CHE-RECIPIENT_ATTRIBUTE_0: EntityType=ENTITY|
+X-CHE-RECIPIENT_ATTRIBUTE_1: EntityType=ENTITY|
+X-CHE-RECIPIENT_ATTRIBUTE_2: EntityType=ENTITY|
+Disposition-Notification-To: jdorian+readreceipt@messaging.cerner.com
+X-PRIORITY: 3
+
+------=_Part_23_845427300.1306179710770
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+
+
+testing removed
+
+------=_Part_23_845427300.1306179710770
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<p>
+        testing removed</p>
+
+------=_Part_23_845427300.1306179710770--
