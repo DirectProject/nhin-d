@@ -217,10 +217,15 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
             else
             {
                 LOGGER.info("Handling an inbound message");
-             
+                
+                // Issue 249 - before handling the inbound case, we should clear 
+                // out the old thread data if we don't this the To: (SMTP recipients) will 
+                // append from the previous thread data 
+                SafeThreadData.clean(Thread.currentThread().getId());
+                
                 SafeThreadData threadData = SafeThreadData.GetThreadInstance(Thread.currentThread().getId());
                 
-
+                
                 SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
 
                 ServletRequest sr = (ServletRequest) context.get(MessageContext.SERVLET_REQUEST);
@@ -298,6 +303,9 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
                                 }
                                 else if (StringUtils.contains(node.getNodeName(), "to"))
                                 {
+                                    // XDR-MULTIPLE-RECIPIENT-ISSUE - this is the part where old thread data 
+                                    // gets into the To: and will cause unwanted recipients 
+                                    // (see above for the clear)
                                     String recipient = node.getTextContent();
                                     if (threadData.getDirectTo() == null){
                                         threadData.setDirectTo(recipient);
