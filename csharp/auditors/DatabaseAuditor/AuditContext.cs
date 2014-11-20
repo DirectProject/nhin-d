@@ -34,4 +34,14 @@ namespace Health.Direct.DatabaseAuditor
             }
         }
     }
+
+    public class AuditDbConfiguration : DbConfiguration
+    {
+        public AuditDbConfiguration()
+        {
+            SetExecutionStrategy("System.Data.SqlClient", () => new DefaultExecutionStrategy());
+            SetDefaultConnectionFactory(new SqlConnectionFactory());
+        }
+    }
+
 }

@@ -118,6 +118,7 @@
     </Content>
     <Content Include="SmtpAgentTestFiles\TestPlugin.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig_BadAuditor_Defaults.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

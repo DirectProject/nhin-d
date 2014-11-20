@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Policy;
 
 namespace Health.Direct.Common.Policies
 {
@@ -29,7 +30,7 @@ namespace Health.Direct.Common.Policies
     /// </para>
     /// Expressions are categorized into three types.
     /// <ul>
-    ///     <li>Literals: Literals are simply primitive types or objects that have a static value.  In the policy engine, literals are represented by <see cref="IPolicyValue{T}"/> objects. </li>
+    ///     <li>Literals: Literals are simply primitive types or objects that have a static value.  In the policy engine, literals are represented by <see cref="Health.Direct.Policy.IPolicyValue{T}"/> objects. </li>
     ///     <li>References: References are objects whose values are evaluated at runtime similar to variables.  Reference may be simple structures or specific structure types such as X509 certificates. At this time all known implementations are of type <see cref="X509Certificate2"/> </li>
     ///     <li>Operations: Operations are a combination of a <see cref="PolicyOperator{T}"/> and one or more parameters.  Operator parameters are themselves expressions allowing parameters to be either literals, references, or the result of another operation. </li>
     ///  </ul>
