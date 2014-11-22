@@ -69,6 +69,8 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(DirectSOAPHandler.class);
     public static final String ENDPOINT_ADDRESS = "javax.xml.ws.service.endpoint.address";
+    public static final String RESPONSE_NODE_NAME = "RegistryResponse";
+    public static final String PNR_NODE_NAME = "ProvideAndRegisterDocumentSetRequest";
 
     /**
      * Is called after constructing the handler and before executing any othe
@@ -218,16 +220,18 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
             {
                 LOGGER.info("Handling an inbound message");
                 
-                // Issue 249 - before handling the inbound case, we should clear 
-                // out the old thread data if we don't this the To: (SMTP recipients) will 
-                // append from the previous thread data 
-                SafeThreadData.clean(Thread.currentThread().getId());
+                SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
+                boolean isResponse = isResponse(msg);
+                
+                if (! isResponse) {
+                    // Issue 249 - before handling the inbound case, we should clear 
+                    // out the old thread data if we don't this the To: (SMTP recipients) will 
+                    // append from the previous thread data 
+                    SafeThreadData.clean(Thread.currentThread().getId());
+                }
                 
                 SafeThreadData threadData = SafeThreadData.GetThreadInstance(Thread.currentThread().getId());
                 
-                
-                SOAPMessage msg = ((SOAPMessageContext) context).getMessage();
-
                 ServletRequest sr = (ServletRequest) context.get(MessageContext.SERVLET_REQUEST);
                 if (sr != null)
                 {
@@ -471,6 +475,39 @@ public class DirectSOAPHandler implements SOAPHandler<SOAPMessageContext>
     {
         String processName = ManagementFactory.getRuntimeMXBean().getName();
         return processName.split("@")[0];
+    }
+    
+    /**
+     * Determines if the specified SOAPMessage is a Registry Response.
+     * 
+     * @param soapMessage
+     * @return false if message is null, otherwise true if this a a response
+     * @throws SOAPException
+     */
+    protected boolean isResponse(SOAPMessage soapMessage) throws SOAPException {
+        boolean isResponse = false;
+        
+        if (soapMessage != null) {
+            SOAPBody soapBody = soapMessage.getSOAPBody();
+            
+            @SuppressWarnings("rawtypes")
+            Iterator childElements = soapBody.getChildElements();
+            if (childElements != null) {
+                while (childElements.hasNext()) {
+                    Node node = (Node) childElements.next();
+                    String nodeName = node.getNodeName();
+                    if (StringUtils.equalsIgnoreCase(nodeName, RESPONSE_NODE_NAME)) {
+                        isResponse = true;
+                        break;
+                    } else if (StringUtils.equalsIgnoreCase(nodeName, PNR_NODE_NAME)) {
+                        isResponse = false;
+                        break;
+                    }
+                }    
+            }    
+        }
+        
+        return isResponse;
     }
 }
 
