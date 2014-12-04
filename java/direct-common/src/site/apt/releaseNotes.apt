@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.4}
+
+    Changes included with release 1.2
+    
+    []
+    
+ 	* Added additional PKCS11 support and command line tooling.
+
+{1.3}
+
+    Changes included with release 1.2
+    
+    []
+    
+ 	* Added crypto classes for PKCS11 support.
+
 {1.2.1}
 
     Changes included with release 1.2.1
