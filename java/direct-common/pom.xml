@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>direct-common</artifactId>    
     <name>Direct Project common APIs</name>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <description>Direct Project common APIs.  Includes instrumentation, auditing, and other utility APIs</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-common/${project.version}</url> 
@@ -46,7 +46,7 @@
        <url>http://repo2.maven.org/maven2/</url>
     </repository>
   </repositories>     
-  <dependencies>    
+  <dependencies>       
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
