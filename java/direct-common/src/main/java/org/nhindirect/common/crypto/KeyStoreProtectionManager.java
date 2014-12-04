@@ -61,4 +61,12 @@ public interface KeyStoreProtectionManager
 	 * @throws CryptoException
 	 */
 	public Map<String, Key> getAllKeys() throws CryptoException;
+	
+	/**
+	 * Gets a specific key by name.
+	 * @param keyName The name of the key to retrieve.  Returns null if the key doesn't exist.
+	 * @return They key specified by the name. 
+	 * @throws CryptoException
+	 */
+	public Key getKey(String keyName) throws CryptoException;
 }

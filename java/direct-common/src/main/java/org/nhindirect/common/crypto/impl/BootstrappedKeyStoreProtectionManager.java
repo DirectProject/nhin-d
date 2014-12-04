@@ -125,5 +125,11 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 		keys.put("KeyStoreProtKey", getKeyStoreProtectionKey());
 		
 		return keys;
-	}	
+	}
+	
+	@Override
+	public Key getKey(String keyName) throws CryptoException
+	{
+		return null;
+	}
 }

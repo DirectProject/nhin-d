@@ -21,15 +21,24 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.common.crypto.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.Provider;
+import java.security.Security;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nhindirect.common.crypto.MutableKeyStoreProtectionManager;
 import org.nhindirect.common.crypto.PKCS11Credential;
 import org.nhindirect.common.crypto.exceptions.CryptoException;
@@ -43,10 +52,17 @@ import org.nhindirect.common.crypto.exceptions.CryptoException;
 public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements MutableKeyStoreProtectionManager
 {
 
+	protected static final String SUNPKCS11_KEYSTORE_PROVIDER_NAME = "sun.security.pkcs11.SunPKCS11";
+	protected static final String DEFAULT_KESTORE_TYPE = "PKCS11";
+	
 	protected PKCS11Credential credential;
 	protected String keyStorePassPhraseAlias;
 	protected String privateKeyPassPhraseAlias;
 	protected KeyStore ks;
+	protected String keyStoreType;
+	protected String keyStoreProviderName;
+	protected String pcks11ConfigFile;
+	protected InputStream keyStoreSource;
 	
 	/**
 	 * Empty constructor.
@@ -57,6 +73,10 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 		this.credential = null;
 		this.keyStorePassPhraseAlias = "";
 		this.privateKeyPassPhraseAlias = "";
+		this.keyStoreType = DEFAULT_KESTORE_TYPE;
+		this.keyStoreProviderName = "";
+		this.pcks11ConfigFile = "";
+		this.keyStoreSource = null;
 	}
 	
 	/**
@@ -71,8 +91,74 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 		this.credential = credential;
 		this.keyStorePassPhraseAlias = keyStorePassPhraseAlias;
 		this.privateKeyPassPhraseAlias = privateKeyPassPhraseAlias;
+		this.keyStoreType = DEFAULT_KESTORE_TYPE;
+		this.keyStoreProviderName = "";
+		this.pcks11ConfigFile = "";
+		this.keyStoreSource = null;
 		
 		initTokenStore();
+	}
+	
+	@SuppressWarnings("restriction")
+	protected void loadProvider() throws CryptoException
+	{
+		try
+		{
+			// first see if we need to add a PKCS11 provider or custom provider
+			
+			if (!StringUtils.isEmpty(this.keyStoreProviderName))
+			{
+				if (this.keyStoreProviderName.equals(SUNPKCS11_KEYSTORE_PROVIDER_NAME))
+				{
+					// we want to add a SunPKCS11 provider...
+					// this provider requires a config file
+					if (StringUtils.isEmpty(this.pcks11ConfigFile))
+						throw new IllegalStateException("SunPKCS11 providers require a configuration file.  There is not one set.");
+					
+					// check and see if this is one of the same providers that is already loaded
+					final InputStream inStream = FileUtils.openInputStream(new File(this.pcks11ConfigFile));
+					
+					final Properties props = new Properties();
+					props.load(inStream);
+					IOUtils.closeQuietly(inStream);
+					
+					boolean providerFound = false;
+					
+					final String requestedName = props.getProperty("name");
+					
+					// check if this provider exists
+					if (!StringUtils.isEmpty(requestedName) && Security.getProvider(requestedName) != null)
+						providerFound = true;
+					
+					if (!providerFound)
+						Security.addProvider(new sun.security.pkcs11.SunPKCS11(this.pcks11ConfigFile));
+				}
+				else
+				{
+					// create the new provider
+					final Class<?> provider = this.getClass().getClassLoader().loadClass(this.keyStoreProviderName);
+				
+					// check if the provider is already loaded
+					boolean providerFound = false;
+					for (Provider existingProv : Security.getProviders())
+					{
+						if (existingProv.getClass().equals(provider))
+						{
+							providerFound = true;
+							break;
+						}
+					}
+					
+					if (!providerFound)
+						Security.addProvider((Provider)provider.newInstance());
+					
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			throw new CryptoException("Error loading PKCS11 provder", e);
+		}
 	}
 	
 	/**
@@ -100,6 +186,38 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 	public void setPrivateKeyPassPhraseAlias(String privateKeyPassPhraseAlias)
 	{
 		this.privateKeyPassPhraseAlias = privateKeyPassPhraseAlias;
+	}
+	
+	public void setKeyStoreType(String keyStoreType)
+	{
+		this.keyStoreType = keyStoreType;
+	}
+	
+	public void setKeyStoreSource(InputStream keyStoreSource)
+	{
+		this.keyStoreSource = keyStoreSource;
+	}
+	
+	public void setKeyStoreSourceAsString(String keyStoreSource)
+	{
+		try
+		{
+			this.keyStoreSource = new ByteArrayInputStream(keyStoreSource.getBytes("UTF-8"));
+		}
+		catch (Exception e)
+		{
+			/* do quietly, no-op */
+		}
+	}
+	
+	public void setKeyStoreProviderName(String keyStoreProviderName)
+	{
+		this.keyStoreProviderName = keyStoreProviderName;
+	}
+	
+	public void setPcks11ConfigFile(String pcks11ConfigFile)
+	{
+		this.pcks11ConfigFile = pcks11ConfigFile;
 	}
 	
 	/**
@@ -147,6 +265,26 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 		}
 		
 		return keys;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Key getKey(String keyName) throws CryptoException
+	{
+		Key theKey = null;
+		
+		try
+		{
+			theKey = ks.getKey(keyName, null);
+		}
+		catch (Exception e) 
+		{
+			throw new CryptoException("Error extracting key from PKCS11 token", e);
+		}
+		
+		return theKey;
 	}
 	
 	/**
@@ -338,11 +476,13 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 	{
 		try 
 		{
-			ks.deleteEntry(alias);
+			// make sure the key exists first
+			if (this.getKey(alias) != null)
+				ks.deleteEntry(alias);
 		} 
 		catch (Exception e) 
 		{
-			throw new CryptoException("Error deleting key store protection from PKCS11 token", e);
+			throw new CryptoException("Error deleting key from PKCS11 token", e);
 		}		
 	}
 }
