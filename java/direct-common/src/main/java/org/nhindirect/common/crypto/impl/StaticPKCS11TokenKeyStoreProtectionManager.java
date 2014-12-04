@@ -61,10 +61,12 @@ public class StaticPKCS11TokenKeyStoreProtectionManager extends AbstractPKCS11To
 	 */
 	public void initTokenStore() throws CryptoException
 	{
+		loadProvider();
+		
 		try
 		{
-			ks = KeyStore.getInstance("PKCS11");
-			ks.load(null, credential.getPIN()); 
+			ks = KeyStore.getInstance(keyStoreType);
+			ks.load(keyStoreSource, credential.getPIN()); 
 		}
 		catch (Exception e)
 		{

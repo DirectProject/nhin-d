@@ -21,10 +21,12 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.common.crypto.impl;
 
+import java.io.InputStream;
 import java.security.KeyStore;
 
 import javax.security.auth.callback.CallbackHandler;
 
+import org.apache.commons.lang.StringUtils;
 import org.nhindirect.common.crypto.exceptions.CryptoException;
 
 /**
@@ -58,9 +60,19 @@ public class DynamicPKCS11TokenKeyStoreProtectionManager extends AbstractPKCS11T
 	 */
 	public DynamicPKCS11TokenKeyStoreProtectionManager(String keyStorePassPhraseAlias, String privateKeyPassPhraseAlias, CallbackHandler handler) throws CryptoException
 	{
+		this(keyStorePassPhraseAlias, keyStorePassPhraseAlias, handler, null, null);
+	}
+	
+	public DynamicPKCS11TokenKeyStoreProtectionManager(String keyStorePassPhraseAlias, String privateKeyPassPhraseAlias, CallbackHandler handler, 
+			String keyStoreType, InputStream inputStream) throws CryptoException
+	{
 		this.keyStorePassPhraseAlias = keyStorePassPhraseAlias;
 		this.privateKeyPassPhraseAlias = privateKeyPassPhraseAlias;
 		this.handler = handler;
+		if (!StringUtils.isEmpty(keyStoreType))
+			this.keyStoreType = keyStoreType;
+		else 
+			this.keyStoreType = DEFAULT_KESTORE_TYPE;
 		
 		configureKeyStoreBuilder();
 		
@@ -86,7 +98,7 @@ public class DynamicPKCS11TokenKeyStoreProtectionManager extends AbstractPKCS11T
 		final KeyStore.CallbackHandlerProtection chp =
 			    new KeyStore.CallbackHandlerProtection(handler);
 		
-		keyStoreBuilder = KeyStore.Builder.newInstance("PKCS11", null, chp);
+		keyStoreBuilder = KeyStore.Builder.newInstance(keyStoreType, null, chp);
 	}
 	
 	/**
@@ -96,7 +108,10 @@ public class DynamicPKCS11TokenKeyStoreProtectionManager extends AbstractPKCS11T
 	{
 		try
 		{
+			loadProvider();
+			
 			ks = keyStoreBuilder.getKeyStore();
+			ks.load(keyStoreSource, null);
 		}
 		catch (Exception e)
 		{
