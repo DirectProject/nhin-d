@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{1.4.1}
+
+    Changes included with release 1.4.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Added new PCKS11 store implementation that caches secret key in memory instead of requesting secret keys per certificate access.
+
 {1.4}
 
     Changes included with release 1.2
