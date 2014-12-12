@@ -15,13 +15,16 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "file:src/test/resources/auditStore-test.xml" })
+@ContextConfiguration(locations = { "file:src/main/resources/auditStore.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
 public abstract class RDBMSAuditorBaseTest 
 {
 	@Autowired
 	protected RDBMSDao auditor;		
+	
+
+	protected RDBMSAuditor auditorImpl;
 	
 	private static final String derbyHomeLoc = "/target/data";	
 	
@@ -46,13 +49,15 @@ public abstract class RDBMSAuditorBaseTest
 	{
 		clearAuditEvent();
 		
+		auditorImpl = new RDBMSAuditor();
+			auditorImpl.setDao(auditor);
 	}
 	
 	protected void clearAuditEvent()
 	{
-		auditor.clear();
+		auditor.rDBMSclear();
 		
-		assertEquals((Integer)0, auditor.getEventCount());
+		assertEquals((Integer)0, auditor.getRDBMSEventCount());
 	}
 	
 }

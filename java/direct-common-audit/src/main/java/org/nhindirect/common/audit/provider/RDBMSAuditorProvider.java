@@ -21,13 +21,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.common.audit.provider;
 
+
 import java.util.Arrays;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
 import org.nhindirect.common.audit.Auditor;
-import org.nhindirect.common.audit.impl.RDBMSAuditor;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -42,7 +39,8 @@ public class RDBMSAuditorProvider implements Provider<Auditor>
 {
 	private static final String DEFAULT_APPLICATION_CONTEXT_FILE = "auditStore.xml";
 	
-	private final EntityManager entityManager;
+	private final String springConfigLocation;
+	protected Auditor auditor = null;
 	
 	/**
 	 * Default constructor.  Uses the default file auditStore.xml to pull the Sring configuration.
@@ -58,7 +56,23 @@ public class RDBMSAuditorProvider implements Provider<Auditor>
 	 */
 	public RDBMSAuditorProvider(String springConfigLocation)
 	{ 
+		this.springConfigLocation = springConfigLocation;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public synchronized Auditor get()
+	{
+		if (auditor == null)
+			auditor = createAuditor();
 		
+		return auditor;
+	}
+	
+	protected Auditor createAuditor()
+	{
 		final String fileLoc = (springConfigLocation == null || springConfigLocation.isEmpty()) ? DEFAULT_APPLICATION_CONTEXT_FILE : springConfigLocation;
 		
 		final ClassLoader loader = new AggregateClassLoader(Arrays.asList(Thread.currentThread().getContextClassLoader()),
@@ -67,6 +81,7 @@ public class RDBMSAuditorProvider implements Provider<Auditor>
 		
 		try
 		{
+
 			final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(fileLoc)
 			{	
 			    protected void initBeanDefinitionReader(XmlBeanDefinitionReader reader)
@@ -78,38 +93,12 @@ public class RDBMSAuditorProvider implements Provider<Auditor>
 			    }
 
 			};
-		
-		
-			final EntityManagerFactory factory = ctx.getBean(EntityManagerFactory.class);
-		
-			entityManager = factory.createEntityManager();
+
+			return (Auditor)ctx.getBean("auditor");
 		}
 		catch (Exception e)
 		{
-			throw new IllegalStateException("Entity manager could not be found in Spring configuration.", e);
+			throw new IllegalStateException("Auditor could not be found in Spring configuration.", e);
 		}
-	}
-	
-	
-	/**
-	 * Constructor with the pre-configured entity manager.
-	 * @param fileLoc The pre-configured entity manager.
-	 */
-	public RDBMSAuditorProvider(EntityManager entityManager)
-	{
-		if (entityManager == null)
-			throw new IllegalArgumentException("Entity manager null");
-		
-		this.entityManager = entityManager;
-	}
-	
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Auditor get()
-	{
-		return new RDBMSAuditor(entityManager);
 	}
 }

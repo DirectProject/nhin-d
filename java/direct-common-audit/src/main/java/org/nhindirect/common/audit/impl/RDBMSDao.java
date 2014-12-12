@@ -21,15 +21,26 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.common.audit.impl;
 
-import org.nhindirect.common.audit.Auditor;
-import org.nhindirect.common.audit.AuditorMBean;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.UUID;
+
+import org.nhindirect.common.audit.AuditContext;
+import org.nhindirect.common.audit.AuditEvent;
 
 /**
- * Aggregate interface for a DirectProject auditor and MBean specific to the database auditor implementation.
+ * DAO interface for reading and writing audit info to the RDBMS.
  * @author Greg Meyer
  * @since 1.0
  */
-public interface RDBMSDao extends Auditor, AuditorMBean
+public interface RDBMSDao
 {
+	public void writeRDBMSEvent(UUID eventId, Calendar eventTimeStamp,
+			String principal, AuditEvent event, Collection<? extends AuditContext> contexts);
 
+	public Integer getRDBMSEventCount();
+	
+	public Collection<org.nhindirect.common.audit.impl.entity.AuditEvent> getRDBMSEvents(Integer eventCount);
+	
+	public void rDBMSclear();
 }

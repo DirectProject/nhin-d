@@ -3,11 +3,8 @@ package org.nhindirect.common.audit;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-import javax.persistence.EntityManagerFactory;
-
 import org.junit.Test;
 import org.nhindirect.common.audit.provider.RDBMSAuditorProvider;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class RDBMSAuditorProviderTest 
 {
@@ -33,7 +30,8 @@ public class RDBMSAuditorProviderTest
 		boolean exceptionOccured = false;
 		try
 		{
-			new RDBMSAuditorProvider("auditStoreBogus.xml");
+			final RDBMSAuditorProvider provider = new RDBMSAuditorProvider("auditStoreBogus.xml");
+			provider.get();
 		}
 		catch (IllegalStateException e)
 		{
@@ -43,18 +41,17 @@ public class RDBMSAuditorProviderTest
 		assertTrue(exceptionOccured);
 	}		
 	
+	
 	@Test
-	public void testCreateWithEntityManager_assertCreated() throws Exception
+	public void testCreateWithSpecificFile_assertCreatedAndWriteEvent() throws Exception
 	{
+		final RDBMSAuditorProvider provider = new RDBMSAuditorProvider("auditStore.xml");
 		
-		final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("auditStore.xml");
-		
-		
-		final EntityManagerFactory factory = ctx.getBean(EntityManagerFactory.class);
-
-		
-		final RDBMSAuditorProvider provider = new RDBMSAuditorProvider(factory.createEntityManager());
-		
-		assertNotNull(provider.get());
+		final Auditor auditor = provider.get();
+		assertNotNull(auditor);
+    	final AuditEvent auditEvent = new AuditEvent("name1", "value1");
+    	
+    	auditor.audit("testPin", auditEvent, null);
+    	
 	}	
 }

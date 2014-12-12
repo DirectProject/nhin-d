@@ -21,9 +21,9 @@ public class RDBMSAuditor_getLastEventTest extends RDBMSAuditorBaseTest
 	    	
 	    	final AuditEvent auditEvent = new AuditEvent("name1", "value1");
 
-	    	this.auditor.audit("testPin", auditEvent, null);
+	    	this.auditorImpl.audit("testPin", auditEvent, null);
 	    	
-	    	final CompositeData lastMessage = auditor.getLastEvent();
+	    	final CompositeData lastMessage = auditorImpl.getLastEvent();
 	    	
 			assertNotNull(lastMessage);
 			
@@ -46,9 +46,9 @@ public class RDBMSAuditor_getLastEventTest extends RDBMSAuditorBaseTest
 			final DefaultAuditContext context1 = new DefaultAuditContext("name1", "value1");
 			final DefaultAuditContext context2 = new DefaultAuditContext("name2", "value2");
 	    	
-	    	this.auditor.audit("testPin", auditEvent, Arrays.asList(context1, context2));
+	    	this.auditorImpl.audit("testPin", auditEvent, Arrays.asList(context1, context2));
 	    	
-	    	final CompositeData lastMessage = auditor.getLastEvent();
+	    	final CompositeData lastMessage = auditorImpl.getLastEvent();
 	    	
 			assertNotNull(lastMessage);
 			
@@ -69,7 +69,7 @@ public class RDBMSAuditor_getLastEventTest extends RDBMSAuditorBaseTest
 		public void testGetLastEventTest_noEntries_assertNull() throws Exception
 		{
 	    	
-	    	final CompositeData lastMessage = auditor.getLastEvent();
+	    	final CompositeData lastMessage = auditorImpl.getLastEvent();
 	    	
 			assertNull(lastMessage);
 
