@@ -50,6 +50,4 @@
 		<property name="password" value='${auditStore.db.password}' />
 	</bean> 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
-	
-	<bean id="auditor" class="org.nhindirect.common.audit.impl.RDBMSAuditor"/>
 </beans>

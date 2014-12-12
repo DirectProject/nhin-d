@@ -24,7 +24,6 @@ package org.nhindirect.common.audit.impl;
 import java.lang.management.ManagementFactory;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.Vector;
 
@@ -39,9 +38,6 @@ import javax.management.openmbean.CompositeType;
 import javax.management.openmbean.OpenDataException;
 import javax.management.openmbean.OpenType;
 import javax.management.openmbean.SimpleType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,8 +47,6 @@ import org.nhindirect.common.audit.AuditEvent;
 import org.nhindirect.common.audit.AuditorMBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the DirectProject RI auditor that writes records to a configurable database.
@@ -60,61 +54,44 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Greg Meyer
  * @since 1.0
  */
-@Repository
-public class RDBMSAuditor extends AbstractAuditor implements RDBMSDao
+public class RDBMSAuditor extends AbstractAuditor implements AuditorMBean
 {
 	private final Log LOGGER = LogFactory.getFactory().getInstance(RDBMSAuditor.class);
-	
-    @PersistenceContext
-    @Autowired
-    private EntityManager entityManager;
     
 	private String[] itemNames;
 	private CompositeType eventType;
     
+	@Autowired
+	protected RDBMSDao dao;
+	
 	/**
 	 * Constructor
 	 */
     public RDBMSAuditor()
-    {
+    {	
+    	super();
 		// register the auditor as an MBean
+    	
 		registerMBean();
     }
-    
-    /**
-     * Constructor 
-     * @param entityManager Entity manager for accessing the underlying data store medium
-     */
-    ///CLOVER:OFF
-    public RDBMSAuditor(EntityManager entityManager)
-    {
-    	super();
+	
+	/**
+	 * Constructor
+	 */
+    public RDBMSAuditor(RDBMSDao dao)
+    {	
+    	this();
+		// register the auditor as an MBean
     	
-    	setEntityManager(entityManager);
+    	setDao(dao);
     }
-    ///CLOVER:ON
     
-	/**
-	 * Sets the entity manager for access to the underlying data store medium.
-	 * @param entityManager The entity manager.
-	 */
-    ///CLOVER:OFF
-	public void setEntityManager(EntityManager entityManager)
-	{
-		this.entityManager = entityManager;
-	}
-    ///CLOVER:ON
-	
-	/**
-	 * Validate that we have a connection to the DAO
-	 */
-	protected void validateState()
-	{	
-    	if (entityManager == null)
-    		throw new IllegalStateException("entityManger has not been initialized");
-	}
-	
-	
+    
+    public void setDao(RDBMSDao dao)
+    {
+    	this.dao = dao;
+    }
+    
 	/*
 	 * Register the MBean
 	 */
@@ -160,39 +137,10 @@ public class RDBMSAuditor extends AbstractAuditor implements RDBMSDao
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Transactional(readOnly = false)	
 	public void writeEvent(UUID eventId, Calendar eventTimeStamp,
 			String principal, AuditEvent event, Collection<? extends AuditContext> contexts) 
 	{
-    	validateState();
-
-		final org.nhindirect.common.audit.impl.entity.AuditEvent newEvent =
-				new org.nhindirect.common.audit.impl.entity.AuditEvent();
-
-		newEvent.setEventName(event.getName());
-		newEvent.setEventType(event.getType());
-
-		newEvent.setEventTime(Calendar.getInstance(Locale.getDefault()));
-		newEvent.setPrincipal(principal);
-		newEvent.setUUID(eventId.toString());
-
-		if (contexts != null)
-		{
-			final Collection<org.nhindirect.common.audit.impl.entity.AuditContext> entityContexts = newEvent.getAuditContexts();
-			for (AuditContext context : contexts)
-			{
-				final org.nhindirect.common.audit.impl.entity.AuditContext newContext = 
-						new org.nhindirect.common.audit.impl.entity.AuditContext();
-				
-				newContext.setContextName(context.getContextName());
-				newContext.setContextValue(context.getContextValue());
-				newContext.setAuditEvent(newEvent);
-				entityContexts.add(newContext);
-			}
-		}
-		
-		entityManager.persist(newEvent);
-		entityManager.flush();
+		this.dao.writeRDBMSEvent(eventId, eventTimeStamp, principal, event, contexts);
 	}
 	
 
@@ -200,20 +148,14 @@ public class RDBMSAuditor extends AbstractAuditor implements RDBMSDao
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Transactional(readOnly = true)	
 	public Integer getEventCount() 
 	{
-    	validateState();
-    	
-    	final Query select = entityManager.createQuery("SELECT count(ae) from AuditEvent ae");
-    	
-    	return new Integer(((Long)select.getSingleResult()).intValue());
+		return this.dao.getRDBMSEventCount();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public CompositeData[] getEvents(Integer eventCount) 
 	{
@@ -222,10 +164,7 @@ public class RDBMSAuditor extends AbstractAuditor implements RDBMSDao
 		
 		final Vector<CompositeData> retVal = new Vector<CompositeData>();
 		
-    	final Query select = 
-    			entityManager.createQuery("SELECT ae from AuditEvent ae ORDER BY ae.eventTime desc").setMaxResults(eventCount);
-		
-        final Collection<org.nhindirect.common.audit.impl.entity.AuditEvent> rs = select.getResultList();
+        final Collection<org.nhindirect.common.audit.impl.entity.AuditEvent> rs = this.dao.getRDBMSEvents(eventCount);
         if (rs.size() == 0)
         	return null;
         
@@ -283,19 +222,6 @@ public class RDBMSAuditor extends AbstractAuditor implements RDBMSDao
 	@Override
 	public void clear() 
 	{
-		// truncating the tables
-		
-    	Query delete = 
-    			entityManager.createQuery("delete from AuditContext");
-    	
-    	delete.executeUpdate();
-    	
-    	delete = 
-    			entityManager.createQuery("delete from AuditEvent");
-    	
-    	delete.executeUpdate();
-    	
-    	entityManager.flush();
-		
+		this.dao.rDBMSclear();		
 	}
 }

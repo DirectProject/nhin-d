@@ -28,10 +28,10 @@ public class RDBMSAuditor_getEventsTest extends RDBMSAuditorBaseTest
 		DefaultAuditContext context1 = new DefaultAuditContext("name1", "value1");
 		DefaultAuditContext context2 = new DefaultAuditContext("name2", "value2");
 		
-		auditor.audit(PRINCIPAL, event1);
-		auditor.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
+		auditorImpl.audit(PRINCIPAL, event1);
+		auditorImpl.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
 		
-		CompositeData[] events = auditor.getEvents(2);
+		CompositeData[] events = auditorImpl.getEvents(2);
 		
 		assertNotNull(events);
 		assertEquals(2, events.length);
@@ -60,10 +60,10 @@ public class RDBMSAuditor_getEventsTest extends RDBMSAuditorBaseTest
 		DefaultAuditContext context1 = new DefaultAuditContext("name1", "value1");
 		DefaultAuditContext context2 = new DefaultAuditContext("name2", "value2");
 		
-		auditor.audit(PRINCIPAL, event1);
-		auditor.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
+		auditorImpl.audit(PRINCIPAL, event1);
+		auditorImpl.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
 		
-		CompositeData[] events = auditor.getEvents(5);
+		CompositeData[] events = auditorImpl.getEvents(5);
 		
 		assertNotNull(events);
 		assertEquals(2, events.length);
@@ -91,10 +91,10 @@ public class RDBMSAuditor_getEventsTest extends RDBMSAuditorBaseTest
 		DefaultAuditContext context1 = new DefaultAuditContext("name1", "value1");
 		DefaultAuditContext context2 = new DefaultAuditContext("name2", "value2");
 		
-		auditor.audit(PRINCIPAL, event1);
-		auditor.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
+		auditorImpl.audit(PRINCIPAL, event1);
+		auditorImpl.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
 		
-		CompositeData[] events = auditor.getEvents(1);
+		CompositeData[] events = auditorImpl.getEvents(1);
 		
 		assertNotNull(events);
 		assertEquals(1, events.length);
@@ -116,7 +116,7 @@ public class RDBMSAuditor_getEventsTest extends RDBMSAuditorBaseTest
 	public void testGetEvents_NoRecordsAvailable_NoRecordsFound()
 	{
 		
-		CompositeData[] events = auditor.getEvents(1);
+		CompositeData[] events = auditorImpl.getEvents(1);
 		
 		assertNull(events);
 	}	
@@ -130,10 +130,10 @@ public class RDBMSAuditor_getEventsTest extends RDBMSAuditorBaseTest
 		DefaultAuditContext context1 = new DefaultAuditContext("name1", "value1");
 		DefaultAuditContext context2 = new DefaultAuditContext("name2", "value2");
 		
-		auditor.audit(PRINCIPAL, event1);
-		auditor.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
+		auditorImpl.audit(PRINCIPAL, event1);
+		auditorImpl.audit(PRINCIPAL, event2, Arrays.asList(context1, context2));
 		
-		CompositeData[] events = auditor.getEvents(0);
+		CompositeData[] events = auditorImpl.getEvents(0);
 		
 		assertNull(events);
 
