@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{1.4.2}
+
+    Changes included with release 1.4.2
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed cached secret key store where Key objects were reference to an HSM and still suffering from time outs.
+
 {1.4.1}
 
     Changes included with release 1.4.1
