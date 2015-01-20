@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-manager</artifactId>
-	<version>1.2-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java configuration manager</name>
     <description>NHIN Direct Java configuration manager</description>
