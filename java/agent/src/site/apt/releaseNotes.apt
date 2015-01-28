@@ -6,6 +6,34 @@
         Greg Meyer
         ---
 
+{2.0.13}
+
+    Changes included with release 2.0.13
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Backed out change to suppress NXRRSet errors.  These errors should not be suppressed.
+
+{2.0.12}
+
+    Changes included with release 2.0.12
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with Base64 message signature not properly line wrapping.
+
 {2.0.5}
 
     Changes included with release 2.0.5
