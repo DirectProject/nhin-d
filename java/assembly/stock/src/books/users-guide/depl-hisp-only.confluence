@@ -22,6 +22,18 @@ Version 3.0 of the Bare Metal assembly added the policy enablement module as an 
 
 From a deployment perspective, there are no differences between 2.x and 3.x when installing the required components other than updated versions of components.  Configuration of the policy enable module is described in the direct-policy library users [guide|http://api.nhindirect.org/java/site/direct-policy/1.0/users-guide/dev-sta.html].
 
+h2. Major Updates in Version 4.0+
+
+Version 4.0 of the Mare Metal assembly introduced a number of new features focused on real world production issues.  These include:
+* A complete re-implementation of the configuration service API using a RESTful paradigm.
+** Supports a pluggalbe authentication model and a BasicAuth model by default.
+* Mandatory encryption of p12 files stored in the configuration service.  Pre-existing p12 files will remain unencrypted, but it is highly advised that you re-import them.
+* Support of PKCS12 hardware tokens for storage of p12 secret keys.
+* RDBMS based auditing support and pluggable auditing configuration.
+* Default TLS edge encryption for IMAP, POP3, and SMTP in James 3.
+
+From a deployment perspective, there are some key configuration changes to take advantage of the new features.  These will be discussed in their appropriate sections.
+
 h2. Assumptions
 
 * User is running one of the following software platforms.  Other platforms are supported and may only required slight variations of the instructions listed this section, but the Bare Metal install has only been validated on the following platforms:
@@ -35,6 +47,9 @@ h2. Assumptions
 *** 12.04 (Precise Pangolin)
 *** 12.10 (Quantal Quetzal)
 *** 13.04 (Raring Ringtail)
+*** 13.10 (Saucy Salamander)
+*** 14.04 (Trusty Tahr)
+*** 14.10 (Utopic Unicorn)
 ** FreeBSD 9.1
 ** CentOS 5+
 ** RHEL 5.5+
@@ -49,7 +64,7 @@ The reference implementation requires some tools to be available on the platform
 
 * Unzip
 * Ant
-* Java SE 6
+* Java SE 6 or 7
 
 h3. Unzip
 
@@ -116,19 +131,19 @@ FreeBSD also does not come with _wget_ by default.  Install wget using the follo
  pkg_add -r wget
 {code}
 
-h3. Java 6 SE
+h3. Java SE
 
-The Java 6 SE platform provides the runtime environment that all of the Bare Metal components will run in.
+The Java 6 and 7 SE platforms provides the runtime environment that all of the Bare Metal components will run in.  The package has been tested with both.
 
 _Windows_
 
-Download and install the Java 6 JRE from Oracle's download web [site|http://www.oracle.com/technetwork/java/javase/downloads/jre-6u29-download-513650.html].  After installing the JRE, set the JAVA_HOME environment variable by following the instructions below:
+Download and install the Java 6 or 7 JRE from Oracle's download web [site|http://www.oracle.com/technetwork/java/javaseproducts/downloads/index.html].  After installing the JRE, set the JAVA_HOME environment variable by following the instructions below:
 
 * Right click on "My Computer" (may be in different locations depending on the Windows version) and select Properties
 * If running later versions of Windows, you may be presented "Control\System" panel.  If so, click Advanced system settings on the left side of the window.
 * In the System Properties Dialog, click the Advanced tab and then click Environment Variables.
 * Under System Variables click New.
-* Use the following setting:
+* Use the following settings example substituting with the appropriate folder:
 
 {code}
  Variable Name: JAVA_HOME
@@ -158,7 +173,7 @@ _Ubuntu 12.04 - 13.04_
 
 The Oracle JREs are supported in the [WebUpdt8|https://launchpad.net/~webupd8team/+archive/java] Personal Package Archive (PPA) which automatically downloads and installs the JRE.
 
-To install the Java 6 JRE, follow the commands below:
+To install PPA, follow the commands below:
 
 *Note:* The add-apt-repository command may not be available.  Adding the python-software-properties package should resolve this issue.  It is also okay to ignore the "no alternative" error messages displayed after running the update-java-alternatives command.
 
@@ -166,9 +181,23 @@ To install the Java 6 JRE, follow the commands below:
  sudo apt-get install python-software-properties
  sudo add-apt-repository ppa:webupd8team/java
  sudo apt-get update
+{code}
+
+To install Java 6: 
+
+{code}
  sudo apt-get install oracle-java6-installer 
  sudo update-java-alternatives -s java-6-oracle
  export JAVA_HOME=/usr/lib/jvm/java-6-oracle
+ echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
+{code}
+
+To install Java 7: 
+
+{code}
+ sudo apt-get install oracle-java7-installer 
+ sudo update-java-alternatives -s java-7-oracle
+ export JAVA_HOME=/usr/lib/jvm/java-7-oracle
  echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/environment
 {code}
 
@@ -234,7 +263,10 @@ h3. Java Cryptographic Extensions
 
 The Sun JRE/JDK requires the JCE policy jars to be updated to allow for unlimited strength encryption.  The policy files must be downloaded separately and copied in the JRE library.
 
-For all platforms, download the jce policy [file|http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html] using a web browser.  For Unix/Linux systems, it may be necessary to manually copy or FTP the file from a system with a UI to the Unix/Linux node. 
+For all platforms, download the jce policy file using a web browser.  For Unix/Linux systems, it may be necessary to manually copy or FTP the file from a system with a UI to the Unix/Linux node. 
+
+* [Java 6|http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html]
+* [Java 7|http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html]
 
 _Windows_
 
@@ -245,7 +277,7 @@ _All Linux/Unix/FreeBSD_
 From the directory where you downloaded and placed the jce zip file, run the following commands:
 
 {code}
- unzip jce_policy-6.zip
+ unzip <jce zip file name>
  sudo cp jce/local_policy.jar $JAVA_HOME/jre/lib/security
  sudo cp jce/US_export_policy.jar $JAVA_HOME/jre/lib/security
 {code}
@@ -270,26 +302,26 @@ _Windows_
 
 From a browser, download the desired version of the assembly from one the repositories above.  
 
-Example: Download version 3.0 - [direct-project-stock-3.0.tar.gz|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz].  After downloading, unzip the contents to appropriate installation location.
+Example: Download version 4.0 - [direct-project-stock-4.0.tar.gz|https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/4.0/direct-project-stock-4.0.tar.gz].  After downloading, unzip the contents to appropriate installation location.
 
 _All Linux/Unix_
 
-Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-3.0.tar.gz from maven central, use the following commands:
+Obtain the URL for appropriate version of the assembly and download it the /opt directory by running wget command from the /opt directory.  For example, to download version direct-project-stock-4.0.tar.gz from maven central, use the following commands:
 {code}
  cd /opt
- sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
+ sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/4.0/direct-project-stock-4.0.tar.gz
 {code}
 
 If you are denied access to the location above, try the Sonatype repostitory using the following command.
 {code}
  cd /opt
- sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
+ sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/4.0/direct-project-stock-4.0.tar.gz
 {code}
 
 Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
 
 {code}
- sudo tar xvfz direct-project-stock-3.0.tar.gz
+ sudo tar xvfz direct-project-stock-4.0.tar.gz
  export DIRECT_HOME=`pwd`/direct
  echo "export DIRECT_HOME=$DIRECT_HOME" | sudo tee -a /etc/environment
 {code}
@@ -302,19 +334,19 @@ Obtain the URL for appropriate version of the assembly and download it the /opt 
  cd /
  mkdir opt
  cd /opt
- sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
+ sudo wget http://repo2.maven.apache.org/maven2/org/nhind/direct-project-stock/4.0/direct-project-stock-4.0.tar.gz
 {code}
 
 If you are denied access to the location above, try the Sonatype repostitory using the following command.
 {code}
  cd /opt
- sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/3.0/direct-project-stock-3.0.tar.gz
+ sudo wget https://oss.sonatype.org/content/repositories/releases/org/nhind/direct-project-stock/4.0/direct-project-stock-4.0.tar.gz
 {code}
 
 Extract the contents of the assembly and set the DIRECT HOME logical using the following command.  Note the name of the tar.gz file if you downloaded a different version:
 
 {code}
- sudo tar xvfz direct-project-stock-3.0.tar.gz
+ sudo tar xvfz direct-project-stock-4.0.tar.gz
  sed -i .bak 's/setenv=/setenv=DIRECT_HOME=\/opt\/direct,/g' /etc/login.conf
  cap_mkdb /etc/login.conf
 {code}
@@ -425,16 +457,30 @@ First, configure james with your domain name.  Depending on the version of James
 
 _Windows_
 
+*NOTE* You will need ant installed to use the batch file method.
+
 *James 2.3.2*
 
-Manually edit the file config.xml under DIRECT HOME/james-2.3.2/apps/james/SAR-INF and change the following settings:
+To set the domain via the batch file, open a command prompt, CD to the %DIRECT_HOME%/james-2.3.2 directory and run the following command:
+
+{code}
+ bin/setdomain <your domain name>
+{code}
+
+If you don't have Ant installed, manually edit the file config.xml under %DIRECT_HOME%/james-2.3.2/apps/james/SAR-INF and change the following settings:
 * <postmaster>postmaster@localhost</postmaster> to <postmaster>postmaster@<your domain name></postmaster>
 * <servername>localhost</servername> to <servername>your domain name</servername>
 * match="RecipAndSenderIsNotLocal=mydomain.com" to match="RecipAndSenderIsNotLocal=your domain name"
 
 *James 3*
 
-Manually edit the file domainlist.conf under DIRECT HOME/apache-james-3.0-beta4/conf and change the following settings under the XML based configuration (not the JPA configuration settings):  
+To set the domain via the batch file, open a command prompt, CD to the %DIRECT_HOME%/apache-james-3.0-beta4 directory and run the following command:
+
+{code}
+ bin/setdomain <your domain name>
+{code}
+
+Manually edit the file domainlist.conf under %DIRECT_HOM%E/apache-james-3.0-beta4/conf and change the following settings under the XML based configuration (not the JPA configuration settings):  
 
 *NOTE:* James3 has better support of multiple domains hosted in a single mail server.  You may add multiple domains to this list, but you must list only one default domain. 
 * <domainname>localhost</domainname> to <domainname>your domain name</domainname>
@@ -547,11 +593,11 @@ h2. Recommended Next Steps
 
 Following are optional, but recommended, next steps to secure your environment.
 
-_Secure Configuration Service Port (8081)_
+h3. Secure Configuration Service Port (8081)
 
 To secure the configuration service, it is recommended to limit access to port 8081 to localhost and/or a local subnet.
 
-_Secure Configuration Service Password_
+h3. Secure Configuration Service Password
 
 To further protect the configuration service, or if port 8081 must remain public, it is recommended to change the default password.
 
@@ -579,10 +625,16 @@ _All Unix/Linux/FreeBSD_
  sh bin/startup.sh
 {code}
 
-_Tweak Message Monitoring Service Settings_
+h3. Add Own Server Certificate to James 3
+
+If you are using James 3, the default configuration enables last mile encryption (SSL and TLS) on the edge POP3, SMTP, and IMAP protocols.  This is enabled via configuration in the imapserver.conf, pop3server.conf, and smtpserver.conf files.  For POP3 and IMAP4, all connections use the STARTTLS command.  For the SMTP protocol, the configuration enables STARTTLS for local outgoing connections that must be authenticated, but all incoming SMTP exchanges from external systems will continue to use non SSL/TLS connections.
+
+To enable encryption, a server certificate must be installed along with its private key.  The James 3 configuration comes pre-packaged with a self signed certificate.  Most email and edge clients will display a warning to the user noting that the certificate should probably not be trusted.  At this point, it is recommneded that you either install your own certificate or install a certificate from a PKI third party.  In either case, you will need to create your own keystore file with your own certificate and deploy it in the James _conf_ directory.  This should be the same place where the default cakeystore.jks is located.  After deploying your own keystore, you will need to update the SSL connection section of the imapserver.conf, pop3server.conf, and smtpserver.conf files with the location of your own keystore file and passphrase for the keystore file.
+
+h3. Tweak Message Monitoring Service Settings
 
 The message monitoring service is preconfigured with common settings, but can be tweaked to your specific requirements.  See the monitoring deployment [guide|http://api.nhindirect.org/java/site/direct-msg-monitor/1.1.3/users-guide/deployment.html] for more details.
 
-_Define Policy Definitions_
+h3. Define Policy Definitions
 
 Starting with version 3.0, an optional module is available for defining X509 certificate policies.  See the policy enablement module (direct-policy) users [guide|http://api.nhindirect.org/java/site/direct-policy/1.0/users-guide/] for full details.
