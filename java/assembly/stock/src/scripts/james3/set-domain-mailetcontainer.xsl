@@ -55,7 +55,32 @@
                             <xsl:apply-templates select="node()|@*"/>
                         </xsl:copy>
                     </xsl:for-each>                      
-                </xsl:element>
+                    <xsl:for-each select="SmptAgentConfigProvider">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each> 
+                    <xsl:for-each select="ServiceSecurityManagerProvider">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>    
+                    <xsl:for-each select="ServiceSecurityAuthSubject">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>    
+                    <xsl:for-each select="ServiceSecurityAuthSecret">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>   
+                    <xsl:for-each select="SmptAgentAuditorProvider">
+                        <xsl:copy>
+                            <xsl:apply-templates select="node()|@*"/>
+                        </xsl:copy>
+                    </xsl:for-each>  
+            	</xsl:element>                                                                                                                                   
             </xsl:when>
  
             <!-- Otherwise just copy things -->
