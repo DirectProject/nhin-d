@@ -65,9 +65,9 @@
 	<property name="james3.stage.springserver" value="${james3.stage.conf.dir}/META-INF/org/apache/james/spring-server.xml"></property>	
 	
 	<!-- tomcat properties -->
-	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.53/bin/apache-tomcat-7.0.53.tar.gz"></property>
-	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.53.tar.gz"></property>
-	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.53"></property>
+	<property name="tomcat.binary.url" value="http://apache.mirrors.pair.com/tomcat/tomcat-7/v7.0.59/bin/apache-tomcat-7.0.59.tar.gz"></property>
+	<property name="tomcat.binary.zip" value="${build.download.dir}/apache-tomcat-7.0.59.tar.gz"></property>
+	<property name="tomcat.stage.dir" value="${env.DIRECT_INSTALL_DIR}/apache-tomcat-7.0.59"></property>
 	<property name="tomcat.webapp.dir" value="${tomcat.stage.dir}/webapps"></property>
 	<property name="tomcat.bin.dir" value="${tomcat.stage.dir}/bin"></property>	
 	<property name="tomcat.stage.config" value="${tomcat.stage.dir}/conf/server.xml"></property>
@@ -83,7 +83,7 @@
 	<!-- Config server files -->
 	<property name="config.root" value="${config.root}/../config"></property>
 	<property name="config.service.dir" value="${config.root}/config-service/target"></property>
-	<property name="config.service.orig.war" value="config-service-2.0-SNAPSHOT.war"></property>
+	<property name="config.service.orig.war" value="config-service-2.1.2.war"></property>
 	<property name="config.service.dest.war" value="config-service.war"></property>
 	<property name="config.ui.dir" value="${config.root}/config-ui/target"></property>
 	<property name="config.ui.orig.war" value="config-ui-1.3.war"></property>
@@ -92,7 +92,7 @@
 	<!-- xd server files -->
 	<property name="xd.root" value="${config.root}/../xd"></property>
 	<property name="xd.service.dir" value="${config.root}/xd/target"></property>
-	<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
+	<property name="xd.service.orig.war" value="xd-1.0.3.war"></property>
 	<property name="xd.service.dest.war" value="xd.war"></property>
 	
 	
@@ -146,6 +146,9 @@
 	<property name="lib.spring-orm" value="${install.root.dir}/lib/spring-orm-3.0.4.RELEASE.jar"></property>	
 	<property name="lib.spring-tx" value="${install.root.dir}/lib/spring-tx-3.0.4.RELEASE.jar"></property>		
 	<property name="lib.javassist" value="${install.root.dir}/lib/javassist-3.4.GA.jar"></property>	
+	<property name="lib.antlr" value="${install.root.dir}/lib/antlr-2.7.6.jar"></property>	
+	<property name="lib.slf4j-api" value="${install.root.dir}/lib/slf4j-api-1.6.1.jar"></property>		
+	<property name="lib.commons-collections" value="${install.root.dir}/lib/commons-collections-3.2.1.jar"></property>		
 	
 	<!-- Support libraries (DNS) -->
 	<property name="lib.jcs" value="${install.root.dir}/lib/jcs-1.3.jar"></property>
@@ -157,8 +160,8 @@
 	<property name="lib.jaxrpc-api" value="${install.root.dir}/lib/jaxrpc-api-1.1.jar"></property>
 	<property name="lib.commons-discovery" value="${install.root.dir}/lib/commons-discovery-0.4.jar"></property>
 	<property name="lib.axis" value="${install.root.dir}/lib/axis-1.4.jar"></property>
-	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-2.0-SNAPSHOT.jar"></property>
-	<property name="lib.config-model" value="${install.root.dir}/lib/config-model-1.0-SNAPSHOT.jar"></property>
+	<property name="lib.config.proxy" value="${install.root.dir}/lib/config-service-client-2.0.jar"></property>
+	<property name="lib.config-model" value="${install.root.dir}/lib/config-model-1.0.jar"></property>
 	
 	<!-- Package libraries -->
 	<property name="agent.dir" value="${install.root.dir}/../agent"></property>
@@ -167,12 +170,12 @@
 	<property name="direct-common-audit.dir" value="${install.root.dir}/../direct-common-audit"></property>		
 	<property name="xdmail.dir" value="${install.root.dir}/../xdmail"></property>
 	<property name="xd-common.dir" value="${install.root.dir}/../xd-common"></property>	
-	<property name="lib.agent" value="${install.root.dir}/lib/agent-2.1-SNAPSHOT.jar"></property>
-	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-3.1-SNAPSHOT.jar"></property>
-	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.3-SNAPSHOT.jar"></property>	
-	<property name="lib.direct-common-audit" value="${install.root.dir}/lib/direct-common-audit-1.0-SNAPSHOT.jar"></property>		
-	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.3.jar"></property>
-	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.2.jar"></property>
+	<property name="lib.agent" value="${install.root.dir}/lib/agent-2.0.13.jar"></property>
+	<property name="lib.gateway" value="${install.root.dir}/lib/gateway-4.0.jar"></property>
+	<property name="lib.direct-common" value="${install.root.dir}/lib/direct-common-1.4.2.jar"></property>	
+	<property name="lib.direct-common-audit" value="${install.root.dir}/lib/direct-common-audit-1.0.jar"></property>		
+	<property name="lib.xdmail" value="${install.root.dir}/lib/xdmail-1.1.4.jar"></property>
+	<property name="lib.xd-common" value="${install.root.dir}/lib/xd-common-1.0.3.jar"></property>
 	<property name="lib.policy" value="${install.root.dir}/lib/direct-policy-1.0.jar"></property>	
 	
 	<!-- Stylesheet to edit the config file -->
@@ -370,6 +373,9 @@
 		<copy file="${lib.spring-orm}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
 		<copy file="${lib.spring-tx}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
 		<copy file="${lib.javassist}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.antlr}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>
+		<copy file="${lib.slf4j-api}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>	
+		<copy file="${lib.commons-collections}" todir="${james.stage.apps.SAR-INF.lib.dir}"></copy>				
 		
 		<!-- edit the config.xml file -->
 		<copy file="${james.stage.config}" tofile="${james.stage.config.save}" overwrite="true"></copy>
@@ -378,6 +384,7 @@
 		<copy file="${src}/scripts/phoenix.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
 		<copy file="${src}/scripts/run.bat" todir="${james.stage.dir}/bin" overwrite="true"></copy>		
 		<copy file="${src}/scripts/setdomain.sh" todir="${james.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/setdomain.bat" todir="${james.stage.dir}/bin" overwrite="true"></copy>		
 		<copy file="${src}/scripts/set-domain.xml" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/set-domain.xsl" todir="${james.stage.dir}/bin" overwrite="true"></copy> 
 
@@ -451,6 +458,7 @@
 		<copy file="${lib.spring-orm}" todir="${james3.stage.lib.dir}"></copy>	
 		<copy file="${lib.spring-tx}" todir="${james3.stage.lib.dir}"></copy>			
 		<copy file="${lib.javassist}" todir="${james3.stage.lib.dir}"></copy>			
+		<copy file="${lib.antlr}" todir="${james3.stage.lib.dir}"></copy>			
 		
 		<!-- copy the new config files -->
 		<copy file="${src}/scripts/james3/domainlist.conf" tofile="${james3.stage.domainlist}" overwrite="true"></copy>
@@ -465,6 +473,7 @@
 		<copy file="${src}/scripts/james3/spring-server.xml" tofile="${james3.stage.springserver}" overwrite="true"></copy>
 		
 		<copy file="${src}/scripts/james3/setdomain.sh" todir="${james3.stage.dir}/bin" overwrite="true"></copy>
+		<copy file="${src}/scripts/james3/setdomain.bat" todir="${james3.stage.dir}/bin" overwrite="true"></copy>		
 		<copy file="${src}/scripts/james3/set-domain.xml" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/james3/set-domain-domainlist.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
 		<copy file="${src}/scripts/james3/set-domain-mailetcontainer.xsl" todir="${james3.stage.dir}/bin" overwrite="true"></copy> 
@@ -473,11 +482,11 @@
 	</target>	
 	
 	<target name="configure-tomcat">
-		<property name="config.service.orig.war" value="config-service-2.0-SNAPSHOT.war"></property>
+		<property name="config.service.orig.war" value="config-service-2.1.2.war"></property>
 		<property name="config.service.dest.war" value="config-service.war"></property>
 		<property name="config.ui.orig.war" value="config-ui.war"></property>
 		<property name="config.ui.dest.war" value="config-ui.war"></property>
-		<property name="xd.service.orig.war" value="xd-1.0.2.war"></property>
+		<property name="xd.service.orig.war" value="xd-1.0.3.war"></property>
 		<property name="xd.service.dest.war" value="xd.war"></property>
 		<property name="msg-monitor.service.orig.war" value="direct-msg-monitor-web-1.1.3.war"></property>
 		<property name="msg-monitor.service.dest.war" value="msg-monitor.war"></property>		
