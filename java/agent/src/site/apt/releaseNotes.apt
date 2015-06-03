@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{2.0.15}
+
+    Changes included with release 2.0.15
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with local domain suffixes being used when querying for DNS cert records.
+
 {2.0.13}
 
     Changes included with release 2.0.13
