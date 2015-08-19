@@ -240,7 +240,8 @@ public class XdmPackage {
                 // Read data
               //  if (StringUtils.contains(subsetDirspec, StringUtils.remove(XDM_SUB_FOLDER, "/"))
                 if (StringUtils.contains(subsetDirspec,XDM_SUB_FOLDER)
-                        && !StringUtils.contains(zname, ".xsl") && !StringUtils.contains(zname, XDM_METADATA_FILE)) {
+                        && !StringUtils.containsIgnoreCase(zname, ".xsl") && !StringUtils.containsIgnoreCase(zname,
+						XDM_METADATA_FILE)) {
                     ByteArrayOutputStream byteArrayOutputStream = readData(zipFile, zipEntry);
 
                     String digest = DirectDocument2.getSha1Hash(byteArrayOutputStream.toString());
@@ -307,7 +308,7 @@ public class XdmPackage {
    protected static  boolean matchName(String zname, String subsetDirspec, String subsetFilespec) {
         zname = zname.replaceAll("\\\\", "/");
         String zipFilespec = subsetDirspec + "/" + subsetFilespec;
-        boolean ret = StringUtils.equals(zname, zipFilespec);
+        boolean ret = StringUtils.equalsIgnoreCase(zname, zipFilespec);
 
 
         return ret;
