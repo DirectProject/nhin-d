@@ -325,7 +325,27 @@
 		            </goals>
 		          </execution>
 		        </executions>
-		      </plugin>  		
+		      </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>add-source</goal>
+						</goals>
+						<configuration>
+							<sources>
+								<source>${project.build.directory}/generated-sources/jaxws-wsgen</source>
+							</sources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxws-maven-plugin</artifactId>
@@ -347,8 +367,8 @@
 				<configuration>
 					<sei>org.nhindirect.config.service.impl.ConfigurationServiceImpl</sei>
 					<verbose>true</verbose>
-					<destDir>src/main/java</destDir>
-					<resourceDestDir>src/main/resources/wsdl</resourceDestDir>
+					<resourceDestDir>${project.build.directory}/${pom.artifactId}-${pom.version}/WEB-INF/wsdl</resourceDestDir>
+					<sourceDestDir>${project.build.directory}/generated-sources/jaxws-wsgen</sourceDestDir>
 					<protocol>soap1.1</protocol>
 					<keep>true</keep>
 					<genWsdl>true</genWsdl>
