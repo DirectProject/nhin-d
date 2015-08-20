@@ -42,6 +42,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.cms.CMSSignedData;
@@ -996,7 +997,7 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         	{
         		Header hdr = (Header)eHeaders.nextElement();
         		if (!MimeStandard.startsWith(hdr.getName(), MimeStandard.HeaderPrefix))
-        			headers.setHeader(hdr.getName(), hdr.getValue());
+        			headers.addHeader(hdr.getName(), hdr.getValue());
         	}
         	
         	
@@ -1005,7 +1006,12 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
         	while (eHeaders.hasMoreElements())
         	{
         		Header hdr = (Header)eHeaders.nextElement();
-        		headers.setHeader(hdr.getName(), hdr.getValue());
+				if (!StringUtils.equalsIgnoreCase(hdr.getName(), "received")) {
+					headers.setHeader(hdr.getName(), hdr.getValue());
+				}
+				else {
+					headers.addHeader(hdr.getName(), hdr.getValue());
+				}
         	}   
 			
         	Message msg = new Message(headers, payload.getContentAsBytes());
