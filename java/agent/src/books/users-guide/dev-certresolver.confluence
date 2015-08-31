@@ -2,7 +2,7 @@ h1. Certificate Resolvers
 
 The agent utilizes X509 certificates for encryption and signature purposes.  Certificates are required for every destination (sometime referred to in the Direct Project as a universal address).  The Direct Project network is made up a series of HISPs with each HISP containing one or more destinations.  A HISP maintains certificates for all if it's destinations and must obtain public certificates for destinations owned by other HISPs.  The obvious looming question is how does the agent obtain certificates for local and remote destinations.
 
-Certificates are obtained by the agent using the [CertificateResolver|http://api.nhindirect.org/java/site/agent/1.4.2/apidocs/org/nhindirect/stagent/cert/CertificateResolver.html] interface.  
+Certificates are obtained by the agent using the [CertificateResolver|../apidocs/org/nhindirect/stagent/cert/CertificateResolver.html] interface.  
 
 {code}
 package org.nhindirect.stagent.cert;
@@ -20,7 +20,7 @@ Now lets set some context with a couple of definitions:
 # *Local Destination*:  An address/destination whose domain is controlled by the agent.
 # *Remote Destination:* All other addresses that are not local destinations.
 
-The [DefaultNHINDAgent|./dev-nhindagent.html#DefaultNHINDAgent] requires two CertificteResolver instances: one for private certificates (local destinations) and one for public certificates (remote destinations).  In many cases (if not most), the private and public resolver may use completely different implementations.  In any case, the private resolver must be able to retrieve certificates from a medium that has access to the certificates' private keys.
+The [DefaultNHINDAgent|./dev-nhindagent#DefaultNHINDAgent] requires two CertificteResolver instances: one for private certificates (local destinations) and one for public certificates (remote destinations).  In many cases (if not most), the private and public resolver may use completely different implementations.  In any case, the private resolver must be able to retrieve certificates from a medium that has access to the certificates' private keys.
 
 The default agent supports multiple simultaneous resolvers for public certificate resolution.  Multiple public resolvers are configured by passing a collection of resolvers to the agents constructor.  The agent uses each resolver in the order they are obtained by the collection's Iterator.  The agent only iterates through the resolvers until at least one certificate is found; at that point iteration stops.
 
@@ -118,7 +118,7 @@ The second allows you to override the DNS servers that the resolver will use to 
 
 The last allows you to provide a custom bootstrap store and a custom cache policy.  Passing null for the server list for either constructor results in the resolver using the machine's configured DNS servers.
 
-Certificate resolvers that use cache policies implement the [CacheableCertStore|http://api.nhindirect.org/java/site/agent/1.4.2/apidocs/org/nhindirect/stagent/cert/CacheableCertStore.html] interface.  This interface allows the cache and bootstrap parameters to be set after instance construction.
+Certificate resolvers that use cache policies implement the [CacheableCertStore|../apidocs/org/nhindirect/stagent/cert/CacheableCertStore.html] interface.  This interface allows the cache and bootstrap parameters to be set after instance construction.
 
 *Example*
 {code}

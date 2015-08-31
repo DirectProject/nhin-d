@@ -1,24 +1,35 @@
 package org.nhindirect.stagent.cryptography;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.security.Key;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.crypto.SecretKey;
 import javax.mail.internet.InternetHeaders;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 
 
 import junit.framework.TestCase;
 
+import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.cms.ContentInfo;
+import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.SignerInformation;
+import org.bouncycastle.mail.smime.CMSProcessableBodyPart;
+import org.bouncycastle.util.encoders.Base64;
 import org.nhindirect.common.crypto.PKCS11Credential;
 import org.nhindirect.common.crypto.impl.BootstrappedPKCS11Credential;
 import org.nhindirect.common.crypto.impl.StaticPKCS11TokenKeyStoreProtectionManager;
@@ -373,6 +384,33 @@ public class CryptographerTest extends TestCase
 		byte[] entityBytes = EntitySerializer.Default.serializeToBytes(entity);
 		
 		assertTrue(Arrays.equals(decryEntityBytes, entityBytes));
+	}	
+	
+	public void testvalidateSignature() throws Exception
+	{
+		final String str = FileUtils.readFileToString(new File("./src/test/resources/org/nhindirect/stagent/msgSig.txt"));
+		
+		byte[] byteData = Base64.decode(str);
+		
+        MimeBodyPart signedContent = null;
+        
+        //ContentInfo info = CMSUtils.readContentInfo(sigData)
+        
+       	signedContent = new MimeBodyPart(new ByteArrayInputStream(str.getBytes()));
+		
+       	CMSSignedData signed = new CMSSignedData(byteData);
+		
+       	CertStore certs = signed.getCertificatesAndCRLs("Collection", CryptoExtensions.getJCEProviderName());
+       	
+       	Collection<? extends Certificate> certCollection = certs.getCertificates(null);
+       	
+        for (Certificate cert : certCollection)
+        {
+        	FileUtils.writeByteArrayToFile(new File("./testCert.der"), cert.getEncoded());
+        }
+		
+		int i = 0;
+		++i;
 	}	
 	
 }

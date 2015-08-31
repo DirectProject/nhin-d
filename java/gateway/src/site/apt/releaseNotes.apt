@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{4.0}
+
+    Changes included with release 3.0
+    
+    []
+    
+    Enhancements
+    
+    * Configuration by default uses REST based configuration access.
+
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
 {3.0.1}
 
     Changes included with release 3.0.1

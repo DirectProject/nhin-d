@@ -74,17 +74,17 @@
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-service-client</artifactId>
-		    <version>1.1</version>   
+		    <version>2.0</version>   
 		</dependency>	
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>agent</artifactId>
-		    <version>2.0.1</version>   
+		    <version>2.0.11</version>   
 		</dependency>		
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-store</artifactId>
-		    <version>1.2</version>   
+		    <version>1.5</version>   
 		</dependency>				
 		<dependency>
 		    <groupId>org.apache.mina</groupId>

@@ -130,7 +130,7 @@ Thus the introduction of the [PolicyFilter|../apidocs/org/nhindirect/policy/Poli
 
 Policy filters are the core constructs of the policy engine as they determine if an X509 certificate is compliant with a given policy. Internally they encapsulate the modular pieces of the engine (parser, compiler, and execution engine), and orchestrate the flow of a certificate and policy through the engine's components.  Each functional component of the policy engine can be used independently to perform specific tasks such as those stated in the previous paragraph, however filters combine the components together to achieve the primary value proposition of the engine: evaluating X509 certificate compliance to a policy.
 
-The term filter is derived from the primary use case of the PolicyFilter: to filter non compliant certificates within the security and trust [agent|http://api.nhindirect.org/java/site/agent/1.6/apidocs/org/nhindirect/stagent/NHINDAgent.html] process.  In the agent, filters are applied at strategic intercept points to remove discovered and other encountered certificates that do not meet policy requirements.  These intercept points are covered in detail in the [STA|dev-sta.html] section of this book.
+The term filter is derived from the primary use case of the PolicyFilter: to filter non compliant certificates within the security and trust [agent|../../../agent/2.0.13/apidocs/org/nhindirect/stagent/NHINDAgent.html] process.  In the agent, filters are applied at strategic intercept points to remove discovered and other encountered certificates that do not meet policy requirements.  These intercept points are covered in detail in the [STA|dev-sta.html] section of this book.
 
 The filter provides one method with two variations:
 

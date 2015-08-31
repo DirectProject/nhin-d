@@ -1,8 +1,8 @@
-h1. DNS Certificate Dumper
+h1. LDAP Certificate Dumper
 
 The reference implementation source tree provides a tool retrieving user and organizational certificates by email address or domain using LDAP and writing the certificate to a DER encoded file.  The tool is located under the /java/agent/tools directory in the source tree and is named ldapCertDumper.sh for unix/linux based systems and ldapCertDumper.bat for Windows.
 
-h2. DNS Certificate Resolution
+h2. LDAP Certificate Resolution
 
 The Direct Project defines a method for resolving public certificates using LDAP.  In some cases, it may be desirable to manually download a public certificate using LDAP and dump it to a file.  The ldapCertDumper tool uses the LDAPCertificateResolver with the public SRV resolver to locate certificates using an email address or a domain name.  Certificates are located using the resolution algorithms defined by the Direct Project meaning the resolver will look for user level certificates first then fall back to searching for organizational certificates if a user level certificate can not be found. 
 

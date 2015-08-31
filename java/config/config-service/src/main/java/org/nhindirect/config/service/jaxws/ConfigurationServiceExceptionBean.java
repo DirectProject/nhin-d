@@ -15,14 +15,10 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlRootElement(name = "ConfigurationServiceException", namespace = "http://nhind.org/config")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ConfigurationServiceException", namespace = "http://nhind.org/config", propOrder = {
-    "message",
-    "suppressed"
-})
+@XmlType(name = "ConfigurationServiceException", namespace = "http://nhind.org/config")
 public class ConfigurationServiceExceptionBean {
 
     private String message;
-    private Throwable[] suppressed;
 
     /**
      * 
@@ -40,24 +36,6 @@ public class ConfigurationServiceExceptionBean {
      */
     public void setMessage(String message) {
         this.message = message;
-    }
-
-    /**
-     * 
-     * @return
-     *     returns Throwable[]
-     */
-    public Throwable[] getSuppressed() {
-        return this.suppressed;
-    }
-
-    /**
-     * 
-     * @param suppressed
-     *     the value for the suppressed property
-     */
-    public void setSuppressed(Throwable[] suppressed) {
-        this.suppressed = suppressed;
     }
 
 }

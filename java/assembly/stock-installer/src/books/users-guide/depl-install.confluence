@@ -246,9 +246,9 @@ Finally the system will display the completion screen.  At this point you may op
 
 !images/complete.PNG!
 
-By this point you should have a base installation of the Java reference implementation up and running.  If you shutdown Tomcat and/or James, you may need to relauch them using the command line scripts found in their respective directories.  You can find a full description of launching these applications manually in the Bare Metal no source installation [guide|http://api.nhindirect.org/java/site/assembly/stock/2.1.1/users-guide/depl-hisp-only.html]
+By this point you should have a base installation of the Java reference implementation up and running.  If you shutdown Tomcat and/or James, you may need to relauch them using the command line scripts found in their respective directories.  You can find a full description of launching these applications manually in the Bare Metal no source installation [guide|../../../../assembly/stock/4.0/users-guide/depl-hisp-only.html]
 
 
 h2. Next Steps
 
-Now that your implemtation is up and running, you need to make it publically available to the internet.  Instructions from this point can be found on the in the Bare Metal no source installation guide starting from the DNS record section of the [guide|http://api.nhindirect.org/java/site/assembly/stock/2.1.1/users-guide/depl-hisp-only.html].
+Now that your implemtation is up and running, you need to make it publically available to the internet.  Instructions from this point can be found on the in the Bare Metal no source installation guide starting from the DNS record section of the [guide|../../../../assembly/stock/4.0/users-guide/depl-hisp-only.html].

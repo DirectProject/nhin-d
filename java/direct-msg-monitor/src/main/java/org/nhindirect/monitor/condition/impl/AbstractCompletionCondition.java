@@ -23,6 +23,9 @@ package org.nhindirect.monitor.condition.impl;
 
 import java.util.Collection;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
@@ -102,6 +105,15 @@ public abstract class AbstractCompletionCondition implements TxCompletionConditi
 		if (index > -1)
 		{
 			normalizedString = recip.substring(index + 1).trim();
+			try 
+			{
+				InternetAddress addr = new InternetAddress(normalizedString);
+				normalizedString = addr.getAddress();
+			} 
+			catch (AddressException e)
+			{
+				/* noop */
+			}
 		}
 			
 		return normalizedString;

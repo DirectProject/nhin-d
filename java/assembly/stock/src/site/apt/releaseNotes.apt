@@ -6,6 +6,34 @@
         Greg Meyer
         ---
 
+{4.0}
+
+    Changes included with release 4.0
+    
+    []
+    
+    Enhancements/Bug Fixes
+    
+    * Implementation of config-service via REST API
+    
+    * Plugable auth model for REST resources 
+    
+    * Database backed auditing implementation
+    
+    * Pluggalbe audit model
+    
+    * PKCS12 certificate files encrypted by default in config-service storage.
+    
+    * PKCS11/Cryptoki module support for storage of secret keys that protect P12 certificate files. 
+    
+    * Agent Version 2.0.13  See agent {{{http://api.directproject.info/agent/2.0.13/releaseNotes.html}release notes}}:
+    
+    * Gateway Version 4.0  See gateway {{{http://api.directproject.info/gateway/4.0/releaseNotes.html}release notes}}:
+    
+    * DNS Server Version 1.2.5  See dns {{{http://api.directproject.info/dns/1.2.5/releaseNotes.html}release notes}}:
+
+    * Direct Common Version 1.4.2  See dns {{{http://api.directproject.info/direct-common/1.4.2/releaseNotes.html}release notes}}: 
+
 {3.0.1}
 
     Changes included with release 3.0.1

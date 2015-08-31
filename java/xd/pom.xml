@@ -111,7 +111,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>xd-common</artifactId>
-            <version>1.1-SNAPSHOT</version>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 
@@ -315,16 +315,6 @@
 		            -->
                 </plugins>
             </build>
-            <pluginRepositories>
-                <pluginRepository>
-                    <releases>
-                        <enabled>true</enabled>
-                    </releases>
-                    <id>atlassian-m2-repository</id>
-                    <name>Atlassian Maven 2.x Repository</name>
-                    <url>http://repository.atlassian.com/maven2</url>
-                </pluginRepository>
-            </pluginRepositories>
         </profile>
     </profiles>
 

@@ -127,7 +127,7 @@ public class Certificate
      * 
      * @return the value of data.
      */
-    @Column(name = "certificateData",  length=4096)
+    @Column(name = "certificateData",  length=8192)
     @Lob
     public byte[] getData() {
         return data;

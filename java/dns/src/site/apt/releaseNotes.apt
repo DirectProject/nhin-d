@@ -1,0 +1,112 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.3}
+
+    Changes included with release 1.3
+    
+    []
+    
+    Enhancements
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=237}237}}: Added ability to delegate sub zones to a different DNS server.
+    
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
+{1.2.3}
+
+    Changes included with release 1.2.3
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=218}218}}: Fixed build and test issues with JDK 7.
+
+{1.2.2}
+
+    Changes included with release 1.2.2
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=215}215}}: ANY type query failing when multiple types associated with DNS question.
+
+{1.2.1}
+
+    Changes included with release 1.2.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=182}182}}: Fixed issue with UDP replies not being properly truncated.
+    
+{1.2}
+
+    Changes included with release 1.2
+    
+    []
+    
+    Enhancements
+    
+    * DNSStoreProvider is now configurable using "org.nhindirect.dns.DNSStoreProviderClass" JVM parameter in the DNSServerService DNS.
+
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
+{1.1}
+
+    Changes included with release 1.1 
+    
+    []
+    
+    Enhancements
+    
+    * Added simple real time metrics exposed through JMX.
+
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=142}142}}: Certificate extension searches now searching for subject alt names.
+
+{1.0.0}
+
+    Changes included with release 1.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	

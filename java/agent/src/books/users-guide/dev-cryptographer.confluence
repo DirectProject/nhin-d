@@ -1,6 +1,6 @@
 h1. Cryptographer
 
-Cryptographers are responsible for encrypting, decrypting, signing, and validating signatures and support multiple message container constructs. They are defined by the [Cryptographer|http://api.nhindirect.org/java/site/agent/1.4.2/apidocs/org/nhindirect/stagent/cryptography/Cryptographer.html] interface.
+Cryptographers are responsible for encrypting, decrypting, signing, and validating signatures and support multiple message container constructs. They are defined by the [Cryptographer|../apidocs/org/nhindirect/stagent/cryptography/Cryptographer.html] interface.
 
 {code}
 package org.nhindirect.stagent.cryptography;
@@ -82,7 +82,7 @@ This method returns without incident if the signature can be validated.  Otherwi
 
 h2. DeserializeSignatureEnvelope
 
-The DeserializeSignatureEnvelope method and its variants are utility functions to extract the [CMS|http://en.wikipedia.org/wiki/Cryptographic_Message_Syntax] data embedded in the message signature block.  The latest version of CMS is decribed by [RFC5652|http://tools.ietf.org/html/rfc5652].
+The DeserializeSignatureEnvelope method and its variants are utility functions to extract the CMS data embedded in the message signature block.  The latest version of CMS is decribed by [RFC5652|http://tools.ietf.org/html/rfc5652].
 
 h2. SMIMECryptographerImpl
 

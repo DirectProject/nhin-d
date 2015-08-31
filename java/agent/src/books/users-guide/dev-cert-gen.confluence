@@ -98,7 +98,7 @@ The names' of the files are generated using the username of the email address of
 
 * *greg.der* - The public certificate file.
 * *gregKey.def* - The PKCS8 private key file in PCKS8 format.  This is encrypted if the password field is populated.
-* *greg.p12* - The PCKS12 file that containes the public certificate and private key.  *NOTE* This file is not encrypted or password protected.  It is stored in a format that can be readily imported into the Direct Project's config UI [tool|http://api.nhindirect.org/java/site/gateway/1.2/users-guide/smtp-depl-wsconfig.html#PrivateCertStore].
+* *greg.p12* - The PCKS12 file that containes the public certificate and private key.  *NOTE* This file is not encrypted or password protected.  It is stored in a format that can be readily imported into the Direct Project's config UI [tool|../../../gateway/4.0/users-guide/smtp-depl-wsconfig#PrivateCertStore].
 
 h3. Creating A Chain From An Existing CA
 

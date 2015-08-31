@@ -221,6 +221,7 @@ public class DefaultDNSRecordPrinter implements DNSRecordPrinter
     	
     	print("DomainName", soa.getName().toString());
         print("Primary Name Server", soa.getHost().toString());
+        print("Domain Manager:", soa.getAdmin().toString());
         print("Refresh", String.valueOf(soa.getRefresh()));
         print("Retry", String.valueOf(soa.getRetry()));
         print("Expire", String.valueOf(soa.getExpire()));

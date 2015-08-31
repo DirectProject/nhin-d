@@ -1,13 +1,16 @@
 package org.nhindirect.monitor.route;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelSpringTestSupport;
 import org.junit.Test;
+import org.nhindirect.common.tx.impl.DefaultTxDetailParser;
 import org.nhindirect.common.tx.model.Tx;
+import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.monitor.util.TestUtils;
 import org.springframework.context.support.AbstractXmlApplicationContext;
@@ -31,6 +34,29 @@ public class TestNonReliableMessageMonitorRoute extends CamelSpringTestSupport
 		// send MDN to original message
 		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
 				"gm2552@cerner.com", "gm2552@direct.securehealthemail.com");
+		template.sendBody("direct:start", mdnMessage);
+		
+		List<Exchange> exchanges = mock.getReceivedExchanges();
+		
+		assertEquals(1, exchanges.size());
+    }
+	
+	@Test
+    public void testSingleRecipMDNReceived_readFromMessages_assertConditionComplete() throws Exception 
+    {
+		final DefaultTxDetailParser parser = new DefaultTxDetailParser();
+		
+		final Map<String, TxDetail> imfDetails = parser.getMessageDetails(TestUtils.readMimeMessageFromFile("MessageFromCernerToAthena.txt")); 
+		final Map<String, TxDetail> mdnDetails = parser.getMessageDetails(TestUtils.readMimeMessageFromFile("MDNFromAthenaToCerner")); 
+		
+		MockEndpoint mock = getMockEndpoint("mock:result");
+
+		// send original message
+		Tx originalMessage = new Tx(TxMessageType.IMF, imfDetails);
+		template.sendBody("direct:start", originalMessage);
+
+		// send MDN to original message
+		Tx mdnMessage = new Tx(TxMessageType.MDN, mdnDetails);
 		template.sendBody("direct:start", mdnMessage);
 		
 		List<Exchange> exchanges = mock.getReceivedExchanges();

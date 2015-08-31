@@ -376,18 +376,7 @@
   <xs:complexType name="ConfigurationServiceException">
     <xs:sequence>
       <xs:element name="message" type="xs:string" minOccurs="0"/>
-      <xs:element name="suppressed" type="tns:throwable" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="throwable">
-    <xs:sequence>
-      <xs:element name="stackTrace" type="tns:stackTraceElement" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="stackTraceElement" final="extension restriction">
-    <xs:sequence/>
   </xs:complexType>
 
   <xs:complexType name="getAnchor">

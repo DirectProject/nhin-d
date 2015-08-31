@@ -10,7 +10,7 @@ Protocol bridges are specific to two variables:
 
 Protocols bridges intercept messages as they flow through the protocol implementation's stack and hand the messages off to lower layers of the architecture for security and trust processing.  Each protocol implementation will more than likely provide its own architecture, API set, and configuration for adding custom processing logic into its stack.  For example: the Apache James SMTP server provides the [Mailet|http://james.apache.org/mailet/index.html] API to write custom mail processing logic and deploys the Mailet using an XML based configuration file.
 
-Generally messages intercepted by a protocol bridge are in a format or structure specific to the protocol implementation.  For example the Apache James hands off a message to a mailet using the [Mail|http://james.apache.org/mailet/api/apidocs/org/apache/mailet/Mail.html] interface.  In most cases, the bridge will need to convert the message into a common structure supported by the protocol agent.  For example, the [SMTPAgent|http://api.nhindirect.org/java/site/gateway/1.5/apidocs/org/nhindirect/gateway/smtp/SmtpAgent.html] requires that all messages are passed to it using a [MimeMessage|http://java.sun.com/products/javamail/javadocs/javax/mail/internet/MimeMessage.html] structure.  After the message is processed by the protocol and subsequently the security and trust agent, the bridge must inject the processed message back into the protocol implementation's stack according the implemntation's specification.
+Generally messages intercepted by a protocol bridge are in a format or structure specific to the protocol implementation.  For example the Apache James hands off a message to a mailet using the [Mail|http://james.apache.org/mailet/api/apidocs/org/apache/mailet/Mail.html] interface.  In most cases, the bridge will need to convert the message into a common structure supported by the protocol agent.  For example, the [SMTPAgent|../apidocs/org/nhindirect/gateway/smtp/SmtpAgent.html] requires that all messages are passed to it using a [MimeMessage|http://java.sun.com/products/javamail/javadocs/javax/mail/internet/MimeMessage.html] structure.  After the message is processed by the protocol and subsequently the security and trust agent, the bridge must inject the processed message back into the protocol implementation's stack according the implemntation's specification.
 
 The Direct Project gateway module provides protocol agent for the following backbone protocols:
 
@@ -18,7 +18,7 @@ The Direct Project gateway module provides protocol agent for the following back
 
 h2. Writing an SMTP Protocol Bridge
 
-SMTP bridges interact with the system through the [SMTPAgent|http://api.nhindirect.org/java/site/gateway/1.5/apidocs/org/nhindirect/gateway/smtp/SmtpAgent.html] interface.  Although concrete implementations of the SMTPAgent interface can be instantiated directly, the agent architecture implements a dependency injection (DI) paradigm.  Specifically it uses the google [Guice|http://code.google.com/p/google-guice/] DI framework.  Guice provides a high level of custom configuration using Java classes (as opposed to XML or other declarative configurations files used in other DI frameworks such as Spring) to inject dependencies into other components.  To facilitate the instantiation of an agent, the gateway module provides the [SmtpAgentFactory|http://api.nhindirect.org/java/site/gateway/1.5/apidocs/org/nhindirect/gateway/smtp/SmtpAgentFactory.html] to configure and create instances of the SMTPAgent.  The factory has two static methods for creating instances:
+SMTP bridges interact with the system through the [SMTPAgent|../../apidocs/org/nhindirect/gateway/smtp/SmtpAgent.html] interface.  Although concrete implementations of the SMTPAgent interface can be instantiated directly, the agent architecture implements a dependency injection (DI) paradigm.  Specifically it uses the google [Guice|http://code.google.com/p/google-guice/] DI framework.  Guice provides a high level of custom configuration using Java classes (as opposed to XML or other declarative configurations files used in other DI frameworks such as Spring) to inject dependencies into other components.  To facilitate the instantiation of an agent, the gateway module provides the [SmtpAgentFactory|../apidocs/org/nhindirect/gateway/smtp/SmtpAgentFactory.html] to configure and create instances of the SMTPAgent.  The factory has two static methods for creating instances:
 
 {code}
   static SmtpAgent createAgent(URL configLocation)
@@ -56,6 +56,70 @@ Pseudo Example:
   // get an instance of the agent
   agent = SmtpAgentFactory.createAgent(configLocation);
 {code}
+
+With the introduction of RESTful based configuration services in version 2.0 of the config service and enabled in version 4.0 of the gateway, a more
+sophisticated method is available using security and url providers.
+
+Pseudo Example with open authentication (no authentication):
+
+{code}
+  // probably declared as a class instance variable.. depends on the protocol implementation API
+  SmtpAgent agent = null;
+  .
+  .
+  // get the config location... specific to the protocol implementation... 
+  // assuming the location is passed as a string as is well formed
+  URL configLocation = new URL(getConfigLocation());
+  
+  // use an open authentication provider
+  Provider<ServiceSecurityManager> secMgr = new OpenServiceSecurityManagerProvider();
+  
+    
+  // get a RESTful config provider, set the URL and security manager
+  Provider<SmtpAgentConfig> configProvider = new RESTSmtpAgentConfigProvider();
+  configProvider.setConfigURL(configLocation);
+  configProvider.setServiceSecurityManager(secMgr);
+  
+  // get an instance of the agent
+  agent = SmtpAgentFactory.createAgent(configLocation, configProvider, null, null);
+{code}
+
+The _SmtpAgentFactory_ also utilizes the Google Guice framework to allow further customization using Guide _Modules_ and _Providers_.  The following example creates
+and SmtpAgent with the Reference Implementation's RDBMs auditor with also allows for the location of a properties file (a default location is used if one
+is not provided).
+
+{code}
+  // probably declared as a class instance variable.. depends on the protocol implementation API
+  SmtpAgent agent = null;
+  .
+  .
+  // get the config location... specific to the protocol implementation... 
+  // assuming the location is passed as a string as is well formed
+  URL configLocation = new URL(getConfigLocation());
+  
+  // use an open authentication provider
+  Provider<ServiceSecurityManager> secMgr = new OpenServiceSecurityManagerProvider();
+  
+    
+  // get a RESTful config provider, set the URL and security manager
+  Provider<SmtpAgentConfig> configProvider = new RESTSmtpAgentConfigProvider();
+  configProvider.setConfigURL(configLocation);
+  configProvider.setServiceSecurityManager(secMgr);
+  
+  // create a list container for modules
+  Collection<Module> modules = new ArrayList<Module>();
+  
+  // create the audit module
+  Provider<Auditor> auditProvider = new RDBMSAuditorProvider();
+  Module auditModule = AuditorModule.create(auditProvider);
+  
+  modules.add(auditModule);
+  
+  // get an instance of the agent
+  agent = SmtpAgentFactory.createAgent(configLocation, configProvider, null, modules);
+{code}
+
+
 
 h3. Processing Messages
 
@@ -135,7 +199,7 @@ h3. Dependencies
 
 The following jars are direct dependencies for writing protocol bridges.
 
-* agent-1.x.jar
-* gateway-1.x.jar
+* agent-<version>.jar
+* gateway-<version>.jar
 
 Transitive dependencies of these libraries may be required for development, testing, and deployment.  These libraries are available in the public mavne repository under the group [org.nhind|http://repo1.maven.org/maven2/org/nhind/].

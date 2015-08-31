@@ -10,4 +10,4 @@ About this Document
   
   * {{{./dev-intro.html}Development Guide}} - This section describes how to develop a protocol bridge specific to a protocol and protocol implementation.
   
-  * {{{./deploy-intro.html}Deployment Guide}} - This section describes how deploy and configure a protocol bridges provided by the gateway module.
+  * {{{./depl-intro.html}Deployment Guide}} - This section describes how deploy and configure a protocol bridges provided by the gateway module.

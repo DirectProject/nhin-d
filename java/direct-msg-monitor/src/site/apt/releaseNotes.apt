@@ -6,11 +6,29 @@
         Greg Meyer
         ---
 
+{1.1.5}
+
+    Changes included with release 1.1.5
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=239}239}}: Resolved issue with matching final recipients in MDN and DNS messages.
+
 {1.1.4}
 
     Changes included with release 1.1.4
     
     []
+    
+    Enhancements    
     
  	* NA
     
@@ -28,6 +46,8 @@
     
     []
     
+    Enhancements    
+    
  	* NA
     
     [] 
@@ -41,6 +61,8 @@
     Changes included with release 1.1.2
     
     []
+    
+    Enhancements    
     
  	* NA
     
@@ -56,6 +78,8 @@
     Changes included with release 1.1.1
     
     []
+    
+    Enhancements    
     
  	* NA
     

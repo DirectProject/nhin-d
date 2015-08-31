@@ -76,6 +76,15 @@
         <soap:fault name="ConfigurationServiceException" use="literal"/>
       </fault>
     </operation>
+    <operation name="getDomain">
+      <soap:operation soapAction="urn:GetDomain"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
     <operation name="addDomain">
       <soap:operation soapAction="urn:AddDomain"/>
       <input>
@@ -169,15 +178,6 @@
         <soap:body use="literal"/>
       </output>
     </operation>
-    <operation name="getDomain">
-      <soap:operation soapAction="urn:GetDomain"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-    </operation>
     <operation name="contains">
       <soap:operation soapAction="urn:Contains"/>
       <input>
@@ -189,6 +189,18 @@
     </operation>
     <operation name="getCertificates">
       <soap:operation soapAction="urn:GetCertificates"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+      <fault name="ConfigurationServiceException">
+        <soap:fault name="ConfigurationServiceException" use="literal"/>
+      </fault>
+    </operation>
+    <operation name="getCertificate">
+      <soap:operation soapAction="urn:GetCertificate"/>
       <input>
         <soap:body use="literal"/>
       </input>
@@ -249,18 +261,6 @@
     </operation>
     <operation name="removeCertificatesForOwner">
       <soap:operation soapAction="urn:RemoveCertificatesForOwner"/>
-      <input>
-        <soap:body use="literal"/>
-      </input>
-      <output>
-        <soap:body use="literal"/>
-      </output>
-      <fault name="ConfigurationServiceException">
-        <soap:fault name="ConfigurationServiceException" use="literal"/>
-      </fault>
-    </operation>
-    <operation name="getCertificate">
-      <soap:operation soapAction="urn:GetCertificate"/>
       <input>
         <soap:body use="literal"/>
       </input>

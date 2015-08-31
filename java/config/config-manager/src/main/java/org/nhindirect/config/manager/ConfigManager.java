@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.Arrays;
 
 import org.nhind.config.ConfigurationServiceProxy;
-import org.nhindirect.dns.tools.DNSRecordCommands;
 import org.nhindirect.dns.tools.utils.Commands;
 
 public class ConfigManager 
@@ -83,6 +82,7 @@ public class ConfigManager
 		commands.register(new DNSRecordCommands(proxy));
 		commands.register(new CertCommands(proxy));
 		commands.register(new PolicyCommands(proxy));
+		commands.register(new SettingsCommands(proxy));
 		
 		System.out.println("Configuration service URL: " + configURL.toExternalForm());
 		

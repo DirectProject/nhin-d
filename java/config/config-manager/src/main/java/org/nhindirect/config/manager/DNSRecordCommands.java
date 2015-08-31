@@ -24,6 +24,9 @@ package org.nhindirect.config.manager;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +38,9 @@ import org.nhindirect.config.manager.printers.DNSRecordPrinter;
 import org.nhindirect.config.manager.printers.DefaultDNSRecordPrinter;
 import org.nhindirect.dns.tools.utils.Command;
 import org.nhindirect.dns.tools.utils.StringArrayUtil;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.SOARecord;
 import org.xbill.DNS.Section;
 import org.xbill.DNS.Type;
 
@@ -106,6 +111,9 @@ public class DNSRecordCommands
         "\r\n\trecordid";
 
     private static final String GET_ALL_USAGE = "Gets all records in the DNS store.";
+    
+    private static final String GET_SOA_CONTACTS = "Gets a list of all the different SOA contacts.";
+    
     private DNSRecordPrinter printer;
     private DNSRecordParser parser;
     private ConfigurationServiceProxy proxy;
@@ -446,6 +454,54 @@ public class DNSRecordCommands
 	    }
 	    else
 	    	print(records);
+	}
+	
+	@Command(name= "Dns_Get_SOA_Contacts", usage = GET_SOA_CONTACTS)
+	public void getSoaContacts(String[] args)
+	{
+	    DnsRecord[] records = null;
+	    try
+	    {
+	    	records = proxy.getDNSByType(Type.SOA);
+	    }
+		catch (Exception e)
+		{
+			throw new RuntimeException("Error accessing configuration service: " + e.getMessage(), e);
+		}
+		
+	    if (records == null || records.length == 0)
+	    {
+	    	System.out.println("No records found");
+	    }
+	    else
+	    {
+	    	final Map<String, String> contacts = new HashMap<String, String>();
+	    	
+	    	for (DnsRecord rec : records)
+	    	{
+	    		final SOARecord soaRec = (SOARecord)Record.newRecord(nameFromString(rec.getName()), rec.getType(), rec.getDclass(), rec.getTtl(), rec.getData());
+	    		if (contacts.get(soaRec.getAdmin().toString()) == null)
+	    			contacts.put(soaRec.getAdmin().toString(), soaRec.getAdmin().toString());
+	    	}
+	    	
+	    	for (Entry<String, String> ent : contacts.entrySet())
+	    		System.out.println("Contact: " + ent.getKey());
+	    }
+	}
+	
+	private Name nameFromString(String str)
+	{
+		if (!str.endsWith("."))
+			str += ".";
+	
+		try
+		{
+			return Name.fromString(str);
+		}
+		catch (Exception e)
+		{
+			throw new IllegalArgumentException("Invalid DNS name");
+		}
 	}
 	
 	/*

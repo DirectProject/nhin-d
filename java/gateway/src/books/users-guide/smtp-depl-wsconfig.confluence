@@ -17,7 +17,7 @@ Configuration or the SMTP agent is separated into five components, however they 
 * Certificates - Private and optionally public certificate storage.
 * Trust Anchors - Trust anchor certificate storage for course grain anchor configuration.
 * Trust Bundles - Collections of anchors published by trust communities.
-* Settings - Configuration settings for numerous components of a HISP.  These are generally higher level configuration settings.  Fine grained tuning is available via the [OptionsManager|http://api.nhindirect.org/java/site/agent/1.5.4/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
+* Settings - Configuration settings for numerous components of a HISP.  These are generally higher level configuration settings.  Fine grained tuning is available via the [OptionsManager|../../../agent/2.0.13/apidocs/org/nhindirect/stagent/options/OptionsManager.html].
 
 Domains, certificates, trust anchors, and trust bundles have specific configuration elements stored in the settings component.
 

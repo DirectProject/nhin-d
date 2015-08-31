@@ -32,6 +32,8 @@ X509.TBS.EXTENSION.BasicConstraints.CA = true
 
 *Key encipherment and not digital signature*
 
-((X509.TBS.EXTENSION.KeyUsage & 32) = 0) && ((X509.TBS.EXTENSION.KeyUsage & 128) > 0)
+((X509.TBS.EXTENSION.KeyUsage & 32) > 0) && ((X509.TBS.EXTENSION.KeyUsage & 128) = 0)
 
 *Digital signature and not key encipherment*
+
+((X509.TBS.EXTENSION.KeyUsage & 32) = 0) && ((X509.TBS.EXTENSION.KeyUsage & 128) > 0)

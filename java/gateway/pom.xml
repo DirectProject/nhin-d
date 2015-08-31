@@ -635,18 +635,19 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
 			</plugin>
+<!--  			
 			<plugin>
 	            <groupId>org.apache.maven.plugins</groupId>
 	            <artifactId>maven-changelog-plugin</artifactId>
 	            <configuration>
 	                <dates>
-	                    <!-- Insert the date of the most recent release -->
                         <date>2010-11-10</date>
 	                </dates>
 	                <outputEncoding>UTF-8</outputEncoding>
 	                <type>date</type>
 	            </configuration>
 	        </plugin>	
+-->	        
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId> 
 	            <artifactId>findbugs-maven-plugin</artifactId>

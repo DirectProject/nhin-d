@@ -1,0 +1,17 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{3.0.1}
+
+    Changes included with release 3.0.1.
+
+    []
+    
+	* Initial Release.  Starting first release version with 3.0.1 to stay consistent with the corresponding reference implementation version.
+
+    * Requires Java SE 1.6 or greater.

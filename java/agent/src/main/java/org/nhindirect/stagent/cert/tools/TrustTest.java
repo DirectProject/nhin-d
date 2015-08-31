@@ -13,8 +13,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.impl.DNSCertificateStore;
@@ -36,6 +39,8 @@ public class TrustTest
             System.exit(-1);			
 		}
 		
+		String[] servers = null;	
+		String address = "";
 		String configServiceURL = "";
 		String bundleURL = "";
 		String certFileName = "";
@@ -62,6 +67,17 @@ public class TrustTest
                 }
                 
                 certFileName = args[++i];
+                
+            }
+            else if (arg.equalsIgnoreCase("-address"))
+            {
+                if (i == args.length - 1 || args[i + 1].startsWith("-"))
+                {
+                    System.err.println("Error: Missing the email address");
+                    System.exit(-1);
+                }
+                
+                address = args[++i];
                 
             }
             else if (arg.equalsIgnoreCase("-bundleURL"))
@@ -95,6 +111,15 @@ public class TrustTest
                 }
                 anchorFiles = args[++i].split(",");
             }
+            else if (arg.equals("-server"))
+            {
+                if (i == args.length - 1 || args[i + 1].startsWith("-"))
+                {
+                    System.err.println("Error: Missing DNS server list");
+                    System.exit(-1);
+                }
+                servers = args[++i].split(",");
+            }            
             else if (arg.equals("-help"))
             {
                 printUsage();
@@ -108,9 +133,9 @@ public class TrustTest
             }
         }	
         
-        if (certFileName == null || certFileName.isEmpty())
+        if (StringUtils.isEmpty(certFileName) && StringUtils.isEmpty(address))
         {
-        	System.err.println("You must provide the name of the certificate file to test.");
+        	System.err.println("You must provide the name of the certificate file or an email address/domain to test.");
         	printUsage();
         }
         
@@ -120,13 +145,56 @@ public class TrustTest
         	printUsage();
         }
         
-        // load the certificates
-        final File certFileToTest = new File(certFileName);
-        if (!certFileToTest.exists())
+        X509Certificate certToTest = null;
+        // is using cert files, make sure it exists
+        // prefer cert files over addresses
+        // if the certFile exists, addresses will be ignored
+        
+        if (!StringUtils.isEmpty(certFileName))
         {
-        	System.out.println("Certificate file " + certFileName + " does not exist.");
-        	System.exit(-1);
-        	return;
+	        final File certFileToTest = new File(certFileName);
+	        if (!certFileToTest.exists())
+	        {
+	        	System.out.println("Certificate file " + certFileName + " does not exist.");
+	        	System.exit(-1);
+	        	return;
+	        }
+	        try
+	        {
+	        	certToTest = (X509Certificate)CertificateFactory.getInstance("X509").generateCertificate(FileUtils.openInputStream(certFileToTest));
+	        }
+	        catch (Exception e)
+	        {
+	        	System.out.println("Failed to load certificate: " + e.getLocalizedMessage());
+	        	System.exit(-1);
+	        	return;
+	        }
+        }
+        else
+        {
+        	final DNSCertificateStore dnsStore = (servers != null) ? new DNSCertificateStore(Arrays.asList(servers)) : new DNSCertificateStore();
+        	
+        	try
+        	{
+				Collection<X509Certificate> certs = dnsStore.getCertificates(new InternetAddress(address));
+				if (certs == null || certs.size() == 0)
+				{
+					System.out.println("No certs found");
+		        	System.exit(-1);
+		        	return;
+				}
+				else
+				{
+					System.out.println("Found " + certs.size() + " certificates via DNS");
+					certToTest = certs.iterator().next();
+				}
+        	}
+        	catch(Exception e)
+        	{
+	        	System.out.println("Failed to load certificate via DNS: " + e.getLocalizedMessage());
+	        	System.exit(-1);
+	        	return;
+        	}
         }
         
         try
@@ -164,7 +232,7 @@ public class TrustTest
             	
             }
         
-            final X509Certificate certToTest = (X509Certificate)CertificateFactory.getInstance("X509").generateCertificate(FileUtils.openInputStream(certFileToTest));
+
             
             final TrustChainValidator chainValidator = new TrustChainValidator();
             
@@ -275,6 +343,10 @@ public class TrustTest
         use.append("options:\n");
         use.append("-cert		The certificate file name that will be tested for trust.\n");
         use.append("\n");
+        use.append("-address	The Direct address that will be tested for trust.\n");
+        use.append("\n");        
+        use.append("-server     Comma delimited list of DNS servers used for lookup.\n");
+        use.append("			Default: Local machine's configured DNS server(s)\n\n");           
         use.append("-anchors    Comma delimited list of anchors files used for trust.\n");
         
 

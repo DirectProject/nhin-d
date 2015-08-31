@@ -4,7 +4,9 @@ h1. Apache James Deployment
 
 This section is not intended to be a full fledged James configuration and deployment guide, but to explain how the Direct Project gateway module integrates with the James platform.  
 
-*NOTE* All James instructions in the following sections are specific to James 2.3.2.  James 3 at the time of writing is still under development in beata relase and radically changes the structure of the James deployment.
+*NOTE* As version 4.0, James 3 is better supported, but still considered to be a non-production release.  It adds support for additional features such as
+IMAP, contemporary SSL/TLS encryption ciphers, and better multi domain support.  This guide will differentiate configuration options between
+James 2 and James 2 when applicable.
 
 h2. NHINDSecurityAndTrustMailet
 
@@ -12,24 +14,40 @@ As stated earlier, James is modular platform that facilitates easy integration o
 
 h3. Mailet installation
 
-All custom modules are deployed in jar files and placed in the James lib directory:
 
-_%jamesInstallRoot%/apps/james/SAR-INF/lib_
 
-All jars and transient dependencies must be placed in this directory.
+In James 2, all custom modules are deployed as jar files and placed in the James lib directory:
+
+_%james2InstallRoot%/apps/james/SAR-INF/lib_
+
+In James 3, all custom modules are deployed as jar files and placed in the James conf/lib directory:
+
+_%james3InstallRoot%/conf/lib_
+
+All jars and transient dependencies must be placed in the appropriate directory.
 
 *NOTE* The reference implementation contains a pre-built James configuration in the [direct-project-stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] project that contains all of the necessary jars in the lib folder as well as a pre-configured mailet.
 
 
 h3. Mailet Configuration
 
-The NHINDSecurityAndTrustMailet is added to the James processing stack by adding specific lines into the James configuration file:
+The NHINDSecurityAndTrustMailet is added to the James processing stack by adding specific lines into the James configuration file.  
 
-_%jamesInstallRoot%/apps/james/SAR-INF/config.xml_
+For James 2, use the _config.xml_ file.
 
-All configuration examples in this section are located in the config.xml file. 
+_%james2InstallRoot%/apps/james/SAR-INF/config.xml_
 
-All custom Matchers and Mailet packages must be registered with James in the <mailetpackages> and <matcherpackages> elements.
+James 3 is much more modular and breaks out the configuration into appropriate configuration files and are found in the _conf_ directory.  The ones of most 
+interest are:
+
+* _%james3InstallRoot%/conf/domainlist.conf_ - Contains the list of all domains managed by the system.
+* _%james3InstallRoot%/conf/imapserver.conf_ - Contains the configuration for the IMAP edge protocol.
+* _%james3InstallRoot%/conf/mailetcontainer.conf_ - Contains the configuration of the mailets.
+* _%james3InstallRoot%/conf/pop3server.conf_ - Contains the configuration of the POP3 edge protocol.
+* _%james3InstallRoot%/conf/smtpserver.conf_ - Contains the configuration of the SMTP edge protocol.
+
+In James 2 all custom Matchers and Mailet packages must be registered with James in the <mailetpackages> and <matcherpackages> elements of the configuration.  This can be found in the config.xml.  For James 3, the fully qualified name of the classes are used when identifying matchers and mailets; the following lines are
+not used for James 3.
 
 {code}
    <mailetpackages>
@@ -46,10 +64,20 @@ All custom Matchers and Mailet packages must be registered with James in the <ma
 
 To install the security and trust mailet into the James stack, you need to a mailet element under the transport processor.  *NOTE* James executes mailets in the order that they are listed in the configuration file, so place your mailet appropriately if you have other custom processing that needs to be executed before or after the security and trust mailet.
 
-Example:
+James 2 Example:
 
 {code}
-   <mailet match="All" class="NHINDSecurityAndTrustMailet">
+   <mailet match="RecipAndSenderIsNotLocal=mydomain.com" class="NHINDSecurityAndTrustMailet">
+       <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>   
+       <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
+       <AutoDSNFailueCreation>General,ReliableAndTimely</AutoDSNFailueCreation>            
+   </mailet>
+{code}
+
+James 3 Example (fully qualified class names):
+
+{code}
+   <mailet match="org.nhindirect.gateway.smtp.james.matcher.RecipAndSenderIsNotLocal=mydomain.com" class="org.nhindirect.gateway.smtp.james.mailet.NHINDSecurityAndTrustMailet">
        <ConfigURL>http://localhost:8081/config-service/ConfigurationService</ConfigURL>   
        <MessageMonitoringServiceURL>http://localhost:8081/msg-monitor</MessageMonitoringServiceURL>
        <AutoDSNFailueCreation>General,ReliableAndTimely</AutoDSNFailueCreation>            
@@ -68,12 +96,18 @@ Attributes:
 Elements:
 
 ||Element||Type||Description||
-|ConfigURL|URL|A URL to the location of the SMTPAgent configuration information.  This information is forwarded to the SmtpAgentFactory to locate and parse the configuration|
-|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
+|ConfigURL|URL|A URL to the location of the SMTPAgent configuration information.  This information is forwarded to the SmtpAgentFactory to locate and parse the configuration.  As of 4.0, there is a choice of the old SOAP style interface and a newer RESTful interface.  The RESTful interface may required additional
+elements described in the appropriate sections below.|
+|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|../../../direct-common/1.4.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
 |AutoDSNFailueCreation|Comma Delimited String|Determines if DSN bounce messages should be automatically created for failed security and trust recipients.  Defaults to ReliableAndTimely if this parameter is not present.|
 |UseOutgoingPolicyForIncomingNotifications|Indicates if the outbound trust policy should be applied to incoming notification messages.  Defaults to false if this parameter is not present.|
+|SmptAgentConfigProvider|String|Fully qualified class name of a Guice configuration provider.  This is necessary if other configuration type such as the RESTful configuration are used.  If one is not provided, then the system will use the default SOAP based configuration provider.  To use the RESTful based configuration, specify the org.nhindirect.gateway.smtp.provider.RESTSmtpAgentConfigProvider class|
+|ServiceSecurityManagerProvider|String|Fully qualified class name of a Guice security manager provider.  This is necessary if other configuration type such as the RESTful configuration are used and you need to authenticate James to the configuration service.  If one is not provided, then the system will default to an option security provider that does not require any additional parameters.  To use the RESTful based configuration with BasicAuth, specify the org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider class|
+|ServiceSecurityAuthSubject|String|Subject (user) name when using a security manager that requires authentication.  This is required when using the org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider security provider.|
+|ServiceSecurityAuthSecret|String|Secret (password) when using a security manager that requires authentication.  This is required when using the org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider security provider.|
+|SmptAgentAuditorProvider|String|Fully qualified class name of a Guice auditing provider.  If you choose to use a custom auditor, you must specify it here.  If this element is left blank, the system will default to writing audit events to the default log file.  Use the org.nhindirect.common.audit.provider.RDBMSAuditorProvider to use the new database backed auditing system.|
+|SmptAgentAuditorConifgLocation|String|If you are using a custom auditor that needs additional configuration information, this element specifies the location of the configuration file.  Some audit providers will default a location of the configuration file if this element is not present.  For example, the RDBMSAuditorProvider defaults to using a file named auditStore.xml that must be located somewhere in the system classpath.|
 
-The above example tell James to send all messages to the agent using the *All* matcher.  More on matchers later.
 
 The ConfigURL must be a valid and well formed URL that is addressable by the James application.  The other settings are optional.
 
@@ -99,7 +133,8 @@ The configuration URL can either reference an XML file that contains configurati
 
 Examples:
 * File: file:///home/ubuntu/james-agent-v2/james-2.3.2/apps/james/SAR-INF/STConfig.xml
-* HTTP: http://configServer/config/ConfigurationService
+* SOAP Based HTTP: http://configServer/config/ConfigurationService
+* REST Based HTTP: http://configServer/config/api
 
 When using the HTTP based configuration service, it is assumed the service has been deployed and settings such as domains, anchors, and certificates have been configured.  
 
@@ -126,7 +161,7 @@ NOTE: The settings are only applicable for out bound message and do not apply to
 
 h3. Message Monitoring
 
-Messages that are not trusted by a receiving HISP do not receive any type of positive notification.  To provide feedback to the sender, the NHINDSecurityAndTrustMailet can send outbound message information to a monitoring service that keeps track of all out bound messages and received notifications.  The monitoring service is responsible for generating DSN bounce messages for messages that have not received notification messages within a given time period.  The time period is configured in the monitoring [service|http://api.nhindirect.org/java/site/direct-msg-monitor/1.1.3/users-guide/overview.html].  
+Messages that are not trusted by a receiving HISP do not receive any type of positive notification.  To provide feedback to the sender, the NHINDSecurityAndTrustMailet can send outbound message information to a monitoring service that keeps track of all out bound messages and received notifications.  The monitoring service is responsible for generating DSN bounce messages for messages that have not received notification messages within a given time period.  The time period is configured in the monitoring [service|../../../direct-msg-monitor/1.1.5/users-guide/overview.html].  
 
 h3. Delivery Failure
 
@@ -166,12 +201,12 @@ The SuppressAndTrackAggregate mailet is responsible for sending inbound notifica
 The following mailet elements are used:
 
 ||Element||Type||Description||
-|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|http://api.nhindirect.org/java/site/direct-common/1.1.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
+|MessageMonitoringServiceURL|URL|A URL to the location of the message monitoring service for quality of service purposes.  If this parameter is present, the mailet creates default NoOp [TxService|../../../direct-common/1.4.2/apidocs/org/nhindirect/common/tx/TxService.html] implementation.|
 |ConsumeMDNProcessed|Boolean |Indicates if all MDN processed messages should be suppressed. It is recommended that this be set to true.  Setting to false will allow all MDN processed message to be sent to the sender's edge client.  This setting is mainly here to enable passivity from older versions of the agent (setting to false enables the passive behavior).|
 
 h2. Prebuilt Assembly Configuration
 
-A full [stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|http://api.nhindirect.org/java/site/assembly/stock/2.0.1/] for installation and configuration details.
+A full [stock|http://repo2.maven.org/maven2/org/nhind/direct-project-stock/] assembly and configuration is available that contains the minimum set of components to run the Direct Project in a single domain stand alone James deployment.  See the stock project [site|../../../assembly/stock/4.0] for installation and configuration details.
 
 h2. Deployment Configuration Scenarios
 

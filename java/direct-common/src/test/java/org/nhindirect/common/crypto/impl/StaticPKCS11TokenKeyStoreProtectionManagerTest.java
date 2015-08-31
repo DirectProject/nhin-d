@@ -4,17 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.security.Key;
+import java.security.KeyStore;
+import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.junit.Test;
 import org.nhindirect.common.crypto.PKCS11Credential;
@@ -27,6 +34,9 @@ public class StaticPKCS11TokenKeyStoreProtectionManagerTest
 	{
 		
 	}
+	
+	
+
 	
 	/*
 	 * Enable the tests below when testing with a real PKCS token
