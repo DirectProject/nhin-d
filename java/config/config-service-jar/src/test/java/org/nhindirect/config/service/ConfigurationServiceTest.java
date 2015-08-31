@@ -379,7 +379,8 @@ public class ConfigurationServiceTest extends MockObjectTestCase
     /**
      * Test the removeDomain method.
      */
-    public void testRemoveDomain() throws Exception
+    @SuppressWarnings("deprecation")
+	public void testRemoveDomain() throws Exception
     {
         final DomainService domainService = context.mock(DomainService.class);
 

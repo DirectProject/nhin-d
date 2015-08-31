@@ -1,5 +1,6 @@
 package org.nhindirect.dns.util;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ public class IPUtils
 				while (addrs.hasMoreElements())
 				{
 					final InetAddress addr = addrs.nextElement();
-					ips.add(addr.getHostAddress());
+					if (!(addr instanceof Inet6Address))
+						ips.add(addr.getHostAddress());
 				}
 			}
 		}

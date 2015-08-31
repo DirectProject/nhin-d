@@ -31,8 +31,11 @@ java/gateway/OutgoingMsgFolder/
 java/gateway/RawMsgFolder/
 java/xd-common/war
 java/gateway/war
+java/dns/war
 java/install/build
 java/config/config-service/src/main/webapp/WEB-INF/beans.xml
+*.war
+*.dat
 
 nhindconfig/service.properties
 config-service-client/war/config-service.war

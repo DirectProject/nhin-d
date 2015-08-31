@@ -113,7 +113,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         addressSvc.updateAddress(address);
     }
 
-    /*
+    /*get
      * (non-Javadoc)
      * 
      * @see org.nhindirect.config.service.AddressService#getAddressCount()
@@ -190,7 +190,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     @FaultAction(className = ConfigurationFault.class)
     public int getDomainCount() throws ConfigurationServiceException {
-        return domainSvc.getDomainCount();
+        int i = 0;
+    	try 
+    	{
+    		i = domainSvc.getDomainCount();
+		} 
+    	catch (Exception e) 
+		{
+				if (log.isDebugEnabled()) 
+				{
+					log.error("Errors in getDomainCount " + e.getMessage(), e);
+				}
+		}
+		return i;
     }
 
     /*
@@ -237,7 +249,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     @FaultAction(className = ConfigurationFault.class)
     public Collection<Domain> listDomains(String lastDomainName, int maxResults) throws ConfigurationServiceException {
-        return domainSvc.listDomains(lastDomainName, maxResults);
+    	Collection<Domain> domains = null;
+        try 
+        {
+        	domains = domainSvc.listDomains(lastDomainName, maxResults);
+		} 
+        catch (Exception e) 
+		{
+					if (log.isDebugEnabled()) 
+					{
+						log.error("Errors in listDomains " + e.getMessage(), e);
+					}
+		}
+		return domains;
     }
 
     /*
@@ -567,7 +591,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @FaultAction(className = ConfigurationFault.class)
     public Collection<Certificate> getCertificatesForOwner(String owner, CertificateGetOptions options)
             throws ConfigurationServiceException {
-        return certSvc.getCertificatesForOwner(owner, options);
+
+    	try 
+    	{
+    		return certSvc.getCertificatesForOwner(owner, options);
+        } 
+    	catch (Exception e) 
+    	{
+			if (log.isDebugEnabled()) 
+			{
+				log.error("Errors in getDomainCount " + e.getMessage(), e);
+			}
+    	}
+    	return null;
     }
 
     /*
@@ -614,8 +650,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     @FaultAction(className = ConfigurationFault.class)
     public Collection<Anchor> getAnchorsForOwner(String owner, CertificateGetOptions options)
-            throws ConfigurationServiceException {
-        return anchorSvc.getAnchorsForOwner(owner, options);
+            throws ConfigurationServiceException 
+    {
+    	Collection<Anchor> anchors = null;
+        try 
+        {
+        	anchors =  anchorSvc.getAnchorsForOwner(owner, options);
+		} 
+        catch (Exception e) 
+        {
+				if (log.isDebugEnabled()) 
+				{
+					log.error("Errors in getAnchorsForOwner " + e.getMessage(), e);
+				}
+		}
+		return anchors;
     }
 
     /*
@@ -681,8 +730,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	@Override
 	@FaultAction(className = ConfigurationFault.class)
 	public Setting getSettingByName(String name)
-			throws ConfigurationServiceException {
-		return settingSvc.getSettingByName(name);
+			throws ConfigurationServiceException 
+	{
+		Setting settings = null;
+		try 
+		{
+			settings =  settingSvc.getSettingByName(name);
+		} 
+		catch (Exception e) 
+		{
+				if (log.isDebugEnabled()) 
+				{
+					log.error("Errors in getSettingByName " + e.getMessage(), e);
+				}
+		}
+		return settings;
 	}
 
     /**
@@ -841,7 +903,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	public Collection<TrustBundle> getTrustBundles(boolean fetchAnchors)
 			throws ConfigurationServiceException 
 	{
-		return trustBundleSvc.getTrustBundles(fetchAnchors);
+		Collection<TrustBundle> bundles = null;
+		try 
+		{
+			bundles =  trustBundleSvc.getTrustBundles(fetchAnchors);
+		} 
+		catch (Exception e) 
+		{
+				if (log.isDebugEnabled()) 
+				{
+					log.error("Errors in getTrustBundles " + e.getMessage(), e);
+				}
+		}
+		return bundles;
 	}
 
     /**
@@ -983,7 +1057,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	public Collection<TrustBundleDomainReltn> getTrustBundlesByDomain(long domainId,
 			boolean fetchAnchors) throws ConfigurationServiceException 
 	{
-		return trustBundleSvc.getTrustBundlesByDomain(domainId, fetchAnchors);
+		Collection<TrustBundleDomainReltn> bundles = null;
+		try
+		{
+			bundles =  trustBundleSvc.getTrustBundlesByDomain(domainId, fetchAnchors);
+		} 
+		catch (Exception e) 
+		{
+			if (log.isDebugEnabled()) 
+			{
+				log.error("Errors in getTrustBundles " + e.getMessage(), e);
+			}   
+		}
+		return bundles;
 	}   
 	
 	@Override
@@ -1118,7 +1204,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 	@FaultAction(className = ConfigurationFault.class)
 	public Collection<CertPolicyGroupDomainReltn> getPolicyGroupDomainReltns() throws ConfigurationServiceException
 	{
-		return certPolicySvc.getPolicyGroupDomainReltns();
+		Collection<CertPolicyGroupDomainReltn> domains = null;
+		try 
+		{
+			domains =  certPolicySvc.getPolicyGroupDomainReltns();
+		} 
+		catch (Exception e) 
+		{
+				if (log.isDebugEnabled()) 
+				{
+					log.error("Errors in getPolicyGroupDomainReltns " + e.getMessage(), e);
+				}
+		}
+		return domains;
 	}
 	
 	@Override

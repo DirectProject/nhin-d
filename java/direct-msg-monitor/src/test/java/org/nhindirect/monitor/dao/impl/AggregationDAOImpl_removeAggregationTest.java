@@ -35,8 +35,14 @@ public class AggregationDAOImpl_removeAggregationTest
 	@Before
 	public void setUp() throws Exception
 	{
-		notifDao.purgeAll();
-		
+		try
+		{
+			notifDao.purgeAll();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		List<String> keys = notifDao.getAggregationKeys();
 		assertEquals(0, keys.size());
 		
@@ -47,6 +53,7 @@ public class AggregationDAOImpl_removeAggregationTest
 	@Test
 	public void testRemoveAggregation_emptyRepository_assertExcpetion() throws Exception
 	{
+
 		final Aggregation remove = new Aggregation();
 		remove.setExchangeBlob(new byte[] {0,3,2});
 		remove.setId("12345");
@@ -63,6 +70,7 @@ public class AggregationDAOImpl_removeAggregationTest
 		}
 		
 		assertTrue(exceptionOccured);
+
 	}
 	
 	@Test

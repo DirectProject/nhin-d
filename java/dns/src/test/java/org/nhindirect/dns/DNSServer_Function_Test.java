@@ -1,7 +1,6 @@
 package org.nhindirect.dns;
 
 
-import java.net.Inet4Address;
 import java.net.URL;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;

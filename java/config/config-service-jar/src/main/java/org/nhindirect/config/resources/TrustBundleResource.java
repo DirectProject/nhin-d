@@ -125,7 +125,7 @@ public class TrustBundleResource extends ProtectedResource
      * @param template The producer template.
      */
     @Autowired
-    @Qualifier("triggeredCertificatePickup")
+    @Qualifier("bundleRefresh")
     public void setTemplate(ProducerTemplate template) 
     {
         this.template = template;
