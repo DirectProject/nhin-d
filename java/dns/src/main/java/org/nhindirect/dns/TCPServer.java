@@ -216,11 +216,28 @@ public class TCPServer extends DNSSocketServer
 			
 			try
 			{
-				InputStream is = requestSocket.getInputStream();
-				dataIn = new DataInputStream(is);
-				inLength = dataIn.readUnsignedShort();
+				InputStream is = null;
+				try
+				{
+					is = requestSocket.getInputStream();
+					dataIn = new DataInputStream(is);
+					inLength = dataIn.readUnsignedShort();
+				}
+				catch (Exception e)
+				{
+					// don't fill up my logs due to input stream errors that can happen
+					// from DOS attaches
+					try
+					{
+						requestSocket.close();
+					}
+					catch (IOException e2) {/* no-op */}
+					return;
+				}
 				in = new byte[inLength];
 				dataIn.readFully(in);
+				
+				//LOGGER.info("Valid message... moving on.");
 				
 				try
 				{
@@ -229,7 +246,8 @@ public class TCPServer extends DNSSocketServer
 					response = responder.processRequest(query);
 				}
 				catch (DNSException e) 
-				{					
+				{		
+					//LOGGER.info("TCP server error response.");
 					if (query != null)
 						response = responder.processError(query, e.getError());
 				}
@@ -245,6 +263,8 @@ public class TCPServer extends DNSSocketServer
 					else
 						++errorCount;	
 						
+					//LOGGER.info("Sending back valid response.");
+					
 					dataOut = new DataOutputStream(requestSocket.getOutputStream());
 					byte[] writeBytes = response.toWire();
 					dataOut.writeShort(writeBytes.length);

@@ -19,6 +19,7 @@ package org.nhindirect.dns;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,18 +36,25 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAKey;
 
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
 import org.nhindirect.dns.annotation.ConfigServiceURL;
+import org.nhindirect.policy.PolicyExpression;
+import org.nhindirect.policy.PolicyFilter;
+import org.nhindirect.policy.PolicyFilterFactory;
+import org.nhindirect.policy.PolicyLexicon;
+import org.nhindirect.policy.PolicyLexiconParser;
+import org.nhindirect.policy.PolicyLexiconParserFactory;
 import org.xbill.DNS.CERTRecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Flags;
 import org.xbill.DNS.Header;
 import org.xbill.DNS.Message;
-import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Opcode;
 import org.xbill.DNS.RRset;
@@ -66,6 +74,7 @@ import com.google.inject.Inject;
  */
 public class ConfigServiceDNSStore implements DNSStore 
 {
+	protected static final String DNS_CERT_POLICY_NAME_VAR = "org.nhindirect.dns.CertPolicyName";
 	
 	protected static final String DEFAULT_JCE_PROVIDER_STRING = "BC";
 	protected static final String JCE_PROVIDER_STRING_SYS_PARAM = "org.nhindirect.dns.JCEProviderName";	
@@ -73,6 +82,9 @@ public class ConfigServiceDNSStore implements DNSStore
 	protected static final Log LOGGER = LogFactory.getFactory().getInstance(ConfigServiceDNSStore.class);
 	
 	protected Map<String, Record> soaRecords = null;
+	
+	protected PolicyFilter polFilter = null;
+	protected PolicyExpression polExpression = null;
 	
 	/**
 	 * Gets the configured JCE crypto provider string for crypto operations.  This is configured using the
@@ -118,6 +130,61 @@ public class ConfigServiceDNSStore implements DNSStore
 	public ConfigServiceDNSStore(@ConfigServiceURL URL serviceURL)
 	{
 		proxy = new ConfigurationServiceProxy(serviceURL.toString());		
+		
+		try
+		{
+			configCertPolicy();
+		}
+		catch (DNSException e)
+		{
+			throw new IllegalStateException(e);
+		}
+		
+	}
+	
+	/**
+	 * Checks to see if a certificate policy has been configured.
+	 */
+	protected void configCertPolicy() throws DNSException
+	{
+		// check to see if there is a certificate policy set
+		final String polName = System.getProperty(DNS_CERT_POLICY_NAME_VAR);
+		if (!StringUtils.isEmpty(polName))
+		{
+			InputStream inStream = null;
+			LOGGER.info("Certificate policy name " + polName + " has been configured.");
+			try
+			{
+				// get the policy by name
+				final org.nhind.config.CertPolicy policy = proxy.getPolicyByName(polName);
+				if (policy == null)
+				{
+					LOGGER.warn("Certificate policy " + polName + " could not be found in the system.  Falling back to no policy.");
+					return;
+				}
+				
+				// now compile the policy into an expression
+				final PolicyLexiconParser parser = PolicyLexiconParserFactory.getInstance(PolicyLexicon.valueOf(policy.getLexicon().getValue()));
+				inStream = new ByteArrayInputStream(policy.getPolicyData());
+				this.polExpression = parser.parse(inStream);
+				
+				// now create the filter
+				this.polFilter = PolicyFilterFactory.getInstance();
+				
+			}
+			catch (Exception e)
+			{
+				// it's OK if can't find the certificate policy that was configured, we'll just log a warning
+				// it's also OK if we can't download or parse the policy, but we need to log the error
+				LOGGER.warn("Error loading and compling certificate policy " + polName + ".  Will fallback to no policy filter.", e);
+			}
+			finally
+			{
+				IOUtils.closeQuietly(inStream);
+			}
+		}
+		else
+			LOGGER.info("No certificate policy has been configured.");
 	}
 	
 	/**
@@ -234,15 +301,8 @@ public class ConfigServiceDNSStore implements DNSStore
         
         if (lookupRecords == null || lookupRecords.size() == 0)
         {
-        	LOGGER.debug("No records found.  Searching for NS delegation.");
-        	
-        	// check to see if there is subzone delegation to another server(s)
-        	lookupRecords = searchForSubzoneDelation(name.toString());
-        	if (lookupRecords == null || lookupRecords.size() == 0)
-        		return null;
-        	
-        	// now delegate the call
-        	return delegateSubZoneLookup(lookupRecords, request);
+        	LOGGER.debug("No records found.");
+        	return null;
         }
         	
         final Message response = new Message(request.getHeader().getID());
@@ -266,59 +326,6 @@ public class ConfigServiceDNSStore implements DNSStore
 		LOGGER.trace("get(Message) Exit");
 		
     	return response;
-	}
-
-	protected Message delegateSubZoneLookup(Collection<Record> servers, Message request) throws DNSException
-	{
-		final Collection<String> nameServers = new ArrayList<String>();
-		
-		for (Record server : servers)
-		{	
-			String serverNameOrIP = ((NSRecord)server).getTarget().toString();
-			if (serverNameOrIP.endsWith("."))
-				serverNameOrIP = serverNameOrIP.substring(0, serverNameOrIP.length() - 1);
-			
-			nameServers.add(serverNameOrIP);
-		}
-		
-		final ProxyDNSStore proxyStore = new ProxyDNSStore(nameServers);
-		
-		return proxyStore.get(request);
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected Collection<Record> searchForSubzoneDelation(String name) throws DNSException
-	{	
-		Collection<Record> lookupRecords = null;
-		
-		// first check if this server is an authority for this record
-		RRset set = processGenericRecordRequest(name, Type.SOA);
-		if (set != null)
-			// we are the authority, so can't delegate
-			return null;
-		
-		// check to see if an NS record exists for this domain
-		set = processGenericRecordRequest(name, Type.NS);
-		if (set != null)
-		{
-			lookupRecords = new ArrayList<Record>();
-			Iterator<Record> iter = set.rrs();
-			while (iter.hasNext())
-				lookupRecords.add(iter.next());			
-			
-			return lookupRecords;
-		}
-		
-		// go from left to right and cut down the name between each "."
-		int idx = name.indexOf(".");
-		if (idx == -1 || idx == (name.length() + 1))
-			return null;
-		
-		final String dmName = name.substring(idx + 1);
-		if (dmName.length() == 0)
-			return null;
-
-		return searchForSubzoneDelation(dmName);
 	}
 	
 	
@@ -473,6 +480,10 @@ public class ConfigServiceDNSStore implements DNSStore
 				try
 				{
 					xCert = dataToCert(cert.getData());
+					// check if this is a compliant certificate with the configured policy... if not, move on
+					if (!isCertCompliantWithPolicy(xCert))
+						continue;
+					
 					retData = xCert.getEncoded();
 				}
 				catch (DNSException e)
@@ -520,7 +531,9 @@ public class ConfigServiceDNSStore implements DNSStore
 			throw new DNSException(DNSError.newError(Rcode.SERVFAIL), "Failure while parsing CERT record data: " + e.getMessage(), e);
 		}
 		
-		return retVal;
+		// because of policy filtering, it's possible that we could have filtered out every cert
+		// resulting in an empty RR set
+		return (retVal.size() == 0) ? null : retVal;
 	}
 	
 	/*
@@ -656,4 +669,21 @@ public class ConfigServiceDNSStore implements DNSStore
     	
     	return retVal;
     }
+	
+	protected boolean isCertCompliantWithPolicy(X509Certificate cert)
+	{
+		// if no policy has been set, then always return true
+		if (this.polFilter == null)
+			return true;
+		
+		try
+		{
+			return this.polFilter.isCompliant(cert, this.polExpression);
+		}
+		catch (Exception e)
+		{
+			LOGGER.warn("Error testing certificate for policy compliance.  Default to compliant.", e);
+			return true;
+		}
+	}
 }

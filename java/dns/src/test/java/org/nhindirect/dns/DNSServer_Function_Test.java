@@ -10,10 +10,12 @@ import java.util.Collection;
 import junit.framework.TestCase;
 
 import org.apache.mina.util.AvailablePortFinder;
+import org.nhind.config.CertPolicy;
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
 import org.nhind.config.DnsRecord;
 import org.nhind.config.EntityStatus;
+import org.nhind.config.PolicyLexicon;
 import org.nhindirect.dns.util.BaseTestPlan;
 import org.nhindirect.dns.util.ConfigServiceRunner;
 import org.nhindirect.dns.util.DNSRecordUtil;
@@ -30,6 +32,8 @@ import org.xbill.DNS.security.CERTConverter;
 
 public class DNSServer_Function_Test extends TestCase
 {
+	static final String KEY_ENC_POLICY = "(X509.TBS.EXTENSION.KeyUsage & 32) > 0";
+	
 	private static class Query
 	{
 		public String name;
@@ -115,8 +119,22 @@ public class DNSServer_Function_Test extends TestCase
 			doAssertions(retrievedRecord);
 		}
 
-		private void cleanRecords() throws Exception
+		protected void cleanRecords() throws Exception
 		{
+			CertPolicy[] pols = proxy.getPolicies();
+
+			if (pols != null && pols.length > 0)
+			{
+				final Long[] ids = new Long[pols.length];
+				for (int i = 0; i < pols.length; ++i)
+					ids[i] = pols[i].getId();
+				
+				proxy.deletePolicies(ids);
+			}
+			pols = proxy.getPolicies();
+
+			assertNull(pols);
+			
 			DnsRecord[] rec = proxy.getDNSByType(Type.ANY);
 
 			if (rec != null && rec.length > 0)
@@ -466,6 +484,106 @@ public class DNSServer_Function_Test extends TestCase
 		}.perform();
 	}
 
+	
+	public void testQueryCERTRecords_policyExists_AssertRecordsRetrieved() throws Exception
+	{
+		new TestPlan()
+		{
+			
+			@Override
+			public void tearDownMocks() throws Exception
+			{
+				
+				System.setProperty(ConfigServiceDNSStore.DNS_CERT_POLICY_NAME_VAR, "");
+				super.tearDownMocks();
+			}
+			
+			@Override
+			protected void setupMocks() throws Exception
+			{
+				System.setProperty(ConfigServiceDNSStore.DNS_CERT_POLICY_NAME_VAR, "ValidPolicy");
+				
+				if (!ConfigServiceRunner.isServiceRunning())
+					ConfigServiceRunner.startConfigService();
+
+				proxy = new ConfigurationServiceProxy(ConfigServiceRunner.getConfigServiceURL());
+
+				cleanRecords();
+
+				addRecords();
+
+				port = AvailablePortFinder.getNextAvailable(1024);
+				DNSServerSettings settings = new DNSServerSettings();
+				settings.setPort(port);
+				
+				// create the key encypherment policy
+				final CertPolicy policy = new CertPolicy();
+				policy.setLexicon(PolicyLexicon.SIMPLE_TEXT_V1);
+				policy.setPolicyName("ValidPolicy");
+				policy.setPolicyData(KEY_ENC_POLICY.getBytes());
+				
+				proxy.addPolicy(policy);
+
+
+				server = new DNSServer(new ConfigServiceDNSStore(new URL(ConfigServiceRunner.getConfigServiceURL())), settings);
+
+				server.start();
+			}
+			
+			protected void addRecords() throws Exception
+			{
+				// add some CERT records
+				ArrayList<Certificate> recs = new ArrayList<Certificate>();
+
+				X509Certificate cert = DNSRecordUtil.loadCertificate("bob.der");
+				Certificate addCert = xCertToCert(cert);
+				recs.add(addCert);
+
+				cert = DNSRecordUtil.loadCertificate("umesh.der");
+				addCert = xCertToCert(cert);
+				recs.add(addCert);
+
+				proxy.addCertificates(recs.toArray(new Certificate[recs.size()]));
+
+
+				ArrayList<DnsRecord> soaRecs = new ArrayList<DnsRecord>();
+				DnsRecord rec = DNSRecordUtil.createSOARecord("securehealthemail.com", "nsserver.securehealthemail.com","master.securehealthemail.com");
+				soaRecs.add(rec);
+
+				rec = DNSRecordUtil.createSOARecord("nhind.hsgincubator.com", "nsserver.nhind.hsgincubator.com","master.nhind.hsgincubator.com");
+				soaRecs.add(rec);
+
+				
+				proxy.addDNS(soaRecs.toArray(new DnsRecord[soaRecs.size()]));
+
+			}
+
+			protected Collection<Query> getTestQueries() throws Exception
+			{
+				Collection<Query> queries = new ArrayList<Query>();
+				queries.add(new Query("bob.nhind.hsgincubator.com", Type.CERT));
+				queries.add(new Query("umesh.securehealthemail.com", Type.CERT));
+				
+				return queries;
+
+			}
+
+			protected void doAssertions(Collection<Record> records) throws Exception
+			{
+				assertNotNull(records);
+				assertEquals(1, records.size());
+
+				final Record record = records.iterator().next();
+				assertTrue(record instanceof CERTRecord);
+
+				X509Certificate cert = (X509Certificate)CERTConverter.parseRecord((CERTRecord)record);
+				assertNotNull(cert);
+
+				DNSRecordUtil.getCertOwner(cert).equals("bob@nhind.hsgincubator.com");
+			}
+		}.perform();
+	}
+	
 	public void testQueryCERTRecords_AssertNoRecordsRetrieved() throws Exception
 	{
 		new TestPlan()

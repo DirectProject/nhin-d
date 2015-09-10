@@ -103,7 +103,7 @@ public class ProxyDNSStore implements DNSStore
 	@Override
 	public Message get(Message dnsMsg) throws DNSException
 	{
-		ExtendedResolver resolver = createExResolver(servers, port, 2, 6);
+		ExtendedResolver resolver = createExResolver(servers, port, 2, 2000);
 		// try UPD first
 		
 		Message response = null;

@@ -126,3 +126,27 @@ Typically your domain registration service will allow you to define an NS (name 
 * An A record for each of you email servers.
 * An MX record for each of you email servers server a domain.
 * Either an org level certificate for each domain or individual certificates per email address (this should already be configured as part of you SMTP agent/gateway installation).
+
+h2. Policy Enforcement
+
+It is possible for multiple certificates to exist for a specific address of domain.  This is especially true in circumstances when single use certificates are used (i.e. one certificate for encryption and one certificate for digital signatures).  In these cases, it likely that you will not want to publish all certificates for a addresses or domains over DNS.  The Direct DNS server allow you to filter published certificate using the Policy Enablement [module|../../../direct-policy/1.0/users-guide/index.html].
+
+The Direct DNS server's configuration file (conf/wrapper.conf) defines a system parameter named _org.nhindirect.dns.CertPolicyName_ with a default value of _DNSCertPolicy_.  This policy name indicates the name of the policy that the server will use for filtering certificates.  If this parameter does not exist or references a policy that does not exist in the system, the server will fall back to not filtering certificates.
+
+h3. Policy Configuration
+
+To configure a policy for certificate filtering, first define a policy using the appropriate [syntax|../../../direct-policy/1.0/users-guide/tools-simpleTextV1.html#Simple_Text_Lexicon_Version_I].  As an example, let's say you want to only publish certificates that assert the key encipherment bit (which is probably the primary use case for using policy enforcement in the DNS server.  Below is the syntax for this policy:
+
+{code}
+(X509.TBS.EXTENSION.KeyUsage & 32) > 0
+{code}
+ 
+Now let's say this policy is saved in a file named KeyEnc.pol.  To add this policy to the system, run the Management Console application and execute the following sample command.
+
+{code}
+IMPORTPOLICY DNSCertPolicy KeyEnc.pol
+{code}
+
+This will create a policy named _DNSCertPolicy_ which contains the policy defined in the file KeyEnc.pol.  When the DNS server launches, it will look for a policy with the name _DNSCertPolicy_ (remember the policy name is configured with system parameter org.nhindirect.dns.CertPolicyName in the wrapper.conf file) in the system and will apply the policy to all certificates that queried.
+
+If you choose, you can change the name of the policy that you want the DNS server to use by changing the value of the _org.nhindirect.dns.CertPolicyName_ parameter in the wrapper.conf file.

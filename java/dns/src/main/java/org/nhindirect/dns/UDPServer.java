@@ -214,12 +214,15 @@ public class UDPServer extends DNSSocketServer
 				
 				try
 				{
+					//LOGGER.info("Got UDP DNS query.  Translating");
 					query = responder.toMessage(inPacket.getData());
-					
+					//LOGGER.info("Send UDP DNS query to service.");
 					response = responder.processRequest(query);
+					//LOGGER.info("UDP query returned from config service");
 				}
 				catch (DNSException e) 
 				{
+					//LOGGER.info("Sending UDP error response");
 					if (query != null)
 						response = responder.processError(query, e.getError());
 				}
@@ -241,6 +244,7 @@ public class UDPServer extends DNSSocketServer
 							inPacket.getAddress(),
 							inPacket.getPort());
 					
+					//LOGGER.info("Sending UDP query valid response");
 					serverSock.send(outPacket);
 				}
 				else

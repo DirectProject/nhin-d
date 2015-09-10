@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dns</artifactId>    
     <name>Direct Project DNS services</name>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT</version>
     <description>Direct Project DNS services</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/dns/${project.version}</url> 
@@ -75,7 +75,12 @@
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-service-client</artifactId>
 		    <version>2.0</version>   
-		</dependency>	
+		</dependency>
+		<dependency>
+		    <groupId>org.nhind</groupId>
+		    <artifactId>direct-policy</artifactId>
+		    <version>1.0</version>   
+		</dependency>				
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>agent</artifactId>
@@ -292,7 +297,8 @@
 		            <systemProperties>
 		              <systemProperty>java.security.policy=conf/policy.all</systemProperty>
 	                  <systemProperty>org.apache.commons.logging.Log=org.apache.commons.logging.impl.SimpleLog</systemProperty>
-	                  <systemProperty>org.apache.commons.logging.simplelog.defaultlog=info</systemProperty>                  
+	                  <systemProperty>org.apache.commons.logging.simplelog.defaultlog=info</systemProperty>       
+	                  <systemProperty>org.nhindirect.dns.CertPolicyName=DNSCertPolicy</systemProperty>   	                             
 		            </systemProperties>
 		          </defaultJvmSettings>	                 
 		          <daemons>

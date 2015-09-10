@@ -185,7 +185,7 @@ public class DNSConnectionTest extends TestCase
 		server.start();
 		
 		// give the server a couple seconds to start
-		Thread.currentThread().sleep(2000);
+		Thread.sleep(2000);
 		
 		// turn on debug settings for the DNS client
 		Options.set("verbose", "true");
@@ -206,7 +206,7 @@ public class DNSConnectionTest extends TestCase
 		
 		server.stop();
 		
-		Thread.currentThread().sleep(4000);
+		Thread.sleep(2000);
 	}
 
 	
@@ -223,7 +223,7 @@ public class DNSConnectionTest extends TestCase
 		server.start();
 		
 		// give the server a couple seconds to start
-		Thread.currentThread().sleep(2000);
+		Thread.sleep(2000);
 		
 		// turn on debug settings for the DNS client
 		Options.set("verbose", "true");
@@ -242,7 +242,7 @@ public class DNSConnectionTest extends TestCase
 		
 		server.stop();
 		
-		Thread.currentThread().sleep(4000);
+		Thread.sleep(2000);
 	}
 	
 }
