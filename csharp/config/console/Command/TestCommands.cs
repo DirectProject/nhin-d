@@ -43,6 +43,39 @@ namespace Health.Direct.Config.Console.Command
             EnsureStandardMachineStores(path);
         }
 
+        [Command(Name = "Reset_Stores",
+            Usage = "Remove certs in all Direct Project machine stores")]
+        public void ResetStores(string[] args)
+        {
+            SystemX509Store store;
+            WriteLine("Removing all Machine Private Certs");
+            using (store = SystemX509Store.OpenPrivateEdit())
+            {
+                foreach (var certificate in store.GetAllCertificates())
+                {
+                    store.Remove(certificate);
+                }
+            }
+
+            WriteLine("Removing all Machine Public Certs");
+            using (store = SystemX509Store.OpenExternalEdit())
+            {
+                foreach (var certificate in store.GetAllCertificates())
+                {
+                    store.Remove(certificate);
+                }
+            }
+
+            WriteLine("Removing all Machine Anchors Certs");
+            using (store = SystemX509Store.OpenAnchorEdit())
+            {
+                foreach (var certificate in store.GetAllCertificates())
+                {
+                    store.Remove(certificate);
+                }
+            }
+        }
+
         [Command(Name = "Test_Certs_InstallInService",
             Usage = "Install test certs into config service")]
         public void TestCertsInstallInService(string[] args)

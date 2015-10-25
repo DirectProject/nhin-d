@@ -88,7 +88,8 @@ namespace Health.Direct.Policy
                 throw new InvalidOperationException("Execution engine cannot be null");
 
             IList<IOpCode> opcodes = m_compiler.Compile(cert, expression);
-            return m_executionEngine.Evaluate(opcodes);
+            var compliant = m_executionEngine.Evaluate(opcodes);
+            return compliant;
         }
     }
 }

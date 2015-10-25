@@ -100,7 +100,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             SmtpAgent smtpAgent = SmtpAgentFactory.Create(settings);
 
@@ -157,7 +157,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             SmtpAgent smtpAgent = SmtpAgentFactory.Create(settings);
 
@@ -196,6 +196,14 @@ namespace Health.Direct.SmtpAgent.Tests
             mockTrustPolicyResolver.Verify(r => r.GetOutgoingPolicy(It.IsAny<MailAddress>()), Times.Never());
         }
 
+        /// <summary>
+        /// The machine cert store needs to be set up with specific certs
+        /// Use ConfigConsole to reset and load test certs
+        /// <example>
+        /// ConfigConsole Reset_Stores
+        /// ConfigConsole Test_Certs_Install
+        /// </example>
+        /// </summary>
         [Fact]
         public void TestFilterCertificateByPolicy_incomingPolicyCompliant_assertNoCertsFiltered()
         {
@@ -214,7 +222,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
             
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
 
@@ -271,7 +279,7 @@ namespace Health.Direct.SmtpAgent.Tests
            mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
                , Times.Exactly(1));
 
-            mockPolicyFilter.Verify(p => p.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()), Times.Exactly(6));
+            mockPolicyFilter.Verify(p => p.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()), Times.Exactly(8));
             //
             // These two are never called.  These code paths do not exist.
             //
@@ -297,7 +305,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
             mockPrivatePolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
@@ -362,7 +370,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
             mockPrivatePolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
@@ -413,7 +421,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
             mockPrivatePolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
@@ -467,7 +475,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
             mockPrivatePolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
@@ -521,7 +529,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
             mockTrustPolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
@@ -577,7 +585,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<PublicPolicyResolver> mockPublicPolicyResolver;
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
-            MockPrivatePolicyResolver(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
+            MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
 
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
             mockTrustPolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
@@ -662,7 +670,7 @@ namespace Health.Direct.SmtpAgent.Tests
         //
         // Mock all policy resolver
         //
-        protected static void MockPrivatePolicyResolver(SmtpAgentSettings settings, out Mock<PrivatePolicyResolver> mockPrivatePolicyResolver,
+        protected static void MockPolicyResolvers(SmtpAgentSettings settings, out Mock<PrivatePolicyResolver> mockPrivatePolicyResolver,
             out Mock<PublicPolicyResolver> mockPublicPolicyResolver, out Mock<TrustPolicyResolver> mockTrustPolicyResolver, out Mock<IPolicyFilter> mockPolicyFilter)
         {
             
