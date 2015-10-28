@@ -97,11 +97,12 @@ namespace Health.Direct.Common.Certificates
             {
                 throw new ArgumentNullException("bundleUri");
             }
-            
+
             using (WebDownloader client = new WebDownloader())
             {
                 client.TimeoutMS = this.TimeoutMS;
                 client.MaxRetries = m_maxRetries;
+                client.Headers.Add(HttpRequestHeader.Accept, "application/octet-stream,application/x-pkcs7-certificates,application/pkcs7-mime");
 
                 return client.DownloadDataWithRetry(bundleUri);
             }
