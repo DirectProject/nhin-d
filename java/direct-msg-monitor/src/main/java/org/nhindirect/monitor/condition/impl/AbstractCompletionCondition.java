@@ -105,17 +105,19 @@ public abstract class AbstractCompletionCondition implements TxCompletionConditi
 		if (index > -1)
 		{
 			normalizedString = recip.substring(index + 1).trim();
-			try 
-			{
-				InternetAddress addr = new InternetAddress(normalizedString);
-				normalizedString = addr.getAddress();
-			} 
-			catch (AddressException e)
-			{
-				/* noop */
-			}
 		}
-			
+		// due to potential friendly names in the recipient (which are recommended against)
+		// we need to just get the email address for comparison
+		try 
+		{
+			InternetAddress addr = new InternetAddress(normalizedString);
+			normalizedString = addr.getAddress();
+		} 
+		catch (AddressException e)
+		{
+			/* noop */
+		}
+		
 		return normalizedString;
 	}
 }

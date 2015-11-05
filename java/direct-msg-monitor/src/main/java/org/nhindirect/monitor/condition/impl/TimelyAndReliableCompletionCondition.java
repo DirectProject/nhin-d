@@ -58,6 +58,7 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public Collection<String> getIncompleteRecipients(Collection<Tx> txs)
 	{
@@ -105,7 +106,8 @@ public class TimelyAndReliableCompletionCondition extends AbstractCompletionCond
 						   {
 							   // check for the reliable and timely option
 							   final TxDetail mdnOptionDetail = tx.getDetail(TxDetailType.DISPOSITION_OPTIONS);
-							   if (mdnOptionDetail != null && mdnOptionDetail.getDetailValue().contains(MDNStandard.DispositionOption_TimelyAndReliable))
+							   if (mdnOptionDetail != null && mdnOptionDetail.getDetailValue().toLowerCase().
+									   contains(MDNStandard.DispositionOption_TimelyAndReliable.toLowerCase()))
 								   recipStatus.addReceivedStatus(RecipientResponseStatus.MDNDispatchedReceived);
 						   }
 						   // check if this is an MDN failed message

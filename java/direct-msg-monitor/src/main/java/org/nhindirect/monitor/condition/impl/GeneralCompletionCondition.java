@@ -45,6 +45,7 @@ public class GeneralCompletionCondition extends AbstractCompletionCondition
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public Collection<String> getIncompleteRecipients(Collection<Tx> txs)
 	{

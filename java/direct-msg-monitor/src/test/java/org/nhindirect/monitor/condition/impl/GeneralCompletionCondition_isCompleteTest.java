@@ -119,6 +119,44 @@ public class GeneralCompletionCondition_isCompleteTest
 	}
 	
 	@Test
+	public void testIsComplete_nonQuotedFriendlyFinalRecipName_MDNMessageReceived_assertTrue()
+	{
+		GeneralCompletionCondition condition = new GeneralCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// MDN to original message
+		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552@cerner.com", "GregMeyer <gm2552@direct.securehealthemail.com>");
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	@Test
+	public void testIsComplete_nonFriendlyFinalRecipName_MDNMessageReceived_assertTrue()
+	{
+		GeneralCompletionCondition condition = new GeneralCompletionCondition();
+		
+		// original message
+		final String originalMessageId = UUID.randomUUID().toString();	
+		
+		Tx originalMessage = TestUtils.makeMessage(TxMessageType.IMF, originalMessageId, "", "gm2552@cerner.com", "gm2552@direct.securehealthemail.com", "");
+
+		// MDN to original message
+		Tx mdnMessage = TestUtils.makeMessage(TxMessageType.MDN, UUID.randomUUID().toString(), originalMessageId, "gm2552@direct.securehealthemail.com", 
+				"gm2552@cerner.com", "\"Greg Meyer\" <gm2552@direct.securehealthemail.com>");
+		
+		List<Tx> txs = Arrays.asList(originalMessage, mdnMessage);
+		
+		assertTrue(condition.isComplete(txs));
+	}
+	
+	@Test
 	public void testIsComplete_MDNMessageReceived_plusNotationOnMDNRecip_rfc822NotactionOnFinalRecip_assertTrue()
 	{
 		GeneralCompletionCondition condition = new GeneralCompletionCondition();

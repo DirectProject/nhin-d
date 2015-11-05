@@ -41,6 +41,8 @@ public class TestNonReliableMessageMonitorRoute extends CamelSpringTestSupport
 		assertEquals(1, exchanges.size());
     }
 	
+	/*
+	 * Keep around for testing with real messages
 	@Test
     public void testSingleRecipMDNReceived_readFromMessages_assertConditionComplete() throws Exception 
     {
@@ -63,6 +65,7 @@ public class TestNonReliableMessageMonitorRoute extends CamelSpringTestSupport
 		
 		assertEquals(1, exchanges.size());
     }
+	*/
 	
 	@Test
     public void testSingleRecipMDNReceived_multipleMessage_assertSingleConditionComplete() throws Exception 
