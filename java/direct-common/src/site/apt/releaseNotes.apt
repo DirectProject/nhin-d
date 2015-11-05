@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{2.0}
+
+    Changes included with release 2.0
+    
+    []
+    
+ 	* Added interface to wrap and unwrap keys in a PCKS11 token.
+ 	
+ 	* Tightened up SMIME types for Applicability Statement v1.2 compliance
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with comparison of MDN final recipient using case sensitivity.
+
 {1.4.2}
 
     Changes included with release 1.4.2

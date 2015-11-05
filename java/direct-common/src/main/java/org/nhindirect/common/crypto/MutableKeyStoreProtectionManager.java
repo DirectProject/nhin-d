@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.common.crypto;
 
 import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStore.Entry;
 
 import org.nhindirect.common.crypto.exceptions.CryptoException;
 
@@ -110,4 +112,25 @@ public interface MutableKeyStoreProtectionManager extends KeyStoreProtectionMana
 	 */
 	public void clearKey(String alias) throws CryptoException;
 	
+	/**
+	 * Generic method to set an arbitrary entry.
+	 * @param alias Alias of the entry that will be set.
+	 * @param entry The entry that will be set.
+	 * @throws CryptoException
+	 */
+	public void setEntry(String alias, Entry entry) throws CryptoException;
+
+	/**
+	 * Generic method to clear an arbitrary entry.
+	 * @param alias Alias of the entry that will be cleared.
+	 * @throws CryptoException
+	 */
+	public void clearEntry(String alias) throws CryptoException;
+	
+	
+	/**
+	 * Gets the underlying KeyStore object.
+	 * @return The KeyStore object backing the protection manager.
+	 */
+	public KeyStore getKS();
 }

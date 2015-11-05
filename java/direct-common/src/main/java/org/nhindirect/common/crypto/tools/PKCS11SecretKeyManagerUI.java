@@ -61,6 +61,7 @@ public class PKCS11SecretKeyManagerUI extends JFrame
 	protected JButton removeKeyButton;
 	protected JButton addAESKeyButton;
 	protected JButton addGenericKeyButton;
+	protected JButton addCertificate;
 	protected DefaultTableModel keyDataModel;
 	protected JButton quitButton;
 

@@ -70,6 +70,16 @@ public class TxUtil_isRelAndTimelyTest
 	}
 	
 	@Test
+	public void testIsTimelyAndRequired_caseInsensitiveOption_MDNOptionForTimely_assertTrue()
+	{			
+		Map<String, TxDetail> details = new HashMap<String, TxDetail>();
+		details.put(TxDetailType.DISPOSITION_OPTIONS.getType(), new TxDetail(TxDetailType.DISPOSITION_OPTIONS, MDNStandard.DispositionOption_TimelyAndReliable.toLowerCase()));
+		Tx msg = new Tx(TxMessageType.IMF, details);
+		
+		assertTrue(TxUtil.isReliableAndTimelyRequested(msg));
+	}
+	
+	@Test
 	public void testIsTimelyAndRequired_MDNOptionForTimelyMimeMessage_assertTrue() throws Exception
 	{			
 		MimeMessage msg = TestUtils.readMimeMessageFromFile("MessageWithAttachment.txt");

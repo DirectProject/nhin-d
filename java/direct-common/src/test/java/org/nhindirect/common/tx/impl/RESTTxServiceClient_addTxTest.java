@@ -20,6 +20,7 @@ import org.nhindirect.common.ServiceRunner;
 import org.nhindirect.common.rest.HttpClientFactory;
 import org.nhindirect.common.tx.mock.MockTxsResource;
 import org.nhindirect.common.tx.model.Tx;
+import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.common.tx.model.TxMessageType;
 import org.nhindirect.common.util.TestUtils;
 
@@ -152,6 +153,43 @@ public class RESTTxServiceClient_addTxTest
 			protected void doAssertions(Collection<Tx> txs) throws Exception
 			{				
 				assertEquals(1, txs.size());
+			}
+		}.perform();		
+	}
+	
+	@Test
+	public void testSendMimeMessage_friendlyFinalRecipName_assertTxsReceived() throws Exception
+	{
+		new TestPlan<MimeMessage>()
+		{
+			
+			@Override
+			protected Collection<MimeMessage> getTxsToSubmit()
+			{					
+				Collection<MimeMessage> txs = new ArrayList<MimeMessage>();
+				try
+				{
+					MimeMessage msg = TestUtils.readMimeMessageFromFile("MDNMessageFriendlyNameFinalRecip.txt");			
+
+					txs.add(msg);
+				}
+				catch (Exception e){}
+				
+				return txs;
+
+			}
+			
+			@Override
+			protected void trackMessage(MimeMessage tx) throws Exception
+			{
+				client.trackMessage(tx);
+			}
+			
+			protected void doAssertions(Collection<Tx> txs) throws Exception
+			{				
+				assertEquals(1, txs.size());
+				final Tx tx = txs.iterator().next();
+				assertEquals("externaluser <externuser1@starugh-stateline.com>",  tx.getDetail(TxDetailType.FINAL_RECIPIENTS).getDetailValue());
 			}
 		}.perform();		
 	}

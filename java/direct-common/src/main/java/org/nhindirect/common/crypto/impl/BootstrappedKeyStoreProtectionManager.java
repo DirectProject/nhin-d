@@ -21,9 +21,13 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.common.crypto.impl;
 
 import java.security.Key;
+import java.security.KeyStore.Entry;
+import java.security.KeyStore.SecretKeyEntry;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.nhindirect.common.crypto.KeyStoreProtectionManager;
@@ -37,15 +41,19 @@ import org.nhindirect.common.crypto.exceptions.CryptoException;
  */
 public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtectionManager
 {
+	public final static String PrivKeyProtKey = "PrivKeyProtKey";
+	public final static String KeyStoreProtKey = "KeyStoreProtKey";
+	
 	protected Key keyStoreProtectionKey;
 	protected Key privateKeyProtectionKey;
+	protected Map<String, Entry> keyEntries;
 	
 	/**
 	 * Empty constructore
 	 */
 	public BootstrappedKeyStoreProtectionManager ()
 	{
-		
+		setKeyEntries(null);
 	}
 	
 	/**
@@ -57,6 +65,21 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 	{
 		setKeyStoreProtectionKey(keyStoreProtectionKey);
 		setPrivateKeyProtectionKey(privateKeyProtectionKey);
+		setKeyEntries(null);
+	}
+	
+	/**
+	 * Constructs a manager by providing the protection keys as strings and a collection of key entries
+	 * @param keyStoreProtectionKey The pass phrase that protects the key store as a whole.
+	 * @param privateKeyProtectionKey The pass phrase that protects the private keys in the key store.
+	 * @param entries Key entries
+	 */
+	public BootstrappedKeyStoreProtectionManager (String keyStoreProtectionKey, String privateKeyProtectionKey,
+			Map<String, Entry> entries)
+	{
+		setKeyStoreProtectionKey(keyStoreProtectionKey);
+		setPrivateKeyProtectionKey(privateKeyProtectionKey);
+		setKeyEntries(entries);
 	}
 	
 	/**
@@ -66,6 +89,7 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 	public void setKeyStoreProtectionKey(byte[] keyStoreProtectionKey)
 	{
 		this.keyStoreProtectionKey = new SecretKeySpec(keyStoreProtectionKey, "");
+		keyEntries.put(KeyStoreProtKey, new SecretKeyEntry((SecretKey)this.keyStoreProtectionKey));
 	}
 	
 	/**
@@ -75,6 +99,7 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 	public void setKeyStoreProtectionKey(String keyStoreProtectionKey)
 	{
 		this.keyStoreProtectionKey = new SecretKeySpec(keyStoreProtectionKey.getBytes(), "");
+		keyEntries.put(KeyStoreProtKey, new SecretKeyEntry((SecretKey)this.keyStoreProtectionKey));
 	}
 	
 	/**
@@ -84,6 +109,7 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 	public void setPrivateKeyProtectionKey(byte[] privateKeyProtectionKey)
 	{
 		this.privateKeyProtectionKey = new SecretKeySpec(privateKeyProtectionKey, "");
+		keyEntries.put(PrivKeyProtKey, new SecretKeyEntry((SecretKey)this.privateKeyProtectionKey));
 	}
 
 	/**
@@ -93,6 +119,21 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 	public void setPrivateKeyProtectionKey(String privateKeyProtectionKey)
 	{
 		this.privateKeyProtectionKey = new SecretKeySpec(privateKeyProtectionKey.getBytes(), "");
+		keyEntries.put(PrivKeyProtKey, new SecretKeyEntry((SecretKey)this.privateKeyProtectionKey));
+	}
+	
+	/**
+	 * Sets the key entries.
+	 * @param entries The key entries
+	 */
+	public void setKeyEntries(Map<String, Entry> entries) 
+	{
+		this.keyEntries = (entries == null) ? new HashMap<String, Entry>() : new HashMap<String, Entry>(entries);
+		// add the static entries
+		if (this.keyStoreProtectionKey != null)
+			keyEntries.put(PrivKeyProtKey, new SecretKeyEntry((SecretKey)this.keyStoreProtectionKey));
+		if (this.keyStoreProtectionKey != null)
+			keyEntries.put(KeyStoreProtKey, new SecretKeyEntry((SecretKey)this.privateKeyProtectionKey));
 	}
 	
 	/**
@@ -120,16 +161,43 @@ public class BootstrappedKeyStoreProtectionManager implements KeyStoreProtection
 	public Map<String, Key> getAllKeys() throws CryptoException 
 	{
 		final Map<String, Key> keys = new HashMap<String, Key>();
-		
-		keys.put("PrivKeyProtKey", getPrivateKeyProtectionKey());
-		keys.put("KeyStoreProtKey", getKeyStoreProtectionKey());
-		
+		for (Map.Entry<String, Entry> keyEntry : this.keyEntries.entrySet())
+			if (keyEntry.getValue() instanceof SecretKeyEntry)
+				keys.put(keyEntry.getKey(), ((SecretKeyEntry)keyEntry.getValue()).getSecretKey());
+	
 		return keys;
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Key getKey(String keyName) throws CryptoException
 	{
+		final Entry keyEntry = getEntry(keyName);
+		if (keyEntry != null && keyEntry instanceof SecretKeyEntry)
+			return ((SecretKeyEntry)keyEntry).getSecretKey();
+
 		return null;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Map<String, Entry> getAllEntries() throws CryptoException 
+	{
+		return Collections.unmodifiableMap(keyEntries);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Entry getEntry(String entryName) throws CryptoException 
+	{
+		return this.keyEntries.get(entryName);
+	}
+	
+	
 }

@@ -2,10 +2,14 @@ package org.nhindirect.common.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.internet.MimeMessage;
+import javax.security.auth.callback.Callback;
+import javax.security.auth.callback.CallbackHandler;
+import javax.security.auth.callback.PasswordCallback;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,6 +25,45 @@ public class TestUtils
 	public void dummy()
 	{
 		
+	}
+	
+    /**
+     * used for testing with a pkcs11 token
+     * @return The Security provider name if the token is loaded successfully... an empty string other wise 
+     * @throws Exception
+     */
+	public static String setupSafeNetToken() throws Exception
+	{	
+		final CallbackHandler handler = new CallbackHandler()
+		{
+			public void	handle(Callback[] callbacks)
+			{
+				for (Callback callback : callbacks)
+				{
+					if (callback instanceof PasswordCallback)
+					{		
+						
+						 ((PasswordCallback)callback).setPassword("1Kingpuff".toCharArray());
+					
+					}
+				}
+			}
+		};
+		
+		final String configName = "./src/test/resources/pkcs11Config/pkcs11.cfg";
+		final sun.security.pkcs11.SunPKCS11 p = new sun.security.pkcs11.SunPKCS11(configName);
+		Security.addProvider(p);
+		try
+		{
+			p.login(null, handler);
+
+		}
+		catch (Exception e)
+		{
+			return "";
+		}
+
+		return p.getName();
 	}
 	
 	public static String readMessageFromFile(String fileName) throws Exception

@@ -22,6 +22,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 package org.nhindirect.common.crypto;
 
 import java.security.Key;
+import java.security.KeyStore.Entry;
 import java.util.Map;
 
 import org.nhindirect.common.crypto.exceptions.CryptoException;
@@ -57,7 +58,7 @@ public interface KeyStoreProtectionManager
 	
 	/**
 	 * Gets a Map of all keys managed by the token.
-	 * @return Returns a map of all keys in the token.  The mapping is key alias to key.
+	 * @return Returns a map of all keys in the token.  The mapping is string alias to the key.
 	 * @throws CryptoException
 	 */
 	public Map<String, Key> getAllKeys() throws CryptoException;
@@ -69,4 +70,19 @@ public interface KeyStoreProtectionManager
 	 * @throws CryptoException
 	 */
 	public Key getKey(String keyName) throws CryptoException;
+	
+	/**
+	 * Gets a Map of all entries managed by the token.
+	 * @return Returns a map of all entries in the token.  The mapping is a string alias to the entry.
+	 * @throws CryptoException
+	 */
+	public Map<String, Entry> getAllEntries() throws CryptoException;
+	
+	/**
+	 * Gets a specific entry by name
+	 * @param entryName The name of the entry to retrieve.  Returns null if the entry doesn't exist.
+	 * @return They entry specified by the name.
+	 * @throws CryptoException
+	 */
+	public Entry getEntry(String entryName) throws CryptoException;
 }

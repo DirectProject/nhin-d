@@ -16,6 +16,10 @@ import org.nhindirect.common.crypto.exceptions.CryptoException;
  * <p>
  * This class is also a generic band aid for systems that get disconnected from their HSMs due to policy and technical reasons.  These
  * systems need access to the secret keys even after they are disconnected.
+ * <p>
+ * <b>NOTE:</b> PrivateKeyEntry object are not cached because most PKCS11 implementations consider them non-extractable meaning they cannot
+ * be taken off of the PKCS11 token and stored into process memory.  A persistent connection the PKCS11 token is generally required for PrivateKeyEntry
+ * objects.
  * @author Greg Meyer
  * @since 1.4.1
  */
@@ -23,6 +27,7 @@ public class StaticCachedPKCS11TokenKeyStoreProtectionManager extends StaticPKCS
 {
 	private Key keystoreProtectionKey;
 	private Key privateKeyProtectionKey;
+
 	
 	/**
 	 * Empty constructor
@@ -66,6 +71,8 @@ public class StaticCachedPKCS11TokenKeyStoreProtectionManager extends StaticPKCS
 			// create a key object from the encoded data
 			keystoreProtectionKey = new SecretKeySpec(keystoreProtectionKey.getEncoded(), "");
 			privateKeyProtectionKey = new SecretKeySpec(privateKeyProtectionKey.getEncoded(), "");
+			
+			
 			
 		}
 		catch (Exception e)

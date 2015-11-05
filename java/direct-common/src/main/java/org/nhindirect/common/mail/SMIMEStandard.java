@@ -35,7 +35,7 @@ public class SMIMEStandard
     //
     public static final String MediaType_Multipart = "multipart";
     public static final String MultiPartType_Mixed = "multipart/mixed;";
-    public static final String MultiPartType_Signed = "multipart/signed; protocol=\"application/x-pkcs7-signature\";";
+    public static final String MultiPartType_Signed = "multipart/signed; protocol=\"application/pkcs7-signature\";";
     public static final String MICAlgorithmKey = "micalg"; // Message Integrity Check Protocol   
     
     //

@@ -19,63 +19,46 @@ STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
 THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-package org.nhindirect.common.crypto.impl;
 
-import java.security.KeyStore;
+package org.nhindirect.common.crypto.provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nhindirect.common.crypto.KeyStoreProtectionManager;
 import org.nhindirect.common.crypto.PKCS11Credential;
 import org.nhindirect.common.crypto.exceptions.CryptoException;
+import org.nhindirect.common.crypto.impl.StaticCachedPKCS11TokenKeyStoreProtectionManager;
+
+import com.google.inject.Provider;
 
 /**
- * Implementation of PKCS11 token store that generally does not get detached from the system.  Credentials are accessed via a PKCS11Credential implementation.
+ * Guice provider for the StaticCachedPKCS11TokenKeyStoreProtectionManager class.
  * @author Greg Meyer
- * @since 1.3
+ * @since 2.0
  */
-/// CLOVER:OFF
-public class StaticPKCS11TokenKeyStoreProtectionManager extends AbstractPKCS11TokenKeyStoreProtectionManager
+public class StaticCachedPKCS11TokenKeyStoreProtectionManagerProvider implements Provider<KeyStoreProtectionManager>
 {
-	private static final Log LOGGER = LogFactory.getFactory().getInstance(StaticPKCS11TokenKeyStoreProtectionManager.class);	
+	private final PKCS11Credential credential;
+	private final String keyStorePassPhraseAlias;
+	private final String privateKeyPassPhraseAlias;
 	
-	/**
-	 * Empty constructor
-	 * @throws CryptoException
-	 */
-	public StaticPKCS11TokenKeyStoreProtectionManager() throws CryptoException
+	public StaticCachedPKCS11TokenKeyStoreProtectionManagerProvider(PKCS11Credential credential, 
+			String keyStorePassPhraseAlias, String privateKeyPassPhraseAlias)
 	{
-		super();
+		this.credential = credential;
+		this.keyStorePassPhraseAlias = keyStorePassPhraseAlias;
+		this.privateKeyPassPhraseAlias = privateKeyPassPhraseAlias;
 	}
 	
-	/**
-	 * Constructs the store with a credential manager and aliases.
-	 * @param credential The credentials to log into the store.
-	 * @param keyStorePassPhraseAlias The alias name of the key store key in the PKCS11 token.
-	 * @param privateKeyPassPhraseAlias The alias name of the private key protection key in the PKCS11 token.
-	 * @throws CryptoException
-	 */
-	public StaticPKCS11TokenKeyStoreProtectionManager(PKCS11Credential credential, String keyStorePassPhraseAlias, String privateKeyPassPhraseAlias) throws CryptoException
+	@Override
+	public KeyStoreProtectionManager get()
 	{
-		super(credential, keyStorePassPhraseAlias, privateKeyPassPhraseAlias);
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public void initTokenStore() throws CryptoException
-	{
-		loadProvider();
-		
-		try
+		try 
 		{
-			LOGGER.debug("Initializing token store type " + keyStoreType);
-			ks = KeyStore.getInstance(keyStoreType);
-			ks.load(keyStoreSource, credential.getPIN()); 
-		}
-		catch (Exception e)
+			return new StaticCachedPKCS11TokenKeyStoreProtectionManager(credential, 
+					keyStorePassPhraseAlias, privateKeyPassPhraseAlias);
+		} 
+		catch (CryptoException e) 
 		{
-			throw new CryptoException("Error initializing PKCS11 token", e);
+			throw new IllegalStateException("Failed to create StaticCachedPKCS11TokenKeyStoreProtectionManager.", e);
 		}
 	}
 }
-/// CLOVER:ON

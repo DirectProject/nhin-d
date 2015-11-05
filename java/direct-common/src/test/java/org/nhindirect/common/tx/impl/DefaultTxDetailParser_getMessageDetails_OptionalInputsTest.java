@@ -127,6 +127,32 @@ public class DefaultTxDetailParser_getMessageDetails_OptionalInputsTest
 	}	
 	
 	@Test
+	public void testGetMessageDetails_getReportExtension_lowercaseOption_assertdispostionOption() throws Exception
+	{	
+		final MimeMessage msg = TestUtils.readMimeMessageFromFile("MDNDispatchedTimeAndReliableLowerCaseOption.txt");
+		
+		final DefaultTxDetailParser parser = new DefaultTxDetailParser();
+		
+		final Map<String, TxDetail> details = parser.getMessageDetails(msg);
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.MessageID),
+				details.get(TxDetailType.MSG_ID.getType()).getDetailValue());
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.From).toLowerCase(Locale.getDefault()),
+				details.get(TxDetailType.FROM.getType()).getDetailValue());
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.To).toLowerCase(Locale.getDefault()),
+				details.get(TxDetailType.RECIPIENTS.getType()).getDetailValue());
+		
+		assertEquals(MailStandard.getHeader(msg, MailStandard.Headers.Subject),
+				details.get(TxDetailType.SUBJECT.getType()).getDetailValue());
+		
+		assertEquals("X-DIRECT-FINAL-DESTINATION-DELIVERY",
+				details.get(TxDetailType.DISPOSITION_OPTIONS.getType()).getDetailValue());
+
+	}	
+	
+	@Test
 	public void testGetMessageDetails_getReportExtension_noDispostionOption() throws Exception
 	{	
 		final MimeMessage msg = TestUtils.readMimeMessageFromFile("MDNMessage.txt");
