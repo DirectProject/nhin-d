@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.1.5}
+
+    Changes included with release 1.1.5
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with comparison of MDN final recipient using case sensitivity.
+    
+    * Fixed issue with MDN final recipients not utilizing rfc822 in the field.    
+
 {1.1.4}
 
     Changes included with release 1.1.4
