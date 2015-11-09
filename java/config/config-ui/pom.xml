@@ -4,7 +4,7 @@
 	<groupId>org.nhind</groupId>
 	<artifactId>config-ui</artifactId>
 	<packaging>war</packaging>
-	<version>1.4-SNAPSHOT</version>
+	<version>2.1-SNAPSHOT</version>
 	<name>NHIN Direct Java Configuration UI</name>
 	<description>NHIN Direct Java Configuration UI</description>
 	<url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-ui/${project.version}</url>
@@ -60,25 +60,28 @@
 			<version>3.1.0</version>
 		</dependency>
 		<!-- Servlet/JSP/JSTL -->
+		<!--  
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
 			<version>2.1</version>
 			<scope>provided</scope>
 		</dependency>
+		-->	
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 			<type>jar</type>
 		</dependency>
-
+	
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -154,6 +157,7 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		
   <dependency>
 	<groupId>com.googlecode.json-simple</groupId>
 	<artifactId>json-simple</artifactId>
@@ -219,14 +223,14 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.5.8</version>
+			<version>1.7.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.5.8</version>
+			<version>1.7.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -244,6 +248,56 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.mina</groupId>
+			<artifactId>mina-core</artifactId>
+			<version>1.0.2</version>
+			<scope>test</scope>
+		</dependency>
+		<!--   
+		<dependency>  
+			<groupId>org.mortbay.jetty</groupId>  
+			<artifactId>jetty-servlet-tester</artifactId>  
+			<version>6.1.14</version>  
+		    <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>		    	 			
+		</dependency> 
+		-->
+		<dependency>
+  			<groupId>org.eclipse.jetty</groupId>
+  			<artifactId>jetty-server</artifactId>
+  			<version>9.0.7.v20131107</version>
+            <exclusions>
+               <exclusion>
+                    <groupId>org.eclipse.jetty.orbit</groupId>
+                    <artifactId>javax.servlet</artifactId>
+                </exclusion>                                                               
+            </exclusions>	
+			<scope>test</scope>              			
+		</dependency>
+		<dependency>
+  			<groupId>org.eclipse.jetty</groupId>
+  			<artifactId>jetty-webapp</artifactId>
+  			<version>9.0.7.v20131107</version>
+			<scope>test</scope>  			
+		</dependency>	
+		<dependency>
+  			<groupId>org.eclipse.jetty</groupId>
+  			<artifactId>jetty-annotations</artifactId>
+  			<version>9.0.7.v20131107</version>
+			<scope>test</scope>  			
+		</dependency>	
+		<dependency>
+  			<groupId>org.eclipse.jetty</groupId>
+  			<artifactId>jetty-jsp</artifactId>
+  			<version>9.0.7.v20131107</version>
+			<scope>test</scope>  			
+		</dependency>													
 		<dependency>
 <groupId>org.apache.cxf</groupId>
 <artifactId>cxf-api</artifactId>
@@ -335,10 +389,16 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
+	  <dependency>
+	    <groupId>${project.groupId}</groupId>
+	    <artifactId>direct-common</artifactId>
+	    <version>2.0</version>	
+	    <scope>compile</scope>
+	 </dependency>   	
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-jar</artifactId>
-	  <version>1.5.1</version>
+	  <version>2.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.nhind</groupId>
@@ -355,13 +415,19 @@
                 <exclusion>
                     <groupId>org.apache.camel</groupId>
                     <artifactId>camel-mina</artifactId>
-                </exclusion>                                                               
+                </exclusion> 
+                <!-- 
+                <exclusion>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.servlet</artifactId>
+                </exclusion>  
+                 -->                                                             
             </exclusions>	  
 	 </dependency>
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-store</artifactId>
-	  <version>1.4</version>
+	  <version>1.6</version>
             <exclusions> 
                 <exclusion>
                     <groupId>org.hibernate</groupId>
@@ -376,7 +442,7 @@
 	 <dependency>
 	  <groupId>${project.groupId}</groupId>
 	  <artifactId>config-service-client</artifactId>
-	  <version>1.4</version>
+	  <version>2.1</version>
 	  <exclusions>
 				<exclusion>
 					<groupId>org.apache.geronimo.specs</groupId>
@@ -402,30 +468,20 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- JETTY 6 PLUGIN FOR IN PLACE TESTING WITH MAVEN Execute the mvn clean 
+				<!-- JETTY PLUGIN FOR IN PLACE TESTING WITH MAVEN Execute the mvn clean 
 					jetty:run in a browser use http://localhost:8080/config-ui/ to test the connection 
 					and web app -->
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-				<version>6.1.14</version>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.0.7.v20131107</version>
 				<configuration>
 					<scanIntervalSeconds>10</scanIntervalSeconds>
                                          <jvmArgs>-Xmx1024</jvmArgs>
-					<contextPath>/config-ui</contextPath>
-					<connectors>
-						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-							<port>8080</port>
-							<maxIdleTime>60000</maxIdleTime>
-						</connector>
-					</connectors>
-					<webApp>${basedir}/target/config-ui</webApp>
-					<requestLog implementation="org.mortbay.jetty.NCSARequestLog">
-						<filename>target/yyyy_mm_dd.request.log</filename>
-						<retainDays>90</retainDays>
-						<append>true</append>
-						<extended>true</extended>
-						<logTimeZone>GMT</logTimeZone>
-					</requestLog>
+					
+					<webApp>
+						<contextPath>/config-ui</contextPath>
+					</webApp>
+
 				</configuration>
 			</plugin>
 			<!--  for releases only 
