@@ -1,8 +1,8 @@
 package org.nhindirect.config.store;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.security.Security;
@@ -20,12 +20,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "file:src/test/resources/configStore-test.xml" })
+@ContextConfiguration(locations = { "file:src/test/resources/configStore-keyProtMgr-test.xml" })
 @TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = true)
 @Transactional
-public class CertificateDao_stripP12ProtectionNoManagerTest 
+public class CertificateDao_stripP12ProtectionWithManagerTest 
 {
 	private static final String derbyHomeLoc = "/target/data";	
 	
@@ -33,6 +32,7 @@ public class CertificateDao_stripP12ProtectionNoManagerTest
 	
 	@Autowired
 	private CertificateDao certificateDao;
+	
 	
 	static
 	{
@@ -92,10 +92,11 @@ public class CertificateDao_stripP12ProtectionNoManagerTest
 	}
 	
 	@Test
-	public void testStripP12ProtectionTest_NoP12ProtectionOrManager_assertP12Returned() throws Exception
+	public void testStripP12ProtectionTest_p12ProtectionWithManager_assertP12Returned() throws Exception
 	{
 		populateCert("gm2552.der", "gm2552Key.der");
-				
+		
+    	
 		Collection<Certificate> certificates = certificateDao.list((String)null);
 		assertEquals(1, certificates.size());
 		
@@ -111,7 +112,7 @@ public class CertificateDao_stripP12ProtectionNoManagerTest
 	}
 	
 	@Test
-	public void testStripP12ProtectionTest_X509CertAndNoManager_assertX509Returned() throws Exception
+	public void testStripP12ProtectionTest_X509CertAndManager_assertX509Returned() throws Exception
 	{
 		populateCert("gm2552.der", null);
 				
@@ -125,36 +126,6 @@ public class CertificateDao_stripP12ProtectionNoManagerTest
 
 		CertUtils.CertContainer container = CertUtils.toCertContainer(certData);
 		
-		assertEquals(container.getCert(), CertUtils.toCertContainer(cert.getData()).getCert());
-		
+		assertEquals(container.getCert(), CertUtils.toCertContainer(cert.getData()).getCert());	
 	}
-	
-	@Test
-	public void testStripP12ProtectionTest_X509CertAndWrappedData_noMager_assertX509Returned() throws Exception
-	{				
-		cleanDatabase();
-		
-		final byte[] certData = loadCertificateData("gm2552.der");
-		final byte[] keyData = loadCertificateData("gm2552Key.der");
-		
-		Certificate addCert = new Certificate();
-		addCert.setData(CertUtils.certAndWrappedKeyToRawByteFormat(keyData, CertUtils.toX509Certificate(certData)));
-		addCert.setOwner("gm2552@cerner.com");
-		
-		certificateDao.save(addCert);
-
-		
-		final Collection<Certificate> certificates = certificateDao.list((String)null);
-		assertEquals(1, certificates.size());
-		
-		final Certificate cert = certificates.iterator().next();
-		
-		assertTrue(cert.isPrivateKey());
-
-		CertUtils.CertContainer container = CertUtils.toCertContainer(certData);
-		
-		assertEquals(container.getCert(), CertUtils.toCertContainer(cert.getData()).getCert());
-		
-	}
-	
 }
