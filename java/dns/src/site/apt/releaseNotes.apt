@@ -6,6 +6,38 @@
         Greg Meyer
         ---
 
+{1.5}
+
+    Changes included with release 1.5
+    
+    []
+    
+    Enhancements
+ 
+    * Support for new wrapped key format.
+    
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
+{1.4.1}
+
+    Changes included with release 1.4.1
+    
+    []
+    
+    Enhancements
+ 
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue where UPD and TCP responders were crashing when rejecting tasks due to load.
+
 {1.4}
 
     Changes included with release 1.4
