@@ -6,6 +6,26 @@
         Greg Meyer
         ---
 
+{4.1}
+
+    Changes included with release 4.1
+    
+    []
+    
+    Enhancements
+    
+    * Applicability statement v1.2 compliance.
+    
+    * Support of optimized PKCS11 cryptographic operations for message signing and decryption.
+    
+    * Policy support on detection of "tampered" message SMTP and outer MIME headers.
+
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
 {4.0}
 
     Changes included with release 3.0

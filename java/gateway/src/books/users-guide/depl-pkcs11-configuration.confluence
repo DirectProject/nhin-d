@@ -1,0 +1,17 @@
+h1. PKCS11 Configuration
+
+Depending on institutional or agency policy, private keys may be required to be protected in such a way that the private key is never exposed in unencrypted format unless loaded onto a PKCS11 token such as a NIST certified hardware security module (HSM).  Previous and current versions of configuration service can store the private key in an encrypted PKCS12 container, however, this container is decrypted in the configuration service when needed and the private key is present in unecrypted format in process memory of both the configuration service and the gateway.  As of version 2.2 of the configuration service, private keys can be store in a "wrapped" format where they are encrypted by a secret key encryption key and never decrypted in the configuration service.  As of version 2.1 of the agent, the agent can "unwrap" the private keys into a PKCS11 token and perform signing and decryption operations without the private key ever being decrypted in process memory.  As of version 4.1, the gateway can be configured to load and inject an appropriate PKCS11 token implementation into the agent.  
+
+Token configuration generally comes in 2 flavors: tokens that leverage the Sun PKCS11 JCE provider implementation and those that provide their own custom JCE provider.  The gateway supports both models with a little different configuration for each.  The config.xml and mailetcontainer.conf files for James 2 and 3 respectively contain templates for each token type (commented out by default), but the following table describes each setting:
+
+||Setting Name||Description||
+|KeystoreManagerProvider|A Google Guice provider used to create instance of the PKCS11 key store protection manager|
+|KeystoreManagerPKCS11Provider|The name of the JCE provider class utilized by the token.  This may either be the Sun PKCS11 JCE provider or a custom provider.|
+|KeystoreManagerPin|The PIN/password used to login to the token|
+|PrivateKeyPassPhraseAlias|The keystore alias of the key encryption key that is used to unwrap the private key into the token.  This is generally pre-configured and generated on the token using an arbitrary method.  This should match the PrivateKeyPassPhraseAlias that is configured in the config-ui.|
+|JCE_SENTITIVE_PROVIDER|The JCE provider name that is mapped to the token.  The provider name is obtained in different methods depending on the KeystoreManagerPKCS11Provider (Sun or custom provider)|
+|KeystoreManagerStoreType|The keystore of the token.  This is usually PKCS11 for token that use the Sun PKCS11 provider, but will vary when using a custom provider|
+|KeystoreManagerPin|The PIN/password used to login to the token|
+|KeystoreManagerPKCS11ConfigFile|For tokens that utilize the Sun PKCS11 JCE provider, an external configuration file is required that follows the provider's specified format.  This the location and name of the configuration file.|
+|KeystoreManagerPKCS11ProviderCustomConfigFile|For tokens that utilize a custom JCE provider, a custom configuration may be required.  This is the location and name of the file that contains the configuration.|
+|KeystoreManagerPKCS11ProviderCustomConfigString|For tokens that utilize a custom JCE provider, a custom configuration may be required.  Instead of using a file, this provides the content of the configuration file as a string.|

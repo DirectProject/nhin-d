@@ -6,16 +6,12 @@ import junit.framework.TestCase;
 
 import org.nhind.config.Certificate;
 import org.nhind.config.ConfigurationServiceProxy;
-import org.nhind.config.rest.CertificateService;
-import org.nhind.config.rest.impl.DefaultCertificateService;
-import org.nhindirect.common.rest.HttpClientFactory;
-import org.nhindirect.common.rest.OpenServiceSecurityManager;
 import org.nhindirect.gateway.smtp.config.ConfigServiceRunner;
 import org.nhindirect.gateway.testutils.BaseTestPlan;
 import org.nhindirect.stagent.cert.CertCacheFactory;
 import org.nhindirect.stagent.cert.impl.KeyStoreCertificateStore;
 
-public class ConfigServiceRESTCertificateStore_CertBootstrap_Test extends TestCase 
+public class ConfigServiceCertificateStore_CertBootstrap_Test extends TestCase 
 {
 	private static final String keyStoreFile = "./target/TempKeyStore";
 	
@@ -24,20 +20,17 @@ public class ConfigServiceRESTCertificateStore_CertBootstrap_Test extends TestCa
 		
 		
 		protected ConfigurationServiceProxy proxy;
-		protected CertificateService certService;
 		
 		@Override
 		protected void setupMocks() 
 		{
+			
 			// create the web service and proxy.... not really mocks
 			try
 			{
 				ConfigServiceRunner.startConfigService();
 				proxy = new ConfigurationServiceProxy();
 				proxy.setEndpoint(ConfigServiceRunner.getConfigServiceURL());
-				
-				certService = new DefaultCertificateService(ConfigServiceRunner.getRestAPIBaseURL(), HttpClientFactory.createHttpClient(),
-						new OpenServiceSecurityManager());
 				
 				cleanConfig();
 				
@@ -94,11 +87,11 @@ public class ConfigServiceRESTCertificateStore_CertBootstrap_Test extends TestCa
 		@Override
 		protected abstract void performInner() throws Exception;   
 		
-		protected class TestConfigServiceCertificateStore extends ConfigServiceRESTCertificateStore
+		protected class TestConfigServiceCertificateStore extends ConfigServiceCertificateStore
 		{
-			public TestConfigServiceCertificateStore(CertificateService certService)
+			public TestConfigServiceCertificateStore(ConfigurationServiceProxy proxy)
 			{
-				super(certService);
+				super(proxy);
 			}	
 		}
 	}
@@ -112,7 +105,7 @@ public class ConfigServiceRESTCertificateStore_CertBootstrap_Test extends TestCa
 			protected void performInner() throws Exception
 			{
 								
-				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(certService);
+				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
 				
 				assertNull(store.localStoreDelegate);
 				assertEquals(0, store.getAllCertificates().size());
@@ -130,7 +123,7 @@ public class ConfigServiceRESTCertificateStore_CertBootstrap_Test extends TestCa
 				KeyStoreCertificateStore keyStore = new KeyStoreCertificateStore(new File(keyStoreFile), "nH!NdK3yStor3", "31visl!v3s");
 				
 								
-				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(certService);
+				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
 				store.setBootStrap(keyStore);
 				
 				assertNotNull(store.localStoreDelegate);
@@ -147,7 +140,7 @@ public class ConfigServiceRESTCertificateStore_CertBootstrap_Test extends TestCa
 			protected void performInner() throws Exception
 			{
 												
-				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(certService);
+				TestConfigServiceCertificateStore store = new TestConfigServiceCertificateStore(proxy);
 				
 				boolean exceptionOccured = false;
 				
