@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dns</artifactId>    
     <name>Direct Project DNS services</name>
-    <version>1.6-SNAPSHOT</version>
+    <version>1.5.1</version>
     <description>Direct Project DNS services</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/dns/${project.version}</url> 
@@ -614,7 +614,19 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-			</plugin>			
+			</plugin>
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-changelog-plugin</artifactId>
+	            <configuration>
+	                <dates>
+	                    <!-- Insert the date of the most recent release -->
+                        <date>2010-12-01</date>
+	                </dates>
+	                <outputEncoding>UTF-8</outputEncoding>
+	                <type>date</type>
+	            </configuration>
+	        </plugin>			
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId>
 	            <artifactId>clirr-maven-plugin</artifactId>
