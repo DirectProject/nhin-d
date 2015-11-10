@@ -25,8 +25,9 @@ public class CRLManagerTest extends TestCase
     public void testCrlManager() 
     {
         String tmp = this.getClass().getClassLoader().getResource("crl/certs.crl").getPath();
-        final String workingDir = tmp.substring(0, tmp.lastIndexOf("/") + 1);
+        final String workingDir = tmp.substring(0, tmp.lastIndexOf("/") + 1).replaceAll("%20", " ");
 
+        
         String internalKeystoreFile = workingDir + "keystore";
         KeyStoreCertificateStore service = new KeyStoreCertificateStore(internalKeystoreFile, KEY_STORE_PASSWORD, PRIVATE_KEY_PASSWORD);
 

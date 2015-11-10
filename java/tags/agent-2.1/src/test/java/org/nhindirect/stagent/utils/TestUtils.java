@@ -288,11 +288,14 @@ public class TestUtils
 			}
 		};
 		
-		final String configName = "./src/test/resources/pkcs11Config/pkcs11.cfg";
-		final sun.security.pkcs11.SunPKCS11 p = new sun.security.pkcs11.SunPKCS11(configName);
-		Security.addProvider(p);
+		sun.security.pkcs11.SunPKCS11 p = null;
+		
+
 		try
 		{
+			final String configName = "./src/test/resources/pkcs11Config/pkcs11.cfg";
+			p = new sun.security.pkcs11.SunPKCS11(configName);
+			Security.addProvider(p);
 			p.login(null, handler);
 
 		}
