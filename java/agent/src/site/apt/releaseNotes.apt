@@ -6,6 +6,20 @@
         Greg Meyer
         ---
 
+{2.1.1}
+
+    Changes included with release 2.1.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with not being able to override the DNS certificate resovler's server list via an options parameter.
+
 {2.1}
 
     Changes included with release 2.1
