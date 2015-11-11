@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.1.7}
+
+    Changes included with release 1.1.7
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Updating spring dependencies that were incompatible with Java 8. 
+
 {1.1.6}
 
     Changes included with release 1.1.6

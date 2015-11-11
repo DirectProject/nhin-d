@@ -5,7 +5,7 @@
     <packaging>war</packaging> 
     <artifactId>direct-msg-monitor-web</artifactId>    
     <name>Direct Project message monitor web application</name>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.2</version>
     <description>Direct Project message monitor web application for timely and reliable messaging</description>
     <inceptionYear>2012</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-msg-monitor/${project.version}</url> 
@@ -46,12 +46,56 @@
        <name>Maven2 Central Repo2</name>
        <url>http://repo2.maven.org/maven2/</url>
     </repository>
-  </repositories>        
+  </repositories> 
+	<dependencyManagement>
+		<dependencies>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-asm</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>	
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>3.0.4.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>2.5.6.RELEASE</version>
+		</dependency>								
+		</dependencies>
+	</dependencyManagement>           
   <dependencies>    
 		<dependency>
 			<groupId>org.nhind</groupId>
 			<artifactId>direct-msg-monitor</artifactId>
-			<version>1.1.6</version>
+			<version>1.1.7</version>
 	        <scope>compile</scope>			
 		</dependency> 		  
 		<dependency>
@@ -241,8 +285,69 @@
 		</dependency>  	
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring</artifactId>
-			<version>2.5.6</version>		
+			<artifactId>spring-web</artifactId>
+			<version>2.5.6</version>
+		</dependency>			
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-asm</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>	
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>3.0.4.RELEASE</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>						        	     																																																																																														
   </dependencies>      
   <build>
