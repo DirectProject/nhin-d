@@ -1,0 +1,108 @@
+h1. Enhanced Private Key Security
+
+Although version 4.0 of Bare Metal added additional protection of private keys, it only protected keys at rest.  When keys were "activated," they were loaded into the agent's process memory completely unencrypted.  Some deployments may lock down access to the agent tight enough that this may be acceptable, but it still leaves the keys venerable to any entity that access to the agent's process memory.
+
+With governmental and other high security agencies now implementing Direct, a higher level of key protection is required not only by the agencies themselves, but by the systems that they rely upon (i.e. your system).  A common approach to the private key protection problem is to utilized PKCS11 token such as NIST certified hardware security modules where the keys are only activated (i.e. utilized for cryptographic operations in their unecrypted form) inside the tokens.  Beginning with version 5.0 of Bare Metal, PKCS11 tokens are supported using this model.
+
+*NOTE* The following is an optional configuration; Bare Metal will still operate in the same manner as version 4.0 if the following configuration options are not implemented.  If enhanced key security is implemented, any keys installed before implementation will continue to operate and function as they did in previous versions (they system is backward compatible).  If you wish to use enhance key security on previously installed keys, you will need to remove them an reimport them.
+
+h2. Key At Rest Protection
+
+Version 4.0 of Bare Metal first implemented key protection by encrypting p12 containers in the configuration service.  The configuration service was configured with a secret key that could either be bootstrapped in the Spring configuration or loaded from a PKCS11 token.  The private key was only encrypted when at rest and was decrypted as soon as it was read from the configurations store's database.  This meant that the private key was accessible at any time it was outside of the configuration service including when they private key was first loaded into the system.
+
+To ensure that private keys always stay encrypted until they are needed for cryptographic operations, PKCS11 tokens utilize key "wrapping" and "unwrapping".  Wrapping encrypts a private key utilizing a symmetric secret key that is also stored and only activated in the PKCS11 module (it doesn't help to secure private keys at rest if their key encryption key is exposed).  Unwrapping decrypts the private key using the same symmetric secret key, however the unwrapping operation results in the private being loaded into and only decrypted inside the PKCS11 token.  That application using the private key is only give a logical handle to the secret key and can't get access to the sensitive key material.
+
+Utilizing the wrapping and unwrapping model, the configuration service is no longer responsible for encrypting and decrypting p12 files.  Instead, certificates and their private keys are loaded into and retrieved from the configuration service in their wrapped form.  The config-ui is now responsible for wrapping the private keys as they loaded into the application and the agent is responsible unwrapping keys at the time they are needed for cryptographic operations.
+
+h2. PKCS11 Token Selection
+
+There are many PKCS11 options available on the market, however it is recommended to utilize a module that is NIST certified.  Additionally it MUST have support for the Java PKCS11 model and support wrapping private key with an AES128 secret key.  Value adds to look for are good documentation, key management tooling, random number generation, and access from multiple nodes for high availability and scalability.
+
+h2. Key Encryption Key
+
+The first step is to create the symmetric key that will encrypt the private keys; this is also known as the key encryption key.  The key encryption key is an AES128 key, and its generation is dependent on the tooling at hand.  Some PKCS11 modules come with tools that enable creation of AES128 keys on the module; see your token documentation for details.  If your token does not have a tool, Bare Metal ships with the PKCS11SecretKeyManager tool to create random AES128 keys.  In either case, the key encryption key is assigned a name (or alias) that will be used the config-ui and agent to reference to the key encryption key.
+
+h3. PKCS11SecretKeyManager
+
+The PKCS11SecretKeyManager accesses a PKCS11 token for the purpose of managing secret keys on the token.  Before you can use the tool, you will need to check the documentation of your token to understand how it works with the Java PKCS11 model.  There are two generally ways:
+
+* The token utilizes the Sun PKCS11 JCE provider and is configured using a file that adheres to the Sun PKCS11 configuration [guide|https://docs.oracle.com/javase/7/docs/technotes/guides/security/p11guide.html].  Most notably, this file contains the name of the native library that implements the token's bridge interface.
+* The token ships its own PKCS11 JCE provider library.  In this case, the configuration is completely dependent on the token vendor's implementation.  In many cases, a file or input stream is passed to the KeyStore _load_ method that contains configuration information.
+
+The PKCS11SecretKeyManager supports both methods.
+
+The PKCS11SecretKeyManager has a couple of command line arguments:
+* -keyStoreCfg: This parameter is always required and is the path to a file that contains the following information:
+** JCE provider class name.  This is will be _sun.security.pkcs11.SunPKCS11_ for token that utilize the Sun JCE provider.  Tokens that implement their own providers should indicate the provider class name in their documentation.
+** Key Store Type: This is the type of key store.  If not present, this defaults to PKCS11.  Some tokens will require a proprietary name; see the tokens documentation for details.
+** Key Store Source:  For tokens that implement their own JCE providers, this is a string that is passed to the KeyStore load method.
+* -pkcscfg: For tokens that utilized _sun.security.pkcs11.SunPKCS11_ JCE provider, this is a required parameter that is the path to a file that contains the Sun PKCS11 compliant configuration information.
+
+The following is an example of the contents of the keyStoreCfg file for a token that uses the _sun.security.pkcs11.SunPKCS11_ JCE provider:
+{code}
+    keyStoreProviderName=sun.security.pkcs11.SunPKCS11
+{code}
+
+The following is an example of the contents of the keyStoreCfg file for a token that uses its own JCE provider:
+{code}
+	keyStoreType=Luna
+	keyStoreProviderName=com.safenetinc.luna.provider.LunaProvider
+	keyStoreSource=slot:0
+{code}
+
+The following is an example of the contents of the required pkcscfg for a token that uses the _sun.security.pkcs11.SunPKCS11_ JCE provider:
+
+{code}
+	name=SafeNeteTokenPro
+	library=/usr/local/lib/libeTPkcs11.dylib
+{code}
+
+Once you have to proper configuration completed, you need to make sure you have all native libraries and jar files in the proper location.  Most likely, the native libraries will be installed when you run the installation software package that came with your token.  For tokens that utilize the _sun.security.pkcs11.SunPKCS11_ JCE provider, you need to find the location of the native library the implements the Java PKCS11 bridge.  For tokens that implement their own JCE providers, they will most likely have a combination of native libraries and a jar file.  You will need to add the jar file to the Bare Metal /tools/lib directory.
+
+
+The following is an example command to launch the tool for a token that uses the _sun.security.pkcs11.SunPKCS11_ JCE provider:
+
+{code}
+	java -classpath .:./lib/* org.nhindirect.common.crypto.tools.PKCS11SecretKeyManager -keyStoreCfg keyStore.cfg -pkcscfg pkcs11.cfg
+{code}
+
+The following is an example command to launch the tool for a token that uses its own JCE provider.  Note it does not need a pkcscfg file:
+
+{code}
+	java -classpath .:./lib/* org.nhindirect.common.crypto.tools.PKCS11SecretKeyManager -keyStoreCfg keyStore.cfg
+{code}
+
+
+Once you launch the tool and entered the correct pin/password, creating random secret key is done by executing the following command.  In most cases, using this command will utilize a random number generator implemented on the token.  *NOTE* You can use any key name you want, but it MUST match the key alias name in the config-ui and gateway configuration files.
+
+{code}
+	CreateRandomSecretKey privateKeyWrapperSecret
+{code}
+
+h2. Config UI Configuration
+
+When importing keys with enhanced key protection, the config-ui wraps the keys before sending them to the configuration service.  In order to do this, the config-ui web application will need access to the PKCS11.  The token is configured similarly to the way it is configured in the PKCS11SecretKeyManager tool.  To configure the token, you will need to uncomment the PKCS11 bean configuration section at the bottom of the <DIRECT_HOME>/apache-tomcat-xxx/webappsconfig-ui/WEB-INF/config-servlet.xml file.  Once this configuration section is uncommented, you will set the parameters for the token in the <DIRECT_HOME>/apache-tomcat-xxx/webappsconfig-ui/WEB-INF/classes/properties/config-ui.properties file.  The file contains the following properties for the token:
+
+||Propert Name||Property Description||
+|config-ui.keyprotection.pkcs11.pin|The pin/password to authenticate to the token|
+|config-ui.keyprotection.pkcs11.keyStoreType|The Key Store Type.  This is generally set to PKCS11 for tokens that utilize the Sun PKCS11 JCE provider.|
+|config-ui.keyprotection.pkcs11.keyStoreSource|A string that is passed to the KeyStore load method.  This is generally used for tokens that implement their own JCE providers|
+|config-ui.keyprotection.pkcs11.keyStoreProviderName|The PCKS11 JCE provider class|
+|config-ui.keyprotection.pkcs11.pcks11ConfigFile|For tokens that use the Sun PKCS11 JCE provider, that path of the file that contains the Sun PKCS11 compliant configuration|
+|config-ui.keyprotection.pkcs11.privateKeyPassPhraseAlias|The alias of the key encryption key. This MUST match the name of the key created in the PKCS11SecretKeyManager tool (or tool provider by the token vendor).|
+
+Similar to the PKCS11SecretKeyManager tool, you will need to make sure all native libaries are properly installed.  If the token implements its own JCE provider, you need to copy the vendor's jar file to the <DIRECT_HOME>/apache-tomcat-xxx/webappsconfig-ui/WEB-INF/lib directory.
+
+h2. Gateway and Agent Configuration
+
+To properly unwrap the keys and utilize the token, the gateway (and subsequently the agent) needs to also be configured.  Depending on the version of James, you will need to edit the following files:
+
+* James 2: <DIRECT_HOME>/james-2.3.2/apps/james/SAR-INF/config.xml
+* James 3: <DIRECT_HOME>/apache-james-3.0-beta4/conf/mailetcontainer.conf
+
+The configuration options are found under the configuration NHINDSecurityAndTrustMailet mailet, and contains two commented out templates: one for a token that utilizes the Sun PKCS11 JCE provider and one a token the uses its own provider.  The configuration paremeter names are very simliar to the ones decribed in the last two sections, and are fully documented in the gateway PKCS11 deployment [documentation|../../../../gateway/4.1/users-guide/depl-pkcs11-configuration.html].  You will again need to ensure that the appropriate token native libraries are installed and any jar files copied to the following locations:  
+
+* James 2: <DIRECT_HOME>/james-2.3.2/apps/james/SAR-INF/lib
+* James 3: <DIRECT_HOME>/apache-james-3.0-beta4/conf/lib
+
+*NOTE* If you are using James 2, pay close attention to the documentation preceding the configuration templates in the config.xml file about the necessity to copy the Sun Jars.

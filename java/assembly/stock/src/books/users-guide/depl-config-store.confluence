@@ -1,0 +1,28 @@
+h1. Configuration and Message Monitor Storage
+
+By default, the configuration and message monitor services uses the embedded file based Derby database.  Although this simplifies an out of the box solution deployment, it has several disadvantages:
+* It only allows one process to access it at any one time limiting the ability to run multiple instances of the configuration service for high availability and load balancing.
+* Unless mounted on a network share, it is only available on the local machine.
+* It is not redundant and providers no fail over options.
+
+These are only a small collection of issues and it becomes obvious that an enterprise/distributed database solution is needed for a robust production solution.
+
+The configuration service's Spring web deployment file _beans.xml_ found in the <DIRECT_HOME>/apache-tomcat-xxx/webapps/config-service/WEB-INF directory contains templates for connecting to a MySQL or Oracle database.  The pattern is very similar for other database such as Postgress, so it would not take a lot of effort and Googling to figure out how to add other database implementations.
+
+To connect to different database source, simply comment out the EMBEDDED DERBY JPA configuration sections of the _beans.xml_ and uncomment the database configuration that you want to use.  For the most part, these configurations are complete with the exception of the following properties which need to be set specific to your database deployment:
+* url
+* username
+* password
+
+The message monitor uses a slightly different configuration option, but is essentially the same as the configuration service.  The database configuration of the message monitor is in the _monitor.properties_ file found in the <DIRECT_HOME>/apache-tomcat-xxx/webapps/msg-monitor/WEB-INF/classes/properties directory.  The database connection parameters are set with the following properties that you will need to update:
+
+* monitor.dupStateDAO.driverClass
+* monitor.dupStateDAO.url
+* monitor.dupStateDAO.username
+* monitor.dupStateDAO.password
+
+Other database such as Oracle allow for finer grained tuning via properties; consult your database vendor for more information.
+
+Keep in mind that the Bare Metal deployment does not ship with drivers for other database vendors; you will need to consult your vendor (or vendor's website) to obtain the appropriate JDBC libraries.  Once procured, the libraries need to be placed into the <DIRECT_HOME>/apache-tomcat-xxx/webapps/config-service/WEB-INF/lib and <DIRECT_HOME>/apache-tomcat-xxx/webapps/msg-monitor/WEB-INF/lib folders.
+
+After you migrate the services to your new distributed data source, it is recommended that you consider deploying multiple instance of the tomcat server using a fault tolerant and load balance configuration (instructions are beyond the scope of this document).

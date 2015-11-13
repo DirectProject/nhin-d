@@ -24,7 +24,25 @@
         </section>   
         <section>
           <id>depl-hisp-only</id>     
-        </section>                                                       
+        </section>  
+      </sections>
+    </chapter>
+    <chapter>
+      <id>options</id>
+      <title>Deploymenet Options</title>   
+      <sections>       
+        <section>
+          <id>depl-options</id>     
+        </section>  
+        <section>
+          <id>depl-config-store</id>     
+        </section>
+        <section>
+          <id>depl-single-use-certs</id>     
+        </section>                                                                             
+        <section>
+          <id>depl-enhanced-key-security</id>     
+        </section>         
       </sections>
     </chapter> 
   </chapters>

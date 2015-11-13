@@ -535,7 +535,51 @@ Regards, Postmaster XXX.YYY
             <ServiceSecurityManagerProvider>org.nhindirect.gateway.smtp.provider.ConfigBasicAuthServiceSecurityManagerProvider</ServiceSecurityManagerProvider>
             <ServiceSecurityAuthSubject>direct</ServiceSecurityAuthSubject>
             <ServiceSecurityAuthSecret>#H|tBro$</ServiceSecurityAuthSecret>    
-            <SmptAgentAuditorProvider>org.nhindirect.common.audit.provider.RDBMSAuditorProvider</SmptAgentAuditorProvider>           
+            <SmptAgentAuditorProvider>org.nhindirect.common.audit.provider.RDBMSAuditorProvider</SmptAgentAuditorProvider>       
+            
+            <!--  The following sections are for configuration of a PKCS11 security token.  This provides a higher level of
+            private key protection where the private key is never in a decrypted form in the STA process memory space.  Instead
+            the key is retrieved from configuration service in a "wrapped" form and unwrapped on the security token using the 
+            "PrivateKeyPassPhraseAlias" systemtric which is also stored in the security token.-
+            
+            Each security token will most likely have its own configuration settings, so consult your token documentation for specifics.
+            NOTE: Some tokens may specify that specific jars and/or native libraries by places in the JVM lib/ext directory.  The James 2 
+            classloader for mailets does not give mailets access to code in this location, so it may be necessary to copy these libraries to the 
+            <JAMES_HOME>/apps/james/SAR-INF/lib directory.  For example, security tokesn that utilize the built in JDK sun.security.pkcs11.SunPKCS11
+            JCE provider will have to copy the sunpkcs11.jar file to the <JAMES_HOME>/apps/james/SAR-INF/lib directory
+            -->
+                
+            <!-- 
+            The example below is for a token that utilizes the sun.security.pkcs11.SunPKCS11 security provider.  Specifically, this configuration
+            is tested against a SafeNet eToken pro device.  The specific configuration information is store in an external file name 
+            pkcs11.cfg.  NOTE: The eTokenPro does not support RSA private key wrapping, so it is not an
+            appropriate security token for production use; this is configuration is an example only.
+             -->    
+            <!-- 
+            <KeystoreManagerProvider>org.nhindirect.gateway.smtp.provider.StaticPKCS11TokenKeyStoreProtectionManagerProvider</KeystoreManagerProvider>
+            <KeystoreManagerPin>key$toreP!n</KeystoreManagerPin>
+            <PrivateKeyPassPhraseAlias>privateKeyWrapperSecret</PrivateKeyPassPhraseAlias>
+            <JCE_SENTITIVE_PROVIDER>SunPKCS11-SafeNeteTokenPro</JCE_SENTITIVE_PROVIDER>            
+            <KeystoreManagerStoreType>PKCS11</KeystoreManagerStoreType>
+            <KeystoreManagerPKCS11Provider>sun.security.pkcs11.SunPKCS11</KeystoreManagerPKCS11Provider>
+            <KeystoreManagerPKCS11ConfigFile>properties/pkcs11.cfg</KeystoreManagerPKCS11ConfigFile>
+             -->    
+            
+            <!-- 
+            The example below is for a token that utilizes a custom PKCS11 provider.  Specifically, this configuration
+            is tested against a SafeNet LunaSA device.  The custom configuration information is provided in the KeystoreManagerPKCS11ProviderCustomConfigString
+            setting, but could be placed in a external file using the KeystoreManagerPKCS11ProviderCustomConfigFile setting. 
+             -->    
+            <!-- 
+            <KeystoreManagerProvider>org.nhindirect.gateway.smtp.provider.StaticPKCS11TokenKeyStoreProtectionManagerProvider</KeystoreManagerProvider>
+            <KeystoreManagerPin>key$toreP!n</KeystoreManagerPin>
+            <PrivateKeyPassPhraseAlias>privateKeyWrapperSecret</PrivateKeyPassPhraseAlias>
+            <JCE_SENTITIVE_PROVIDER>LunaProvider</JCE_SENTITIVE_PROVIDER>            
+            <KeystoreManagerStoreType>LUNA</KeystoreManagerStoreType>
+            <KeystoreManagerPKCS11Provider>com.safenetinc.luna.provider.LunaProvider</KeystoreManagerPKCS11Provider>
+            <KeystoreManagerPKCS11ProviderCustomConfigString>slot:0</KeystoreManagerPKCS11ProviderCustomConfigString>
+             -->       
+                
          </mailet>
 
          <!-- This mailet tracks all incoming notification messages.  All messages at this point should not encrypted, so they

@@ -10,3 +10,5 @@ About this Document
   install, see the Bare Metal Project Java source {{{http://wiki.directproject.org/Bare+Metal+Project+-+Java+%28source%29}page}} on the Direct Project {{{http://wiki.directproject.org}wiki}}. 
   
   * {{{./depl-intro.html}Deployment Guide}} - This section describes how to deploy a Bare Metal installation from the stock reference implementation assembly.
+  
+  * {{{./depl-options.html}Implementation Options}} - This section describes how to configure the Bare Metal installation for specific use case options such as single use certificates and enhance private key protection.

@@ -6,6 +6,33 @@
         Greg Meyer
         ---
 
+{5.0}
+
+    Changes included with release 5.0
+    
+    []
+    
+    Enhancements/Bug Fixes
+    
+    * Applicability statement v1.2 compliance
+    
+    * Enhanced private key security and protection
+    
+    * Policy filtering in DNS server
+    
+    * Config-ui converted to utilize config service REST API and supports importing encrypted p12 files
+    
+    * Agent Version 2.1.1  See agent {{{http://api.directproject.info/agent/2.1.1/releaseNotes.html}release notes}}
+    
+    * Gateway Version 4.1  See gateway {{{http://api.directproject.info/gateway/4.1/releaseNotes.html}release notes}}
+    
+    * DNS Server Version 1.5  See dns {{{http://api.directproject.info/dns/1.5/releaseNotes.html}release notes}}
+
+    * Direct Common Version 2.0  See direct-common {{{http://api.directproject.info/direct-common/2.0/releaseNotes.html}release notes}}
+
+    * Message monitor Version 1.1.7 See message-monitor {{{http://api.directproject.info/direct-msg-monitor/1.1.7/releaseNotes.html}release notes}}
+
+
 {4.0}
 
     Changes included with release 4.0
