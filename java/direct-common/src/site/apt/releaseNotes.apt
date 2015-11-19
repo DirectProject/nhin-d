@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{2.0.1}
+
+    Changes included with release 2.0.1
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed constructor issue in BootstrappedKeyStoreProtectionManager.
+
 {2.0}
 
     Changes included with release 2.0
