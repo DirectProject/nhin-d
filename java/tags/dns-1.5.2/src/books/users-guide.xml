@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<book xmlns="http://maven.apache.org/BOOK/1.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/BOOK/1.0.0 ../../../doxia/doxia-book/target/generated-site/xsd/book-1.0.0.xsd">
+  <id>users-guide</id>
+  <title>DNS Services Users Guide</title>
+  <chapters>
+    <chapter>
+      <id>preface</id>
+      <title>Preface</title>
+      <sections>
+        <section>
+          <id>preface</id>
+        </section>
+      </sections>
+    </chapter>    
+    <chapter>
+      <id>deploy</id>
+      <title>Deployment Guide</title>
+      <sections>
+        <section>
+          <id>deploy-intro</id>     
+        </section>   
+        <section>
+          <id>dns-serv-depl</id>     
+        </section>                                               
+        <section>
+          <id>dns-proto-config</id>     
+        </section> 
+        <section>
+          <id>dns-record-config</id>     
+        </section>   
+        <section>
+          <id>dns-godad-config</id>     
+        </section>                                                       
+      </sections>      
+    </chapter> 
+  </chapters>
+</book>

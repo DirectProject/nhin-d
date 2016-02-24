@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.5.2}
+
+    Changes included with release 1.5.2
+    
+    []
+    
+    Enhancements
+ 
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Updated to direct-policy-1.0.1 to resolve a concurrency issue in the policy engine.
+
 {1.5}
 
     Changes included with release 1.5
