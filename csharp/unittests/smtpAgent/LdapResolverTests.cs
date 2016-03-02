@@ -808,7 +808,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
             foreach (var chainElementStatu in chainElementStatus)
             {
-                if ((chainElementStatu.Status & x509StatusFlags) != 0)
+                if ((chainElementStatu.Status & DefaultProblemFlags) != 0)
                 {
                     return;  //we expect problems
                 }
