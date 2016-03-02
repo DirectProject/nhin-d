@@ -3,8 +3,8 @@
  All rights reserved.
 
  Authors:
-    Joseph Shook    jshook@kryptiq.com
- 
+    Joseph Shook    Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -20,11 +20,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
@@ -37,118 +33,15 @@ namespace Health.Direct.SmtpAgent.Tests
 {
 
 
-    public class LdapResolverTests : IUseFixture<DCDTResolverFixture>
+    public class LdapResolverTests 
     {
         //const string Dns_Server = "184.73.237.102";
         //const string Dns_Server = "10.110.22.16";
         //const string Dns_Sertver = "207.170.210.162";
-        const string Dns_Server = "8.8.8.8";
+        const string Dns_Server = "8.8.4.4";
         
 
         #region data
-
-
-        public const string TestXml = @"
-            <AgentSettings>
-                <Domain>exampledomain.com</Domain>   
-                <PrivateCerts>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.Agent.Tests.MachineResolverProxy, Health.Direct.Agent.Tests</TypeName>
-                            <Settings>
-                                <Name>NHINDPrivate</Name>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </PrivateCerts>             
-                <PublicCerts>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.ResolverPlugins.Tests.Fakes.DnsFakeResolver, Health.Direct.ResolverPlugins.Tests</TypeName>
-                            <Settings> 
-                               <ServerIP>0.0.0.0</ServerIP>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
-                            <Settings> 
-                                <!--<ServerIP>10.110.1.11</ServerIP>--> <!-- Windows Dns Server -->
-                                <!--<ServerIP>184.72.234.183</ServerIP>-->
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </PublicCerts> 
-                <Anchors>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.Agent.Tests.MachineAnchorResolverProxy, Health.Direct.Agent.Tests</TypeName>
-                            <Settings>
-                                <Incoming>
-                                    <Name>NHINDAnchors</Name>
-                                </Incoming>
-                                <Outgoing>
-                                    <Name>NHINDAnchors</Name>
-                                </Outgoing>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </Anchors>        
-            </AgentSettings>
-            ";
-
-
-        public const string TestXmlBackupServerIP = @"
-            <AgentSettings>
-                <Domain>exampledomain.com</Domain>   
-                <PrivateCerts>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.Agent.Tests.MachineResolverProxy, Health.Direct.Agent.Tests</TypeName>
-                            <Settings>
-                                <Name>NHINDPrivate</Name>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </PrivateCerts>             
-                <PublicCerts>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.ResolverPlugins.Tests.Fakes.DnsFakeResolver, Health.Direct.ResolverPlugins.Tests</TypeName>
-                            <Settings> 
-                               <ServerIP>0.0.0.0</ServerIP>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
-                            <Settings> 
-                                <ServerIP>0.0.0.0</ServerIP> <!-- Windows Dns Server -->
-                                <BackupServerIP>8.8.8.8</BackupServerIP>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </PublicCerts> 
-                <Anchors>
-                    <PluginResolver>
-                        <Definition>
-                            <TypeName>Health.Direct.Agent.Tests.MachineAnchorResolverProxy, Health.Direct.Agent.Tests</TypeName>
-                            <Settings>
-                                <Incoming>
-                                    <Name>NHINDAnchors</Name>
-                                </Incoming>
-                                <Outgoing>
-                                    <Name>NHINDAnchors</Name>
-                                </Outgoing>
-                            </Settings>
-                        </Definition>
-                    </PluginResolver>
-                </Anchors>        
-            </AgentSettings>
-            ";
-
 
         public static readonly string TestRealResolversXml = string.Format(@"
             <AgentSettings>
@@ -207,61 +100,7 @@ namespace Health.Direct.SmtpAgent.Tests
             X509ChainStatusFlags.InvalidBasicConstraints |
             X509ChainStatusFlags.CtlNotTimeValid |
             X509ChainStatusFlags.CtlNotSignatureValid;
-
-        public void SetFixture(DCDTResolverFixture data)
-        {
-        }
-
-        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
-        [InlineData("direct.securehealthemail.com")]
-        public void TestLdapCertResolverPlugin(string subject)
-        {
-            AgentSettings settings = AgentSettings.Load(TestXml);
-            DirectAgent agent = settings.CreateAgent();
-
-            ICertificateResolver pluginResolver = LocateChild<LdapCertResolverProxy>(agent.PublicCertResolver);
-            Assert.NotNull(pluginResolver);
-
-            X509Certificate2Collection certs = pluginResolver.GetCertificatesForDomain(subject);
-            Assert.NotNull(certs);
-            Assert.True(certs.Count > 0);
-        }
-
-        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
-        [InlineData("gm2552@direct.securehealthemail.com")]
-        public void TestDnsFallbackToLdapCertResolverPlugin(string subject)
-        {
-            AgentSettings settings = AgentSettings.Load(TestXml);
-            DirectAgent agent = settings.CreateAgent();
-
-            ICertificateResolver pluginResolver = agent.PublicCertResolver;
-            Assert.NotNull(pluginResolver);
-
-
-            X509Certificate2Collection certs = pluginResolver.GetCertificates(new MailAddress(subject));
-            Assert.NotNull(certs);
-            Assert.True(certs.Count > 0);
-        }
-
-
-        [Theory(Skip = "Requires SRV Lookup and LDAP server running on returned port.")]
-        [InlineData("gm2552@direct.securehealthemail.com")]
-        public void TestDnsFallbackToLdapCertResolverBackupIPPlugin(string subject)
-        {
-            // System.Diagnostics.Debugger.Break();
-
-            AgentSettings settings = AgentSettings.Load(TestXmlBackupServerIP);
-            DirectAgent agent = settings.CreateAgent();
-
-            ICertificateResolver pluginResolver = agent.PublicCertResolver;
-            Assert.NotNull(pluginResolver);
-
-            X509Certificate2Collection certs = pluginResolver.GetCertificates(new MailAddress(subject));
-            Assert.NotNull(certs);
-            Assert.True(certs.Count > 0);
-        }
-
-
+        
         /// <summary>
         /// This test case verifies that your system can query DNS for address-bound CERT records and discover a valid address-bound X.509 certificate for a Direct address.
         /// http://sitenv.org/direct-certificate-discovery-tool-2015
@@ -912,10 +751,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
             X509Chain chainBuilder = new X509Chain();
             X509ChainPolicy policy = new X509ChainPolicy();
-            //
-            // I believe this may be causing the Teamcity.CodeBetter.com build servers to fail some tests.  Cannot reproduce this issue on my own Teamcity build servers.  
-            //
-            //chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
+            chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
             policy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
             chainBuilder.ChainPolicy = policy;
             chainBuilder.Build(cert);
@@ -938,13 +774,13 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
                     AssertChainHasProblems(chainElement, x509StatusFlags);
                 }
 
-                //if (anchor.Thumbprint == chainElement.Certificate.Thumbprint)
-                //{
-                //    foundAnchor = true;
-                //}
+                if (anchor.Thumbprint == chainElement.Certificate.Thumbprint)
+                {
+                    foundAnchor = true;
+                }
             }
 
-            //Assert.True(foundAnchor, "Did not chain to an anchor");
+            Assert.True(foundAnchor, "Did not chain to an anchor");
         }
         private static void AssertChainHasNoProblems(X509ChainElement chainElement, X509ChainStatusFlags x509StatusFlags)
         {
@@ -992,136 +828,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             }
 
             return null;
-        }
-    }
-
-    public class DCDTResolverFixture : IDisposable
-    {
-
-        [DllImport("user32.dll", EntryPoint = "FindWindow")]
-        private static extern IntPtr FindWindow(string lp1, string lp2);
-
-        [DllImport("USER32.DLL")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        public DCDTResolverFixture()
-        {
-            Console.WriteLine("DCDTResolverFixture ctor: This should only be run once");
-
-            //
-            // Not capable on codebetter.com TeamCity build server.
-            // InstallAnchorsInTrustedRootUserStore();
-
-            InstallAnchorsInMachineStore();
-        }
-
-        private void InstallAnchorsInTrustedRootUserStore()
-        {
-            //
-            // Ensure certs installed
-            //
-
-            var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
-            try
-            {
-                store.Open(OpenFlags.ReadWrite);
-
-                var file = @".\Anchors\demo31.direct-test.com_ca_root.cer";
-
-                if (!AnchorExists(store, file))
-                {
-                    InstallAnchor(store, file);
-                    CloseDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            finally
-            {
-                store.Close();
-            }
-
-            try
-            {
-                store.Open(OpenFlags.ReadWrite);
-
-                var file = @"Anchors\staging.direct-test.com_ca_root.der";
-
-                if (!AnchorExists(store, file))
-                {
-                    InstallAnchor(store, file);
-                    CloseDialog();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            finally
-            {
-                store.Close();
-            }
-        }
-
-        private void InstallAnchorsInMachineStore()
-        {
-            var anchorStore = new X509Store("NHINDAnchors", StoreLocation.LocalMachine);
-            anchorStore.Open(OpenFlags.ReadWrite);
-
-            var file = @".\Anchors\demo31.direct-test.com_ca_root.cer";
-
-            if (!AnchorExists(anchorStore, file))
-            {
-                anchorStore.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(file)));
-            }
-
-            file = @".\Anchors\staging.direct-test.com_ca_root.der";
-
-            if (!AnchorExists(anchorStore, file))
-            {
-                anchorStore.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(file)));
-            }
-
-            anchorStore.Close();
-        }
-
-        private void CloseDialog()
-        {
-            Thread.Sleep(500);
-
-            var iHandle = FindWindow("#32770", "Security Warning");
-            if (iHandle != IntPtr.Zero)
-            {
-                SetForegroundWindow(iHandle);
-                SendKeys.SendWait("%Y");
-            }
-        }
-
-        async void InstallAnchor(X509Store store, string file)
-        {
-            if (!AnchorExists(store, file))
-            {
-                await Task.Run(() => store.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(file))));
-            }
-        }
-
-        bool AnchorExists(X509Store store, string file)
-        {
-            var cert = new X509Certificate2(X509Certificate.CreateFromCertFile(file));
-            var found = store.Certificates.FindByThumbprint(cert.Thumbprint);
-            return found != null;
-        }
-
-        public void SomeMethod()
-        {
-            Console.WriteLine("DCDTResolverFixture::SomeMethod()");
-        }
-
-        public void Dispose()
-        {
-            Console.WriteLine("DCDTResolverFixture: Disposing DCDTResolverFixture");
         }
     }
 
