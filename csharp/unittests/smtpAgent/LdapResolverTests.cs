@@ -813,7 +813,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
                     return;  //we expect problems
                 }
             }
-            Assert.True(false, "Expected chain problems and found none.");
+            Assert.True(false, "Expected DefaultProblemFlags and found none. " + String.Join(" | ", chainElementStatus.Select(s => s.Status.ToString())));
         }
 
         ICertificateResolver LocateChild<T>(ICertificateResolver resolver)
