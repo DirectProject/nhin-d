@@ -826,7 +826,8 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             agent.TrustModel.Enforce(outgoingMessage);
 
             Assert.Equal(1, outgoingMessage.Recipients.Certificates.Count());
-            var certCollection = new X509Certificate2Collection() { outgoingMessage.Recipients.Certificates };
+            var certCollection = new X509Certificate2Collection();
+            certCollection.Add(outgoingMessage.Recipients.Certificates);
             Assert.True(certCollection.FindByName("D17_valA") != null);
 
             //
