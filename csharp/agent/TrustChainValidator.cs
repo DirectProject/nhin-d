@@ -248,9 +248,20 @@ namespace Health.Direct.Agent
                     return false;
                 }
 
+                bool foundAnchor = false;
+
                 // walk the chain starting at the leaf and see if we hit any issues before the anchor
                 foreach (X509ChainElement chainElement in chainElements)
-                {                
+                {
+                    bool isAnchor = (anchors.FindByThumbprint(chainElement.Certificate.Thumbprint) != null);
+                    if (isAnchor)
+                    {
+                        // Found a valid anchor!
+                        // Because we found an anchor we trust, we can skip trust
+                        foundAnchor = true;
+                        continue;
+                    }
+
                     if (this.ChainElementHasProblems(chainElement))
                     {
                         this.NotifyProblem(chainElement);
@@ -258,15 +269,14 @@ namespace Health.Direct.Agent
                         // Whoops... problem with at least one cert in the chain. Stop immediately
                         return false;
                     }
-
-                    bool isAnchor = (anchors.FindByThumbprint(chainElement.Certificate.Thumbprint) != null);
-                    if (isAnchor)
-                    {
-                        // Found a valid anchor!
-                        // Because we found an anchor we trust, we can now trust the entire trust chain
-                        return true;
-                    }
                 }
+
+                if (foundAnchor)
+                {
+                    return true;
+                }
+
+                return false;
             }
             catch(Exception ex)
             {
