@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -299,6 +300,71 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Equal("domain1.demo31.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
 
+        }
+
+        /// <summary>
+        /// This test case verifies that your system can query DNS for domain-bound CERT records and discover a valid domain-bound X.509 certificate for a Direct address.
+        /// http://sitenv.org/direct-certificate-discovery-tool-2015
+        /// </summary>
+        /// <param name="subject"></param>
+        [Theory]
+        [InlineData("d2@domain1.demo31.direct-test.com")]
+        public void TestD2_Via_Agent_TrustModel(string subject)
+        {
+            AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
+            DirectAgent agent = settings.CreateAgent();
+
+            ICertificateResolver resolver = agent.PublicCertResolver;
+
+            var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
+            var diagnostics = new FakeDiagnostics(typeof(DnsCertResolver));
+            dnsCertResolver.Error += diagnostics.OnResolverError;
+
+            Assert.NotNull(resolver);
+
+            //
+            // Build up an outgoing message to feed to the TrustModel enforce routine.
+            //
+            var email = string.Format(@"From: HoboJoe@redmond.hsgincubator.com
+To: {0}
+Message-ID: {1}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
+
+            var recipient = new DirectAddress(subject);
+            var recipients = new DirectAddressCollection() { recipient };
+            var sender = new DirectAddress("HoboJoe@redmond.hsgincubator.com");
+            var outgoingMessage = new OutgoingMessage(email, recipients, sender);
+            outgoingMessage.EnsureRecipientsCategorizedByDomain(agent.Domains);
+            var emailAddress = new MailAddress(subject);
+
+            outgoingMessage.Sender.TrustAnchors = agent.TrustAnchors.OutgoingAnchors.GetCertificates(outgoingMessage.Sender);
+
+            //skip private certs...
+            X509Certificate2Collection certs = dnsCertResolver.GetCertificates(emailAddress);
+            recipient.Certificates = certs;
+            recipient.ResolvedCertificates = true;
+
+            var diagnosticsChainValidator = new FakeChainValidatorDiagnostics();
+            agent.TrustModel.CertChainValidator.Problem += diagnosticsChainValidator.OnChainProblem;
+            agent.TrustModel.Enforce(outgoingMessage);
+
+            Assert.Equal(1, outgoingMessage.Recipients.Certificates.Count());
+            var certCollection = new X509Certificate2Collection();
+            certCollection.Add(outgoingMessage.Recipients.Certificates);
+            Assert.Equal(1, certCollection.Count);
+            Assert.True(certCollection.FindByName("D2_valB") != null);
+
+            //
+            // Assert problem details 
+            // Usefull to logging at the host level
+            //
+            Assert.Equal(1, diagnosticsChainValidator.ActualErrorMessages.Count);
+            Assert.Contains("Trust ERROR A required certificate is not within its validity period when verifying against the current system clock or the timestamp in the signed file.", diagnosticsChainValidator.ActualErrorMessages[0]);
+            Assert.Contains("CN=D1_invB", diagnosticsChainValidator.ActualErrorMessages[0]);
         }
 
 
@@ -748,7 +814,7 @@ namespace Health.Direct.SmtpAgent.Tests
             //
             // Build up an outgoing message to feed to the TrustModel enforce routine.
             //
-            var email = string.Format(@"From: HoboJoe@kryptiq.DirectCi.lab
+            var email = string.Format(@"From: HoboJoe@redmond.hsgincubator.com
 To: {0}
 Message-ID: {1}
 Date: Mon, 10 May 2010 14:53:27 -0700
@@ -759,7 +825,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
             var recipient = new DirectAddress(subject);
             var recipients = new DirectAddressCollection() { recipient };
-            var sender = new DirectAddress("HoboJoe@kryptiq.DirectCi.lab");
+            var sender = new DirectAddress("HoboJoe@redmond.hsgincubator.com");
             var outgoingMessage = new OutgoingMessage(email, recipients, sender);
             outgoingMessage.EnsureRecipientsCategorizedByDomain(agent.Domains);
             var emailAddress = new MailAddress(subject);
@@ -863,9 +929,10 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
             X509Chain chainBuilder = new X509Chain();
             X509ChainPolicy policy = new X509ChainPolicy();
+            chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
             policy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
             chainBuilder.ChainPolicy = policy;
-            chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
+            
 
             chainBuilder.Build(cert);
             X509ChainElementCollection chainElements = chainBuilder.ChainElements;
@@ -878,7 +945,12 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             // walk the chain starting at the leaf and see if we hit any issues
             foreach (X509ChainElement chainElement in chainElements)
             {
-                
+                if (anchor.Thumbprint == chainElement.Certificate.Thumbprint)
+                {
+                    foundAnchor = true;
+                    continue;
+                }
+
                 if (expectValidCert)
                 {
                     AssertChainHasNoProblems(chainElement, x509StatusFlags);
@@ -886,12 +958,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
                 else
                 {
                     AssertChainHasProblems(chainElement, x509StatusFlags);
-                }
-
-                if (anchor.Thumbprint == chainElement.Certificate.Thumbprint)
-                {
-                    foundAnchor = true;
-                    continue;
                 }
             }
 
@@ -1112,7 +1178,8 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
         public void OnChainProblem(X509ChainElement chainElement)
         {
-            foreach (var chainElementStatus in chainElement.ChainElementStatus)
+            foreach (var chainElementStatus in chainElement.ChainElementStatus
+                .Where(s => (s.Status & TrustChainValidator.DefaultProblemFlags) != 0))
             {
                 var problem = string.Format("Trust ERROR {0}, {1}", chainElementStatus.StatusInformation, chainElement.Certificate);
                 _actualErrorMessages.Add(problem);
