@@ -863,9 +863,10 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
             X509Chain chainBuilder = new X509Chain();
             X509ChainPolicy policy = new X509ChainPolicy();
-            chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
             policy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
             chainBuilder.ChainPolicy = policy;
+            chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
+
             chainBuilder.Build(cert);
             X509ChainElementCollection chainElements = chainBuilder.ChainElements;
 
@@ -877,12 +878,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             // walk the chain starting at the leaf and see if we hit any issues
             foreach (X509ChainElement chainElement in chainElements)
             {
-                if (anchor.Thumbprint == chainElement.Certificate.Thumbprint)
-                {
-                    foundAnchor = true;
-                    continue;
-                }
-
+                
                 if (expectValidCert)
                 {
                     AssertChainHasNoProblems(chainElement, x509StatusFlags);
@@ -890,6 +886,12 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
                 else
                 {
                     AssertChainHasProblems(chainElement, x509StatusFlags);
+                }
+
+                if (anchor.Thumbprint == chainElement.Certificate.Thumbprint)
+                {
+                    foundAnchor = true;
+                    continue;
                 }
             }
 
