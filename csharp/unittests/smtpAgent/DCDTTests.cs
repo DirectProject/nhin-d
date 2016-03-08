@@ -793,7 +793,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// <param name="subject"></param>
         /// <param name="ip">Dns server IP</param>
         /// <param name="commonName">Filter extra anchors so it is easier to debug</param>
-        [Theory(Skip = "Not capable on codebetter.com TeamCity build server.")]
+        [Theory]
         [InlineData("d17@domain9.staging.direct-test.com", "8.8.8.8", "CN=staging.direct-test.com_ca_root", @".\Anchors\staging.direct-test.com_ca_root.der")]
         public void TestD17(string subject, string ip, string commonName, string anchorFile)
         {
@@ -1024,11 +1024,8 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         public DCDTResolverFixture()
         {
             Console.WriteLine("DCDTResolverFixture ctor: This should only be run once");
-
-            //
-            // Not capable on codebetter.com TeamCity build server.
-            // InstallAnchorsInTrustedRootUserStore();
-
+            
+            InstallAnchorsInTrustedRootUserStore();
             InstallAnchorsInMachineStore();
         }
 
@@ -1038,7 +1035,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             // Ensure certs installed
             //
 
-            var store = new X509Store(StoreName.Root, StoreLocation.CurrentUser);
+            var store = new X509Store(StoreName.AuthRoot, StoreLocation.CurrentUser);
             try
             {
                 store.Open(OpenFlags.ReadWrite);
