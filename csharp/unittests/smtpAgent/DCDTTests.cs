@@ -1040,12 +1040,12 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             {
                 store.Open(OpenFlags.ReadWrite);
 
-                var file = @".\Anchors\demo31.direct-test.com_ca_root.cer";
+                var file = @".\Anchors\staging.direct-test.com_ca_root.der"; 
 
                 if (!AnchorExists(store, file))
                 {
                     InstallAnchor(store, file);
-                    CloseDialog();
+                    //CloseDialog();  Should be no dialog with AuthRoot store name
                 }
             }
             catch (Exception ex)
@@ -1061,12 +1061,12 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             {
                 store.Open(OpenFlags.ReadWrite);
 
-                var file = @"Anchors\staging.direct-test.com_ca_root.der";
+                var file = @".\Anchors\demo31.direct-test.com_ca_root.cer";
 
                 if (!AnchorExists(store, file))
                 {
                     InstallAnchor(store, file);
-                    CloseDialog();
+                    //CloseDialog(); Should be no dialog with AuthRoot store name
                 }
             }
             catch (Exception ex)
