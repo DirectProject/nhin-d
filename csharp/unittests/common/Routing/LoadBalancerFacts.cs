@@ -11,16 +11,12 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 */
-using System;
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using Health.Direct.Common.Routing;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Routing
 {
@@ -30,20 +26,20 @@ namespace Health.Direct.Common.Tests.Routing
     public class LoadBalancerFacts
     {
         string m_root;
-        
+
         public LoadBalancerFacts()
         {
             m_root = EnsureRootFolder("routerUnitTest");
         }
-        
+
         [Fact]
         public void TestNoRoute()
         {
             string receiverRoot = EnsureCleanFolder(Path.Combine(m_root, "receivers"));
-            FolderBalancer<KeyValuePair<string, string>> balancer = new FolderBalancer<KeyValuePair<string,string>>(this.TextCopy);
-            Assert.False(balancer.Process(new KeyValuePair<string,string>("foo", "Hello")));
+            FolderBalancer<KeyValuePair<string, string>> balancer = new FolderBalancer<KeyValuePair<string, string>>(this.TextCopy);
+            Assert.False(balancer.Process(new KeyValuePair<string, string>("foo", "Hello")));
         }
-                
+
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
@@ -51,9 +47,9 @@ namespace Health.Direct.Common.Tests.Routing
         [InlineData(4)]
         public void TestRoundRobin(int folderCount)
         {
-            string receiverRoot = EnsureCleanFolder(Path.Combine(m_root, "receivers"));   
+            string receiverRoot = EnsureCleanFolder(Path.Combine(m_root, "receivers"));
             FolderBalancer<KeyValuePair<string, string>> balancer = this.CreateBalancer(folderCount);
-            
+
             int fileNumber = -1;
             //
             // These should all succeed
@@ -63,7 +59,7 @@ namespace Health.Direct.Common.Tests.Routing
                 ++fileNumber;
                 Process(balancer, fileNumber.ToString(), i);
             }
-            
+
             ++fileNumber;
             Process(balancer, fileNumber.ToString(), 0);
         }
@@ -76,14 +72,14 @@ namespace Health.Direct.Common.Tests.Routing
                 {
                     for (int j = 1; j <= i; ++j)
                     {
-                        yield return new object[] {i, j};
-                    }                    
+                        yield return new object[] { i, j };
+                    }
                 }
             }
         }
-        
+
         [Theory]
-        [PropertyData("FailureParams")]
+        [MemberData("FailureParams")]
         public void TestFailure(int folderCount, int failureCount)
         {
             string receiverRoot = EnsureCleanFolder(Path.Combine(m_root, "receivers"));
@@ -95,8 +91,8 @@ namespace Health.Direct.Common.Tests.Routing
             {
                 Directory.Delete(balancer.Receivers[i]);
             }
-            
-            int fileNumber = -1;            
+
+            int fileNumber = -1;
             string fileName = null;
             if (failureCount < folderCount)
             {
@@ -107,7 +103,7 @@ namespace Health.Direct.Common.Tests.Routing
                 {
                     ++fileNumber;
                     fileName = fileNumber.ToString();
-                    Assert.DoesNotThrow(() => balancer.Process(new KeyValuePair<string, string>(fileName, "Hello")));
+                    Assert.Null(Record.Exception(() => balancer.Process(new KeyValuePair<string, string>(fileName, "Hello"))));
                     Assert.True(Locate(balancer, fileName) >= 0);
                 }
             }
@@ -125,18 +121,18 @@ namespace Health.Direct.Common.Tests.Routing
                 }
             }
         }
-        
+
         FolderBalancer<KeyValuePair<string, string>> CreateBalancer(int folderCount)
         {
-            return new FolderBalancer<KeyValuePair<string, string>>(m_root, folderCount, this.TextCopy);            
+            return new FolderBalancer<KeyValuePair<string, string>>(m_root, folderCount, this.TextCopy);
         }
 
         void Process(FolderBalancer<KeyValuePair<string, string>> balancer, string fileName, int expectedIndex)
         {
-            Assert.DoesNotThrow(() => balancer.Process(new KeyValuePair<string, string>(fileName, "Hello")));
+            Assert.Null(Record.Exception(() => balancer.Process(new KeyValuePair<string, string>(fileName, "Hello"))));
             Assert.True(File.Exists(Path.Combine(balancer.Receivers[expectedIndex], fileName)));
         }
-        
+
         int Locate(FolderBalancer<KeyValuePair<string, string>> balancer, string fileName)
         {
             string[] folders = balancer.Receivers;
@@ -153,16 +149,16 @@ namespace Health.Direct.Common.Tests.Routing
                 {
                 }
             }
-            
+
             return -1;
         }
-        
+
         string EnsureRootFolder(string name)
         {
             string path = Path.Combine(Path.GetTempPath(), name);
             return EnsureCleanFolder(path);
         }
-        
+
         string EnsureCleanFolder(string path)
         {
             if (Directory.Exists(path))
@@ -171,8 +167,8 @@ namespace Health.Direct.Common.Tests.Routing
             }
             Directory.CreateDirectory(path);
             return path;
-        }        
-        
+        }
+
         bool TextCopy(KeyValuePair<string, string> file, string folderPath)
         {
             try
@@ -183,10 +179,8 @@ namespace Health.Direct.Common.Tests.Routing
             catch
             {
             }
-            
+
             return false;
         }
-        
-        
     }
 }

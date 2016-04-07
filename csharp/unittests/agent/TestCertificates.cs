@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
-
 using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.Agent.Tests
@@ -31,9 +30,9 @@ namespace Health.Direct.Agent.Tests
         }
 
         public static MemoryX509Store ChainCertsStore;
-        public static MemoryX509Store PublicCertsStore;        
+        public static MemoryX509Store PublicCertsStore;
         public static X509Certificate2Collection AllPublicCerts;
-        
+
         public static MemoryX509Store LoadCertificateFolder(string folderPath)
         {
             string path = FullPath(folderPath);
@@ -42,7 +41,7 @@ namespace Health.Direct.Agent.Tests
 
             return store;
         }
-        
+
         public static X509Certificate2Collection LoadAllPublic()
         {
             using (SystemX509Store store = SystemX509Store.OpenExternal())
