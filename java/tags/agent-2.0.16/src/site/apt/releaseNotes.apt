@@ -6,42 +6,6 @@
         Greg Meyer
         ---
 
-{2.1.1}
-
-    Changes included with release 2.1.1
-    
-    []
-    
- 	* NA
-    
-    [] 
-     
-    Bug Fixes
-
-    * Fixed issue with not being able to override the DNS certificate resovler's server list via an options parameter.
-
-{2.1}
-
-    Changes included with release 2.1
-    
-    []
-    
-    Enhancements
-    
-    * Applicability statement v1.2 compliance.
-    
-    * Support of optimized PKCS11 cryptographic operations for message signing and decryption.
-    
-    * Policy support on detection of "tampered" message SMTP and outer MIME headers.
-    
-    * Policy support to only receiving messages using higher strength encryption and digest algorithms.   
-    
-    [] 
-     
-    Bug Fixes
-    
-    * NA
-
 {2.0.16}
 
     Changes included with release 2.0.16
