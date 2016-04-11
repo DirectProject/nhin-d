@@ -76,7 +76,9 @@ public class CRLRevocationManager implements RevocationManager
 
     private static final Log LOGGER = LogFactory.getFactory().getInstance(CRLRevocationManager.class);
 
-    private static final int CRL_FETCH_TIMEOUT = 3000;
+    private static final int CRL_CONNECT_TIMEOUT = 3000;
+
+    private static final int CRL_READ_TIMEOUT = 60000;
     
     private static final String DEFAULT_CRL_CACHE_LOCATION = "CrlCache";
     
@@ -358,7 +360,8 @@ public class CRLRevocationManager implements RevocationManager
             {
             	// create a URL connection object from the distribution point
                 URLConnection urlConnection = new URL(crlUrlString).openConnection();
-                urlConnection.setConnectTimeout(CRL_FETCH_TIMEOUT);
+                urlConnection.setConnectTimeout(CRL_CONNECT_TIMEOUT);
+                urlConnection.setReadTimeout(CRL_READ_TIMEOUT);
                 
                 // get the input stream
                 InputStream crlInputStream = urlConnection.getInputStream();
