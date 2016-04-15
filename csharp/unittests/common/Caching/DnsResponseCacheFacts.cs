@@ -12,13 +12,13 @@ Redistributions in binary form must reproduce the above copyright notice, this l
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.DnsResolver;
-
 using Xunit;
 
 namespace Health.Direct.Common.Tests.Caching
@@ -27,7 +27,6 @@ namespace Health.Direct.Common.Tests.Caching
     {
         // set this to true if dump statements are needed for debugging purposes
         private const bool DumpIsEnabled = false;
-
 
         private const string m_filePath = @"..\..\..\..\common.metadata\dnsresponses";
 
@@ -87,7 +86,7 @@ namespace Health.Direct.Common.Tests.Caching
                 }
 
                 // ensure that the qusetion QName matches the name of the mocked entry
-                Assert.True(dr.Question.Domain.ToLower().Contains(s.ToLower().Replace("aname.","")));
+                Assert.True(dr.Question.Domain.ToLower().Contains(s.ToLower().Replace("aname.", "")));
             }
         }
 
@@ -137,7 +136,7 @@ namespace Health.Direct.Common.Tests.Caching
 
             // populate the entires
             PopulateMockDnsARecordResponseEntries();
-            
+
             // force static TTL
             ForceTtlTime(m_basettl);
 
@@ -201,7 +200,7 @@ namespace Health.Direct.Common.Tests.Caching
                 //---populate the cache
                 PopulateBasicCache();
 
-                
+
                 //----------------------------------------------------------------------------------------------------
                 //---get the first response, we are going to remove it
                 DnsResponse dr = m_responses[0];
@@ -259,7 +258,6 @@ namespace Health.Direct.Common.Tests.Caching
 
         }
 
-
         /// <summary>
         /// checks for duplicates inside the cache and how they are handled
         /// Remarks:
@@ -268,8 +266,6 @@ namespace Health.Direct.Common.Tests.Caching
         [Fact]
         public void CacheDuplicateTest()
         {
-
-
             try
             {
                 //----------------------------------------------------------------------------------------------------
@@ -298,16 +294,12 @@ namespace Health.Direct.Common.Tests.Caching
                 //---make sure that there are only the X number of items in the cache
                 Assert.Equal(m_responses.Count
                              , m_drrc.CacheCount);
-
-
             }
             finally
             {
                 m_drrc.RemoveAll();
             }
-
         }
-
 
         /// <summary>
         /// checks to make sure that ttl is respected in the cache

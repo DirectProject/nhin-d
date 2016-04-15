@@ -11,16 +11,14 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
  */
+
 using System;
 using System.Collections.Generic;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
-
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Caching
 {
@@ -63,7 +61,7 @@ namespace Health.Direct.Common.Tests.Caching
             : base(DumpIsEnabled)
         {
             m_cache = new DnsResponseCache(Guid.NewGuid().ToString("D"));
-            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(5), Cache = m_cache};
+            m_client = new DnsClientWithCache(PublicDns) { Timeout = TimeSpan.FromSeconds(5), Cache = m_cache };
             m_client.MaxRetries = 1;
             m_clientNoCache = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(5) };
             m_clientNoCache.MaxRetries = 1;
@@ -103,13 +101,13 @@ namespace Health.Direct.Common.Tests.Caching
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
-        
+
         /// <summary>
         /// Confirms ability of code to resolve certs using the dns caching client method ResolveCERT, ensures items are in cache
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
         [Theory(Skip = "Requires remote DNS call on port 53.")]
-        [PropertyData("CertDomainNames")]
+        [MemberData("CertDomainNames")]
         public void ResolveCertEnsureInCache(string domain)
         {
             // try with ResolveCert
@@ -128,8 +126,8 @@ namespace Health.Direct.Common.Tests.Caching
         /// confirms ability of code to resolve certs using the dns caching client method ResolveCERT
         /// </summary>
         /// <param name="domain">domain name to be resolved</param>
-        [Theory(Skip="Requires remote DNS call on port 53.")]
-        [PropertyData("CertDomainNames")]
+        [Theory(Skip = "Requires remote DNS call on port 53.")]
+        [MemberData("CertDomainNames")]
         public void ResolveCERTFromNameServerEnsureInCache(string domain)
         {
             // try with ResolveCert
@@ -137,7 +135,7 @@ namespace Health.Direct.Common.Tests.Caching
 
             IEnumerable<CertRecord> results = m_client.ResolveCERTFromNameServer(domain);
             Assert.True(results != null, domain);
-            
+
             Dump("ensuring item is stored in cache");
             DnsResponse res = m_client.Cache.Get(new DnsQuestion(domain
                                                                  , DnsStandard.RecordType.CERT));
@@ -165,7 +163,7 @@ namespace Health.Direct.Common.Tests.Caching
             Dump("ensuring item is stored in cache");
             Assert.NotNull(res);
         }
-        
+
         /// <summary>
         /// confirms ability to resolve and cache TXT records
         /// </summary>

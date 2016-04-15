@@ -12,19 +12,16 @@ Redistributions in binary form must reproduce the above copyright notice, this l
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-
 using Health.Direct.Common.DnsResolver;
-
 using Security.Cryptography;
 using Security.Cryptography.X509Certificates;
-
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Caching
 {
@@ -97,9 +94,10 @@ namespace Health.Direct.Common.Tests.Caching
             }
         }
 
-        public DnsResponseToBinExample(){
-		
-            m_client = new DnsClient(PublicDns) {Timeout = TimeSpan.FromSeconds(10) };
+        public DnsResponseToBinExample()
+        {
+
+            m_client = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
         }
 
         //---these "tests" are purely examples of how to create mock responses, they are skipped out as they alter the file system 
@@ -123,7 +121,8 @@ namespace Health.Direct.Common.Tests.Caching
             byte[] bytes = buff.CreateReader().ReadBytes();
             string path = Path.Combine(DnsResponsePath, string.Format("aname.{0}.bin", domain)).Replace("www.", "");
             Console.WriteLine("Creating {0}", path);
-            using (FileStream s = new FileStream(path,FileMode.OpenOrCreate)){
+            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
+            {
                 s.Write(bytes
                         , 0
                         , bytes.Length);
@@ -234,7 +233,8 @@ namespace Health.Direct.Common.Tests.Caching
             DnsBuffer buff = new DnsBuffer();
             byte[] bytes;
             AddressRecord arec = new AddressRecord(domain
-                , "127.0.0.1") {TTL = 1000};
+                , "127.0.0.1")
+            { TTL = 1000 };
             arec.Serialize(buff);
 
             string path = Path.Combine(DNSRECORDSEPATH, string.Format("aname.{0}.bin", domain));
@@ -248,7 +248,7 @@ namespace Health.Direct.Common.Tests.Caching
                 s.Close();
             }
 
-            
+
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
@@ -269,7 +269,8 @@ namespace Health.Direct.Common.Tests.Caching
                 , 2
                 , 3
                 , 4
-                , 5) {TTL = 2000};
+                , 5)
+            { TTL = 2000 };
             buff = new DnsBuffer();
             soa.Serialize(buff);
 
@@ -304,7 +305,8 @@ namespace Health.Direct.Common.Tests.Caching
             //----------------------------------------------------------------------------------------------------------------
             MXRecord mx = new MXRecord(domain
                 , string.Format("mx.{0}", domain)
-                , 1) {TTL = 2000};
+                , 1)
+            { TTL = 2000 };
 
             buff = new DnsBuffer();
             mx.Serialize(buff);
@@ -338,7 +340,8 @@ namespace Health.Direct.Common.Tests.Caching
             CertRecord cert = new CertRecord(new DnsX509Cert(CreateNamedKeyCertificate(new CertData(domain
                 , domain
                 , string.Format("CN={0}", domain)
-                , "")))) {TTL = 2000};
+                , ""))))
+            { TTL = 2000 };
 
             buff = new DnsBuffer();
             cert.Serialize(buff);
@@ -368,36 +371,36 @@ namespace Health.Direct.Common.Tests.Caching
             Console.WriteLine(cert.Cert.Certificate.NotAfter);
         }
 
-        public X509Certificate2  CreateNamedKeyCertificate(CertData data)
+        public X509Certificate2 CreateNamedKeyCertificate(CertData data)
         {
             try
             {
                 CngKeyCreationParameters keyCreationParameters
                     = new CngKeyCreationParameters
-                          {
-                              ExportPolicy =
+                    {
+                        ExportPolicy =
                                   CngExportPolicies.AllowExport |
                                   CngExportPolicies.AllowPlaintextExport |
                                   CngExportPolicies.AllowPlaintextArchiving |
                                   CngExportPolicies.AllowArchiving,
-                              KeyUsage = CngKeyUsages.AllUsages
-                          };
+                        KeyUsage = CngKeyUsages.AllUsages
+                    };
 
                 X509Certificate2 cert;
                 X509CertificateCreationParameters configCreate
                     = new X509CertificateCreationParameters(new X500DistinguishedName(data.DistinguishedName))
-                          {
-                              EndTime =
+                    {
+                        EndTime =
                                   DateTime.Parse("01/01/2020",
                                                  System.Globalization.
                                                      DateTimeFormatInfo.
                                                      InvariantInfo),
-                              StartTime =
+                        StartTime =
                                   DateTime.Parse("01/01/2010",
                                                  System.Globalization.
                                                      DateTimeFormatInfo.
                                                      InvariantInfo)
-                          };
+                    };
 
                 using (CngKey namedKey = CngKey.Create(CngAlgorithm2.Rsa, data.Key, keyCreationParameters))
                 {
