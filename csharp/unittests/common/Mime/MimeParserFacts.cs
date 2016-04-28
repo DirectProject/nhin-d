@@ -11,17 +11,13 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 */
-using System;
-using System.Linq;
-using System.Net.Mail;
+
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Health.Direct.Common.Mime;
-using Health.Direct.Common.Mail;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Mime
 {
@@ -35,18 +31,19 @@ namespace Health.Direct.Common.Tests.Mime
         public void TestInvalidCRLN(string text)
         {
             MimeException error = null;
-            
-            error = AssertEx.Throws<MimeException>(() => {
+
+            error = AssertEx.Throws<MimeException>(() =>
+            {
                 MimeParser.ReadLines(text).ToArray();
             });
-            
+
             Assert.True(error.Error == MimeError.InvalidCRLF);
         }
-        
+
         public static IEnumerable<object[]> ValidLines
         {
-            get 
-            {   
+            get
+            {
                 yield return new object[]
                 {
                     "This is a valid line .\r\n",
@@ -72,14 +69,14 @@ namespace Health.Direct.Common.Tests.Mime
                 };
             }
         }
-        
+
         [Theory]
-        [PropertyData("ValidLines")]
+        [MemberData("ValidLines")]
         public void TestValidCRLN(string text, string[] expectedLines)
         {
             StringSegment[] parsedLines = null;
-            Assert.DoesNotThrow(() => parsedLines = MimeParser.ReadLines(text).ToArray());
-            
+            Assert.Null(Record.Exception(() => parsedLines = MimeParser.ReadLines(text).ToArray()));
+
             Assert.True(parsedLines[parsedLines.Length - 1].IsEmpty);
             Assert.True((parsedLines.Length - 1) == expectedLines.Length);
             for (int i = 0; i < expectedLines.Length; ++i)
@@ -87,33 +84,33 @@ namespace Health.Direct.Common.Tests.Mime
                 Assert.Equal(parsedLines[i].ToString(), expectedLines[i]);
             }
         }
-                    
+
         public static IEnumerable<object[]> HeaderFiles
         {
             get
             {
-                yield return new object[] {"Mime\\TestFiles\\Multipart.txt", 13}; // Expect 13 headers
+                yield return new object[] { "Mime\\TestFiles\\Multipart.txt", 13 }; // Expect 13 headers
             }
         }
-            
+
         [Theory]
-        [PropertyData("HeaderFiles")]
+        [MemberData("HeaderFiles")]
         public void TestHeaders(string filePath, int expectedHeaderCount)
         {
             string entity = File.ReadAllText(filePath);
             Header[] headers = null;
-            Assert.DoesNotThrow(() => headers = MimeParser.ReadHeaders(entity).ToArray());
+            Assert.Null(Record.Exception(() => headers = MimeParser.ReadHeaders(entity).ToArray()));
             Assert.True(headers.Length == expectedHeaderCount);
-            foreach(Header header in headers)
+            foreach (Header header in headers)
             {
                 Assert.True(header != null);
-                
+
                 string name = null;
-                Assert.DoesNotThrow(() => name = header.Name);
+                Assert.Null(Record.Exception(() => name = header.Name));
                 Assert.True(!string.IsNullOrEmpty(name));
 
                 string value = null;
-                Assert.DoesNotThrow(() => value = header.ValueRaw);
+                Assert.Null(Record.Exception(() => value = header.ValueRaw));
             }
         }
 
@@ -121,23 +118,23 @@ namespace Health.Direct.Common.Tests.Mime
         {
             get
             {
-                yield return new object[] { "To:", string.Empty};  
-                yield return new object[] { "To:toby@foo.bar", "toby@foo.bar"};
-                yield return new object[] { "To: ", string.Empty}; 
-                yield return new object[] { "To:toby@foo\r\n .bar \r\n .goo", "toby@foo.bar .goo"};
+                yield return new object[] { "To:", string.Empty };
+                yield return new object[] { "To:toby@foo.bar", "toby@foo.bar" };
+                yield return new object[] { "To: ", string.Empty };
+                yield return new object[] { "To:toby@foo\r\n .bar \r\n .goo", "toby@foo.bar .goo" };
             }
         }
-        
+
         [Theory]
-        [PropertyData("GoodHeaders")]
+        [MemberData("GoodHeaders")]
         public void TestValidHeaders(string entity, string expectedValue)
         {
             string headerValue = null;
-            Assert.DoesNotThrow(() =>
+            Assert.Null(Record.Exception(() =>
             {
                 Header[] headers = MimeParser.ReadHeaders(entity).ToArray();
-                headerValue = headers[0].ValueRaw;                
-            });
+                headerValue = headers[0].ValueRaw;
+            }));
 
             Assert.Equal(headerValue, expectedValue);
         }
@@ -146,27 +143,28 @@ namespace Health.Direct.Common.Tests.Mime
         {
             get
             {
-                yield return new object[] { "To", MimeError.MissingNameValueSeparator};  // No : character
-                yield return new object[] { "To:\r\n \r\n \r\n", MimeError.MissingHeaderValue }; 
+                yield return new object[] { "To", MimeError.MissingNameValueSeparator };  // No : character
+                yield return new object[] { "To:\r\n \r\n \r\n", MimeError.MissingHeaderValue };
                 yield return new object[] { " To: foo", MimeError.InvalidHeader }; // Can't start with a space
-                yield return new object[] { "To foo@goo", MimeError.MissingNameValueSeparator};
+                yield return new object[] { "To foo@goo", MimeError.MissingNameValueSeparator };
                 yield return new object[] { "To: ", MimeError.MissingHeaderValue };
             }
         }
-        
+
         [Theory]
-        [PropertyData("BadHeaders")]
+        [MemberData("BadHeaders")]
         public void TestInvalidHeaders(string entity, MimeError expectedError)
         {
             MimeException error;
-            error = AssertEx.Throws<MimeException>(() => {
+            error = AssertEx.Throws<MimeException>(() =>
+            {
                 Header[] headers = MimeParser.ReadHeaders(entity).ToArray();
                 string value = headers[0].Value;
             });
-            
+
             Assert.True(error.Error == expectedError);
         }
-        
+
         [Theory]
         [InlineData("--foo", "foo", true)]
         [InlineData("--1233423233432--", "1233423233432", true)]
@@ -179,11 +177,11 @@ namespace Health.Direct.Common.Tests.Mime
         [InlineData("--123", "1233423233432", false)]
         public void TestBoundaryStart(string text, string boundary, bool isBoundary)
         {
-            bool result = false;            
-            Assert.DoesNotThrow(() => result = MimeParser.IsBoundary(new StringSegment(text), boundary));
+            bool result = false;
+            Assert.Null(Record.Exception(() => result = MimeParser.IsBoundary(new StringSegment(text), boundary)));
             Assert.True(result == isBoundary);
         }
-        
+
         [Theory]
         [InlineData("", false)]
         [InlineData("--", false)]
@@ -193,8 +191,8 @@ namespace Health.Direct.Common.Tests.Mime
         public void TestBoundaryEnd(string text, bool isEnd)
         {
             bool result = false;
-            Assert.DoesNotThrow(() => result = MimeParser.IsBoundaryEnd(new StringSegment(text)));
-            Assert.True(result == isEnd);        
+            Assert.Null(Record.Exception(() => result = MimeParser.IsBoundaryEnd(new StringSegment(text))));
+            Assert.True(result == isEnd);
         }
 
         public static IEnumerable<object[]> MultipartFiles
@@ -206,17 +204,17 @@ namespace Health.Direct.Common.Tests.Mime
         }
 
         [Theory]
-        [PropertyData("MultipartFiles")]
+        [MemberData("MultipartFiles")]
         public void TestMultipart(string filePath, int expectedPartCount)
         {
             string entityText = File.ReadAllText(filePath);
-            
+
             MimeEntity entity = null;
-            Assert.DoesNotThrow(() => entity = MimeParser.Read<MimeEntity>(entityText));
+            Assert.Null(Record.Exception(() => entity = MimeParser.Read<MimeEntity>(entityText)));
             Assert.True(entity.IsMultiPart);
-            
+
             MimePart[] parts = null;
-            Assert.DoesNotThrow(() => parts = entity.GetAllParts().ToArray());
+            Assert.Null(Record.Exception(() => parts = entity.GetAllParts().ToArray()));
             if (expectedPartCount > 0)
             {
                 Assert.True(parts != null && parts.Length == expectedPartCount);

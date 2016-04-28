@@ -11,20 +11,17 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Domains;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
-using Health.Direct.Common.DnsResolver;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Agent.Tests
 {
@@ -43,7 +40,7 @@ namespace Health.Direct.Agent.Tests
         }
         
         [Theory]
-        [PropertyData("IncomingFiles")]
+        [MemberData("IncomingFiles")]
         public void TestIncoming(string fileName)
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
@@ -52,19 +49,19 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("OutgoingFiles")]
+        [MemberData("OutgoingFiles")]
         public void TestOutgoing(string fileName)
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
             m_tester.AgentA.Cryptographer.DigestAlgorithm = DigestAlgorithm.SHA1;            
             
             OutgoingMessage message = null;            
-            Assert.DoesNotThrow(() => message = m_tester.ProcessOutgoingFile(fileName));
+            Assert.Null(Record.Exception(() => message = m_tester.ProcessOutgoingFile(fileName)));
             Assert.NotNull(message);
             Assert.NotNull(message.Message);
             
             byte[] encryptedBytes = null;
-            Assert.DoesNotThrow(() => encryptedBytes = m_tester.AgentA.Cryptographer.GetEncryptedBytes(message.Message));
+            Assert.Null(Record.Exception(() => encryptedBytes = m_tester.AgentA.Cryptographer.GetEncryptedBytes(message.Message)));
             Assert.NotNull(encryptedBytes);
             Assert.True(encryptedBytes.Length > 0);
             
@@ -78,7 +75,7 @@ namespace Health.Direct.Agent.Tests
         /// Test if the agent catches them
         /// </summary>
         [Theory]
-        [PropertyData("OutgoingUntrustedFullyFiles")]
+        [MemberData("OutgoingUntrustedFullyFiles")]
         public void TestOutgoingUntrustedFully(string fileName)
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = EncryptionAlgorithm.AES128;
@@ -90,12 +87,11 @@ namespace Health.Direct.Agent.Tests
             Assert.Throws<OutgoingAgentException>(() => m_tester.ProcessOutgoingFileToString(fileName));
         }
 
-
         //
         // Some recipients are untrusted. The agent should return > 1 rejected recipients
         //
         [Theory]
-        [PropertyData("OutgoingUntrustedFiles")]
+        [MemberData("OutgoingUntrustedFiles")]
         public void OutgoingUntrusted(string fileName)
         {
             OutgoingMessage outgoing = m_tester.ProcessOutgoingFile(fileName);
@@ -128,7 +124,6 @@ namespace Health.Direct.Agent.Tests
             VerifyTrusted(incoming.Recipients, m_tester.AgentB.MinTrustRequirement);
             Assert.True(outgoing.RejectedRecipients.Count == 0);
         }
-        
 
         // this allows us to easily iterate over the cross product between
         // EncryptionAlgorithm x DigestAlgorithm x EndToEndFiles
@@ -153,7 +148,7 @@ namespace Health.Direct.Agent.Tests
         /// This is the real test - does a FULL END TO END TEST using a cross product of variations
         /// </summary>
         [Theory]
-        [PropertyData("EndToEndParameters")]
+        [MemberData("EndToEndParameters")]
         public void TestEndToEnd(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
@@ -167,7 +162,7 @@ namespace Health.Direct.Agent.Tests
         /// Similar to TestEndToEnd, but we let the receiving agent run with Default settings
         /// </summary>
         [Theory]
-        [PropertyData("EndToEndParameters")]
+        [MemberData("EndToEndParameters")]
         public void TestEndToEndCompat(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
         {
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
@@ -176,7 +171,7 @@ namespace Health.Direct.Agent.Tests
         }
         
         [Theory]
-        [PropertyData("DecryptionFailureFiles")]
+        [MemberData("DecryptionFailureFiles")]
         public void TestDecryptionFailure(string filename)
         {
             //
@@ -197,11 +192,11 @@ namespace Health.Direct.Agent.Tests
                                       baseAgent.PublicCertResolver,
                                       baseAgent.TrustAnchors);
             m_tester.AgentB = badAgent;
-            Assert.DoesNotThrow(() => m_tester.TestEndToEndFile(filename));
+            Assert.Null(Record.Exception(() => m_tester.TestEndToEndFile(filename)));
         }
         
         [Theory]
-        [PropertyData("ManInMiddleParams")]
+        [MemberData("ManInMiddleParams")]
         public void TestManInMiddle(string fileName, string injectedWithPersonalKey, string injectedWithOrgKey)
         {
             //
@@ -210,7 +205,7 @@ namespace Health.Direct.Agent.Tests
             OutgoingMessage outgoing = m_tester.ProcessOutgoingFile(fileName);
             string message = outgoing.SerializeMessage();
             IncomingMessage incoming = new IncomingMessage(message, outgoing.Recipients, outgoing.Sender);
-            Assert.DoesNotThrow(() => m_tester.AgentB.ProcessIncoming(incoming));
+            Assert.Null(Record.Exception(() => m_tester.AgentB.ProcessIncoming(incoming)));
             //
             // Add additional recipient not in original message
             //
