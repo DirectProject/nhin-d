@@ -793,8 +793,8 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// <param name="subject"></param>
         /// <param name="ip">Dns server IP</param>
         /// <param name="commonName">Filter extra anchors so it is easier to debug</param>
-        [Theory]
-        [InlineData("d17@domain9.staging.direct-test.com", "8.8.8.8", "CN=staging.direct-test.com_ca_root", @".\Anchors\staging.direct-test.com_ca_root.der")]
+        [Theory(Skip = "Will not run on TeamCity build server at hosting provider")]
+        [InlineData("d17@domain9.demo31.direct-test.com", "8.8.8.8", "CN=demo31.direct-test.com_ca_root", @".\Anchors\demo31.direct-test.com_ca_root.cer")]
         public void TestD17(string subject, string ip, string commonName, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -887,7 +887,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         }
 
         [Theory]
-        [InlineData("d18@domain10.staging.direct-test.com", "8.8.8.8", @".\Anchors\staging.direct-test.com_ca_root.der")]
+        [InlineData("d18@domain10.demo31.direct-test.com", "8.8.8.8", @".\Anchors\demo31.direct-test.com_ca_root.cer")]
         public void TestD18(string subject, string ip, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
