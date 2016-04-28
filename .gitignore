@@ -123,3 +123,5 @@ tools/trust.bundler/cmdlet/Examples/*.p7*
 tools/trust.bundler/build/packages/**
 csharp/build/packages/**
 *.DotSettings
+Java-Direct-IntelliJ/
+*.iml
