@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using Health.Direct.Common.Caching;
 
@@ -90,7 +91,7 @@ namespace Health.Direct.Common.Policies
             {
                 matches = m_policyCache.Get(domainName);
 
-                if (matches != null)
+                if (matches.Any())
                 {
                     return matches;
                 }
@@ -108,6 +109,17 @@ namespace Health.Direct.Common.Policies
             }
 
             return matches;
+        }
+
+        /// <summary>
+        /// This resolver's policy cache.
+        /// </summary>
+        public PolicyCache Cache
+        {
+            get
+            {
+                return m_policyCache;
+            }
         }
     }
 }
