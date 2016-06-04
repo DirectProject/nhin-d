@@ -110,7 +110,7 @@ namespace Health.Direct.DnsResponder.Tests
         /// <summary>
         /// https://code.google.com/p/nhin-d/issues/detail?id=240
         /// Demonstration of the correct LINQ query for sorting SRV records 
-        /// DCDT tests exercise actual LDAP queries here <see cref="LdapResolverTests"/>
+        /// DCDT tests exercise actual LDAP queries here <see cref="DCDTTests"/>
         /// </summary>
         [Fact]
         public void TestTypeSRVSort()

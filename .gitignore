@@ -125,3 +125,4 @@ csharp/build/packages/**
 *.DotSettings
 Java-Direct-IntelliJ/
 *.iml
+csharp/build/.vs/config/applicationhost.config

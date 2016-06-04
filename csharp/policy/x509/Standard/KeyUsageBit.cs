@@ -36,7 +36,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// Non repudiation
-        /// Binary: 1000000
+        /// Binary: 0100 0000
         /// Hex: 0x40
         /// Dec: 64
         /// </summary>
@@ -44,7 +44,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// Key encipherment
-        /// Binary: 100000
+        /// Binary: 0010 0000
         /// Hex: 0x20
         /// Dec: 32
         /// </summary>
@@ -52,7 +52,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// Data encipherment
-        /// Binary: 10000
+        /// Binary: 0001 0000
         /// Hex: 0x10
         /// Dec: 16
         /// </summary>
@@ -60,7 +60,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// Key agreement
-        /// Binary: 100
+        /// Binary: 000 0100
         /// Hex: 0x08
         /// Dec: 8
         /// </summary>
@@ -68,7 +68,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// Certificate signing
-        /// Binary: 100
+        /// Binary: 0000 0100
         /// Hex: 0x04
         /// Dec: 4
         /// </summary>
@@ -76,7 +76,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// CRL signing
-        /// Binary: 10
+        /// Binary: 0000 0010
         /// Hex: 0x02
         /// Dec: 2
         /// </summary>
@@ -84,7 +84,7 @@ namespace Health.Direct.Policy.X509.Standard
 
         /// <summary>
         /// Encipherment only
-        /// Binary: 1
+        /// Binary: 0000 0001
         /// Hex: 0x01
         /// Dec: 1
         /// </summary>
