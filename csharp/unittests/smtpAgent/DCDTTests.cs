@@ -220,7 +220,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d1@domain1.demo31.direct-test.com")]
+        [InlineData("d1@domain1.dcdt31prod.sitenv.org")]
         public void TestD1(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -258,7 +258,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d2@domain1.demo31.direct-test.com")]
+        [InlineData("d2@domain1.dcdt31prod.sitenv.org")]
         public void TestD2(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -280,11 +280,11 @@ namespace Health.Direct.SmtpAgent.Tests
             // find invalid cert
             //
             var cert = certs.FindByName("D1_invB");
-            Assert.Equal("domain1.demo31.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            Assert.Equal("domain1.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, false, DefaultProblemFlags);
 
             cert = certs.FindByName("D2_valB");
-            Assert.Equal("domain1.demo31.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            Assert.Equal("domain1.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
 
 
@@ -293,11 +293,11 @@ namespace Health.Direct.SmtpAgent.Tests
             //
             certs = resolver.GetCertificatesForDomain(email.Host);
             cert = certs.FindByName("D1_invB");
-            Assert.Equal("domain1.demo31.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            Assert.Equal("domain1.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, false, DefaultProblemFlags);
 
             cert = certs.FindByName("D2_valB");
-            Assert.Equal("domain1.demo31.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            Assert.Equal("domain1.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
 
         }
@@ -308,7 +308,7 @@ namespace Health.Direct.SmtpAgent.Tests
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d2@domain1.demo31.direct-test.com")]
+        [InlineData("d2@domain1.dcdt31prod.sitenv.org")]
         public void TestD2_Via_Agent_TrustModel(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -374,7 +374,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d3@domain2.demo31.direct-test.com")]
+        [InlineData("d3@domain2.dcdt31prod.sitenv.org")]
         public void TestD3(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -398,7 +398,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d4@domain2.demo31.direct-test.com")]
+        [InlineData("d4@domain2.dcdt31prod.sitenv.org")]
         public void TestD4(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -420,7 +420,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             X509Certificate2Collection certs = resolver.GetCertificates(email);
 
             var cert = certs.FindByName("D4_valD");
-            Assert.Equal("domain2.demo31.direct-test.com", cert.GetNameInfo(X509NameType.DnsName, false));
+            Assert.Equal("domain2.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
 
 
@@ -438,7 +438,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d5@domain1.demo31.direct-test.com")]
+        [InlineData("d5@domain1.dcdt31prod.sitenv.org")]
         public void TestD5(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -463,7 +463,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d6@domain4.demo31.direct-test.com")]
+        [InlineData("d6@domain4.dcdt31prod.sitenv.org")]
         public void TestD6(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -489,7 +489,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d7@domain2.demo31.direct-test.com")]
+        [InlineData("d7@domain2.dcdt31prod.sitenv.org")]
         public void TestD7(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -515,7 +515,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d8@domain5.demo31.direct-test.com")]
+        [InlineData("d8@domain5.dcdt31prod.sitenv.org")]
         public void TestD8(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -540,7 +540,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d9@domain1.demo31.direct-test.com")]
+        [InlineData("d9@domain1.dcdt31prod.sitenv.org")]
         public void TestD9(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -571,7 +571,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d10@domain3.demo31.direct-test.com")]
+        [InlineData("d10@domain3.dcdt31prod.sitenv.org")]
         public void TestD10(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -598,7 +598,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             AssertCert(certs[0], true, DefaultProblemFlags);
 
             Assert.Equal(1, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
-            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.domain3.demo31.direct-test.com:10389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.domain3.dcdt31prod.sitenv.org:10389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
         }
 
         /// <summary>
@@ -607,7 +607,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d11@domain6.demo31.direct-test.com")]
+        [InlineData("d11@domain6.dcdt31prod.sitenv.org")]
         public void TestD11(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -628,7 +628,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d12@domain7.demo31.direct-test.com")]
+        [InlineData("d12@domain7.dcdt31prod.sitenv.org")]
         public void TestD12(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -651,7 +651,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             Assert.Null(certs);
 
             Assert.Equal(1, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
-            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.domain7.demo31.direct-test.com:10389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
+            Assert.Equal("Error=BindFailure\r\n_ldap._tcp.domain7.dcdt31prod.sitenv.org:10389 Priority:0 Weight:0", diagnosticsForLdapCertResolver.ActualErrorMessages[0]);
         }
 
         /// <summary>
@@ -660,7 +660,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d13@domain8.demo31.direct-test.com")]
+        [InlineData("d13@domain8.dcdt31prod.sitenv.org")]
         public void TestD13(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -691,7 +691,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d14@domain1.demo31.direct-test.com")]
+        [InlineData("d14@domain1.dcdt31prod.sitenv.org")]
         public void TestD14(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -717,7 +717,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d15@domain2.demo31.direct-test.com")]
+        [InlineData("d15@domain2.dcdt31prod.sitenv.org")]
         public void TestD15(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -754,7 +754,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// </summary>
         /// <param name="subject"></param>
         [Theory]
-        [InlineData("d16@domain5.demo31.direct-test.com")]
+        [InlineData("d16@domain5.dcdt31prod.sitenv.org")]
         public void TestD16(string subject)
         {
             AgentSettings settings = AgentSettings.Load(TestRealResolversXml);
@@ -887,7 +887,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         }
 
         [Theory]
-        [InlineData("d18@domain10.demo31.direct-test.com", "8.8.8.8", @".\Anchors\demo31.direct-test.com_ca_root.cer")]
+        [InlineData("d18@domain10.dcdt31prod.sitenv.org", "8.8.8.8", @".\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
         public void TestD18(string subject, string ip, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -923,7 +923,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         {
             if (anchor == null)
             {
-                var anchorText = File.ReadAllBytes(@".\Anchors\demo31.direct-test.com_ca_root.cer");
+                var anchorText = File.ReadAllBytes(@".\Anchors\dcdt31prod.sitenv.org_ca_root.der");
                 anchor = new X509Certificate2(anchorText);
             }
 
@@ -1084,20 +1084,13 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var anchorStore = new X509Store("NHINDAnchors", StoreLocation.LocalMachine);
             anchorStore.Open(OpenFlags.ReadWrite);
 
-            var file = @".\Anchors\demo31.direct-test.com_ca_root.cer";
+            var file = @".\Anchors\dcdt31prod.sitenv.org_ca_root.der";
 
             if (!AnchorExists(anchorStore, file))
             {
                 anchorStore.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(file)));
             }
-
-            file = @"Anchors\staging.direct-test.com_ca_root.der";
-
-            if (!AnchorExists(anchorStore, file))
-            {
-                anchorStore.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(file)));
-            }
-
+            
             anchorStore.Close();
         }
 
