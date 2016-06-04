@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Data.Linq;
-using System.Runtime.InteropServices;
-using Health.Direct.Policy.Impl;
 
 namespace Health.Direct.Config.Store
 {

@@ -23,9 +23,7 @@ using System.Data.Linq;
 using System.Data.Linq.Mapping;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text.RegularExpressions;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Policy.Impl;
 
 
 namespace Health.Direct.Config.Store

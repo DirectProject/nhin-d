@@ -107,7 +107,7 @@
       <Name>common</Name>
     </ProjectReference>
     <ProjectReference Include="..\policy\policy.csproj">
-      <Project>{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}</Project>
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
       <Name>policy</Name>
     </ProjectReference>
   </ItemGroup>

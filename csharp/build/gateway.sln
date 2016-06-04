@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30110.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent", "..\gateway\smtpAgent\smtpAgent.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
 EndProject
@@ -629,6 +629,7 @@ Global
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|Win32.Build.0 = Debug|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Debug|x64.Build.0 = Debug|Any CPU
 		{CBA6088A-9425-4948-B046-0E0EABF07E5D}.Development|Any CPU.ActiveCfg = Debug|Any CPU
@@ -649,6 +650,7 @@ Global
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|Win32.Build.0 = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Debug|x64.Build.0 = Debug|Any CPU
 		{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}.Development|Any CPU.ActiveCfg = Debug|Any CPU
@@ -669,6 +671,7 @@ Global
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Debug|Win32.Build.0 = Debug|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Debug|x64.Build.0 = Debug|Any CPU
 		{0F787328-E1BD-418E-AA6C-F412FD1C1F70}.Development|Any CPU.ActiveCfg = Debug|Any CPU
@@ -689,6 +692,7 @@ Global
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Win32.Build.0 = Debug|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|x64.Build.0 = Debug|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Development|Any CPU.ActiveCfg = Debug|Any CPU
@@ -709,6 +713,7 @@ Global
 		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|Win32.Build.0 = Debug|Any CPU
 		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|x64.Build.0 = Debug|Any CPU
 		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Development|Any CPU.ActiveCfg = Debug|Any CPU
@@ -729,6 +734,7 @@ Global
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|Win32.Build.0 = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|x64.Build.0 = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Development|Any CPU.ActiveCfg = Debug|Any CPU
