@@ -124,3 +124,5 @@ tools/trust.bundler/build/packages/**
 csharp/build/packages/**
 *.DotSettings
 csharp/build/.vs/config/applicationhost.config
+Java-Direct-IntelliJ/
+*.iml
