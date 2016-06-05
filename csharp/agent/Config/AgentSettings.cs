@@ -17,9 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Xml.Serialization;
-
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Domains;
@@ -240,14 +238,13 @@ namespace Health.Direct.Agent.Config
             ICertificateResolver publicCerts = this.PublicCerts.CreateResolver();
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
             ICertPolicyResolvers certPolicyResolvers = GetPolicyResolvers();
-            IPolicyFilter policyFilter = PolicyFilter.Default;
-            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel(certPolicyResolvers.TrustResolver, policyFilter) : TrustModel.Default;
+            TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel(certPolicyResolvers.TrustResolver) : TrustModel.Default;
             SMIMECryptographer cryptographer = this.Cryptographer.Create();
 
             IDomainResolver domainResolver = this.CreateResolver();
 
             
-            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers, policyFilter);
+            DirectAgent agent = new DirectAgent(domainResolver, privateCerts, publicCerts, trustAnchors, trustModel, cryptographer, certPolicyResolvers);
             agent.AllowNonWrappedIncoming = m_allowNonWrappedIncoming;
             agent.WrapMessages = m_wrapOutgoing;
             

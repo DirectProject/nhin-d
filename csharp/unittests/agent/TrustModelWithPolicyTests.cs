@@ -45,20 +45,20 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestIsCertPolicyCompiant_NoPolicyExpression_AssertTrue()
         {
-            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object, mockPolicyFilter.Object);
+            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object);
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
             mockPolicyResolver.Setup(resolver => resolver.GetIncomingPolicy(new MailAddress("me@test.com")))
                 .Returns(new List<IPolicyExpression>());
 
-            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object).Should().BeTrue();
+            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object, mockPolicyFilter.Object).Should().BeTrue();
         }
 
 
         [Fact]
         public void TestIsCertPolicyCompiant_PolicyCompliant_AssertTrue()
         {
-            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object, mockPolicyFilter.Object);
+            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object);
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
             mockPolicyFilter.Setup(
@@ -71,7 +71,7 @@ namespace Health.Direct.Agent.Tests
                 resolver => resolver.GetIncomingPolicy(new MailAddress("me@test.com")))
                 .Returns(new List<IPolicyExpression>{mockExpression.Object});
 
-            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object).Should().BeTrue();
+            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object, mockPolicyFilter.Object).Should().BeTrue();
 
             mockPolicyFilter.VerifyAll();
         }
@@ -80,7 +80,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestIsCertPolicyCompiant_PolicyNotCompliant_AssertFalse()
         {
-            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object, mockPolicyFilter.Object);
+            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object);
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
             mockPolicyFilter.Setup(
@@ -93,7 +93,7 @@ namespace Health.Direct.Agent.Tests
                 resolver => resolver.GetIncomingPolicy(new MailAddress("me@test.com")))
                 .Returns(new List<IPolicyExpression> { mockExpression.Object });
 
-            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object).Should().BeFalse();
+            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object, mockPolicyFilter.Object).Should().BeFalse();
 
             mockPolicyFilter.VerifyAll();
         }
@@ -102,7 +102,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestIsCertPolicyCompiant_MissingRequiredField_AssertFalse()
         {
-            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object, mockPolicyFilter.Object);
+            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object);
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
             mockPolicyFilter.Setup(
@@ -115,7 +115,7 @@ namespace Health.Direct.Agent.Tests
                 resolver => resolver.GetIncomingPolicy(new MailAddress("me@test.com")))
                 .Returns(new List<IPolicyExpression> { mockExpression.Object });
 
-            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object).Should().BeFalse();
+            trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object, mockPolicyFilter.Object).Should().BeFalse();
 
             mockPolicyFilter.VerifyAll();
         }
@@ -124,7 +124,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestIsCertPolicyCompiant_PolicyExpressionError_AssertException()
         {
-            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object, mockPolicyFilter.Object);
+            TrustModel trustModel = new TrustModel(mockTrustChainValidator.Object, mockPolicyResolver.Object);
             Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
 
             mockPolicyFilter.Setup(
@@ -137,7 +137,7 @@ namespace Health.Direct.Agent.Tests
                 resolver => resolver.GetIncomingPolicy(new MailAddress("me@test.com")))
                 .Returns(new List<IPolicyExpression> { mockExpression.Object });
 
-            Action action = () => trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object);
+            Action action = () => trustModel.IsCertPolicyCompliant(new MailAddress("me@test.com"), mockCert.Object, mockPolicyFilter.Object);
             action.ShouldThrow<AgentException>().WithInnerException<PolicyProcessException>();
 
 
