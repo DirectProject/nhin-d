@@ -232,7 +232,7 @@ namespace Health.Direct.Agent
 
 
 
-        internal byte[] GetEncryptedBytes(SMIMECryptographer cryptographer)
+        internal byte[] GetEncryptedBytes(ISmimeCryptographer cryptographer)
         {
             if (m_encryptedBytes == null)
             {
