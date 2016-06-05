@@ -47,7 +47,7 @@ namespace Health.Direct.Agent.Tests
         public CryptographerTests()
         {
             m_tester = AgentTester.CreateTest();
-            m_cryptographer = m_tester.AgentA.Cryptographer;
+            m_cryptographer = m_tester.AgentA.Cryptographer as SMIMECryptographer;
             MemoryX509Store certs = AgentTester.LoadPrivateCerts("redmond");
             m_cert = certs.First();
         }
@@ -79,7 +79,7 @@ namespace Health.Direct.Agent.Tests
             m_cryptographer.DigestAlgorithm = algo;
             SignedCms signedData = null;
             
-            Assert.DoesNotThrow(() => signedData = m_cryptographer.CreateSignature(Encoding.ASCII.GetBytes(messageText), m_cert)); 
+            Assert.DoesNotThrow(() => signedData = m_cryptographer.CreateSignature(Encoding.ASCII.GetBytes(messageText), new X509Certificate2Collection(m_cert))); 
             
             Assert.True(signedData.SignerInfos.Count == 1);
             Assert.True(signedData.SignerInfos[0].DigestAlgorithm.Value == SMIMECryptographer.ToDigestAlgorithmOid(algo).Value);

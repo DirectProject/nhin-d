@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
@@ -64,7 +65,7 @@ namespace Health.Direct.Agent
     ///  
     public class DirectAgent
     {
-        SMIMECryptographer m_cryptographer;
+        ISmimeCryptographer m_cryptographer;
         ICertificateResolver m_privateCertResolver;
         ICertificateResolver m_publicCertResolver;
         ITrustAnchorResolver m_trustAnchors;
@@ -190,7 +191,7 @@ namespace Health.Direct.Agent
         /// <param name="cryptographer">
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
-        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
+        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, ISmimeCryptographer cryptographer)
             : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default)
         {
         }
@@ -226,7 +227,7 @@ namespace Health.Direct.Agent
             ICertificateResolver publicCerts, 
             ITrustAnchorResolver anchors, 
             TrustModel trustModel, 
-            SMIMECryptographer cryptographer,
+            ISmimeCryptographer cryptographer,
             ICertPolicyResolvers certPolicyResolvers)
         {
             m_managedDomains = new AgentDomains(domainResolver);
@@ -286,7 +287,7 @@ namespace Health.Direct.Agent
         /// Gets the cryptographic model used by this agent.
         /// </summary>
         /// <value>The cryptographic model used by this agent.</value>
-        public SMIMECryptographer Cryptographer
+        public ISmimeCryptographer Cryptographer
         {
             get
             {
@@ -981,14 +982,15 @@ namespace Health.Direct.Agent
         //
         void SignAndEncryptMessage(OutgoingMessage message)
         {
-            SignedEntity signedEntity = m_cryptographer.Sign(message.Message, message.Sender.Certificates);
+            ISmimeCryptographer cryptographer = ResolveOutgoingCryptographer(message.Sender);
+            SignedEntity signedEntity = cryptographer.Sign(message.Message, message.Sender.Certificates);
 
             if (m_encryptionEnabled)
             {
                 //
                 // Encrypt the outbound message with all known trusted certs
                 //
-                MimeEntity encryptedEntity = m_cryptographer.Encrypt(signedEntity, message.Recipients.GetCertificates());
+                MimeEntity encryptedEntity = cryptographer.Encrypt(signedEntity.ToEntity(), message.Recipients.GetCertificates());
                 //
                 // Alter message content to contain encrypted data
                 //
@@ -998,6 +1000,30 @@ namespace Health.Direct.Agent
             {
                 message.Message.UpdateBody(signedEntity);
             }
+        }
+
+        ISmimeCryptographer ResolveOutgoingCryptographer(DirectAddress address)
+        {
+            if (address.HsmEnabled)
+            {
+                // Using HSM then you must install an HSM enabled Cryptographer
+                return m_cryptographer;
+            }
+
+            // return the encapsulated software based cryptographer
+            return m_cryptographer.DefaultCryptographer;
+        }
+
+        ISmimeCryptographer ResolveIncomingCryptographer(DirectAddressCollection addresses)
+        {
+            if (addresses.Any(a => a.HsmEnabled))
+            {
+                // Using HSM then you must install an HSM enabled Cryptographer
+                return m_cryptographer;
+            }
+
+            // return the encapsulated software based cryptographer
+            return m_cryptographer.DefaultCryptographer;
         }
 
         X509Certificate2Collection ResolvePrivateCerts(MailAddress address, bool required, bool incoming)

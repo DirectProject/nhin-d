@@ -157,7 +157,13 @@ namespace Health.Direct.Agent
             get;
             set;
         }
-        
+
+        /// <summary>
+        /// Special identifier.  When enabled this address is identified as requiring higher security.
+        /// The typical usage would be to route decryption and digital signing through a hardware device.
+        /// </summary>
+        public bool HsmEnabled { get; set; }
+
         /// <summary>
         /// Returns <c>true</c> if the trust status for this address meets minimal trust, <c>false</c> if not.
         /// </summary>

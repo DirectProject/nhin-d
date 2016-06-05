@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -180,6 +181,46 @@ namespace Health.Direct.Common.Cryptography
         public static AlgorithmIdentifier AsAlgorithmIdentifier(this EncryptionAlgorithm algorithm)
         {
             return SMIMECryptographer.ToAlgorithmID(algorithm);
+        }
+
+        /// <summary>
+        /// Used by Cryptographers to fire error events
+        /// </summary>
+        /// <param name="handler">Event handler to fire, if any subscribers</param>
+        /// <param name="cryptographer">cryptographer for which this is an event handler</param>
+        /// <param name="ex">exception to notify</param>
+        public static void NotifyEvent(this Action<ISmimeCryptographer, Exception> handler, ISmimeCryptographer cryptographer, Exception ex)
+        {
+            if (handler != null)
+            {
+                try
+                {
+                    handler(cryptographer, ex);
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used by Cryptographers to fire warning events
+        /// </summary>
+        /// <param name="handler">Event handler to fire, if any subscribers</param>
+        /// <param name="cryptographer">cryptographer for which this is an event handler</param>
+        /// <param name="message">warning message to notify</param>
+        public static void NotifyEvent(this Action<ISmimeCryptographer, string> handler, ISmimeCryptographer cryptographer, string message)
+        {
+            if (handler != null)
+            {
+                try
+                {
+                    handler(cryptographer, message);
+                }
+                catch
+                {
+                }
+            }
         }
     }
 }
