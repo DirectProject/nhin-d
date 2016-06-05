@@ -242,6 +242,24 @@ namespace Health.Direct.Common.Extensions
                 }
             }
         }
+
+        /// <summary>
+        /// Generic XML de-serializer
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xml"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static T FromXml<T>(this string xml) where T : class
+        {
+            if (xml == null)
+                throw new ArgumentNullException(nameof(xml), "xml parameter cannot be null");
+            using (StringReader stringReader = new StringReader(xml))
+            {
+                using (XmlTextReader xmlTextReader = new XmlTextReader((TextReader)stringReader))
+                    return (T)new XmlSerializer(typeof(T)).Deserialize((XmlReader)xmlTextReader);
+            }
+        }
     }
 
     /// <summary>
