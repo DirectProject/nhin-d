@@ -157,6 +157,7 @@
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\config\store\Schema.sql" -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />		
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="IIS APPPOOL\ASP.NET v4.0"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
+		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="NT AUTHORITY\NETWORK SERVICE"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />		
 	</Target>
 	
 	<Target Name="create-testData">

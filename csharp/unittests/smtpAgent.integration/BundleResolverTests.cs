@@ -159,7 +159,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         public const string BundleGoodSubject = "direct.example.org";
         public const string BundleBadSubject = "direct.example-bogus.org";
 
-        public const string BundleGoodUrl = "https://secure.bluebuttontrust.org/p7b.ashx?id=4d9daaf9-384a-e211-8bc3-78e3b5114607";
+        public const string BundleGoodUrl = "https://bundles.nate-trust.org/NateService/admin/download?type=.p7b&bundleName=NATE%20Blue%20Button%20For%20Consumers%20(NBB4C)";
         public const string BundleBadUrl = "https://secure.bluebuttontrust-bogus.org/banana";
 
         public static Bundle GoodBundleIncoming = new Bundle(BundleGoodSubject, BundleGoodUrl, true, false);
