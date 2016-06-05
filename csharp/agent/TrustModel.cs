@@ -22,6 +22,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Policies;
+using Health.Direct.Policy;
 
 namespace Health.Direct.Agent
 {
@@ -55,11 +56,8 @@ namespace Health.Direct.Agent
         public static readonly TrustModel Default = new TrustModel();
 
         TrustChainValidator m_certChainValidator;
-
         IPolicyResolver m_trustPolicyResolver;
-
-        IPolicyFilter m_policyFilter;
-
+        
         /// <summary>
         /// Constructs an instance with a default chain validator.
         /// </summary>
@@ -72,7 +70,7 @@ namespace Health.Direct.Agent
         /// Constructs an instance specifying a certificate chain validator.
         /// </summary>
         /// <param name="validator">The <see cref="TrustChainValidator"/> to use in validating certificate chains</param>
-        public TrustModel(TrustChainValidator validator):this(validator, null, null)
+        public TrustModel(TrustChainValidator validator):this(validator, null)
         {
         }
 
@@ -81,8 +79,7 @@ namespace Health.Direct.Agent
         /// </summary>
         /// <param name="validator">The <see cref="TrustChainValidator"/> to use in validating certificate chains</param>
         /// <param name="policyResolver">The <see cref="IPolicyResolver"/> to use in resolving policies.</param>
-        /// <param name="policyFilter">The <see cref="IPolicyFilter"/> to use in validating certificate against policies</param>
-        public TrustModel(TrustChainValidator validator, IPolicyResolver policyResolver, IPolicyFilter policyFilter)
+        public TrustModel(TrustChainValidator validator, IPolicyResolver policyResolver)
         {
             if (validator == null)
             {
@@ -93,7 +90,6 @@ namespace Health.Direct.Agent
 
             
             m_trustPolicyResolver = policyResolver;
-            m_policyFilter = policyFilter;
         }
 
 
@@ -237,7 +233,7 @@ namespace Health.Direct.Agent
                      signature.CheckSignature());
                 if (certTrustedAndInPolicy && recipient != null)
                 {
-                    certTrustedAndInPolicy = IsCertPolicyCompliant(recipient, signature.Certificate);
+                    certTrustedAndInPolicy = IsCertPolicyCompliant(recipient, signature.Certificate, PolicyFilter.Default);
                 }
 
                 if (certTrustedAndInPolicy)
@@ -271,11 +267,12 @@ namespace Health.Direct.Agent
         /// </summary>
         /// <param name="recipient">Incoming messages are sent to the recipent</param>
         /// <param name="cert">Signing cert</param>
-        public bool IsCertPolicyCompliant(MailAddress recipient, X509Certificate2 cert)
+        /// <param name="policyFilter">The <see cref="IPolicyFilter"/> to use in validating certificate against policies</param>
+        public bool IsCertPolicyCompliant(MailAddress recipient, X509Certificate2 cert, IPolicyFilter policyFilter = null)
         {
             bool isCompliant = true;
             // apply the policy if it exists
-            if (m_trustPolicyResolver != null && m_policyFilter != null)
+            if (m_trustPolicyResolver != null)
             {
                 IList<IPolicyExpression> expressions = m_trustPolicyResolver.GetIncomingPolicy(recipient);
 
@@ -284,7 +281,7 @@ namespace Health.Direct.Agent
                     try
                     {
                         // check for compliance
-                        if (m_policyFilter.IsCompliant(cert, expression)) continue;
+                        if (policyFilter.IsCompliant(cert, expression)) continue;
                         isCompliant = false;
                         break;
                     }

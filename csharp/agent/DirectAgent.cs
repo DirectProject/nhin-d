@@ -24,6 +24,7 @@ using Health.Direct.Common.Domains;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 using Health.Direct.Common.Policies;
+using Health.Direct.Policy;
 
 namespace Health.Direct.Agent
 {
@@ -72,7 +73,6 @@ namespace Health.Direct.Agent
         AgentDomains m_managedDomains;
         IPolicyResolver m_privatePolicyResolver;
         IPolicyResolver m_publicPolicyResolver;
-        IPolicyFilter m_policyFilter;
 
         //
         // Options
@@ -159,10 +159,9 @@ namespace Health.Direct.Agent
         /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
-        /// <param name="polciyFilter"></param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors
-            , ICertPolicyResolvers certPolicyResolvers, IPolicyFilter polciyFilter)
-            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers, polciyFilter)
+            , ICertPolicyResolvers certPolicyResolvers)
+            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers)
         {
         }
         
@@ -192,7 +191,7 @@ namespace Health.Direct.Agent
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
         public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer)
-            : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default, null)
+            : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default)
         {
         }
 
@@ -222,10 +221,13 @@ namespace Health.Direct.Agent
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
         /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
-        /// <param name="policyFilter"><see cref="IPolicyFilter"/></param>
-        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts
-            , ITrustAnchorResolver anchors, TrustModel trustModel, SMIMECryptographer cryptographer,
-            ICertPolicyResolvers certPolicyResolvers, IPolicyFilter policyFilter)
+        public DirectAgent(IDomainResolver domainResolver, 
+            ICertificateResolver privateCerts, 
+            ICertificateResolver publicCerts, 
+            ITrustAnchorResolver anchors, 
+            TrustModel trustModel, 
+            SMIMECryptographer cryptographer,
+            ICertPolicyResolvers certPolicyResolvers)
         {
             m_managedDomains = new AgentDomains(domainResolver);
 
@@ -264,7 +266,6 @@ namespace Health.Direct.Agent
             
             m_privatePolicyResolver = certPolicyResolvers.PrivateResolver;
             m_publicPolicyResolver = certPolicyResolvers.PublicResolver;
-            m_policyFilter = policyFilter;
         }
         
 
@@ -1051,7 +1052,7 @@ namespace Health.Direct.Agent
 
         bool FilterCertificateByPolicy(MailAddress address, X509Certificate2 cert, IPolicyResolver resolver, bool incoming)
         {
-            if (cert == null || resolver == null || m_policyFilter == null)
+            if (cert == null || resolver == null)
             {
                 return true;
             }
@@ -1062,9 +1063,11 @@ namespace Health.Direct.Agent
 
             try
             {
+                var policyFilter = PolicyFilter.Default;
+
                 foreach (var expression in exressions)
                 {
-                    if (! m_policyFilter.IsCompliant(cert, expression)) 
+                    if (! policyFilter.IsCompliant(cert, expression)) 
                     {
                         return false;
                     }
