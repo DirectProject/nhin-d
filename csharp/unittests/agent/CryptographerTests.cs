@@ -48,8 +48,12 @@ namespace Health.Direct.Agent.Tests
         {
             m_tester = AgentTester.CreateTest();
             m_cryptographer = m_tester.AgentA.Cryptographer as SMIMECryptographer;
+
             MemoryX509Store certs = AgentTester.LoadPrivateCerts("redmond");
-            m_cert = certs.First();
+
+            m_cert = certs
+                .ToList()
+                .First(c => c.HasPrivateKey);
         }
 
         public static IEnumerable<object[]> DigestAlgorithms

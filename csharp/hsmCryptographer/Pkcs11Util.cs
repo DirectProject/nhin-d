@@ -44,7 +44,7 @@ namespace Health.Direct.Hsm
             var slots = pkcs11.GetSlotList(true);
 
             // No criteria, not go.
-            if (settings.TokenSerial == null || settings.TokenLabel == null)
+            if (settings.TokenLabel == null)
                 return null;
 
             foreach (var slot in slots)
@@ -65,15 +65,8 @@ namespace Health.Direct.Hsm
                 if (tokenInfo == null)
                     continue;
 
-                if (!String.IsNullOrEmpty(settings.TokenSerial)) {
-                    if (0 != String.Compare(
-                        settings.TokenSerial,
-                        tokenInfo.SerialNumber,
-                        StringComparison.Ordinal))
-                        continue;
-                }
-
-                if (!String.IsNullOrEmpty(settings.TokenLabel)) {
+                if (!String.IsNullOrEmpty(settings.TokenLabel))
+                {
                     if (0 != String.Compare(
                         settings.TokenLabel,
                         tokenInfo.Label,
@@ -84,7 +77,7 @@ namespace Health.Direct.Hsm
                 return slot;
             }
 
-             return null;
+            return null;
         }
 
         public static byte[] Decrypt(Session session, KeyTransRecipientInfo keyTransRecipientInfo, X509Certificate2 cert)
@@ -99,7 +92,7 @@ namespace Health.Direct.Hsm
                 throw new NotSupportedException("Unsupported keys.  Currently supporting RSA keys only.");
 
             var rsaPubKeyParams = (RsaKeyParameters)pubKeyParams;
-            
+
             //Correlate with HSM
             var privKeySearchTemplate = new List<ObjectAttribute>
             {

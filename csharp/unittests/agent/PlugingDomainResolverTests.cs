@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Text;
 using System.Xml.Serialization;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Container;
@@ -35,6 +34,11 @@ namespace Health.Direct.Agent.Tests
         public bool IsManaged(string domain)
         {
             return m_innerResolver.IsManaged(domain);
+        }
+
+        public bool HsmEnabled(string address)
+        {
+            return false;
         }
 
         public bool Validate(string[] domains)
@@ -120,6 +124,11 @@ namespace Health.Direct.Agent.Tests
             }
 
             return m_domains.ContainsKey(domain);
+        }
+
+        public bool HsmEnabled(string address)
+        {
+            return false;
         }
 
         public bool Validate(string[] domains)

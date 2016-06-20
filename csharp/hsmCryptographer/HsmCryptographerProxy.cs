@@ -132,7 +132,7 @@ namespace Health.Direct.Hsm
         {
             try
             {
-                PropertyManagerClient client = resolverSettings.ClientSettings.CreatePropertyManagerClient();
+                IPropertyManager client = resolverSettings.ClientSettings.CreatePropertyManagerClient();
                 Property[] properties = client.GetProperties(new [] {"TokenSettings"});
                 string tokenSettingsXml = properties.SingleOrDefault().Value;
                 var tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();

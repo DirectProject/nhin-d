@@ -64,10 +64,10 @@
       <HintPath>..\..\build\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core"/>
+    <Reference Include="System.Core" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="xunit, Version=1.6.1.1521, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -145,10 +145,28 @@
     <None Include="Certificates\nhind\OutgoingAnchors\hotmail.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\nhind\OutgoingAnchors\kryptiq.lab.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\nhind\OutgoingAnchors\um-amalga1-vm1.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\nhind\OutgoingAnchors\umamalga1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\fha-crossover.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\fha-crossover.DirectInt.lab_dualUse.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\hsm.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\hsm.DirectInt.lab_dualUse.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\hsm.DirectInt.lab_encipherment.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\nhind\Private\nhind_umamalga1.pfx">
@@ -181,10 +199,16 @@
     <None Include="Certificates\noAnchor\Public\Direct.NoAnchor.Hobo.lab.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\redmond\IncomingAnchors\kryptiq.lab.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\redmond\IncomingAnchors\um-amalga1-vm1.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\IncomingAnchors\umamalga1.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\OutgoingAnchors\kryptiq.lab.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\OutgoingAnchors\um-amalga1-vm1.cer">
@@ -193,7 +217,28 @@
     <None Include="Certificates\redmond\OutgoingAnchors2\umamalga1.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\redmond\Private\fha-crossover.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Private\hsm.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Private\hsm.DirectInt.lab_dualUse.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\redmond\Private\redmond.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\fha-crossover.DirectInt.lab_dualUse.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\fha-crossover.DirectInt.lab_encipherment.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\hsm.DirectInt.lab_dualUse.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\hsm.DirectInt.lab_encipherment.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\Public\nhind_umamalga1.pfx">

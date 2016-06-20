@@ -87,7 +87,7 @@ namespace Health.Direct.Config.Console
 
             if (m_settings.PropertyManager != null)
             {
-                m_propertyClient = m_settings.PropertyManager.CreatePropertyManagerClient();
+                m_propertyClient = m_settings.PropertyManager.CreatePropertyManagerClient() as PropertyManagerClient;
             }
             if (m_settings.BlobManager != null)
             {

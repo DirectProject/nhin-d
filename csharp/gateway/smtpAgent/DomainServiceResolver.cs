@@ -16,9 +16,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Domains;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
@@ -27,7 +30,6 @@ namespace Health.Direct.SmtpAgent
 {
     public class DomainServiceResolver : IDomainResolver
     {
-        Dictionary<string, string> m_managedDomains;
         string m_agentName;
         ClientSettings m_domainClientSettings;
         DomainCache m_domainCache;
@@ -36,12 +38,12 @@ namespace Health.Direct.SmtpAgent
         {
             if (agentName == null)
             {
-                throw new ArgumentNullException("agentName");
+                throw new ArgumentNullException(nameof(agentName));
             }
 
             if (domainClientSettings == null)
             {
-                throw new ArgumentNullException("domainClientSettings");
+                throw new ArgumentNullException(nameof(domainClientSettings));
             }
             m_agentName = agentName;
             m_domainClientSettings = domainClientSettings;
@@ -67,46 +69,42 @@ namespace Health.Direct.SmtpAgent
         {
             get
             {
-                return GetDomains().Values;
+                return GetDomains().Values.Select(d => d.Name);
             }
         }
 
 
-        public Dictionary<string, string> GetDomains()
+        public Dictionary<string, Domain> GetDomains()
         {
-                Dictionary<string, string> managedDomains = null;
+            Dictionary<string, Domain> managedDomains;
 
-                if (m_domainCache != null)
+            if (m_domainCache != null)
+            {
+                managedDomains = m_domainCache.Get(m_agentName);
+                if (managedDomains != null)
                 {
-                    managedDomains = m_domainCache.Get(m_agentName);
-                    if (managedDomains != null)
-                    {
-                        return managedDomains;
-                    }
+                    return managedDomains;
                 }
-                
-                using (DomainManagerClient client = CreateClient())
-                {
-                    Domain[] domains = client.GetAgentDomains(m_agentName, EntityStatus.Enabled);
-                    m_managedDomains = new Dictionary<string, string>(MailStandard.Comparer); // Case-IN-sensitive
-                    for (int i = 0; i < domains.Length; ++i)
-                    {
-                        string domain = domains[i].Name;
-                        m_managedDomains[domain] = domain;
-                    }
-                }
+            }
 
-                if (m_domainCache != null)
+            using (DomainManagerClient client = CreateClient())
+            {
+                Domain[] domains = client.GetAgentDomains(m_agentName, EntityStatus.Enabled);
+                managedDomains = new Dictionary<string, Domain>(MimeStandard.Comparer); // Case-IN-sensitive
+                for (int i = 0; i < domains.Length; ++i)
                 {
-                    m_domainCache.Put(m_agentName, m_managedDomains);
+                    managedDomains[domains[i].Name] = domains[i];
                 }
-                
+            }
 
-                return m_managedDomains;
-            
+            if (m_domainCache != null)
+            {
+                m_domainCache.Put(m_agentName, managedDomains);
+            }
+
+            return managedDomains;
         }
 
-        
 
         public bool IsManaged(string domain)
         {
@@ -117,6 +115,19 @@ namespace Health.Direct.SmtpAgent
 
             return GetDomains().ContainsKey(domain);
         }
+
+        public bool HsmEnabled(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                throw new ArgumentException("value was null or empty", nameof(address));
+            }
+
+            return GetDomains().Any(d =>
+                address.ContainsIgnoreCase(d.Key) &&
+                d.Value.SecurityStandard == SecurityStandard.Fips1402);
+        }
+
 
         public bool Validate(string[] domains)
         {

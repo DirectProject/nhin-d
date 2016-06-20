@@ -22,6 +22,9 @@ using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Domains;
+using Health.Direct.Common.Policies;
 using Xunit;
 using Xunit.Extensions;
 
@@ -202,6 +205,40 @@ namespace Health.Direct.Agent.Tests
             return new DirectAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors);
         }
 
+        public static DirectAgent CreateAgent(
+            IDomainResolver domain,
+            string certsBasePath,
+            ISmimeCryptographer cryptographer,
+            ICertPolicyResolvers certPolicyResolvers)
+        {
+            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath, false);
+            MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
+            TrustAnchorResolver anchors = new TrustAnchorResolver(
+                (IX509CertificateStore)LoadOutgoingAnchors(certsBasePath),
+                (IX509CertificateStore)LoadIncomingAnchors(certsBasePath));
+
+            return new DirectAgent(
+                domain,
+                privateCerts.CreateResolver(),
+                publicCerts.CreateResolver(),
+                anchors,
+                TrustModel.Default,
+                cryptographer ?? SMIMECryptographer.Default,
+                certPolicyResolvers
+                );
+        }
+
+        public static DirectAgent CreateAgent(string domain, string certsBasePath, ISmimeCryptographer cryptographer)
+        {
+            MemoryX509Store privateCerts = LoadPrivateCerts(certsBasePath, false);
+            MemoryX509Store publicCerts = LoadPublicCerts(certsBasePath);
+            TrustAnchorResolver anchors = new TrustAnchorResolver(
+                (IX509CertificateStore)LoadIncomingAnchors(certsBasePath),
+                (IX509CertificateStore)LoadOutgoingAnchors(certsBasePath));
+
+            return new DirectAgent(domain, privateCerts.CreateResolver(), publicCerts.CreateResolver(), anchors, cryptographer);
+        }
+
         public static string MakeCertificatesPath(string basePath, string agentFolder)
         {
             return Path.Combine(basePath, Path.Combine("Certificates", agentFolder));
@@ -269,9 +306,16 @@ namespace Health.Direct.Agent.Tests
                     default:
                         certStore.ImportKeyFile(file, flags);
                         break;
-                    
+
                     case ".pfx":
-                        certStore.ImportKeyFile(file, "passw0rd!", flags);
+                        try
+                        {
+                            certStore.ImportKeyFile(file, "passw0rd!", flags);
+                        }
+                        catch
+                        {
+                            certStore.ImportKeyFile(file, "Passw0rd!", flags);
+                        }
                         break;
                 }
             } 
@@ -290,7 +334,7 @@ namespace Health.Direct.Agent.Tests
             string basePath = Directory.GetCurrentDirectory();
             string redmondCertsPath = MakeCertificatesPath(basePath, "redmond");
             string nhindCertsPath = MakeCertificatesPath(basePath, "nhind");
-            
+
             X509Store privateStore = CryptoUtility.OpenStoreReadWrite(SystemX509Store.PrivateCertsStoreName, StoreLocation.LocalMachine);
             if (!DoPrivateKeysExist(privateStore, redmondCertsPath))
             {
@@ -316,6 +360,7 @@ namespace Health.Direct.Agent.Tests
 
                 InstallCerts(store, LoadIncomingAnchors(nhindCertsPath));
                 InstallCerts(store, LoadOutgoingAnchors(nhindCertsPath));
+                
             }
         }
 

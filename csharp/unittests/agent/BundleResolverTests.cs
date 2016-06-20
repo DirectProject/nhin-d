@@ -64,7 +64,7 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestSigned()
         {
-            X509Certificate2 signingCert = AgentTester.LoadPrivateCerts("redmond").First();
+            X509Certificate2 signingCert = AgentTester.LoadPrivateCerts("redmond").First(c => c.HasPrivateKey);
             X509Certificate2Collection certs = AgentTester.LoadPrivateCerts("nhind").GetAllCertificates();
                         
             byte[] p7sData = null;

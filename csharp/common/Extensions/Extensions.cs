@@ -50,6 +50,31 @@ namespace Health.Direct.Common.Extensions
         {
             return Guid.NewGuid().ToString("D");
         }
+
+        public static bool ContainsIgnoreCase(this string source, string @value)
+        {
+            if (source.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            if (value.IsNullOrWhiteSpace())
+            {
+                return true;
+            }
+
+            return source.IndexOfIgnoreCase(value) >= 0;
+        }
+
+        public static int IndexOfIgnoreCase(this string item, string search)
+        {
+            return item.IndexOf(search, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsNullOrWhiteSpace(this string item)
+        {
+            return string.IsNullOrWhiteSpace(item);
+        }
     }
 
     /// <summary>

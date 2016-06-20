@@ -111,6 +111,7 @@
     <Compile Include="Diagnostics\IBuildAuditLogMessage.cs" />
     <Compile Include="Diagnostics\SimpleAuditLogBuilder.cs" />
     <Compile Include="Diagnostics\SmtpAgentEventLogAuditor.cs" />
+    <Compile Include="DomainCache.cs" />
     <Compile Include="DomainServiceResolver.cs" />
     <Compile Include="FolderRoute.cs" />
     <Compile Include="INotificationProducer.cs" />

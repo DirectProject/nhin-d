@@ -1,0 +1,70 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 40 (0x28)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=kryptiq.lab
+        Validity
+            Not Before: May 16 18:21:04 2016 GMT
+            Not After : May 14 18:21:04 2026 GMT
+        Subject: C=US, O=Surescripts, OU=DirectInt.Lab, CN=hsm.DirectInt.lab
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:cb:d3:1e:90:ae:5b:7b:50:68:39:ca:0f:f8:77:
+                    f7:d0:d1:fa:b7:ba:64:4c:e8:dd:0d:3d:bc:53:32:
+                    9d:f1:37:1a:35:23:2a:ea:b4:73:2f:85:6e:64:72:
+                    6b:ab:a8:b4:55:b9:74:40:30:d1:4d:88:ef:e9:dd:
+                    1b:19:89:e4:e4:71:1a:6f:28:0b:68:ce:fc:89:19:
+                    dd:a0:91:e5:8f:44:95:20:f0:36:84:2f:17:90:d1:
+                    8d:6d:fe:fb:b8:67:11:71:1d:d6:48:8c:e4:57:30:
+                    4d:51:a5:70:7f:06:02:01:cc:31:4c:70:77:dc:5a:
+                    3b:33:58:4c:dc:ed:d6:0b:49:99:e0:26:0d:fa:cd:
+                    4a:4b:ef:7e:66:dc:c7:b1:6e:97:c8:c4:87:d2:7d:
+                    59:ee:43:8d:06:f0:36:09:51:a1:4b:73:1c:7a:4b:
+                    44:b5:3e:a5:57:52:7d:6c:47:aa:d7:a9:d6:3c:02:
+                    a0:00:b7:dc:63:b4:1a:c9:14:d4:1e:f4:20:e6:7a:
+                    36:b5:68:a9:95:b0:06:3a:0a:03:95:48:32:97:b4:
+                    53:07:97:94:5b:55:b3:be:30:55:7d:a0:35:c5:ba:
+                    87:08:d4:e7:6a:3a:ae:83:02:fd:91:b4:9c:6e:c5:
+                    33:b2:76:2a:77:7a:79:59:82:84:7e:da:13:28:7f:
+                    43:a5
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Extended Key Usage: 
+                E-mail Protection
+            X509v3 Authority Key Identifier: 
+                0.
+            X509v3 Key Usage: critical
+                Digital Signature
+            X509v3 Subject Alternative Name: 
+                DNS:hsm.DirectInt.lab
+    Signature Algorithm: sha256WithRSAEncryption
+         9c:b9:3c:f3:75:75:e4:3c:e5:24:4d:34:15:f2:47:8a:74:e6:
+         ea:7f:18:9b:bd:0e:70:63:ae:b1:a5:2f:56:16:75:ec:e8:b1:
+         23:69:13:9e:b9:5d:03:bf:a9:0b:4e:8b:40:8f:46:14:d0:65:
+         d8:ec:50:23:d7:31:41:c0:5c:b0:12:ec:ae:3c:1b:98:9a:bb:
+         07:84:b2:75:89:38:f2:ff:91:1b:a5:d7:9e:e5:6b:fc:2b:06:
+         f1:96:67:c7:7a:53:88:de:49:42:b6:5c:e0:10:0e:fa:ec:d5:
+         4e:9a:33:1f:ee:0f:fc:d8:68:ab:09:45:07:32:07:17:09:35:
+         eb:1c
+-----BEGIN CERTIFICATE-----
+MIICxTCCAi6gAwIBAgIBKDANBgkqhkiG9w0BAQsFADAWMRQwEgYDVQQDEwtrcnlw
+dGlxLmxhYjAeFw0xNjA1MTYxODIxMDRaFw0yNjA1MTQxODIxMDRaMFcxCzAJBgNV
+BAYTAlVTMRQwEgYDVQQKDAtTdXJlc2NyaXB0czEWMBQGA1UECwwNRGlyZWN0SW50
+LkxhYjEaMBgGA1UEAwwRaHNtLkRpcmVjdEludC5sYWIwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDL0x6Qrlt7UGg5yg/4d/fQ0fq3umRM6N0NPbxTMp3x
+Nxo1IyrqtHMvhW5kcmurqLRVuXRAMNFNiO/p3RsZieTkcRpvKAtozvyJGd2gkeWP
+RJUg8DaELxeQ0Y1t/vu4ZxFxHdZIjORXME1RpXB/BgIBzDFMcHfcWjszWEzc7dYL
+SZngJg36zUpL735m3MexbpfIxIfSfVnuQ40G8DYJUaFLcxx6S0S1PqVXUn1sR6rX
+qdY8AqAAt9xjtBrJFNQe9CDmeja1aKmVsAY6CgOVSDKXtFMHl5RbVbO+MFV9oDXF
+uocI1OdqOq6DAv2RtJxuxTOydip3enlZgoR+2hMof0OlAgMBAAGjXjBcMAwGA1Ud
+EwEB/wQCMAAwEwYDVR0lBAwwCgYIKwYBBQUHAwQwCQYDVR0jBAIwADAOBgNVHQ8B
+Af8EBAMCB4AwHAYDVR0RBBUwE4IRaHNtLkRpcmVjdEludC5sYWIwDQYJKoZIhvcN
+AQELBQADgYEAnLk883V15DzlJE00FfJHinTm6n8Ym70OcGOusaUvVhZ17OixI2kT
+nrldA7+pC06LQI9GFNBl2OxQI9cxQcBcsBLsrjwbmJq7B4SydYk48v+RG6XXnuVr
+/CsG8ZZnx3pTiN5JQrZc4BAO+uzVTpozH+4P/NhoqwlFBzIHFwk16xw=
+-----END CERTIFICATE-----

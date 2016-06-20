@@ -50,6 +50,10 @@ namespace Health.Direct.Config.Store
             set;
         }
 
+        [Column(Name = "SecurityStandard", DbType = "tinyint", CanBeNull = true, UpdateCheck = UpdateCheck.Never)]
+        [DataMember(IsRequired = false)]
+        public SecurityStandard SecurityStandard { get; set; }
+
         [Column(Name = "DomainName", DbType = "varchar(255)", CanBeNull = false, IsPrimaryKey = true, UpdateCheck = UpdateCheck.Never)]
         [DataMember(IsRequired = true)]
         public string Name

@@ -88,6 +88,12 @@ namespace Health.Direct.Common.Domains
             return m_managedDomains.ContainsKey(domain);
         }
 
+        /// <inheritdoc />
+        public bool HsmEnabled(string address)
+        {
+            return false;
+        }
+
         /// <summary>
         /// 
         /// </summary>
