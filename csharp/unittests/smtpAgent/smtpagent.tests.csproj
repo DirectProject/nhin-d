@@ -126,6 +126,9 @@
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigWithCertPolicy.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigServiceProd.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
