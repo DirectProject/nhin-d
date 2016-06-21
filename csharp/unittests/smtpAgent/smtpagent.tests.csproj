@@ -109,9 +109,13 @@
     <Compile Include="TestSmtpAgent.cs" />
     <Compile Include="TestSmtpAgentCertPolicies.cs" />
     <Compile Include="TestSmtpAgentDSNs.cs" />
+    <Compile Include="TestSmtpAgentFailures.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SmtpAgentTestFiles\SmtpAgentConfig.xml" />
+    <Content Include="SmtpAgentTestFiles\SmtpAgentConfigBadlyformed.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SmtpAgentTestFiles\TestDomainTenancyConfig.xml">
       <SubType>Form</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  Copyright (c) 2016, Direct Project
  All rights reserved.
 
@@ -15,47 +15,60 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using Org.BouncyCastle.Crypto.Parameters;
+using Health.Direct.Common.Diagnostics;
+using Health.Direct.SmtpAgent.Config;
 
-namespace Health.Direct.Config.Console
+namespace Health.Direct.SmtpAgent
 {
-    /// <summary>
-    /// Pkcs#11 public key and certificate container
-    /// </summary>
-    public class Pkcs11PublicKey
+    public static class SettingsInitializer
     {
-        public string Id { get; }
+        private static bool m_initialized;
+        public const string BadmailFolder = @"C:\inetpub\mailroot\Gateway\badMail";
+        public const string LogPath = @"C:\inetpub\logs";
 
-        public string Label { get; }
-
-        public byte[] Data { get; }
-
-        public RsaKeyParameters PublicKey { get; }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id">Value of CKA_ID attribute</param>
-        /// <param name="label">Value of CKA_LABEL attribute.</param>
-        /// <param name="publicKey"><see cref="RsaKeyParameters"/> of public Modulus and public Exponent represent the Public part of the key or null</param>
-        internal Pkcs11PublicKey(string id, string label, RsaKeyParameters publicKey)
+        public static SmtpAgentSettings Init(string configFilePath)
         {
-            Id = id;
-            Label = label;
-            PublicKey = publicKey;
+            SmtpAgentSettings settings;
+
+            try
+            {
+                settings = SmtpAgentSettings.LoadSettings(configFilePath);
+            }
+            catch (Exception ex)
+            {
+                settings = LoadFailedInit();
+            }
+
+            return settings;
         }
 
-
-        internal Pkcs11PublicKey(string id, string label, byte[] data)
+        public static SmtpAgentSettings LoadFailedInit()
         {
-            if (data == null)
-                throw new ArgumentNullException(nameof(data));
-            
-            Id = id;
-            Label = label;
-            Data = data;
-            
+
+            var badMessage = new ProcessBadMessageSettings
+            {
+                CopyFolder = BadmailFolder
+            };
+
+            badMessage.EnsureFolders();
+
+            var logSettings = new LogFileSettings();
+            logSettings.DirectoryPath = LogPath;
+            logSettings.NamePrefix = "gateway";
+
+            return new SmtpAgentSettings
+            {
+                FailedInit = true,
+                BadMessage = badMessage,
+                LogSettings = logSettings
+            };
+        }
+
+        public static SmtpAgent DisabledAgent()
+        {
+            var smtpAgent = new SmtpAgent(LoadFailedInit());
+
+            return smtpAgent;
         }
     }
 }
