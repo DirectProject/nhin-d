@@ -177,8 +177,6 @@ namespace Health.Direct.SmtpAgent.Tests
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
-            CleanMonitor();
-
             SetPolicyTestSettings(settings);
 
             //
@@ -189,7 +187,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
             MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
-            
+
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
 
             mockPublicPolicyResolver.Setup(r => r.GetOutgoingPolicy(It.IsAny<MailAddress>()))
@@ -197,11 +195,12 @@ namespace Health.Direct.SmtpAgent.Tests
 
             mockPrivatePolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
                 .Returns(new List<IPolicyExpression>() { policyExpression.Object });
+
             mockPolicyFilter.Setup(r => r.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()))
                 .Returns(true);
 
             SmtpAgent smtpAgent = SmtpAgentFactory.Create(settings);
-            
+
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -236,16 +235,16 @@ namespace Health.Direct.SmtpAgent.Tests
             mockPrivatePolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
                 , Times.Exactly(1));
 
-           mockPrivatePolicyResolver.Verify(r => r.GetOutgoingPolicy(new MailAddress("toby@redmond.hsgincubator.com"))
+            mockPrivatePolicyResolver.Verify(r => r.GetOutgoingPolicy(new MailAddress("toby@redmond.hsgincubator.com"))
+                , Times.Exactly(1));
+
+            mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("biff@nhind.hsgincubator.com"))
                , Times.Exactly(1));
 
-           mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("biff@nhind.hsgincubator.com"))
-              , Times.Exactly(1));
+            mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
+                , Times.Exactly(1));
 
-           mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
-               , Times.Exactly(1));
-
-            mockPolicyFilter.Verify(p => p.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()), Times.Exactly(8));
+            mockPolicyFilter.Verify(p => p.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()), Times.Exactly(6));
             //
             // These two are never called.  These code paths do not exist.
             //
@@ -639,7 +638,7 @@ namespace Health.Direct.SmtpAgent.Tests
         protected static void MockPolicyResolvers(SmtpAgentSettings settings, out Mock<PrivatePolicyResolver> mockPrivatePolicyResolver,
             out Mock<PublicPolicyResolver> mockPublicPolicyResolver, out Mock<TrustPolicyResolver> mockTrustPolicyResolver, out Mock<IPolicyFilter> mockPolicyFilter)
         {
-            
+
             PolicyResolverSettings privatePolicySettings =
                 settings.CertPolicies.Resolvers.First(r => r.Name == CertPolicyResolvers.PrivatePolicyName);
             Assert.NotNull(privatePolicySettings);

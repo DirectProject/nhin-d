@@ -37,25 +37,12 @@ namespace Health.Direct.Policy.Tests
                 Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
                 mockEngine.Setup(e => e.Evaluate(It.IsAny<IList<IOpCode>>())).Returns(true);
 
-                PolicyFilter filter = new PolicyFilter(mockCompiler.Object, mockEngine.Object, new XMLLexiconPolicyParser());
+                PolicyFilter filter = new PolicyFilter(mockCompiler.Object, new XMLLexiconPolicyParser());
                 filter.IsCompliant(mockCert.Object, stream);
 
             }
 	    }
-
-        [Fact]
-        public void testIsCompliant_engineReturnsCompliant_assertTrue() 
-        {
-            Mock<ICompiler> mockCompiler = new Mock<ICompiler>();
-            Mock<IExecutionEngine> mockEngine = new Mock<IExecutionEngine>();
-            Mock<IPolicyExpression> mockExpression = new Mock<IPolicyExpression>();
-            Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
-
-            mockEngine.Setup(e => e.Evaluate(It.IsAny<IList<IOpCode>>())).Returns(true);
-            PolicyFilter filter = new PolicyFilter(mockCompiler.Object, mockEngine.Object);
-            filter.IsCompliant(mockCert.Object, mockExpression.Object);
-        }
-
+        
         [Fact]
         public void testIsCompliant_missingComplier_assertException()
         {
@@ -67,18 +54,5 @@ namespace Health.Direct.Policy.Tests
             action.ShouldThrow<InvalidOperationException>().WithMessage("Compiler cannot be null");
 
         }
-
-        [Fact]
-        public void testIsCompliant_missingEngine_assertException()
-        {
-            Mock<ICompiler> mockCompiler = new Mock<ICompiler>();
-            Mock<IPolicyExpression> mockExpression = new Mock<IPolicyExpression>();
-            Mock<X509Certificate2> mockCert = new Mock<X509Certificate2>();
-
-            PolicyFilter filter = new PolicyFilter(mockCompiler.Object, null);
-            Action action = () => filter.IsCompliant(mockCert.Object, mockExpression.Object);
-            action.ShouldThrow<InvalidOperationException>().WithMessage("Execution engine cannot be null");
-        }
-
     }
 }
