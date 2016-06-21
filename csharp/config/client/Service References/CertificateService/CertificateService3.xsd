@@ -36,6 +36,20 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ConfigStoreFault" nillable="true" type="tns:ConfigStoreFault" />
+  <xs:element name="AddPkcs11Certificate">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="certificate" nillable="true" type="tns:Certificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AddPkcs11CertificateResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="AddPkcs11CertificateResult" nillable="true" type="tns:Certificate" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="AddCertificates">
     <xs:complexType>
       <xs:sequence>

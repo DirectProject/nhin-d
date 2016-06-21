@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.IO;
 
 namespace Health.Direct.Config.Tools.Command
 {
@@ -29,7 +30,12 @@ namespace Health.Direct.Config.Tools.Command
         public static string GetInput()
         {
             Console.Write('>');
-            return Console.ReadLine();            
+
+            byte[] inputBuffer = new byte[1024];
+            Stream inputStream = Console.OpenStandardInput(inputBuffer.Length);
+            Console.SetIn(new StreamReader(inputStream, Console.InputEncoding, false, inputBuffer.Length));
+            string strInput = Console.ReadLine();
+            return strInput;
         }
         
         public static void PrintDivider()

@@ -14,7 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Linq;
 using System.ServiceModel;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Client.MonitorService;
@@ -40,19 +42,36 @@ namespace Health.Direct.Config.Console
         private BundleStoreClient m_bundleClient;
         private MdnMonitorClient m_mdnMoniotrClient;
         private CertPolicyStoreClient m_certPolicyClient;
-        
+
         internal ConfigConsole(ConsoleSettings settings)
         {
             m_settings = settings;
 
             this.CreateClients();
 
+            TokenSettings tokenSettings = null;
+
+            try
+            {
+                Property[] properties = m_propertyClient.GetProperties(new[] {"TokenSettings"});
+                string tokenSettingsXml = properties.SingleOrDefault().Value;
+                tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();
+            }
+            catch (Exception)
+            {
+                //Acceptable to not have token settings.
+            }
+            
             m_commands = new Commands("ConfigConsole");
             m_commands.Error += PrintError;
             
             m_commands.Register(new AddressCommands(this, () => m_addressClient));
             m_commands.Register(new AnchorCommands(this, () => m_anchorClient));
             m_commands.Register(new CertificateCommands(this, () => m_certificateClient));
+            if (tokenSettings != null)
+            {
+                m_commands.Register(new Pkcs11Commands(this, () => m_certificateClient, tokenSettings));
+            }
             m_commands.Register(new DomainCommands(this, () => m_domainClient, () => m_addressClient));
             m_commands.Register(new DnsRecordCommands(this, () => m_dnsRecordClient));
             m_commands.Register(new PropertyCommands(this, () => m_propertyClient));

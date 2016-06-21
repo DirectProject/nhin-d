@@ -56,6 +56,14 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\..\build\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Pkcs11Interop, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\build\packages\Pkcs11Interop.3.1.0\lib\net40\Pkcs11Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -79,6 +87,7 @@
     <Compile Include="Command\DnsRecordCommands.cs" />
     <Compile Include="Command\DomainCommands.cs" />
     <Compile Include="Command\MdnMonitorCommands.cs" />
+    <Compile Include="Command\Pkcs11Commands.cs" />
     <Compile Include="Command\PropertyCommands.cs" />
     <Compile Include="Command\SettingsCommands.cs">
       <SubType>Code</SubType>
@@ -86,12 +95,17 @@
     <Compile Include="Command\TestCommands.cs" />
     <Compile Include="ConsoleSettings.cs" />
     <Compile Include="ConfigConsole.cs" />
+    <Compile Include="Pkcs11Explorer.cs" />
+    <Compile Include="Pkcs11PrivateKey.cs" />
+    <Compile Include="Pkcs11PublicKey.cs" />
+    <Compile Include="Pkcs11Util.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ConfigConsoleSettings.xml">
