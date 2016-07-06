@@ -538,24 +538,12 @@ namespace Health.Direct.Hsm
 
         private static byte[] GeneratePkcs1Signature(X509Certificate2 signingCertificate, byte[] pkcs1DigestInfo)
         {
-            var bcSigningCertificate = CertificateUtilities.ToBouncyCastleObject(signingCertificate.RawData);
+            AsymmetricCipherKeyPair key = DotNetUtilities.GetKeyPair(signingCertificate.PrivateKey);
+            ISigner signer = SignerUtilities.GetSigner("RSA");
+            signer.Init(true, key.Private);
+            signer.BlockUpdate(pkcs1DigestInfo, 0, pkcs1DigestInfo.Length);
 
-            var x509Store = X509StoreFactory.Create(
-                "Certificate/Collection",
-                new X509CollectionStoreParameters(new[] { bcSigningCertificate }));
-
-            var signedData = new CmsSignedDataStreamGenerator();
-            var key = DotNetUtilities.GetKeyPair(signingCertificate.PrivateKey);
-            signedData.AddSigner(key.Private, bcSigningCertificate, X509ObjectIdentifiers.IdSha1.Id);
-            signedData.AddCertificates(x509Store);
-
-            using (var memory = new MemoryStream())
-            {
-                using (var stream = signedData.Open(memory, true))
-                    stream.Write(pkcs1DigestInfo, 0, pkcs1DigestInfo.Length);
-
-                return memory.ToArray();
-            }
+            return signer.GenerateSignature();
         }
 
         /// <summary>

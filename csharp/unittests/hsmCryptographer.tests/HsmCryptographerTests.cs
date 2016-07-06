@@ -462,6 +462,10 @@ namespace hsmCryptographer.tests
             Assert.NotNull(allSigners.FindByName("hsm.DirectInt.lab"));
             Assert.NotNull(allSigners.FindByName("fha-crossover.DirectInt.lab"));
 
+            foreach (var signerInfo in allSigners)
+            {
+                signerInfo.CheckSignature(true);
+            }
         }
 
         [Fact]
