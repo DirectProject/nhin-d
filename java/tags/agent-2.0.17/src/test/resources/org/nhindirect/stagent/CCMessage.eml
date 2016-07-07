@@ -1,0 +1,61 @@
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha1; 
+	boundary="----=_Part_28494_555593429.1433169104129"
+
+------=_Part_28494_555593429.1433169104129
+content-type: message/rfc822
+
+Received: from ipnmapp7.northamerica.cerner.net ([10.190.130.144])
+          by ipnmapp7.northamerica.cerner.net.james-agent-in (JAMES SMTP Server 2.3.2) with SMTP ID 133
+          for <agent-in-recipient@virusscanning.sandboxcernerdirect.com>;
+          Mon, 1 Jun 2015 09:31:41 -0500 (CDT)
+Received: from ipnmapp3.northamerica.cerner.net ([10.190.120.178])
+          by ipnmapp7.northamerica.cerner.net.mock-ironport (JAMES SMTP Server 2.3.2) with SMTP ID 622
+          for <agent-in-recipient@virusscanning.sandboxcernerdirect.com>;
+          Mon, 1 Jun 2015 09:31:52 -0500 (CDT)
+Received: from ipnmapp7.northamerica.cerner.net ([10.190.130.144])
+          by ipnmapp7.northamerica.cerner.net.james-agent-out (JAMES SMTP Server 2.3.2) with SMTP ID 965
+          for <kc016731@direct.securehealthemail.com>;
+          Mon, 1 Jun 2015 09:31:41 -0500 (CDT)
+Date: Mon, 1 Jun 2015 09:31:52 -0500 (CDT)
+From: Kristie Canas <cernerdirect4.trust@kristietestdomain.com>
+To: kc016731@direct.securehealthemail.com
+Message-ID: <1201266845.2146.1433169112114.JavaMail.default@messaging.cerner.com>
+Subject: Tesst3
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-CHE-RECIPIENT_ATTRIBUTE_0: EntityType=ENTITY|
+Disposition-Notification-To: cernerdirect4.trust+readreceipt@kristietestdomain.com
+Content-Disposition: inline
+X-PRIORITY: 3
+
+ 
+
+------=_Part_28494_555593429.1433169104129
+Content-Type: application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIAwggKUMIIB
+/aADAgECAggkRaEmYhs78jANBgkqhkiG9w0BAQUFADAgMR4wHAYDVQQDDBVLcmlzdGllJ3MgVGVz
+dCBBbmNob3IwHhcNMTUwMTI4MTQzOTQ5WhcNMjUwMTI1MTQzOTQ5WjBGMSQwIgYJKoZIhvcNAQkB
+FhVrcmlzdGlldGVzdGRvbWFpbi5jb20xHjAcBgNVBAMMFWtyaXN0aWV0ZXN0ZG9tYWluLmNvbTCB
+nzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAgZnX19de0Ul9xvhdKNJ0jjn+dPqfgMzXZDYI7Sya
+abLpEXjGBPr79nJXnDWtQlE0FXnpfHzDmvR7cwwCS6fpJA+NsW+m5XbJ16ydGlA5BCGDcC8fEmwQ
+ItXeTR3iRdos86rIAKRfevF4RBwEhHpKLVujGERxuJxidb2l36Fp0J8CAwEAAaOBsDCBrTBPBgNV
+HSMESDBGgBR4Qp6wWHRsUj5SdQe+tdLpcePV7qEkpCIwIDEeMBwGA1UEAwwVS3Jpc3RpZSdzIFRl
+c3QgQW5jaG9ygghzTyoVLsXP6TAdBgNVHQ4EFgQUaFzJubRg13eOUJZ30tJG9SgvaIUwDAYDVR0T
+AQH/BAIwADALBgNVHQ8EBAMCBaAwIAYDVR0RBBkwF4IVa3Jpc3RpZXRlc3Rkb21haW4uY29tMA0G
+CSqGSIb3DQEBBQUAA4GBAIH/mypxRdWmMWN7YhD7hHzJS45tA8WOWhg2QC8eAQALmeB6kPWRWaf6
+3qqXblVboknlN0f/RH6FJwYjg0w62SZ9U1scDTEz8SXT7bJ3zq3jwIxYVNZpAqXDp7/VEoRJHT5N
+bLABJ9X1qAHnD2dKHcbQdAYhyyn/trPD30sFKzTEAAAxggGDMIIBfwIBATAsMCAxHjAcBgNVBAMM
+FUtyaXN0aWUncyBUZXN0IEFuY2hvcgIIJEWhJmIbO/IwCQYFKw4DAhoFAKCBrjAYBgkqhkiG9w0B
+CQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0xNTA2MDExNDMxNDRaMCMGCSqGSIb3DQEJ
+BDEWBBSJn0LDwbMgAjVNYhmbZVGqG+CXCTBPBgkqhkiG9w0BCQ8xQjBAMAoGCCqGSIb3DQMHMA4G
+CCqGSIb3DQMCAgIAgDAHBgUrDgMCBzALBgkqhkiG9w0BBwEwDAYKKoZIhvcNAQkWATANBgkqhkiG
+9w0BAQEFAASBgDNjGoh6Bb/kaL1ezjRUsRHCzszx369xxPEG1F2/3d8Fxg5C1lBEUdScu78oxxXq
+DoFH7L8S7oDtZ8HthW4gExW9L0o3lsdIXSMBAJDvwbIs5Y1Di+EJ5/ze5LiQ9MHmOUgk+IcO1FCO
+VrTDFWAr/oM/rdrCFsqN3PXb4N7Wp5wgAAAAAAAA
+
+------=_Part_28494_555593429.1433169104129--
