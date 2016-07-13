@@ -66,7 +66,7 @@ begin
   VDir.AppFriendlyName := description;
   VDir.Path := path;
   try
-    VDir.AppPoolId := 'ASP.NET v4.0';
+    VDir.AppPoolId := 'DefaultAppPool';
   except
   end;
 
