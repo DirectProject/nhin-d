@@ -1,0 +1,5 @@
+((X509.TBS.EXTENSION.KeyUsage & 32) > 0) || ((X509.TBS.EXTENSION.KeyUsage & 128) > 0) &&
+(X509.TBS.SubjectPublicKeyInfo.Size > 2047) &&
+((X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} ﻿﻿1.3.6.1.4.1.41179.2.1) || (X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} ﻿﻿1.3.6.1.4.1.41179.2.2) || (X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} ﻿﻿1.3.6.1.4.1.41179.2.3) ||
+(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} ﻿﻿1.3.6.1.4.1.41179.2.4))  && 
+(X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} ﻿1.3.6.1.4.1.41179.1)
