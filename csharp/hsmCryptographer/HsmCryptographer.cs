@@ -38,6 +38,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.IO;
 using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 using EncryptionException = Health.Direct.Common.Cryptography.EncryptionException;
 using IssuerAndSerialNumber = Org.BouncyCastle.Asn1.Cms.IssuerAndSerialNumber;
@@ -234,6 +235,11 @@ namespace Health.Direct.Hsm
             }
 
             return null;
+        }
+
+        public SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates)
+        {
+            return Sign(message.ExtractEntityForSignature(IncludeMultipartEpilogueInSignature), signingCertificates);
         }
 
         public CmsReadable GetReadable(

@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Cryptography
@@ -104,6 +105,18 @@ namespace Health.Direct.Common.Cryptography
 
         /// <summary>
         /// Creates a detatched signed entity from a <see cref="MimeEntity"/> and a signing certificate
+        /// </summary>
+        /// <remarks>
+        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
+        /// Some mail readers ignore the epilogue when calculating signatures!
+        /// </remarks>
+        /// <param name="message">The <see cref="Message"/> to sign</param>
+        /// <param name="signingCertificates">The certificates with which to sign.</param>
+        /// <returns>A <see cref="SignedEntity"/> instance holding the signature.</returns>
+        SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates);
+
+        /// <summary>
+        /// Creates a detached signed entity from a <see cref="MimeEntity"/> and a signing certificate
         /// </summary>
         /// <remarks>
         /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
