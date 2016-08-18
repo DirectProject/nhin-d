@@ -42,6 +42,7 @@ import java.util.Map.Entry;
 
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -68,7 +69,9 @@ import org.xbill.DNS.Lookup;
 import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.Resolver;
 import org.xbill.DNS.ResolverConfig;
+import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
 
 import com.google.inject.Inject;
@@ -419,22 +422,28 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 				
 				// search the name servers for the cert
 				lu = new Lookup(new Name(lookupName), Type.CERT);
-				lu.setResolver(createExResolver(remoteServers, 2, 3));
-				lu.setSearchPath((String[])null);
-				
-				// CLEAR THE CACHE!!!  We are seeing instances where an NXRRSET is cached because
-				// a DNS provider is trying to handle a request that it should be delegating
-				// The purpose of bypassing the DNS provider and going directly to the NS server
-				// is to avoid issues like this
-				
-				/*
-				 * Change of heart on clearing the DNS cache.  Covering up the NXRRSET hides potential issues
-				 * with incorrect DNS configuration.  It is important that NXRRSET issues are discovered and corrected
-				 * so all participants in the community participate in a consistent manner.
-				 */
-				//lu.setCache(new Cache(DClass.IN));
-				
-				retRecords = lu.run();
+				ExtendedResolver remoteResolver = createExResolver(remoteServers, 2, 3);
+				if (remoteResolver.getResolvers().length > 0) {
+					lu.setResolver(remoteResolver);
+					lu.setSearchPath((String[])null);
+					
+					// CLEAR THE CACHE!!!  We are seeing instances where an NXRRSET is cached because
+					// a DNS provider is trying to handle a request that it should be delegating
+					// The purpose of bypassing the DNS provider and going directly to the NS server
+					// is to avoid issues like this
+					
+					/*
+					 * Change of heart on clearing the DNS cache.  Covering up the NXRRSET hides potential issues
+					 * with incorrect DNS configuration.  It is important that NXRRSET issues are discovered and corrected
+					 * so all participants in the community participate in a consistent manner.
+					 */
+					//lu.setCache(new Cache(DClass.IN));
+					
+					retRecords = lu.run();
+				} else {
+					// null out NS records
+					retRecords = null;
+				}
 			}
 						
 			if (retRecords != null)
@@ -645,23 +654,44 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 	
 	protected ExtendedResolver createExResolver(String[] servers, int retries, int timeout)
 	{
-		ExtendedResolver retVal = null;
-		
-		// support for IP addresses instead of names
-        for (int i = 0; servers != null && i < servers.length; i++) 
-        {
-            servers[i] = servers[i].replaceFirst("\\.$", "");
-        }
-		
-		try
-		{
-			retVal = new ExtendedResolver(servers);
-			retVal.setRetries(retries);
-			retVal.setTimeout(timeout);
-			retVal.setTCP(useTCP);
+		// create a default ExtendedResolver
+		ExtendedResolver extendedResolver;
+		try {
+			extendedResolver = new ExtendedResolver();
+		} catch (UnknownHostException e) {
+			LOGGER.error("", e);
+			throw new IllegalStateException("unable to create default ExtendedResolver", e);
 		}
-		catch (UnknownHostException e) {/* no-op */}
-		return retVal;
+
+		// remove all resolvers from default ExtendedResolver
+		Resolver[] resolvers = extendedResolver.getResolvers();
+		if (!ArrayUtils.isEmpty(resolvers)) {
+			for (Resolver resolver : resolvers) {
+				extendedResolver.deleteResolver(resolver);
+			}
+		}
+
+		// add the specified servers
+		if (!ArrayUtils.isEmpty(servers)) {
+			for (String server : servers) {
+				// support for IP addresses instead of names
+				server = server.replaceFirst("\\.$", "");
+
+				try {
+					// create and add a SimpleResolver for each server
+					SimpleResolver simpleResolver = new SimpleResolver(server);
+					extendedResolver.addResolver(simpleResolver);
+				} catch (UnknownHostException e) {
+					LOGGER.debug("unable to add resolver for " + server, e);
+					continue;
+				}
+			}
+			extendedResolver.setRetries(retries);
+			extendedResolver.setTimeout(timeout);
+			extendedResolver.setTCP(true);
+		}
+
+		return extendedResolver;
 	}
 	
 	protected Certificate convertPKIXRecordToCert(CERTRecord certRec)
