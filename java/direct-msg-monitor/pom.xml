@@ -45,11 +45,6 @@
        <name>Maven2 Central Repo2</name>
        <url>http://repo2.maven.org/maven2/</url>
     </repository>
-	<repository>
-		<id>Cerner External</id>
-		<name>Cerner External Repository</name>
-		<url>http://repo.release.cerner.corp/external/repo/</url>
-	</repository> 
   </repositories>  
 	<dependencyManagement>
 		<dependencies>
@@ -401,12 +396,6 @@
 			<artifactId>spring-test</artifactId>
 			<version>3.0.4.RELEASE</version>
 			<scope>test</scope>
-		</dependency>	
-		<dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6_g</artifactId>
-			<scope>test</scope>
-			<version>12.1.0.2</version>
 		</dependency>												        	     																																																																																														
   </dependencies>      
   <build>
