@@ -294,6 +294,9 @@ public class ConcurrentJPAAggregationRepository extends ServiceSupport implement
         	throw new RuntimeException("Error recovering exchange from repository with exchangeId " + exchangeId, e);
         }
 		
+		// reset the exception
+		retVal.setException(null);
+		
 		return retVal;
 	}
 

@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{1.1.8}
+
+    Changes included with release 1.1.8
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue where completed aggregations were not clearing out of the database if all attempts were exhausted.
+
 {1.1.7}
 
     Changes included with release 1.1.7
