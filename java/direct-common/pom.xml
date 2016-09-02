@@ -40,13 +40,23 @@
      </license>
   </licenses>   
   <repositories>
+  		<repository>
+			<id>Cerner External</id>
+			<name>Cerner External Repository</name>
+			<url>http://repo.release.cerner.corp/external/repo/</url>
+		</repository>  
     <repository>
        <id>REPO2</id>
        <name>Maven2 Central Repo2</name>
        <url>http://repo2.maven.org/maven2/</url>
-    </repository>
+    </repository>  
   </repositories>     
-  <dependencies>       
+  <dependencies>    
+  		<dependency>
+		    <groupId>com.safenetinc.luna</groupId>
+		    <artifactId>LunaProvider</artifactId>
+		    <version>6.0.0-40</version>    
+		</dependency>     
 		<dependency>
 		    <groupId>bouncycastle</groupId>
 		    <artifactId>bcprov-jdk15</artifactId>
