@@ -43,14 +43,17 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.cxf.common.util.StringUtils;
 import org.nhind.config.rest.CertificateService;
 import org.nhind.config.rest.DNSService;
 import org.nhind.config.rest.SettingService;
+import org.nhindirect.common.crypto.MutableKeyStoreProtectionManager;
+import org.nhindirect.common.crypto.WrappableKeyProtectionManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.config.model.Certificate;
 import org.nhindirect.config.model.DNSRecord;
 import org.nhindirect.config.model.Setting;
+import org.nhindirect.config.model.utils.CertUtils;
 import org.nhindirect.config.service.ConfigurationServiceException;
 import org.nhindirect.config.store.EntityStatus;
 import org.nhindirect.config.store.util.DNSRecordUtils;
@@ -62,7 +65,8 @@ import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
-
+import org.nhindirect.config.ui.util.PrivateKeyType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -101,6 +105,9 @@ public class DNSController
 	private CertificateService certService;
 	private DNSService dnsService;
 	private SettingService settingsService;
+	
+	@Autowired(required=false)
+	private WrappableKeyProtectionManager keyManager;
 	
 	@Inject
 	public void setCertificateService(CertificateService certService)
@@ -179,6 +186,7 @@ public class DNSController
                     .isAjaxRequest(requestedWith));
     
             mav.setViewName("main");
+            mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
             mav.addObject("statusList", EntityStatus.getEntityStatusList());
         }
         else if ("gotosettings".equalsIgnoreCase(actionPath) || "settings".equalsIgnoreCase(actionPath))
@@ -227,7 +235,40 @@ public class DNSController
                 try {
                 	final Collection<Certificate> certs = certService.getAllCertificates();
                 	if (certs != null)
+                	{
+        				if (this.keyManager != null && this.keyManager instanceof MutableKeyStoreProtectionManager)
+        				{
+        					final KeyStore keyStore = ((MutableKeyStoreProtectionManager)keyManager).getKS();
+        					// find the certs that don't have private keys and check them against the 
+        					// the key store manager to see if they have private keys
+        					for (Certificate cert : certs)
+        					{
+        						if (!cert.isPrivateKey())
+        						{
+        							
+        							try
+        							{
+        								final X509Certificate checkCert = CertUtils.toX509Certificate(cert.getData());
+        								final String alias = keyStore.getCertificateAlias(checkCert);
+        								
+        								if (!StringUtils.isEmpty(alias))
+        								{
+        									// check if this entry has a private key associated with
+        									// it
+        									final PrivateKey privKey = (PrivateKey)keyStore.getKey(alias, "".toCharArray());
+        									if (privKey != null)
+        										cert.setPrivateKey(true);
+        								}
+        							}
+        							catch (Exception e)
+        							{
+        								
+        							}
+        						}
+        					}
+        				}                		
                 		results = new ArrayList<Certificate>(certs);
+                	}
                 	else
                 		results = new ArrayList<Certificate>();
                 } catch (ServiceException e) {

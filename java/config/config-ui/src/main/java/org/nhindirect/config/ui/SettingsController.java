@@ -36,6 +36,7 @@ import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
+import org.nhindirect.config.ui.util.PrivateKeyType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -90,6 +91,7 @@ public class SettingsController {
 					.isAjaxRequest(requestedWith));
 
 			mav.setViewName("main");
+			mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 			return mav;
 		}

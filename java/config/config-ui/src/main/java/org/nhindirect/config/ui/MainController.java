@@ -21,8 +21,10 @@ THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 import java.io.IOException;
+import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,12 +41,15 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.cxf.common.util.StringUtils;
 import org.nhind.config.rest.CertPolicyService;
 import org.nhind.config.rest.CertificateService;
 import org.nhind.config.rest.DNSService;
 import org.nhind.config.rest.DomainService;
 import org.nhind.config.rest.SettingService;
 import org.nhind.config.rest.TrustBundleService;
+import org.nhindirect.common.crypto.MutableKeyStoreProtectionManager;
+import org.nhindirect.common.crypto.WrappableKeyProtectionManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.config.model.CertPolicy;
 import org.nhindirect.config.model.Certificate;
@@ -71,6 +76,8 @@ import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.form.SettingsForm;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
+import org.nhindirect.config.ui.util.PrivateKeyType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -108,6 +115,9 @@ public class MainController {
 	private SettingService settingsService;
 	private CertPolicyService policyService;
 	private DomainService domainService;
+	
+	@Autowired(required=false)
+	private WrappableKeyProtectionManager keyManager;
 	
 	@Inject
 	public void setTrustBundleService(TrustBundleService bundleService)
@@ -227,14 +237,17 @@ public class MainController {
                  * 
                  *************************************/                     
 
-                if (log.isDebugEnabled()) {
-                    log.debug("trying to go to the certificates page");
-                }
+                //if (log.isDebugEnabled()) {
+                    log.error("trying to go to the certificates page");
+                //}
                     final String action = "Update";
                     model.addAttribute("action", action);
 
+                    
                     mav.setViewName("certificates");
+                    mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
                     mav.addObject("actionPath", "gotocertificates");
+                    
                     CertificateForm form = (CertificateForm) session.getAttribute("certificateForm");
                     if (form == null) {
                             form = new CertificateForm();
@@ -245,15 +258,48 @@ public class MainController {
                     if (certService != null) {
                             try {
                                     final Collection<Certificate> certs = certService.getAllCertificates();
-                                    if (certs != null) {
-                                    results = new ArrayList<Certificate>(certs);
-                                }
+                                    if (certs != null) 
+                                    {
+                        				if (this.keyManager != null && this.keyManager instanceof MutableKeyStoreProtectionManager)
+                        				{
+                        					final KeyStore keyStore = ((MutableKeyStoreProtectionManager)keyManager).getKS();
+                        					// find the certs that don't have private keys and check them against the 
+                        					// the key store manager to see if they have private keys
+                        					for (Certificate cert : certs)
+                        					{
+                        						if (!cert.isPrivateKey())
+                        						{
+                        							
+                        							try
+                        							{
+                        								final X509Certificate checkCert = CertUtils.toX509Certificate(cert.getData());
+                        								final String alias = keyStore.getCertificateAlias(checkCert);
+                        								
+                        								if (!StringUtils.isEmpty(alias))
+                        								{
+                        									// check if this entry has a private key associated with
+                        									// it
+                        									final PrivateKey privKey = (PrivateKey)keyStore.getKey(alias, "".toCharArray());
+                        									if (privKey != null)
+                        										cert.setPrivateKey(true);
+                        								}
+                        							}
+                        							catch (Exception e)
+                        							{
+                        								
+                        							}
+                        						}
+                        					}
+                        				}                                    
+                                    	results = new ArrayList<Certificate>(certs);
+                                    }
                                     else {
                                     results = new ArrayList<Certificate>();
                                 }
                             } catch (ServiceException e) {
                             }
                     }
+                    
                     model.addAttribute("simpleForm",new SimpleForm());
                     model.addAttribute("certificatesResults", results);
             }
@@ -293,6 +339,7 @@ public class MainController {
 
                     mav.setViewName("domain");
                     mav.addObject("actionPath", "newdomain");
+                    mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
                     mav.addObject("statusList", EntityStatus.getEntityStatusList());
             }		
             else if (actionPath.equalsIgnoreCase("gotodns") || actionPath.equalsIgnoreCase("DNS Entries"))
@@ -587,6 +634,7 @@ public class MainController {
                 }
 
                 mav.setViewName("main");
+                mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
                 mav.addObject("statusList", EntityStatus.getEntityStatusList());
                 mav.addObject("searchResults", results);
             }
@@ -630,6 +678,7 @@ public class MainController {
 		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 
 		mav.setViewName("main"); 
+		mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
                 mav.addObject("searchTerm", "");
                 
@@ -689,6 +738,7 @@ public class MainController {
                 model.addAttribute("searchResults", results);
 
                 mav.setViewName("main");
+                mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
                 mav.addObject("statusList", EntityStatus.getEntityStatusList());
                 mav.addObject("searchResults", results);
 		
@@ -715,6 +765,7 @@ public class MainController {
 		mav.setViewName("domain"); 
 		model.addAttribute(new DomainForm());
 		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		
 		if (log.isDebugEnabled()) log.debug("Exit");

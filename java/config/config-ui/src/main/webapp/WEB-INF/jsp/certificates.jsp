@@ -6,6 +6,50 @@
 <%@ include file="/WEB-INF/jsp/include.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title><fmt:message key="certs.title" /></title>
+
+    <script type="text/javascript">
+     function showHidePassPhrase(elem)
+     {
+    	if (elem.selectedIndex == 0 || elem.selectedIndex == 1 || elem.selectedIndex == 3 || elem.selectedIndex == 5)
+        {
+      	   document.getElementById('passphrase').style.display = 'none';
+        }
+        else
+        {
+      	  document.getElementById('passphrase').style.display = 'table-row';
+        }
+    	
+    	if (elem.selectedIndex == 0 || elem.selectedIndex == 1 || elem.selectedIndex == 2)
+        {
+      	   document.getElementById('privKeyRow').style.display = 'none';
+        }
+        else
+        {
+      	  document.getElementById('privKeyRow').style.display = 'table-row';
+        }
+     }
+
+     $(document).ready(function()
+       {
+      	 document.getElementById('passphrase').style.display = 'none';
+      	 document.getElementById('privKeyRow').style.display = 'none';
+       }
+     )
+     
+     function validateForm() 
+     {
+       //var keyType = document.getElementById('privKeyType');
+       var passField = document.getElementById('certPassphrase');
+       var passValue = passField.value;
+       if (passField.style.display == "none"  &&  (passField == null || passField == ""))
+       {
+         alert("Private key passhphrae cannot be empty.");
+         return false;
+       }
+     }
+     
+    </script>
+
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/header.jsp"%>
@@ -28,11 +72,15 @@
                     <p style="color:red;">Please upload only DER encoded certificates</p>
                 </c:if>
 		
+		        <c:if test="${passphraseError == true}">
+                    <p style="color:red;">Protected private keys must include a pass phrase.</p>
+                </c:if>
+		
 		<div style="padding:0 10px;">
 		
 		<spring:url
 			value="/config/certificates/addcertificate" var="formUrladdcertificate" />
-		<form:form modelAttribute="certificateForm"
+		<form:form onsubmit="return validateForm()"  modelAttribute="certificateForm"
 			action="${fn:escapeXml(formUrladdcertificate)}" cssClass="cleanform"
 			method="POST" enctype="multipart/form-data">
 			<form:hidden path="id" />
@@ -44,8 +92,25 @@
 					<td align=left>
 						<form:input path="fileData" id="certificatefile" type="file"/>
 					</td>
-				</tr>
+				</tr>		
                 <tr>
+					<td>
+						<form:label path="privKeyType">Private Key Type:<form:errors path="privKeyType" cssClass="error" /></form:label>
+					</td>
+					<td>
+					<form:select path="privKeyType" onchange="showHidePassPhrase(this)">
+						<form:options items="${privKeyTypeList}" />
+					</form:select></td>
+                </tr>	
+				<tr id="privKeyRow">
+					<td width="100">
+						<form:label for="privKeyData" path="privKeyData">Private Key:</form:label>
+					</td>
+					<td align=left>
+						<form:input path="privKeyData" id="privKey" type="file"/>
+					</td>
+				</tr>		                				
+                <tr id="passphrase" >
                 	<td width="100">
                         <form:label for="keyPassphrase" path="keyPassphrase">Pass Phrase:</form:label>
                     </td>  

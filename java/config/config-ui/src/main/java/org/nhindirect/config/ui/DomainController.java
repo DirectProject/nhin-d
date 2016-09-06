@@ -65,6 +65,7 @@ import org.nhindirect.config.ui.form.DomainForm;
 import org.nhindirect.config.ui.form.SearchDomainForm;
 import org.nhindirect.config.ui.form.SimpleForm;
 import org.nhindirect.config.ui.util.AjaxUtils;
+import org.nhindirect.config.ui.util.PrivateKeyType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -388,6 +389,7 @@ public class DomainController {
 			model.addAttribute("action", action);
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 	
+			mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}
 		
@@ -521,7 +523,8 @@ public class DomainController {
 		// now set anchorsResults
 		model.addAttribute("anchorsResults", convertedanchors);
 		
-		// END: temporary code for mocking purposes			
+		// END: temporary code for mocking purposes	
+		mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		
 		model.addAttribute("simpleForm",simpleForm);
@@ -623,6 +626,7 @@ public class DomainController {
 			model.addAttribute("action", action);
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 	
+			mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}
 		
@@ -751,7 +755,8 @@ public class DomainController {
 		// now set anchorsResults
 		model.addAttribute("anchorsResults", convertedanchors);
 		
-		// END: temporary code for mocking purposes			
+		// END: temporary code for mocking purposes	
+		mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 
 		model.addAttribute("simpleForm",simpleForm);
@@ -860,6 +865,7 @@ public class DomainController {
 			model.addAttribute("action", action);
 			model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
 	
+			mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 			mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		}
 		
@@ -1015,6 +1021,7 @@ public class DomainController {
 		}
 
 		model.addAttribute("ajaxRequest", AjaxUtils.isAjaxRequest(requestedWith));
+		mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
 		mav.addObject("statusList", EntityStatus.getEntityStatusList());
 		final String action = "Update";
 		model.addAttribute("action", action);			
@@ -1191,6 +1198,7 @@ public class DomainController {
                 model.addAttribute("searchResults", results);
 
                 mav.setViewName("main");
+                mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
                 mav.addObject("statusList", EntityStatus.getEntityStatusList());
                 mav.addObject("searchResults", results);
                 
@@ -1298,6 +1306,7 @@ public class DomainController {
             
 
             mav.addObject("action", action);
+            mav.addObject("privKeyTypeList", PrivateKeyType.getPrivKeyTypeList());
             mav.addObject("statusList", EntityStatus.getEntityStatusList());
 
             session.setAttribute("currentDomainName", domainName);

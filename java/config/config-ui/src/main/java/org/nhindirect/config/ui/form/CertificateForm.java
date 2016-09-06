@@ -18,6 +18,7 @@ public class CertificateForm {
     private List<String> remove;
     private String domainName;
     private String keyPassphrase;	
+    private String privKeyType;
     
     public void setDomainName(String domainName)
 	{
@@ -40,7 +41,8 @@ public class CertificateForm {
 	}
 	
 	private CommonsMultipartFile fileData;
-    
+	private CommonsMultipartFile privKeyData;
+	
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
@@ -101,4 +103,28 @@ public class CertificateForm {
 	public CommonsMultipartFile getFileData() {
 		return fileData;
 	}
+
+	
+	
+	public CommonsMultipartFile getPrivKeyData()
+	{
+		return privKeyData;
+	}
+
+	public void setPrivKeyData(CommonsMultipartFile privKeyData)
+	{
+		this.privKeyData = privKeyData;
+	}
+
+	public String getPrivKeyType()
+	{
+		return privKeyType;
+	}
+
+	public void setPrivKeyType(String privKeyType)
+	{
+		this.privKeyType = privKeyType;
+	}
+	
+	
 }
