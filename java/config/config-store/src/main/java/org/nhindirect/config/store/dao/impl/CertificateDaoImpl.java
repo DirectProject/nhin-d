@@ -231,20 +231,31 @@ public class CertificateDaoImpl implements CertificateDao
     private Certificate stripP12Protection(Certificate cert)
     {
     	
+    	log.debug("Attempting to strip p12 protection for certificate with id " + cert.getId());
+    	
     	if (cert.isPrivateKey() && kspMgr != null)
     	{
+        	log.debug("isPrivateKey = true ");
+    		
     		final char[] emptyProtection = "".toCharArray();
     		try
     		{
+    			log.debug("Attempting to convert to a container that is wrapped");
     			if (CertUtils.toCertContainer(cert.getData()) != null)
     				return cert;
     		}
     		catch (CertificateConversionException e)
     		{
+    			log.trace("CertificateConversionException error when converting wrapped data.", e);
     			// no-op.. this just means that the certificate is probably protected by pass phrases
     			// need to convert
     		}
+    		catch (Throwable t)
+    		{
+    			log.debug("Throwable error when converting wrapped data.", t);
+    		}
     		
+    		log.debug("Appears to not be wrapped.  Attempting to convert by changing p12 protection.");
 			try
 			{
 	    		final String oldKeystorePassPhrase = new String(kspMgr.getKeyStoreProtectionKey().getEncoded());
