@@ -172,6 +172,13 @@ public class OptionsParameter
 	 */
     public final static String CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM = "CRYPTOGRAHPER_SMIME_DIGEST_ALGORITHM";
     
+    /**
+     * Boolean value that determines if message digests should be logged.  If true, both the digest in the message signature and
+     * the computed digest of message used for verification will be logged.  This is set to false by default. 
+     * 
+	 * <p><b>JVM Parameter/Options Name:</b> org.nhindirect.stagent.cryptographer.smime.LogDigests
+     */
+    public final static String CRYPTOGRAHPER_LOG_DIGESTS = "CRYPTOGRAHPER_LOG_DIGESTS";
  	/**
  	 * Boolean value that determines if the set of outgoing anchors can be used to trust incoming MDN and DSN messages.  This
  	 * is necessary to allow QoS to happen when messages are set to be outgoing only.

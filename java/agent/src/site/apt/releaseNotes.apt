@@ -6,6 +6,28 @@
         Greg Meyer
         ---
 
+{2.2}
+
+    Changes included with release 2.2
+    
+    []
+    
+ 	* Added new configuration option to log message digest information for ONC 2015 HealthIt certification.
+ 	
+ 	* Cert Gen tool can sign CSRs.
+    
+    [] 
+     
+    Bug Fixes
+
+    * Merged from 2.0.17: Move digest logging to DefaultMessageSignatureImpl.  Previous location was not getting hit.
+    
+    * Merged from 2.0.17: Fixed issue with incoming message not validating CRLs.
+    
+    * Merged pull request for DNS null pointer fix.  Back ported to version 2.0.19
+    
+    * SplitProviderDirectSignedDataGenerater can deal with private keys from mix HSM and non-HSM sources.
+
 {2.1.1}
 
     Changes included with release 2.1.1
@@ -18,7 +40,7 @@
      
     Bug Fixes
 
-    * Fixed issue with not being able to override the DNS certificate resovler's server list via an options parameter.
+    * Fixed issue with not being able to override the DNS certificate resovler's server list via an options parameter.  Back ported to version 2.0.18.
 
 {2.1}
 
@@ -41,6 +63,50 @@
     Bug Fixes
     
     * NA
+
+{2.0.19}
+
+    Changes included with release 2.0.19
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+    
+    * Merged pull request for DNS null pointer fix.  Back ported to version 2.0.19
+
+{2.0.18}
+
+    Changes included with release 2.0.18
+    
+    []
+    
+    * Back porting ability to set DNS servers for DNS cert resolution via option parameter from the 2.1.x branch.
+    
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
+{2.0.17}
+
+    Changes included with release 2.0.17
+    
+    []
+    
+    * NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Move digest logging to DefaultMessageSignatureImpl.  Previous location was not getting hit.
+    
+    * Fixed issue with incoming message not validating CRLs.
 
 {2.0.16}
 

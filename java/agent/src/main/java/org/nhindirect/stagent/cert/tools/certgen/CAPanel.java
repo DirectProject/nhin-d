@@ -29,6 +29,8 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener; 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +51,12 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.SoftBevelBorder;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.bouncycastle.jce.PKCS10CertificationRequest;
+import org.bouncycastle.openssl.PEMReader;
+import org.nhindirect.stagent.CryptoExtensions;
 
 
 /**
@@ -90,6 +98,7 @@ class CAPanel extends JPanel
 	protected JButton createCert;
 	protected JButton clear;
 	protected JButton genCert;
+	protected JButton signCSR;
 	protected JCheckBox addToAltSubjects;
 	protected JCheckBox allowedToSign;
 	protected JCheckBox keyEnc;
@@ -182,6 +191,9 @@ class CAPanel extends JPanel
 		clear = new JButton("Clear");
 		genCert = new JButton("Create Leaf Cert");
 		genCert.setVisible(false);
+		signCSR = new JButton("Sign CSR");
+		signCSR.setVisible(false);		
+		
 		
 		addToAltSubjects = new JCheckBox("Add Email To Alt Subject Names");
 		addToAltSubjects.setVisible(false);
@@ -209,9 +221,10 @@ class CAPanel extends JPanel
 		buttonPanel.add(createCert);
 		buttonPanel.add(clear);
 		buttonPanel.add(genCert);
+		buttonPanel.add(signCSR);
 		
 		JPanel combineAltAndButtonPanel = new JPanel(new BorderLayout());
-		combineAltAndButtonPanel.add(addAltPanel, BorderLayout.WEST);
+		//combineAltAndButtonPanel.add(addAltPanel, BorderLayout.WEST);
 		combineAltAndButtonPanel.add(buttonPanel, BorderLayout.EAST);
 		
 		JPanel bottomPannel = new JPanel(new BorderLayout());
@@ -264,6 +277,13 @@ class CAPanel extends JPanel
 				createLeaf();
 			}
 		});
+	
+		signCSR.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				signCSR();
+			}
+		});
 		
 	}
 	
@@ -297,6 +317,7 @@ class CAPanel extends JPanel
 				createCert.setVisible(true);				
 				clear.setVisible(false);
 				genCert.setVisible(false);
+				signCSR.setVisible(false);
 				addToAltSubjects.setVisible(false);
 	
 				if(workflowContext == WF_CONTEXT_CLEAR)
@@ -320,6 +341,7 @@ class CAPanel extends JPanel
 					createCert.setVisible(true);				
 					clear.setVisible(false);
 					genCert.setVisible(false);
+					signCSR.setVisible(false);
 					addToAltSubjects.setVisible(false);
 					
 					currentCert = null;
@@ -344,6 +366,7 @@ class CAPanel extends JPanel
 				createCert.setVisible(false);
 				clear.setVisible(false);
 				genCert.setVisible(false);
+				signCSR.setVisible(false);
 				addToAltSubjects.setVisible(false);
 				
 				createCA.setEnabled(true);
@@ -375,6 +398,7 @@ class CAPanel extends JPanel
 				createCert.setVisible(false);
 				clear.setVisible(true);
 				genCert.setVisible(true);
+				signCSR.setVisible(true);
 				
 				addToAltSubjects.setVisible(false);
 				
@@ -390,6 +414,55 @@ class CAPanel extends JPanel
 		LeafCertGenDialog generator = new LeafCertGenDialog(null, currentCert);
 		generator.setVisible(true);
 	}
+	
+	private void signCSR()
+	{
+	 	JFileChooser fc = new JFileChooser(); 
+        fc.setDragEnabled(false); 
+        fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        fc.setDialogTitle("Open Signing Request PEM File");
+
+	 			
+		int result = fc.showOpenDialog(this); 
+		 
+		if(result == JFileChooser.APPROVE_OPTION) 
+		{ 
+			final File fl = fc.getSelectedFile();
+			
+			PEMReader reader = null;
+			try
+			{
+				reader = new PEMReader( new InputStreamReader(FileUtils.openInputStream(fl)));
+				final PKCS10CertificationRequest certReq = (PKCS10CertificationRequest)reader.readObject();
+				certReq.verify();
+				
+				final X509Certificate signedCert = CertGenerator.createCertFromCSR(certReq, currentCert);
+				
+		        // validate the certificate 
+				signedCert.verify(currentCert.getSignerCert().getPublicKey());
+
+				// write it to a file
+				final String addressName = CryptoExtensions.getSubjectAddress(signedCert);
+				final File outFile = new File(addressName + ".der");
+				FileUtils.writeByteArrayToFile(outFile, signedCert.getEncoded());
+				
+				JOptionPane.showMessageDialog(this,"Signing successful.\r\nCertificate saved to " + outFile.getAbsolutePath(), 
+			 		    "CSR Sign", JOptionPane.PLAIN_MESSAGE );
+				
+			}
+			catch (Exception e)
+			{
+				JOptionPane.showMessageDialog(this,"Error signging CSR: " + e.getMessage(), 
+			 		    "CSR Sign Error", JOptionPane.ERROR_MESSAGE );
+			}
+			finally
+			{
+				IOUtils.closeQuietly(reader);
+			}
+		} 
+	}
+
 	
 	protected File createNewFileName(boolean isKey)
 	{

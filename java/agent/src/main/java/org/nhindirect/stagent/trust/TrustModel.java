@@ -46,7 +46,9 @@ import org.nhindirect.stagent.DefaultMessageSignatureImpl;
 import org.nhindirect.stagent.NHINDAddress;
 import org.nhindirect.stagent.NHINDAddressCollection;
 import org.nhindirect.stagent.OutgoingMessage;
+import org.nhindirect.stagent.cert.RevocationManager;
 import org.nhindirect.stagent.cert.SignerCertPair;
+import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 import org.nhindirect.stagent.policy.PolicyResolver;
 import org.nhindirect.stagent.trust.annotation.TrustPolicyFilter;
 import org.nhindirect.stagent.trust.annotation.TrustPolicyResolver;
@@ -300,6 +302,7 @@ public class TrustModel
         Collection<DefaultMessageSignatureImpl> signatures = message.getSenderSignatures();
         DefaultMessageSignatureImpl lastTrustedSignature = null;    	
         
+  		final RevocationManager revocationManager = CRLRevocationManager.getInstance();
         for (DefaultMessageSignatureImpl signature : signatures)
         {
         	// The point of this loop is to find the most trusted signature
@@ -307,6 +310,10 @@ public class TrustModel
         	// return if we find a thumb print match... otherwise keep searching until we either find one
         	// of find the best possible match
         	
+        	// before checking for cert chain validation, make sure we aren't dealing with a revoked certificate
+    		if (revocationManager.isRevoked(signature.getSignerCert()))
+    			continue;
+    		
         	boolean certTrustedAndInPolicy = certChainValidator.isTrusted(signature.getSignerCert(), anchors) && signature.checkSignature();
         	if (certTrustedAndInPolicy && recipient != null)
         	{

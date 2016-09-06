@@ -30,6 +30,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 
@@ -41,12 +42,22 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.io.FileUtils;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.ASN1Set;
+import org.bouncycastle.asn1.DEREncodable;
+import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.pkcs.CertificationRequestInfo;
+import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.crypto.prng.VMPCRandomGenerator;
+import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.bouncycastle.x509.extension.AuthorityKeyIdentifierStructure;
@@ -92,7 +103,7 @@ public class CertGenerator
 			return createLeafCertificate(fields, keyPair, addAltNames);		
 	}	
 	
-	private static long generatePositiveRandom()
+	public static long generatePositiveRandom()
 	{
 		Random ranGen;
 		long retVal = -1;
@@ -107,6 +118,74 @@ public class CertGenerator
 		}
 		
 		return retVal;
+	}
+	
+	public static X509Certificate createCertFromCSR(PKCS10CertificationRequest certReq, CertCreateFields signerCert) throws Exception
+	{
+		certReq.verify();
+		
+		final CertificationRequestInfo reqInfo = certReq.getCertificationRequestInfo();
+
+		final X509V3CertificateGenerator  v1CertGen = new X509V3CertificateGenerator();
+		final Calendar start = Calendar.getInstance();
+		final Calendar end = Calendar.getInstance();
+		end.add(Calendar.YEAR, 3); 
+		
+        v1CertGen.setSerialNumber(BigInteger.valueOf(generatePositiveRandom()));
+        v1CertGen.setIssuerDN(signerCert.getSignerCert().getSubjectX500Principal()); // issuer is the parent cert
+        v1CertGen.setNotBefore(start.getTime());
+        v1CertGen.setNotAfter(end.getTime());
+        v1CertGen.setSubjectDN(new X509Principal(reqInfo.getSubject().toString()));
+        v1CertGen.setPublicKey(certReq.getPublicKey());
+        v1CertGen.setSignatureAlgorithm("SHA256WithRSAEncryption");
+
+        
+        final ASN1Set attributesAsn1Set = reqInfo.getAttributes();
+        
+        X509Extensions certificateRequestExtensions = null;
+        for (int i = 0; i < attributesAsn1Set.size(); ++i)
+        {
+           // There should be only only one attribute in the set. (that is, only
+           // the `Extension Request`, but loop through to find it properly)
+           final DEREncodable derEncodable = attributesAsn1Set.getObjectAt( i );
+           
+           
+           if (derEncodable instanceof DERSequence)
+           {
+              final Attribute attribute = new Attribute( (DERSequence) attributesAsn1Set
+                    .getObjectAt( i ) );
+
+              if (attribute.getAttrType().equals( PKCSObjectIdentifiers.pkcs_9_at_extensionRequest ))
+              {
+                 // The `Extension Request` attribute is present.
+                 final ASN1Set attributeValues = attribute.getAttrValues();
+
+                 // The X509Extensions are contained as a value of the ASN.1 Set.
+                 // Assume that it is the first value of the set.
+                 if (attributeValues.size() >= 1)
+                 {
+                    certificateRequestExtensions = new X509Extensions( (ASN1Sequence) attributeValues
+                          .getObjectAt( 0 ) );
+
+                    // No need to search any more.
+                    //break;
+                 }
+              }
+           }
+        }
+
+        @SuppressWarnings("unchecked")
+		Enumeration<DERObjectIdentifier> oids = certificateRequestExtensions.oids();
+        while (oids.hasMoreElements())
+        {
+        	DERObjectIdentifier oid = oids.nextElement();
+        	X509Extension ex = certificateRequestExtensions.getExtension(oid);
+        	
+        	v1CertGen.addExtension(oid, ex.isCritical(), X509Extension.convertValueToObject(ex));
+        }
+        
+        return v1CertGen.generate((PrivateKey)signerCert.getSignerKey(), CryptoExtensions.getJCEProviderName());
+        
 	}
 	
 	private static CertCreateFields createNewCA(CertCreateFields fields, KeyPair keyPair, boolean addAltNames) throws Exception

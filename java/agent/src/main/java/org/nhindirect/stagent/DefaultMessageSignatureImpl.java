@@ -24,8 +24,16 @@ package org.nhindirect.stagent;
 
 import java.security.cert.X509Certificate;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.bouncycastle.asn1.ASN1OctetString;
+import org.bouncycastle.asn1.DERObject;
+import org.bouncycastle.asn1.cms.Attribute;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.cms.SignerInformation;
 import org.nhindirect.stagent.cert.Thumbprint;
+import org.nhindirect.stagent.options.OptionsManager;
+import org.nhindirect.stagent.options.OptionsParameter;
 
 /**
  * Contains information specific to a discrete signer of a message.  Includes the singer information and the certificate used to sign the message (optimally
@@ -36,11 +44,14 @@ import org.nhindirect.stagent.cert.Thumbprint;
  */
 public class DefaultMessageSignatureImpl implements MessageSignature
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(DefaultMessageSignatureImpl.class);
+	
 	private boolean signatureValid;
 	private SignerInformation signer;
 	private boolean useOrgCertificate;
 	private boolean thumbprintVerified;
 	private X509Certificate signerCert;
+	private boolean m_logDigest = false;
 	
 	/**
 	 * Constructs a message signature from the singer info and the certificate used to sign the message.
@@ -58,6 +69,9 @@ public class DefaultMessageSignatureImpl implements MessageSignature
 		this.useOrgCertificate = useOrgCert;
 		this.thumbprintVerified = false;
 		this.signerCert = cert;
+		
+		final OptionsParameter param = OptionsManager.getInstance().getParameter(OptionsParameter.CRYPTOGRAHPER_LOG_DIGESTS);
+		this.m_logDigest = OptionsParameter.getParamValueAsBoolean(param, false);
 	}
 
 	/**
@@ -121,9 +135,39 @@ public class DefaultMessageSignatureImpl implements MessageSignature
         	// TODO: Log an error
         	signatureValid = false; 
         }
-                
+    	finally
+    	{
+    		logDigests(signer);
+    	}  
+        
         return signatureValid;
 	}
+	
+	private void logDigests(SignerInformation sigInfo)
+    {
+    	// it is assumed that the verify function has already been called, other wise the getContentDigest function
+    	// will fail
+    	if (this.m_logDigest && sigInfo != null)
+    	{
+    		try
+    		{
+		        //get the digests
+		        final Attribute digAttr = sigInfo.getSignedAttributes().get(CMSAttributes.messageDigest);
+		        final DERObject hashObj = digAttr.getAttrValues().getObjectAt(0).getDERObject();
+		        final byte[] signedDigest = ((ASN1OctetString)hashObj).getOctets();
+		        final String signedDigestHex = org.apache.commons.codec.binary.Hex.encodeHexString(signedDigest);
+		        
+		        LOGGER.info("Signed Message Digest: " + signedDigestHex);
+		           
+		        // should have the computed digest now
+		        final byte[] digest = sigInfo.getContentDigest();
+		        final String digestHex = org.apache.commons.codec.binary.Hex.encodeHexString(digest);
+		        LOGGER.info("Computed Message Digest: " + digestHex);
+    		}
+    		catch (Throwable t)
+    		{  /* no-op.... logging digests is a quiet operation */}
+    	}
+    }
 	
 	/**
 	 * Validates if the senders certificate matches the signature certificate using certificate thumb printing.

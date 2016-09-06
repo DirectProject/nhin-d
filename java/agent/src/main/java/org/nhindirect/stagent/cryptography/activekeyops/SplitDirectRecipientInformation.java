@@ -112,7 +112,7 @@ public class SplitDirectRecipientInformation extends KeyTransRecipientInformatio
             {
             	// the original BC libraries attempted to do an UNWRAP assuming that the 
             	// same provider was used for secret key decryption and message decryption
-            	// when these too operations are split into separate providers, using an unwrap method
+            	// when these two operations are split into separate providers, using an unwrap method
             	// may result in a secret key handle that may not be usable by the another provider
             	// for that reason, this class will do a straight up decrypt of the message's internal
             	// secret key and hand that key off to the "encProvider" provider

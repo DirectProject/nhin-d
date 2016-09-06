@@ -44,9 +44,13 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.ParseException;
 
 import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.ASN1OctetString;
 import org.bouncycastle.asn1.DEREncodableVector;
+import org.bouncycastle.asn1.DERObject;
 import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.cms.Attribute;
 import org.bouncycastle.asn1.cms.AttributeTable;
+import org.bouncycastle.asn1.cms.CMSAttributes;
 import org.bouncycastle.asn1.smime.SMIMECapabilitiesAttribute;
 import org.bouncycastle.asn1.smime.SMIMECapability;
 import org.bouncycastle.asn1.smime.SMIMECapabilityVector;
@@ -110,6 +114,8 @@ public class SMIMECryptographerImpl implements Cryptographer
     protected boolean enforceStrongEncryption;
     protected boolean enforceStrongDigests;
     
+	private boolean m_logDigest = false;
+	
     /**
      * Constructs a Cryptographer with a default EncryptionAlgorithm and DigestAlgorithm.
      */
@@ -129,6 +135,8 @@ public class SMIMECryptographerImpl implements Cryptographer
         
         this.sigFactory = new SplitProviderDirectSignedDataGeneratorFactory();
         this.decFactory = new SplitDirectRecipientInformationFactory();
+		
+		this.m_logDigest = OptionsParameter.getParamValueAsBoolean(param, false);
     }
 
     /**
@@ -152,6 +160,8 @@ public class SMIMECryptographerImpl implements Cryptographer
         
         this.sigFactory = (sigFactory == null) ? new SplitProviderDirectSignedDataGeneratorFactory() : sigFactory;
         this.decFactory = (decFactory == null) ? new SplitDirectRecipientInformationFactory() : decFactory;
+		
+		this.m_logDigest = OptionsParameter.getParamValueAsBoolean(param, false);
     }
     
     /**
@@ -171,6 +181,8 @@ public class SMIMECryptographerImpl implements Cryptographer
         
         param = OptionsManager.getInstance().getParameter(OptionsParameter.ENFORCE_STRONG_ENCRYPTION);
         this.enforceStrongEncryption = OptionsParameter.getParamValueAsBoolean(param, true);
+		
+		this.m_logDigest = OptionsParameter.getParamValueAsBoolean(param, false);
     }
 
     /**
@@ -193,6 +205,8 @@ public class SMIMECryptographerImpl implements Cryptographer
         
         param = OptionsManager.getInstance().getParameter(OptionsParameter.ENFORCE_STRONG_ENCRYPTION);
         this.enforceStrongEncryption = OptionsParameter.getParamValueAsBoolean(param, true);
+		
+		this.m_logDigest = OptionsParameter.getParamValueAsBoolean(param, false);
     }
     
     /**
@@ -271,6 +285,15 @@ public class SMIMECryptographerImpl implements Cryptographer
         this.m_digestAlgorithm = value;
     }
     
+	/**
+     * Indicates if message digests will be logged when verifying messages.
+     * @return True if the digests will be logged.  False otherwise. 
+     */
+    public boolean isLogDigests()
+    {
+    	return this.m_logDigest;
+    }
+	
     /**
      * Sets the option to enforce strong message digests.
      * @param value True if strong message digests are enforced.  False otherwise.
@@ -289,6 +312,15 @@ public class SMIMECryptographerImpl implements Cryptographer
     	return this.enforceStrongDigests;
     }
     
+	/**
+     * Sets if message digests will be looged.
+     * @param m_logDigest True if the digests will be logged.  False otherwise.
+     */
+    public void setLogDigests(boolean m_logDigest)
+    {
+    	this.m_logDigest = m_logDigest;
+    }
+	
     /**
      * Sets the option to enforce strong message encryption
      * @param value True if strong encryption is enforced.  False otherwise.
@@ -823,12 +855,14 @@ public class SMIMECryptographerImpl implements Cryptographer
     {
     	CMSSignedData signatureEnvelope = deserializeSignatureEnvelope(signedEntity);
     	    	
+        SignerInformation logSigInfo = null;
     	try
     	{
 	    	// there may be multiple signatures in the signed part... iterate through all the signing certificates until one
     		// is verified with the signerCertificate
     		for (SignerInformation sigInfo : (Collection<SignerInformation>)signatureEnvelope.getSignerInfos().getSigners())	 
     		{
+    			logSigInfo = sigInfo;
     			// make sure the sender did not send the message with an explicitly disallowed digest algorithm
     			// such as MD5
     			if (!isAllowedDigestAlgorithm(sigInfo.getDigestAlgOID()))
@@ -851,6 +885,10 @@ public class SMIMECryptographerImpl implements Cryptographer
     	catch (Exception e)
     	{
     		throw new SignatureValidationException("Signature validation failure.", e);
+    	}
+    	finally
+    	{
+    		logDigests(logSigInfo);
     	}
     }                        
  	
@@ -888,6 +926,33 @@ public class SMIMECryptographerImpl implements Cryptographer
     	return encryptionOID.equalsIgnoreCase(EncryptionAlgorithm.DES_EDE3_CBC.getOID()) ? false : true;
     }
     
+	protected void logDigests(SignerInformation sigInfo)
+    {
+    	// it is assumed that the verify function has already been called, other wise the getContentDigest function
+    	// will fail
+    	if (this.m_logDigest && sigInfo != null)
+    	{
+    		try
+    		{
+		        //get the digests
+		        final Attribute digAttr = sigInfo.getSignedAttributes().get(CMSAttributes.messageDigest);
+		        final DERObject hashObj = digAttr.getAttrValues().getObjectAt(0).getDERObject();
+		        final byte[] signedDigest = ((ASN1OctetString)hashObj).getOctets();
+		        final String signedDigestHex = org.apache.commons.codec.binary.Hex.encodeHexString(signedDigest);
+		        
+		        LOGGER.info("Signed Message Digest: " + signedDigestHex);
+		           
+		        // should have the computed digest now
+		        final byte[] digest = sigInfo.getContentDigest();
+		        final String digestHex = org.apache.commons.codec.binary.Hex.encodeHexString(digest);
+		        LOGGER.info("Computed Message Digest: " + digestHex);
+    		}
+    		catch (Throwable t)
+    		{  /* no-op.... logging digests is a quiet operation */}
+    	}
+    }
+	
+	
     /**
      * Extracts the ASN1 encoded signature data from the signed entity.
      * @param entity The entity containing the original signed part and the message signature.

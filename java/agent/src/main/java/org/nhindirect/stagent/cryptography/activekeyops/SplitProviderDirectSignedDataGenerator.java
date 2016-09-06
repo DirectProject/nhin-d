@@ -179,8 +179,23 @@ public class SplitProviderDirectSignedDataGenerator extends CMSSignedDataGenerat
 
 		                digestAlgs.add(digAlgId);
 
-		                signerInfos.add(signer.toSignerInfo(contentTypeOID, content, rand, sigProvider, 
+		                
+		                // because there is a possibility of mixing HSM keys and non HSM keys within the 
+		                // DirectTargetedSignerInf collection, we need to make a special consideration
+		                // to sign using the digest provider if the private key is not HSM protected
+		                
+		                
+		                try
+		                {
+		                	signerInfos.add(signer.toSignerInfo(contentTypeOID, content, rand, sigProvider, 
 		                		digestProvider, addDefaultAttributes, isCounterSignature));
+		                }
+		                catch (ClassCastException e)
+		                {
+		                	// try again with the digest provider... the key may need to use a different provider than the sig provider
+		                	signerInfos.add(signer.toSignerInfo(contentTypeOID, content, rand, digestProvider, 
+			                		digestProvider, addDefaultAttributes, isCounterSignature));
+		                }
 		            }
 		            catch (IOException e)
 		            {
