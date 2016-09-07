@@ -1,0 +1,20 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{1.0.0}
+
+    Changes included with release 1.0.0.
+
+    []
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+    
+    * Wrapper classes for Gemalto (SafeNet) ProjectServer jprov_sfnt.jar library.
+	

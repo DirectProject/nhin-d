@@ -23,6 +23,7 @@
 	</issueManagement>  	    
     <modules>
         <module>./direct-common</module>
+        <module>./direct-jce-providers</module>        
         <module>./direct-common-audit</module>        
         <module>./direct-policy</module>
         <module>./config</module>

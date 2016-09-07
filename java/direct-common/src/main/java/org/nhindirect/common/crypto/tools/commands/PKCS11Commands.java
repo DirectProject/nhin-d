@@ -11,6 +11,7 @@ import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.MessageDigest;
 import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.Signature;
@@ -125,9 +126,10 @@ public class PKCS11Commands
             "\r\n\t file: The name of the file that contains the wrapped private key.";    		
     
     private static final String MESSAGE_SIGN_PROFILING = "Runs a test of signing x number of messages and reports the speed" +
-    		"\r\n privateKeyName numSigs " +
+    		"\r\n privateKeyName numSigsPerThread [numThreads]" +
             "\r\n\t wrapperKeyName: The key name given to secret key used to unwrap the private key." +    		
-            "\r\n\t numSigs: The number of signatures to perform.";    	
+            "\r\n\t numSigs: The number of signatures to perform per thread." + 
+            "\r\n\t numThreads: Optional number of threads that will execute signature.  Default is 1.  Max number is 20" ;    	
     
     private static final String IMPORT_P12_FILE_FOR_TEMP_KEY = "Imports a p12 file and creates a temporary private key entry.\r\n " +
     		"\r\n  p12FileName keyStorePass privKeyPass " +
@@ -296,6 +298,18 @@ public class PKCS11Commands
     {
 		final String alias = StringArrayUtil.getRequiredValue(args, 0);
 		final int numSigs = Integer.parseInt(StringArrayUtil.getRequiredValue(args, 1));
+		int numThreads = Integer.parseInt(StringArrayUtil.getOptionalValue(args, 2, "1"));
+		
+		if (numThreads < 1)
+		{
+			System.out.println("Number of threads cannot be less than 1.  Setting number of threads to 1");
+			numThreads = 1;
+		}
+		else if (numThreads > 20)
+		{
+			System.out.println("Number of thread cannot be greater than 20.  Setting number of threads to 20");
+			numThreads = 20;
+		}
 		
 		try
 		{
@@ -314,36 +328,39 @@ public class PKCS11Commands
 			byte[] b = new byte[2048];
 			new Random().nextBytes(b);
 			
-			long startTime = System.currentTimeMillis();
+			// generate a SHA256 hash
+			MessageDigest dig = MessageDigest.getInstance("SHA256", "BC");  
+			dig.update(b);
+			byte[] digest = dig.digest();
+			
 			// now perform the operations
-			for (int idx = 0; idx < numSigs; ++idx)
+			final SigTestThread[] sigThreads = new SigTestThread[numThreads];
+			final Thread[] thrds = new Thread[numThreads];
+			long startTime = System.currentTimeMillis();
+			for (int idx = 0; idx < numThreads; ++idx)
 			{
-				// generate a SHA256 hash
-				final MessageDigest dig = MessageDigest.getInstance("SHA256", "BC");  
-				dig.update(b);
-				byte[] digest = dig.digest();
-				
-				// now create the signature
-				Signature rsaSig = Signature.getInstance("SHA256withRSA", ks.getProvider());
-				rsaSig.initSign(privKey);
-				rsaSig.update(digest);
-				rsaSig.sign();
-				
-				if (idx % 25 == 0)
-				{
-					System.out.println("Performed " + idx + " signatures");
-				}
+				sigThreads[idx] = new SigTestThread(numSigs, digest, privKey, ks.getProvider());
+				thrds[idx] = new Thread(sigThreads[idx]);
+				thrds[idx].setDaemon(true);
+				thrds[idx].setName("SigThread" + idx);
+				thrds[idx].start();
 			}
+			
+			// wait for each thread to die
+			for (int idx = 0; idx < numThreads; ++idx)
+				thrds[idx].join();
 			
 			long totalTime = System.currentTimeMillis() - startTime;
 			
-			System.out.println("Completed " + numSigs + " signatures in " + totalTime + "ms.");
+			int totalNumSigs = numSigs * numThreads;
 			
 			// get seconds
 			int secs = (int)totalTime / 1000;
-			int averageSpeed =  numSigs / secs;
+			int averageSpeed =  totalNumSigs / secs;
 			
-			System.out.println("Average speed " + averageSpeed + " signatures per second.");
+			System.out.println("\r\nTotal runtime: " + totalTime + "ms.");
+			System.out.println("\r\nNumber of signatures: " + totalNumSigs);			
+			System.out.println("Average speed: " + averageSpeed + " signatures per second.");
 			
 		}
 		catch (Exception e)
@@ -896,6 +913,49 @@ public class PKCS11Commands
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+	}
+	
+	protected class SigTestThread implements Runnable
+	{
+		protected final byte[] digest;
+		protected final int numSigs;
+		protected final PrivateKey privKey;
+		protected final Provider prov;
+		
+		public SigTestThread(int numSigs, byte[] digest, PrivateKey privKey, Provider prov)
+		{
+			this.numSigs = numSigs;
+			this.digest = digest;
+			this.privKey = privKey;
+			this.prov = prov;
+		}
+		
+		public void run()
+		{
+
+			
+			for (int idx = 0; idx < numSigs; ++idx)
+			{
+
+				try
+				{	
+					// now create the signature
+					Signature rsaSig = Signature.getInstance("SHA256withRSA", prov);
+					rsaSig.initSign(privKey);
+					rsaSig.update(digest);
+					rsaSig.sign();
+					
+					if (idx % 25 == 0)
+					{
+						System.out.println("Thread progress: " + Thread.currentThread().getName() + " performed " + idx + " signatures");
+					}
+				}
+				catch (Exception e)
+				{
+					System.out.println("Error creating signature.");
+				}
+			}
 		}
 	}
 	
