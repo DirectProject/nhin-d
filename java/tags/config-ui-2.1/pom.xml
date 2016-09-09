@@ -4,7 +4,7 @@
 	<groupId>org.nhind</groupId>
 	<artifactId>config-ui</artifactId>
 	<packaging>war</packaging>
-	<version>2.2-SNAPSHOT</version>
+	<version>2.1</version>
 	<name>NHIN Direct Java Configuration UI</name>
 	<description>NHIN Direct Java Configuration UI</description>
 	<url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/config/config-ui/${project.version}</url>
@@ -490,7 +490,6 @@
 
 				</configuration>
 			</plugin>
-			<!--  for releases only 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -526,8 +525,7 @@
                     </goals>
                  </execution>
                </executions>
-            </plugin>
-            -->				
+            </plugin>		
 		</plugins>
 		<pluginManagement>
 			<plugins>

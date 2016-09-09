@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://cxf.apache.org/jaxws   http://cxf.apache.org/schemas/jaxws.xsd
+		http://www.springframework.org/schema/security 
+        http://www.springframework.org/schema/security/spring-security-3.0.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-xml.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-jaxws.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-http.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-extension-addr.xml"/>
+
+    <mvc:annotation-driven/>
+    <context:annotation-config />
+    
+       <!-- Scans the classpath of this application for @Components to deploy as beans -->
+       
+    <context:component-scan base-package="org.nhindirect.config.ui" />
+
+    <security:global-method-security pre-post-annotations="enabled"/>
+    <context:property-placeholder location="classpath:properties/config-ui.properties"/>	
+   
+    <security:http auto-config="true">
+        <security:intercept-url pattern="/resources/**" filters="none"/>
+        <security:intercept-url pattern="/config/login" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
+        <security:intercept-url pattern="/**" access="ROLE_ADMIN" />
+        
+        <!-- Override default login and logout pages -->
+
+        <security:form-login login-page="/config/login"
+                             login-processing-url="/config/j_spring_security_check" 
+                             default-target-url="/config/main" 
+                             authentication-failure-url="/config/login?login_error=1" />
+        <security:logout invalidate-session="true" logout-success-url="/config/login?logout=1"/>
+    </security:http>
+    
+    <security:authentication-manager alias="authenticationManager">
+
+    <!-- 
+        To change IdP just change the authentication-provider
+    -->
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="admin" password="adm1nD1r3ct" authorities="ROLE_ADMIN"/>
+            </security:user-service>
+        </security:authentication-provider>
+ 
+    <!-- If you want to use an LDAP provider for security  
+    <authentication-provider>
+    <security:ldap-user-service server-ref="ldapServer"
+            group-search-filter="member={0}"
+            group-role-attribute="cn"
+            user-search-base=""
+            user-search-filter="uid={0}"
+            group-search-base="" />
+            
+        <security:password-encoder hash="sha-256"/>
+    </security:authentication-provider>
+
+    <security:ldap-server id="ldapServer"
+        url="ldap://localhost:389/o=IEXTRA"
+        manager-dn="cn=Directory Manager"
+        manager-password="c31c|us1063"/>
+    -->
+  
+    </security:authentication-manager>
+
+    <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping"/>
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"/>
+    <bean id="handlerAdapter" class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="alwaysUseFullPath" value="true"/>
+    </bean>
+    
+    <!-- Forwards requests to the "/" resource to the "login" view -->
+    <mvc:view-controller path="/" view-name="login"/>
+    
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+    
+	<!-- the ResourceBundleViewResolver -->
+    <bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/jsp/" />
+        <property name="suffix" value=".jsp" />
+	
+    </bean>
+	
+	<!-- Application Message Bundle -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="/WEB-INF/messages/messages" />
+        <property name="cacheSeconds" value="0" />
+    </bean>
+    
+    
+    
+    <!--  AT DEPLOYMENT TIME, THE API URL AND LOGIN ATTRIBUTES WILL NEED TO BE UPDATED.  THIS IS DEFAULT ADDRESS FOR RUNNING AGAINST
+          THE DEFAULT JETTY:RUN DEPLOYMENT OF THE CONFIGURATION SERVICE -->
+
+    <!-- Version 2.0 switching over to utilize the newer configuration client -->
+    
+	<bean id="HttpParams" class="org.apache.http.params.BasicHttpParams"/>
+    <bean class="org.apache.http.params.HttpConnectionParamBean">
+        <constructor-arg index="0">
+            <ref bean="HttpParams"/>
+        </constructor-arg>
+        <property name="connectionTimeout" value="20000"/>
+        <property name="soTimeout" value="20000"/>
+    </bean>
+	
+     <bean id="configServiceSecManager" class="org.nhindirect.common.rest.BootstrapBasicAuthServiceSecurityManager">
+		<constructor-arg index="0" value="${configService.secSubject}" />
+		<constructor-arg index="1" value="${configService.secSecret}" />	
+	</bean>   
+	
+	<bean id="ThreadSafeConMgr" class="org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager" destroy-method="shutdown"/>
+	
+	<bean id="HttpClient" class="org.apache.http.impl.client.DefaultHttpClient">
+		<constructor-arg index="0"><ref bean="ThreadSafeConMgr"/></constructor-arg>
+		<constructor-arg index="1"><ref bean="HttpParams"/></constructor-arg>		
+	</bean>    
+    
+	<bean id="certServiceClient" class="org.nhind.config.rest.impl.DefaultCertificateService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>
+	
+	<bean id="trustBundleServiceClient" class="org.nhind.config.rest.impl.DefaultTrustBundleService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<bean id="dnsServiceClient" class="org.nhind.config.rest.impl.DefaultDNSService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<bean id="settingServiceClient" class="org.nhind.config.rest.impl.DefaultSettingService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<bean id="policyServiceClient" class="org.nhind.config.rest.impl.DefaultCertPolicyService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<bean id="domainServiceClient" class="org.nhind.config.rest.impl.DefaultDomainService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<bean id="anchorServiceClient" class="org.nhind.config.rest.impl.DefaultAnchorService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<bean id="addressServiceClient" class="org.nhind.config.rest.impl.DefaultAddressService" >
+		<constructor-arg index="0" value="${configService.apiURL}" />
+		<constructor-arg index="1"><ref bean="HttpClient"/></constructor-arg>		
+		<constructor-arg index="2"><ref bean="configServiceSecManager"/></constructor-arg>			
+	</bean>	
+
+	<!-- Configure the multipart resolver -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    </bean>
+
+    <!--  For systems that support PCKS11 tokens capable of executing key wrapping, the sections below is are example
+    configuring an PCKS11 hardware security module (HSM) that will wrap private keys before storing them in the configuration service.
+    When this option is enabled, the security and trust agent should also be configured to connect against the same HSM for key unwrapping
+    for message signing and decryption operations. 
+    
+    The example below is stores the settings in the config-ui.properties file.  The default example connects to a SafeNet LunaSA 
+    module.  Refer to your HSM's configuration guide for specific configuration information. -->
+    
+    <!-- 
+	<bean id="keyStoreCredential" class="org.nhindirect.common.crypto.impl.BootstrappedPKCS11Credential">
+	    <constructor-arg index="0" value="${config-ui.keyprotection.pkcs11.pin}"/>
+	</bean> 
+
+	<bean id="keyStoreProtectionManager" class="org.nhindirect.common.crypto.impl.StaticPKCS11TokenKeyStoreProtectionManager" 
+	    init-method="initTokenStore">
+	    <property name="credential" ref="keyStoreCredential"/>
+	    <property name="keyStoreType" value="${config-ui.keyprotection.pkcs11.keyStoreType}"/>		
+	    <property name="keyStoreSourceAsString" value="${config-ui.keyprotection.pkcs11.keyStoreSource}"/>	
+	    <property name="keyStoreProviderName" value="${config-ui.keyprotection.pkcs11.keyStoreProviderName}"/>	
+	    <property name="pcks11ConfigFile" value="${config-ui.keyprotection.pkcs11.pcks11ConfigFile}"/>		    	    		    	    
+	    <property name="privateKeyPassPhraseAlias" value="${config-ui.keyprotection.pkcs11.privateKeyPassPhraseAlias}"/>	        
+	</bean> 
+    -->
+		
+</beans>
