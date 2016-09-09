@@ -2,12 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
     <groupId>org.nhind</groupId>    
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>agent</artifactId>    
-    <name>Direct Project Security And Trust Agent</name>
-    <version>2.3-SNAPSHOT</version>
-    <description>Direct Project Security And Trust Agent</description>
+    <artifactId>gateway</artifactId>    
+    <name>Direct Project Agent Gateways.</name>
+    <version>4.2</version>
+    <description>Direct Project security agent gateways and bridges.</description>
     <inceptionYear>2010</inceptionYear>
-    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url> 
+    <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>        
     <developers>
         <developer>
             <name>Greg Meyer</name>
@@ -17,16 +17,6 @@
                 <role>owner</role>
             </roles>              
         </developer>   
-        <developer>
-            <name>Manjiri Namjoshi</name>
-            <id>NM019057</id>
-            <email>Manjiri.Namjoshi@cerner.com</email>
-        </developer>
-        <developer>
-            <name>John Pavlecich</name>
-            <id>JP018858</id>
-            <email>John.Pavlecich@cerner.com</email>
-        </developer>                          
      </developers>
      <organization>
         <name>NHIN Direct</name>
@@ -36,41 +26,69 @@
         <maven>2.0.4</maven>
    </prerequisites>   
   <scm>
-     <url>http://code.google.com/p/nhin-d/source/browse/#hg/java/agent</url>  
-     <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/agent</connection>
+     <url>https://nhin-d.googlecode.com/hg/java/gateway/</url>  
+     <connection>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/gateway</connection>
   </scm> 
   <issueManagement>
      <system>Google Code</system>
      <url>http://code.google.com/p/nhin-d/issues/list</url>
-  </issueManagement>	
+  </issueManagement>  
   <licenses>
      <license>
         <name>New BSD License</name>
         <url>http://nhindirect.org/BSDLicense</url>
      </license>
-  </licenses>       
-  <dependencies>  
-		<dependency>
-		  <groupId>org.nhind</groupId>
-		  <artifactId>direct-policy</artifactId>
-		  <version>1.0</version>
-		</dependency>	  
-		<dependency>
-		  <groupId>org.nhind</groupId>
-		  <artifactId>direct-common</artifactId>
-		  <version>2.1</version>
-			<exclusions>
-				<exclusion>
-					<groupId>bouncycastle</groupId>
-					<artifactId>bcprov-jdk15</artifactId>
-				</exclusion>
-			</exclusions>			  
-		</dependency>	    
+  </licenses>   
+  <repositories>
+    <repository>
+       <id>REPO2</id>
+       <name>Maven2 Central Repo2</name>
+       <url>http://repo2.maven.org/maven2/</url>
+    </repository>
+  </repositories>   
+  <dependencies>   
+	    <dependency>
+	        <groupId>org.nhind</groupId>
+	        <artifactId>agent</artifactId>
+	        <version>2.2</version>
+	        <scope>compile</scope>
+	    </dependency> 
+	    <dependency>
+	        <groupId>org.nhind</groupId>
+	        <artifactId>direct-common</artifactId>
+	        <version>2.1</version>
+	        <scope>compile</scope> 
+	    </dependency> 	
+	    <dependency>
+	        <groupId>org.nhind</groupId>
+	        <artifactId>direct-common-audit</artifactId>
+	        <version>1.0</version>
+	        <scope>test</scope> 
+	    </dependency> 	        
+	    <dependency>
+	        <groupId>org.nhind</groupId>
+	        <artifactId>config-service-client</artifactId>
+	        <version>2.1</version>
+	        <scope>compile</scope>
+	    </dependency>	    
+	    <dependency>
+	        <groupId>org.nhind</groupId>
+	        <artifactId>agent</artifactId>
+	        <version>2.2</version>
+	         <type>test-jar</type>
+	        <scope>test</scope>
+	    </dependency>  
 		<dependency>
 		  <groupId>com.google.inject</groupId>
 		  <artifactId>guice</artifactId>
 		  <version>2.0</version>
-		</dependency>	  
+		</dependency>	    
+        <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-all</artifactId>
+          <version>1.8.5</version>
+          <scope>test</scope>
+        </dependency>
 	    <dependency>
 	        <groupId>commons-codec</groupId>
 	        <artifactId>commons-codec</artifactId>
@@ -83,17 +101,41 @@
 	        <version>1.1.1</version>
 	        <scope>compile</scope>
 	    </dependency>	 
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+            <scope>test</scope>      
+        </dependency>  
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.6.1</version>
+			<scope>test</scope>
+		</dependency>  
+		<dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>provided</scope>
+        </dependency> 		 	    
 	    <dependency>
 	    	<groupId>commons-io</groupId>
 	    	<artifactId>commons-io</artifactId>
 	    	<version>1.4</version>
-	    </dependency>	        	
+	    </dependency>	    	
 	    <dependency>
-			<groupId>org.apache.james</groupId>
-			<artifactId>apache-jsieve-mailet</artifactId>
-			<version>0.4</version>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2</version>
 			<scope>compile</scope>
-		</dependency>  		     
+		</dependency>        
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.3</version>
+	        <scope>compile</scope>			
+		</dependency>	    
 	    <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -101,18 +143,33 @@
 			<scope>test</scope>
 		</dependency>  
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.3</version>
-	        <scope>compile</scope>			
-		</dependency>				
+		    <groupId>org.apache.james</groupId>
+		    <artifactId>apache-mailet</artifactId>
+		    <version>2.4</version>	    
+		</dependency>						
+		<dependency>
+		    <groupId>org.apache.james</groupId>
+		    <artifactId>apache-mailet-base</artifactId>
+		    <version>1.1</version>	    
+		</dependency>
+	    <dependency>
+	        <groupId>org.nhind</groupId>
+	        <artifactId>config-service-jar</artifactId>
+	        <version>2.1</version>
+	        <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-asm</artifactId>
+				</exclusion>
+			</exclusions>		        
+	    </dependency>						
 		<dependency>
 			<groupId>org.apache.directory.server</groupId>
 			<artifactId>apacheds-core</artifactId>
 			<version>1.0.2</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.directory.shared</groupId>
 			<artifactId>shared-ldap</artifactId>
@@ -130,10 +187,16 @@
 			<artifactId>apacheds-protocol-ldap</artifactId>
 			<version>1.0.2</version>
 			<scope>test</scope>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<version>1.5.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
 			<version>1.5.6</version>
 			<scope>test</scope>
 		</dependency>
@@ -142,40 +205,95 @@
 			<artifactId>apacheds-server-unit</artifactId>
 			<version>1.0.2</version>
 			<scope>test</scope>
+		</dependency>		
+		<dependency>  
+			<groupId>org.mortbay.jetty</groupId>  
+			<artifactId>jetty-servlet-tester</artifactId>  
+			<version>6.1.14</version>  
+		    <scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.activation</groupId>
+					<artifactId>activation</artifactId>
+				</exclusion>
+			</exclusions>		    	 			
+		</dependency>   
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>3.2.3.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging
+					</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>bouncycastle</groupId>
-		    <artifactId>bcprov-jdk15</artifactId>
-		    <version>140</version>    
-		</dependency>	
-		<dependency>
-		    <groupId>bouncycastle</groupId>
-		    <artifactId>bcmail-jdk15</artifactId>
-		    <version>140</version>	    
-		</dependency>	
-		<dependency>
-		    <groupId>dnsjava</groupId>
-		    <artifactId>dnsjava</artifactId>
-		    <version>2.0.8</version>	    
-		</dependency>	
-		<dependency>
-		    <groupId>org.apache.jcs</groupId>
-		    <artifactId>jcs</artifactId>
-		    <version>1.3</version>	    
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>3.2.3.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging
+					</artifactId>
+				</exclusion>
+			</exclusions>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.slf4j</groupId>
-		    <artifactId>nlog4j</artifactId>
-		    <version>1.2.25</version>
-		    <scope>test</scope>	    
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>3.2.3.RELEASE</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>com.springsource.org.apache.commons.logging
+					</artifactId>
+				</exclusion>
+			</exclusions>
+		    <scope>test</scope>
 		</dependency>	
-        <dependency>
-          <groupId>org.mockito</groupId>
-          <artifactId>mockito-all</artifactId>
-          <version>1.8.5</version>
-          <scope>test</scope>
-        </dependency>																																																																																										
-  </dependencies>      
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>2.2.9</version>
+			<scope>test</scope>
+		</dependency>		
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>2.2.9</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.geronimo.specs</groupId>
+					<artifactId>geronimo-activation_1.1_spec</artifactId>
+				</exclusion>
+			</exclusions>			
+		</dependency>	
+	    <dependency>
+	        <groupId>org.apache.derby</groupId>
+	        <artifactId>derby</artifactId>
+	        <version>10.4.1.3</version>
+			<scope>test</scope>	        
+	    </dependency>	
+	    <dependency>
+	        <groupId>backport-util-concurrent</groupId>
+	        <artifactId>backport-util-concurrent</artifactId>
+	        <version>2.2</version>
+			<scope>test</scope>	        
+	    </dependency>		
+	    <dependency>
+	        <groupId>org.apache.mina</groupId>
+	        <artifactId>mina-core</artifactId>
+	        <version>1.0.2</version>
+			<scope>test</scope>	        
+	    </dependency>		    	    			     				 																																																																															
+  </dependencies>        
   <build>
   	<extensions>
   		<extension>
@@ -183,21 +301,6 @@
   			<artifactId>wagon-webdav</artifactId> 
   			<version>RELEASE</version> 
   		</extension>
-	    <extension>
-	      <groupId>org.apache.maven.wagon</groupId>
-	       <artifactId>wagon-ssh-external</artifactId>
-	       <version>2.2</version>
-	    </extension>
-	    <extension>
-	      <groupId>org.apache.maven.wagon</groupId>
-	       <artifactId>wagon-ssh</artifactId>
-	       <version>2.2</version>
-	    </extension>  	
-	    <extension>
-	      <groupId>org.apache.maven.wagon</groupId>
-	       <artifactId>wagon-ssh-common</artifactId>
-	       <version>2.2</version>
-	    </extension>  	    	
    	</extensions>
     <resources>
       <resource>
@@ -220,21 +323,10 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>copy-dependencies</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${project.basedir}/target/lib</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>     
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId> 
+        <configuration>
+           <argLine>-Xmx1024m -XX:MaxPermSize=512m</argLine>
+        </configuration>        
       </plugin>
 	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
@@ -252,9 +344,9 @@
 			</execution>
 		</executions>
 		<configuration>
-		    <fork>true</fork>
+			<fork>true</fork>
 			<optimize>true</optimize>
-			<showDeprecation>true</showDeprecation>
+			<showDeprecation>false</showDeprecation>
 			<encoding>UTF-8</encoding>
 			<source>1.6</source>
 			<target>1.6</target>
@@ -271,26 +363,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>    
-        <plugin>
-            <groupId>com.atlassian.maven.plugins</groupId>
-            <artifactId>maven-clover2-plugin</artifactId>
-			<version>3.3.0</version>
-            <configuration>
-                <jdk>1.6</jdk>
-			<licenseLocation>
-				${project.basedir}/../licenses/clover.license
-			</licenseLocation>
-            </configuration>
-            <executions>
-                <execution>
-                    <phase>pre-site</phase>
-                    <goals>
-                        <goal>instrument</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>	    
+      </plugin>             
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
@@ -300,19 +373,7 @@
                   <!--<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile> -->
                </archive>
             </configuration>
-         </plugin>
-         <plugin>
-       <groupId>org.apache.maven.plugins</groupId>
-       <artifactId>maven-jar-plugin</artifactId>
-       <version>2.2</version>
-       <executions>
-         <execution>
-           <goals>
-             <goal>test-jar</goal>
-           </goals>
-         </execution>
-       </executions>
-     </plugin>
+         </plugin>	
         <!-- DOXIA does not yet copy resources to the generated-site or site location.  Bug
         DOXIA-355 was submitted in July of 09 and is listed to be resolved in DOXIA 1.2.
         This plugin a is work around for copying the resources from the book source to 
@@ -380,11 +441,11 @@
                     <groupId>org.apache.maven.doxia</groupId>
                     <artifactId>doxia-module-confluence</artifactId>
                     <version>1.2</version>
-                </dependency>	
-			</dependencies>			
-		</plugin>
-		<!--  for release only       
-        <plugin>
+                </dependency>
+			</dependencies>
+		</plugin>   			
+		<!--  for release only
+	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
 	        <version>2.6.1</version>
@@ -397,20 +458,19 @@
 	          <source>1.6</source>
 	          <show>public</show>
 	          <excludePackageNames>
-	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils:org.nhindirect.stagent.policy.impl
-	          </excludePackageNames>          	          
+	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider:org.nhindirect.gateway.smtp.config.cert.impl
+	          </excludePackageNames>     	               	          
 	        </configuration>
-            <executions>
-              <execution>
-                <phase>package</phase>
-                <id>attach-javadocs</id>
-                <goals>
-                  <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>	        
-	      </plugin>		
-
+	        <executions>
+	            <execution>
+	              <phase>package</phase>
+	              <id>attach-javadocs</id>
+	              <goals>
+	                <goal>jar</goal>
+	              </goals>
+	            </execution>
+	        </executions>		        
+	      </plugin>
 	      <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-gpg-plugin</artifactId>
@@ -423,8 +483,8 @@
                      </goals>
               </execution>
             </executions>
-         </plugin>
-         -->
+         </plugin>      
+          -->    
     </plugins>
     <pluginManagement>
        <plugins>
@@ -451,9 +511,9 @@
                    <artifactId>commons-logging</artifactId>
                  </exclusion>
                </exclusions>
-             </dependency>         
+             </dependency>
             </dependencies>
-          </plugin>
+          </plugin>          
        </plugins>
     </pluginManagement>		    
   </build>                        
@@ -462,13 +522,13 @@
           <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-site-plugin</artifactId>
-             <version>2.1.1</version>          
+             <version>2.1.1</version>
           </plugin>  
           <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-project-info-reports-plugin</artifactId>
-             <version>2.4</version>
-          </plugin>    
+             <version>2.2</version>
+          </plugin>   
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -482,7 +542,7 @@
 	          <source>1.6</source>
 	          <show>public</show>
 	          <excludePackageNames>
-	              org.nhindirect.stagent.annotation:org.nhindirect.stagent.cert.impl:org.nhindirect.stagent.cert.impl.annotation:org.nhindirect.stagent.cert.impl.module:org.nhindirect.stagent.cert.impl.provider:org.nhindirect.stagent.cryptography.annotation:org.nhindirect.stagent.module:org.nhindirect.stagent.provider:org.nhindirect.stagent.trust.annotation:org.nhindirect.stagent.trust.provider:org.nhindirect.stagent.utils:org.nhindirect.stagent.policy.impl
+	              org.nhindirect.gateway.smtp.annotation:org.nhindirect.gateway.smtp.module:org.nhindirect.gateway.smtp.provider:org.nhindirect.gateway.smtp.config.cert.impl:org.nhindirect.gateway.smtp.dsn.impl
 	          </excludePackageNames>          	          
 	        </configuration>
 	      </plugin>
@@ -493,23 +553,27 @@
           			<targetJdk>1.6</targetJdk>
         		</configuration>					
 			</plugin>
-                <!--
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-report-plugin</artifactId>
 		    </plugin>
-                -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
-			</plugin>		
-	        <plugin>
-	            <groupId>org.codehaus.mojo</groupId>
-	            <artifactId>clirr-maven-plugin</artifactId>
+			</plugin>
+<!--  			
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-changelog-plugin</artifactId>
 	            <configuration>
-	                <minSeverity>info</minSeverity>
+	                <dates>
+                        <date>2010-11-10</date>
+	                </dates>
+	                <outputEncoding>UTF-8</outputEncoding>
+	                <type>date</type>
 	            </configuration>
-	        </plugin> 
+	        </plugin>	
+-->	        
 	        <plugin>
 	            <groupId>org.codehaus.mojo</groupId> 
 	            <artifactId>findbugs-maven-plugin</artifactId>
@@ -530,24 +594,14 @@
 	                    <tag>@deprecated</tag>
 	                </tags>
 	            </configuration>
-	        </plugin>	
-			<plugin>
-	            <groupId>com.atlassian.maven.plugins</groupId>
-	            <artifactId>maven-clover2-plugin</artifactId>
-			    <version>3.3.0</version>
-				<configuration>
-					<licenseLocation>
-						${project.basedir}/../licenses/clover.license
-					</licenseLocation>
-				</configuration>
-			</plugin>	                   
+	        </plugin>  	                         
 		</plugins>
   </reporting>
   <distributionManagement>
     <site>
       <id>nhind-site</id>
       <name>NHIN Direct API publication site</name>
-      <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/agent/${project.version}</url>
+      <url>sftp://api.nhindirect.org/x/www/api.nhindirect.org/java/site/gateway/${project.version}</url>
     </site>
     <snapshotRepository>
         <id>sonatype-snapshot</id>
@@ -560,6 +614,6 @@
         <name>Sonatype OSS Maven Release Repositor</name>
         <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         <uniqueVersion>false</uniqueVersion>
-     </repository>		    
-  </distributionManagement>
+     </repository>	    
+  </distributionManagement>         
 </project>
