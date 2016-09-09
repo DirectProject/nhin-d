@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>direct-jce-providers</artifactId>    
     <name>Direct Project JCE Provider</name>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0</version>
     <description>Direct Project JCE Provider.  Includes wrapper classes for other JCE providers</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/direct-jce-providers/${project.version}</url> 
@@ -168,7 +168,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>        
+      </plugin>    	    
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>

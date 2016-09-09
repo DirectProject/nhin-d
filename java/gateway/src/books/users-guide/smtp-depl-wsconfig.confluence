@@ -186,7 +186,23 @@ Private and public certificates stored in the configuration service are added an
 
 !images/WSConfigAddCertificate.png!
 
-The certificate field is the location of the DER encoded certificate file that represents the private or public certificate.  Clicking *_Add Certificate_* will add the certificate to the configuration service.  *NOTE* The owner is automatically populated by the service when the certificate is added.  
+Certificates can be uploaded in the multiple formats and may or may not include a private key.  The *_Private Key Type_* drop down determines the format of the certificate
+you are uploading.  The following formats below are supported along with what type of files should be uploaded with each (NOTE: All formats are expected to use DER encoding).
+
+* No Private Key: The certificate field is the location of the certificate file that represents public certificate.  No private key is provided.
+* Unprotected PKCS12: The certificate field is the location of a PKCS12 file (most likely has an extension of .p12) that contains both the certificate and private key, but the
+file does use any encryption.  A password is not needed for this format type.
+* Password Protected PKCS12: The certificate field is the location of a PKCS12 file (most likely has an extension of .p12) that contains both the certificate and private key, and the
+file is encrypted.  A password is entered in the Pass Phrase field to decrypt the file.
+* Unprotected PKCS8: The certificate field is the location of a certificate file and the private private key is the location of the private key file.  The
+private key is not encrypted, and a password is not needed for this format type.
+* Password Unprotected PKCS8: The certificate field is the location of a certificate file and the private private key is the location of the private key file.  The
+private key is encrypted, and a password is entered in the Pass Phrase field to decrypt the private key.
+* Wrapped PKCS8: The certificate field is the location of a certificate file and the private private key is the location of the private key file.  The
+private key is encrypted, but is _wrapped_ using a secret key from a hardware security module.  In this case, the private key remains in it's wrapped state and is only
+unwrapped when activated by the security and trust agent for signing and decryption operations.
+
+Clicking *_Add Certificate_* will add the certificate and optional private key to the configuration service.  *NOTE* The owner is automatically populated by the service when the certificate is added.  
 
 *NOTE:* Private certificate files should be pkcs12 der encoded files with either encryption or no encryption on the private key stored in the file.  If the private key is encrypted, then the correct pass-phrase must be provided (the certificate will fail to load if the wrong pass-phrase is provider).  Although pkcs12 files can be created from open source tools such as openssl, the Java Reference implementation agent module contains a tool for creating pkcs12 files in the expected format from DER encoded X509 certificates and pkcs8 DER encoded private key files.
 

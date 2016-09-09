@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{4.2}
+
+    Changes included with release 4.2
+    
+    []
+    
+    Enhancements
+    
+    * Searches key store manager (backed by PKCS11 tokens) for private keys when a key store manager is configured as part of the local certificate resolution.
+
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
 {4.1}
 
     Changes included with release 4.1
