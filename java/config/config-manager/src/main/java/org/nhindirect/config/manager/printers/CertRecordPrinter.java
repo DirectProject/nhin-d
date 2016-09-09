@@ -3,13 +3,12 @@ package org.nhindirect.config.manager.printers;
 
 import java.net.URL;
 
-import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
 
-import org.nhindirect.dns.DNSException;
+import org.nhindirect.config.model.exceptions.CertificateConversionException;
 import org.nhindirect.stagent.cert.Thumbprint;
 
 public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Certificate>
@@ -52,16 +51,15 @@ public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Ce
 		String tpOrURL = null;
 		boolean isURL = false;
 		
-		X509Certificate cert = null;
-		
+		org.nhindirect.config.model.utils.CertUtils.CertContainer cont = null;
 		try
 		{
-			cert = CertUtils.toX509Certificate(retCert.getData());
-			tpOrURL = Thumbprint.toThumbprint(cert).toString();
+			cont = org.nhindirect.config.model.utils.CertUtils.toCertContainer(retCert.getData());
+			tpOrURL = Thumbprint.toThumbprint(cont.getCert()).toString();
 		}
-		catch (DNSException e)
+		catch (CertificateConversionException e)
 		{
-			// probably not an X509 CERT... might be a URL
+			
 		}
 		
 		if (tpOrURL == null)
@@ -88,9 +86,9 @@ public class CertRecordPrinter extends AbstractRecordPrinter<org.nhind.config.Ce
 			else if (column.header.equals(RECORD_TYPE_COL))
 				return (isURL) ? "IPKIX" : "PKIX";			
 			else if (column.header.equals(TP_NAME_COL))
-				return isURL ? tpOrURL : Thumbprint.toThumbprint(cert).toString();			
+				return isURL ? tpOrURL : Thumbprint.toThumbprint(cont.getCert()).toString();			
 			else if (column.header.equals(EXPIRES_COL))
-				return isURL ? "" : dateFormatter.format(cert.getNotAfter());	
+				return isURL ? "" : dateFormatter.format(cont.getCert().getNotAfter());	
 			else if (column.header.equals(PRIVATE_IND_COL))
 				return retCert.isPrivateKey() ? "Y" : "N";
 			else
