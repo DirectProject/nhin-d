@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-using Health.Direct.Agent;
-using Health.Direct.Common.Certificates;
-using Health.Direct.Common.Cryptography;
+﻿using System.Linq;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.SettingsManager;
 using Health.Direct.Config.Store;

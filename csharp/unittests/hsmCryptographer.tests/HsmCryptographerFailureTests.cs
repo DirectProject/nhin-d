@@ -603,10 +603,10 @@ namespace hsmCryptographer.tests
 
                 var encryptedMessage = tester.AgentA.Cryptographer.Encrypt(message, m_singleUseEnciphermentPublicCert);
 
-                Assert.DoesNotThrow(() => tester.AgentB.Cryptographer  // Decrypt Test
+                tester.AgentB.Cryptographer  // Decrypt Test
                     .DecryptEntity(
                         hsmCryptographer.GetEncryptedBytes(encryptedMessage),
-                        m_singleUseEnciphermentPublicCert));
+                        m_singleUseEnciphermentPublicCert);
 
                 Assert.Equal(5, diagnostics.ActualErrorMessages.Count);
 
@@ -657,10 +657,10 @@ namespace hsmCryptographer.tests
 
                 var encryptedMessage = tester.AgentA.Cryptographer.Encrypt(message, m_singleUseEnciphermentPublicCert);
 
-                Assert.DoesNotThrow(() => tester.AgentB.Cryptographer  // Decrypt Test
+                tester.AgentB.Cryptographer  // Decrypt Test
                     .DecryptEntity(
                         hsmCryptographer.GetEncryptedBytes(encryptedMessage),
-                        m_singleUseEnciphermentPublicCert));
+                        m_singleUseEnciphermentPublicCert);
 
                 Assert.Equal(3, diagnostics.ActualErrorMessages.Count);
                 Assert.Equal(
@@ -715,10 +715,10 @@ namespace hsmCryptographer.tests
 
                 var encryptedMessage = tester.AgentA.Cryptographer.Encrypt(message, m_singleUseEnciphermentPublicCert);
 
-                Assert.DoesNotThrow(() => tester.AgentB.Cryptographer  // Decrypt Test
+                tester.AgentB.Cryptographer  // Decrypt Test
                     .DecryptEntity(
                         hsmCryptographer.GetEncryptedBytes(encryptedMessage),
-                        m_singleUseEnciphermentPublicCert));
+                        m_singleUseEnciphermentPublicCert);
 
                 Assert.Equal(3, diagnostics.ActualErrorMessages.Count);
                 Assert.Equal(
@@ -740,7 +740,7 @@ namespace hsmCryptographer.tests
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                Assert.DoesNotThrow(() => hsmCryptographer.Init(pluginDef.Object));
+                hsmCryptographer.Init(pluginDef.Object);
             }
         }
 

@@ -11,20 +11,17 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 */
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Net.Mime;
 using System.Net.Mail;
-using Health.Direct.Common.Mime;
+using System.Net.Mime;
 using Health.Direct.Common.BlueButton;
+using Health.Direct.Common.Mime;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Mime
 {
@@ -34,7 +31,7 @@ namespace Health.Direct.Common.Tests.Mime
         {
             get
             {
-                yield return new object[] { 
+                yield return new object[] {
                     new ContentType {
                         MediaType = MediaTypeNames.Text.Plain,
                         Name = "FooFile.txt",
@@ -42,108 +39,108 @@ namespace Health.Direct.Common.Tests.Mime
                     },
                     3
                 };
-                
+
                 ContentType c = new ContentType("message/partial");
                 c.Name = "Bingo";
                 c.Parameters["id"] = "28a3sesd313@xyx.pqr";
                 c.Parameters["number"] = "1";
                 c.Parameters["quoted"] = "(foo<bar?q";
                 c.Parameters["total"] = "3";
-                yield return new object[] {c, 6};
+                yield return new object[] { c, 6 };
             }
         }
-        
+
         public static IEnumerable<object[]> ContentDispositions
         {
             get
             {
                 DateTime now = DateTime.Now;
-                ContentDisposition cd = new ContentDisposition {
-                        DispositionType = "attachment",
-                        FileName = "goobar.txt",
-                        CreationDate = now,
-                        ReadDate = now.AddDays(5),
-                        ModificationDate = now.AddDays(3),    
-                        Size = 123456789                    
-                    };
+                ContentDisposition cd = new ContentDisposition
+                {
+                    DispositionType = "attachment",
+                    FileName = "goobar.txt",
+                    CreationDate = now,
+                    ReadDate = now.AddDays(5),
+                    ModificationDate = now.AddDays(3),
+                    Size = 123456789
+                };
                 cd.Parameters["XYZ"] = "pqr/?.<";
                 yield return new object[]
                 {
                     cd, 7
                 };
-                
+
                 //Ensure hour of date time is in an hour that could result in a single hour digit
                 now = new DateTime(2014, 3, 20, 1, 10, 20, DateTimeKind.Local);
-                cd = new ContentDisposition {
-                        DispositionType = "attachment",
-                        FileName = "goobar.txt",
-                        CreationDate = now,
-                        ReadDate = now.AddDays(5),
-                        ModificationDate = now.AddDays(3),    
-                        Size = 123456789                    
-                    };
+                cd = new ContentDisposition
+                {
+                    DispositionType = "attachment",
+                    FileName = "goobar.txt",
+                    CreationDate = now,
+                    ReadDate = now.AddDays(5),
+                    ModificationDate = now.AddDays(3),
+                    Size = 123456789
+                };
                 cd.Parameters["XYZ"] = "pqr/?.<";
-                yield return new object[] { 
+                yield return new object[] {
                     cd, 7
                 };
             }
         }
-                
+
         [Theory]
-        [PropertyData("ContentTypes")]
+        [MemberData("ContentTypes")]
         public void TestContentType(ContentType contentType, int paramCount)
         {
             string fieldText = contentType.ToString();
-            
+
             MimeFieldParameters fieldParams = new MimeFieldParameters();
-            Assert.DoesNotThrow(() => fieldParams.Deserialize(fieldText));
+            Assert.Null(Record.Exception(() => fieldParams.Deserialize(fieldText)));
             Assert.True(fieldParams.Count == paramCount);
-            
+
             Assert.Equal(contentType.MediaType, fieldParams[0].Value);
             Assert.Equal<string>(contentType.Name, fieldParams["name"]);
-            
-            Assert.DoesNotThrow(() => Compare(fieldParams, contentType.Parameters));
-            
+
+            Assert.Null(Record.Exception(() => Compare(fieldParams, contentType.Parameters)));
+
             string fieldTextSerialized = null;
-            Assert.DoesNotThrow(() => fieldTextSerialized = fieldParams.Serialize());
-            
+            Assert.Null(Record.Exception(() => fieldTextSerialized = fieldParams.Serialize()));
+
             fieldParams.Clear();
-            Assert.DoesNotThrow(() => fieldParams.Deserialize(fieldTextSerialized));
+            Assert.Null(Record.Exception(() => fieldParams.Deserialize(fieldTextSerialized)));
             Assert.True(fieldParams.Count == paramCount);
-            
-            Assert.DoesNotThrow(() => new ContentType(fieldTextSerialized));            
+
+            Assert.Null(Record.Exception(() => new ContentType(fieldTextSerialized)));
         }
 
-        
-       
         /// <summary>
         ///
         /// </summary>
         /// <param name="disposition"></param>
         /// <param name="paramCount"></param>
         [Theory]
-        [PropertyData("ContentDispositions")]
+        [MemberData("ContentDispositions")]
         public void TestDisposition(ContentDisposition disposition, int paramCount)
         {
             string fieldText = disposition.ToString();
 
             MimeFieldParameters fieldParams = new MimeFieldParameters();
-            Assert.DoesNotThrow(() => fieldParams.Deserialize(fieldText));
+            Assert.Null(Record.Exception(() => fieldParams.Deserialize(fieldText)));
             Assert.True(fieldParams.Count == paramCount);
 
             Assert.Equal(disposition.DispositionType, fieldParams[0].Value);
             Assert.Equal(disposition.FileName, fieldParams["filename"]);
-            
-            Assert.DoesNotThrow(() => Compare(fieldParams, disposition.Parameters));
-            
+
+            Assert.Null(Record.Exception(() => Compare(fieldParams, disposition.Parameters)));
+
             string fieldTextSerialized = null;
-            Assert.DoesNotThrow(() => fieldTextSerialized = fieldParams.Serialize());
+            Assert.Null(Record.Exception(() => fieldTextSerialized = fieldParams.Serialize()));
 
             fieldParams.Clear();
-            Assert.DoesNotThrow(() => fieldParams.Deserialize(fieldTextSerialized));
+            Assert.Null(Record.Exception(() => fieldParams.Deserialize(fieldTextSerialized)));
             Assert.True(fieldParams.Count == paramCount);
-            
-            Assert.DoesNotThrow(() => new ContentDisposition(fieldTextSerialized));
+
+            Assert.Null(Record.Exception(() => new ContentDisposition(fieldTextSerialized)));
         }
 
         public static IEnumerable<KeyValuePair<string, string>> DocumentSourcesText
@@ -166,56 +163,57 @@ namespace Health.Direct.Common.Tests.Mime
                 yield return new KeyValuePair<string, MailAddress>("emailDoc3", new MailAddress("<frank.hardy@direct.healthvault.com>"));
             }
         }
-                
+
         [Fact]
         public void TestBlueBluttonSerialization()
-        {            
+        {
             RequestContext context = this.CreateContext();
-            
+
             MimeEntity entity = null;
-            Assert.DoesNotThrow(() => entity = context.ToMimeEntity());
-            
-            string entityText = null;            
-            Assert.DoesNotThrow(() => entityText = entity.ToString());
-            
+            Assert.Null(Record.Exception(() => entity = context.ToMimeEntity()));
+
+            string entityText = null;
+            Assert.Null(Record.Exception(() => entityText = entity.ToString()));
+
             MimeEntity parsedEntity = null;
-            Assert.DoesNotThrow(() => parsedEntity = MimeSerializer.Default.Deserialize<MimeEntity>(entityText));
+            Assert.Null(Record.Exception(() => parsedEntity = MimeSerializer.Default.Deserialize<MimeEntity>(entityText)));
 
             Attachment attachment = null;
-            Assert.DoesNotThrow(() => attachment = context.ToAttachment());
+            Assert.Null(Record.Exception(() => attachment = context.ToAttachment()));
             Assert.True(attachment.ContentType.MediaType == MediaTypeNames.Text.Plain);
             Assert.True(attachment.ContentDisposition.FileName == RequestContext.AttachmentName);
-            
+
             string attachmentBody = attachment.StringContent();
             Assert.True(attachmentBody.Contains(RequestContext.FieldNames.DocumentSource));
-            
+
             RequestContext contextParsed = new RequestContext(parsedEntity.Body.Text);
             this.Compare(context.GetDocumentSources(), contextParsed.GetDocumentSources());
         }
-        
-        [Fact]        
+
+        [Fact]
         public void TestBlueButtonSources()
         {
             RequestContext context = this.CreateContext();
             List<DocumentSource> ds = null;
-            
-            Assert.DoesNotThrow(() => ds = context.GetDocumentSources().ToList());
 
-            List<DocumentSource> matches = null;            
-            Assert.DoesNotThrow(() => {
+            Assert.Null(Record.Exception(() => ds = context.GetDocumentSources().ToList()));
+
+            List<DocumentSource> matches = null;
+            Assert.Null(Record.Exception(() =>
+            {
                 matches = (
                 from doc in ds
                 where doc.IsSourceForDocument("emailDoc")
                 select doc
                 ).ToList();
-            });    
+            }));
             Assert.True(matches.Count == 2);
-            
-            int matchCount = matches.Count;                    
-            Assert.DoesNotThrow(() => context.RemoveDocumentSources());
-            Assert.True(context.Count == (matchCount -2));
+
+            int matchCount = matches.Count;
+            Assert.Null(Record.Exception(() => context.RemoveDocumentSources()));
+            Assert.True(context.Count == (matchCount - 2));
         }
-        
+
         RequestContext CreateContext()
         {
             RequestContext context = new RequestContext();
@@ -223,40 +221,40 @@ namespace Health.Direct.Common.Tests.Mime
             this.AddMailSources(context);
             return context;
         }
-        
-        void AddTextSources(RequestContext context)
-        {        
-            foreach(KeyValuePair<string, string> kv in DocumentSourcesText)
-            {
-                Assert.DoesNotThrow(() => context.Add(new DocumentSource(kv.Key, kv.Value)));
-            }
-        } 
 
-        void AddMailSources(RequestContext context)
-        {    
-            foreach (KeyValuePair<string, MailAddress> kv in DocumentSourcesMailAddress)
+        void AddTextSources(RequestContext context)
+        {
+            foreach (KeyValuePair<string, string> kv in DocumentSourcesText)
             {
-                Assert.DoesNotThrow(() => context.Add(new DocumentSource(kv.Key, kv.Value)));
+                Assert.Null(Record.Exception(() => context.Add(new DocumentSource(kv.Key, kv.Value))));
             }
         }
-        
+
+        void AddMailSources(RequestContext context)
+        {
+            foreach (KeyValuePair<string, MailAddress> kv in DocumentSourcesMailAddress)
+            {
+                Assert.Null(Record.Exception(() => context.Add(new DocumentSource(kv.Key, kv.Value))));
+            }
+        }
+
         void Compare(MimeFieldParameters mfp, StringDictionary pd)
-        {   
-            foreach(string key in pd.Keys)
+        {
+            foreach (string key in pd.Keys)
             {
                 Assert.Equal(pd[key], mfp[key]);
             }
-        } 
-        
+        }
+
         void Compare(IEnumerable<DocumentSource> x, IEnumerable<DocumentSource> y)
         {
             List<DocumentSource> xl = null;
             List<DocumentSource> yl = null;
-            
-            Assert.DoesNotThrow(() => xl = x.ToList());
-            Assert.DoesNotThrow(() => yl = y.ToList());
+
+            Assert.Null(Record.Exception(() => xl = x.ToList()));
+            Assert.Null(Record.Exception(() => yl = y.ToList()));
             Assert.True(xl.Count == yl.Count);
-            
+
             for (int i = 0, count = xl.Count; i < count; ++i)
             {
                 Assert.True(xl[i].CompareTo(yl[i]) == 0);

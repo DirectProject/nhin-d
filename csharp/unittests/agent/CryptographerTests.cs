@@ -4,6 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
+    Joseph Shook    Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -68,7 +69,7 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("DigestAlgorithms")]
+        [MemberData("DigestAlgorithms")]
         public void TestDigestMicalgParameter(DigestAlgorithm algo)
         {
             ContentType type = SignedEntity.CreateContentType(algo);
@@ -76,14 +77,14 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("DigestAlgorithms")]
+        [MemberData("DigestAlgorithms")]
         public void TestSignatureOIDs(DigestAlgorithm algo)
         {
             string messageText = m_tester.ReadMessageText("simple.eml");
             m_cryptographer.DigestAlgorithm = algo;
             SignedCms signedData = null;
             
-            Assert.DoesNotThrow(() => signedData = m_cryptographer.CreateSignature(Encoding.ASCII.GetBytes(messageText), new X509Certificate2Collection(m_cert))); 
+            signedData = m_cryptographer.CreateSignature(Encoding.ASCII.GetBytes(messageText), new X509Certificate2Collection(m_cert)); 
             
             Assert.True(signedData.SignerInfos.Count == 1);
             Assert.True(signedData.SignerInfos[0].DigestAlgorithm.Value == SMIMECryptographer.ToDigestAlgorithmOid(algo).Value);

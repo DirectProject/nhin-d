@@ -11,48 +11,47 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 */
+
 using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Caching;
+using Health.Direct.Common.Certificates;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Agent.Tests
 {
     public class UniformResolverTests
     {
         UniformCertificateResolver m_resolver;
-        
+
         public UniformResolverTests()
         {
             m_resolver = new UniformCertificateResolver(TestCertificates.ChainCertsStore);
         }
-        
+
         public static IEnumerable<object[]> Domains
         {
             get
             {
-                yield return new[] {"foo"};
-                yield return new[] {"bar"};
+                yield return new[] { "foo" };
+                yield return new[] { "bar" };
             }
         }
-        
+
         public static IEnumerable<object[]> Addresses
         {
             get
             {
-                yield return new[] {new MailAddress("foo@bar.com")};
+                yield return new[] { new MailAddress("foo@bar.com") };
                 yield return new[] { new MailAddress("shoo@goo.com") };
             }
         }
-        
+
         [Theory]
-        [PropertyData("Domains")]
+        [MemberData("Domains")]
         public void TestDomains(string domain)
         {
             X509Certificate2Collection matches = m_resolver.GetCertificatesForDomain(domain);
@@ -60,7 +59,7 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("Addresses")]
+        [MemberData("Addresses")]
         public void TestAddresses(MailAddress address)
         {
             X509Certificate2Collection matches = m_resolver.GetCertificates(address);
@@ -72,7 +71,7 @@ namespace Health.Direct.Agent.Tests
     {
         ICertificateResolver m_resolver;
         MailAddress m_address = new System.Net.Mail.MailAddress("toby@redmond.hsgincubator.com");
-        
+
         public CertificateResolverTests()
         {
             m_resolver = TestCertificates.PublicCertsStore.CreateResolver();
@@ -117,9 +116,9 @@ namespace Health.Direct.Agent.Tests
                 yield return new[] { "hsgincubator.com" };
             }
         }
-        
+
         [Theory]
-        [PropertyData("GoodAddresses")]
+        [MemberData("GoodAddresses")]
         public void GetCertificateWithGoodAddress(string address)
         {
             MailAddress mailAddress = new MailAddress(address);
@@ -132,7 +131,7 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("GoodDomains")]
+        [MemberData("GoodDomains")]
         public void GetCertificateWithGoodDomains(string domain)
         {
             X509Certificate2Collection certs = m_resolver.GetCertificatesForDomain(domain);
@@ -144,7 +143,7 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("BadDomains")]
+        [MemberData("BadDomains")]
         public void GetCertificateWithBadDomains(string domain)
         {
             X509Certificate2Collection certs = m_resolver.GetCertificatesForDomain(domain);
@@ -152,13 +151,13 @@ namespace Health.Direct.Agent.Tests
         }
 
         [Theory]
-        [PropertyData("BadAddresses")]
+        [MemberData("BadAddresses")]
         public void GetCertificateWithBadAddresses(string address)
         {
             X509Certificate2Collection certs = m_resolver.GetCertificates(new MailAddress(address));
             Assert.True(certs.IsNullOrEmpty());
         }
-        
+
         [Fact]
         public void TestCollectionRetryNotFound()
         {
@@ -170,64 +169,64 @@ namespace Health.Direct.Agent.Tests
 
             resolvers.Add(new ThrowingCertResolver());
             Assert.Throws<InvalidOperationException>(() => resolvers.GetCertificates(m_address));
-            
+
             resolvers.RemoveAt(0);
             resolvers.Add(new NullResolver());
             Assert.Throws<InvalidOperationException>(() => resolvers.GetCertificates(m_address));
-            
+
             resolvers.Clear();
             resolvers.Add(new NullResolver());
             resolvers.Add(new NullResolver());
             resolvers.Add(m_resolver);
-            Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());            
+            Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());
         }
-        
-        [Fact]        
+
+        [Fact]
         public void TestCollectionRetryException()
         {
             CertificateResolverCollection resolvers = new CertificateResolverCollection();
             resolvers.TryNextWhen = CertificateResolverCollection.TryNextCriteria.Exception;
-            
+
             resolvers.Add(new NullResolver());
             resolvers.Add(m_resolver);
             Assert.True(resolvers.GetCertificates(m_address).IsNullOrEmpty());
-            
+
             resolvers.TryNextWhen = CertificateResolverCollection.TryNextCriteria.NotFound;
             Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());
-            
+
             resolvers.Clear();
 
             resolvers.Add(new ThrowingCertResolver());
             resolvers.Add(m_resolver);
             Assert.Throws<InvalidOperationException>(() => resolvers.GetCertificates(m_address));
-            
+
             resolvers.TryNextWhen = CertificateResolverCollection.TryNextCriteria.Exception;
             Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());
         }
-        
+
         [Fact]
         public void TestCollectionRetryAlways()
         {
             CertificateResolverCollection resolvers = new CertificateResolverCollection();
             resolvers.TryNextWhen = CertificateResolverCollection.TryNextCriteria.Always;
-            
+
             resolvers.Add(new ThrowingCertResolver());
             resolvers.Add(m_resolver);
 
-            Assert.DoesNotThrow(() => resolvers.GetCertificates(m_address));
+            Assert.Null(Record.Exception(() => resolvers.GetCertificates(m_address)));
             Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());
-            
+
             resolvers.Insert(0, new NullResolver());
             Assert.True(!resolvers.GetCertificates(m_address).IsNullOrEmpty());
         }
-        
+
         [Fact]
         public void TestErrorEventHandler()
         {
             ThrowingX509Index throwingIndex = new ThrowingX509Index();
             CacheSettings cacheSettings = new CacheSettings();
             cacheSettings.Cache = false;
-            
+
             List<Exception> notifiedErrors = new List<Exception>();
             List<Exception> thrownErrors = new List<Exception>();
             //
@@ -237,7 +236,7 @@ namespace Health.Direct.Agent.Tests
             resolver.Error += (r, e) => notifiedErrors.Add(e);
             MailAddress address = new MailAddress("toby@toby");
             this.TryResolveCerts(resolver, address, thrownErrors);
-            
+
             Assert.True(notifiedErrors.Count == thrownErrors.Count);
             //
             // Test they are NOT fired
@@ -247,11 +246,11 @@ namespace Health.Direct.Agent.Tests
             notifiedErrors.Clear();
             thrownErrors.Clear();
             this.TryResolveCerts(resolver, address, thrownErrors);
-            
+
             Assert.True(notifiedErrors.Count == 0);
             Assert.True(thrownErrors.Count == countThrownFiredBefore);
         }
-        
+
         void TryResolveCerts(ICertificateResolver resolver, MailAddress address, List<Exception> thrownErrors)
         {
             try

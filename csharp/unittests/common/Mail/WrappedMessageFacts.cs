@@ -14,19 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.IO;
-using Health.Direct.Common.Collections;
+using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
-using Health.Direct.Common.Cryptography;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Common.Tests.Mail
 {
@@ -45,7 +39,7 @@ namespace Health.Direct.Common.Tests.Mail
                       MailStandard.Headers.References,
                       MailStandard.Headers.Date
                   };
-        
+
         [Theory]
         [InlineData(3, 2, 250)]
         [InlineData(4, 2, 1000)]
@@ -59,9 +53,9 @@ namespace Health.Direct.Common.Tests.Mail
             string wrappedMessageText = wrappedMessage.Serialize();
 
             Message parsedMessage = null;
-            Assert.DoesNotThrow(() => parsedMessage = Message.Load(wrappedMessageText));
+            Assert.Null(Record.Exception(() => parsedMessage = Message.Load(wrappedMessageText)));
             Message extracted = null;
-            Assert.DoesNotThrow(() => extracted = WrappedMessage.ExtractInner(parsedMessage));
+            Assert.Null(Record.Exception(() => extracted = WrappedMessage.ExtractInner(parsedMessage)));
 
             string extractedBody = extracted.Body.Text;
             if (extracted.GetTransferEncoding() == TransferEncoding.QuotedPrintable)
@@ -71,7 +65,7 @@ namespace Health.Direct.Common.Tests.Mail
             }
             Assert.True(extractedBody == mail.Body);
         }
-        
+
         [Theory]
         [InlineData("Wrapped_Quoted.eml")]
         [InlineData("Wrapped_Quoted2.eml")]
@@ -83,30 +77,30 @@ namespace Health.Direct.Common.Tests.Mail
         {
             string filePath = Path.Combine("Mail\\TestFiles", fileName);
             string mailtext = File.ReadAllText(filePath);
-            
+
             Message message = null;
-            Assert.DoesNotThrow(() => message = Message.Load(mailtext));
-            
+            Assert.Null(Record.Exception(() => message = Message.Load(mailtext)));
+
             if (SMIMEStandard.IsContentMultipartSignature(message.ParsedContentType))
             {
                 SignedEntity signedEntity = null;
-                
-                Assert.DoesNotThrow(() => signedEntity = SignedEntity.Load(message));
+
+                Assert.Null(Record.Exception(() => signedEntity = SignedEntity.Load(message)));
                 message.Headers = message.Headers.SelectNonMimeHeaders();
                 message.UpdateBody(signedEntity.Content); // this will merge in content + content specific mime headers
             }
 
             Message extracted = null;
-            Assert.DoesNotThrow(() => extracted = WrappedMessage.ExtractInner(message));
-            
+            Assert.Null(Record.Exception(() => extracted = WrappedMessage.ExtractInner(message)));
+
             Header to = null;
-            Assert.DoesNotThrow(() => to = extracted.To);
-            
+            Assert.Null(Record.Exception(() => to = extracted.To));
+
             MailAddressCollection addresses = null;
-            Assert.DoesNotThrow(() => addresses = MailParser.ParseAddressCollection(to));
+            Assert.Null(Record.Exception(() => addresses = MailParser.ParseAddressCollection(to)));
             Assert.True(addresses.Count > 0);
 
-            Assert.DoesNotThrow(() => MailParser.ParseMailAddress(extracted.From));
-        }        
+            Assert.Null(Record.Exception(() => MailParser.ParseMailAddress(extracted.From)));
+        }
     }
 }

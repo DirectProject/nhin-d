@@ -18,8 +18,6 @@ using Health.Direct.Common.Mime;
 using Health.Direct.Common.Policies;
 using Health.Direct.Hsm;
 using Moq;
-using Xunit;
-using Xunit.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
@@ -31,6 +29,7 @@ using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.X509;
+using Xunit;
 
 namespace hsmCryptographer.tests
 {
@@ -177,7 +176,7 @@ namespace hsmCryptographer.tests
         }
 
         [Theory]
-        [PropertyData(nameof(DigestAlgorithms))]
+        [MemberData(nameof(DigestAlgorithms))]
         public void TestDigestMicalgParameter(DigestAlgorithm algo)
         {
             ContentType type = SignedEntity.CreateContentType(algo);
@@ -496,7 +495,7 @@ namespace hsmCryptographer.tests
         /// Invoke-psake .\default.ps1 ConfigureTestdata
         /// </summary>
         [Theory]
-        [PropertyData(nameof(EndToEndSoftToHsmParameters))]
+        [MemberData(nameof(EndToEndSoftToHsmParameters))]
         public void TestEndToEnd_SoftToHsm(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
         {
             var mockPolicyFilterMock = new Mock<IPolicyFilter>();
@@ -585,7 +584,7 @@ namespace hsmCryptographer.tests
         /// Invoke-psake .\default.ps1 ConfigureTestdata
         /// </summary>
         [Theory]
-        [PropertyData(nameof(EndToEndHsmToSoftParameters))]
+        [MemberData(nameof(EndToEndHsmToSoftParameters))]
         public void TestEndToEnd_HsmToSoft(string fileName, EncryptionAlgorithm encryptionAlgorithm, DigestAlgorithm digestAlgorithm)
         {
             var staticDomainResolverMock = new Mock<IDomainResolver>();
