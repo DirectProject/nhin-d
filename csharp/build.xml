@@ -10,6 +10,7 @@
 	
 	<!-- this imports the xunit and xunitproject tasks -->
 	<UsingTask AssemblyFile="external\xunit\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunitproject" />
+	<UsingTask AssemblyFile="build\packages\xunit.runner.msbuild.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
 
 	<!-- place any strings/properties here that are likely to be used more than once -->
 	<PropertyGroup>
@@ -112,12 +113,14 @@
 		<MSBuild Projects="$(xd_solution)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any CPU" />
 	</Target>
 
-	
+	<ItemGroup>
+		<test-agent_Assemblies  Include=".\unittests\agent\bin\$(Configuration)\Health.Direct.Agent.Tests.dll" />
+		<test-agent_Assemblies  Include=".\unittests\common\bin\$(Configuration)\Health.Direct.Common.Tests.dll"  />
+	</ItemGroup>
 	
 	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test-agent" >
-		<xunitproject ProjectFile="unittests\agent.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\agent.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-agent_Assemblies)"/>
 	</Target>
 	
 	<Target Name="test-gateway" >
