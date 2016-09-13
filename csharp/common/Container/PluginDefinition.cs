@@ -165,7 +165,7 @@ namespace Health.Direct.Common.Container
         /// </summary>
         /// <typeparam name="T">type to deserialize to</typeparam>
         /// <returns>strongly typed settings object</returns>
-        public T DeserializeSettings<T>()
+        public virtual T DeserializeSettings<T>()
             where T : class
         {
             if (!this.HasSettings)

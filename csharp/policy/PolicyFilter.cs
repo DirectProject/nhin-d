@@ -27,20 +27,12 @@ namespace Health.Direct.Policy
     public class PolicyFilter : IPolicyFilter
     {
         readonly ICompiler m_compiler;
-        readonly IExecutionEngine m_executionEngine;
         private readonly IPolicyLexiconParser m_parser;
 
-        public PolicyFilter(ICompiler compiler, IExecutionEngine engine, IPolicyLexiconParser parser)
+        public PolicyFilter(ICompiler compiler, IPolicyLexiconParser parser)
         {
             m_compiler = compiler;
-            m_executionEngine = engine;
             m_parser = parser;
-        }
-
-        public PolicyFilter(ICompiler compiler, IExecutionEngine engine)
-        {
-            m_compiler = compiler;
-            m_executionEngine = engine;
         }
 
         /// <summary>
@@ -48,7 +40,6 @@ namespace Health.Direct.Policy
         /// </summary>
         static IPolicyFilter _defaultPolicyFilter = new PolicyFilter(
             new StackMachineCompiler(), 
-            new StackMachine(),
             new SimpleTextV1LexiconPolicyParser());
 
         /// <summary>
@@ -84,11 +75,10 @@ namespace Health.Direct.Policy
             if (m_compiler == null)
                 throw new InvalidOperationException("Compiler cannot be null");
 
-            if (m_executionEngine == null)
-                throw new InvalidOperationException("Execution engine cannot be null");
-
+            StackMachine executionEngine = new StackMachine();
             IList<IOpCode> opcodes = m_compiler.Compile(cert, expression);
-            var compliant = m_executionEngine.Evaluate(opcodes);
+            var compliant = executionEngine.Evaluate(opcodes);
+
             return compliant;
         }
     }

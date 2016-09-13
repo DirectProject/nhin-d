@@ -179,4 +179,91 @@ namespace Health.Direct.Config.Console
             }
         }
     }
+
+    public class TokenSettings
+    {
+        private string m_pkcs11LibraryPath;
+        private string m_tokenSerialNumber;
+        private string m_tokenLabel;
+        private string m_applicationName;
+
+        static TokenSettings()
+        {
+
+        }
+        [XmlElement(ElementName = "Library")]
+        public string Pkcs11LibraryPath
+        {
+            get
+            {
+                return m_pkcs11LibraryPath;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentException("value was null or empty", nameof(value));
+                m_pkcs11LibraryPath = value;
+            }
+        }
+
+        /// <summary>
+        /// This should always be true.
+        /// From PKCS#11 V2.20: CRYPTOGRAPHIC TOKEN INTERFACE STANDARD, section 6.6.2 "Applications and threads"
+        /// 
+        /// 2. The application can specify that it will be accessing the library concurrently from
+        ///    multiple threads, and the library must be able to use native operation system
+        ////   synchronization primitives to ensure proper thread-safe behavior.
+        /// 
+        /// 
+        /// </summary>
+        public bool UseOsLocking { get { return true; } }
+
+        [XmlElement]
+        public string TokenLabel
+        {
+            get
+            {
+                return m_tokenLabel;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentException("value was null or empty", nameof(value));
+                m_tokenLabel = value;
+            }
+        }
+        
+        [XmlElement]
+        public string ApplicationName
+        {
+            get
+            {
+                return m_applicationName;
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentException("value was null or empty", nameof(value));
+                m_applicationName = value;
+            }
+        }
+
+        [XmlElement(ElementName = "UserPin")]
+        public string NormalUserPin { get; set; }
+
+        /// <summary>
+        /// Arguments passed to the C_Initialize function in LowLevelAPI41 tests.
+        /// </summary>
+        public static Net.Pkcs11Interop.LowLevelAPI41.CK_C_INITIALIZE_ARGS InitArgs41 = null;
+
+        /// <summary>
+        /// PIN of the normal user.
+        /// </summary>
+        public byte[] NormalUserPinArray = null;
+
+        /// <summary>
+        /// PKCS#11 URI that identifies private key usable in signature creation tests.
+        /// </summary>
+        public string PrivateKeyUri = null;
+    }
 }

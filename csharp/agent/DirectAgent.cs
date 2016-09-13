@@ -113,8 +113,16 @@ namespace Health.Direct.Agent
         /// <param name="anchors">
         /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
-        public DirectAgent(string domain, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
-            : this(new StaticDomainResolver(domain), privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
+        public DirectAgent(string domain, 
+            ICertificateResolver privateCerts, 
+            ICertificateResolver publicCerts, 
+            ITrustAnchorResolver anchors)
+            : this(new StaticDomainResolver(domain), 
+                  privateCerts, 
+                  publicCerts, 
+                  anchors, 
+                  TrustModel.Default, 
+                  SMIMECryptographer.Default)
         {
         }
 
@@ -136,8 +144,15 @@ namespace Health.Direct.Agent
         /// <param name="anchors">
         /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
-        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors)
-            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default)
+        public DirectAgent(IDomainResolver domainResolver, 
+            ICertificateResolver privateCerts, 
+            ICertificateResolver publicCerts, 
+            ITrustAnchorResolver anchors)
+            : this(domainResolver, privateCerts, 
+                  publicCerts, 
+                  anchors, 
+                  TrustModel.Default, 
+                  SMIMECryptographer.Default)
         {
         }
 
@@ -160,12 +175,53 @@ namespace Health.Direct.Agent
         /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
         /// </param>
         /// <param name="certPolicyResolvers">Certificate <see cref="ICertPolicyResolvers">policy container</see></param>
-        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors
-            , ICertPolicyResolvers certPolicyResolvers)
-            : this(domainResolver, privateCerts, publicCerts, anchors, TrustModel.Default, SMIMECryptographer.Default, certPolicyResolvers)
+        public DirectAgent(IDomainResolver domainResolver, 
+            ICertificateResolver privateCerts, 
+            ICertificateResolver publicCerts, 
+            ITrustAnchorResolver anchors, 
+            ICertPolicyResolvers certPolicyResolvers)
+            : this(domainResolver, 
+                  privateCerts, 
+                  publicCerts, 
+                  anchors, 
+                  TrustModel.Default, 
+                  SMIMECryptographer.Default, 
+                  certPolicyResolvers)
         {
         }
-        
+
+        /// <summary>
+        /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and
+        /// and defaulting to the standard trust and cryptography models.
+        /// </summary>
+        /// <param name="domain">
+        /// The local domain name managed by this agent.
+        /// </param>
+        /// <param name="privateCerts">
+        /// An <see cref="ICertificateResolver"/> instance providing private certificates
+        /// for senders of outgoing messages and receivers of incoming messages.
+        /// </param>
+        /// <param name="publicCerts">
+        /// An <see cref="ICertificateResolver"/> instance providing public certificates 
+        /// for receivers of outgoing messages and senders of incoming messages. 
+        /// </param>
+        /// <param name="anchors">
+        /// An <see cref="ITrustAnchorResolver"/> instance providing trust anchors.
+        /// </param>
+        /// <param name="cryptographer"><see cref="ISmimeCryptographer"/> implementation.</param>
+        public DirectAgent(string domain,
+            ICertificateResolver privateCerts,
+            ICertificateResolver publicCerts,
+            ITrustAnchorResolver anchors,
+            ISmimeCryptographer cryptographer)
+            : this(new StaticDomainResolver(domain),
+                  privateCerts,
+                  publicCerts,
+                  anchors,
+                  TrustModel.Default,
+                  cryptographer)
+        {
+        }
 
         /// <summary>
         /// Creates a DirectAgent instance, specifying private, external and trust anchor certificate stores, and 
@@ -191,8 +247,19 @@ namespace Health.Direct.Agent
         /// <param name="cryptographer">
         /// An instance or subclass of <see cref="Health.Direct.Agent"/> providing a custom cryptography model.
         /// </param>
-        public DirectAgent(IDomainResolver domainResolver, ICertificateResolver privateCerts, ICertificateResolver publicCerts, ITrustAnchorResolver anchors, TrustModel trustModel, ISmimeCryptographer cryptographer)
-            : this(domainResolver, privateCerts, publicCerts, anchors, trustModel, cryptographer, CertPolicyResolvers.Default)
+        public DirectAgent(IDomainResolver domainResolver, 
+            ICertificateResolver privateCerts, 
+            ICertificateResolver publicCerts, 
+            ITrustAnchorResolver anchors, 
+            TrustModel trustModel, 
+            ISmimeCryptographer cryptographer)
+            : this(domainResolver, 
+                  privateCerts, 
+                  publicCerts, 
+                  anchors, 
+                  trustModel, 
+                  cryptographer, 
+                  CertPolicyResolvers.Default)
         {
         }
 
@@ -877,6 +944,10 @@ namespace Health.Direct.Agent
             // Categorize recipients as local/external
             //
             message.EnsureRecipientsCategorizedByDomain(m_managedDomains);
+            //
+            //
+            //
+            message.EnsureSenderClassified(m_managedDomains);
             //
             // Bind addresses to Certs etc
             //

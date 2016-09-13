@@ -360,7 +360,11 @@ namespace Health.Direct.SmtpAgent.Config
             }
         }
 
-        
+        [XmlIgnore]
+        public bool FailedInit
+        {
+            get; set;
+        }
 
         public override void Validate()
         {

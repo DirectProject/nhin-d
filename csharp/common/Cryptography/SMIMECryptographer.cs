@@ -333,23 +333,9 @@ namespace Health.Direct.Common.Cryptography
         // Some mail readers ignore the epilogue when calculating signatures!
         //
 
+       
         /// <summary>
-        /// Creates a detatched signed entity from a message and an signing certificate
-        /// </summary>
-        /// <remarks>
-        /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
-        /// Some mail readers ignore the epilogue when calculating signatures!
-        /// </remarks>
-        /// <param name="message">The <see cref="Message"/> entity to sign</param>
-        /// <param name="signingCertificate">The certificate with which to sign.</param>
-        /// <returns>A <see cref="SignedEntity"/> instance holding the signature.</returns>
-        private SignedEntity Sign(Message message, X509Certificate2 signingCertificate)
-        {
-            return Sign(message.ExtractEntityForSignature(IncludeMultipartEpilogueInSignature), signingCertificate);
-        }
-
-        /// <summary>
-        /// Creates a detatched signed entity from a message and a collection of signing certificate
+        /// Creates a detached signed entity from a message and a collection of signing certificate
         /// </summary>
         /// <remarks>
         /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers
@@ -372,7 +358,7 @@ namespace Health.Direct.Common.Cryptography
         }
 
         /// <summary>
-        /// Creates a detatched signed entity from a <see cref="MimeEntity"/> and a signing certificate
+        /// Creates a detached signed entity from a <see cref="MimeEntity"/> and a signing certificate
         /// </summary>
         /// <remarks>
         /// Cryptography is performed only on the Mime portions of the message, not the RFC822 headers

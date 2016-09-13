@@ -27,7 +27,7 @@ namespace Health.Direct.Config.Store
     public class Property
     {
         public const int MaxNameLength = 255;
-        public const int MaxValueLength = 255;
+        public const int MaxValueLength = 1024;
         
         string m_name;
         string m_value;

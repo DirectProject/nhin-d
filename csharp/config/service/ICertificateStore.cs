@@ -26,6 +26,11 @@ namespace Health.Direct.Config.Service
         [FaultContract(typeof(ConfigStoreFault))]
         Certificate AddCertificate(Certificate certificate);
 
+
+        [OperationContract]
+        [FaultContract(typeof(ConfigStoreFault))]
+        Certificate AddPkcs11Certificate(Certificate certificate);
+
         [OperationContract]
         [FaultContract(typeof(ConfigStoreFault))]
         void AddCertificates(Certificate[] certificates);

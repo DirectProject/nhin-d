@@ -33,10 +33,12 @@ using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.IO;
+using Org.BouncyCastle.X509.Store;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.IO;
 using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 using EncryptionException = Health.Direct.Common.Cryptography.EncryptionException;
 using IssuerAndSerialNumber = Org.BouncyCastle.Asn1.Cms.IssuerAndSerialNumber;
@@ -44,9 +46,11 @@ using RecipientInfo = Org.BouncyCastle.Asn1.Cms.RecipientInfo;
 using KeyTransRecipientInfo = Org.BouncyCastle.Asn1.Cms.KeyTransRecipientInfo;
 using SignedData = Org.BouncyCastle.Asn1.Cms.SignedData;
 using Time = Org.BouncyCastle.Asn1.Cms.Time;
+using X509Certificate = Org.BouncyCastle.X509.X509Certificate;
 
 namespace Health.Direct.Hsm
 {
+
     public class HsmCryptographer : SMIMECryptographerBase, ISmimeCryptographer, IDisposable
     {
         private Session m_sessionApplication;
@@ -58,7 +62,7 @@ namespace Health.Direct.Hsm
         /// Flag indicating whether instance has been disposed
         /// </summary>
         private bool m_disposed;
-        
+
 
         /// <inheritdoc />
         public event Action<ISmimeCryptographer, Exception> Error;
@@ -89,7 +93,7 @@ namespace Health.Direct.Hsm
                     DigestAlgorithm = settings.DefaultDigest;
                     IncludeMultipartEpilogueInSignature = true;
                     IncludeCertChainInSignature = X509IncludeOption.EndCertOnly;
-                    
+
                     InitializePkcs11(settings);
                     EnsureLoggedInSession(settings);
                 }
@@ -113,9 +117,8 @@ namespace Health.Direct.Hsm
             {
                 throw new HsmInitException(
                     string.Format(
-                        "Did not find an available slot with TokenLable:{0} and TokenSerial:{1}", 
-                        settings.TokenLabel, 
-                        settings.TokenSerial));
+                        "Did not find an available slot with TokenLable:{0}",
+                        settings.TokenLabel));
             }
         }
 
@@ -157,7 +160,7 @@ namespace Health.Direct.Hsm
         {
             throw new NotImplementedException();
         }
-   
+
         public MimeEntity Encrypt(MimeEntity entity, X509Certificate2Collection encryptingCertificates)
         {
             throw new NotImplementedException();
@@ -171,7 +174,7 @@ namespace Health.Direct.Hsm
                 {
                     throw new EncryptionException(EncryptionError.NoCertificates);
                 }
-            
+
                 // TODO: introduce buffering if you are using large files
                 // CMSEnvelopeData is a PKCS# structure  rfc4134
                 var envelopedData = new CmsEnvelopedData(encryptedBytes);
@@ -200,8 +203,7 @@ namespace Health.Direct.Hsm
                         }
 
                         var recipientId = new RecipientID();
-                        //TODO: is it possible to use something other than issuerAndSerialNumber?
-                        var issuerAndSerialNumber = (IssuerAndSerialNumber) keyTransRecipientInfo.RecipientIdentifier.ID;
+                        var issuerAndSerialNumber = (IssuerAndSerialNumber)keyTransRecipientInfo.RecipientIdentifier.ID;
                         recipientId.Issuer = issuerAndSerialNumber.Name;
                         recipientId.SerialNumber = issuerAndSerialNumber.SerialNumber.Value;
                         var recipientInformation = envelopedData.GetRecipientInfos().GetRecipients(recipientId);
@@ -225,7 +227,6 @@ namespace Health.Direct.Hsm
                             return mimeEntity;
                         }
                     }
-
                 }
             }
             catch (Exception ex)
@@ -234,6 +235,11 @@ namespace Health.Direct.Hsm
             }
 
             return null;
+        }
+
+        public SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates)
+        {
+            return Sign(message.ExtractEntityForSignature(IncludeMultipartEpilogueInSignature), signingCertificates);
         }
 
         public CmsReadable GetReadable(
@@ -310,7 +316,7 @@ namespace Health.Direct.Hsm
 
             return null;
         }
-        
+
         /// <summary>
         /// Creates a signed data from source raw data and a collection of signing certificates
         /// </summary>
@@ -327,25 +333,20 @@ namespace Health.Direct.Hsm
 
             Console.WriteLine(signingCertificates[0].ToString(true));
 #endif
-
-            var bcCert = CertificateUtilities.BuildBouncyCastleCollection(signingCertificates);
-
             using (var session = GetSession())
             {
                 if (session == null)
                 {
                     return null;
                 }
-                //
-                // TODO handle more than one cert
-                //
-                var signature = CreateSignature(session, content, bcCert.First(), bcCert);
-                
+
+                var signature = CreateSignature(session, content, signingCertificates);
+
                 // Construct top level ContentInfo
                 var contentInfo = new Org.BouncyCastle.Asn1.Pkcs.ContentInfo(
                     new DerObjectIdentifier(PkcsObjectIdentifiers.SignedData.Id),
                     signature);
-            
+
                 return contentInfo.GetDerEncoded();
             }
         }
@@ -399,7 +400,7 @@ namespace Health.Direct.Hsm
                     InitializePkcs11(m_tokenSettings);
                     EnsureLoggedInSession(m_tokenSettings);
                     return m_slot.OpenSession(true);
-                    
+
                 }
                 catch (Exception ex)
                 {
@@ -410,11 +411,13 @@ namespace Health.Direct.Hsm
             }
         }
 
+        //var bcCert = CertificateUtilities.BuildBouncyCastleCollection(signingCertificates);
+        //ICollection<Org.BouncyCastle.X509.X509Certificate>
 
-        private SignedData CreateSignature(Session session,
-            byte[] content, 
-            Org.BouncyCastle.X509.X509Certificate signingCertificate, 
-            ICollection<Org.BouncyCastle.X509.X509Certificate> certPath)
+        private SignedData CreateSignature(
+            Session session,
+            byte[] content,
+            X509Certificate2Collection signingCertificates)
         {
             var digestOid = ToDigestAlgorithmOid(DigestAlgorithm).Value;
             var hashGenerator = GetHashGenerator(DigestAlgorithm);
@@ -448,78 +451,54 @@ namespace Health.Direct.Hsm
             // Sign SignerInfo.signedAttrs with PKCS#1 v1.5 RSA signature using private key stored on PKCS#11 compatible device
             byte[] pkcs1Digest = ComputeDigest(hashGenerator, signedAttributes.GetDerEncoded());
             byte[] pkcs1DigestInfo = CreateDigestInfo(pkcs1Digest, digestOid);
-            byte[] pkcs1Signature;
-            ObjectHandle privateKeyHandle;
-
-
-
-
-            // Get public key from certificate
-            var pubKeyParams = signingCertificate.GetPublicKey(); //AsymmetricKeyParameter
-            if (!(pubKeyParams is RsaKeyParameters))
-                throw new NotSupportedException("Unsupported keys.  Currently supporting RSA keys only.");
-
-            var rsaPubKeyParams = (RsaKeyParameters)pubKeyParams;
-
-            //Correlate with HSM
-            var privKeySearchTemplate = new List<ObjectAttribute>
-            {
-                new ObjectAttribute(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
-                new ObjectAttribute(CKA.CKA_KEY_TYPE, CKK.CKK_RSA),
-                new ObjectAttribute(CKA.CKA_MODULUS, rsaPubKeyParams.Modulus.ToByteArrayUnsigned()),
-                new ObjectAttribute(CKA.CKA_PUBLIC_EXPONENT, rsaPubKeyParams.Exponent.ToByteArrayUnsigned())
-            };
-
-    
-            //
-            // TODO: Need to handle multiple signers during a new cert rollout. 
-            // Compare with SMIMECryptographer.
-            //
-            var objectHandles = session.FindAllObjects(privKeySearchTemplate);
-
-            if (objectHandles.Count < 1)
-                throw new HsmObjectNotFoundException(
-                    string.Format("Private key correlation failed for signing cert \r\n{0} \r\n CKA_MODULUS: {1} \r\n CKA_PUBLIC_EXPONENT {2},", 
-                    signingCertificate,
-                    rsaPubKeyParams.Modulus,
-                    rsaPubKeyParams.Exponent));
-            
-            privateKeyHandle = objectHandles[0];
-
-            using (var mechanism = new Mechanism(CKM.CKM_RSA_PKCS))
-            {
-                pkcs1Signature = session.Sign(mechanism, privateKeyHandle, pkcs1DigestInfo);
-            }
-
-            
-
-            // Construct SignerInfo
-            var signerInfo = new Org.BouncyCastle.Asn1.Cms.SignerInfo(
-                new SignerIdentifier(new IssuerAndSerialNumber(signingCertificate.IssuerDN, signingCertificate.SerialNumber)),
-                new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(new DerObjectIdentifier(digestOid), null),
-                signedAttributes,
-                new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(new DerObjectIdentifier(PkcsObjectIdentifiers.RsaEncryption.Id), null),
-                new DerOctetString(pkcs1Signature),
-                null);
 
             // Construct SignedData.digestAlgorithms
             var digestAlgorithmsVector = new Asn1EncodableVector();
-            digestAlgorithmsVector.Add(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(new DerObjectIdentifier(digestOid), null));
+            // Construct SignedData.certificates
+            var certificatesVector = new Asn1EncodableVector();
+            // Construct SignedData.signerInfos
+            var signerInfosVector = new Asn1EncodableVector();
 
             // Construct SignedData.encapContentInfo
             var encapContentInfo = new Org.BouncyCastle.Asn1.Cms.ContentInfo(
-                new DerObjectIdentifier(PkcsObjectIdentifiers.Data.Id), 
+                new DerObjectIdentifier(PkcsObjectIdentifiers.Data.Id),
                 null); //Always a detached signature.
-                
 
-            // Construct SignedData.certificates
-            var certificatesVector = new Asn1EncodableVector();
-            foreach (Org.BouncyCastle.X509.X509Certificate cert in certPath)
-                certificatesVector.Add(X509CertificateStructure.GetInstance(Asn1Object.FromByteArray(cert.GetEncoded())));
 
-            // Construct SignedData.signerInfos
-            var signerInfosVector = new Asn1EncodableVector();
-            signerInfosVector.Add(signerInfo.ToAsn1Object());
+            foreach (var signingCertificate in signingCertificates)
+            {
+                var bcSigningCertificate = CertificateUtilities.ToBouncyCastleObject(signingCertificate.RawData);
+                // Get public key from certificate
+                var pubKeyParams = bcSigningCertificate.GetPublicKey(); //AsymmetricKeyParameter
+                if (!(pubKeyParams is RsaKeyParameters))
+                    throw new NotSupportedException("Unsupported keys.  Currently supporting RSA keys only.");
+
+                var rsaPubKeyParams = (RsaKeyParameters)pubKeyParams;
+
+                byte[] pkcs1Signature;
+
+                if (signingCertificate.HasPrivateKey)
+                {
+                    pkcs1Signature = GeneratePkcs1Signature(signingCertificate, pkcs1DigestInfo);
+                }
+                else
+                {
+                    pkcs1Signature = GeneratePkcs1Signature(session, rsaPubKeyParams, bcSigningCertificate, pkcs1DigestInfo);
+                }
+
+                // Construct SignerInfo
+                var signerInfo = new Org.BouncyCastle.Asn1.Cms.SignerInfo(
+                    new SignerIdentifier(new IssuerAndSerialNumber(bcSigningCertificate.IssuerDN, bcSigningCertificate.SerialNumber)),
+                    new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(new DerObjectIdentifier(digestOid), null),
+                    signedAttributes,
+                    new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(new DerObjectIdentifier(PkcsObjectIdentifiers.RsaEncryption.Id), null),
+                    new DerOctetString(pkcs1Signature),
+                    null);
+
+                digestAlgorithmsVector.Add(new Org.BouncyCastle.Asn1.X509.AlgorithmIdentifier(new DerObjectIdentifier(digestOid), null));
+                certificatesVector.Add(X509CertificateStructure.GetInstance(Asn1Object.FromByteArray(bcSigningCertificate.GetEncoded())));
+                signerInfosVector.Add(signerInfo.ToAsn1Object());
+            }
 
             // Construct SignedData
             var signedData = new SignedData(
@@ -530,6 +509,47 @@ namespace Health.Direct.Hsm
                 new DerSet(signerInfosVector));
 
             return signedData;
+        }
+
+        private static byte[] GeneratePkcs1Signature(Session session, RsaKeyParameters rsaPubKeyParams,
+            X509Certificate bcSigningCertificate, byte[] pkcs1DigestInfo)
+        {
+            //Correlate with HSM
+            var privKeySearchTemplate = new List<ObjectAttribute>
+            {
+                new ObjectAttribute(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
+                new ObjectAttribute(CKA.CKA_KEY_TYPE, CKK.CKK_RSA),
+                new ObjectAttribute(CKA.CKA_MODULUS, rsaPubKeyParams.Modulus.ToByteArrayUnsigned()),
+                new ObjectAttribute(CKA.CKA_PUBLIC_EXPONENT, rsaPubKeyParams.Exponent.ToByteArrayUnsigned())
+            };
+
+            var privateKeyHandles = session.FindAllObjects(privKeySearchTemplate);
+
+            if (privateKeyHandles.Count != 1)
+                throw new HsmObjectNotFoundException(
+                    string.Format(
+                        "Private key correlation failed for signing cert \r\n{0} \r\n CKA_MODULUS: {1} \r\n CKA_PUBLIC_EXPONENT {2},",
+                        bcSigningCertificate,
+                        rsaPubKeyParams.Modulus,
+                        rsaPubKeyParams.Exponent));
+
+            byte[] pkcs1Signature;
+
+            using (var mechanism = new Mechanism(CKM.CKM_RSA_PKCS))
+            {
+                pkcs1Signature = session.Sign(mechanism, privateKeyHandles.Single(), pkcs1DigestInfo);
+            }
+            return pkcs1Signature;
+        }
+
+        private static byte[] GeneratePkcs1Signature(X509Certificate2 signingCertificate, byte[] pkcs1DigestInfo)
+        {
+            AsymmetricCipherKeyPair key = DotNetUtilities.GetKeyPair(signingCertificate.PrivateKey);
+            ISigner signer = SignerUtilities.GetSigner("RSA");
+            signer.Init(true, key.Private);
+            signer.BlockUpdate(pkcs1DigestInfo, 0, pkcs1DigestInfo.Length);
+
+            return signer.GenerateSignature();
         }
 
         /// <summary>
@@ -578,7 +598,7 @@ namespace Health.Direct.Hsm
                     digest = new Sha384Digest();
                     break;
                 case DigestAlgorithm.SHA512:
-                    digest = new Sha512Digest();break;
+                    digest = new Sha512Digest(); break;
             }
 
             return digest;
@@ -699,7 +719,7 @@ namespace Health.Direct.Hsm
 
     public class HsmObjectNotFoundException : Exception
     {
-        public HsmObjectNotFoundException(string message):base(message)
+        public HsmObjectNotFoundException(string message) : base(message)
         {
         }
     }

@@ -17,6 +17,15 @@
   <wsdl:message name="ICertificateStore_AddCertificate_ConfigStoreFaultFault_FaultMessage">
     <wsdl:part name="detail" element="tns:ConfigStoreFault" />
   </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddPkcs11Certificate_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddPkcs11Certificate" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddPkcs11Certificate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddPkcs11CertificateResponse" />
+  </wsdl:message>
+  <wsdl:message name="ICertificateStore_AddPkcs11Certificate_ConfigStoreFaultFault_FaultMessage">
+    <wsdl:part name="detail" element="tns:ConfigStoreFault" />
+  </wsdl:message>
   <wsdl:message name="ICertificateStore_AddCertificates_InputMessage">
     <wsdl:part name="parameters" element="tns:AddCertificates" />
   </wsdl:message>
@@ -319,6 +328,11 @@
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificate" message="tns:ICertificateStore_AddCertificate_InputMessage" />
       <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificateResponse" message="tns:ICertificateStore_AddCertificate_OutputMessage" />
       <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_AddCertificate_ConfigStoreFaultFault_FaultMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddPkcs11Certificate">
+      <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddPkcs11Certificate" message="tns:ICertificateStore_AddPkcs11Certificate_InputMessage" />
+      <wsdl:output wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddPkcs11CertificateResponse" message="tns:ICertificateStore_AddPkcs11Certificate_OutputMessage" />
+      <wsdl:fault wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddPkcs11CertificateConfigStoreFaultFault" name="ConfigStoreFaultFault" message="tns:ICertificateStore_AddPkcs11Certificate_ConfigStoreFaultFault_FaultMessage" />
     </wsdl:operation>
     <wsdl:operation name="AddCertificates">
       <wsdl:input wsaw:Action="urn:directproject:config/store/082010/ICertificateStore/AddCertificates" message="tns:ICertificateStore_AddCertificates_InputMessage" />

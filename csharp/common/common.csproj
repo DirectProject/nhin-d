@@ -170,7 +170,6 @@
     <Compile Include="DnsResolver\TextRecord.cs" />
     <Compile Include="Dns\DnsClientWithCache.cs" />
     <Compile Include="Container\IDependencyResolver.cs" />
-    <Compile Include="Domains\DomainCache.cs" />
     <Compile Include="Domains\IDomainResolver.cs" />
     <Compile Include="Domains\StaticDomainResolver.cs" />
     <Compile Include="Extensions\Extensions.cs" />

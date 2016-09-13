@@ -240,7 +240,7 @@ namespace Health.Direct.Config.Client
                 , this.Endpoint);
         }
         
-        public PropertyManagerClient CreatePropertyManagerClient()
+        public virtual IPropertyManager CreatePropertyManagerClient()
         {
             return new PropertyManagerClient(this.Binding, this.Endpoint);
         }

@@ -445,6 +445,16 @@ namespace Health.Direct.Common.Certificates
         /// </summary>
         /// <param name="cert">The certificate from which to extract the name</param>
         /// <returns>The <c>E</c> value, or the <c>CN</c> value if <c>E</c> is not found or <c>null</c> if neither are found</returns>
+        public static string ExtractEmailNameOrDnsName(this X509Certificate2 cert)
+        {
+            return cert.ExtractEmailNameOrName(false);
+        }
+
+        /// <summary>
+        /// Extracts the email (<c>E</c> (by preference) or subject name (<c>CN</c>) value from this certificate.
+        /// </summary>
+        /// <param name="cert">The certificate from which to extract the name</param>
+        /// <returns>The <c>E</c> value, or the <c>CN</c> value if <c>E</c> is not found or <c>null</c> if neither are found</returns>
         public static string ExtractEmailNameOrName(this X509Certificate2 cert)
         {
             return cert.ExtractEmailNameOrName(false);

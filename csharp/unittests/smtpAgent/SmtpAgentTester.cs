@@ -205,6 +205,15 @@ Yo. Wassup?";
             } 
         }
 
+        public IEnumerable<string> FileMessages(string folder)
+        {
+            foreach (var file in Directory.GetFiles(folder))
+            {
+                yield return file;
+                File.Delete(file);
+            }
+        }
+
         public IEnumerable<string> IncomingMessages()
         {
             foreach (var file in Directory.GetFiles(TestIncomingFolder))

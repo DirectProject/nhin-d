@@ -11,15 +11,13 @@ Redistributions of source code must retain the above copyright notice, this list
 Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- 
 */
+
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Health.Direct.Common.Certificates;
-
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Agent.Tests
 {
@@ -29,12 +27,12 @@ namespace Health.Direct.Agent.Tests
         {
             AgentTester.EnsureStandardMachineStores();
         }
-        
+
         public static IEnumerable<object[]> PrivateCerts
         {
             get
             {
-                using(SystemX509Store store = SystemX509Store.OpenPrivate())
+                using (SystemX509Store store = SystemX509Store.OpenPrivate())
                 {
                     foreach (X509Certificate2 cert in store)
                     {
@@ -71,7 +69,7 @@ namespace Health.Direct.Agent.Tests
                 }
             }
         }
-        
+
         public static IEnumerable<object[]> AllCerts
         {
             get
@@ -86,18 +84,16 @@ namespace Health.Direct.Agent.Tests
                     yield return o;
                 }
             }
-        }        
-                
+        }
+
         [Theory]
-        [PropertyData("AllCerts")]
+        [MemberData("AllCerts")]
         public void TestNameExtraction(X509Certificate2 cert)
         {
             string name = cert.ExtractEmailNameOrName();
             Assert.False(string.IsNullOrEmpty(name));
             Assert.True(cert.MatchEmailNameOrName(name));
         }
-
-
 
         /// <summary>
         /// Certificate extracted from the NIST INVALID_CERT test.
@@ -109,7 +105,6 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestVerifySignature_dNSName_in_subjectAltName_doesNotMatch_Health_Internet_Domain()
         {
-
             string signingCert = @"MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIAwggQhMIID
 iqADAgECAghs4QKo+HXxyzANBgkqhkiG9w0BAQUFADCBpDEkMCIGCSqGSIb3DQEJARYVdHJhbnNw
 b3J0LXRlc3Rpbmcub3JnMR4wHAYDVQQDDBV0cmFuc3BvcnQtdGVzdGluZy5vcmcxCzAJBgNVBAYT
@@ -146,13 +141,12 @@ g9DY8Y/ubZz99nUCA0ZEMUYEaLG+gWjzD0TXU+IBKmzX55p2DktPBSGz+rO3TdDzCa3oRJsHBIFp
 
             X509Certificate2 cert = new X509Certificate2();
             cert.Import(Encoding.UTF8.GetBytes(signingCert));
-            
+
             Assert.Equal("foo.transport-testing.org", cert.GetNameInfo(X509NameType.DnsFromAlternativeName, false));
 
             Assert.False(cert.MatchEmailNameOrName("InvalidCert@ttt.transport-testing.org"));
             Assert.False(cert.MatchDnsOrEmailOrName("ttt.transport-testing.org"));
         }
-
     }
 
     public class TestCertFind
@@ -187,7 +181,7 @@ g9DY8Y/ubZz99nUCA0ZEMUYEaLG+gWjzD0TXU+IBKmzX55p2DktPBSGz+rO3TdDzCa3oRJsHBIFp
         }
 
         [Theory]
-        [PropertyData("MixedNames")]
+        [MemberData("MixedNames")]
         public void TestFindMixed(string name, bool shouldMatch)
         {
             bool found = (m_certs.Find(x => x.MatchEmailNameOrName(name)) != null);
@@ -195,7 +189,7 @@ g9DY8Y/ubZz99nUCA0ZEMUYEaLG+gWjzD0TXU+IBKmzX55p2DktPBSGz+rO3TdDzCa3oRJsHBIFp
         }
 
         [Theory]
-        [PropertyData("Names")]
+        [MemberData("Names")]
         public void TestFindNames(string name, bool shouldMatch)
         {
             bool found = (m_certs.FindByName(name) != null);

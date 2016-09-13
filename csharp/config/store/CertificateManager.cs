@@ -81,7 +81,41 @@ namespace Health.Direct.Config.Store
             cert.ValidateHasData();
             db.Certificates.InsertOnSubmit(cert);
         }
-                
+
+        public Certificate AddHsm(Certificate cert)
+        {
+            using (var db = Store.CreateContext())
+            {
+                AddHsm(db, cert);
+                db.SubmitChanges();
+                return cert;
+            }
+        }
+
+        public void AddHsm(ConfigDatabase db, Certificate cert)
+        {
+            if (db == null)
+            {
+                throw new ArgumentNullException(nameof(db));
+            }
+
+            if (cert == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
+            }
+
+            cert.ValidateHasData();
+            var domain = db.Domains.SingleOrDefault(d => d.Name == cert.Owner);
+
+            if (domain == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.MissingDomain);
+            }
+
+            domain.SecurityStandard = SecurityStandard.Fips1402;
+            db.Certificates.InsertOnSubmit(cert);
+        }
+
         public Certificate Get(long certID)
         {
             using(ConfigDatabase db = this.Store.CreateReadContext())

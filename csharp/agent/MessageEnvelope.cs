@@ -512,6 +512,11 @@ namespace Health.Direct.Agent
                 DirectAddress address = recipients[i];
                 if (domains.IsManaged(address))
                 {
+                    if (domains.HsmEnabled(address))
+                    {
+                        address.HsmEnabled = true;
+                    }
+
                     if (domainRecipients == null)
                     {
                         domainRecipients = new DirectAddressCollection();
@@ -530,6 +535,24 @@ namespace Health.Direct.Agent
 
             this.DomainRecipients = domainRecipients;
             this.OtherRecipients = otherRecipients;
+        }
+
+        /// <summary>
+        /// Classify security level of sender
+        /// </summary>
+        /// <remarks>
+        /// This will allow a consumer to decide how to handle decryption and digital signing.
+        /// </remarks>
+        /// <param name="domains"></param>
+        public void EnsureSenderClassified(AgentDomains domains)
+        {
+            if (domains.IsManaged(Sender))
+            {
+                if (domains.HsmEnabled(Sender))
+                {
+                    Sender.HsmEnabled = true;
+                }
+            }
         }
 
         internal virtual void CategorizeRecipientsByTrust(TrustEnforcementStatus minTrustStatus)

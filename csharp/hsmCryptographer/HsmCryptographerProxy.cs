@@ -22,6 +22,7 @@ using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 using Health.Direct.Config.Client.SettingsManager;
 using Health.Direct.Config.Store;
@@ -132,7 +133,7 @@ namespace Health.Direct.Hsm
         {
             try
             {
-                PropertyManagerClient client = resolverSettings.ClientSettings.CreatePropertyManagerClient();
+                IPropertyManager client = resolverSettings.ClientSettings.CreatePropertyManagerClient();
                 Property[] properties = client.GetProperties(new [] {"TokenSettings"});
                 string tokenSettingsXml = properties.SingleOrDefault().Value;
                 var tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();
@@ -215,6 +216,16 @@ namespace Health.Direct.Hsm
             }
 
             return m_innerHsmCryptographer.Sign(entity, signingCertificate);
+        }
+
+        public SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates)
+        {
+            if (m_innerHsmCryptographer == null)
+            {
+                throw new NullReferenceException("Missing HSMCryptographer");
+            }
+ 
+            return m_innerHsmCryptographer.Sign(message, signingCertificates);
         }
 
         public SignedEntity Sign(MimeEntity entity, X509Certificate2Collection signingCertificates)

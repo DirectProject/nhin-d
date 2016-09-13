@@ -39,6 +39,18 @@ namespace Health.Direct.Config.Service
             }
         }
 
+        public Certificate AddPkcs11Certificate(Certificate certificate)
+        {
+            try
+            {
+                return Store.Certificates.AddHsm(certificate);
+            }
+            catch (Exception ex)
+            {
+                throw CreateFault("AddCertificates", ex);
+            }
+        }
+
         public void AddCertificates(Certificate[] certificates)
         {
             if (certificates == null)

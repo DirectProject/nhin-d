@@ -34,7 +34,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "X509.TBS.EXTENSION.KeyUsage = 224".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -45,7 +46,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "X509.TBS.EXTENSION.KeyUsage != 223".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -56,7 +58,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "(X509.TBS.EXTENSION.KeyUsage > 0) && (X509.TBS.EXTENSION.KeyUsage < 225)".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -67,7 +70,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "(X509.TBS.EXTENSION.KeyUsage & 224) = 224".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -78,7 +82,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "(X509.TBS.EXTENSION.KeyUsage & 200) != 224".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -89,7 +94,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "(X509.TBS.EXTENSION.KeyUsage | 0) = 224".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }
@@ -100,7 +106,8 @@ namespace Health.Direct.Policy.Tests
             using (Stream stream = "(X509.TBS.EXTENSION.KeyUsage | 255) != 224".ToStream())
             {
                 var cert = new X509Certificate2(@"resources/certs/AlAnderson@hospitalA.direct.visionshareinc.com.der");
-                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(), new StackMachine(), new SimpleTextV1LexiconPolicyParser());
+                IPolicyFilter filter = new PolicyFilter(new StackMachineCompiler(),
+                    new SimpleTextV1LexiconPolicyParser());
                 filter.IsCompliant(cert, stream).Should().BeTrue();
             }
         }

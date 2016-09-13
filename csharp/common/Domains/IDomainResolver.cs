@@ -41,6 +41,15 @@ namespace Health.Direct.Common.Domains
         bool IsManaged(string domain);
 
         /// <summary>
+        /// Test if an address should be highly secured.
+        /// The consumer will most likely use this indicator more secure procedures such as FIPS level 140-2 for example.
+        /// This method came into existence when the the HSMCryptographer plugin was created for FHA interoperability. 
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        bool HsmEnabled(string address);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="domains"></param>

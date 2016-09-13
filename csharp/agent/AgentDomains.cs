@@ -69,7 +69,22 @@ namespace Health.Direct.Agent
             return m_tenancy.IsManaged(address.Host);
         }
 
-        
+        /// <summary>
+        /// Tests if an address/domain certs are managed by a hardware device.
+        /// </summary>
+        /// <param name="address">The <see cref="MailAddress"/> to test</param>
+        /// <returns><c>true</c> if the address's domain is managed by the agent,
+        /// <c>false</c> otherwise.</returns>
+        public bool HsmEnabled(MailAddress address)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException("address");
+            }
+
+            return m_tenancy.HsmEnabled(address.Address);
+        }
+
         internal static bool Validate(string[] domains)
         {
             if (domains == null || domains.Length == 0)

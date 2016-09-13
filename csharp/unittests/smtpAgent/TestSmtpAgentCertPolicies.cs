@@ -49,43 +49,9 @@ namespace Health.Direct.SmtpAgent.Tests
         }
         
         [Fact]
-        public void TestFilterCertificateByPolicy_nullResolver_assertNoCertsFiltered()
-        {
-            SmtpAgent m_agent = SmtpAgentFactory.Create(GetSettingsPath("TestSmtpAgentConfig.xml"));
-
-            CleanMessages(m_agent.Settings);
-            CleanMonitor();
-
-            SetPolicyTestSettings(m_agent.Settings);
-            
-            //
-            // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
-            // Go ahead and pick them up and Process them as if they where being handled
-            // by the SmtpAgent by way of (IIS)SMTP hand off.
-            //
-            var sendingMessage = LoadMessage(TestMessage);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage, m_agent));
-
-            //
-            // grab the clear text mdns and delete others.
-            //
-            bool foundMdns = false;
-            foreach (var pickupMessage in PickupMessages())
-            {
-                string messageText = File.ReadAllText(pickupMessage);
-                if (messageText.Contains("disposition-notification"))
-                {
-                    foundMdns = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent));
-                }
-            }
-            Assert.True(foundMdns);
-        }
-        
-        [Fact]
         public void TestFilterCertificateByPolicy_noIncomingExpressions_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -142,7 +108,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_noOutgoingExpressions_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -207,12 +173,10 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_incomingPolicyCompliant_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
-            CleanMonitor();
-
             SetPolicyTestSettings(settings);
 
             //
@@ -223,7 +187,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<TrustPolicyResolver> mockTrustPolicyResolver;
             Mock<IPolicyFilter> mockPolicyFilter;
             MockPolicyResolvers(settings, out mockPrivatePolicyResolver, out mockPublicPolicyResolver, out mockTrustPolicyResolver, out mockPolicyFilter);
-            
+
             Mock<IPolicyExpression> policyExpression = new Mock<IPolicyExpression>();
 
             mockPublicPolicyResolver.Setup(r => r.GetOutgoingPolicy(It.IsAny<MailAddress>()))
@@ -231,11 +195,12 @@ namespace Health.Direct.SmtpAgent.Tests
 
             mockPrivatePolicyResolver.Setup(r => r.GetIncomingPolicy(It.IsAny<MailAddress>()))
                 .Returns(new List<IPolicyExpression>() { policyExpression.Object });
+
             mockPolicyFilter.Setup(r => r.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()))
                 .Returns(true);
 
             SmtpAgent smtpAgent = SmtpAgentFactory.Create(settings);
-            
+
 
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
@@ -270,16 +235,16 @@ namespace Health.Direct.SmtpAgent.Tests
             mockPrivatePolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
                 , Times.Exactly(1));
 
-           mockPrivatePolicyResolver.Verify(r => r.GetOutgoingPolicy(new MailAddress("toby@redmond.hsgincubator.com"))
+            mockPrivatePolicyResolver.Verify(r => r.GetOutgoingPolicy(new MailAddress("toby@redmond.hsgincubator.com"))
+                , Times.Exactly(1));
+
+            mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("biff@nhind.hsgincubator.com"))
                , Times.Exactly(1));
 
-           mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("biff@nhind.hsgincubator.com"))
-              , Times.Exactly(1));
+            mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
+                , Times.Exactly(1));
 
-           mockTrustPolicyResolver.Verify(r => r.GetIncomingPolicy(new MailAddress("bob@nhind.hsgincubator.com"))
-               , Times.Exactly(1));
-
-            mockPolicyFilter.Verify(p => p.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()), Times.Exactly(8));
+            mockPolicyFilter.Verify(p => p.IsCompliant(It.IsAny<X509Certificate2>(), It.IsAny<IPolicyExpression>()), Times.Exactly(6));
             //
             // These two are never called.  These code paths do not exist.
             //
@@ -290,7 +255,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_outgoingPolicyCompliant_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -355,7 +320,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_notCompliant_assertNoCertsFiltered() 
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -406,7 +371,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_requiredFieldMissing_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -460,7 +425,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_badPoolicyExpression_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -514,7 +479,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_trust_requiredPolicyThrow_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -570,7 +535,7 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestFilterCertificateByPolicy_trust_badPolicyThrow_assertNoCertsFiltered()
         {
-            string configPath = GetSettingsPath("TestSmtpAgentConfig.xml");
+            string configPath = GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml");
             SmtpAgentSettings settings = SmtpAgentSettings.LoadSettings(configPath);
 
             CleanMessages(settings);
@@ -673,7 +638,7 @@ namespace Health.Direct.SmtpAgent.Tests
         protected static void MockPolicyResolvers(SmtpAgentSettings settings, out Mock<PrivatePolicyResolver> mockPrivatePolicyResolver,
             out Mock<PublicPolicyResolver> mockPublicPolicyResolver, out Mock<TrustPolicyResolver> mockTrustPolicyResolver, out Mock<IPolicyFilter> mockPolicyFilter)
         {
-            
+
             PolicyResolverSettings privatePolicySettings =
                 settings.CertPolicies.Resolvers.First(r => r.Name == CertPolicyResolvers.PrivatePolicyName);
             Assert.NotNull(privatePolicySettings);

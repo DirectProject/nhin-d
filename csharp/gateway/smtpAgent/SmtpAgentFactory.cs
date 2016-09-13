@@ -5,7 +5,8 @@
  Authors:
     John Theisen     jtheisen@kryptiq.com
     Umesh Madan      umeshma@microsoft.com
- 
+    Joseph Shook     joseph.shook@surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -36,27 +37,33 @@ namespace Health.Direct.SmtpAgent
         /// <returns></returns>
         public static SmtpAgent Create(SmtpAgentSettings settings)
         {
+            if (settings.FailedInit)
+            {
+                return new SmtpAgent(settings);
+            }
+
             m_initialized = false;
             InitializeContainer(settings);
             Log.For<MessageArrivalEventHandler>().Debug(settings);
+
             return new SmtpAgent(settings);
         }
 
         public static SmtpAgent Create(string configFilePath)
         {
             SmtpAgentSettings settings = null;
+
             try
             {
-                // move this to some package initializer...
-                settings = SmtpAgentSettings.LoadSettings(configFilePath);
-                InitializeContainer(settings);
-                Log.For<MessageArrivalEventHandler>().Debug(settings);
-                return new SmtpAgent(settings);
+                settings = SettingsInitializer.Init(configFilePath);
+
+                return Create(settings);
             }
             catch (Exception ex)
             {
                 LogError(settings, ex);
-                throw;
+
+                return SettingsInitializer.DisabledAgent();
             }
         }
 
@@ -78,6 +85,7 @@ namespace Health.Direct.SmtpAgent
                             LogError(settings, ex);
                         }
                     }
+
                     EnsureDefaults(dependencyResolver, settings);
                     IoC.Initialize(dependencyResolver);
                     m_initialized = true;

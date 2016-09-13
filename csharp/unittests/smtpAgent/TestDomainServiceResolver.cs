@@ -18,10 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Health.Direct.Common.Caching;
-using Health.Direct.Common.Domains;
 using Health.Direct.Config.Client;
+using Health.Direct.Config.Store;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
@@ -37,8 +36,8 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             DomainServiceResolver m_resolver = CreateResolver(AgentName, true, 60, false); // enable caching, ttl=60secs, dissable negative caching
             
-            Dictionary<string, string> domains = m_resolver.GetDomains();
-            Dictionary<string, string> cached = m_resolver.Cache.Get(AgentName);
+            Dictionary<string, Domain> domains = m_resolver.GetDomains();
+            Dictionary<string, Domain> cached = m_resolver.Cache.Get(AgentName);
 
             VerifyValidDomain(domains, cached);
 
@@ -55,8 +54,8 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             DomainServiceResolver m_resolver = CreateResolver(MissingAgentName, true, 60, false); // enable caching, ttl=60secs, dissable negative caching
 
-            Dictionary<string, string> domains = m_resolver.GetDomains();
-            Dictionary<string, string> cached = m_resolver.Cache.Get(MissingAgentName);
+            Dictionary<string, Domain> domains = m_resolver.GetDomains();
+            Dictionary<string, Domain> cached = m_resolver.Cache.Get(MissingAgentName);
 
             VerifyDomainNotFound(domains, cached);
 
@@ -75,7 +74,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Throws<InvalidOperationException>(() => CreateResolver(AgentName, true, 60, true)); // enable caching, ttl=60secs, enable negative caching
         }
 
-        private void VerifyValidDomain(Dictionary<string, string> domains, Dictionary<string, string> cached)
+        private void VerifyValidDomain(Dictionary<string, Domain> domains, Dictionary<string, Domain> cached)
         {
             Assert.NotNull(domains);
             Assert.NotNull(cached);
@@ -90,7 +89,7 @@ namespace Health.Direct.SmtpAgent.Tests
         //
         // DomainServiceResolver does not support negative cache.  It is a simple cache of only one tenant
         //
-        private void VerifyDomainNotFound(Dictionary<string, string> domains, Dictionary<string, string> cached)
+        private void VerifyDomainNotFound(Dictionary<string, Domain> domains, Dictionary<string, Domain> cached)
         {
             Assert.Empty(domains);
             Assert.Empty(cached);

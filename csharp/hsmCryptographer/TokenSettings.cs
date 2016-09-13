@@ -26,7 +26,6 @@ namespace Health.Direct.Hsm
     public class TokenSettings 
     {
         private string m_pkcs11LibraryPath;
-        private string m_tokenSerialNumber;
         private string m_tokenLabel;
         private EncryptionAlgorithm m_defaultEncryption = EncryptionAlgorithm.AES128;
         private DigestAlgorithm m_defaultDigest = DigestAlgorithm.SHA256;
@@ -108,25 +107,7 @@ namespace Health.Direct.Hsm
             }
         }
 
-        /// <summary>
-        /// Serial number of the device 
-        /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        [XmlElement(ElementName = "TokenSerial")]
-        public string TokenSerial
-        {
-            get
-            {
-                return m_tokenSerialNumber;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    throw new ArgumentException("value was null or empty", nameof(value));
-                m_tokenSerialNumber = value;
-            }
-        }
-
+        
         /// <summary>
         /// Password or pin to authorize access to a partition or slot.
         /// This is in addition to prerequisite certificate exchange when setting up a computer to authenticate with a pkcs#11 token.
