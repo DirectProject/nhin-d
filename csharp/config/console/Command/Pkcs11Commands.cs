@@ -48,7 +48,7 @@ namespace Health.Direct.Config.Console.Command
     public class Pkcs11Commands : CommandsBase<CertificateStoreClient>
     {
         private readonly TokenSettings m_tokenSettings;
-        private Session m_session_application;
+        private Session m_sessionApplication;
         private Pkcs11 m_pkcs11;
         private Slot m_slot;
 
@@ -99,9 +99,9 @@ namespace Health.Direct.Config.Console.Command
         /// <param name="settings"></param>
         private void EnsureLoggedInSession(TokenSettings settings)
         {
-            m_session_application = m_slot.OpenSession(true);
+            m_sessionApplication = m_slot.OpenSession(true);
 
-            var sessionInfo = m_session_application.GetSessionInfo();
+            var sessionInfo = m_sessionApplication.GetSessionInfo();
 
             //
             // If another session has logged in then we should also be logged in.
@@ -109,7 +109,7 @@ namespace Health.Direct.Config.Console.Command
             //
             if (sessionInfo.State != CKS.CKS_RO_USER_FUNCTIONS)
             {
-                m_session_application.Login(CKU.CKU_USER, settings.NormalUserPin);
+                m_sessionApplication.Login(CKU.CKU_USER, settings.NormalUserPin);
             }
         }
 
@@ -128,8 +128,8 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateExportUsage
             = "Import a p12 (.pfx) certificate from a file.\r\n"
-                + "Extract the private key to pkcs#8 format.\r\n"
-                + Constants.CRLF + CertificateFileInfo.Usage;
+              + "Extract the private key to pkcs#8 format.\r\n"
+              + Constants.CRLF + CertificateFileInfo.Usage;
 
         /// <summary>
         /// List all keys and x509 certificates
@@ -147,8 +147,8 @@ namespace Health.Direct.Config.Console.Command
         private
             const string CertificateListUsage
             = "List all keys"
-                + Constants.CRLF + "  [chunkSize]"
-                + Constants.CRLF + "\t chunkSize: (Optional) Enumeration size. Default is 25";
+              + Constants.CRLF + "  [chunkSize]"
+              + Constants.CRLF + "\t chunkSize: (Optional) Enumeration size. Default is 25";
 
         /// <summary>
         /// Find all keys and x509 certificates by email or domain.
@@ -166,9 +166,9 @@ namespace Health.Direct.Config.Console.Command
         private
             const string SearchByOwnerUsage
             = "Search for a certificate by email or domain owner"
-                + Constants.CRLF + "Case sensitive search"
-                + Constants.CRLF + "    owner"
-                + Constants.CRLF + "\t name: Should be the same as the value of the certificate subjecAlt name.";
+              + Constants.CRLF + "Case sensitive search"
+              + Constants.CRLF + "    owner"
+              + Constants.CRLF + "\t name: Should be the same as the value of the certificate subjecAlt name.";
 
         /// <summary>
         /// Remove key and x509 certificate by Id (CKA_ID)
@@ -185,18 +185,18 @@ namespace Health.Direct.Config.Console.Command
             {
                 // Define search template for private keys
                 var keySearchTemplate = new List<ObjectAttribute>
-            {
-                //new ObjectAttribute(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
-                new ObjectAttribute(CKA.CKA_TOKEN, true),
-                new ObjectAttribute(CKA.CKA_ID, ConvertUtils.HexStringToBytes(id))
-            };
+                {
+                    //new ObjectAttribute(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
+                    new ObjectAttribute(CKA.CKA_TOKEN, true),
+                    new ObjectAttribute(CKA.CKA_ID, ConvertUtils.HexStringToBytes(id))
+                };
 
                 var keyAttributes = new List<CKA>
-            {
-                CKA.CKA_ID,
-                CKA.CKA_LABEL,
-                CKA.CKA_CLASS
-            };
+                {
+                    CKA.CKA_ID,
+                    CKA.CKA_LABEL,
+                    CKA.CKA_CLASS
+                };
 
                 // Get search results
                 var hsmObjects = session.FindAllObjects(keySearchTemplate);
@@ -222,7 +222,7 @@ namespace Health.Direct.Config.Console.Command
 
         private const string CertificateRemoveUsage
             = "Remove certificate by Id (CKA_ID)"
-                + Constants.CRLF + "    certificateID";
+              + Constants.CRLF + "    certificateID";
 
         /// <summary>
         /// Create certificate signing request
@@ -234,8 +234,8 @@ namespace Health.Direct.Config.Console.Command
         /// PKCS11_CREATE_CSR hobojoe.lab CN=hobojoe.lab
         /// </example>
         /// </summary>
-        [Command(Name = "Pkcs11_Create_CSR", Usage = CertificateSigningRequestUsage)]
-        public void CertificateCsr(string[] args)
+        [Command(Name = "Pkcs11_Create_Domain_CSR", Usage = CertificateSigningRequestForDomainUsage)]
+        public void CertificateDomainCsr(string[] args)
         {
             string directDomain = args.GetRequiredValue(0);
             string distinguishedName = args.GetRequiredValue(1);
@@ -247,19 +247,19 @@ namespace Health.Direct.Config.Console.Command
                 string ckaLabel = directDomain;
                 byte[] ckaId = session.GenerateRandom(20);
 
-                var csrSign = CreateCsrForSigningCert(session, ckaLabel, ckaId, defaultBits, directDomain, distinguishedName, KeyUsage.DigitalSignature);
+                var csrSign = CreateCertificateSigningRequest(session, ckaLabel, ckaId, defaultBits, directDomain, distinguishedName, KeyUsage.DigitalSignature);
                 WriteLine("Cert request created for KeyUsage.DigitalSignature");
                 WriteLine(csrSign);
                 File.WriteAllText(Path.Combine(outPath, directDomain + "_digitalsignature.csr"), csrSign);
 
-                var csrEncipherment = CreateCsrForSigningCert(session, ckaLabel, ckaId, defaultBits, directDomain, distinguishedName, KeyUsage.KeyEncipherment);
+                var csrEncipherment = CreateCertificateSigningRequest(session, ckaLabel, ckaId, defaultBits, directDomain, distinguishedName, KeyUsage.KeyEncipherment);
                 WriteLine("Cert request created for KeyUsage.KeyEncipherment");
                 WriteLine(csrEncipherment);
                 File.WriteAllText(Path.Combine(outPath, directDomain + "_encipherment.csr"), csrEncipherment);
             }
         }
 
-        private const string CertificateSigningRequestUsage
+        private const string CertificateSigningRequestForDomainUsage
             = "Create certificate signing request.  CN of distinguishedName will typically be the same as directDomain"
                 + Constants.CRLF + "    directDomain distinguishedName [defaultBits] [out]"
                 + Constants.CRLF + "\t directDomain: New direct domain name.  Will be the SubjectAlt name in format DNS:{directDomain}"
@@ -268,6 +268,51 @@ namespace Health.Direct.Config.Console.Command
                 + Constants.CRLF + "\t defaultBits: Default key length is 2048 bits"
                 + Constants.CRLF + "\t out: folder path.";
 
+
+        /// <summary>
+        /// Create certificate signing request
+        /// <remarks>
+        /// Public and private key are stored with the same CKA_ID.  Later when deleting expired certificates the CKA_ID passed to Pkcs11_Delete_ById will clean both records.
+        /// </remarks>
+        /// <example>
+        /// PKCS11_CREATE_CSR hobojoe.lab CN=hobojoe.lab 1024
+        /// PKCS11_CREATE_CSR hobojoe.lab CN=hobojoe.lab
+        /// </example>
+        /// </summary>
+        [Command(Name = "Pkcs11_Create_Address_CSR", Usage = CertificateSigningRequestForAddressUsage)]
+        public void CertificateAddressCsr(string[] args)
+        {
+            string emailAddress = args.GetRequiredValue(0);
+            string distinguishedName = args.GetRequiredValue(1);
+            int defaultBits = args.GetOptionalValue(2, 2048);
+            string outPath = args.GetOptionalValue(4, ".");
+
+
+            using (var session = m_slot.OpenSession(true))
+            {
+                string ckaLabel = emailAddress;
+                byte[] ckaId = session.GenerateRandom(20);
+
+                var csrSign = CreateCertificateSigningRequest(session, ckaLabel, ckaId, defaultBits, emailAddress, distinguishedName, KeyUsage.DigitalSignature);
+                WriteLine("Cert request created for KeyUsage.DigitalSignature");
+                WriteLine(csrSign);
+                File.WriteAllText(Path.Combine(outPath, emailAddress + "_digitalsignature.csr"), csrSign);
+
+                var csrEncipherment = CreateCertificateSigningRequest(session, ckaLabel, ckaId, defaultBits, emailAddress, distinguishedName, KeyUsage.KeyEncipherment);
+                WriteLine("Cert request created for KeyUsage.KeyEncipherment");
+                WriteLine(csrEncipherment);
+                File.WriteAllText(Path.Combine(outPath, emailAddress + "_encipherment.csr"), csrEncipherment);
+            }
+        }
+
+        private const string CertificateSigningRequestForAddressUsage
+            = "Create certificate signing request.  CN of distinguishedName will typically be the same as directDomain"
+                + Constants.CRLF + "    email distinguishedName [defaultBits] [NPI] [out]"
+                + Constants.CRLF + "\t email: Will be the SubjectAlt name in format rfc822:{directDomain}"
+                + Constants.CRLF + "\t distinguishedName: X500DistinguishedName"
+                + Constants.CRLF + "\t\t Example distinguisedName: \"CN=hsm.DirectInt.lab, OU=DirectInt.Lab, O=Surescripts, C=US\""
+                + Constants.CRLF + "\t defaultBits: Default key length is 2048 bits"
+                + Constants.CRLF + "\t out: folder path.";
 
         /// <summary>
         /// Install signed x509 certificate
@@ -309,24 +354,24 @@ namespace Health.Direct.Config.Console.Command
         {
             //Correlate with HSM
             var privKeySearchTemplate = new List<ObjectAttribute>
-        {
-            new ObjectAttribute(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
-            new ObjectAttribute(CKA.CKA_KEY_TYPE, CKK.CKK_RSA),
-            new ObjectAttribute(CKA.CKA_MODULUS, rsaPubKeyParams.Modulus.ToByteArrayUnsigned()),
-            new ObjectAttribute(CKA.CKA_PUBLIC_EXPONENT, rsaPubKeyParams.Exponent.ToByteArrayUnsigned())
-        };
+            {
+                new ObjectAttribute(CKA.CKA_CLASS, CKO.CKO_PRIVATE_KEY),
+                new ObjectAttribute(CKA.CKA_KEY_TYPE, CKK.CKK_RSA),
+                new ObjectAttribute(CKA.CKA_MODULUS, rsaPubKeyParams.Modulus.ToByteArrayUnsigned()),
+                new ObjectAttribute(CKA.CKA_PUBLIC_EXPONENT, rsaPubKeyParams.Exponent.ToByteArrayUnsigned())
+            };
 
             var hsmObjects = session.FindAllObjects(privKeySearchTemplate);
 
             if (hsmObjects.Count != 1)
-                throw new HSMObjectNotFound("Correlating RSA private key not found");
+                throw new HsmObjectNotFoundException("Correlating RSA private key not found");
         }
 
         private const string CertificateAddUsage
             = "Import a certificate from a file and push it into the store."
-                + Constants.CRLF + CertificateFileInfo.Usage;
+              + Constants.CRLF + CertificateFileInfo.Usage;
 
-        private static string CreateCsrForSigningCert(Session session, string ckaLabel, byte[] ckaId, int defaultBits,
+        private static string CreateCertificateSigningRequest(Session session, string ckaLabel, byte[] ckaId, int defaultBits,
             string directDomain, string distinguishedName, int keyUsage)
         {
             // Generate key pair - Signing
@@ -348,12 +393,14 @@ namespace Health.Direct.Config.Console.Command
                 true,
                 new DerOctetString(new KeyUsage(keyUsage))));
 
-            oids.Add(X509Extensions.SubjectAlternativeName);
-            values.Add(new X509Extension(
-                false,
-                new DerOctetString(
-                    new GeneralNames(
-                        new GeneralName(GeneralName.DnsName, directDomain)))));
+            if (directDomain.Contains("@"))
+            {
+                AddSubjectAltNameForRfc822Name(directDomain, oids, values);
+            }
+            else
+            {
+                AddSubjectAltNameForDnsName(directDomain, oids, values);
+            }
 
             var attribute = new AttributePkcs(
                 PkcsObjectIdentifiers.Pkcs9AtExtensionRequest,
@@ -383,6 +430,27 @@ namespace Health.Direct.Config.Console.Command
             return sb.ToString();
         }
 
+        private static void AddSubjectAltNameForDnsName(string directDomain, IList oids, IList values)
+        {
+            oids.Add(X509Extensions.SubjectAlternativeName);
+            values.Add(new X509Extension(
+                false,
+                new DerOctetString(
+                    new GeneralNames(
+                        new GeneralName(GeneralName.DnsName, directDomain)))));
+        }
+
+        private static void AddSubjectAltNameForRfc822Name(string email, IList oids, IList values)
+        {
+            oids.Add(X509Extensions.SubjectAlternativeName);
+            
+            values.Add(new X509Extension(
+                false,
+                new DerOctetString(
+                    new GeneralNames(
+                        new GeneralName(GeneralName.Rfc822Name, email)))));
+        }
+        
         internal void PushPublicCert(X509Certificate2 signedCert, bool checkForDupes, EntityStatus? status)
         {
             var owner = signedCert.ExtractEmailNameOrDnsName();
@@ -417,7 +485,6 @@ namespace Health.Direct.Config.Console.Command
         {
             foreach (var cert in certs)
             {
-                var owner = cert.ExtractEmailNameOrDnsName();
                 var csp = (RSACryptoServiceProvider)cert.PrivateKey;
                 var pkcs8 = GetPkcs8Format(csp);
 
@@ -425,11 +492,10 @@ namespace Health.Direct.Config.Console.Command
                 WriteLine(pkcs8);
 
                 WriteLine(".Net Code only::");
-                var pkcs8MS = GetPkcs8FormatMS(csp);
-                WriteLine(pkcs8MS);
+                var pkcs8Ms = GetPkcs8FormatMs(csp);
+                WriteLine(pkcs8Ms);
             }
         }
-
 
         //
         // Bouncy Castle PKCS#8 Formater
@@ -460,9 +526,9 @@ namespace Health.Direct.Config.Console.Command
         // openssl pkcs12 -in certname.pfx -nocerts -out key.pem -nodes
         // openssl rsa -in key.pem -out private.key 
         // 
-        private string GetPkcs8FormatMS(RSACryptoServiceProvider csp)
+        private string GetPkcs8FormatMs(RSACryptoServiceProvider csp)
         {
-            if (csp.PublicOnly) throw new ArgumentException("CSP does not contain a private key", "csp");
+            if (csp.PublicOnly) throw new ArgumentException("CSP does not contain a private key", nameof(csp));
             var parameters = csp.ExportParameters(true);
             var sb = new StringBuilder();
 
@@ -503,7 +569,7 @@ namespace Health.Direct.Config.Console.Command
 
         private static void EncodeLength(BinaryWriter stream, int length)
         {
-            if (length < 0) throw new ArgumentOutOfRangeException("length", "Length must be non-negative");
+            if (length < 0) throw new ArgumentOutOfRangeException(nameof(length), "Length must be non-negative");
             if (length < 0x80)
             {
                 // Short form
@@ -598,9 +664,9 @@ namespace Health.Direct.Config.Console.Command
         }
     }
 
-    internal class HSMObjectNotFound : Exception
+    internal class HsmObjectNotFoundException : Exception
     {
-        public HSMObjectNotFound(string correlatingRsaPrivateKeyNotFound) : base(correlatingRsaPrivateKeyNotFound)
+        public HsmObjectNotFoundException(string correlatingRsaPrivateKeyNotFound) : base(correlatingRsaPrivateKeyNotFound)
         {
         }
     }
