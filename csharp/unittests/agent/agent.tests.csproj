@@ -227,6 +227,12 @@
     <None Include="Certificates\redmond\OutgoingAnchors2\umamalga1.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\redmond\Private\dev.singleuse.lab.encipherment.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Private\dev.singleuse.lab.sign.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\redmond\Private\fha-crossover.DirectInt.lab_digitalsignature.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -310,6 +316,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Certificates\Chain\notes.txt" />
+    <Content Include="Policies\command_samples.txt" />
+    <Content Include="Policies\dataEnciphermentOnlyRequired.txt" />
+    <Content Include="Policies\digiSigOnly.txt" />
+    <Content Include="Policies\dualUseCertRequired.txt" />
+    <Content Include="Policies\keyEncOnly.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

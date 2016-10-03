@@ -1157,7 +1157,7 @@ namespace Health.Direct.Config.Store.Tests
             Certificate cert;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                cert = new Certificate(string.Format("CN=domain{0}.test.com", domainID)
+                cert = new Certificate(string.Format("domain{0}.test.com", domainID)
                                        , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
                                        , String.Empty);
                 //cert.Owner = string.Format("domain{0}.test.com", domainID);

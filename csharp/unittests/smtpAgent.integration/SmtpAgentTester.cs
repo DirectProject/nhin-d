@@ -154,7 +154,33 @@ Content-Type: text/plain
 
 Yo. Wassup?";
 
-        
+        //
+        // From dual-use cert sender stored in config store to single-use cert receiver. 
+        //
+        public static string TestMessageDualUseToSingleUse =
+                    @"From: <toby@redmond.hsgincubator.com>
+To: drjoe@dev.singleuse.lab
+Subject: Simple Text Message to HSM recipient
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        //
+        // From single-use cert sender, to dual-use cert receiver stored in config store 
+        //
+        public static string TestMessageSingleUseToDualUse =
+                    @"From: <toby@dev.singleuse.lab>
+To: toby@redmond.hsgincubator.com
+Subject: Simple Text Message to HSM recipient
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
 
         public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
         public const string TestIncomingFolder = @"c:\inetpub\mailroot\incoming";
@@ -305,6 +331,60 @@ Yo. Wassup?";
         protected static ConfigStore CreateConfigStore()
         {
             return new ConfigStore(ConnectionString);
+        }
+
+        internal CDO.Message RunEndToEndTest(CDO.Message message, SmtpAgent smtpAgent)
+        {
+            smtpAgent.ProcessMessage(message);
+            message = LoadMessage(message);
+            VerifyOutgoingMessage(message);
+
+            smtpAgent.ProcessMessage(message);
+            message = LoadMessage(message);
+
+            if (smtpAgent.Settings.InternalMessage.EnableRelay)
+            {
+                VerifyIncomingMessage(message);
+            }
+            else
+            {
+                VerifyOutgoingMessage(message);
+            }
+            return message;
+        }
+
+        internal void RunMdnOutBoundProcessingTest(CDO.Message message, SmtpAgent smtpAgent)
+        {
+            VerifyMdnIncomingMessage(message);      //Plain Text
+            smtpAgent.ProcessMessage(message);        //Encrypts
+            VerifyOutgoingMessage(message);    //Mdn looped back
+        }
+
+        internal void RunMdnInBoundProcessingTest(CDO.Message message, SmtpAgent smtpAgent)
+        {
+            VerifyOutgoingMessage(message);         //Encryted Message
+            smtpAgent.ProcessMessage(message);        //Decrypts Message
+            VerifyMdnIncomingMessage(message);    //Mdn looped back
+        }
+
+        private static void TestMdnTimelyAndReliableExtensionField(NotificationMessage message, bool exists)
+        {
+            var mdn = MDNParser.Parse(message);
+            TestMdnTimelyAndReliableExtensionField(mdn, exists);
+        }
+
+        protected static void TestMdnTimelyAndReliableExtensionField(Notification mdn, bool exists)
+        {
+            Console.WriteLine(mdn.Disposition);
+
+            if (exists)
+            {
+                Assert.NotNull(mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable]);
+            }
+            else
+            {
+                Assert.True(mdn.SpecialFields == null || mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable] == null);
+            }
         }
     }
 

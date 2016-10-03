@@ -5,14 +5,23 @@
   Customize as per your needs
 -->
 <SmtpAgentConfig>
-  <Domain>redmond.hsgincubator.com</Domain>
-  <Domain>nhind.hsgincubator.com</Domain>
-  <Postmaster>postmaster@redmond.hsgincubator.com</Postmaster>
+  <Domains>
+    <ServiceResolver>
+      <AgentName>Agent1</AgentName>
+      <ClientSettings>
+        <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+      </ClientSettings>
+      <CacheSettings>
+        <Cache>true</Cache>
+        <CacheTTLSeconds>5</CacheTTLSeconds>
+      </CacheSettings>
+    </ServiceResolver>
+  </Domains>
   <DomainManager>
-    <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
+    <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
   </DomainManager>
   <AddressManager>
-    <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
+    <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
     <Settings>
       <EnableDomainSearch>true</EnableDomainSearch>
     </Settings>
@@ -30,7 +39,7 @@
   <PrivateCerts>
     <ServiceResolver>
       <ClientSettings>
-        <Url>http://localhost/ConfigService/CertificateService.svc/Certificates</Url>
+        <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
       </ClientSettings>
     </ServiceResolver>
     <!--
@@ -53,7 +62,7 @@
   <Anchors>
     <ServiceResolver>
       <ClientSettings>
-        <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
+        <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
       </ClientSettings>
     </ServiceResolver>
     <!--
@@ -70,7 +79,7 @@
   <CertPolicies>
     <Public>
       <ClientSettings>
-        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -80,7 +89,7 @@
     </Public>
     <Private>
       <ClientSettings>
-        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -90,7 +99,7 @@
     </Private>
     <Trust>
       <ClientSettings>
-        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>

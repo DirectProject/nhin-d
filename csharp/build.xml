@@ -167,11 +167,27 @@
 		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdns.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupsingleusetestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="AdminConsole.exe USER_REMOVE admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
 		<Exec Command="AdminConsole.exe USER_ADD admin admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
 		<Exec Command="AdminConsole.exe USER_STATUS_SET admin Enabled " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
 	</Target>
+		
+	<Target Name="create-testHsmData">
 	
+		<ItemGroup>
+			<policies Include="$(MSBuildProjectDirectory)\Support\Policy\*.*"/>
+		</ItemGroup>
+		
+		<Copy
+            SourceFiles="@(policies)"
+            DestinationFiles="@(policies->'$(MSBuildProjectDirectory)\bin\$(Configuration)\Support\Policy\%(Filename)%(Extension)')"
+        />
+		
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupsingleusetestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+	
+	</Target>
+		
 	<Target Name="publish-configui">
 		<MSBuild Targets="clean-configui-install" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
 		<CallTarget Targets="build-configui" />
