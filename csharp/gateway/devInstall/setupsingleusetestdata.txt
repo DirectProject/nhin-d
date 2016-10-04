@@ -1,5 +1,5 @@
 //
-// Commands issued to ConfigConsole.exe to install single use public certs already installed in HSM
+// Commands issued to ConfigConsole.exe to install single use certs 
 // Dependent on test_certs_InstallInService, typically ran in other setups
 // 
 // Run in a batch by the exe
@@ -13,7 +13,7 @@ domain_add dev.singleuse.lab Enabled Agent1
 
 echo ******************************
 //
-// Install Certificates 
+// Install Single-Use Certificates 
 //
 // The following certs are typically added by test_certs_InstallInService 
 //
@@ -21,8 +21,8 @@ echo ******************************
 //Certificate_ADD .\Certificates\redmond\Private\dev.singleuse.lab.sign.pfx passw0rd! Enabled
 
 
-DNS_MX_ENSURE dev.singleuse.lab 	Smtp.DirectInt.lab 3600
-dns_ns_ensure dev.singleuse.lab 	ns1.DirectInt.Lab 3600
+//DNS_MX_ENSURE dev.singleuse.lab 	Smtp.DirectInt.lab 3600
+//dns_ns_ensure dev.singleuse.lab 	ns1.DirectInt.Lab 3600
 Policy_Add  DigitalSignature .\Support\Policy\DigitalSignature.dpol
 Policy_Add  KeyEncipherment  .\Support\Policy\KeyEncipherment.dpol
 PolicyGroup_ADD  FHA

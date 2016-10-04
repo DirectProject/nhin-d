@@ -24,15 +24,27 @@ namespace Health.Direct.Agent.Config
     /// </summary>
     [XmlType("CryptographerSettings")]
     public class CryptographerSettings
-    {        
-        EncryptionAlgorithm m_defaultEncryption = EncryptionAlgorithm.AES128;
-        DigestAlgorithm m_defaultDigest = DigestAlgorithm.SHA1;
-        
+    {
+        private ISmimeCryptographer m_cryptographer;
+
         /// <summary>
         /// Creates an instance, normally called via one of the <see cref="AgentSettings"/> class factory methods.
         /// </summary>
         public CryptographerSettings()
         {
+        }
+
+        EncryptionAlgorithm m_defaultEncryption = EncryptionAlgorithm.AES128;
+        DigestAlgorithm m_defaultDigest = DigestAlgorithm.SHA1;
+        
+        /// <summary>
+        /// Plugin cryptographer settings.
+        /// </summary>
+        [XmlElement("PluginCryptographer", typeof(PluginCryptographerSettings))]
+        public PluginCryptographerSettings Cryptographer
+        {
+            get;
+            set;
         }
 
         /// <summary>
@@ -71,9 +83,16 @@ namespace Health.Direct.Agent.Config
         /// Creates an <see cref="SMIMECryptographer"/> with the configured settings
         /// </summary>
         /// <returns>The configured cryptographer.</returns>
-        public SMIMECryptographer Create()
+        public ISmimeCryptographer Create()
         {
-            return new SMIMECryptographer(m_defaultEncryption, m_defaultDigest);
+            if (Cryptographer == null)
+            {
+                return new SMIMECryptographer(DefaultEncryption, DefaultDigest);
+            }
+            else
+            {
+                return Cryptographer.Create();
+            }
         }
     }
 }

@@ -83,6 +83,7 @@
     <Compile Include="Config\MachineCertResolverSettings.cs" />
     <Compile Include="Config\PluginAnchorResolverSettings.cs" />
     <Compile Include="Config\PluginCertResolverSettings.cs" />
+    <Compile Include="Config\PluginCryptographerSettings.cs" />
     <Compile Include="Config\PluginDomainResolverSettings.cs" />
     <Compile Include="Config\PolicyResolverSettings.cs" />
     <Compile Include="Config\PolicySettings.cs" />

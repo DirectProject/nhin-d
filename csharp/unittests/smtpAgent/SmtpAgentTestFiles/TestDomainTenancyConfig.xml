@@ -10,7 +10,7 @@
     <ServiceResolver>
       <AgentName>Agent1</AgentName>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
       </ClientSettings>      
     </ServiceResolver>
   </Domains>
@@ -23,10 +23,10 @@
   </Log>
 
   <DomainManager>
-    <Url>http://localhost:6692/DomainManagerService.svc/Domains</Url>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
   </DomainManager>
   <AddressManager>
-    <Url>http://localhost:6692/DomainManagerService.svc/Addresses</Url>
+    <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
   </AddressManager>
 
   <InternalMessage>
@@ -42,7 +42,7 @@
   <PrivateCerts>
     <ServiceResolver>
       <ClientSettings>
-        <Url>http://localhost:6692/CertificateService.svc/Certificates</Url>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Certificates</Url>
       </ClientSettings>
     </ServiceResolver>
   </PrivateCerts>
@@ -61,7 +61,7 @@
   <Anchors>
     <ServiceResolver>
       <ClientSettings>
-        <Url>http://localhost:6692/CertificateService.svc/Anchors</Url>
+        <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
       </ClientSettings>
     </ServiceResolver>
   </Anchors>

@@ -130,6 +130,12 @@
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService_HsmCryptographer.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService_HsmCryptographerBadUrl.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigWithCertPolicy.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

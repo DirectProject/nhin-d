@@ -218,6 +218,12 @@
     <None Include="Certificates\redmond\IncomingAnchors\umamalga1.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\redmond\OutgoingAnchors\DirectMix.Hard_Cert.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\OutgoingAnchors\DirectMix.Soft_Cert.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\redmond\OutgoingAnchors\kryptiq.lab.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -243,6 +249,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\Private\redmond.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Public\dev.singleuse.lab.encipherment.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\Public\fha-crossover.DirectInt.lab_dualUse.cer">

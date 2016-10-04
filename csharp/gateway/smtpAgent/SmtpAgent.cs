@@ -284,7 +284,10 @@ namespace Health.Direct.SmtpAgent
                 
                 this.SubscribeToResolverEvents(m_agent.PublicCertResolver);
                 this.SubscribeToResolverEvents(m_agent.PrivateCertResolver);
-                
+
+                m_agent.Cryptographer.Error += m_diagnostics.OnCryptographerError;
+                m_agent.Cryptographer.Warning += m_diagnostics.OnCryptographerWarning;
+
                 m_agent.TrustModel.CertChainValidator.Problem += m_diagnostics.OnCertificateProblem;
                 m_agent.TrustModel.CertChainValidator.Untrusted += m_diagnostics.OnUntrustedCertificate;
             }

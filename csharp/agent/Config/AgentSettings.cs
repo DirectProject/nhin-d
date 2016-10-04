@@ -239,7 +239,7 @@ namespace Health.Direct.Agent.Config
             ITrustAnchorResolver trustAnchors = this.Anchors.Resolver.CreateResolver();
             ICertPolicyResolvers certPolicyResolvers = GetPolicyResolvers();
             TrustModel trustModel = (this.Trust != null) ? this.Trust.CreateTrustModel(certPolicyResolvers.TrustResolver) : TrustModel.Default;
-            SMIMECryptographer cryptographer = this.Cryptographer.Create();
+            ISmimeCryptographer cryptographer = this.Cryptographer.Create();
 
             IDomainResolver domainResolver = this.CreateResolver();
 

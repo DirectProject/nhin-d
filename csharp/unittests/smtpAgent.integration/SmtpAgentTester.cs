@@ -182,6 +182,74 @@ Content-Type: text/plain
 
 Yo. Wassup?";
 
+        //
+        // From dual-use cert sender stored in config store to single-use cert receiver (keys stored in HSM). 
+        //
+        public static string TestMessageDualToHsm =
+                    @"From: <toby@redmond.hsgincubator.com>
+To: drjoe@hsm.DirectInt.lab
+Subject: Simple Text Message to HSM recipient
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        //
+        // From dual-use cert sender stored in config store to single-use certs (multiple domains) receiver (keys stored in HSM). 
+        //
+        public static string TestMessageDualToHsmMulti =
+                    @"From: <toby@redmond.hsgincubator.com>
+To: drjoe@hsm.DirectInt.lab, hobojoe@fha-crossover.DirectInt.lab
+Subject: Simple Text Message to HSM recipient
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        //
+        // From single-use cert sender (keys stored in HSM), to dual-use cert receiver stored in config store 
+        //
+        public static string TestMessageHsmToSoft =
+                    @"From: drjoe@hsm.DirectInt.lab
+To: <toby@redmond.hsgincubator.com>
+Subject: Simple Text Message to HSM recipient
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        //
+        // From single-use cert sender (keys stored in HSM), o single-use cert receiver (keys stored in HSM). 
+        //
+        public static string TestMessageHsmToHsm =
+                    @"From: drjoe@hsm.DirectInt.lab
+To: HoboJoe@hsm.DirectInt.lab
+Subject: Simple Text Message to HSM recipient
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        public static string RecipientHostsMixedPublicCerts =
+            @"From: <toby @redmond.hsgincubator.com>
+To: <hobojoe@mixed.directmix.lab>
+Subject: Simple Text Message
+Message-ID: {0}
+Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Recipient hosting both a hardware cert and a software cert issued by two different anchors.
+";
+
         public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
         public const string TestIncomingFolder = @"c:\inetpub\mailroot\incoming";
 
@@ -230,6 +298,15 @@ Yo. Wassup?";
         {
             if (settings == null) return;
             CleanMessages(settings.CopyFolder);
+        }
+
+        public IEnumerable<string> FileMessages(string pickupFolder)
+        {
+            foreach (var file in Directory.GetFiles(pickupFolder))
+            {
+                yield return file;
+                File.Delete(file);
+            }
         }
 
         public IEnumerable<string> PickupMessages()

@@ -161,32 +161,65 @@
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="IIS APPPOOL\ASP.NET v4.0"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="NT AUTHORITY\NETWORK SERVICE"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />		
+	    <Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i setTokenSettings.sql -v DBName=DirectConfig' WorkingDirectory="$(ProgramData)\DirectProject" />
 	</Target>
 	
 	<Target Name="create-testData">
 		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdns.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+		
+		<CallTarget Targets="create-testSingleUseData" />
+		<CallTarget Targets="create-testHsmData" />
+		
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupsingleusetestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 		<Exec Command="AdminConsole.exe USER_REMOVE admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
 		<Exec Command="AdminConsole.exe USER_ADD admin admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
 		<Exec Command="AdminConsole.exe USER_STATUS_SET admin Enabled " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
 	</Target>
 		
-	<Target Name="create-testHsmData">
+	<Target Name="create-testSingleUseData">
 	
 		<ItemGroup>
-			<policies Include="$(MSBuildProjectDirectory)\Support\Policy\*.*"/>
+			<policies Include="$(MSBuildProjectDirectory)\support\policy\*.*"/>
+			<certificates Include="$(MSBuildProjectDirectory)\support\certificate\*.*"/>
 		</ItemGroup>
 		
 		<Copy
             SourceFiles="@(policies)"
-            DestinationFiles="@(policies->'$(MSBuildProjectDirectory)\bin\$(Configuration)\Support\Policy\%(Filename)%(Extension)')"
+            DestinationFiles="@(policies->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\policy\%(Filename)%(Extension)')"
+        />
+		
+		<Copy
+            SourceFiles="@(certificates)"
+            DestinationFiles="@(certificates->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\certificate\%(Filename)%(Extension)')"
         />
 		
 		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupsingleusetestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
 	
 	</Target>
+	
+	<Target Name="create-testHsmData">
+		
+		<ItemGroup>
+			<policies Include="$(MSBuildProjectDirectory)\support\policy\*.*"/>
+			<certificates Include="$(MSBuildProjectDirectory)\support\certificate\*.*"/>
+		</ItemGroup>
+		
+		<Copy
+            SourceFiles="@(policies)"
+            DestinationFiles="@(policies->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\policy\%(Filename)%(Extension)')"
+        />
+		
+		<Copy
+            SourceFiles="@(certificates)"
+            DestinationFiles="@(certificates->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\certificate\%(Filename)%(Extension)')"
+        />
+		
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupHSMtestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
+	
+	</Target>
+		
 		
 	<Target Name="publish-configui">
 		<MSBuild Targets="clean-configui-install" Projects="$(MSBuildProjectFile)" Properties="state=pre" />

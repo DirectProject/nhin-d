@@ -112,6 +112,10 @@
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\hsmCryptographer\hsmCryptographer.csproj">
+      <Project>{3c66e370-68b4-45c7-8c69-622c983c8e43}</Project>
+      <Name>hsmCryptographer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ResolverPlugin\resolverPlugins.csproj">
       <Project>{3b166914-a175-4248-b281-ea16afcfd550}</Project>
       <Name>resolverPlugins</Name>
