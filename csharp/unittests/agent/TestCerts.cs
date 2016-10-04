@@ -90,9 +90,9 @@ namespace Health.Direct.Agent.Tests
         [MemberData("AllCerts")]
         public void TestNameExtraction(X509Certificate2 cert)
         {
-            string name = cert.ExtractEmailNameOrName();
+            string name = cert.ExtractEmailNameOrDnsName();
             Assert.False(string.IsNullOrEmpty(name));
-            Assert.True(cert.MatchEmailNameOrName(name));
+            Assert.True(cert.MatchDnsOrEmailOrName(name));
         }
 
         /// <summary>
