@@ -98,5 +98,17 @@ public enum NotificationType implements DispositionType
 	    {
 	    	return NotificationHelper.asString(this);
 	    }
-	}		
+	}, 
+    
+    /**
+     * Negative delivery notification message is issued by an STA when delivery to a destination 
+     * has failed or is considered to have failed.
+     */
+    Failed
+    {
+        public String toString() 
+        {
+            return NotificationHelper.asString(this);
+        }
+    }   	
 }
