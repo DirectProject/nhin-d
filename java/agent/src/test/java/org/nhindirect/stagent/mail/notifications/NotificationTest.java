@@ -417,5 +417,30 @@ public class NotificationTest extends TestCase
 	
 		assertNotNull(headers.getHeader("X-TEST2"));
 		assertEquals("value", headers.getHeader("X-TEST2", ","));		
-	}	
+	}
+	
+    public void testFailedNotification() throws Exception
+    {
+        Notification noti = new Notification(NotificationType.Failed);
+        
+        System.out.println(noti);
+        
+        MimeMultipart mm = noti.getAsMultipart();
+        
+        assertNotNull(mm);
+        assertEquals(2, mm.getCount());
+        
+        BodyPart part = mm.getBodyPart(0);
+        assertTrue(part.getContentType().startsWith("text/plain"));
+        assertEquals(Notification.DefaultExplanationFailed, part.getContent().toString());
+            
+        part = mm.getBodyPart(1);
+        assertTrue(part.getContentType().startsWith("message/disposition-notification"));
+        
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        part.writeTo(outStream);
+        String content = new String(outStream.toByteArray());
+        
+        assertTrue(content.contains("automatic-action/MDN-sent-automatically;failed"));
+    }
 }

@@ -59,6 +59,7 @@ public class Notification
 	private static Method getHeaders;
 	
 	private static final String DefaultExplanation = "Your message was successfully processed.";
+	public static final String DefaultExplanationFailed = "Your message encountered an error and failed delivery to the target system. Please contact your administrator.";
 	
     private String explanation;
 	private Disposition disposition;
@@ -99,7 +100,12 @@ public class Notification
      */
     public Notification(Disposition disposition)
 	{    
-    	this.explanation = DefaultExplanation;
+        NotificationType notificationType = (disposition == null) ? null : disposition.getNotification();
+        if (NotificationType.Failed.equals(notificationType)) {
+            this.explanation = DefaultExplanationFailed;
+        } else {
+            this.explanation = DefaultExplanation;    
+        }
     	this.disposition = disposition;
     	this.originalMsgId = "";
     	this.finalRecipient = "";

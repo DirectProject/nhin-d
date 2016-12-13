@@ -150,11 +150,12 @@ public class MDNStandard extends MailStandard
     public static final String Send_Automatic = "MDN-sent-automatically";
     public static final String Disposition_Displayed = "displayed";
     public static final String Disposition_Processed = "processed";
-    public static final String Disposition_Dispatched = "dispatched";  
+    public static final String Disposition_Dispatched = "dispatched";
     public static final String Disposition_Deleted = "deleted";
-    public static final String Disposition_Denied = "denied";    
-    public static final String Disposition_Error = "error";  
-    public static final String Modifier_Error = "error";    
+    public static final String Disposition_Denied = "denied";
+    public static final String Disposition_Error = "error";
+    public static final String Disposition_Failed = "failed";
+    public static final String Modifier_Error = "error"; 
     
     public static final String  ReportType = "report-type";
     public static final String  ReportTypeValueNotification = "disposition-notification";  
@@ -363,7 +364,10 @@ public class MDNStandard extends MailStandard
                 return Disposition_Denied;  
                 
             case Error:
-                return Disposition_Error;         
+                return Disposition_Error;
+                
+            case Failed:
+                return Disposition_Failed;
         }
     }    
     
