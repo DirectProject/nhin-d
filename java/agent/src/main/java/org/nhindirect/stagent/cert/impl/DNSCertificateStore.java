@@ -688,7 +688,7 @@ public class DNSCertificateStore extends CertificateStore implements CacheableCe
 			}
 			extendedResolver.setRetries(retries);
 			extendedResolver.setTimeout(timeout);
-			extendedResolver.setTCP(true);
+			extendedResolver.setTCP(useTCP);
 		}
 
 		return extendedResolver;

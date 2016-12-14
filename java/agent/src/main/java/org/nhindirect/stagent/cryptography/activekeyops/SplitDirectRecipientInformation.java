@@ -23,18 +23,15 @@ package org.nhindirect.stagent.cryptography.activekeyops;
 
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.ProviderException;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.asn1.DERObjectIdentifier;
 import org.bouncycastle.asn1.cms.KeyTransRecipientInfo;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
@@ -57,6 +54,8 @@ import org.nhindirect.stagent.cryptography.EncryptionAlgorithm;
  */
 public class SplitDirectRecipientInformation extends KeyTransRecipientInformation implements DirectRecipientInformation
 {
+	private static final Log LOGGER = LogFactory.getFactory().getInstance(SplitDirectRecipientInformation.class);
+	
 	protected final String encProvider;
 	protected final String keyEncProvider;
 	
@@ -99,73 +98,76 @@ public class SplitDirectRecipientInformation extends KeyTransRecipientInformatio
 		// this is the symmetric key
         final byte[]  encryptedKey = info.getEncryptedKey().getOctets();
         // this is the algorithm that protects the symmetric key
-        final String  keyExchangeAlgorithm = getExchangeEncryptionAlgorithmName(_keyEncAlg.getObjectId());
+        // some PKCS11 tokens need different names than what we would
+        // usually expect, so we'll try a list of them in order
+        // of most likely to least likely
+        final String[]  keyExchangeAlgorithms = new String[]
+        {
+        				getExchangeEncryptionAlgorithmName(_keyEncAlg.getObjectId()),
+        				"RSA/None/OAEPWithSHA1AndMGF1Padding",
+        				"RSA/ECB/PKCS1Padding",
+        				_keyEncAlg.getObjectId().getId()
+        };
         // this is the algorithm of the symmetric key to actually decrypt the content
         final String  alg = EncryptionAlgorithm.fromOID(_encAlg.getObjectId().getId(), EncryptionAlgorithm.AES128_CBC).getAlgName();
         
-        try
+        Exception lastError = null;
+        for (String algName : keyExchangeAlgorithms)
         {
-            Cipher  keyCipher =  Cipher.getInstance(keyExchangeAlgorithm, keyEncProvider);
-            Key     sKey;
-            
-            try
-            {
-            	// the original BC libraries attempted to do an UNWRAP assuming that the 
-            	// same provider was used for secret key decryption and message decryption
-            	// when these two operations are split into separate providers, using an unwrap method
-            	// may result in a secret key handle that may not be usable by the another provider
-            	// for that reason, this class will do a straight up decrypt of the message's internal
-            	// secret key and hand that key off to the "encProvider" provider
-                keyCipher.init(Cipher.DECRYPT_MODE, key);
-
-                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
-            }
-            catch (GeneralSecurityException e)
-            {        	
-                keyCipher.init(Cipher.DECRYPT_MODE, key);
-
-                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
-            }
-            catch (IllegalStateException e) 
-            {
-                keyCipher.init(Cipher.DECRYPT_MODE, key);
-
-                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
-            }
-            catch (UnsupportedOperationException e) 
-            {
-                keyCipher.init(Cipher.DECRYPT_MODE, key);
-
-                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
-            }
-            catch (ProviderException e)
-            {
-                keyCipher.init(Cipher.DECRYPT_MODE, key);
-
-                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
-            }
-            return getContentFromSessionKey(sKey, encProvider);
+	        try
+	        {
+	            Cipher  keyCipher =  Cipher.getInstance(algName, keyEncProvider);
+	            Key     sKey;
+	            
+	            try
+	            {
+	            	LOGGER.debug("Attempting to decrypt message symetric encryption key with algorithm " + algName);
+	            	// the original BC libraries attempted to do an UNWRAP assuming that the 
+	            	// same provider was used for secret key decryption and message decryption
+	            	// when these two operations are split into separate providers, using an unwrap method
+	            	// may result in a secret key handle that may not be usable by the another provider
+	            	// for that reason, this class will do a straight up decrypt of the message's internal
+	            	// secret key and hand that key off to the "encProvider" provider
+	                keyCipher.init(Cipher.DECRYPT_MODE, key);
+	
+	                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
+	            }
+	            catch (GeneralSecurityException e)
+	            {        	
+	                keyCipher.init(Cipher.DECRYPT_MODE, key);
+	
+	                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
+	            }
+	            catch (IllegalStateException e) 
+	            {
+	                keyCipher.init(Cipher.DECRYPT_MODE, key);
+	
+	                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
+	            }
+	            catch (UnsupportedOperationException e) 
+	            {
+	                keyCipher.init(Cipher.DECRYPT_MODE, key);
+	
+	                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
+	            }
+	            catch (ProviderException e)
+	            {
+	                keyCipher.init(Cipher.DECRYPT_MODE, key);
+	
+	                sKey = new SecretKeySpec(keyCipher.doFinal(encryptedKey), alg);
+	            }
+	            if (sKey != null)
+	            	LOGGER.debug("Successfully decrypted message symetric encryption key");
+	            
+	            return getContentFromSessionKey(sKey, encProvider);
+	        }
+	        catch (Exception e)
+	        {
+	        	LOGGER.warn("Message symetric encryption is not decryptable with algorithm " + algName + ": " + e.getMessage());
+	        	lastError = e;
+	        }
         }
-        catch (NoSuchAlgorithmException e)
-        {
-            throw new CMSException("can't find algorithm.", e);
-        }
-        catch (InvalidKeyException e)
-        {
-            throw new CMSException("key invalid in message.", e);
-        }
-        catch (NoSuchPaddingException e)
-        {
-            throw new CMSException("required padding not supported.", e);
-        }
-        catch (IllegalBlockSizeException e)
-        {
-            throw new CMSException("illegal blocksize in message.", e);
-        }
-        catch (BadPaddingException e)
-        {
-            throw new CMSException("bad padding in message.", e);
-        }
+        throw new CMSException("Failed to decyrpt message symetric encryption key", lastError);
     }
 	
     private String getExchangeEncryptionAlgorithmName(DERObjectIdentifier oid)
