@@ -15,10 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using Health.Direct.Install.Tools;
 using Xunit;
 
-namespace install.tools.tests
+namespace Health.Direct.Install.Tools.Tests
 {
     public class SqlDbTests
     {

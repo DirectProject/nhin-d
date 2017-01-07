@@ -17,7 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Net.Sockets;
 using Xunit;
-namespace Health.Direct.Install.Tools.tests
+
+namespace Health.Direct.Install.Tools.Tests
 {
     public class SmtpTests
     {

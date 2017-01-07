@@ -16,11 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.IO;
-using Health.Direct.Install.Tools;
 using Xunit;
 
-namespace install.tools.tests
+namespace Health.Direct.Install.Tools.Tests
 {
     public class EndPointTests
     {
@@ -53,13 +51,13 @@ namespace install.tools.tests
 
             Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Domains"));
-            
+
             Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/DnsRecords"));
-            
+
             Assert.False(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Authentication"));
-            
+
             Assert.True(endPoint.TestWcfSoapConnection(
                 "http://DirectGateway.South.Hobo.Lab/ConfigService/AuthManagerService.svc/Authentication"));
 
@@ -68,7 +66,7 @@ namespace install.tools.tests
 
             Assert.False(endPoint.TestWcfSoapConnection(
                "http://badhostname/ConfigService/AuthManagerService.svc/Certificates"));
-            
+
         }
 
         /// <summary>
@@ -90,7 +88,7 @@ namespace install.tools.tests
                 "http://engr-dir-be.engr.kryptiq.com/dnsservice/recordretrievalservice.svc/Records"));
         }
 
-         
+
 
         [Fact]
         public void TestLocalhost()
