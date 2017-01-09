@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.VisualStudioVersion.v14.Common.props" />
+  <PropertyGroup>
+    <!-- Default values for configuration variables -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ErrorReport>send</ErrorReport>
+    <!-- Project name -->
+    <ProjectGuid>{FACB2D74-D738-4D41-A595-8396B75277D1}</ProjectGuid>
+    <AssemblyName>Pkcs11Interop</AssemblyName>
+    <!-- Project output -->
+    <OutputType>Library</OutputType>
+    <OutputPath>..\build\bin\$(Configuration)\</OutputPath>
+    <AssemblyOriginatorKeyFile>..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
+    <!-- Framework dependencies -->
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <!-- Default build options -->
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <FileAlignment>512</FileAlignment>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <!-- Deployment options -->
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Pkcs11Interop">
+      <HintPath>..\build\packages\Pkcs11Interop.3.1.0\lib\net40\Pkcs11Interop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Target Name="CreateManifestResourceNames" />
+  <Target Name="CoreCompile" Inputs="@(Reference)" Outputs="$(OutputPath)$(AssemblyName).dll">
+    <PropertyGroup>
+      <ILAsm>$(MSBuildFrameworkToolsPath)ilasm.exe</ILAsm>
+      <ILDAsm>$(TargetFrameworkSDKToolsDirectory)ildasm.exe</ILDAsm>
+    </PropertyGroup>
+
+    <Exec Condition="'%(Reference.Hintpath)' != ''" Command="&quot;$(ILDAsm)&quot; %(Reference.Hintpath) /output=$(IntermediateOutputPath)%(Reference.Filename).il" />
+    <Exec Condition="'%(Reference.Hintpath)' != ''" Command="&quot;$(ILAsm)&quot; $(IntermediateOutputPath)%(Reference.Filename).il /dll /key=$(AssemblyOriginatorKeyFile) /output=$(IntermediateOutputPath)$(AssemblyName).dll" />
+  </Target>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

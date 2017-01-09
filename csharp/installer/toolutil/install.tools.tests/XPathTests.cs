@@ -16,11 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.IO;
-using System.Text;
 using System.Xml;
 using Xunit;
 
-namespace Health.Direct.Install.Tools.tests
+namespace Health.Direct.Install.Tools.Tests
 {
     public class XPathTests
     {
@@ -44,7 +43,7 @@ namespace Health.Direct.Install.Tools.tests
         [Fact]
         public void ConnectAndDropDirectDnsResponder_Test()
         {
-            
+
             File.Copy("DirectDnsResponderSvc.exe.config", "DirectDnsResponderSvc.exe.config.test", true);
             XPath editor = new XPath();
             editor.XmlFilePath = "DirectDnsResponderSvc.exe.config.test";
@@ -54,7 +53,7 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal(expected, value);
 
             editor.SetSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url",
-               @"http://SomeServer/DnsService/RecordRetrievalService.svc/Records" );
+               @"http://SomeServer/DnsService/RecordRetrievalService.svc/Records");
 
 
             value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
@@ -114,7 +113,7 @@ namespace Health.Direct.Install.Tools.tests
             expected = null;
             Assert.Equal(expected, actual);
 
-            editor. CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
+            editor.CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
 
             editor.SetSingleAttribute("/SmtpAgentConfig/MdnMonitor/Url", @"http://localhost/ConfigService/MonitorService.svc/Dispositions");
 
@@ -157,7 +156,7 @@ namespace Health.Direct.Install.Tools.tests
   <Definition>
     <TypeName>Health.Direct.ResolverPlugins.MultiSourceAnchorResolver, Health.Direct.ResolverPlugins</TypeName>
     <Settings>
-	  <!-- New Bundle Resolver -->
+      <!-- New Bundle Resolver -->
       <BundleResolver>
         <ClientSettings>
           <Url>http://localhost/ConfigService/CertificateService.svc/Bundles</Url>
@@ -172,7 +171,7 @@ namespace Health.Direct.Install.Tools.tests
         <Timeout>30000</Timeout> <!-- In milliseconds -->
         <VerifySSL>true</VerifySSL>
       </BundleResolver>
-	  <!-- Standard Resolver that pulls from Anchor store -->
+      <!-- Standard Resolver that pulls from Anchor store -->
       <ServiceResolver>
         <ClientSettings>
           <Url>http://localhost/ConfigService/CertificateService.svc/Anchors</Url>
@@ -193,15 +192,15 @@ namespace Health.Direct.Install.Tools.tests
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
             //var original = editor.SelectSingleAttribute("xpath");
-           
+
             //Act
             editor.ReplaceFragment(xpath, anchorsPlugin);
 
-            
+
             //Assert
             XmlDocument updatedDocument = new XmlDocument();
             updatedDocument.Load("SmtpAgentConfig.xml.test");
-            
+
             XmlNode updatedAnchors = updatedDocument.SelectSingleNode(xpath);
 
             XmlWriterSettings settings = new XmlWriterSettings();
@@ -211,7 +210,7 @@ namespace Health.Direct.Install.Tools.tests
             settings.ConformanceLevel = ConformanceLevel.Auto;
 
             string actualFragment;
-            using(var stringWriter = new StringWriter())
+            using (var stringWriter = new StringWriter())
             {
                 using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
                 {

@@ -19,11 +19,9 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
-
 
 namespace Health.Direct.Install.Tools
 {
@@ -40,14 +38,14 @@ namespace Health.Direct.Install.Tools
     [ClassInterface(ClassInterfaceType.None)]
     public class Smtp : ISmtp
     {
-        
+
         public bool TestConnection(string host, int port)
         {
             if (TestNicInterfaceConnection(host, port))
             {
                 return true;
             }
-                      
+
             IPHostEntry ipHostEntry = Dns.GetHostEntry(Dns.GetHostName());
             return ipHostEntry.AddressList.Any(ip => TestNicInterfaceConnection(ip.ToString(), port));
         }
@@ -78,9 +76,9 @@ namespace Health.Direct.Install.Tools
 
                     return true;
                 }
-                    catch
-                    {
-                    }
+                catch
+                {
+                }
                 finally
                 {
                     //Need a logger injected.
@@ -101,7 +99,7 @@ namespace Health.Direct.Install.Tools
             sw.Start();
             while (socket.Available == 0)
             {
-                if(sw.ElapsedMilliseconds > 1000)
+                if (sw.ElapsedMilliseconds > 1000)
                 {
                     return false;
                 }

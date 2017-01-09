@@ -40,7 +40,7 @@ namespace Health.Direct.Trust.Tests
         {
             BundleAnchorsCommand cmd = new BundleAnchorsCommand();
             string[] ignoreArray = new string[] {"Direct.Drhisp.Com Root CAKey.der"};
-            cmd.Name = @".\Certificates\nhind\IncomingAnchors";
+            cmd.Name = @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
             cmd.Ignore = ignoreArray;
 
             IEnumerator result = cmd.Invoke().GetEnumerator();
@@ -62,7 +62,7 @@ namespace Health.Direct.Trust.Tests
         {
             BundleAnchorsCommand cmd = new BundleAnchorsCommand();
             string[] ignoreArray = new string[] { "Direct.Drhisp.Com Root CAKey.der" };
-            cmd.Name = @".\Certificates\nhind\IncomingAnchors";
+            cmd.Name = @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
             cmd.Ignore = ignoreArray;
             cmd.Metadata = @"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>";
 
@@ -86,7 +86,7 @@ namespace Health.Direct.Trust.Tests
         {
             BundleAnchorsCommand cmd = new BundleAnchorsCommand();
             string[] ignoreArray = new string[] { "Direct.Drhisp.Com Root CAKey.der" };
-            cmd.Name = @".\Certificates\nhind\IncomingAnchors";
+            cmd.Name = @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
             cmd.Ignore = ignoreArray;
 
             IEnumerator result = cmd.Invoke().GetEnumerator();
@@ -100,7 +100,7 @@ namespace Health.Direct.Trust.Tests
             {
                 secString.AppendChar(secchar);
             }
-            signCmd.Name = @".\Certificates\redmond\Private\redmond.pfx";
+            signCmd.Name = @"..\..\..\unittests\agent\Certificates\redmond\Private\redmond.pfx";
             signCmd.PassKey = secString;
             signCmd.Bundle = (byte[])result.Current;
 
@@ -123,7 +123,7 @@ namespace Health.Direct.Trust.Tests
            
             BundleAnchorsCommand cmd = new BundleAnchorsCommand();
             string[] ignoreArray = new string[] { "Direct.Drhisp.Com Root CAKey.der" };
-            cmd.Name = @".\Certificates\nhind\IncomingAnchors";
+            cmd.Name = @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
             cmd.Ignore = ignoreArray;
             cmd.Metadata = @"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>";
 
@@ -138,7 +138,7 @@ namespace Health.Direct.Trust.Tests
             {
                 secString.AppendChar(secchar);
             }
-            signCmd.Name = @".\Certificates\redmond\Private\redmond.pfx";
+            signCmd.Name = @"..\..\..\unittests\agent\Certificates\redmond\Private\redmond.pfx";
             signCmd.PassKey = secString;
             signCmd.Bundle = (byte[])result.Current;
 

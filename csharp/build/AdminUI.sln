@@ -1,7 +1,6 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.client", "..\config\client\config.client.csproj", "{2EA3D265-4E39-4631-85F3-1DC6B5103C71}"
 EndProject
@@ -10,11 +9,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "..\common\common.csproj", "{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diagnostics.nlog", "..\diagnostics\diagnostics.nlog.csproj", "{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{096D98D0-0B39-4527-85F7-7AC8302BB68B}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminMvc", "..\admin\AdminMvc\AdminMvc.csproj", "{8E284E54-B6E7-4F16-B362-719C34E95762}"
 EndProject

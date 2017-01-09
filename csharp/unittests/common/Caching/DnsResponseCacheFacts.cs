@@ -28,7 +28,7 @@ namespace Health.Direct.Common.Tests.Caching
         // set this to true if dump statements are needed for debugging purposes
         private const bool DumpIsEnabled = false;
 
-        private const string m_filePath = @"..\..\..\..\common.metadata\dnsresponses";
+        private const string m_filePath = @"..\..\..\common.metadata\dnsresponses";
 
         private int m_basettl = 10;
         private DnsResponseCache m_drrc;
