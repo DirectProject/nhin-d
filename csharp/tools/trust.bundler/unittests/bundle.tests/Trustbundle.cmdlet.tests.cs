@@ -39,18 +39,18 @@ namespace Health.Direct.Trust.Tests
         public void CreateBundleTest()
         {
             BundleAnchorsCommand cmd = new BundleAnchorsCommand();
-            string[] ignoreArray = new string[] {"Direct.Drhisp.Com Root CAKey.der"};
+            string[] ignoreArray = new string[] { "Direct.Drhisp.Com Root CAKey.der" };
             cmd.Name = @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
             cmd.Ignore = ignoreArray;
 
             IEnumerator result = cmd.Invoke().GetEnumerator();
             result.MoveNext();
-            byte[] cmsdata = (byte [])result.Current;
+            byte[] cmsdata = (byte[])result.Current;
 
 
             //Assert (Using agent bundler resolver code)
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(cmsdata));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(cmsdata)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Null(anchorBundle.Metadata);
@@ -70,14 +70,12 @@ namespace Health.Direct.Trust.Tests
             result.MoveNext();
             byte[] cmsdata = (byte[])result.Current;
 
-
             //Assert (Using agent bundler resolver code)
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(cmsdata));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(cmsdata)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Equal(@"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>", anchorBundle.Metadata);
-
         }
 
 
@@ -91,10 +89,9 @@ namespace Health.Direct.Trust.Tests
 
             IEnumerator result = cmd.Invoke().GetEnumerator();
             result.MoveNext();
-           
 
             SignBundleCommand signCmd = new SignBundleCommand();
-            
+
             var secString = new SecureString();
             foreach (var secchar in "passw0rd!".ToCharArray())
             {
@@ -110,17 +107,15 @@ namespace Health.Direct.Trust.Tests
 
             //Assert (Using agent bundler resolver code)
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(signedCmsdata, true));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(signedCmsdata, true)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Null(anchorBundle.Metadata);
         }
 
-
         [Fact]
         public void CreateSignedBundleWithMetadataTest()
         {
-           
             BundleAnchorsCommand cmd = new BundleAnchorsCommand();
             string[] ignoreArray = new string[] { "Direct.Drhisp.Com Root CAKey.der" };
             cmd.Name = @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
@@ -130,7 +125,6 @@ namespace Health.Direct.Trust.Tests
             IEnumerator result = cmd.Invoke().GetEnumerator();
             result.MoveNext();
 
-
             SignBundleCommand signCmd = new SignBundleCommand();
 
             var secString = new SecureString();
@@ -146,15 +140,12 @@ namespace Health.Direct.Trust.Tests
             result.MoveNext();
             byte[] signedCmsdata = (byte[])result.Current;
 
-            
-
             //Assert (Using agent bundler resolver code)
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(signedCmsdata, true));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(signedCmsdata, true)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Equal(@"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>", anchorBundle.Metadata);
-
         }
     }
 }

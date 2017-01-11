@@ -13,13 +13,12 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-
 using Health.Direct.Common.Metadata;
-
 using Xunit;
 
 namespace Health.Direct.Xd.Tests
@@ -30,7 +29,7 @@ namespace Health.Direct.Xd.Tests
         public void NoDocumentMetadata()
         {
             DocumentMetadata empty = new DocumentMetadata();
-            Assert.DoesNotThrow(() => empty.Generate());
+            Assert.Null(Record.Exception(() => empty.Generate()));
         }
 
 
@@ -66,7 +65,7 @@ namespace Health.Direct.Xd.Tests
         {
             Assert.NotEmpty(TestDocXElement.Classifications(XDMetadataStandard.UUIDs.DocumentClass));
         }
-        
+
         // all the code value stuff uses the same generator, so no need to test each coded attr.
         [Fact]
         public void DocumentClassCodeValueIsCorrect()
@@ -296,7 +295,7 @@ namespace Health.Direct.Xd.Tests
         public void EmptyRegistryPackage()
         {
             DocumentPackage package = new DocumentPackage();
-            Assert.DoesNotThrow(() => XDMetadataGenerator.GeneratePackage(package));
+            Assert.Null(Record.Exception(() => XDMetadataGenerator.GeneratePackage(package)));
         }
 
 
@@ -366,7 +365,7 @@ namespace Health.Direct.Xd.Tests
             Assert.NotNull(Examples.TestPackageXElement.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetUniqueId));
         }
 
-        
+
         XElement m_testPackage;
         XElement TestSubmitObjectsXElement
         {
@@ -385,7 +384,7 @@ namespace Health.Direct.Xd.Tests
             Assert.NotNull(elt.Attribute(XDMetadataStandard.Attrs.Id).Value);
             string id = elt.Attribute(XDMetadataStandard.Attrs.Id).Value;
             IEnumerable<XElement> classifications = from el in elt.DescendantsAnyNs(XDMetadataStandard.Elts.Classification)
-                                                    where (string) el.Attribute(XDMetadataStandard.Attrs.ClassificationNode) == XDMetadataStandard.UUIDs.SubmissionSetClassification
+                                                    where (string)el.Attribute(XDMetadataStandard.Attrs.ClassificationNode) == XDMetadataStandard.UUIDs.SubmissionSetClassification
                                                     select el;
             Assert.NotEmpty(classifications);
             Assert.Equal(id, classifications.First().AttributeValue(XDMetadataStandard.Attrs.ClassifiedObject));

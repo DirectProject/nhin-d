@@ -35,7 +35,7 @@ namespace Health.Direct.SmtpAgent.Tests
         public void CachingDomainKnown()
         {
             DomainServiceResolver m_resolver = CreateResolver(AgentName, true, 60, false); // enable caching, ttl=60secs, dissable negative caching
-            
+
             Dictionary<string, Domain> domains = m_resolver.GetDomains();
             Dictionary<string, Domain> cached = m_resolver.Cache.Get(AgentName);
 
@@ -102,9 +102,9 @@ namespace Health.Direct.SmtpAgent.Tests
             return new DomainServiceResolver(
                 agentName,
                 new ClientSettings()
-                    {
-                        Url = "http://localhost:6692/DomainManagerService.svc/Domains"
-                    },
+                {
+                    Url = "http://localhost:6692/DomainManagerService.svc/Domains"
+                },
                 new CacheSettings()
                 {
                     Name = TestCacheName,

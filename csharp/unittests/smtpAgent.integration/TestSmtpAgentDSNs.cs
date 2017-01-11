@@ -29,7 +29,6 @@ using Health.Direct.Config.Client;
 using Health.Direct.Config.Store;
 using Health.Direct.SmtpAgent.Config;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.SmtpAgent.Integration.Tests
 {
@@ -42,10 +41,9 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
     {
         SmtpAgent m_agent;
 
-
         static TestSmtpAgentDSNs()
         {
-            AgentTester.EnsureStandardMachineStores();        
+            AgentTester.EnsureStandardMachineStores();
         }
 
         public TestSmtpAgentDSNs()
@@ -67,8 +65,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.InternalMessage.EnableRelay = true;
             m_agent.Settings.Notifications.AutoResponse = false; //don't care.  This is MDN specific
             m_agent.Settings.Notifications.AlwaysAck = false; //don't care.  This is MDN specific
-            m_agent.Settings.Notifications.AutoDsnFailureCreation = 
-                NotificationSettings.AutoDsnOption.Always.ToString(); 
+            m_agent.Settings.Notifications.AutoDsnFailureCreation = NotificationSettings.AutoDsnOption.Always.ToString();
             //m_agent.Settings.AddressManager = new ClientSettings();
             //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
             m_agent.Settings.MdnMonitor = new ClientSettings();
@@ -80,7 +77,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             // by the SmtpAgent by way of (IIS)SMTP hand off.
             //
             var sendingMessage = LoadMessage(ContainsUntrustedRecipientMessageNoTandR);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text dsn and delete others.
@@ -93,7 +90,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 if (messageText.Contains("message/delivery-status"))
                 {
                     foundDsn = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
 
                     //
                     // assert not in the monitor store.
@@ -104,7 +101,6 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     var mdnManager = CreateConfigStore().Mdns;
                     var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
-
                 }
             }
             Assert.True(foundDsn);
@@ -118,7 +114,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 foundDsn = true;
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
                 var dsnMessage = new CDOSmtpMessage(message).GetEnvelope();
                 Assert.True(dsnMessage.Message.IsDSN());
                 Assert.False(dsnMessage.Message.IsMDN());
@@ -140,10 +136,10 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         /// in the bad messages folder.
         /// </summary>
         [Theory]
-        [PropertyData("UntrustedRecipientMessages")]
+        [MemberData("UntrustedRecipientMessages")]
         public void TestFailedDSN_SecurityAndTrustOutGoingOnly_AlwaysGenerate_AllRecipientsRejected(
-            string untrustedRecipientMessage
-            , List<DSNPerRecipient> perRecipientExpected)
+            string untrustedRecipientMessage,
+            List<DSNPerRecipient> perRecipientExpected)
         {
             CleanMessages(m_agent.Settings);
             CleanMonitor();
@@ -165,14 +161,13 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             //
             var sendingMessage = LoadMessage(untrustedRecipientMessage);
             Assert.Equal(
-                string.Format("Error={0}", AgentError.NoTrustedRecipients), 
+                string.Format("Error={0}", AgentError.NoTrustedRecipients),
                 Assert.Throws<OutgoingAgentException>(() => m_agent.ProcessMessage(sendingMessage)).Message
-                );
-            
+            );
+
             //No trusted recipients so not encrypted.
             ContentType contentType = new ContentType(sendingMessage.GetContentType());
             Assert.False(SMIMEStandard.IsContentEncrypted(contentType));
-
 
             //
             // grab the clear text dsn and delete others.
@@ -185,7 +180,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 if (messageText.Contains("message/delivery-status"))
                 {
                     foundDsn = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
 
                     //
                     // assert not in the monitor store.
@@ -210,7 +205,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 foundDsn = true;
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
                 var dsnMessage = new CDOSmtpMessage(message).GetEnvelope();
                 Assert.True(dsnMessage.Message.IsDSN());
                 Assert.False(dsnMessage.Message.IsMDN());
@@ -248,8 +243,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.InternalMessage.EnableRelay = true;
             m_agent.Settings.Notifications.AutoResponse = true;
             m_agent.Settings.Notifications.AlwaysAck = true;
-            m_agent.Settings.Notifications.AutoDsnFailureCreation =
-                NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
+            m_agent.Settings.Notifications.AutoDsnFailureCreation = NotificationSettings.AutoDsnOption.TimelyAndReliable.ToString();
             //m_agent.Settings.AddressManager = new ClientSettings();
             //m_agent.Settings.AddressManager.Url = "http://localhost:6692/DomainManagerService.svc/Addresses";
             m_agent.Settings.MdnMonitor = new ClientSettings();
@@ -261,7 +255,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             // by the SmtpAgent by way of (IIS)SMTP hand off.
             //
             var sendingMessage = LoadMessage(ContainsUntrustedRecipientMessageNoTandR);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text dsn and delete others.
@@ -274,7 +268,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 if (messageText.Contains("message/delivery-status"))
                 {
                     foundDsn = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
 
                     //
                     // assert not in the monitor store.
@@ -322,7 +316,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             // by the SmtpAgent by way of (IIS)SMTP hand off.
             //
             var sendingMessage = LoadMessage(ContainsUntrustedRecipientMessageRequestTandR);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text dsn and delete others.
@@ -335,7 +329,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 if (messageText.Contains("message/delivery-status"))
                 {
                     foundDsn = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
 
                     //
                     // assert not in the monitor store.
@@ -346,7 +340,6 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                     var mdnManager = CreateConfigStore().Mdns;
                     var mdn = mdnManager.Get(queryMdn.MdnIdentifier);
                     Assert.Null(mdn);
-
                 }
             }
             Assert.True(foundDsn);
@@ -360,7 +353,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 foundDsn = true;
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
                 var dsnMessage = new CDOSmtpMessage(message).GetEnvelope();
                 Assert.True(dsnMessage.Message.IsDSN());
                 Assert.False(dsnMessage.Message.IsMDN());
@@ -372,15 +365,14 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
-        
+
         /// <summary>
         /// Generation of DSN bounce messages for messages that cannot be delivered via incomingRoute.
         /// Need more research to figure out this scenario.
         /// </summary>
         [Theory]
-        [PropertyData("UnDeliverableRecipientMessages")]
-        public void TestFinalDestinationDelivery(string unDeliverableRecipientMessage
-            , List<DSNPerRecipient> perRecipientExpected)
+        [MemberData("UnDeliverableRecipientMessages")]
+        public void TestFinalDestinationDelivery(string unDeliverableRecipientMessage, List<DSNPerRecipient> perRecipientExpected)
         {
             CleanMessages(m_agent.Settings);
             CleanMonitor();
@@ -402,14 +394,14 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             {
                 route.CopyMessageHandler = ThrowCopy;
             }
- 
+
             //
             // Process loopback messages.  Leaves un-encrypted mdns in pickup folder
             // Go ahead and pick them up and Process them as if they where being handled
             // by the SmtpAgent by way of (IIS)SMTP hand off.
             //
             var sendingMessage = LoadMessage(unDeliverableRecipientMessage);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             var foundDsn = false;
             foreach (var pickupMessage in PickupMessages())
@@ -417,7 +409,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message cdoMessage = LoadMessage(messageText);
                 var message = new CDOSmtpMessage(cdoMessage).GetEnvelope();
-                if(message.Message.IsDSN())
+                if (message.Message.IsDSN())
                 {
                     foundDsn = true;
 
@@ -432,10 +424,8 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                         Assert.Equal(expectedPerRecipient.Status, perRecipient.Status);
                     }
                 }
-
             }
             Assert.True(foundDsn);
-
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
@@ -541,7 +531,6 @@ Bad message?", Guid.NewGuid())
             }
         }
 
-
         /// <summary>
         /// List of mime messages with untrusted recipients.
         /// </summary>
@@ -601,7 +590,7 @@ Bad message?", Guid.NewGuid())
                 new DSNPerRecipient(DSNStandard.DSNAction.Failed, 5, DSNStandard.DSNStatus.DELIVERY_OTHER, new MailAddress("throw@redmond.hsgincubator.com"))
              }
                     };
-            
+
             }
         }
     }

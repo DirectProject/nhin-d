@@ -14,11 +14,12 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Collections.Generic;
 using System.Data.Linq;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Policy.Extensions;
@@ -41,20 +42,9 @@ namespace Health.Direct.Config.Store.Tests
         private const string ADDRESSPATTERN = "test@address{0}.domain{1}.com";
         private const string SMTPDOMAINNAMEPATTERN = "smtp{0}.domain{1}.test.com";
         private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
-#if DEBUG
-        private const string DNSRECORDSEPATH = @"..\..\..\..\bin\debug\metadata\DnsRecords";
-#else
-        //---assume release...
-        private static string DNSRECORDSEPATH = @"..\..\..\..\bin\release\metadata\DnsRecords";
-#endif
-#if DEBUG
-        private const string CERTSRECORDSPATH = @"..\..\..\..\bin\debug\metadata\certs";
-#else
-        //---assume release...
-        private static string CERTSRECORDSPATH = @"..\..\..\..\bin\release\metadata\certs";
-#endif
+        private const string DNSRECORDSEPATH = @"..\..\..\unittests\configStoreTests\metadata\DnsRecords";
+        private const string CERTSRECORDSPATH = @"..\..\..\unittests\configStoreTests\metadata\certs";
         protected Dictionary<string, DnsResponse> m_DomainResponses;
-
 
         // if true dump will be sent to the delegate specified by DumpLine
         private readonly bool m_dumpEnabled;
@@ -72,10 +62,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Default ctor. Will log to <see cref="Console.Out"/>.
         /// </summary>
-        protected ConfigStoreTestBase() :this(true)
+        protected ConfigStoreTestBase() : this(true)
         {
         }
-
 
         /// <summary>
         /// Logs to <see cref="Console.Out"/> if <paramref name="dumpEnabled"/> is <c>true</c>.
@@ -85,8 +74,6 @@ namespace Health.Direct.Config.Store.Tests
         {
             m_dumpEnabled = dumpEnabled;
         }
-
-        
 
         /// <summary>
         /// Dump the <paramref name="msg"/> to the output with a preamble line of '!'s
@@ -154,7 +141,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             Dump(string.Format(format, args));
         }
-        
+
         /// <summary>
         /// dumps out message to the console
         /// </summary>
@@ -163,7 +150,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             Console.Out.WriteLine(msg);
         }
-        
+
         /// <summary>
         /// gets clean, workable enumerator for the IEnumerable(object[]) utilized for property data on theory testing
         /// </summary>
@@ -233,7 +220,7 @@ namespace Health.Direct.Config.Store.Tests
                     {
                         yield return new[] { GetTestCertFromPfx(i, t) };
                     }
-                    
+
                 }
 
             }
@@ -269,8 +256,8 @@ namespace Health.Direct.Config.Store.Tests
             {
                 for (int t = 1; t <= MAXDOMAINCOUNT; t++)
                 {
-                    yield return  BuildDomainName(t);
-                       
+                    yield return BuildDomainName(t);
+
 
                 }
             }
@@ -281,11 +268,12 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         protected static IEnumerable<CertPolicy> TestCertPolicies
         {
-            get { 
-                
+            get
+            {
+
                 yield return new CertPolicy(
                 "Policy1"
-                ,"Specific policy OID exists"
+                , "Specific policy OID exists"
                 , "X509.TBS.EXTENSION.CertificatePolicies.PolicyOIDs {?} 1.3.6.1.4.1.41179.0.1.2".ToBytesUtf8());
 
                 yield return new CertPolicy(
@@ -396,11 +384,11 @@ namespace Health.Direct.Config.Store.Tests
                     {
                         //----------------------------------------------------------------------------------------------------
                         //---use i as the domain id, t as preference
-                        yield return new KeyValuePair<long, KeyValuePair<int,string>>(i
-                                                                                      , new KeyValuePair<int,string>(t, BuildSMTPDomainName(i,t)));
+                        yield return new KeyValuePair<long, KeyValuePair<int, string>>(i
+                                                                                      , new KeyValuePair<int, string>(t, BuildSMTPDomainName(i, t)));
                     }
                 }
-                
+
             }
         }
 
@@ -417,11 +405,11 @@ namespace Health.Direct.Config.Store.Tests
                     {
                         //----------------------------------------------------------------------------------------------------
                         //---use i as the domain id, t as preference
-                        yield return new KeyValuePair<long, KeyValuePair<int,string>>(i
-                                                                                      , new KeyValuePair<int,string>(t, BuildEmailAddress(i,t)));
+                        yield return new KeyValuePair<long, KeyValuePair<int, string>>(i
+                                                                                      , new KeyValuePair<int, string>(t, BuildEmailAddress(i, t)));
                     }
                 }
-                
+
             }
         }
 
@@ -468,24 +456,24 @@ namespace Health.Direct.Config.Store.Tests
                 // Processed but no dispatch requested
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
-                         string msgId = Guid.NewGuid().ToString();
-                        yield return
-                        BuildMdn(msgId
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
-                        , "Processed@domain2.test.com"
-                        , "To dispatch or not dispatch"
-                        , MdnStatus.Started
-                        , false
-                        , DateTimeHelper.Now.AddMinutes(-20));  //created start message
+                    string msgId = Guid.NewGuid().ToString();
+                    yield return
+                    BuildMdn(msgId
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "Processed@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.Started
+                    , false
+                    , DateTimeHelper.Now.AddMinutes(-20));  //created start message
 
-                        yield return
-                        BuildMdn(msgId
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
-                        , "Processed@domain2.test.com"
-                        , "To dispatch or not dispatch"
-                        , MdnStatus.Processed
-                        , false
-                        , DateTimeHelper.Now.AddMinutes(-10));  //Original message 20 minute ago
+                    yield return
+                    BuildMdn(msgId
+                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , "Processed@domain2.test.com"
+                    , "To dispatch or not dispatch"
+                    , MdnStatus.Processed
+                    , false
+                    , DateTimeHelper.Now.AddMinutes(-10));  //Original message 20 minute ago
                 }
 
                 // Processed and dispatch requested, 
@@ -578,7 +566,6 @@ namespace Health.Direct.Config.Store.Tests
                        , DateTimeHelper.Now.AddDays(-10));
                 }
 
-
                 // Processed but now times out for dispatch
                 for (int i = 1; i <= MAXDOMAINCOUNT; i++)
                 {
@@ -591,14 +578,14 @@ namespace Health.Direct.Config.Store.Tests
                     , MdnStatus.Started
                     , true
                     , DateTimeHelper.Now.AddDays(-20).AddSeconds(-10));  //Original message 20 days ago
-                    
+
                     yield return BuildMdn(msgId
                     , string.Format("Name{0}@nhind.hsgincubator.com", i)
                     , "ProcessedThenTimeoutDispatch@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Processed
                     , true
-                    , DateTimeHelper.Now.AddDays(-10));  
+                    , DateTimeHelper.Now.AddDays(-10));
 
                     yield return BuildMdn(msgId
                     , string.Format("Name{0}@nhind.hsgincubator.com", i)
@@ -606,8 +593,8 @@ namespace Health.Direct.Config.Store.Tests
                     , "To dispatch or not dispatch"
                     , MdnStatus.TimedOut
                     , true
-                    , DateTimeHelper.Now.AddDays(-11)); 
-                   
+                    , DateTimeHelper.Now.AddDays(-11));
+
 
                 }
 
@@ -621,7 +608,7 @@ namespace Health.Direct.Config.Store.Tests
                     , "ProcessExpired@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Started
-                    , true 
+                    , true
                     , DateTimeHelper.Now.AddDays(-20));  //Original message 20 days ago
 
 
@@ -632,7 +619,7 @@ namespace Health.Direct.Config.Store.Tests
                     , MdnStatus.TimedOut
                     , true
                     , DateTimeHelper.Now.AddDays(-10));  //Original message 20 days ago
-                    
+
                 }
             }
         }
@@ -640,29 +627,28 @@ namespace Health.Direct.Config.Store.Tests
         protected static Mdn BuildMdn(string messageId, string sender, string receiver, string subject, string status)
         {
             return new Mdn()
-                       {
-                           MessageId = messageId,
-                           Recipient = receiver,
-                           Sender = sender,
-                           SubjectValue = subject,
-                           Status = status
-                       };
+            {
+                MessageId = messageId,
+                Recipient = receiver,
+                Sender = sender,
+                SubjectValue = subject,
+                Status = status
+            };
         }
 
         protected static Mdn BuildMdn(string messageId, string sender, string receiver, string subject, string status, bool notifyDispatched, DateTime createdDate)
         {
             return new Mdn()
-                       {
-                           MessageId = messageId,
-                           Recipient = receiver,
-                           Sender = sender,
-                           Status = status,
-                           SubjectValue = subject,
-                           NotifyDispatched = notifyDispatched,
-                           CreateDate = createdDate
+            {
+                MessageId = messageId,
+                Recipient = receiver,
+                Sender = sender,
+                Status = status,
+                SubjectValue = subject,
+                NotifyDispatched = notifyDispatched,
+                CreateDate = createdDate
             };
         }
-
 
         /// <summary>
         /// Simple method to return a list containing all MX domain names
@@ -681,7 +667,6 @@ namespace Health.Direct.Config.Store.Tests
             return names;
         }
 
-        
         /// <summary>
         /// this method populates the DnsRecords table with viable DnsRecords stored in metadata
         /// </summary>
@@ -761,7 +746,6 @@ namespace Health.Direct.Config.Store.Tests
                                    , new ConfigDatabase(ConnectionString, CertPolicyManager.DataLoadOptions));
         }
 
-
         /// <summary>
         /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
         /// </summary>
@@ -778,7 +762,7 @@ namespace Health.Direct.Config.Store.Tests
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
             mgr.RemoveAll();
-            
+
             foreach (CertPolicy val in TestCertPolicies)
             {
                 mgr.Add(db, val);
@@ -795,7 +779,6 @@ namespace Health.Direct.Config.Store.Tests
 
         }
 
-        
         /// <summary>
         /// This method will clean, load and verify CertPolcyGroup records in the DB for testing purposes
         /// </summary>
@@ -822,7 +805,7 @@ namespace Health.Direct.Config.Store.Tests
             mgr.RemoveAll();
 
             using (var db = new ConfigDatabase(ConnectionString, CertPolicyGroupManager.DataLoadOptions))
-            { 
+            {
                 foreach (CertPolicyGroup val in TestCertPolicyGroups)
                 {
                     mgr.Add(db, val);
@@ -910,7 +893,7 @@ namespace Health.Direct.Config.Store.Tests
                 //---cheezy but will add MAXCERTPEROWNER certs per each relative domain
                 for (int t = 1; t <= MAXCERTPEROWNER; t++)
                 {
-                    mgr.Add(GetCertificateFromTestCertPfx(i,t));
+                    mgr.Add(GetCertificateFromTestCertPfx(i, t));
                 }
             }
         }
@@ -954,7 +937,7 @@ namespace Health.Direct.Config.Store.Tests
                     anc.ForIncoming = true;
                     anc.ForOutgoing = true;
                     mgr.Add(GetAnchorFromTestCertPfx(i, t));
-                
+
                 }
             }
         }
@@ -1028,7 +1011,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             mgr.RemoveAll();
             mgr.Start(db, TestMdns.ToArray());
-            
+
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
             db.SubmitChanges();
@@ -1047,7 +1030,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             mgr.RemoveAll();
             mgr.Start(db, TestOldMdns.ToArray());
-            
+
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
             db.SubmitChanges();
@@ -1056,8 +1039,6 @@ namespace Health.Direct.Config.Store.Tests
                 //Assert.NotNull(mgr.Get(kp.Value.Value));
             }
         }
-
-
 
         /// <summary>
         ///  Simple method that yeilds a uniform means for setting up an address name
@@ -1153,7 +1134,7 @@ namespace Health.Direct.Config.Store.Tests
             string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
                 , CERTSRECORDSPATH
                 , domainID
-                ,subId);
+                , subId);
             Certificate cert;
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
@@ -1165,8 +1146,6 @@ namespace Health.Direct.Config.Store.Tests
             }
             return cert;
         }
-
-
 
         protected static DisposableX509Certificate2 GetDisposableTestCertFromPfx(long domainID, int subId)
         {
@@ -1194,7 +1173,7 @@ namespace Health.Direct.Config.Store.Tests
                 , CERTSRECORDSPATH
                 , domainID
                 , subId);
-            return  new System.Security.Cryptography.X509Certificates.X509Certificate2(path, String.Empty);
+            return new System.Security.Cryptography.X509Certificates.X509Certificate2(path, String.Empty);
         }
 
         /// <summary>
@@ -1219,10 +1198,10 @@ namespace Health.Direct.Config.Store.Tests
                 , subId);
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                return  new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
+                return new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
         }
-        
+
         /// <summary>
         /// generates a random cert id within the allotted range
         /// </summary>

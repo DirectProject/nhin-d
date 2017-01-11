@@ -63,7 +63,9 @@
     <Content Include="MonitorService.svc" />
     <Content Include="SettingsManager.svc" />
     <Content Include="TestService.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">

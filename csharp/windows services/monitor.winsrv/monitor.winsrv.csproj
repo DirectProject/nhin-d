@@ -81,17 +81,11 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
-      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
-      <Name>diagnostics.nlog</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\mdnMonitor\mdnMonitor.csproj">
-      <Project>{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}</Project>
-      <Name>mdnMonitor</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="jobs.xml">

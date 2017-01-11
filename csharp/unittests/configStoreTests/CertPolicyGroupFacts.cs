@@ -48,7 +48,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(expected, actual);
         }
 
-        
+
         /// <summary>
         ///A test for Name
         ///</summary>

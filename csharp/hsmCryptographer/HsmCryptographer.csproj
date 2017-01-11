@@ -60,14 +60,14 @@
     <Compile Include="TokenSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\agent\agent.csproj">
-      <Project>{bc563499-b6f2-492a-ac91-d2d18e2fcfdd}</Project>
-      <Name>agent</Name>
-    </ProjectReference>
     <ProjectReference Include="..\common\common.csproj">
       <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
       <Name>common</Name>

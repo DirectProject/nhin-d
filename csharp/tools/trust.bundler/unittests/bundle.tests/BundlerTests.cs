@@ -14,22 +14,18 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security;
 using System.Xml;
 using System.Xml.Schema;
 using Health.Direct.Common.Certificates;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Trust.Tests
 {
     public class BundlerTests : BaseBundlerTests
     {
-        
         [Fact]
         public void CreateBundleTest()
         {
@@ -47,15 +43,14 @@ namespace Health.Direct.Trust.Tests
             byte[] cmsdata = bundle.Create(resourceProvider);
 
             //Assert (Using agent bundler resolver code)
-            Assert.DoesNotThrow(() => resourceProvider.StoreBundle(cmsdata));
+            Assert.Null(Record.Exception(() => resourceProvider.StoreBundle(cmsdata)));
             byte[] p7BData = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(p7BData));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(p7BData)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Null(anchorBundle.Metadata);
         }
-
 
         [Fact]
         public void CreateBundleWithMetadataTest()
@@ -74,10 +69,10 @@ namespace Health.Direct.Trust.Tests
             byte[] cmsdata = bundle.Create(resourceProvider);
 
             //Assert (Using agent bundler resolver code)
-            Assert.DoesNotThrow(() => resourceProvider.StoreBundle(cmsdata));
+            Assert.Null(Record.Exception(() => resourceProvider.StoreBundle(cmsdata)));
             byte[] p7BData = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(p7BData));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(p7BData)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.NotNull(anchorBundle.Metadata);
@@ -97,7 +92,6 @@ namespace Health.Direct.Trust.Tests
                 secString.AppendChar(secchar);
             }
 
-
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(
@@ -110,15 +104,13 @@ namespace Health.Direct.Trust.Tests
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
 
             //Assert (Using agent bundler resolver code)
-            Assert.DoesNotThrow(() => resourceProvider.StoreBundle(cmsdata));
+            Assert.Null(Record.Exception(() => resourceProvider.StoreBundle(cmsdata)));
             byte[] p7BData = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(p7BData, true));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(p7BData, true)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Null(anchorBundle.Metadata);
-
-
         }
 
         /// <summary>
@@ -156,15 +148,13 @@ namespace Health.Direct.Trust.Tests
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
 
             //Assert (Using agent bundler resolver code)
-            Assert.DoesNotThrow(() => resourceProvider.StoreBundle(cmsdata));
+            Assert.Null(Record.Exception(() => resourceProvider.StoreBundle(cmsdata)));
             byte[] p7BData = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(p7BData, true));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(p7BData, true)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Null(anchorBundle.Metadata);
-
-
         }
 
         [Fact]
@@ -180,7 +170,6 @@ namespace Health.Direct.Trust.Tests
                 secString.AppendChar(secchar);
             }
 
-
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(
@@ -194,17 +183,14 @@ namespace Health.Direct.Trust.Tests
             cmsdata = bundle.Sign(cmsdata, signProvider);
 
             //Assert (Using agent bundler resolver code)
-            Assert.DoesNotThrow(() => resourceProvider.StoreBundle(cmsdata));
+            Assert.Null(Record.Exception(() => resourceProvider.StoreBundle(cmsdata)));
             byte[] p7BData = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(p7BData, true));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(p7BData, true)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.Null(anchorBundle.Metadata);
-
-
         }
-
 
         [Fact]
         public void CreateSignedBundleWithMetadataTest()
@@ -219,7 +205,6 @@ namespace Health.Direct.Trust.Tests
                 secString.AppendChar(secchar);
             }
 
-            
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory()
@@ -235,21 +220,17 @@ namespace Health.Direct.Trust.Tests
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
 
             //Assert (Using agent bundler resolver code)
-            Assert.DoesNotThrow(() => resourceProvider.StoreBundle(cmsdata));
+            Assert.Null(Record.Exception(() => resourceProvider.StoreBundle(cmsdata)));
             byte[] p7BData = File.ReadAllBytes(Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             AnchorBundle anchorBundle = null;
-            Assert.DoesNotThrow(() => anchorBundle = new AnchorBundle(p7BData, true));
+            Assert.Null(Record.Exception(() => anchorBundle = new AnchorBundle(p7BData, true)));
             Assert.True(!anchorBundle.Certificates.IsNullOrEmpty());
             Assert.Equal(4, anchorBundle.Certificates.Count);
             Assert.NotNull(anchorBundle.Metadata);
             Assert.Equal(@"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>", anchorBundle.Metadata);
-
-            
         }
 
-
-
-        [Theory, PropertyData("BadMetadata")]
+        [Theory, MemberData("BadMetadata")]
         public void CreateWithBadMetaDataTest(string metatdata)
         {
             Bundler bundle = new Bundler();
@@ -261,15 +242,13 @@ namespace Health.Direct.Trust.Tests
                                             , null
                                             , metatdata))
                 );
-
-
         }
 
-        [Theory, PropertyData("InvalidMetadata")]
+        [Theory, MemberData("InvalidMetadata")]
         public void CreateWithInvalidMetaDataTest(string metatdata)
         {
             Bundler bundle = new Bundler();
-            
+
             Assert.Throws<XmlSchemaValidationException>(() =>
                                         bundle.Create(
                                             new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")

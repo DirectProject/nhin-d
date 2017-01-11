@@ -19,17 +19,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using Health.Direct.Agent;
-using Health.Direct.Agent.Config;
 using Health.Direct.Agent.Tests;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Common.Policies;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Store;
-using Health.Direct.SmtpAgent.Config;
-using Health.Direct.SmtpAgent.Policy;
 using Moq;
 using Xunit;
 
@@ -80,7 +76,7 @@ namespace Health.Direct.SmtpAgent.Tests
                                     (x, s) =>
                                         {
                                             var addresses =
-                                                AddressMemoryStore.Where(a => x.Contains(a.EmailAddress, StringComparer.OrdinalIgnoreCase )  && a.Status == s)
+                                                AddressMemoryStore.Where(a => x.Contains(a.EmailAddress, StringComparer.OrdinalIgnoreCase) && a.Status == s)
                                                                   .ToArray();
                                             if (addresses.IsNullOrEmpty())
                                             {
@@ -88,8 +84,8 @@ namespace Health.Direct.SmtpAgent.Tests
                                             }
                                             return addresses;
                                         });
-                   
-          
+
+
             //
             // Ensure we create a AddressManagerClient
             //
@@ -104,7 +100,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Mock<ClientSettings> mockClientSettings = MockAddressClientSettings();
             var addressClientSettings = mockClientSettings.Object;
             var addressManager = addressClientSettings.CreateAddressManagerClient();
-            var addresses = addressManager.GetAddresses(new string[] {"joe@hobo.lab"}, EntityStatus.Enabled);
+            var addresses = addressManager.GetAddresses(new string[] { "joe@hobo.lab" }, EntityStatus.Enabled);
             Assert.Null(addresses);
 
             AddressMemoryStore.AddRange(new Address[]
