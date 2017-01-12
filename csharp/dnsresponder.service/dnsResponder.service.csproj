@@ -57,7 +57,9 @@
   <ItemGroup>
     <Content Include="RecordRetrievalService.svc" />
     <Content Include="TestService.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IRecordRetrievalService.cs" />
@@ -88,9 +90,6 @@
       <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
       <Name>diagnostics.nlog</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" />

@@ -6,6 +6,7 @@ set msbuild_verbosity=/v:minimal
 if "%1" EQU "help" goto :help
 
 call :check_environment
+call :restore_packages
 
 rem this is here if we want to support different names of the build file in the future
 if exist %default_buildfile% (
@@ -37,6 +38,10 @@ call setenv.bat
 msbuild /? > nul 2> nul
 if %ERRORLEVEL% equ 0 goto :eof
 exit /b %ERRORLEVEL%
+goto :eof
+
+:restore_packages
+for /R %%i in (packages.config*) do @build\.nuget\nuget.exe restore %%i -PackagesDirectory build\packages
 goto :eof
 
 :error_missing_buildfile

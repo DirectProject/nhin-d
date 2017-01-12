@@ -16,13 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using Xunit;
-using Xunit.Extensions;
-using Health.Direct.Common.Container;
-using Health.Direct.Common.Diagnostics;
-using Health.Direct.Agent.Config;
-using Health.Direct.Common.Certificates;
 
 namespace Health.Direct.SmtpAgent.Integration.Tests
 {
@@ -44,7 +38,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_handler = new MessageArrivalEventHandler();
         }
 
-        
+
         public static IEnumerable<object[]> ConfigFileNames
         {
             get
@@ -55,20 +49,16 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         }
 
         [Theory]
-        [PropertyData("ConfigFileNames")]
+        [MemberData("ConfigFileNames")]
         public void TestWithService(string fileName)
         {
             m_handler.InitFromConfigFile(Fullpath(fileName));
         }
 
-       
         string Fullpath(string fileName)
         {
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "SmtpAgentTestFiles");
             return Path.Combine(folderPath, fileName);
         }
-        
-        
     }
-
 }

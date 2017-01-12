@@ -13,16 +13,17 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
-using Health.Direct.Common.Mail;
-using Health.Direct.Config.Store;
 using Health.Direct.Common.Container;
+using Health.Direct.Common.Mail;
 using Health.Direct.Common.Routing;
+using Health.Direct.Config.Store;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
@@ -45,11 +46,11 @@ namespace Health.Direct.SmtpAgent.Tests
         [Fact]
         public void TestSerialization()
         {
-            Assert.DoesNotThrow(() => EnsureAgent());
+            Assert.Null(Record.Exception(() => EnsureAgent()));
             Assert.True(m_agent.Router.Count >= 0);
             foreach (Route route in m_agent.Router)
             {
-                Assert.DoesNotThrow(() => route.Validate());
+                Assert.Null(Record.Exception(() => route.Validate()));
             }
         }
 
@@ -310,7 +311,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Throws<SmtpAgentException>(() => forwarder.Settings = null);
             Assert.Throws<SmtpAgentException>(() => forwarder.Settings = settings);
             settings.Server = "foo";
-            Assert.DoesNotThrow(() => forwarder.Settings = settings);
+            Assert.Null(Record.Exception(() => forwarder.Settings = settings));
         }
 
         [Fact]
@@ -325,7 +326,7 @@ namespace Health.Direct.SmtpAgent.Tests
         {
             SmtpAgent agent = null;
 
-            Assert.DoesNotThrow(() => agent = SmtpAgentFactory.Create(GetSettingsPath("TestPlugin.xml")));
+            Assert.Null(Record.Exception(() => agent = SmtpAgentFactory.Create(GetSettingsPath("TestPlugin.xml"))));
             Assert.True(agent.Router.Count == 3);
 
             Route[] routes = agent.Router.ToArray();

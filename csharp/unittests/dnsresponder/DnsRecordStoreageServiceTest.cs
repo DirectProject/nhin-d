@@ -1,18 +1,27 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, Direct Project
+ All rights reserved.
+
+ Authors:
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 using Health.Direct.Config.Client;
-using Health.Direct.Common;
-using Health.Direct.Common.DnsResolver;
-using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.DnsResponder.Tests
 {
     class DnsRecordStoreageServiceTest : TestBase
-    {   
+    {
 
         DnsRecordStorageService m_store;
 
@@ -48,11 +57,11 @@ namespace Health.Direct.DnsResponder.Tests
 
         public DnsRecordStoreageServiceTest()
         {
-            m_store = new DnsRecordStorageService
-                (
-                new ClientSettings() {
-                                         Url = "http://localhost:6693/RecordRetrievalService.svc/Records"
-                                     });
+            m_store = new DnsRecordStorageService(
+                new ClientSettings()
+                {
+                    Url = "http://localhost:6693/RecordRetrievalService.svc/Records"
+                });
             //----------------------------------------------------------------------------------------------------
             //---really only want to do this one time
             this.InitDnsRecords();
@@ -63,7 +72,7 @@ namespace Health.Direct.DnsResponder.Tests
         //4 at the bottom to ensure that windows service for the dns responder works
          
         [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
+        [MemberData("DnsRecordDomainNamesTheoryData")]
         public void TestGetDomainANAME(string domainName){
 
             Dump(string.Format("Attempting to resolve ANAME {0} from dbstore", domainName));
@@ -81,7 +90,7 @@ namespace Health.Direct.DnsResponder.Tests
 
         
         [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
+        [MemberData("DnsRecordDomainNamesTheoryData")]
         public void TestGetDomainMX(string domainName)
         {
             Dump(string.Format("Attempting to resolve MX {0} from dbstore", domainName));
@@ -99,7 +108,7 @@ namespace Health.Direct.DnsResponder.Tests
 
 
         [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
+        [MemberData("DnsRecordDomainNamesTheoryData")]
         public void TestGetDomainSOA(string domainName)
         {
             Dump(string.Format("Attempting to resolve SOA {0} from dbstore", domainName));
@@ -126,7 +135,7 @@ namespace Health.Direct.DnsResponder.Tests
         /// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
         /// and records in the database must be populated (runs in constructor)</remarks>
         [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
+        [MemberData("DnsRecordDomainNamesTheoryData")]
         public void TestDnsResolveMX(string domain)
         {
             DnsClient client = new DnsClient("127.0.0.1", 5353);
@@ -145,7 +154,7 @@ namespace Health.Direct.DnsResponder.Tests
         /// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
         /// and records in the database must be populated (runs in constructor)</remarks>
         [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
+        [MemberData("DnsRecordDomainNamesTheoryData")]
         public void TestDnsResolveANAME(string domain)
         {
             DnsClient client = new DnsClient("127.0.0.1", 5353);
@@ -164,7 +173,7 @@ namespace Health.Direct.DnsResponder.Tests
         /// <remarks>In order to run this you need to have the dnsResponder service running (which can run in debug mode)
         /// and records in the database must be populated (runs in constructor)</remarks>
         [Theory]
-        [PropertyData("DnsRecordDomainNamesTheoryData")]
+        [MemberData("DnsRecordDomainNamesTheoryData")]
         public void TestDnsResolveSOA(string domain)
         {
             DnsClient client = new DnsClient("127.0.0.1", 5353);
@@ -178,7 +187,7 @@ namespace Health.Direct.DnsResponder.Tests
 
 
         [Theory]
-        [PropertyData("CertRecordOwnersTheoryData")]
+        [MemberData("CertRecordOwnersTheoryData")]
         public void TestDnsResolveCERT(string owner)
         {
             //----------------------------------------------------------------------------------------------------

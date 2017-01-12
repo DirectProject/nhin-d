@@ -28,8 +28,8 @@ namespace Health.Direct.Common.Tests.Caching
     public class DnsResponseToBinExample
     {
         private readonly DnsClient m_client;
-        private const string DNSRECORDSEPATH = @"..\..\common.metadata\DnsRecords";
-        private const string DnsResponsePath = @"..\..\common.metadata\dnsresponses";
+        private const string DNSRECORDSEPATH = @"..\..\..\common.metadata\DnsRecords";
+        private const string DnsResponsePath = @"..\..\..\common.metadata\dnsresponses";
 
         const string PublicDns = "8.8.8.8";         // Google
 
@@ -108,8 +108,6 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         [InlineData("www.bing.com")]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("hvnhind.hsgincubator.com")]
         [InlineData("www.nhindirect.org")]
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
@@ -137,8 +135,6 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         [InlineData("www.bing.com")]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("hvnhind.hsgincubator.com")]
         [InlineData("www.nhindirect.org")]
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
@@ -166,8 +162,6 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         [InlineData("www.bing.com")]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("hvnhind.hsgincubator.com")]
         [InlineData("www.nhindirect.org")]
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
@@ -195,8 +189,6 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.google.com")]
         [InlineData("www.apple.com")]
         [InlineData("www.bing.com")]
-        [InlineData("nhind.hsgincubator.com")]
-        [InlineData("hvnhind.hsgincubator.com")]
         [InlineData("www.nhindirect.org")]
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]

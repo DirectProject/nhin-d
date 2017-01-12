@@ -26,7 +26,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Pkcs11Interop">
-      <HintPath>..\build\packages\Pkcs11Interop.3.1.0\lib\net40\Pkcs11Interop.dll</HintPath>
+      <HintPath>..\build\packages\Pkcs11Interop.3.2.0\lib\net45\Pkcs11Interop.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -39,7 +39,6 @@
       <ILAsm>$(MSBuildFrameworkToolsPath)ilasm.exe</ILAsm>
       <ILDAsm>$(TargetFrameworkSDKToolsDirectory)ildasm.exe</ILDAsm>
     </PropertyGroup>
-
     <Exec Condition="'%(Reference.Hintpath)' != ''" Command="&quot;$(ILDAsm)&quot; %(Reference.Hintpath) /output=$(IntermediateOutputPath)%(Reference.Filename).il" />
     <Exec Condition="'%(Reference.Hintpath)' != ''" Command="&quot;$(ILAsm)&quot; $(IntermediateOutputPath)%(Reference.Filename).il /dll /key=$(AssemblyOriginatorKeyFile) /output=$(IntermediateOutputPath)$(AssemblyName).dll" />
   </Target>
