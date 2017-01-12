@@ -130,3 +130,4 @@ csharp/build/packages/**
 *.DotSettings
 Java-Direct-IntelliJ/
 *.iml
+csharp/installer/configui/
