@@ -9,7 +9,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         public void TestFilterCertificateByPolicy_nullResolver_assertNoCertsFiltered()
         {
             SmtpAgent m_agent = SmtpAgentFactory.Create(GetSettingsPath("TestSmtpAgentConfigWithCertPolicy.xml"));
-
+            m_agent.Settings.InternalMessage.EnableRelay = true;
             CleanMessages(m_agent.Settings);
             CleanMonitor();
 
@@ -23,7 +23,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
             //
             // grab the clear text mdns and delete others.
-            //
+            // 
             bool foundMdns = false;
             foreach (var pickupMessage in PickupMessages())
             {

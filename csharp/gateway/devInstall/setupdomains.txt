@@ -6,7 +6,7 @@
 // 
 // Change this to set up the machine your config service is running on
 //
-settings_host_set localhost 80
+//settings_host_set localhost 80
 
 echo ******************************
 //
