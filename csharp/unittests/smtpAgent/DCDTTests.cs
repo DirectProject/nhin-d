@@ -1058,15 +1058,10 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
 
         private void InstallAnchorsInMachineStore()
         {
-            if (System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debugger.Break();
-            else
-                System.Diagnostics.Debugger.Launch();
-
             var anchorStore = new X509Store("NHINDAnchors", StoreLocation.LocalMachine);
             anchorStore.Open(OpenFlags.ReadWrite);
 
-            var file = @"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der";
+            var file = @".\Anchors\dcdt31prod.sitenv.org_ca_root.der";
 
             if (!AnchorExists(anchorStore, file))
             {

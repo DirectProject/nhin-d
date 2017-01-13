@@ -215,7 +215,15 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Anchors\dcdt31prod.sitenv.org_ca_root.der" />
+    <None Include="Anchors\dcdt31prod.sitenv.org_ca_root.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Anchors\demo31.direct-test.com_ca_root.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Anchors\staging.direct-test.com_ca_root.der">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
