@@ -270,7 +270,7 @@ namespace Health.Direct.Policy
         public static Intersect<T1, T2, TResult> INTERSECT;
         public static Contains<T1, T2, TResult> CONTAINS;
         public static NotContains<T1, T2, TResult> NOT_CONTAINS;
-        public static ContainsRegEx<T1, T2, TResult> CONTAINS_REG_EX;
+        public static ContainsRegEx<T1, T2, bool> CONTAINS_REG_EX;
         
 
         static PolicyOperator()
@@ -394,7 +394,7 @@ namespace Health.Direct.Policy
             if (typeof (IEnumerable<String>).IsAssignableFrom(typeof (T1)))
             {
                 var containsRegEx = new ContainsRegEx();
-                CONTAINS_REG_EX = new ContainsRegEx<T1, T2, TResult>(containsRegEx, RegExContains);
+                CONTAINS_REG_EX = new ContainsRegEx<T1, T2, bool>(containsRegEx, RegExContains);
                 TokenOperatorMap[CONTAINS_REG_EX.GetHashCode()] = CONTAINS_REG_EX;
             }
             
@@ -500,7 +500,7 @@ namespace Health.Direct.Policy
         /// <param name="pattern">Regular expression pattern</param>
         /// <param name="items">Source strings to search</param>
         /// <returns></returns>
-        private static TResult RegExContains(T1 items, T2 pattern) 
+        private static bool RegExContains(T1 items, T2 pattern) 
         {
             var values = items as IList<String>;
             Boolean success = false;
@@ -514,7 +514,8 @@ namespace Health.Direct.Policy
                 success = match.Success;
                 if (success) break;
             }
-            return (TResult)Convert.ChangeType(success, typeof(TResult));
+
+            return success;
         }
 
     }
