@@ -114,43 +114,50 @@
 	</Target>
 
 	<ItemGroup>
-		<test-agent_Assemblies  Include=".\unittests\agent\bin\$(Configuration)\Health.Direct.Agent.Tests.dll" />
-		<test-agent_Assemblies  Include=".\unittests\common\bin\$(Configuration)\Health.Direct.Common.Tests.dll"  />
+		<test-agent_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Agent.Tests.dll" />
+		<test-agent_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Common.Tests.dll"  />
+		
+		<test-xd_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.xd.tests.dll" />
+		<test-xd_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.xdm.tests.dll"  />
+		
+		<test-gateway_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.config.store.tests.dll" />
+		<test-gateway_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.dnsresponder.tests.dll"  />
+		<test-gateway_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.smtpagent.tests.dll" />
+				
+		<test-certPolicy_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Policy.Tests.dll"  />
+		
+		<test-smtp-integration_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.SmtpAgent.Integration.Tests.dll"  />
+		
+		<test-store_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Config.Store.Tests.dll"  />
 	</ItemGroup>
 	
-	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test-agent" >
 		<xunit Assemblies="@(test-agent_Assemblies)"/>
 	</Target>
 	
 	<Target Name="test-gateway" >
-		<xunitproject ProjectFile="unittests\gateway.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\gateway.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-gateway_Assemblies)"/>
 	</Target>
 
 	<Target Name="test-certPolicy" >
-		<xunitproject ProjectFile="unittests\certPolicy.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\certPolicy.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-certPolicy_Assemblies)"/>
 	</Target>
 	
 	<Target Name="test-xd" >
-		<xunitproject ProjectFile="unittests\xd.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-xd_Assemblies)"/>
 	</Target>
 		
 	<Target Name="test-smtp-integration" DependsOnTargets="create-db;create-config-webservice;create-testData">	    
-		<xunitproject ProjectFile="unittests\smtpAgent.integration.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\smtpAgent.integration.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-smtp-integration_Assemblies)"/>
 	</Target>
 		
+	<Target Name="test-store" DependsOnTargets="create-db;">
+		<xunit Assemblies="@(test-store_Assemblies)"/>
+	</Target>
+	
 	<Target Name="create-config-webservice">	  
 		<Message Text="$(ConfigServicPath)" Importance="high"/>
 		<Exec Command='$(CreateConfigServiceWebApp)' />
-	</Target>
-	
-     <Target Name="test-store" DependsOnTargets="create-db;">
-		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' " Verbose="true" /> 
 	</Target>
 
 	<Target Name="create-db" >
