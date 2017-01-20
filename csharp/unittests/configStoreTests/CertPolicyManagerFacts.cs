@@ -14,15 +14,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using FluentAssertions;
 using Health.Direct.Policy.Extensions;
 using Xunit;
-using Xunit.Extensions;
+using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests
 {
@@ -41,9 +39,9 @@ namespace Health.Direct.Config.Store.Tests
         }
     }
 
-    public class CertPolicyManagerFacts : ConfigStoreTestBase, IUseFixture<CertPolicyTestFixture>
+    public class CertPolicyManagerFacts : ConfigStoreTestBase, IClassFixture<CertPolicyTestFixture>
     {
-        private static new CertPolicyManager CreateManager()
+        private new static CertPolicyManager CreateManager()
         {
             return new CertPolicyManager(CreateConfigStore(), new CertPolicyParseValidator());
         }
@@ -55,10 +53,9 @@ namespace Health.Direct.Config.Store.Tests
 
         public void SetFixture(CertPolicyTestFixture data)
         {
-           
+
         }
 
-        
         /// <summary>
         ///A test for Store
         ///</summary>
@@ -69,7 +66,6 @@ namespace Health.Direct.Config.Store.Tests
             ConfigStore actual = mgr.Store;
             Assert.Equal(mgr.Store, actual);
         }
-
 
         /// <summary>
         /// A test for GetEnumerator
@@ -88,12 +84,10 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetPolicyByName()
         {
-           
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy1");
             policy.Name.Should().BeEquivalentTo("Policy1");
         }
-
 
         [Fact, AutoRollback]
         public void GetIncomingAndOutgoingCertPolicieByOwnerTest()
@@ -105,20 +99,17 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
-            
-
-
             //
             // Map cert policy group to domains
             //
             groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
             groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+
             //
             // Map cert policy group to policy
             //
             groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
             groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, true, false);
-            
 
             CertPolicyManager policyMgr = CreateManager();
             CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
@@ -131,9 +122,8 @@ namespace Health.Direct.Config.Store.Tests
 
             policies = policyMgr.GetIncomingByOwner("domain3.test.com");
             policies.Length.Should().Be(0);
-            
-        }
 
+        }
 
         [Fact, AutoRollback]
         public void GetIncomingAndOutgoingCertPolicieByOwnerAndUsage_Test()
@@ -145,20 +135,17 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
-
-
-
             //
             // Map cert policy group to domains
             //
             groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
             groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+
             //
             // Map cert policy group to policy
             //
             groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
             groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, false);
-
 
             CertPolicyManager policyMgr = CreateManager();
             CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.TRUST);
@@ -175,7 +162,6 @@ namespace Health.Direct.Config.Store.Tests
 
             policies = policyMgr.GetIncomingByOwner("domain3.test.com", CertPolicyUse.PRIVATE_RESOLVER);
             policies.Length.Should().Be(0);
-
         }
 
         /// <summary>
@@ -188,24 +174,18 @@ namespace Health.Direct.Config.Store.Tests
 
             CertPolicy expectedPolicy = new CertPolicy("UnitTestPolicy", "", "1 = 1".ToBytesUtf8());
             mgr.Add(expectedPolicy);
-            
 
             CertPolicy actualCertPolicy = mgr.Get("UnitTestPolicy");
             expectedPolicy.Name.Should().BeEquivalentTo("UnitTestPolicy");
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
         }
 
-        
-
-        
         /// <summary>
         /// Remove Policy
         /// </summary>
         [Fact, AutoRollback]
         public void DeletePolicyTest()
         {
-           
-
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy2");
             mgr.Remove(policy.ID);
@@ -233,11 +213,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public void Delete2PoliciesTest()
         {
-           
-
             CertPolicyManager mgr = CreateManager();
             mgr.Count().Should().Be(9);
-            mgr.Remove(new long[]{1,2});
+            mgr.Remove(new long[] { 1, 2 });
 
             mgr.Count().Should().Be(7);
         }
@@ -248,30 +226,23 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public void DeletePolicyWithAssociations()
         {
-           
-
-
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
             CertPolicyManager policyMgr = CreateManager();
             policyMgr.Get("Policy1").Should().NotBeNull();
-            
+
             groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, true);
-            
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
-
 
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = mgr.Get("Policy1");
             mgr.Remove(policy.ID);
             policyMgr.Get("Policy1").Should().BeNull();
-
         }
-
 
         /// <summary>
         /// A test for Update Policy
@@ -279,7 +250,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public void UpdatePolicyDataTest()
         {
-            
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
@@ -291,7 +261,7 @@ namespace Health.Direct.Config.Store.Tests
             mgr.Update(actualCertPolicy);
 
             CertPolicy updatedCertPolicy = mgr.Get("UnitTestPolicy");
-            updatedCertPolicy.Data.ToUtf8String().ShouldAllBeEquivalentTo("1 != 1");
+            updatedCertPolicy.Data.ToUtf8String().ShouldBeEquivalentTo("1 != 1");
         }
 
         /// <summary>
@@ -300,7 +270,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public void UpdatePolicyDescriptionTest()
         {
-            
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
@@ -312,7 +281,7 @@ namespace Health.Direct.Config.Store.Tests
             mgr.Update(actualCertPolicy);
 
             CertPolicy updatedCertPolicy = mgr.Get("UnitTestPolicy");
-            updatedCertPolicy.Description.ShouldAllBeEquivalentTo("blank");
+            updatedCertPolicy.Description.ShouldBeEquivalentTo("blank");
         }
     }
 }

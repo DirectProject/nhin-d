@@ -14,12 +14,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using Health.Direct.Common.Mail;
 using Health.Direct.Policy.Extensions;
 using Xunit;
 
@@ -27,7 +25,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class CertPolicyGroupManagerFacts : ConfigStoreTestBase
     {
-        private static new CertPolicyGroupManager CreateManager()
+        private new static CertPolicyGroupManager CreateManager()
         {
             return new CertPolicyGroupManager(CreateConfigStore());
         }
@@ -47,7 +45,6 @@ namespace Health.Direct.Config.Store.Tests
             ConfigStore actual = mgr.Store;
             Assert.Equal(mgr.Store, actual);
         }
-
 
         /// <summary>
         /// A test for GetEnumerator
@@ -83,7 +80,6 @@ namespace Health.Direct.Config.Store.Tests
             InitCertPolicyRecords();
             InitCertPolicyGroupRecords();
 
-            
             CertPolicyGroupManager mgr = CreateManager();
             mgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
             CertPolicyGroupMap[] maps = mgr.GetWithPolicies("PolicyGroup1");
@@ -91,8 +87,6 @@ namespace Health.Direct.Config.Store.Tests
             maps[0].CertPolicy.Name.Should().Be("Policy1");
         }
 
-
-        
         /// <summary>
         /// A test for Add PolicyGroup
         /// </summary>
@@ -104,7 +98,7 @@ namespace Health.Direct.Config.Store.Tests
 
             CertPolicyGroup expectedPolicy = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest PolicyGroup Description");
             CertPolicyGroup actualCertPolicy = mgr.Add(expectedPolicy);
-            
+
             expectedPolicy.Name.Should().BeEquivalentTo("UnitTestPolicyGroup");
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
         }
@@ -112,7 +106,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Associate @group to policy session based style
         /// </summary>
-        [Fact(Skip="Broken.  Thinks it is adding a new certpolicy with the same name.  This session technique is probably not going to be used.")]
+        [Fact(Skip = "Broken.  Thinks it is adding a new certpolicy with the same name.  This session technique is probably not going to be used.")]
         public void AssociatePolicyToGroupSessionTest()
         {
             InitCertPolicyRecords();
@@ -133,7 +127,6 @@ namespace Health.Direct.Config.Store.Tests
             }
         }
 
-        
         /// <summary>
         /// Associate policy to group sessionless based style
         /// </summary>
@@ -153,7 +146,6 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroup policyGroup = mgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
 
-            
             //act
             mgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, false, true);
 
@@ -162,8 +154,6 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup.CertPolicies.Count.Should().Be(2);
         }
 
-        
-        
         /// <summary>
         /// A test for Update Policy
         /// </summary>
@@ -182,10 +172,8 @@ namespace Health.Direct.Config.Store.Tests
             mgr.Update(actualCertPolicy);
 
             CertPolicyGroup updatedCertPolicy = mgr.Get("UnitTestPolicyGroup");
-            updatedCertPolicy.Description.ShouldAllBeEquivalentTo("blank");
+            updatedCertPolicy.Description.ShouldBeEquivalentTo("blank");
         }
-
-        
 
         /// <summary>
         /// Associate policy to group sessionless based style
@@ -204,16 +192,12 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroup policyGroup = mgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
 
-            
-            CertPolicyGroupMap[] map = new CertPolicyGroupMap[] {policyGroup.CertPolicyGroupMaps.First()};
+            CertPolicyGroupMap[] map = new CertPolicyGroupMap[] { policyGroup.CertPolicyGroupMaps.First() };
             mgr.RemovePolicy(map);
 
             policyGroup = mgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
         }
-
-
-       
 
         [Fact]
         public void AssociatePolicyGroupToDomain_Test()
@@ -226,15 +210,12 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-
             groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
             groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
         }
-
-        
 
         [Fact]
         public void DisassociatePolicyGroupFromomain_Test()
@@ -246,7 +227,6 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
-
 
             groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
             groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
@@ -280,7 +260,6 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-
             groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
             groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
@@ -301,7 +280,6 @@ namespace Health.Direct.Config.Store.Tests
 
             policyGroup = groupMgr.Get("PolicyGroup2");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
-
         }
 
         /// <summary>
@@ -318,18 +296,16 @@ namespace Health.Direct.Config.Store.Tests
             CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-
             groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
             groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
-            
+
             groupMgr.DisassociateFromDomains(policyGroup.ID);
 
             policyGroup = groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
-
         }
 
         /// <summary>
@@ -375,7 +351,6 @@ namespace Health.Direct.Config.Store.Tests
             policyGroups.Length.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(3);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
-
         }
 
         /// <summary>
@@ -395,8 +370,6 @@ namespace Health.Direct.Config.Store.Tests
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
-           
-            
             //
             // Map cert policy group to domains
             //
@@ -404,6 +377,7 @@ namespace Health.Direct.Config.Store.Tests
             groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
             groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
             groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+
             //
             // Map cert policy group to policy
             //
@@ -442,8 +416,6 @@ namespace Health.Direct.Config.Store.Tests
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupMaps.Count.Should().Be(1);
-
-
         }
     }
 }

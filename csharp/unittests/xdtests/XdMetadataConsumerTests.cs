@@ -43,7 +43,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("AuthorPersonData")]
+        [MemberData("AuthorPersonData")]
         public void ConsumerConsumesAuthorPerson(XElement documentXEl, Person expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -63,7 +63,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("AuthorInstitionData")]
+        [MemberData("AuthorInstitionData")]
         public void ConsumerConsumesAuthorInstition(XElement documentXel, List<Institution> expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXel);
@@ -84,7 +84,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("AuthorRoleData")]
+        [MemberData("AuthorRoleData")]
         public void ConsumerConsumesAuthorRole(XElement documentXEl, List<string> expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -103,7 +103,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("AuthorSpecialitiesData")]
+        [MemberData("AuthorSpecialitiesData")]
         public void ConsumerConsumesAuthorSpecialties(XElement documentXEl, List<string> expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -122,7 +122,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("ClassData")]
+        [MemberData("ClassData")]
         public void ConsumerConsumesClass(XElement documentXEl, CodedValue code)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -140,7 +140,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("CommentsData")]
+        [MemberData("CommentsData")]
         public void ConsumerConsumesComments(XElement documentXEl, string expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -155,7 +155,7 @@ namespace Health.Direct.Xd.Tests
             }
         }
         [Theory]
-        [PropertyData("ConfidentialityData")]
+        [MemberData("ConfidentialityData")]
         public void ConsumerConsumesConfidentialty(XElement documentXEl, CodedValue expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -171,7 +171,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("CreatedOnData")]
+        [MemberData("CreatedOnData")]
         public void ConsumerConsumesCreatedOn(XElement documentXEl, DateTime? expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -187,7 +187,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("EventCodesData")]
+        [MemberData("EventCodesData")]
         public void ConsumerConsumesEventCodes(XElement documentXEl, IEnumerable<CodedValue> expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -209,7 +209,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("FacilityCodeData")]
+        [MemberData("FacilityCodeData")]
         public void ConsumerConsumesFacility(XElement documentXEl, CodedValue expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -225,7 +225,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("FormatCodeData")]
+        [MemberData("FormatCodeData")]
         public void ConsumerConsumesFormat(XElement documentXEl, CodedValue expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -241,7 +241,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("HashData")]
+        [MemberData("HashData")]
         public void ConsumerConsumesHashCode(XElement documentXEl, string expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -257,7 +257,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("LanguageCodeData")]
+        [MemberData("LanguageCodeData")]
         public void ConsumerConsumesLanguageCode(XElement documentXEl, string expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -273,7 +273,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("LegalAuthenticatorData")]
+        [MemberData("LegalAuthenticatorData")]
         public void ConsumerConsumesLegalAuthenticator(XElement documentXEl, Person expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -289,7 +289,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("MediaTypeData")]
+        [MemberData("MediaTypeData")]
         public void ConsumerConsumesMediaType(XElement documentXEl, string expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -306,7 +306,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("PatientIdData")]
+        [MemberData("PatientIdData")]
         public void ConsumerConsumesPatientId(XElement documentXEl, PatientID expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -322,7 +322,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("ServiceStartData")]
+        [MemberData("ServiceStartData")]
         public void ConsumerConsumesServiceStart(XElement documentXEl, DateTime? expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -338,7 +338,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("ServiceStopData")]
+        [MemberData("ServiceStopData")]
         public void ConsumerConsumesServiceStop(XElement documentXEl, DateTime? expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -354,7 +354,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("PracticeSettingCodeData")]
+        [MemberData("PracticeSettingCodeData")]
         public void ConsumerConsumesPracticeSetting(XElement documentXEl, CodedValue expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -370,7 +370,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("SizeData")]
+        [MemberData("SizeData")]
         public void ConsumerConsumesSize (XElement documentXEl, int? expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -386,7 +386,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("SourcePatientIdData")]
+        [MemberData("SourcePatientIdData")]
         public void ConsumerConsumesSourcePatientId(XElement documentXEl, PatientID expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -402,7 +402,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("SourcePatientInfoData")]
+        [MemberData("SourcePatientInfoData")]
         public void ConsumerConsumesPatient(XElement documentXEl, Person expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -420,7 +420,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("TitleData")]
+        [MemberData("TitleData")]
         public void ConsumerConsumesTitle(XElement documentXEl, String expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -436,7 +436,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("UniqueIdData")]
+        [MemberData("UniqueIdData")]
         public void ConsumerConsumesUniqueId(XElement documentXEl, String expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -452,7 +452,7 @@ namespace Health.Direct.Xd.Tests
         }
 
         [Theory]
-        [PropertyData("UriData")]
+        [MemberData("UriData")]
         public void ConsumerConsumesUri(XElement documentXEl, String expected)
         {
             DocumentMetadata doc = XDMetadataConsumer.ConsumeDocument(documentXEl);
@@ -490,7 +490,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageAuthorData")]
+        [MemberData("PackageAuthorData")]
         public void ConsumerConsumesPackageAuthor(XElement xl, Author expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -508,7 +508,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageComments")]
+        [MemberData("PackageComments")]
         public void ConsumerConsumesPackageComments(XElement xl, string expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -525,7 +525,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageTypeCode")]
+        [MemberData("PackageTypeCode")]
         public void ConsumerConsumesPackageTypeCode(XElement xl, CodedValue expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -542,7 +542,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackagePatientId")]
+        [MemberData("PackagePatientId")]
         public void ConsumerConsumesPackagePatientId(XElement xl, PatientID expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -559,7 +559,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageSourceId")]
+        [MemberData("PackageSourceId")]
         public void ConsumerConsumesPackageSourceId(XElement xl, string expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -576,7 +576,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageSubmissionTime")]
+        [MemberData("PackageSubmissionTime")]
         public void ConsumerConsumesPackageSubmissionTime(XElement xl, DateTime? expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -601,7 +601,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageTitle")]
+        [MemberData("PackageTitle")]
         public void ConsumerConsumesPackageTitle(XElement xl, string expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -618,7 +618,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageUniqueId")]
+        [MemberData("PackageUniqueId")]
         public void ConsumerConsumesPackageUniqueId(XElement xl, string expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);
@@ -635,7 +635,7 @@ namespace Health.Direct.Xd.Tests
 
 
         [Theory]
-        [PropertyData("PackageRecipients")]
+        [MemberData("PackageRecipients")]
         public void ConsumerConsumesPackageRecipients(XElement xl, List<Recipient> expected)
         {
             DocumentPackage package = XDMetadataConsumer.Consume(xl);

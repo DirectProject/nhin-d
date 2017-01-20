@@ -20,7 +20,7 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class DnsRecordManagerFacts : ConfigStoreTestBase
     {
-        private static new DnsRecordManager CreateManager()
+        private new static DnsRecordManager CreateManager()
         {
             return new DnsRecordManager(CreateConfigStore());
         }
@@ -47,17 +47,13 @@ namespace Health.Direct.Config.Store.Tests
             recs = mgr.Get("microsoft11.com");
             Assert.Equal(0, recs.Length);
 
-            recs = mgr.Get("microsoft.com"
-                , Common.DnsResolver.DnsStandard.RecordType.AAAA);
+            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.AAAA);
             Assert.Equal(0, recs.Length);
-            recs = mgr.Get("microsoft.com"
-                , Common.DnsResolver.DnsStandard.RecordType.SOA);
+            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.SOA);
             Assert.Equal(1, recs.Length);
-            recs = mgr.Get("microsoft.com"
-                , Common.DnsResolver.DnsStandard.RecordType.MX);
+            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.MX);
             Assert.Equal(1, recs.Length);
-            recs = mgr.Get("microsoft.com"
-                , Common.DnsResolver.DnsStandard.RecordType.ANAME);
+            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.ANAME);
             Assert.Equal(1, recs.Length);
         }
 

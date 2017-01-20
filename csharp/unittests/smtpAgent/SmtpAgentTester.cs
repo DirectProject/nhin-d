@@ -14,18 +14,17 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-
 using Health.Direct.Agent;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
-using Health.Direct.Common.Mime;
 using Health.Direct.Config.Store;
 using Health.Direct.SmtpAgent.Config;
 using Xunit;
@@ -72,7 +71,7 @@ Content-Type: text/plain
 
 Yo. Wassup?", Guid.NewGuid());
 
-        
+
         public const string BadMessage =
             @"From: <toby@redmond.hsgincubator.com>
 To: <xyz@untrusted.com>
@@ -142,14 +141,15 @@ Content-Type: text/plain
 
 Yo. Wassup?";
 
-        
+
 
         public const string TestPickupFolder = @"c:\inetpub\mailroot\testPickup";
         public const string TestIncomingFolder = @"c:\inetpub\mailroot\incoming";
         public const string TestBadMessageFolder = @"c:\inetpub\mailroot\badMail";
 
-        public SmtpAgentTester(){
-            
+        public SmtpAgentTester()
+        {
+
             Directory.CreateDirectory(TestPickupFolder);
         }
 
@@ -161,11 +161,12 @@ Yo. Wassup?";
             CleanMessages(settings.RawMessage);
             CleanMessages(settings.BadMessage);
             settings.IncomingRoutes.ToList().ForEach(
-                route => {
-                            if(route as FolderRoute != null)
-                            {   
-                                CleanMessages(((FolderRoute)route).CopyFolders);
-                            }
+                route =>
+                {
+                    if (route as FolderRoute != null)
+                    {
+                        CleanMessages(((FolderRoute)route).CopyFolders);
+                    }
                 });
         }
 
@@ -178,7 +179,7 @@ Yo. Wassup?";
         private void CleanMessages(string path)
         {
             var files = Directory.GetFiles(path);
-            foreach(var file in files)
+            foreach (var file in files)
             {
                 File.Delete(file);
             }
@@ -202,7 +203,7 @@ Yo. Wassup?";
             {
                 yield return file;
                 File.Delete(file);
-            } 
+            }
         }
 
         public IEnumerable<string> FileMessages(string folder)
@@ -236,29 +237,29 @@ Yo. Wassup?";
         {
             return Path.Combine(Directory.GetCurrentDirectory(), subPath);
         }
-        
+
         internal CDO.Message LoadMessage(string text)
         {
             return Extensions.LoadCDOMessageFromText(text);
         }
-        
+
         internal CDO.Message LoadMessage(CDO.Message source)
         {
             return this.LoadMessage(source.GetMessageText());
         }
-        
+
         internal void VerifyOutgoingMessage(CDO.Message message)
         {
             Assert.True(string.IsNullOrEmpty(message.Subject));
-         
+
             ContentType contentType = new ContentType(message.GetContentType());
             Assert.True(SMIMEStandard.IsContentEncrypted(contentType));
         }
-        
+
         internal void VerifyIncomingMessage(CDO.Message message)
         {
             ContentType contentType = new ContentType(message.GetContentType());
-            Assert.False(SMIMEStandard.IsContentEncrypted(contentType));            
+            Assert.False(SMIMEStandard.IsContentEncrypted(contentType));
         }
 
         internal void VerifyMdnIncomingMessage(CDO.Message message)
@@ -273,13 +274,13 @@ Yo. Wassup?";
             Assert.True(envelope.Message.IsDSN());
         }
 
-        
+
         internal void ProcessEndToEnd(SmtpAgent agent, Message msg, out OutgoingMessage outgoing, out IncomingMessage incoming)
         {
             outgoing = agent.SecurityAgent.ProcessOutgoing(new MessageEnvelope(msg));
-            incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));            
+            incoming = agent.SecurityAgent.ProcessIncoming(new MessageEnvelope(outgoing.SerializeMessage()));
         }
-        
+
         protected string GetSettingsPath(string fileName)
         {
             string relativePath = Path.Combine("SmtpAgentTestFiles", fileName);
@@ -298,7 +299,7 @@ Yo. Wassup?";
             return new Mdn(originalMessageId, originalRecipient, originalSender);
         }
 
-        
+
         protected static Mdn BuildQueryFromDSN(CDO.Message message)
         {
             var messageEnvelope = new CDOSmtpMessage(message).GetEnvelope();
@@ -327,12 +328,12 @@ Yo. Wassup?";
         {
             throw new NotImplementedException();
         }
-        
+
         public string GetMessageText()
         {
             throw new NotImplementedException();
         }
-        
+
         public string GetMailFrom()
         {
             throw new NotImplementedException();

@@ -13,6 +13,7 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -29,7 +30,7 @@ namespace Health.Direct.Config.Store.Tests
             ConfigurationManager.AppSettings["EnabledAllDomainAddresses"] = null;
         }
 
-        private static new AddressManager CreateManager()
+        private new static AddressManager CreateManager()
         {
             return new AddressManager(CreateConfigStore());
         }
@@ -41,7 +42,7 @@ namespace Health.Direct.Config.Store.Tests
         public void StoreTest()
         {
             ConfigStore store = CreateConfigStore();
-            AddressManager mgr = new AddressManager(store); 
+            AddressManager mgr = new AddressManager(store);
             ConfigStore actual = mgr.Store;
             Assert.Equal(mgr.Store, actual);
         }
@@ -52,7 +53,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void UpdateTest2()
         {
-
             InitAddressRecords();
 
             AddressManager mgr = CreateManager();
@@ -71,7 +71,7 @@ namespace Health.Direct.Config.Store.Tests
             foreach (Address add in addresses)
             {
                 Assert.Equal(EntityStatus.Enabled, add.Status);
-                Assert.Equal(testType,add.Type);
+                Assert.Equal(testType, add.Type);
             }
         }
 
@@ -84,7 +84,7 @@ namespace Health.Direct.Config.Store.Tests
             InitAddressRecords();
 
             AddressManager mgr = CreateManager();
-            Address add = mgr.Get(BuildEmailAddress(1,1));
+            Address add = mgr.Get(BuildEmailAddress(1, 1));
             Assert.NotNull(add);
             const string testType = "testtype";
             Assert.Equal(add.Status, EntityStatus.New);
@@ -95,7 +95,6 @@ namespace Health.Direct.Config.Store.Tests
             add = mgr.Get(add.EmailAddress);
             Assert.Equal(EntityStatus.Enabled, add.Status);
             Assert.Equal(testType, add.Type);
-            
         }
 
         /// <summary>
@@ -109,7 +108,6 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(MAXDOMAINCOUNT * MAXADDRESSCOUNT, mgr.Count());
         }
 
-
         /// <summary>
         ///A test for SetStatus
         ///</summary>
@@ -117,7 +115,7 @@ namespace Health.Direct.Config.Store.Tests
         public void SetStatusTest1()
         {
             InitAddressRecords();
-            AddressManager mgr = CreateManager(); 
+            AddressManager mgr = CreateManager();
             const long domainID = STARTID;
             const EntityStatus status = EntityStatus.Enabled;
             mgr.SetStatus(domainID, status);
@@ -137,7 +135,7 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveDomainTest1()
         {
             InitAddressRecords();
-            AddressManager mgr = CreateManager(); 
+            AddressManager mgr = CreateManager();
             const long domainID = 1;
 
             using (ConfigDatabase db = CreateConfigDatabase())
@@ -150,9 +148,7 @@ namespace Health.Direct.Config.Store.Tests
                 mgr.RemoveDomain(domainID);
                 adds = mgr.Get(db, domainID, string.Empty, MAXADDRESSCOUNT + 1).ToArray();
                 Assert.Equal(0, adds.Count());
-
             }
-            
         }
 
         /// <summary>
@@ -161,7 +157,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void RemoveDomainTest()
         {
-
             InitAddressRecords();
             AddressManager mgr = CreateManager();
             const long domainID = 1;
@@ -173,12 +168,10 @@ namespace Health.Direct.Config.Store.Tests
                 Address[] adds = mgr.Get(db, domainID, string.Empty, MAXADDRESSCOUNT + 1).ToArray();
                 Assert.Equal(MAXADDRESSCOUNT, adds.Count());
 
-                mgr.RemoveDomain(db,domainID);
+                mgr.RemoveDomain(db, domainID);
                 adds = mgr.Get(db, domainID, string.Empty, MAXADDRESSCOUNT + 1).ToArray();
                 Assert.Equal(0, adds.Count());
-
             }
-            
         }
 
         /// <summary>
@@ -194,7 +187,6 @@ namespace Health.Direct.Config.Store.Tests
             mgr.Remove(emailAddresses);
             Assert.Equal(0, mgr.Get(emailAddresses).Count());
             Assert.Equal(MAXADDRESSCOUNT * MAXDOMAINCOUNT - emailAddresses.Length, mgr.Count());
-            
         }
 
         /// <summary>
@@ -203,7 +195,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void RemoveTest1()
         {
-
             InitAddressRecords();
             AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
@@ -211,7 +202,6 @@ namespace Health.Direct.Config.Store.Tests
             Assert.NotNull(emailAddress);
             mgr.Remove(emailAddress);
             Assert.Null(mgr.Get(emailAddress));
-            
         }
 
         /// <summary>
@@ -220,17 +210,14 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void RemoveTest()
         {
-
             InitAddressRecords();
-            
+
             AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             mgr.Get(emailAddress);
             Assert.NotNull(emailAddress);
             mgr.Remove(emailAddress);
             Assert.Null(mgr.Get(emailAddress));
-            
-            
         }
 
         /// <summary>
@@ -239,12 +226,10 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetEnumeratorTest()
         {
-
             InitAddressRecords();
             IEnumerable<Address> mgr = CreateManager();
             Assert.Equal(MAXADDRESSCOUNT * MAXDOMAINCOUNT, mgr.Count());
         }
-
 
         /// <summary>
         ///A test for GetByDomainTest1
@@ -262,7 +247,6 @@ namespace Health.Direct.Config.Store.Tests
             {
                 Assert.Equal(1, addr.DomainID);
             }
-
         }
 
         /// <summary>
@@ -277,16 +261,13 @@ namespace Health.Direct.Config.Store.Tests
                 InitAddressRecords();
                 AddressManager mgr = CreateManager();
                 string domainName = BuildDomainName(1);
-                Address[] addrs = mgr.GetAllForDomain(db
-                    , domainName.ToUpper()
-                    , int.MaxValue).ToArray();
+                Address[] addrs = mgr.GetAllForDomain(db, domainName.ToUpper(), int.MaxValue).ToArray();
                 Assert.Equal(MAXADDRESSCOUNT, addrs.Length);
                 foreach (Address addr in addrs)
                 {
                     Assert.Equal(1, addr.DomainID);
                 }
             }
-
         }
 
         /// <summary>
@@ -299,17 +280,15 @@ namespace Health.Direct.Config.Store.Tests
             AddressManager mgr = CreateManager();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
-                string[] emailAddresses  = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
+                string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
                 IEnumerable<Address> actual = mgr.Get(db, emailAddresses);
                 Assert.Equal(emailAddresses.Length, actual.Count());
-                
-                for(int t=0;t<actual.Count();t++){
+
+                for (int t = 0; t < actual.Count(); t++)
+                {
                     Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
                 }
-
             }
-
-            
         }
 
         /// <summary>
@@ -330,16 +309,14 @@ namespace Health.Direct.Config.Store.Tests
                 Assert.True(emailAddresses.Contains(actual.ToArray()[t].EmailAddress));
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
             }
-            
         }
-
 
         /// <summary>
         /// Test the ability to validate an address based on the address or domain existing
         ///</summary>
         [Fact]
         public void Get_AddressOrDomainTest()
-        {              
+        {
             InitAddressRecords();
             string addressType = "SMTP";
 
@@ -350,11 +327,11 @@ namespace Health.Direct.Config.Store.Tests
             domain = new Domain("address2.domain2.com");
             domain.Status = EntityStatus.Enabled;
             dMgr.Add(domain);
-            
+
             AddressManager mgr = CreateManager();
 
             string[] emailAddresses = new[] { "NewGuy@address1.domain1.com", "AnotherNewGuy@address1.domain1.com" };
-            
+
             IEnumerable<Address> actual = mgr.Get(emailAddresses, EntityStatus.New);
             Assert.Equal(0, actual.Count());
 
@@ -366,7 +343,6 @@ namespace Health.Direct.Config.Store.Tests
 
             actual = mgr.Get(emailAddresses, true, EntityStatus.New);
             Assert.Equal(emailAddresses.Length, actual.Count());
-
 
             for (int t = 0; t < actual.Count(); t++)
             {
@@ -391,7 +367,6 @@ namespace Health.Direct.Config.Store.Tests
                 Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
         }
-
 
         /// <summary>
         /// Test the ability to validate an address based on the address and domain existing
@@ -427,16 +402,13 @@ namespace Health.Direct.Config.Store.Tests
             actual = mgr.Get(emailAddresses, true, EntityStatus.New);
             Assert.Equal(emailAddresses.Length, actual.Count());
 
-
             for (int t = 0; t < actual.Count(); t++)
             {
                 Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
                 Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
-
         }
-
 
         /// <summary>
         /// Test the ability to validate an address based on the address and domain existing
@@ -465,61 +437,43 @@ namespace Health.Direct.Config.Store.Tests
             IEnumerable<Address> actual = mgr.Get(emailAddresses, true, EntityStatus.Enabled);
             Assert.Equal(1, actual.Count());
 
-
             for (int t = 0; t < actual.Count(); t++)
             {
                 Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
                 Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
                 Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
-
-
-
-
 
             actual = mgr.Get(emailAddresses, EntityStatus.Enabled);
             Assert.Equal(1, actual.Count());
 
-
             for (int t = 0; t < actual.Count(); t++)
             {
                 Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
                 Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
                 Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
-
-
-
 
             actual = mgr.Get(emailAddresses, true);
             Assert.Equal(1, actual.Count());
 
-
             for (int t = 0; t < actual.Count(); t++)
             {
                 Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
                 Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
                 Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
-
-
-
 
             actual = mgr.Get(emailAddresses);
             Assert.Equal(1, actual.Count());
 
-
             for (int t = 0; t < actual.Count(); t++)
             {
                 Assert.True(emailAddresses.Any(e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase)));
                 Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
                 Assert.Equal(addressType, actual.ToArray()[t].Type);
             }
-
-
-
         }
-
 
         /// <summary>
         ///A test for Get
@@ -563,7 +517,7 @@ namespace Health.Direct.Config.Store.Tests
             string emailAddress = BuildEmailAddress(1, 1);
             using (ConfigDatabase db = CreateConfigDatabase())
             {
-                Address add = mgr.Get(db,emailAddress);
+                Address add = mgr.Get(db, emailAddress);
                 Assert.Equal(emailAddress, add.EmailAddress);
             }
         }
@@ -580,7 +534,7 @@ namespace Health.Direct.Config.Store.Tests
             string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             using (ConfigDatabase db = CreateConfigDatabase())
             {
-                IEnumerable<Address> actual = mgr.Get(db,emailAddresses, EntityStatus.New);
+                IEnumerable<Address> actual = mgr.Get(db, emailAddresses, EntityStatus.New);
                 Assert.Equal(emailAddresses.Length, actual.Count());
 
                 for (int t = 0; t < actual.Count(); t++)
@@ -617,7 +571,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest6()
         {
-
             InitAddressRecords();
             AddressManager mgr = CreateManager();
 
@@ -628,7 +581,6 @@ namespace Health.Direct.Config.Store.Tests
             {
                 Assert.True(addressIDs.Contains(actual.ToArray()[t].ID));
             }
-                       
         }
 
         /// <summary>
@@ -651,7 +603,6 @@ namespace Health.Direct.Config.Store.Tests
                     Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
                 }
             }
-            
         }
 
         /// <summary>
@@ -660,7 +611,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest4()
         {
-
             InitAddressRecords();
             AddressManager mgr = CreateManager();
 
@@ -672,7 +622,6 @@ namespace Health.Direct.Config.Store.Tests
                 Assert.True(addressIDs.Contains(actual.ToArray()[t].ID));
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
             }
-            
         }
 
         /// <summary>
@@ -726,7 +675,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTestLast2()
         {
-
             InitAddressRecords();
             AddressManager mgr = CreateManager();
 
@@ -762,8 +710,6 @@ namespace Health.Direct.Config.Store.Tests
             val = mxsAll.Keys.ToArray().First();
             adds = mgr.Get(val, MAXDOMAINCOUNT * MAXADDRESSCOUNT);
             Assert.Equal(MAXDOMAINCOUNT * MAXADDRESSCOUNT - 1, adds.Length);
-     
-            
         }
 
         /// <summary>
@@ -772,8 +718,6 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void GetTest1()
         {
-
-
             InitAddressRecords();
             AddressManager mgr = CreateManager();
 
@@ -783,7 +727,7 @@ namespace Health.Direct.Config.Store.Tests
 
             Assert.Equal(MAXDOMAINCOUNT * MAXADDRESSCOUNT, mxsAll.Count);
 
-            Address[] adds = mgr.Get(1,string.Empty, MAXADDRESSCOUNT).ToArray();
+            Address[] adds = mgr.Get(1, string.Empty, MAXADDRESSCOUNT).ToArray();
 
             //----------------------------------------------------------------------------------------------------
             //---expected that the count of mxs will be  max count for a domain 
@@ -797,7 +741,6 @@ namespace Health.Direct.Config.Store.Tests
             //----------------------------------------------------------------------------------------------------
             //---expected that there should be MAXADDRESSCOUNT - 1 now
             Assert.Equal(MAXADDRESSCOUNT - 1, adds.Length);
-            
         }
 
         /// <summary>
@@ -817,7 +760,7 @@ namespace Health.Direct.Config.Store.Tests
 
                 Assert.Equal(MAXDOMAINCOUNT * MAXADDRESSCOUNT, mxsAll.Count);
 
-                Address[] adds = mgr.Get(db,1, string.Empty, MAXADDRESSCOUNT).ToArray();
+                Address[] adds = mgr.Get(db, 1, string.Empty, MAXADDRESSCOUNT).ToArray();
 
                 //----------------------------------------------------------------------------------------------------
                 //---expected that the count of mxs will be  max count for a domain 
@@ -832,7 +775,6 @@ namespace Health.Direct.Config.Store.Tests
                 //---expected that there should be MAXADDRESSCOUNT - 1 now
                 Assert.Equal(MAXADDRESSCOUNT - 1, adds.Length);
             }
-            
         }
 
         /// <summary>
@@ -842,9 +784,8 @@ namespace Health.Direct.Config.Store.Tests
         public void CountTest()
         {
             InitAddressRecords();
-            AddressManager mgr = CreateManager(); 
+            AddressManager mgr = CreateManager();
             Assert.Equal(MAXADDRESSCOUNT, mgr.Count(1));
-            
         }
 
         /// <summary>
@@ -856,7 +797,7 @@ namespace Health.Direct.Config.Store.Tests
             //----------------------------------------------------------------------------------------------------
             //---only init the domain records which will force a cleaning of the address records
             InitDomainRecords();
-            AddressManager mgr = CreateManager(); 
+            AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
             //---make sure there are no mx records that exist
@@ -864,7 +805,7 @@ namespace Health.Direct.Config.Store.Tests
 
             const long domainId = 1;
             string email = BuildEmailAddress(1, 1);
-            string displayName = BuildEmailAddressDisplayName(1,1);
+            string displayName = BuildEmailAddressDisplayName(1, 1);
             Address addr = new Address(domainId, email, displayName);
 
             mgr.Add(addr);
@@ -874,10 +815,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(email, addr.EmailAddress);
             Assert.Equal(displayName, addr.DisplayName);
             Assert.Equal(EntityStatus.New, addr.Status);
-            
         }
-
-        
 
         /// <summary>
         ///A test for Add
@@ -908,7 +846,6 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(email, addr.EmailAddress);
             Assert.Equal(displayName, addr.DisplayName);
             Assert.Equal(EntityStatus.New, addr.Status);
-            
         }
 
         /// <summary>
@@ -918,9 +855,9 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest()
         {
             InitDomainRecords();
-            AddressManager mgr = CreateManager(); 
+            AddressManager mgr = CreateManager();
             List<Address> addresses = new List<Address>();
-            
+
             for (int i = 1; i <= MAXADDRESSCOUNT; i++)
             {
                 addresses.Add(new Address(STARTID, BuildEmailAddress(STARTID, i)));

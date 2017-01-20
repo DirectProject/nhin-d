@@ -1,6 +1,6 @@
 ; smtpEventHandler.def : Declares the module parameters.
 
-LIBRARY      "smtpEventHandler.DLL"
+LIBRARY      "Health.Direct.SmtpEventHandler.dll"
 
 EXPORTS
 	DllCanUnloadNow		PRIVATE

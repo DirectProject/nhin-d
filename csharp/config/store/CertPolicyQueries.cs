@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 
 namespace Health.Direct.Config.Store
 {

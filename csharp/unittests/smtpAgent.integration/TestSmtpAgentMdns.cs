@@ -40,7 +40,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
         static TestSmtpAgentMDNs()
         {
-            AgentTester.EnsureStandardMachineStores();        
+            AgentTester.EnsureStandardMachineStores();
         }
 
         public TestSmtpAgentMDNs()
@@ -51,7 +51,6 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
         }
 
-        
         /// <summary>
         /// Ensure MdnMonitor starts and MDN process types are updated.
         ///      Includes test for blocked dulicate MDNS.
@@ -76,7 +75,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             // by the SmtpAgent by way of (IIS)SMTP hand off.
             //
             var sendingMessage = LoadMessage(string.Format(TestMessage, Guid.NewGuid()));
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text mdns and delete others.
@@ -88,7 +87,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 if (messageText.Contains("disposition-notification"))
                 {
                     foundMdns = true;
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
                 }
             }
             Assert.True(foundMdns);
@@ -103,9 +102,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 foundMdns = true;
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
-
-
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
 
                 //
                 // Prove we cannot send duplicate MDNs.
@@ -117,9 +114,6 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 //Could possibly check to see if it was dropped.  This integration test is getting ugly...
                 VerifyOutgoingMessage(duplicateMessage);         //Encryted Message
 
-
-
-                
                 TestMdnsInProcessedStatus(message, false);
             }
             Assert.True(foundMdns);
@@ -151,11 +145,8 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             // by the SmtpAgent by way of (IIS)SMTP hand off.
 
             string textMessage = string.Format(TestMessageTimelyAndReliableMissingTo, Guid.NewGuid());
-
-
             var sendingMessage = LoadMessage(textMessage);
-
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text mdns and delete others.
@@ -168,7 +159,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 {
                     foundMdns = true;
                     var cdoMessage = LoadMessage(messageText);
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(cdoMessage));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(cdoMessage)));
                 }
             }
             Assert.True(foundMdns);
@@ -182,8 +173,8 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 foundFiles = true;
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
-                
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
+
                 TestMdnsInProcessedStatus(message, true);
             }
             Assert.True(foundFiles);
@@ -204,7 +195,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
             List<NotificationMessage> notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Dispatched);
             Assert.True(notificationMessages.Count == 2);
-            
+
             //
             // Simulating a destination client sending a dispatched MDN
             //
@@ -214,7 +205,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
                 var dispatchText = MimeSerializer.Default.Serialize(notification);
                 CDO.Message message = LoadMessage(dispatchText);
-                
+
                 RunEndToEndTest(message);
 
                 var duplicateMessage = LoadMessage(dispatchText);
@@ -227,7 +218,6 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 //This proves we could not process the message because it is still encrypted
                 //Could possibly check to see if it was dropped.  This integration test is getting ugly...
                 VerifyOutgoingMessage(duplicateMessage);         //Encryted Message
-
             }
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
@@ -265,7 +255,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             var startEnvelope = new CDOSmtpMessage(sendingMessage).GetEnvelope();
 
             Assert.Null(startEnvelope.Message.Headers[MDNStandard.Headers.DispositionNotificationTo]);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text mdns and delete others.
@@ -275,7 +265,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 if (messageText.Contains("disposition-notification"))
                 {
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
                 }
             }
 
@@ -287,15 +277,15 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             {
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
-                       
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
                 var envelope = new CDOSmtpMessage(message).GetEnvelope();
                 var mdn = MDNParser.Parse(envelope.Message);
-                if(mdn.Disposition.Notification == MDNStandard.NotificationType.Processed)
+                if (mdn.Disposition.Notification == MDNStandard.NotificationType.Processed)
                 {
                     TestMdnTimelyAndReliableExtensionField(mdn, false);
                 }
-                else if(mdn.Disposition.Notification == MDNStandard.NotificationType.Dispatched)
+                else if (mdn.Disposition.Notification == MDNStandard.NotificationType.Dispatched)
                 {
                     TestMdnTimelyAndReliableExtensionField(mdn, true);
                 }
@@ -323,7 +313,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 Assert.NotNull(mdn);
                 Assert.Equal("dispatched", mdn.Status, StringComparer.OrdinalIgnoreCase);
                 Assert.Equal(true, mdn.NotifyDispatched);
-                
+
             }
 
             m_agent.Settings.InternalMessage.EnableRelay = false;
@@ -362,7 +352,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             var startEnvelope = new CDOSmtpMessage(sendingMessage).GetEnvelope();
             Assert.NotNull(startEnvelope.Message.Headers[MDNStandard.Headers.DispositionNotificationTo]);
             var notify = startEnvelope.Message.Headers[MDNStandard.Headers.DispositionNotificationTo].Value;
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text mdns and delete others.
@@ -372,8 +362,8 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 if (messageText.Contains("report-type=disposition-notification"))
                 {
-                    Assert.Contains("To:"+notify, messageText);
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Contains("To:" + notify, messageText);
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
                 }
             }
 
@@ -386,7 +376,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
 
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
                 var envelope = new CDOSmtpMessage(message).GetEnvelope();
                 var mdn = MDNParser.Parse(envelope.Message);
                 if (mdn.Disposition.Notification == MDNStandard.NotificationType.Processed)
@@ -451,7 +441,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             //
             string textMessage = string.Format(string.Format(TestMessage, Guid.NewGuid()), Guid.NewGuid());
             var sendingMessage = LoadMessage(textMessage);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage));
+            Assert.Null(Record.Exception(() => RunEndToEndTest(sendingMessage)));
 
             //
             // grab the clear text mdns and delete others.
@@ -461,7 +451,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 if (messageText.Contains("disposition-notification"))
                 {
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText)));
+                    Assert.Null(Record.Exception(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText))));
                 }
             }
 
@@ -474,7 +464,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
 
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message));
+                Assert.Null(Record.Exception(() => RunMdnInBoundProcessingTest(message)));
                 var envelope = new CDOSmtpMessage(message).GetEnvelope();
                 var mdn = MDNParser.Parse(envelope.Message);
 
@@ -508,7 +498,6 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
-
         /// <summary>
         /// Even if a MDN was not recorded outgoing it can still be returned. 
         /// </summary>
@@ -538,7 +527,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Dispatched);
             Assert.True(notificationMessages.Count == 2);
             RunMdnProcessingForMissingStart(notificationMessages);
-            
+
             notificationMessages = GetNotificationMessages(incoming, MDNStandard.NotificationType.Failed);
             Assert.True(notificationMessages.Count == 2);
             RunMdnProcessingForMissingStart(notificationMessages);
@@ -551,12 +540,9 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             Assert.True(notificationMessages.Count == 2);
             RunMdnProcessingForMissingStart(notificationMessages);
 
-
             m_agent.Settings.InternalMessage.EnableRelay = false;
         }
 
-        
-        
         private void RunMdnProcessingForMissingStart(IEnumerable<NotificationMessage> notificationMessages)
         {
             foreach (var notification in notificationMessages)
@@ -567,13 +553,11 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
                 message = LoadMessage(message);
                 VerifyOutgoingMessage(message);  //Encrypted
                 m_agent.ProcessMessage(message);
-                message = LoadMessage(message);  //Dycrpted
-                
-                VerifyIncomingMessage(message);        
+                message = LoadMessage(message);  //Decrypted
 
+                VerifyIncomingMessage(message);
 
                 //Can't ensure message is deleted in this test because IIS SMTP is not hosting SmtpAgent.
-
 
                 //
                 // assert not in the monitor store.
@@ -590,18 +574,15 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         {
             return incoming.Message.CreateNotificationMessages(
                 incoming.Recipients.AsMailAddresses(),
-                sender => Notification.CreateAck
-                              (
-                                  new ReportingUserAgent
-                                      (
-                                      sender.Host
-                                      , m_agent.Settings.Notifications.ProductName
-                                      )
-                                  , m_agent.Settings.Notifications.Text
-                                  , notificationType)
+                sender => Notification.CreateAck(
+                    new ReportingUserAgent(
+                        sender.Host,
+                        m_agent.Settings.Notifications.ProductName
+                    ),
+                    m_agent.Settings.Notifications.Text,
+                    notificationType)
                 ).ToList();
         }
-
 
         CDO.Message RunEndToEndTest(CDO.Message message)
         {
@@ -658,13 +639,13 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
         static void TestMdnTimelyAndReliableExtensionField(Notification mdn, bool exists)
         {
             Console.WriteLine(mdn.Disposition);
-            if(exists)
+            if (exists)
             {
                 Assert.NotNull(mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable]);
             }
             else
             {
-                Assert.True(mdn.SpecialFields == null ||  mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable] == null);
+                Assert.True(mdn.SpecialFields == null || mdn.SpecialFields[MDNStandard.DispositionOption_TimelyAndReliable] == null);
             }
         }
     }

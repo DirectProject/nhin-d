@@ -14,25 +14,24 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.Config.Store.Tests
 {
     public class CertificateFacts : ConfigStoreTestBase
     {
-
         /// <summary>
         /// property to expose enumerable testing Certificate instances
         /// </summary>
         /// <remarks>
         /// Relates to .cer files in the metadata/certs folder; all files should be copied to output dir if newer
         /// </remarks>
-        public static new IEnumerable<object[]> TestCertificates
+        public new static IEnumerable<object[]> TestCertificates
         {
             get
             {
@@ -46,7 +45,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <remarks>
         /// Relates to .cer files in the metadata/certs folder; all files should be copied to output dir if newer
         /// </remarks>
-        public static new IEnumerable<object[]> TestCerts
+        public new static IEnumerable<object[]> TestCerts
         {
             get
             {
@@ -61,7 +60,7 @@ namespace Health.Direct.Config.Store.Tests
         /// <remarks>
         /// Relates to .cer files in the metadata/certs folder; all files should be copied to output dir if newer
         /// </remarks>
-        public static new IEnumerable<object[]> TestCertsBytes
+        public new static IEnumerable<object[]> TestCertsBytes
         {
             get
             {
@@ -81,7 +80,6 @@ namespace Health.Direct.Config.Store.Tests
             target.ValidStartDate = expected;
             DateTime actual = target.ValidStartDate;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -90,12 +88,11 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void ValidEndDateTest()
         {
-            Certificate target = new Certificate(); 
+            Certificate target = new Certificate();
             DateTime expected = DateTime.UtcNow;
             target.ValidEndDate = expected;
             DateTime actual = target.ValidEndDate;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -104,7 +101,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void ThumbprintTest()
         {
-            Certificate target = new Certificate(); 
+            Certificate target = new Certificate();
             const string expected = "somethumbprintteststring";
             target.Thumbprint = expected;
             string actual = target.Thumbprint;
@@ -122,7 +119,6 @@ namespace Health.Direct.Config.Store.Tests
             target.Status = expected;
             EntityStatus actual = target.Status;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -136,7 +132,6 @@ namespace Health.Direct.Config.Store.Tests
             target.Owner = expected;
             string actual = target.Owner;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -150,7 +145,6 @@ namespace Health.Direct.Config.Store.Tests
             target.ID = expected;
             long actual = target.ID;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -159,11 +153,10 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void HasDataTest()
         {
-            Certificate target = new Certificate(); 
+            Certificate target = new Certificate();
             Assert.False(target.HasData);
             target.Data = System.Text.Encoding.UTF8.GetBytes("somerandomstring");
             Assert.True(target.HasData);
-
         }
 
         /// <summary>
@@ -173,11 +166,10 @@ namespace Health.Direct.Config.Store.Tests
         public void DataTest()
         {
             Certificate target = new Certificate();
-            byte[] expected = System.Text.Encoding.UTF8.GetBytes("somerandomstring"); 
+            byte[] expected = System.Text.Encoding.UTF8.GetBytes("somerandomstring");
             target.Data = expected;
             byte[] actual = target.Data;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -191,7 +183,6 @@ namespace Health.Direct.Config.Store.Tests
             target.CreateDate = expected;
             DateTime actual = target.CreateDate;
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
@@ -219,7 +210,7 @@ namespace Health.Direct.Config.Store.Tests
             catch
             {
                 Assert.True(false);
-            }  
+            }
         }
 
         /// <summary>
@@ -242,48 +233,47 @@ namespace Health.Direct.Config.Store.Tests
             X509Certificate2Collection actual = Certificate.ToX509Collection(certs.ToArray());
 
             Assert.Equal(expected, actual);
-            
-            Assert.DoesNotThrow(() => actual.Close(true));
+
+            Assert.Null(Record.Exception(() => actual.Close(true)));
         }
-        
+
         /// <summary>
         ///A test for ToX509Certificate
         ///</summary>
         [Theory]
-        [PropertyData("TestCertificates")]
+        [MemberData("TestCertificates")]
         public void ToX509CertificateTest(Certificate target)
         {
             X509Certificate2 expected = new DisposableX509Certificate2(target.ToX509Certificate().GetRawCertData());
             X509Certificate2 actual = target.ToX509Certificate();
             Assert.Equal(expected, actual);
-            
         }
 
         [Theory]
-        [PropertyData("TestCertificates")]
+        [MemberData("TestCertificates")]
         public void TestForPrivateKeyExistence(Certificate cert)
         {
-            X509Certificate2 cert2 =  cert.ToX509Certificate();
+            X509Certificate2 cert2 = cert.ToX509Certificate();
             Assert.True(cert2.HasPrivateKey);
         }
-         
+
         /// <summary>
         ///A test for ToPublicX509Certificate
         ///</summary>
         [Theory]
-        [PropertyData("TestCertificates")]
+        [MemberData("TestCertificates")]
         public void ToPublicX509CertificateTest(Certificate target)
         {
             target.ExcludePrivateKey();
             X509Certificate2 cert = target.ToX509Certificate();
-            Assert.False(cert.HasPrivateKey);            
+            Assert.False(cert.HasPrivateKey);
         }
 
         /// <summary>
         ///A test for IsValid
         ///</summary>
         [Theory]
-        [PropertyData("TestCertificates")]
+        [MemberData("TestCertificates")]
         public void IsValidTest(Certificate target)
         {
             Assert.True(target.IsValid(DateTime.UtcNow));
@@ -295,40 +285,36 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for Import
         ///</summary>
         [Theory]
-        [PropertyData("TestCertsBytes")]
+        [MemberData("TestCertsBytes")]
         public void ImportTest(byte[] sourceFileBytes)
         {
-            string password = string.Empty; 
-            X509Certificate2 expected = new X509Certificate2(sourceFileBytes, password); 
+            string password = string.Empty;
+            X509Certificate2 expected = new X509Certificate2(sourceFileBytes, password);
             X509Certificate2 actual = Certificate.Import(sourceFileBytes, password);
             Assert.Equal(expected, actual);
-            
         }
 
         /// <summary>
         ///A test for ExcludePrivateKey
         ///</summary>
         [Theory]
-        [PropertyData("TestCertificates")]
+        [MemberData("TestCertificates")]
         public void ExcludePrivateKeyTest(Certificate target)
         {
             target.ExcludePrivateKey();
-            Assert.False(target.ToX509Certificate().HasPrivateKey);           
+            Assert.False(target.ToX509Certificate().HasPrivateKey);
         }
 
         /// <summary>
         ///A test for ClearData
         ///</summary>
         [Theory]
-        [PropertyData("TestCertificates")]
+        [MemberData("TestCertificates")]
         public void ClearDataTest(Certificate target)
         {
             Assert.NotNull(target.Data);
             target.ClearData();
             Assert.Null(target.Data);
-           
         }
-
-
     }
 }

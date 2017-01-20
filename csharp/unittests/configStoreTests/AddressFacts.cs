@@ -14,14 +14,14 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
 using System;
 using System.Net.Mail;
-
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class AddressFacts : ConfigStoreTestBase 
+    public class AddressFacts : ConfigStoreTestBase
     {
 
 
@@ -31,13 +31,13 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void UpdateDateTest()
         {
-            Address addr = new Address(1, BuildEmailAddress(1,1), BuildEmailAddressDisplayName(1,1));
+            Address addr = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
             DateTime expected = DateTime.UtcNow.AddSeconds(1);
-            Assert.NotEqual(addr.UpdateDate, expected);            
+            Assert.NotEqual(addr.UpdateDate, expected);
             addr.UpdateDate = expected;
             DateTime actual = addr.UpdateDate;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Health.Direct.Config.Store.Tests
             string actual = addr.Type;
             Assert.Equal(expected, actual);
 
-            
+
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.Status = expected;
             EntityStatus actual = addr.Status;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.ID = expected;
             long actual = addr.ID;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.Type = "testtype";
             actual = addr.HasType;
             Assert.True(actual);
-            
+
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.EmailAddress = expected;
             string actual = addr.EmailAddress;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.DomainID = expected;
             long actual = addr.DomainID;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.DisplayName = expected;
             string actual = addr.DisplayName;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace Health.Direct.Config.Store.Tests
             addr.CreateDate = expected;
             DateTime actual = addr.CreateDate;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Health.Direct.Config.Store.Tests
             MailAddress expected = new MailAddress(BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
             MailAddress actual = target.ToMailAddress();
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -186,7 +186,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.True(target.Match(address));
             address = new MailAddress(BuildEmailAddress(2, 1));
             Assert.False(target.Match(address));
-            
+
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.True(target.Match(address));
             address = BuildEmailAddress(2, 1);
             Assert.False(target.Match(address));
-            
+
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.True(target.IsValidMailAddress());
             target.EmailAddress = "bunk";
             Assert.False(target.IsValidMailAddress());
-            
+
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(source.DisplayName, target.DisplayName);
             Assert.Equal(source.Type, target.Type);
             Assert.Equal(source.Status, target.Status);
- 
+
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace Health.Direct.Config.Store.Tests
             Address target = new Address(domainID, address);
             Assert.Equal(domainID, target.DomainID);
             Assert.Equal(address, target.EmailAddress);
-            
+
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace Health.Direct.Config.Store.Tests
             const long domainID = STARTID;
             MailAddress address = new MailAddress(BuildEmailAddress(1, 1));
             Address target = new Address(domainID, address);
-            Assert.Equal(domainID,target.DomainID);
+            Assert.Equal(domainID, target.DomainID);
             Assert.Equal(address, target.ToMailAddress());
         }
 

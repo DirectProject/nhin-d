@@ -1,27 +1,39 @@
-﻿using System;
+﻿/* 
+ Copyright (c) 2010, Direct Project
+ All rights reserved.
+
+ Authors:
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
-
 using Xunit;
 
 namespace Health.Direct.DnsResponder.Tests
 {
     class TestBase
     {
-
         ///TODO: incorporate  [xUnit.Extensions.AutoRollback] for autorollback
         ///TODO: incorporate sample for executing database population one time...
-        
 
         protected const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
         //protected const string ConnectionString = "Data Source=localhost;Initial Catalog=DirectConfig;Integrated Security=SSPI;Persist Security Info=True;User ID=nhindUser;Password=nhindUser!10";
 
-        private readonly static string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
-        private readonly static string CertRecordsPath = Environment.CurrentDirectory + "\\metadata\\certs";
+        private static readonly string DnsRecordsPath = Environment.CurrentDirectory + "\\metadata\\DnsRecords";
+        private static readonly string CertRecordsPath = Environment.CurrentDirectory + "\\metadata\\certs";
 
         // if true dump will be sent to the delegate specified by DumpLine
         private readonly bool m_dumpEnabled;
@@ -31,11 +43,10 @@ namespace Health.Direct.DnsResponder.Tests
         private static readonly string ErrorLinePreamble = new string('!', PreambleWidth);
         private static readonly string SuccessLinePreamble = new string('-', PreambleWidth);
 
-
         /// <summary>
         /// Default ctor. Will log to <see cref="Console.Out"/>.
         /// </summary>
-        protected TestBase() :this(true)
+        protected TestBase() : this(true)
         {
         }
 
@@ -114,7 +125,7 @@ namespace Health.Direct.DnsResponder.Tests
         {
             Dump(string.Format(format, args));
         }
-        
+
         /// <summary>
         /// dumps out message to the console
         /// </summary>
@@ -181,7 +192,7 @@ namespace Health.Direct.DnsResponder.Tests
                 //---get the file names in the certs folder path
                 foreach (string name in System.IO.Directory.GetFiles(CertRecordsPath))
                 {
-                    yield return name.ToLower().Substring(0,name.LastIndexOf(".com") + 4).Replace(CertRecordsPath.ToLower(),"").Replace(@"\","");
+                    yield return name.ToLower().Substring(0, name.LastIndexOf(".com") + 4).Replace(CertRecordsPath.ToLower(), "").Replace(@"\", "");
                 }
             }
         }
@@ -225,24 +236,26 @@ namespace Health.Direct.DnsResponder.Tests
             //---go through all domains and load up the corresponding record types
             foreach (string domainName in domains)
             {
-                mgr.Add(new DnsRecord(domainName
-                    , (int)DnsStandard.RecordType.MX
-                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DnsRecordsPath
-                        , string.Format("mx.{0}.bin", domainName)))
-                    , string.Format("some test notes for mx domain{0}", domainName)));
+                mgr.Add(new DnsRecord(
+                    domainName,
+                    (int)DnsStandard.RecordType.MX,
+                    LoadAndVerifyDnsRecordFromBin<MXRecord>(
+                        Path.Combine(DnsRecordsPath, string.Format("mx.{0}.bin", domainName))),
+                    string.Format("some test notes for mx domain{0}", domainName)));
 
-                mgr.Add(new DnsRecord(domainName
-                    , (int)DnsStandard.RecordType.SOA
-                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DnsRecordsPath
-                        , string.Format("soa.{0}.bin", domainName)))
-                    , string.Format("some test notes for soa domain{0}", domainName)));
+                mgr.Add(new DnsRecord(
+                    domainName,
+                    (int)DnsStandard.RecordType.SOA,
+                    LoadAndVerifyDnsRecordFromBin<SOARecord>(
+                        Path.Combine(DnsRecordsPath, string.Format("soa.{0}.bin", domainName))),
+                    string.Format("some test notes for soa domain{0}", domainName)));
 
-                mgr.Add(new DnsRecord(domainName
-                    , (int)DnsStandard.RecordType.ANAME
-                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DnsRecordsPath
-                        , string.Format("aname.{0}.bin", domainName)))
-                    , string.Format("some test notes for aname domain{0}", domainName)));
-
+                mgr.Add(new DnsRecord(
+                    domainName,
+                    (int)DnsStandard.RecordType.ANAME,
+                    LoadAndVerifyDnsRecordFromBin<AddressRecord>(
+                        Path.Combine(DnsRecordsPath, string.Format("aname.{0}.bin", domainName))),
+                    string.Format("some test notes for aname domain{0}", domainName)));
             }
         }
 
@@ -303,8 +316,8 @@ namespace Health.Direct.DnsResponder.Tests
             {
                 //Console.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
-                
-                using(DisposableX509Certificate2 x509 = new DisposableX509Certificate2(bytes))
+
+                using (DisposableX509Certificate2 x509 = new DisposableX509Certificate2(bytes))
                 {
                     Certificate cert = new Certificate(x509.FriendlyName, x509, false);
                     return cert;

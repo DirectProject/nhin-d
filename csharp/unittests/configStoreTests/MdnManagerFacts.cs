@@ -23,8 +23,6 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class MdnManagerFacts : ConfigStoreTestBase
     {
-        
-
         /// <summary>
         ///A test for Store
         ///</summary>
@@ -35,8 +33,6 @@ namespace Health.Direct.Config.Store.Tests
             ConfigStore actual = target.Store;
             Assert.Equal(target.Store, actual);
         }
-
-
 
         /// <summary>
         ///A test for Add
@@ -50,7 +46,7 @@ namespace Health.Direct.Config.Store.Tests
             string messageId = Guid.NewGuid().ToString();
             var mdn = BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
 
-            target.Start(new Mdn[]{mdn});
+            target.Start(new Mdn[] { mdn });
             mdn = target.Get(mdn.MdnIdentifier);
             Assert.Equal(MdnStatus.Started, mdn.Status);
             Assert.Equal("To dispatch or not dispatch", mdn.SubjectValue);
@@ -66,8 +62,7 @@ namespace Health.Direct.Config.Store.Tests
             InitMdnRecords();
             string messageId = Guid.NewGuid().ToString();
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
-            Assert.Contains("Cannot insert duplicate key"
-                , Assert.Throws<SqlException>(() => target.Start(new Mdn[] { mdn })).Message);
+            Assert.Contains("Cannot insert duplicate key", Assert.Throws<SqlException>(() => target.Start(new Mdn[] { mdn })).Message);
         }
 
         /// <summary>
@@ -126,7 +121,6 @@ namespace Health.Direct.Config.Store.Tests
 
         }
 
-
         /// <summary>
         ///A test for Update
         ///</summary>
@@ -137,20 +131,16 @@ namespace Health.Direct.Config.Store.Tests
             InitMdnRecords();
             var mdn = target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
-            
 
             //
             // Skip processed step is allowed.
             // An external timer will move to Timed out
             //
-            
+
             target.TimeOut(mdn);
             mdn = target.Get("68167934227A8EBF247E6AC345CC02D1");
-           Assert.Equal(MdnStatus.TimedOut, mdn.Status);
+            Assert.Equal(MdnStatus.TimedOut, mdn.Status);
         }
-
-        
-        
 
         /// <summary>
         ///A test for Expired Mdn Processed
@@ -177,7 +167,6 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(11), 40);
             Assert.Equal(0, mdns.Count());
 
-
             //default maxrecords set
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10));
             Assert.Equal(10, mdns.Count());
@@ -185,8 +174,6 @@ namespace Health.Direct.Config.Store.Tests
             //default expieredLimit and maxResults
             mdns = target.GetExpiredProcessed();
             Assert.Equal(10, mdns.Count());
-                       
-            
         }
 
         /// <summary>
@@ -241,7 +228,6 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(10, mdns.Count());
         }
 
-
         /// <summary>
         ///A test for Expired Mdn Dispatched
         ///</summary>
@@ -251,7 +237,6 @@ namespace Health.Direct.Config.Store.Tests
             MdnManager target = CreateManager();
             InitMdnRecords();
 
-            
             //timespan and max records set
             var mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
@@ -266,8 +251,6 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 10);
             Assert.Equal(0, mdns.Count());
         }
-
-        
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
@@ -286,7 +269,6 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(2, mdns.Count());
 
             target.TimeOut(mdns);
-            
 
             mdns = target.GetTimedOut();
             Assert.Equal(2, mdns.Count());
@@ -294,7 +276,6 @@ namespace Health.Direct.Config.Store.Tests
             target.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
             mdns = target.GetTimedOut();
             Assert.Equal(0, mdns.Count());
-
 
             //
             //Two seperate updates
@@ -304,17 +285,13 @@ namespace Health.Direct.Config.Store.Tests
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
 
-            
             target.TimeOut(mdns);
-            
 
             //update thread two
             mdns = target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count());
 
             target.TimeOut(mdns);
-            
-            
 
             mdns = target.GetTimedOut();
             Assert.Equal(4, mdns.Count());
@@ -351,15 +328,13 @@ namespace Health.Direct.Config.Store.Tests
                     target.Update(mdn);
                 }
             }
-            Assert.Equal(0,  target.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100).Count());
+            Assert.Equal(0, target.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100).Count());
             Assert.Equal(0, target.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100).Count());
-            
 
             System.Threading.Thread.Sleep(1000);
             target.RemoveDispositions(TimeSpan.FromSeconds(.001), 100);
             Assert.Equal(0, target.Count());
         }
-
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
@@ -374,33 +349,23 @@ namespace Health.Direct.Config.Store.Tests
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", "pRocessed");
 
             //Record first processed.
-            Assert.DoesNotThrow(() => target.Update(new Mdn[] { mdn }));
+            Assert.Null(Record.Exception(() => target.Update(new Mdn[] { mdn })));
 
             //Throw duplicate processed
-            Assert.Equal(ConfigStoreError.DuplicateProcessedMdn
-                , Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
+            Assert.Equal(ConfigStoreError.DuplicateProcessedMdn, Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
 
             //Record first dispatched.
             mdn.Status = "disPatched";
-            Assert.DoesNotThrow(() => target.Update(mdn));
-
+            Assert.Null(Record.Exception(() => target.Update(mdn)));
 
             //Throw duplicate dispached
-            Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn
-                , Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
-
-
+            Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn, Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
 
             mdn = BuildMdn(Guid.NewGuid().ToString(), "Name1@nhind.hsgincubator.com", "FailedTest@domain1.test.com", "To dispatch or not dispatch", "fAiled");
             target.Start(new Mdn[] { mdn });
 
-            Assert.Equal(ConfigStoreError.DuplicateFailedMdn
-                , Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
-
-
+            Assert.Equal(ConfigStoreError.DuplicateFailedMdn, Assert.Throws<ConfigStoreException>(() => target.Update(mdn)).Error);
         }
-
-
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
@@ -415,9 +380,7 @@ namespace Health.Direct.Config.Store.Tests
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com",
                                "Missing@domain1.test.com", "To dispatch or not dispatch", "pRocessed");
 
-            Assert.Equal(ConfigStoreError.MdnUncorrelated
-                , Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
+            Assert.Equal(ConfigStoreError.MdnUncorrelated, Assert.Throws<ConfigStoreException>(() => target.Update(new Mdn[] { mdn })).Error);
         }
-
     }
 }

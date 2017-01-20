@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -32,19 +31,15 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 using Health.Direct.ResolverPlugins;
 using Xunit;
-using Xunit.Extensions;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
-
-
-    public class DCDTTests : IUseFixture<DCDTResolverFixture>
+    public class DCDTTests : IClassFixture<DCDTResolverFixture>
     {
         //const string Dns_Server = "184.73.237.102";
         //const string Dns_Server = "10.110.22.16";
         //const string Dns_Sertver = "207.170.210.162";
         const string Dns_Server = "8.8.8.8";
-
 
         #region data
 
@@ -213,7 +208,6 @@ namespace Health.Direct.SmtpAgent.Tests
         {
         }
 
-
         /// <summary>
         /// This test case verifies that your system can query DNS for address-bound CERT records and discover a valid address-bound X.509 certificate for a Direct address.
         /// http://sitenv.org/direct-certificate-discovery-tool-2015
@@ -248,9 +242,7 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Equal(subject, certs[0].ExtractEmailNameOrName());
 
             AssertCert(certs[0], true, DefaultProblemFlags);
-
         }
-
 
         /// <summary>
         /// This test case verifies that your system can query DNS for domain-bound CERT records and discover a valid domain-bound X.509 certificate for a Direct address.
@@ -287,7 +279,6 @@ namespace Health.Direct.SmtpAgent.Tests
             Assert.Equal("domain1.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
 
-
             //
             // Now prove we can get it as a domain with no fail over.
             //
@@ -299,7 +290,6 @@ namespace Health.Direct.SmtpAgent.Tests
             cert = certs.FindByName("D2_valB");
             Assert.Equal("domain1.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
-
         }
 
         /// <summary>
@@ -367,7 +357,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             Assert.Contains("CN=D1_invB", diagnosticsChainValidator.ActualErrorMessages[0]);
         }
 
-
         /// <summary>
         /// This test case verifies that your system can query DNS for SRV records and discover a valid address-bound X.509 certificate for a Direct address in the associated LDAP server.
         /// http://sitenv.org/direct-certificate-discovery-tool-2015
@@ -407,7 +396,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             ICertificateResolver resolver = agent.PublicCertResolver;
             Assert.NotNull(resolver);
 
-
             var dnsCertResolver = LocateChild<DnsCertResolver>(resolver);
             var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
             dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
@@ -423,13 +411,8 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             Assert.Equal("domain2.dcdt31prod.sitenv.org", cert.GetNameInfo(X509NameType.DnsName, false));
             AssertCert(cert, true, DefaultProblemFlags);
 
-
-
             Assert.Equal(0, diagnosticsForDnsCertResolver.ActualErrorMessages.Count);
             Assert.Equal(0, diagnosticsForLdapCertResolver.ActualErrorMessages.Count);
-
-
-
         }
 
         /// <summary>
@@ -482,7 +465,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             AssertCert(cert, false, DefaultProblemFlags);
         }
 
-
         /// <summary>
         /// Verify that your system did NOT send an email because it could not find a certificate for the Direct address. To pass this test case, you must NOT receive an email in response.
         /// http://sitenv.org/direct-certificate-discovery-tool-2015
@@ -507,7 +489,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             //
             AssertCert(cert, false, DefaultProblemFlags);
         }
-
 
         /// <summary>
         /// This test case verifies that your system can query DNS for SRV records and finds, but does not select the invalid domain-bound X.509 certificate in the associated LDAP server.
@@ -588,7 +569,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
             ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
 
-
             var email = new MailAddress(subject);
             X509Certificate2Collection certs = resolver.GetCertificates(email);
             Assert.NotNull(certs);
@@ -619,7 +599,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var email = new MailAddress(subject);
             X509Certificate2Collection certs = resolver.GetCertificates(email);
             Assert.Null(certs);
-
         }
 
         /// <summary>
@@ -644,7 +623,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var ldapCertResolver = LocateChild<LdapCertResolverProxy>(resolver);
             var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
             ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
-
 
             var email = new MailAddress(subject);
             X509Certificate2Collection certs = resolver.GetCertificates(email);
@@ -677,7 +655,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var diagnosticsForLdapCertResolver = new FakeDiagnostics(typeof(LdapCertResolver));
             ldapCertResolver.Error += diagnosticsForLdapCertResolver.OnResolverError;
 
-
             var email = new MailAddress(subject);
             X509Certificate2Collection certs = resolver.GetCertificates(email);
             Assert.Empty(certs);
@@ -709,7 +686,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             //
             AssertCert(cert, true, DefaultProblemFlags);
         }
-
 
         /// <summary>
         /// This test case verifies that your system can query DNS for SRV records and discover a valid address-bound X.509 certificate in the LDAP server associated with an SRV record containing the lowest priority value (highest priority).
@@ -794,7 +770,11 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// <param name="ip">Dns server IP</param>
         /// <param name="commonName">Filter extra anchors so it is easier to debug</param>
         [Theory(Skip = "Will not run on TeamCity build server at hosting provider")]
-        [InlineData("d17@domain9.demo31.direct-test.com", "8.8.8.8", "CN=demo31.direct-test.com_ca_root", @".\Anchors\demo31.direct-test.com_ca_root.cer")]
+        [InlineData(
+            "d17@domain9.demo31.direct-test.com",
+            "8.8.8.8",
+            "CN=demo31.direct-test.com_ca_root",
+            @".\Anchors\demo31.direct-test.com_ca_root.cer")]
         public void TestD17(string subject, string ip, string commonName, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -809,7 +789,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var dnsCertResolver = resolver;
             var diagnosticsForDnsCertResolver = new FakeDiagnostics(typeof(DnsCertResolver));
             dnsCertResolver.Error += diagnosticsForDnsCertResolver.OnResolverError;
-
 
             //
             // Build up an outgoing message to feed to the TrustModel enforce routine.
@@ -877,17 +856,18 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             //
             AssertCert(cert, false, X509ChainStatusFlags.Revoked, anchor);
 
-
             cert = certs.FindByName("D17_invC");
             //
             // Assert cert chain is bad
             //
             AssertCert(cert, false, DefaultProblemFlags, anchor);
-
         }
 
         [Theory]
-        [InlineData("d18@domain10.dcdt31prod.sitenv.org", "8.8.8.8", @".\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
+        [InlineData(
+            "d18@domain10.dcdt31prod.sitenv.org",
+            "8.8.8.8",
+            @"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
         public void TestD18(string subject, string ip, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -916,14 +896,13 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             //
             //  Note: this test has a second domain cert domain10.demo31.direct-test.com that is not discovered because we found an address cert first
             //
-
         }
 
         private void AssertCert(X509Certificate2 cert, bool expectValidCert, X509ChainStatusFlags x509StatusFlags, X509Certificate2 anchor = null)
         {
             if (anchor == null)
             {
-                var anchorText = File.ReadAllBytes(@".\Anchors\dcdt31prod.sitenv.org_ca_root.der");
+                var anchorText = File.ReadAllBytes(@"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der");
                 anchor = new X509Certificate2(anchorText);
             }
 
@@ -932,8 +911,6 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
             policy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
             chainBuilder.ChainPolicy = policy;
-            
-
             chainBuilder.Build(cert);
             X509ChainElementCollection chainElements = chainBuilder.ChainElements;
 
@@ -1024,7 +1001,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         public DCDTResolverFixture()
         {
             Console.WriteLine("DCDTResolverFixture ctor: This should only be run once");
-            
+
             InstallAnchorsInTrustedRootUserStore();
             InstallAnchorsInMachineStore();
         }
@@ -1040,7 +1017,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             {
                 store.Open(OpenFlags.ReadWrite);
 
-                var file = @".\Anchors\staging.direct-test.com_ca_root.der"; 
+                var file = @".\Anchors\staging.direct-test.com_ca_root.der";
 
                 if (!AnchorExists(store, file))
                 {
@@ -1090,7 +1067,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             {
                 anchorStore.Add(new X509Certificate2(X509Certificate.CreateFromCertFile(file)));
             }
-            
+
             anchorStore.Close();
         }
 

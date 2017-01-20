@@ -13,8 +13,8 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
-using System;
 
+using System;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
@@ -45,7 +45,7 @@ namespace Health.Direct.Config.Store.Tests
             target.Status = expected;
             EntityStatus actual = target.Status;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -55,11 +55,11 @@ namespace Health.Direct.Config.Store.Tests
         public void NameTest()
         {
             Domain target = new Domain();
-            string expected = BuildDomainName(GetRndDomainID()); 
+            string expected = BuildDomainName(GetRndDomainID());
             target.Name = expected;
             string actual = target.Name;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace Health.Direct.Config.Store.Tests
         public void IDTest()
         {
             long expected = GetRndDomainID();
-            Domain target = new Domain(BuildDomainName(expected)) {ID = expected};
+            Domain target = new Domain(BuildDomainName(expected)) { ID = expected };
             long actual = target.ID;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -82,11 +82,11 @@ namespace Health.Direct.Config.Store.Tests
         public void CreateDateTest()
         {
             Domain target = new Domain(BuildDomainName(GetRndDomainID()));
-            DateTime expected = DateTime.UtcNow; 
+            DateTime expected = DateTime.UtcNow;
             target.CreateDate = expected;
             DateTime actual = target.CreateDate;
             Assert.Equal(expected, actual);
-            
+
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Health.Direct.Config.Store.Tests
             Domain target = new Domain(BuildDomainName(GetRndDomainID()));
             Assert.True(target.IsValidEmailDomain());
             target.Name = "bunk.";
-            Assert.False( target.IsValidEmailDomain());
+            Assert.False(target.IsValidEmailDomain());
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             Assert.True(Domain.IsValidEmailDomain(BuildDomainName(GetRndDomainID())));
             Assert.False(Domain.IsValidEmailDomain("bunk."));
-            
+
         }
 
         /// <summary>

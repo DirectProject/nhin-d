@@ -13,7 +13,7 @@
 	<UsingTask AssemblyFile="build\packages\xunit.runner.msbuild.2.1.0\build\portable-net45+win8+wp8+wpa81\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit" />
 
 	<!-- place any strings/properties here that are likely to be used more than once -->
-	<PropertyGroup>
+	<PropertyGroup>	
 		<Configuration Condition=" $(Configuration) == '' ">Debug</Configuration>
 		<agent_solution>.\build\agent.sln</agent_solution>
 		<gateway_solution>.\build\gateway.sln</gateway_solution>
@@ -28,7 +28,7 @@
 		<AppPoolName>ASP.NET v4.0</AppPoolName>
 		<ConfigServicName>ConfigService</ConfigServicName>
 		<ConfigServicPath>$(MSBuildProjectDirectory)\Config\Service</ConfigServicPath>
-		<CreateConfigServiceWebApp>powershell -Command "set-executionpolicy remotesigned; Import-Module WebAdministration; New-WebApplication -Name '$(ConfigServicName)' -Site '$(WebSiteName)'  -PhysicalPath '$(ConfigServicPath)' -ApplicationPool '$(AppPoolName)' -Force" ;</CreateConfigServiceWebApp>
+		<CreateConfigServiceWebApp>powershell -NonInteractive -executionpolicy remotesigned -Command "Import-Module WebAdministration; New-WebApplication -Name '$(ConfigServicName)' -Site '$(WebSiteName)'  -PhysicalPath '$(ConfigServicPath)' -ApplicationPool '$(AppPoolName)' -Force" ;</CreateConfigServiceWebApp>
 		<PsListTargets>powershell -Command "$build = [xml](Get-Content $(MSBuildProjectFile)); $build.Project.Target| Select-Object Name | Sort-Object Name "</PsListTargets>
 	</PropertyGroup>
 
@@ -114,42 +114,50 @@
 	</Target>
 
 	<ItemGroup>
-		<test-agent_Assemblies  Include=".\unittests\agent\bin\$(Configuration)\Health.Direct.Agent.Tests.dll" />
-		<test-agent_Assemblies  Include=".\unittests\common\bin\$(Configuration)\Health.Direct.Common.Tests.dll"  />
+		<test-agent_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Agent.Tests.dll" />
+		<test-agent_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Common.Tests.dll"  />
+		
+		<test-xd_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.xd.tests.dll" />
+		<test-xd_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.xdm.tests.dll"  />
+		
+		<test-gateway_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.config.store.tests.dll" />
+		<test-gateway_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.dnsresponder.tests.dll"  />
+		<test-gateway_Assemblies  Include=".\build\bin\$(Configuration)\health.direct.smtpagent.tests.dll" />
+				
+		<test-certPolicy_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Policy.Tests.dll"  />
+		
+		<test-smtp-integration_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.SmtpAgent.Integration.Tests.dll"  />
+		
+		<test-store_Assemblies  Include=".\build\bin\$(Configuration)\Health.Direct.Config.Store.Tests.dll"  />
 	</ItemGroup>
 	
-	<!-- information on xUnit can be found at http://xunit.codeplex.com/ it is installed at external\xunit -->
 	<Target Name="test-agent" >
 		<xunit Assemblies="@(test-agent_Assemblies)"/>
 	</Target>
 	
 	<Target Name="test-gateway" >
-		<xunitproject ProjectFile="unittests\gateway.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\gateway.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-gateway_Assemblies)"/>
 	</Target>
 
 	<Target Name="test-certPolicy" >
-		<xunitproject ProjectFile="unittests\certPolicy.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\certPolicy.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-certPolicy_Assemblies)"/>
 	</Target>
 	
 	<Target Name="test-xd" >
-		<xunitproject ProjectFile="unittests\xd.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\xd.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-xd_Assemblies)"/>
 	</Target>
 		
 	<Target Name="test-smtp-integration" DependsOnTargets="create-db;create-config-webservice;create-testData">	    
-		<xunitproject ProjectFile="unittests\smtpAgent.integration.release.xunit"  Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\smtpAgent.integration.xunit" Condition=" $(Configuration) == 'Debug' "/>
+		<xunit Assemblies="@(test-smtp-integration_Assemblies)"/>
 	</Target>
 		
-	<Target Name="create-config-webservice">	    
-		<Exec Command='$(CreateConfigServiceWebApp)' />
+	<Target Name="test-store" DependsOnTargets="create-db;">
+		<xunit Assemblies="@(test-store_Assemblies)"/>
 	</Target>
 	
-     <Target Name="test-store" DependsOnTargets="create-db;">
-		<xunitproject ProjectFile="unittests\store.release.xunit" Condition=" $(Configuration) == 'Release' "/>
-		<xunitproject ProjectFile="unittests\store.xunit" Condition=" $(Configuration) == 'Debug' " Verbose="true" /> 
+	<Target Name="create-config-webservice">	  
+		<Message Text="$(ConfigServicPath)" Importance="high"/>
+		<Exec Command='$(CreateConfigServiceWebApp)' />
 	</Target>
 
 	<Target Name="create-db" >
@@ -161,66 +169,17 @@
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i seeddatabase.sql -v DBName=DirectConfig' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="IIS APPPOOL\ASP.NET v4.0"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />
 		<Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i "..\..\installer\createuser.sql" -v DBName=DirectConfig -v DBUSER="NT AUTHORITY\NETWORK SERVICE"' WorkingDirectory="$(MSBuildProjectDirectory)\gateway\devInstall" />		
-	    <Exec Command='$(SqlCmd2012) -S (localdb)\Projects -E -i setTokenSettings.sql -v DBName=DirectConfig' WorkingDirectory="$(ProgramData)\DirectProject" />
 	</Target>
 	
-	<Target Name="create-testData">
-		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
-		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
-		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdns.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
-		
-		<CallTarget Targets="create-testSingleUseData" />
-		<CallTarget Targets="create-testHsmData" />
-		
-		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupsingleusetestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
-		<Exec Command="AdminConsole.exe USER_REMOVE admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
-		<Exec Command="AdminConsole.exe USER_ADD admin admin " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
-		<Exec Command="AdminConsole.exe USER_STATUS_SET admin Enabled " WorkingDirectory="$(MSBuildProjectDirectory)\tools\admin.console\bin\$(Configuration)"/>
-	</Target>
-		
-	<Target Name="create-testSingleUseData">
-	
-		<ItemGroup>
-			<policies Include="$(MSBuildProjectDirectory)\support\policy\*.*"/>
-			<certificates Include="$(MSBuildProjectDirectory)\support\certificate\*.*"/>
-		</ItemGroup>
-		
-		<Copy
-            SourceFiles="@(policies)"
-            DestinationFiles="@(policies->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\policy\%(Filename)%(Extension)')"
-        />
-		
-		<Copy
-            SourceFiles="@(certificates)"
-            DestinationFiles="@(certificates->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\certificate\%(Filename)%(Extension)')"
-        />
-		
-		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupsingleusetestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
-	
+	<Target Name="create-testData">	  
+		<Exec Command="ConfigConsole.exe Test_Certs_Install" WorkingDirectory="$(MSBuildProjectDirectory)\build\bin\$(Configuration)"/>
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdomains.txt" WorkingDirectory="$(MSBuildProjectDirectory)\build\bin\$(Configuration)"/>
+		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupdns.txt" WorkingDirectory="$(MSBuildProjectDirectory)\build\bin\$(Configuration)"/>
+		<Exec Command="AdminConsole.exe USER_REMOVE admin " WorkingDirectory="$(MSBuildProjectDirectory)\build\bin\$(Configuration)"/>
+		<Exec Command="AdminConsole.exe USER_ADD admin admin " WorkingDirectory="$(MSBuildProjectDirectory)\build\bin\$(Configuration)"/>
+		<Exec Command="AdminConsole.exe USER_STATUS_SET admin Enabled " WorkingDirectory="$(MSBuildProjectDirectory)\build\bin\$(Configuration)"/>
 	</Target>
 	
-	<Target Name="create-testHsmData">
-		
-		<ItemGroup>
-			<policies Include="$(MSBuildProjectDirectory)\support\policy\*.*"/>
-			<certificates Include="$(MSBuildProjectDirectory)\support\certificate\*.*"/>
-		</ItemGroup>
-		
-		<Copy
-            SourceFiles="@(policies)"
-            DestinationFiles="@(policies->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\policy\%(Filename)%(Extension)')"
-        />
-		
-		<Copy
-            SourceFiles="@(certificates)"
-            DestinationFiles="@(certificates->'$(MSBuildProjectDirectory)\bin\$(Configuration)\support\certificate\%(Filename)%(Extension)')"
-        />
-		
-		<Exec Command="ConfigConsole.exe batch $(MSBuildProjectDirectory)\gateway\devInstall\setupHSMtestdata.txt" WorkingDirectory="$(MSBuildProjectDirectory)\bin\$(Configuration)"/>
-	
-	</Target>
-		
-		
 	<Target Name="publish-configui">
 		<MSBuild Targets="clean-configui-install" Projects="$(MSBuildProjectFile)" Properties="state=pre" />
 		<CallTarget Targets="build-configui" />
@@ -258,11 +217,11 @@
 		
 		<Copy
             SourceFiles="@(smtpEventHandler32)"
-            DestinationFiles="@(smtpEventHandler32->'$(MSBuildProjectDirectory)\bin\$(Configuration)\Win32\%(Filename)%(Extension)')"
+            DestinationFiles="@(smtpEventHandler32->'$(MSBuildProjectDirectory)\build\bin\$(Configuration)\Win32\%(Filename)%(Extension)')"
         />
 		<Copy
             SourceFiles="@(smtpEventHandler64)"
-            DestinationFiles="@(smtpEventHandler64->'$(MSBuildProjectDirectory)\bin\$(Configuration)\x64\%(Filename)%(Extension)')"
+            DestinationFiles="@(smtpEventHandler64->'$(MSBuildProjectDirectory)\build\bin\$(Configuration)\x64\%(Filename)%(Extension)')"
         />
 	</Target>
 	

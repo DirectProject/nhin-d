@@ -1,16 +1,15 @@
 ﻿using System.Linq;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.SettingsManager;
 using Health.Direct.Config.Store;
 using Health.Direct.Hsm;
-using Health.Direct.Common.Extensions;
 using Moq;
 
 namespace hsmCryptographer.tests
 {
     public class HsmCryptographerTestsBase
     {
-
         protected static TokenResolverSettings MockTokenResolverSettings(TokenSettings tokensettings)
         {
             var resolverSettings = new TokenResolverSettings();

@@ -22,7 +22,6 @@ namespace Health.Direct.Config.Store.Tests
 {
     public class CertPolicyFacts : ConfigStoreTestBase
     {
-        
         /// <summary>
         ///A test for ID
         ///</summary>
@@ -103,7 +102,7 @@ namespace Health.Direct.Config.Store.Tests
             }
         }
 
-        
+
 
         /// <summary>
         ///A test for Name
@@ -130,7 +129,7 @@ namespace Health.Direct.Config.Store.Tests
             target.CertPolicyGroupMap.Add(targetChild);
         }
 
-        
+
 
     }
 }

@@ -15,11 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-
-using System.Net.Sockets;
 using Xunit;
 
-namespace Health.Direct.Install.Tools.tests
+namespace Health.Direct.Install.Tools.Tests
 {
     public class UrlTests
     {
@@ -30,7 +28,7 @@ namespace Health.Direct.Install.Tools.tests
         const string urlSecureHost2 = "https://localhost:443/DnsService/RecordRetrievalService.svc/Records";
         const string urlSecureHost3 = "https://localhost:444/DnsService/RecordRetrievalService.svc/Records";
         const string urlHostSecurePort = "https://localhost.lab:6693/DnsService/RecordRetrievalService.svc/Records";
-  
+
         [Fact]
         public void UrlHostTest()
         {
@@ -99,8 +97,8 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal("6693", url.Port(urlHostSecurePort));
             Assert.Equal("localhost.lab:6693", url.HostPort(urlHostSecurePort));
             Assert.Equal("https", url.Scheme(urlHostSecurePort));
-            
-            
+
+
         }
 
         [Fact]
@@ -187,7 +185,7 @@ namespace Health.Direct.Install.Tools.tests
                          , url.UpdateUrlPathAndQuery(urlHostSecurePort, "DnsService/test.aspx").FullUrl);
 
 
-            
+
             Assert.Equal("http://localhost.lab:6693/DnsService/test.aspx?myvar=1"
                          , url.UpdateUrlPathAndQuery("http://localhost.lab:6693/DnsService/RecordRetrievalService.svc/Records?myvar=1"
                          , "DnsService/test.aspx").FullUrl);
@@ -202,12 +200,12 @@ namespace Health.Direct.Install.Tools.tests
             Assert.Equal("", url.Host("http://lajdf;/DnsService/TestService.aspx"));
 
             Assert.Equal("", url.Port("http://lajdf:99;99/DnsService/TestService.aspx"));
-            
+
             Assert.Equal("", url.Scheme("ht;tp://lajdf/DnsService/TestService.aspx"));
 
             url.UpdateUrlHost("http://localhost/DnsService/TestService.aspx", "locahost:");
-            
-            
+
+
         }
 
 
@@ -218,7 +216,7 @@ namespace Health.Direct.Install.Tools.tests
             Assert.False(url.ValidUrl("http://lajdf;/DnsService/TestService.aspx"));
 
             Assert.False(url.ValidUrl("http://lajdf:99;99/DnsService/TestService.aspx"));
-            
+
             Assert.False(url.ValidUrl("ht;tp://lajdf/DnsService/TestService.aspx"));
 
             Assert.True(url.ValidUrl(urlHost));

@@ -126,10 +126,10 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
 
             X509Certificate2Collection certs = null;
 
-            Assert.DoesNotThrow(delegate
+            Assert.Null(Record.Exception(delegate
             {
                 certs = m_bundleResolver.OutgoingAnchors.GetCertificatesForDomain(BundleBadSubject);
-            });
+            }));
 
             Assert.True(certs == null || certs.Count == 0);
         }
@@ -198,6 +198,5 @@ namespace Health.Direct.SmtpAgent.Integration.Tests
             ";
 
         #endregion
-
     }
 }
