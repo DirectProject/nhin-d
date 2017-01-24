@@ -60,6 +60,10 @@
       <HintPath>..\..\build\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Pkcs11Interop.StrongName, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c10e9c2d8c006d2a, processorArchitecture=MSIL">
+      <HintPath>..\..\build\packages\Pkcs11Interop.StrongName.3.3.0\lib\net45\Pkcs11Interop.StrongName.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -112,10 +116,6 @@
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\pkcs11Signed\pkcs11Signed.csproj">
-      <Project>{facb2d74-d738-4d41-a595-8396b75277d1}</Project>
-      <Name>pkcs11Signed</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\policy\policy.csproj">
       <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
