@@ -37,7 +37,7 @@ echo ******************************
 //
 // Install Certificates and anchors
 //
-test_certs_InstallInService
+// test_certs_InstallInService
 
 echo ******************************
 //
@@ -61,6 +61,7 @@ echo ******************************
 //
 domain_address_status_set redmond.hsgincubator.com Enabled
 domain_address_status_set nhind.hsgincubator.com Enabled
+
 //
 // How to enable/disable individual Addresses
 //

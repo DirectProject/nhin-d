@@ -12,7 +12,7 @@
     <AssemblyName>Health.Direct.Xdr</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>

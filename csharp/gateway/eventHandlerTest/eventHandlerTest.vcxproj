@@ -12,7 +12,6 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <!-- Default values for configuration variables -->
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\build\</SolutionDir>
     <ProjectGuid>{C6B3117E-E16F-4EFA-955F-76EFDCCD8A83}</ProjectGuid>
     <RootNamespace>eventHandlerTest</RootNamespace>
     <Keyword>AtlProj</Keyword>
@@ -46,20 +45,12 @@
     <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <!--
-    Keeping code signing simple via signing everything in the $(SolutionDir)bin\$(Configuration)\ folder;
-    but this is not a managed assembly and cannot be signed the same way. Keep it separately from the rest.
-    -->
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <!--
-    Keeping code signing simple via signing everything in the $(SolutionDir)bin\$(Configuration)\ folder;
-    but this is not a managed assembly and cannot be signed the same way. Keep it separately from the rest.
-    -->
-    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -69,7 +60,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\smtpEventHandler\;$(SolutionDir)bin\$(Configuration)\;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\smtpEventHandler\;bin\$(Configuration)\;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <MinimalRebuild>true</MinimalRebuild>
@@ -96,7 +87,7 @@
     </Midl>
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories>..\smtpEventHandler\;$(SolutionDir)bin\$(Configuration)\;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\smtpEventHandler\;bin\$(Configuration)\;$(OutDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
