@@ -867,7 +867,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         [InlineData(
             "d18@domain10.dcdt31prod.sitenv.org",
             "8.8.8.8",
-            @"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
+            @"..\..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
         public void TestD18(string subject, string ip, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -902,7 +902,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         {
             if (anchor == null)
             {
-                var anchorText = File.ReadAllBytes(@"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der");
+                var anchorText = File.ReadAllBytes(@"..\..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der");
                 anchor = new X509Certificate2(anchorText);
             }
 

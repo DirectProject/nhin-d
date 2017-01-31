@@ -42,8 +42,8 @@ namespace Health.Direct.Config.Store.Tests
         private const string ADDRESSPATTERN = "test@address{0}.domain{1}.com";
         private const string SMTPDOMAINNAMEPATTERN = "smtp{0}.domain{1}.test.com";
         private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
-        private const string DNSRECORDSEPATH = @"..\..\..\unittests\configStoreTests\metadata\DnsRecords";
-        private const string CERTSRECORDSPATH = @"..\..\..\unittests\configStoreTests\metadata\certs";
+        private const string DNSRECORDSEPATH = @"DnsRecords";
+        private const string CERTSRECORDSPATH = @"certs";
         protected Dictionary<string, DnsResponse> m_DomainResponses;
 
         // if true dump will be sent to the delegate specified by DumpLine

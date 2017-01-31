@@ -26,6 +26,10 @@ namespace Health.Direct.Trust.Tests
 {
     public class BundlerTests : BaseBundlerTests
     {
+        private string _incominganchors = @"..\..\..\..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors";
+        private string _privateRedmondPfx = @"..\..\..\..\..\..\unittests\agent\Certificates\redmond\Private\redmond.pfx";
+        private string _fhaCrossoverDirectintLabDualusePfx = @"..\..\..\..\..\..\unittests\agent\Certificates\nhind\Private\fha-crossover.DirectInt.lab_dualUse.pfx";
+        
         [Fact]
         public void CreateBundleTest()
         {
@@ -37,7 +41,7 @@ namespace Health.Direct.Trust.Tests
             IResourceProvider resourceProvider =
                 new FileResourceProvider(
                     Path.Combine(Directory.GetCurrentDirectory()
-                    , @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")
+                    , _incominganchors)
                     , Path.Combine(Directory.GetCurrentDirectory()
                     , outputFileName));
             byte[] cmsdata = bundle.Create(resourceProvider);
@@ -62,7 +66,7 @@ namespace Health.Direct.Trust.Tests
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory()
-                                                  , @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors"),
+                                                  , _incominganchors),
                                      Path.Combine(Directory.GetCurrentDirectory(), outputFileName)
                                      , null
                                      , @"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>");
@@ -95,11 +99,11 @@ namespace Health.Direct.Trust.Tests
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")
+                    Path.Combine(Directory.GetCurrentDirectory(), _incominganchors)
                     , Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             ISignProvider signProvider =
                 new FileSignerProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\redmond\Private\redmond.pfx"),
+                    Path.Combine(Directory.GetCurrentDirectory(), _privateRedmondPfx),
                     secString);
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
 
@@ -139,11 +143,11 @@ namespace Health.Direct.Trust.Tests
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")
+                    Path.Combine(Directory.GetCurrentDirectory(), _incominganchors)
                     , Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             ISignProvider signProvider =
                 new FileSignerProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\nhind\Private\fha-crossover.DirectInt.lab_dualUse.pfx"),
+                    Path.Combine(Directory.GetCurrentDirectory(), _fhaCrossoverDirectintLabDualusePfx),
                     secString);
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
 
@@ -173,11 +177,11 @@ namespace Health.Direct.Trust.Tests
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")
+                    Path.Combine(Directory.GetCurrentDirectory(), _incominganchors)
                     , Path.Combine(Directory.GetCurrentDirectory(), outputFileName));
             ISignProvider signProvider =
                 new FileSignerProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\redmond\Private\redmond.pfx"),
+                    Path.Combine(Directory.GetCurrentDirectory(), _privateRedmondPfx),
                     secString);
             byte[] cmsdata = bundle.Create(resourceProvider);
             cmsdata = bundle.Sign(cmsdata, signProvider);
@@ -208,13 +212,13 @@ namespace Health.Direct.Trust.Tests
             //Act
             IResourceProvider resourceProvider =
                 new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory()
-                                                  , @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors"),
+                                                  , _incominganchors),
                                      Path.Combine(Directory.GetCurrentDirectory(), outputFileName)
                                      , null
                                      , @"<TrustBundle><Profile>The Good Guys</Profile><DistributionPoint>http://bundler.lab/testComunity/pack.p7b</DistributionPoint></TrustBundle>");
             ISignProvider signProvider =
                 new FileSignerProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\redmond\Private\redmond.pfx"),
+                    Path.Combine(Directory.GetCurrentDirectory(), _privateRedmondPfx),
                     secString);
 
             byte[] cmsdata = bundle.Create(resourceProvider, signProvider);
@@ -237,7 +241,7 @@ namespace Health.Direct.Trust.Tests
             Assert.Throws<XmlException>(() =>
                                         bundle.Create(
                                         new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory()
-                                            , @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")
+                                            , _incominganchors)
                                             , Path.Combine(Directory.GetCurrentDirectory(), @"TestBundle.p7b")
                                             , null
                                             , metatdata))
@@ -251,7 +255,7 @@ namespace Health.Direct.Trust.Tests
 
             Assert.Throws<XmlSchemaValidationException>(() =>
                                         bundle.Create(
-                                            new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\unittests\agent\Certificates\nhind\IncomingAnchors")
+                                            new FileResourceProvider(Path.Combine(Directory.GetCurrentDirectory(), _incominganchors)
                                             , Path.Combine(Directory.GetCurrentDirectory(), @"TestBundle.p7b")
                                             , null
                                             , metatdata))
