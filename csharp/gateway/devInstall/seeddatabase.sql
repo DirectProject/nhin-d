@@ -3,9 +3,6 @@
 -- This keeps it consistent.
 --
 
-USE [DirectConfig]
-GO
-
 INSERT INTO [dbo].[Domains]
            ([DomainName]
            ,[AgentName]
@@ -18,7 +15,7 @@ INSERT INTO [dbo].[Domains]
            ,GETDATE()
            ,GETDATE()
            ,0
-		   )
+           )
 GO
 
 
@@ -34,7 +31,7 @@ INSERT INTO [dbo].[CertPolicies]
            ,'seedlexicon'
            , CONVERT(varbinary(MAX), '')
            ,GETDATE()
-		   )
+           )
 GO
 
 
@@ -46,5 +43,5 @@ INSERT INTO [dbo].[CertPolicyGroups]
            ('seedname'
            ,'seedname'
            ,GETDATE()
-		   )
+           )
 GO
