@@ -1,0 +1,27 @@
+From: Joe <Joe@hobo.lab>
+Date: Mon, 30 Jan 2017 12:59:49 -0800
+Subject: Need more memory
+Message-Id: <PJR73MNYE0U4.PMF8VBLKVCG52@SSORDSK-JSHO01>
+To: Jean <Jean@opsstation.lab>
+X-Direct-Context: 2ff6eaec83894520bbb872e5671ff49e
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="=-gYs4BKxR4H/DHagFF+FcMA=="
+
+--=-gYs4BKxR4H/DHagFF+FcMA==
+Content-Type: text/plain; charset=utf-8
+
+Simple Body
+--=-gYs4BKxR4H/DHagFF+FcMA==
+Content-Type: text/plain
+Content-Disposition: attachment; filename=ContextSimple1.txt
+Content-Transfer-Encoding: 8bit
+Content-ID: 2ff6eaec83894520bbb872e5671ff49e
+
+version: 1.0
+id: 2ff6eaec83894520bbb872e5671ff49e
+patient-id: 2.16.840.1.113883.19.999999:123456; 2.16.840.1.113883.19.888888:75774
+type: radiology/report
+purpose: research
+patient: givenName=John; surname=Doe; dateOfBirth=1961-12-31
+
+--=-gYs4BKxR4H/DHagFF+FcMA==--

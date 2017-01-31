@@ -1,0 +1,30 @@
+From: Joe <Joe@hobo.lab>
+Date: Mon, 30 Jan 2017 12:59:49 -0800
+Subject: Need more memory
+Message-Id: <4PE83MNYE0U4.1R4U5A59RD773@SSORDSK-JSHO01>
+To: Jean <Jean@opsstation.lab>
+X-Direct-Context: 2ff6eaec83894520bbb872e5671ff49e
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="=-ZwiMJbnf8eY7+4PuszzRVw=="
+
+--=-ZwiMJbnf8eY7+4PuszzRVw==
+Content-Type: text/plain; charset=utf-8
+
+Simple Body
+--=-ZwiMJbnf8eY7+4PuszzRVw==
+Content-Type: text/plain
+Content-Disposition: attachment; filename=ContextSimple1.txt
+Content-Transfer-Encoding: x-uuencode
+Content-ID: 2ff6eaec83894520bbb872e5671ff49e
+
+begin 0644 ContextSimple1.txt
+M=F5R<VEO;CH@,2XP#0II9#H@,F9F-F5A96,X,S@Y-#4R,&)B8C@W,F4U-C<Q
+M9F8T.64-"G!A=&EE;G0M:60Z(#(N,38N.#0P+C$N,3$S.#@S+C$Y+CDY.3DY
+M.3HQ,C,T-38[(#(N,38N.#0P+C$N,3$S.#@S+C$Y+C@X.#@X.#HW-3<W-`T*
+M='EP93H@<F%D:6]L;V=Y+W)E<&]R=`T*<'5R<&]S93H@<F5S96%R8V@-"G!A
+M=&EE;G0Z(&=I=F5N3F%M93U*;VAN.R!S=7)N86UE/41O93L@9&%T94]F0FER
+/=&@],3DV,2TQ,BTS,0T*
+`
+end
+
+--=-ZwiMJbnf8eY7+4PuszzRVw==--

@@ -136,6 +136,24 @@ namespace Health.Direct.Common.Mime
         }
 
         /// <summary>
+        /// Gets and sets the value of <c>Content-Id</c>.
+        /// </summary>
+        /// <remarks>
+        /// Content-ID is defined in RFC 2045 section 7.
+        /// </remarks>
+        public virtual string ContentID
+        {
+            get
+            {
+                return this.Headers.GetValue(MimeStandard.ContentIDHeader);
+            }
+            set
+            {
+                this.Headers.SetValue(MimeStandard.ContentIDHeader, value);
+            }
+        }
+
+        /// <summary>
         /// Gets and sets the value of the <c>Content-Disposition</c> header
         /// </summary>
         public virtual string ContentDisposition
