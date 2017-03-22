@@ -527,7 +527,17 @@ public class ConfigServiceDNSStore implements DNSStore
 					keyTag = (modulus[modulus.length - 2] << 8) & 0xFF00;
 					
 					keyTag |= modulus[modulus.length - 1] & 0xFF;	
-					alg = 5;
+					if (xCert.getSigAlgOID().equalsIgnoreCase(SignatureAlgorithmIdentifier.SHA1RSA.getId())){
+					    alg = 5; // RFC 4034 Appendix A.1
+					} else if (xCert.getSigAlgOID().equalsIgnoreCase(SignatureAlgorithmIdentifier.SHA256RSA.getId())){
+					    alg = 8; // RFC 5702 3.1
+					} else if (xCert.getSigAlgOID().equalsIgnoreCase(SignatureAlgorithmIdentifier.SHA1DSA.getId())){
+					    alg = 3; // RFC 4034 Appendix A.1
+					} else if (xCert.getSigAlgOID().equalsIgnoreCase(SignatureAlgorithmIdentifier.MD5RSA.getId())){
+					    alg = 1; // RFC 4034 Appendix A.1
+					} else{
+					    alg = 5;
+					}
 				}
 				
 				CERTRecord rec = new CERTRecord(Name.fromString(name), DClass.IN, 86400L, certRecordType, keyTag, 
