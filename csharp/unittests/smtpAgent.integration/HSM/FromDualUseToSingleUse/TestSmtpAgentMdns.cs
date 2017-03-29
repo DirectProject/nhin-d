@@ -38,7 +38,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
             //
             string textMessage = string.Format(string.Format(TestMessageDualToHsm, Guid.NewGuid()), Guid.NewGuid());
             var sendingMessage = LoadMessage(textMessage);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage, m_agent));
+            RunEndToEndTest(sendingMessage, m_agent);
 
             //
             // grab the clear text mdns and delete others.
@@ -48,7 +48,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
                 string messageText = File.ReadAllText(pickupMessage);
                 if (messageText.Contains("disposition-notification"))
                 {
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent));
+                    RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent);
                 }
             }
 
@@ -61,7 +61,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
 
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message, m_agent));
+                RunMdnInBoundProcessingTest(message, m_agent);
                 var envelope = new CDOSmtpMessage(message).GetEnvelope();
                 var mdn = MDNParser.Parse(envelope.Message);
 
@@ -92,7 +92,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
             //
             string textMessage = string.Format(string.Format(TestMessageDualToHsmMulti, Guid.NewGuid()), Guid.NewGuid());
             var sendingMessage = LoadMessage(textMessage);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage, m_agent));
+            RunEndToEndTest(sendingMessage, m_agent);
 
             //
             // grab the clear text mdns and delete others.
@@ -102,7 +102,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
                 string messageText = File.ReadAllText(pickupMessage);
                 if (messageText.Contains("disposition-notification"))
                 {
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent));
+                    RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent);
                 }
             }
 
@@ -115,7 +115,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
 
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message, m_agent));
+                RunMdnInBoundProcessingTest(message, m_agent);
                 var envelope = new CDOSmtpMessage(message).GetEnvelope();
                 var mdn = MDNParser.Parse(envelope.Message);
 
@@ -146,7 +146,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
             //
             string textMessage = string.Format(string.Format(RecipientHostsMixedPublicCerts, Guid.NewGuid()), Guid.NewGuid());
             var sendingMessage = LoadMessage(textMessage);
-            Assert.DoesNotThrow(() => RunEndToEndTest(sendingMessage, m_agent));
+            RunEndToEndTest(sendingMessage, m_agent);
 
             //
             // grab the clear text mdns and delete others.
@@ -156,7 +156,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
                 string messageText = File.ReadAllText(pickupMessage);
                 if (messageText.Contains("disposition-notification"))
                 {
-                    Assert.DoesNotThrow(() => RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent));
+                    RunMdnOutBoundProcessingTest(LoadMessage(messageText), m_agent);
                 }
             }
 
@@ -169,7 +169,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM.FromDualUseToSingleUse
                 string messageText = File.ReadAllText(pickupMessage);
                 CDO.Message message = LoadMessage(messageText);
 
-                Assert.DoesNotThrow(() => RunMdnInBoundProcessingTest(message, m_agent));
+                RunMdnInBoundProcessingTest(message, m_agent);
                 var envelope = new CDOSmtpMessage(message).GetEnvelope();
                 var mdn = MDNParser.Parse(envelope.Message);
 

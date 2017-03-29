@@ -37,7 +37,7 @@ namespace Health.Direct.SmtpAgent.Integration.Tests.HSM
             var agent = SmtpAgentFactory.Create(GetSettingsPath("TestSmtpAgentConfigService_HsmCryptographer.xml"));
             var messageId = Guid.NewGuid();
             var message = LoadMessage(string.Format(TestMessageDualToHsm, messageId));
-            Assert.DoesNotThrow(() => agent.ProcessMessage(message));
+            agent.ProcessMessage(message);
 
             //nothing in bad folder
             Assert.False(FileMessages(agent.Settings.BadMessage.CopyFolder)
