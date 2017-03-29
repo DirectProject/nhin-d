@@ -23,8 +23,19 @@ param
 
     [int]    $InstanceNumber = 1,
     [string] $SmtpBindingId = '{21312143-C790-4698-94BF-5BDE9B574C19}',
-    [string] $EventSinkProgId = 'NHINDirectGateway.MessageArrivalSink'
+    [string] $EventSinkProgId = 'NHINDirectGateway.MessageArrivalSink',
+	[string] $Platform = 'ANY CPU', 
+	[string] $Rule = 'mail from=*',
+	[int]    $Priority = 24575
 )
+
+
+#####################################################################
+# some computers have the Platform Environment variable set 
+# such as x86.  
+#####################################################################
+$env:Platform = $Platform
+
 
 #####################################################################
 # Prevent bugs
@@ -61,6 +72,8 @@ function Test-AdministratorRole
 }
 
 $isAdministrator = Test-AdministratorRole
+
+$isServer = (Get-CimInstance Win32_OperatingSystem).ProductType -eq 3
 
 #######################################################################
 # Build the whole solution first
@@ -126,7 +139,7 @@ if ($Include -contains 'Build')
     # Build the whole solution
     #
     
-    Invoke-Msbuild -Project $solution -LogFile 'build'
+    Invoke-Msbuild -Project $solution -LogFile 'build' -Options @("/p:Platform=$Platform")
 }
 
 #######################################################################
@@ -265,7 +278,7 @@ function CreateSubfolder
     $folder.FullName
 }
 
-if ($Include -contains 'Deploy' -and $isAdministrator -and (Get-WindowsFeature 'SMTP-Server'))
+if ($Include -contains 'Deploy' -and $isAdministrator -and ($isServer) -and (Get-WindowsFeature 'SMTP-Server'))
 {
     # Register the C# version
     $regasm = Join-Path ([System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()) 'RegAsm.exe'
