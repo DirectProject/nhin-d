@@ -13,7 +13,7 @@
     <AssemblyName>Health.Direct.Policy.UI</AssemblyName>
     <!-- Project output -->
     <OutputType>WinExe</OutputType>
-    <OutputPath>..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>

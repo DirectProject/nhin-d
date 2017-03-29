@@ -14,7 +14,7 @@
     <AssemblyName>Health.Direct.SmtpAgent.Integration.Tests</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -138,6 +138,10 @@
     <ProjectReference Include="..\agent\agent.tests.csproj">
       <Project>{6454E90E-984D-4D09-BD6D-566C9565E028}</Project>
       <Name>agent.tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\smtpAgent\smtpAgent.tests.csproj">
+      <Project>{0063ceeb-e7eb-4e87-a0e9-e9962af74548}</Project>
+      <Name>smtpAgent.tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,16 @@
+﻿CREATE TABLE [dbo].[Blobs]
+(
+    [BlobID] [BIGINT] IDENTITY(1,1) NOT NULL
+        CONSTRAINT [IX_Blobs_ID] UNIQUE NONCLUSTERED,
+
+    [Name] [VARCHAR](255) NOT NULL
+        CONSTRAINT [PK_Blobs] PRIMARY KEY CLUSTERED,
+
+    [Data] [VARBINARY](MAX) NOT NULL,
+
+    [CreateDate] [DATETIME] NOT NULL
+        CONSTRAINT [DF_Blobs_CreateDate] DEFAULT GETDATE(),
+
+    [UpdateDate] [DATETIME] NOT NULL
+        CONSTRAINT [DF_Blobs_UpdateDate] DEFAULT GETDATE()
+)

@@ -109,7 +109,7 @@ namespace hsmCryptographer.tests
 
                 Assert.NotNull(agentB);
                 Assert.Equal(1, diagnostics.ActualErrorMessages.Count);
-                Assert.Equal("Unable to load library: The specified module could not be found",
+                Assert.Equal("Unable to load library. Error code: 0x0000007E",
                     diagnostics.ActualErrorMessages[0]);
             }
         }

@@ -12,7 +12,7 @@
     <AssemblyName>DirectDnsResponderSvc</AssemblyName>
     <!-- Project output -->
     <OutputType>Exe</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>

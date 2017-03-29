@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -80,10 +81,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smtpEventHandler", "..\gate
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{84B9F52B-722C-4CA1-8631-4C908E6BD9E5}"
 	ProjectSection(SolutionItems) = preProject
+		..\build.ps1 = ..\build.ps1
 		DirectProject.snk = DirectProject.snk
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pkcs11Signed", "..\pkcs11Signed\pkcs11Signed.csproj", "{FACB2D74-D738-4D41-A595-8396B75277D1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdminMvc", "..\admin\AdminMvc\AdminMvc.csproj", "{8E284E54-B6E7-4F16-B362-719C34E95762}"
 EndProject
@@ -112,6 +112,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xdm", "..\xdm\xdm.csproj", "{57642FC6-9A0D-4667-858E-6936800A9701}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "xdr", "..\xdr\xdr.csproj", "{0B2306D9-36C7-4388-869E-4177C3BA6FF9}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "DirectConfig", "..\database\DirectConfig.sqlproj", "{2214B078-34FE-4E2E-875A-254ADDB2F1F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -251,10 +253,6 @@ Global
 		{1C4EFA2C-943E-4ABA-9EDC-F92BD561EAC2}.Debug|Any CPU.Build.0 = Debug|x64
 		{1C4EFA2C-943E-4ABA-9EDC-F92BD561EAC2}.Release|Any CPU.ActiveCfg = Release|x64
 		{1C4EFA2C-943E-4ABA-9EDC-F92BD561EAC2}.Release|Any CPU.Build.0 = Release|x64
-		{FACB2D74-D738-4D41-A595-8396B75277D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FACB2D74-D738-4D41-A595-8396B75277D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FACB2D74-D738-4D41-A595-8396B75277D1}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{FACB2D74-D738-4D41-A595-8396B75277D1}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{8E284E54-B6E7-4F16-B362-719C34E95762}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E284E54-B6E7-4F16-B362-719C34E95762}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E284E54-B6E7-4F16-B362-719C34E95762}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -311,6 +309,10 @@ Global
 		{0B2306D9-36C7-4388-869E-4177C3BA6FF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B2306D9-36C7-4388-869E-4177C3BA6FF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B2306D9-36C7-4388-869E-4177C3BA6FF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2214B078-34FE-4E2E-875A-254ADDB2F1F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2214B078-34FE-4E2E-875A-254ADDB2F1F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2214B078-34FE-4E2E-875A-254ADDB2F1F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2214B078-34FE-4E2E-875A-254ADDB2F1F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
