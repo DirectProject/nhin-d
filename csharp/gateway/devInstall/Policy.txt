@@ -1,0 +1,14 @@
+Domain_Add dev.singleuse.lab Enabled Agent1
+Anchor_Add dev.singleuse.lab ..\..\..\..\unittests\agent\Certificates\nhind\OutgoingAnchors\umamalga1.cer Null Enabled
+Certificate_ADD ..\..\..\..\unittests\agent\Certificates\redmond\Private\dev.singleuse.lab.encipherment.pfx passw0rd! Enabled
+Certificate_ADD ..\..\..\..\unittests\agent\Certificates\redmond\Private\dev.singleuse.lab.sign.pfx passw0rd! Enabled
+DNS_SOA_ENSURE dev.singleuse.lab NS1.nhind.hsgincubator.com. foo.example.domain 20100602 3600
+DNS_ANAME_ENSURE dev.singleuse.lab 127.0.0.1 3600
+DNS_MX_ENSURE dev.singleuse.lab gateway.nhind.hsgincubator.com 3600
+Policy_Add  DigitalSignature  ..\..\..\..\Support\Policy\DigitalSignature.dpol
+Policy_Add  KeyEncipherment  ..\..\..\..\Support\Policy\KeyEncipherment.dpol
+PolicyGroup_ADD  FHA
+Policy_AddtoGroup  DigitalSignature  FHA  PRIVATE_RESOLVER false true
+Policy_AddtoGroup  KeyEncipherment  FHA  PRIVATE_RESOLVER true false
+Policy_AddtoGroup  KeyEncipherment  FHA  PUBLIC_RESOLVER
+PolicyGroup_AddOwner  FHA  dev.singleuse.lab 
