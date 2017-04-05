@@ -17,5 +17,5 @@
     [Status] [TINYINT] NOT NULL
         CONSTRAINT [DF_Domains_Status] DEFAULT 0,
 
-    [SecurityStandard] [TINYINT] NULL
+    [SecurityStandard] [TINYINT] NOT NULL DEFAULT 0
 )

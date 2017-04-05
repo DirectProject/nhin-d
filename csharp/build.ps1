@@ -237,6 +237,10 @@ if ($Include -contains 'Deploy')
 {
     if ($isAdministrator -and $defaultSite)
     {
+		#
+		# If you receive access control list not in cononical form then
+		# http://stackoverflow.com/questions/32648654/publishing-website-error-this-access-control-list-is-not-in-canonical-form-and
+		#
         Invoke-Msbuild -Project .\config\service\config.service.csproj -LogFile 'ConfigService' -Options @('/p:DeployOnBuild=true', '/p:PublishProfile=Local-IIS.pubxml')
         Invoke-Msbuild -Project .\dnsresponder.service\dnsResponder.service.csproj -LogFile 'DnsService' -Options @('/p:DeployOnBuild=true', '/p:PublishProfile=Local-IIS.pubxml')
     }

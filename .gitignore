@@ -131,3 +131,6 @@ csharp/installer/DirectConfig.sql
 csharp/installer/*.zip
 tools/trust.bundler/cmdlet/Examples/*.p7*
 tools/trust.bundler/build/packages/**
+*.wrn
+*.err
+*.jfm
