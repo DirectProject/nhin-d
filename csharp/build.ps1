@@ -5,7 +5,7 @@
 
 param
 (
-    [ValidateSet('Build', 'Deploy', 'Test', IgnoreCase = $true)]
+    [ValidateSet('Build', 'Deploy', 'Test', 'Policy', 'Policy', 'HSM', IgnoreCase = $true)]
     [string[]] $Include = @('Build', 'Deploy', 'Test'),
 
     [string] $Solution = '.\build\DirectProject.sln',
@@ -257,13 +257,33 @@ if ($Include -contains 'Deploy')
     & .\ConfigConsole.exe batch ..\..\..\..\gateway\devInstall\setupdomains.txt
     & .\ConfigConsole.exe batch ..\..\..\..\gateway\devInstall\setupdns.txt
     & .\ConfigConsole.exe test_certs_InstallInService ..\..\..\..\unittests\agent
-    Pop-Location
+	Pop-Location
 
     Push-Location .\tools\admin.console\bin\Debug
     & .\AdminConsole.exe USER_REMOVE admin
     & .\AdminConsole.exe USER_ADD admin admin
     & .\AdminConsole.exe USER_STATUS_SET admin Enabled
     Pop-Location
+}
+
+#######################################################################
+# Configure Policy test data
+#######################################################################
+if ($Include -contains 'Deploy' -or $Include -contains 'Policy')
+{
+	Push-Location .\config\console\bin\Debug
+	& .\ConfigConsole.exe batch ..\..\..\..\gateway\devInstall\Policy.txt
+	Pop-Location
+}
+
+#######################################################################
+# Configure HSM test data
+#######################################################################
+if ($Include -contains 'HSM')
+{
+	Push-Location .\config\console\bin\Debug
+	& .\ConfigConsole.exe batch ..\..\..\..\gateway\devInstall\HSM.txt
+	Pop-Location
 }
 
 #######################################################################
