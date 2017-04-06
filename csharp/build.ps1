@@ -5,7 +5,7 @@
 
 param
 (
-    [ValidateSet('Build', 'Deploy', 'Test', 'Policy', 'Policy', 'HSM', IgnoreCase = $true)]
+    [ValidateSet('Build', 'Deploy', 'Test', 'Policy', 'ConfigData', 'Policy', 'HSM', IgnoreCase = $true)]
     [string[]] $Include = @('Build', 'Deploy', 'Test'),
 
     [string] $Solution = '.\build\DirectProject.sln',
@@ -250,7 +250,7 @@ if ($Include -contains 'Deploy')
 # Configure test data
 #######################################################################
 
-if ($Include -contains 'Deploy')
+if ($Include -contains 'Deploy' -or $Include -contains 'ConfigData')
 {
     Push-Location .\config\console\bin\Debug
     & .\ConfigConsole.exe Test_Certs_Install ..\..\..\..\unittests\agent

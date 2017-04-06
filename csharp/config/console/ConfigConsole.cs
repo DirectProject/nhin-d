@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using Health.Direct.Common.Extensions;
@@ -53,13 +54,28 @@ namespace Health.Direct.Config.Console
 
             try
             {
-                Property[] properties = m_propertyClient.GetProperties(new[] {"TokenSettings"});
-                string tokenSettingsXml = properties.SingleOrDefault().Value;
-                tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();
+                string dataPath =
+                    Path.Combine(
+                        Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                            "DirectProject"),
+                        "TokenSettings.xml");
+
+                if (File.Exists(dataPath))
+                {
+                    string tokenSettingsXml = File.ReadAllText(dataPath);
+                    tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();
+                }
+                else
+                {
+                    Property[] properties = m_propertyClient.GetProperties(new[] { "TokenSettings" });
+                    string tokenSettingsXml = properties.SingleOrDefault().Value;
+                    tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();
+                }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Acceptable to not have token settings.
+                System.Console.WriteLine(ex.Message);
             }
             
             m_commands = new Commands("ConfigConsole");

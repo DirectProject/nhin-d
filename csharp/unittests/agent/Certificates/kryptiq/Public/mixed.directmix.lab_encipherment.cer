@@ -1,0 +1,80 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 64 (0x40)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=DirectMix.Hard
+        Validity
+            Not Before: Jul  6 18:17:25 2016 GMT
+            Not After : Jul  4 18:17:25 2026 GMT
+        Subject: CN=mixed.directmix.lab
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:9c:e4:88:a5:ee:16:47:de:0e:31:b8:f1:40:f5:
+                    bd:60:a6:71:9c:dd:c2:d9:b3:5f:c8:68:4a:ef:12:
+                    2e:9f:63:dd:8f:8a:d0:35:62:74:a4:3e:58:01:c6:
+                    a7:09:c4:d9:58:ab:69:2f:c9:3e:2a:1e:f1:14:25:
+                    77:4e:56:0b:36:c6:f5:70:e0:88:82:97:b9:ce:d6:
+                    81:9c:90:df:1b:29:8f:c3:45:3b:e8:dc:db:bf:2d:
+                    e7:76:77:30:39:aa:ff:13:2d:aa:0f:47:c5:09:77:
+                    84:81:61:8d:03:14:bb:ad:04:b1:56:0c:e2:c2:50:
+                    a0:43:87:76:17:f5:cc:5d:04:c3:f4:8d:8b:d6:35:
+                    67:fc:44:27:2d:4d:41:f8:0a:b5:15:e4:b3:6e:2e:
+                    4c:bf:52:5f:37:9c:41:54:4c:d1:77:d6:e0:5f:18:
+                    79:f0:11:1d:d0:c7:54:5a:85:4e:50:0f:a8:e4:22:
+                    0c:bb:ea:26:22:91:03:e2:f3:2d:47:b8:96:c0:fa:
+                    3d:c7:2e:46:a4:49:3e:8a:16:70:b6:5b:51:09:b1:
+                    64:9c:49:31:98:96:23:f7:80:5f:b9:38:e1:97:a2:
+                    a7:6b:51:67:bc:2e:00:af:d4:8a:07:23:ab:19:5f:
+                    4e:94:18:ae:c0:7e:7c:f9:58:c1:ea:bd:39:f7:98:
+                    e0:f9
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: critical
+                CA:FALSE
+            X509v3 Extended Key Usage: 
+                E-mail Protection
+            X509v3 Authority Key Identifier: 
+                keyid:B6:34:22:4D:08:1A:76:AE:E9:6E:49:AC:25:75:7E:BB:D4:78:40:77
+
+            X509v3 Key Usage: critical
+                Key Encipherment
+            X509v3 Subject Alternative Name: 
+                DNS:mixed.directmix.lab
+    Signature Algorithm: sha256WithRSAEncryption
+         3a:34:71:5a:ff:23:42:08:cd:3d:e4:db:8a:49:38:09:af:bb:
+         de:d2:d2:f1:6c:eb:0c:43:5f:1c:ee:3a:5b:cf:92:b4:74:06:
+         bd:9f:38:d9:36:1b:00:f6:1e:36:41:91:c1:ae:91:9a:8f:a5:
+         55:5e:d4:c9:d9:20:42:17:cd:8e:37:19:2e:05:e0:63:58:e8:
+         2d:7f:f4:c9:da:e9:3f:ee:47:4f:82:1e:df:fa:eb:6c:94:54:
+         3f:47:53:95:bb:aa:66:8f:c8:2a:50:cc:ec:d1:de:7c:ef:21:
+         63:7f:e9:0f:31:80:17:2b:9d:37:07:31:52:b2:67:00:09:22:
+         c4:65:01:f9:52:14:f6:bb:01:75:00:a8:9a:22:c4:ba:67:da:
+         b0:55:66:00:ab:af:62:b7:71:52:d0:81:be:a7:ee:ab:0a:f4:
+         5c:55:01:eb:d1:ab:07:ad:16:1e:0a:b6:86:21:5c:63:c7:15:
+         ee:63:00:94:96:54:65:a4:19:6b:e5:ce:d0:8b:0a:ce:61:e3:
+         7a:94:41:29:4f:b9:22:f0:41:78:6f:ea:8b:ab:7f:7e:ed:81:
+         a7:74:ff:d5:6f:85:e3:da:2d:78:0b:b0:fc:ef:da:56:4c:77:
+         1e:33:c4:b0:cc:23:ef:e7:97:c9:a7:e9:75:50:6e:39:f1:97:
+         31:37:6a:8f
+-----BEGIN CERTIFICATE-----
+MIIDKDCCAhCgAwIBAgIBQDANBgkqhkiG9w0BAQsFADAZMRcwFQYDVQQDDA5EaXJl
+Y3RNaXguSGFyZDAeFw0xNjA3MDYxODE3MjVaFw0yNjA3MDQxODE3MjVaMB4xHDAa
+BgNVBAMME21peGVkLmRpcmVjdG1peC5sYWIwggEiMA0GCSqGSIb3DQEBAQUAA4IB
+DwAwggEKAoIBAQCc5Iil7hZH3g4xuPFA9b1gpnGc3cLZs1/IaErvEi6fY92PitA1
+YnSkPlgBxqcJxNlYq2kvyT4qHvEUJXdOVgs2xvVw4IiCl7nO1oGckN8bKY/DRTvo
+3Nu/Led2dzA5qv8TLaoPR8UJd4SBYY0DFLutBLFWDOLCUKBDh3YX9cxdBMP0jYvW
+NWf8RCctTUH4CrUV5LNuLky/Ul83nEFUTNF31uBfGHnwER3Qx1RahU5QD6jkIgy7
+6iYikQPi8y1HuJbA+j3HLkakST6KFnC2W1EJsWScSTGYliP3gF+5OOGXoqdrUWe8
+LgCv1IoHI6sZX06UGK7Afnz5WMHqvTn3mOD5AgMBAAGjdjB0MAwGA1UdEwEB/wQC
+MAAwEwYDVR0lBAwwCgYIKwYBBQUHAwQwHwYDVR0jBBgwFoAUtjQiTQgadq7pbkms
+JXV+u9R4QHcwDgYDVR0PAQH/BAQDAgUgMB4GA1UdEQQXMBWCE21peGVkLmRpcmVj
+dG1peC5sYWIwDQYJKoZIhvcNAQELBQADggEBADo0cVr/I0IIzT3k24pJOAmvu97S
+0vFs6wxDXxzuOlvPkrR0Br2fONk2GwD2HjZBkcGukZqPpVVe1MnZIEIXzY43GS4F
+4GNY6C1/9Mna6T/uR0+CHt/662yUVD9HU5W7qmaPyCpQzOzR3nzvIWN/6Q8xgBcr
+nTcHMVKyZwAJIsRlAflSFPa7AXUAqJoixLpn2rBVZgCrr2K3cVLQgb6n7qsK9FxV
+AevRqwetFh4KtoYhXGPHFe5jAJSWVGWkGWvlztCLCs5h43qUQSlPuSLwQXhv6our
+f37tgad0/9VvhePaLXgLsPzv2lZMdx4zxLDMI+/nl8mn6XVQbjnxlzE3ao8=
+-----END CERTIFICATE-----
