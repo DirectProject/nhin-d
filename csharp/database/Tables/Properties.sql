@@ -5,7 +5,7 @@
     [Name] [NVARCHAR](255) NOT NULL
         CONSTRAINT [PK_Properties] PRIMARY KEY CLUSTERED,
 
-    [Value] [NVARCHAR](255) NOT NULL
+    [Value] [NVARCHAR](512) NOT NULL
 )
 
 GO

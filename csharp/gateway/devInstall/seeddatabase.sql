@@ -45,3 +45,14 @@ INSERT INTO [dbo].[CertPolicyGroups]
            ,GETDATE()
            )
 GO
+
+INSERT [dbo].[Properties] ([Name], [Value]) VALUES (N'TokenSettings', 
+  N'<TokenSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Library>C:\Program Files\SafeNet\LunaClient\cryptoki.dll</Library>
+  <TokenSerial>500464011</TokenSerial>
+  <TokenLabel>mn_qa_partition</TokenLabel>
+  <ApplicationName>DirectBridge</ApplicationName>
+  <UserPin>!sur3parqadrca</UserPin>
+</TokenSettings>')
+
+GO
