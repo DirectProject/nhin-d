@@ -134,3 +134,4 @@ tools/trust.bundler/build/packages/**
 *.wrn
 *.err
 *.jfm
+*.ipch
