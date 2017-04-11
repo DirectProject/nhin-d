@@ -9,6 +9,10 @@
     <span id="status" class="display-field"></span>
     <br class="clear" />
     
+    <span class="display-label">Security Standard</span>
+    <span id="securityStandard" class="display-field"></span>
+    <br class="clear" />
+    
     <span class="display-label">Created</span>
     <span id="created" class="display-field"></span>
     <br class="clear" />
@@ -23,6 +27,7 @@
     function updateDialog(dialog, data) {
         $('#domain-name', dialog).text(data.Name);
         $('#status', dialog).text(data.Status);
+        $('#securityStandard', dialog).text(data.SecurityStandard);
         $('#created', dialog).text(data.CreateDate.parseJSONDate().format(dateTimeFormatString));
         $('#updated', dialog).text(data.UpdateDate.parseJSONDate().format(dateTimeFormatString));
     }
