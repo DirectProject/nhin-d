@@ -22,6 +22,8 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 package org.nhindirect.gateway.smtp;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,6 +34,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeMessage;
 
@@ -63,6 +66,7 @@ import org.nhindirect.stagent.mail.notifications.NotificationMessage;
 import org.nhindirect.stagent.parser.EntitySerializer;
 
 import com.google.inject.Inject;
+import com.sun.mail.util.CRLFOutputStream;
 
 
 
@@ -296,6 +300,23 @@ public class DefaultSmtpAgent implements SmtpAgent
 		return true;
 	}
 	
+	/**
+	 * Create a canonicalized version of a given mime message
+	 * 
+	 * @param mimeMessage
+	 *            the message to canonicalize
+	 * @return a mime message in the canonical form
+	 * @throws IOException
+	 * @throws MessagingException
+	 */
+	protected MimeMessage canonicalizeMessage(MimeMessage mimeMessage) throws IOException, MessagingException 
+	{
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		CRLFOutputStream crlfOutputStream = new CRLFOutputStream(byteArrayOutputStream);
+		mimeMessage.writeTo(crlfOutputStream);
+		return new MimeMessage((Session)null, new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+	}
+	
 	/*
 	 * Processes a message using the securty and trust agent.
 	 */
@@ -307,6 +328,20 @@ public class DefaultSmtpAgent implements SmtpAgent
     	
 		if (isOutgoing)
 		{
+			if (envelope instanceof DefaultMessageEnvelope)
+			{
+				// canonicalize
+				try
+				{
+					final MimeMessage canonicalizedMsg = canonicalizeMessage(envelope.getMessage());
+					((DefaultMessageEnvelope)envelope).setMessage(new Message(canonicalizedMsg));
+				}
+				catch (Exception e)
+				{
+					LOGGER.trace("Failed to canonicalize message", e);
+					throw new SmtpAgentException(SmtpAgentError.Unknown, e);
+				}
+			}
 			if (auditor != null)
 			{
 				Collection<AuditContext> contexts = createContextCollectionFromMessage(envelope,

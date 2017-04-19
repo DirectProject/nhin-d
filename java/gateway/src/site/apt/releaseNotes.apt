@@ -6,6 +6,22 @@
         Greg Meyer
         ---
 
+{4.2.1}
+
+    Changes included with release 4.2.1
+    
+    []
+    
+    Enhancements
+    
+    * NA
+
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with contents of out going messages not being canonicalized in accordance with applicability statement 1.2
+
 {4.2}
 
     Changes included with release 4.2
