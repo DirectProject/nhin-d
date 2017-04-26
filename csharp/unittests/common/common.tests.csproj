@@ -58,6 +58,10 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\..\build\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Security.Cryptography, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\external\codeplex\Security.Cryptography.dll</HintPath>
@@ -90,6 +94,7 @@
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="Certificates\CertificateBuilderFacts.cs" />
     <Compile Include="Certificates\CertificateFacts.cs" />
     <Compile Include="Certificates\CertificateResolverBasic.cs" />
     <Compile Include="Certificates\CertificateResolverFacts.cs" />
