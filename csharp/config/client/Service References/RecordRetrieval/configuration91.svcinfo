@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="N91SA91hmPv2diPwCVQQSnbGNZ0=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="onCozEDRNv0Z72BGWxuplLMa3tw=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IRecordRetrievalService">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_IRecordRetrievalService" contract="RecordRetrieval.IRecordRetrievalService" bindingType="basicHttpBinding" address="http://localhost:6693/RecordRetrievalService.svc/Records" bindingConfiguration="BasicHttpBinding_IRecordRetrievalService">
+    <endpoint name="BasicHttpBinding_IRecordRetrievalService" contract="RecordRetrieval.IRecordRetrievalService" bindingType="basicHttpBinding" address="http://directtest/DnsService/RecordRetrievalService.svc/Records" bindingConfiguration="BasicHttpBinding_IRecordRetrievalService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6693/RecordRetrievalService.svc/Records</serializedValue>
+          <serializedValue>http://directtest/DnsService/RecordRetrievalService.svc/Records</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

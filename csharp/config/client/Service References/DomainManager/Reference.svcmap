@@ -18,17 +18,17 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="http://localhost:6692/DomainManagerService.svc" Protocol="http" SourceId="1" />
+    <MetadataSource Address="http://localhost/ConfigService/DomainManagerService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="DomainManagerService4.xsd" MetadataType="Schema" ID="f069aa58-8a15-4acc-865b-27fd6c09edbe" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd4" />
-    <MetadataFile FileName="DomainManagerService1.xsd" MetadataType="Schema" ID="fba4b708-05b9-4bc2-993e-666736542232" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd0" />
-    <MetadataFile FileName="DomainManagerService.wsdl" MetadataType="Wsdl" ID="ab9e6e54-15be-44b4-b1c9-d656f140e79a" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?wsdl" />
-    <MetadataFile FileName="DomainManagerService2.xsd" MetadataType="Schema" ID="457eefdf-1667-413d-8225-3ae49aeb6cb9" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd3" />
-    <MetadataFile FileName="DomainManagerService.disco" MetadataType="Disco" ID="274538ea-b382-4860-9790-76fb4a4370ed" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?disco" />
-    <MetadataFile FileName="DomainManagerService.xsd" MetadataType="Schema" ID="843808ce-c362-4e33-884b-fc0bb8b3cf4e" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd1" />
-    <MetadataFile FileName="DomainManagerService1.wsdl" MetadataType="Wsdl" ID="c94c9984-620d-4c98-ae44-1db8f59db56c" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?wsdl=wsdl0" />
-    <MetadataFile FileName="DomainManagerService3.xsd" MetadataType="Schema" ID="78c602a5-8fbc-4e98-9188-69bf7eb5bb89" SourceId="1" SourceUrl="http://localhost:6692/DomainManagerService.svc?xsd=xsd2" />
+    <MetadataFile FileName="DomainManagerService4.xsd" MetadataType="Schema" ID="7cfff1cb-e9c5-4797-8e23-7f39c50586ba" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?xsd=xsd4" />
+    <MetadataFile FileName="DomainManagerService1.xsd" MetadataType="Schema" ID="44db69f3-706c-43a5-9fcb-157960aa9574" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?xsd=xsd0" />
+    <MetadataFile FileName="DomainManagerService.wsdl" MetadataType="Wsdl" ID="dcf60816-f11d-4a74-b44b-4846cecb6fb6" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?wsdl" />
+    <MetadataFile FileName="DomainManagerService2.xsd" MetadataType="Schema" ID="1eea559f-b260-411a-a6d6-ec60165b4c34" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?xsd=xsd3" />
+    <MetadataFile FileName="DomainManagerService.disco" MetadataType="Disco" ID="ff1c5fdc-e8e2-498c-a3a7-f2f278c0f7b1" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?disco" />
+    <MetadataFile FileName="DomainManagerService.xsd" MetadataType="Schema" ID="8f60f13e-66cd-40cc-8f3a-f98c38c3a2c3" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?xsd=xsd1" />
+    <MetadataFile FileName="DomainManagerService1.wsdl" MetadataType="Wsdl" ID="67921648-eaad-4428-b3dd-0f3f658dd327" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="DomainManagerService3.xsd" MetadataType="Schema" ID="d38f2224-bb79-4961-ba17-67d9c9a5d3ed" SourceId="1" SourceUrl="http://directtest/ConfigService/DomainManagerService.svc?xsd=xsd2" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

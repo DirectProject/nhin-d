@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="urn:directproject:config/store/082010" elementFormDefault="qualified" targetNamespace="urn:directproject:config/store/082010" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
-  <xs:import schemaLocation="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
+  <xs:import schemaLocation="http://directtest/DnsService/RecordRetrievalService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" />
+  <xs:import schemaLocation="http://directtest/DnsService/RecordRetrievalService.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/Health.Direct.Config.Store" />
   <xs:element name="GetMatchingDnsRecords">
     <xs:complexType>
       <xs:sequence>

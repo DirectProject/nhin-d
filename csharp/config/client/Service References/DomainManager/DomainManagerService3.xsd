@@ -74,9 +74,22 @@
       <xs:enumeration value="InvalidCertPolicyGroup" />
       <xs:enumeration value="CertPolicyGroupDescriptionLength" />
       <xs:enumeration value="InvalidCertPolicyUse" />
+      <xs:enumeration value="MissingDomain" />
     </xs:restriction>
   </xs:simpleType>
   <xs:element name="ConfigStoreError" nillable="true" type="tns:ConfigStoreError" />
+  <xs:simpleType name="SecurityStandard">
+    <xs:annotation>
+      <xs:appinfo>
+        <ActualType Name="unsignedByte" Namespace="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/2003/10/Serialization/" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Software" />
+      <xs:enumeration value="Fips1402" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="SecurityStandard" nillable="true" type="tns:SecurityStandard" />
   <xs:simpleType name="CertPolicyUse">
     <xs:annotation>
       <xs:appinfo>

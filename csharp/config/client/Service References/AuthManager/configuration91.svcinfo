@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="CqZicplZf/0uFv2tw9sV7N1ysL0=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="gi0+Z2LTt1vjd9ZSF/UrUToNEZ0=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IAuthManager">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_IAuthManager" contract="AuthManager.IAuthManager" bindingType="basicHttpBinding" address="http://localhost:6692/AuthManagerService.svc/Authentication" bindingConfiguration="BasicHttpBinding_IAuthManager">
+    <endpoint name="BasicHttpBinding_IAuthManager" contract="AuthManager.IAuthManager" bindingType="basicHttpBinding" address="http://directtest/ConfigService/AuthManagerService.svc/Authentication" bindingConfiguration="BasicHttpBinding_IAuthManager">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/AuthManagerService.svc/Authentication</serializedValue>
+          <serializedValue>http://directtest/ConfigService/AuthManagerService.svc/Authentication</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
