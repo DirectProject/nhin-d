@@ -23,10 +23,22 @@ namespace Health.Direct.Common.Certificates
     public static class DirectTrustCertificatePolicies
     {
         /// <summary>
-        /// DirectTrust Community X.509 Certificate Policy version 1.2
+        /// DirectTrust Community X.509 Certificate Policy
         /// See DirectTrust CP section 1.2 Document Name and Identification.
         /// </summary>
         public const string DTorgCPVersions = "1.3.6.1.4.1.41179.0.1";
+
+        /// <summary>
+        /// DirectTrust Community X.509 Certificate Policy version 1.2
+        /// See DirectTrust CP section 1.2 Document Name and Identification.
+        /// </summary>
+        public const string DTorgCPVersion2 = "1.3.6.1.4.1.41179.0.1.2";
+
+        /// <summary>
+        /// DirectTrust Community X.509 Certificate Policy version 1.3
+        /// See DirectTrust CP section 1.2 Document Name and Identification.
+        /// </summary>
+        public const string DTorgCPVersion3 = "1.3.6.1.4.1.41179.0.1.3";
 
         /// <summary>
         /// Levels of assurance: applicant's control over an email address.
