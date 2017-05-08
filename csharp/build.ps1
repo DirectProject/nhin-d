@@ -5,7 +5,7 @@
 
 param
 (
-    [ValidateSet('Build', 'Deploy', 'Test', 'Policy', 'ConfigData', 'Policy', 'HSM', IgnoreCase = $true)]
+    [ValidateSet('Build', 'Deploy', 'Test', 'Policy', 'ConfigData', 'HSM', IgnoreCase = $true)]
     [string[]] $Include = @('Build', 'Deploy', 'Test'),
 
     [string] $Solution = '.\build\DirectProject.sln',

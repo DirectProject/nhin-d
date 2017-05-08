@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="AXvl7fgWj31/x1QTwzHGk1TptzY=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="8J9m7ExBRcpqK8Yc9iZ4+EqG3K4=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IPropertyManager">
       <properties>
@@ -221,10 +221,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_IPropertyManager" contract="SettingsManager.IPropertyManager" bindingType="basicHttpBinding" address="http://localhost:6692/SettingsManager.svc/Properties" bindingConfiguration="BasicHttpBinding_IPropertyManager">
+    <endpoint name="BasicHttpBinding_IPropertyManager" contract="SettingsManager.IPropertyManager" bindingType="basicHttpBinding" address="http://directtest/ConfigService/SettingsManager.svc/Properties" bindingConfiguration="BasicHttpBinding_IPropertyManager">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/SettingsManager.svc/Properties</serializedValue>
+          <serializedValue>http://directtest/ConfigService/SettingsManager.svc/Properties</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -306,10 +306,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="BasicHttpBinding_IBlobManager" contract="SettingsManager.IBlobManager" bindingType="basicHttpBinding" address="http://localhost:6692/SettingsManager.svc/Blobs" bindingConfiguration="BasicHttpBinding_IBlobManager">
+    <endpoint name="BasicHttpBinding_IBlobManager" contract="SettingsManager.IBlobManager" bindingType="basicHttpBinding" address="http://directtest/ConfigService/SettingsManager.svc/Blobs" bindingConfiguration="BasicHttpBinding_IBlobManager">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/SettingsManager.svc/Blobs</serializedValue>
+          <serializedValue>http://directtest/ConfigService/SettingsManager.svc/Blobs</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
