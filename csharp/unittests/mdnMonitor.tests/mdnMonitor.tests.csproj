@@ -95,6 +95,10 @@
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>
+      <Name>diagnostics.nlog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\mdnMonitor\mdnMonitor.csproj">
       <Project>{948BA1AA-0F92-4EC6-9C89-25725AAEBBFE}</Project>
       <Name>mdnMonitor</Name>

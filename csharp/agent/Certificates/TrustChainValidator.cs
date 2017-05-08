@@ -19,11 +19,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Agent.Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 
-namespace Health.Direct.Agent
+namespace Health.Direct.Agent.Certificates
 {
     /// <summary>
     /// Validates trust chains for certificates.
@@ -184,7 +183,9 @@ namespace Health.Direct.Agent
         /// <summary>
         /// Validates a certificate by walking the certificate chain for all trust anchor chain, validating the leaf certificate against the chain.
         /// </summary>
-        /// <remarks>Currently, all intermediate certificates must be stored in the system.</remarks>
+        /// <remarks>
+        /// Chain buiding is implemented with P/Invoke to create a custom chain engine allowing CRL checking without installing the anchor was in a trusted location in the Windows certificate store.
+        /// </remarks>
         /// <param name="certificate">The leaf <see cref="X509Certificate2"/> to validate</param>
         /// <param name="trustedRoots">The collection of certificates representing anchors or roots of trust.</param>
         /// <returns><c>true</c> if at least one anchor has a valid chain of certs that verify trust in the leaf certificate,
@@ -212,7 +213,7 @@ namespace Health.Direct.Agent
                 {
                     this.ResolveIntermediateIssuers(certificate, chainPolicy.ExtraStore);
                 }
-
+                
                 X509Chain chainBuilder;
                 using (X509ChainEngine secureChainEngine = new X509ChainEngine(trustedRoots.Enumerate()))
                 {

@@ -48,7 +48,7 @@ namespace Health.Direct.DnsResponder.Tests
         {
             DefaultSettings = new DnsServerSettings();
             DefaultSettings.Address = "127.0.0.1";
-            DefaultSettings.Port = 5353;
+            DefaultSettings.Port = 5350;
             DefaultSettings.TcpServerSettings.MaxOutstandingAccepts = 4;
             DefaultSettings.TcpServerSettings.MaxActiveRequests = 16;
             DefaultSettings.TcpServerSettings.ReceiveTimeout = 60 * 1000;

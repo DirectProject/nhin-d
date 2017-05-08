@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Agent.Certificates;
 using Health.Direct.Common.Certificates;
 using Xunit;
 

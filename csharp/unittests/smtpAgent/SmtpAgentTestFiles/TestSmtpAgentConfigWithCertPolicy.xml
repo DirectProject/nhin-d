@@ -47,7 +47,7 @@
   <CertPolicies>
     <Public>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost/configservice/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -57,7 +57,7 @@
     </Public>
     <Private>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost/configservice/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -67,7 +67,7 @@
     </Private>
     <Trust>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost/configservice/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
