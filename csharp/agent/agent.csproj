@@ -21,6 +21,7 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <!-- Default build options -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -93,12 +94,15 @@
     <Compile Include="DirectAddressCollection.cs" />
     <Compile Include="DirectAgent.cs" />
     <Compile Include="DirectStandard.cs" />
+    <Compile Include="Certificates\NativeMethods.cs" />
     <Compile Include="OutgoingMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AgentError.cs" />
     <Compile Include="AgentException.cs" />
-    <Compile Include="TrustChainValidator.cs" />
+    <Compile Include="Certificates\SafeHandles.cs" />
+    <Compile Include="Certificates\TrustChainValidator.cs" />
     <Compile Include="TrustModel.cs" />
+    <Compile Include="Certificates\X509ChainEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj">

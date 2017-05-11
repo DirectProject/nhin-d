@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="Mk5SL9RU7ME3ovSrLZyoyK9UO5Q=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="Jh8jmKEH9jdWkr7qIRAEw3kifIU=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_ICertificateStore">
       <properties>
@@ -219,10 +219,10 @@
         </property>
       </properties>
     </bindingConfiguration>
-    <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IBundleStore1">
+    <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IBundleStore">
       <properties>
         <property path="/name" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>BasicHttpBinding_IBundleStore1</serializedValue>
+          <serializedValue>BasicHttpBinding_IBundleStore</serializedValue>
         </property>
         <property path="/closeTimeout" isComplexType="false" isExplicitlyDefined="true" clrType="System.TimeSpan, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -330,10 +330,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_ICertificateStore" contract="CertificateService.ICertificateStore" bindingType="basicHttpBinding" address="http://localhost:6692/CertificateService.svc/Certificates" bindingConfiguration="BasicHttpBinding_ICertificateStore">
+    <endpoint name="BasicHttpBinding_ICertificateStore" contract="CertificateService.ICertificateStore" bindingType="basicHttpBinding" address="http://directtest/ConfigService/CertificateService.svc/Certificates" bindingConfiguration="BasicHttpBinding_ICertificateStore">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/CertificateService.svc/Certificates</serializedValue>
+          <serializedValue>http://directtest/ConfigService/CertificateService.svc/Certificates</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -415,10 +415,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="BasicHttpBinding_IAnchorStore" contract="CertificateService.IAnchorStore" bindingType="basicHttpBinding" address="http://localhost:6692/CertificateService.svc/Anchors" bindingConfiguration="BasicHttpBinding_IAnchorStore">
+    <endpoint name="BasicHttpBinding_IAnchorStore" contract="CertificateService.IAnchorStore" bindingType="basicHttpBinding" address="http://directtest/ConfigService/CertificateService.svc/Anchors" bindingConfiguration="BasicHttpBinding_IAnchorStore">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/CertificateService.svc/Anchors</serializedValue>
+          <serializedValue>http://directtest/ConfigService/CertificateService.svc/Anchors</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -500,10 +500,10 @@
         </property>
       </properties>
     </endpoint>
-    <endpoint name="BasicHttpBinding_IBundleStore1" contract="CertificateService.IBundleStore" bindingType="basicHttpBinding" address="http://localhost:6692/CertificateService.svc/Bundles" bindingConfiguration="BasicHttpBinding_IBundleStore1">
+    <endpoint name="BasicHttpBinding_IBundleStore" contract="CertificateService.IBundleStore" bindingType="basicHttpBinding" address="http://directtest/ConfigService/CertificateService.svc/Bundles" bindingConfiguration="BasicHttpBinding_IBundleStore">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/CertificateService.svc/Bundles</serializedValue>
+          <serializedValue>http://directtest/ConfigService/CertificateService.svc/Bundles</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
@@ -512,7 +512,7 @@
           <serializedValue>basicHttpBinding</serializedValue>
         </property>
         <property path="/bindingConfiguration" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>BasicHttpBinding_IBundleStore1</serializedValue>
+          <serializedValue>BasicHttpBinding_IBundleStore</serializedValue>
         </property>
         <property path="/contract" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue>CertificateService.IBundleStore</serializedValue>
@@ -575,7 +575,7 @@
           <serializedValue>False</serializedValue>
         </property>
         <property path="/name" isComplexType="false" isExplicitlyDefined="true" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>BasicHttpBinding_IBundleStore1</serializedValue>
+          <serializedValue>BasicHttpBinding_IBundleStore</serializedValue>
         </property>
         <property path="/kind" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/Health.Direct.Common.DnsResolver" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:6692/DomainManagerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://directtest/ConfigService/DomainManagerService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:simpleType name="DnsStandard.RecordType">
     <xs:annotation>
       <xs:appinfo>
