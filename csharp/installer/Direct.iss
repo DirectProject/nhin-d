@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 2.0.0.0
+AppVerName=Direct Project .NET Gateway 1.3.0.0
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-2.0.0.0-NET45
+OutputBaseFilename=Direct-1.3.0.0-NET45
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=2.0.0.0
+VersionInfoVersion=1.3.0.0
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -68,7 +68,6 @@ Name: configwebservice; Description: Config Web services; Types: config;
 Name: configui; Description: UI Web Admin; Types: config;
 Name: directgateway; Description: Gateway to SMTP; Types: gateway;
 Name: monitorserver; Description: Monitor Server; types: monitor
-Name: developergateway; Description: Developer gateway configuration to SMTP; Types: development; 
 Name: database; Description: DirectConfig database; Types: database;
 
      
@@ -79,7 +78,7 @@ Name: config; Description: Config services
 Name: monitor; Description: Monitor Server
 Name: database; Description: Database
 Name: custom; Description: Custom Install; Flags: iscustom;
-Name: development; Description: Developer Install (Single machine and development gateway version)
+
 
 [Dirs]
 Name: "{app}\Log"
@@ -88,42 +87,57 @@ Name: "{app}\Log"
 ;run from command line
 ;example:
 ;"C:\Program Files (x86)\inno setup 5\iscc.exe"  .\Direct.iss /DConfiguration=Release
-Source: "..\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
-Source: "..\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
+Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder 
+Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder 
+Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: dnsresponder 
+Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Components: dnsresponder
 
-Source: "..\bin\{#Configuration}\Win32\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX86;  Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway; 
-Source: "..\bin\{#Configuration}\x64\smtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway developergateway;                            
-Source: "..\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config,DirectDnsResponderSvc.exe.config"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
-Source: "..\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway developergateway;
-Source: "..\bin\{#Configuration}\Certificates\*"; DestDir: "{app}\Certificates"; Flags: ignoreversion recursesubdirs;   Components: developergateway; 
-Source: "ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
+Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: monitorserver 
+Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Flags: ignoreversion;  Components: monitorserver 
+Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: monitorserver 
+Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Components: monitorserver
 Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
-Source: "..\bin\{#Configuration}\DirectDnsResponderSvc.exe.config"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnswebservice developergateway;
-           
-Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
-Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice developergateway; 
-Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: onlyifdoesntexist; Components: configwebservice developergateway; 
-Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice developergateway; 
+         
+Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway 
+Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: directgateway 
+Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: onlyifdoesntexist; Components: directgateway;   
+Source: "..\gateway\smtpEventHandler\bin\x64\{#Configuration}\Health.Direct.SmtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway;                            
 
-Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
-Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice developergateway; 
-Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: onlyifdoesntexist; Components: dnswebservice developergateway; 
-Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice developergateway; 
+Source: "..\config\console\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;  
+Source: "..\config\console\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
+Source: "ConfigConsoleSettings.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist;
+  
+Source: "..\tools\agent.console\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
+Source: "..\tools\agent.console\bin\{#Configuration}\*.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
 
-Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui developergateway;
-Source: "..\installer\configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: onlyifdoesntexist; Components: configui and not developergateway
+Source: "..\tools\admin.console\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
+Source: "..\tools\admin.console\bin\{#Configuration}\*.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
+Source: "..\tools\admin.console\bin\{#Configuration}\*.config"; DestDir: "{app}"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
+                                  
+Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
+Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: onlyifdoesntexist; Components: configwebservice; 
+Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice; 
 
-Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway developergateway;
-Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway developergateway;
-Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: onlyifdoesntexist; Components: directgateway developergateway;
+Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
+Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: onlyifdoesntexist; Components: dnswebservice; 
+Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice; 
+
+Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui;
+Source: "..\installer\configui\config\dev.client.config"; DestDir: "{app}\ConfigUI\Config";  DestName: "client.config";  Flags: onlyifdoesntexist; Components: configui
+
+Source: "..\gateway\install\*.vbs"; DestDir: "{app}"; Flags: ignoreversion; Components: directgateway;
+Source: "..\gateway\install\*.bat"; DestDir: "{app}"; Excludes: "backup.bat,copybins.bat"; Flags: ignoreversion; Components: directgateway;
 
 
-Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}"; DestName: "DevAgentConfig.xml"; Flags: ignoreversion; Components: developergateway;            
-Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: developergateway;
-Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion; Components: developergateway;
 
-Source: "..\external\microsoft\vcredist\vcredist_x86.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX86; Components: directgateway developergateway;
-Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX64 or IsIA64; Components: directgateway developergateway;
+Source: "..\gateway\devInstall\DevAgentWithServiceConfig.xml"; DestDir: "{app}"; DestName: "DevAgentConfig.xml"; Flags: ignoreversion; Components:;            
+Source: "..\gateway\devInstall\setupdomains.txt"; DestDir: "{app}"; Flags: ignoreversion; Components:;
+Source: "..\gateway\devInstall\simple.eml"; DestDir: "{app}\Samples"; Flags: ignoreversion; Components:;
+
+Source: "..\external\microsoft\vcredist\vcredist_x86.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX86; Components: directgateway;
+Source: "..\external\microsoft\vcredist\vcredist_x64.exe"; DestDir: "{app}\Libraries"; DestName: "vcredist.exe"; Flags: ignoreversion recursesubdirs; Check: IsX64 or IsIA64; Components: directgateway;
 
 Source: "createadmin.bat"; DestDir: "{app}";  Flags: ignoreversion;
 Source: "createdatabase.bat"; DestDir: "{app}";  Flags: ignoreversion;
@@ -136,15 +150,12 @@ Source: "UninstallMonitorServer.bat"; DestDir: "{app}";  Flags: ignoreversion;  
 
 Source: "uninstallGateway.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: directgateway;
 
-Source: "install-dev.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: developergateway;
-Source: "uninstall.bat"; DestDir: "{app}";  Flags: ignoreversion;  Components: developergateway;
-
 
 Source: "*.ps1"; DestDir: "{app}"; Flags: ignoreversion;
 Source: "event-sources.txt"; DestDir: "{app}"; Flags: ignoreversion;
-Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
-Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
-Source: "createReadOnlyUser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database developergateway; 
+Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
+Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
+Source: "createReadOnlyUser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
 
 Source: "toolutil\install.tools\bin\{#Configuration}\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
 
@@ -160,36 +171,32 @@ Type: files; Name: "{app}\Log\createeventlogsource.log"
 Type: files; Name: "{app}\InstallTools\Health.Direct.Install.Tools.tlb"
 
 [Icons]
-Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";  Components: configui developergateway;
-Name: "{group}\Agent Console (DNS)"; Filename: "{app}\AgentConsole.exe"; WorkingDir: "{app}";  Components: dnsresponder developergateway;
-Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";   Components: directgateway developergateway;
-Name: "{group}\Config Web UI"; Filename: "http://localhost/ConfigUI/"; Components: configui developergateway;
-Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx"; Components: configwebservice developergateway;
+Name: "{group}\Admin Console"; Filename: "{app}\AdminConsole.exe"; WorkingDir: "{app}";  Components: configui;
+Name: "{group}\Agent Console (DNS)"; Filename: "{app}\AgentConsole.exe"; WorkingDir: "{app}";  Components: dnsresponder;
+Name: "{group}\Config Console"; Filename: "{app}\ConfigConsole.exe"; WorkingDir: "{app}";   Components: directgateway;
+Name: "{group}\Config Web UI"; Filename: "http://localhost/ConfigUI/"; Components: configui;
+Name: "{group}\Test Database"; Filename: "http://localhost/ConfigService/TestService.aspx"; Components: configwebservice;
 Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}";
 
 
 [Run]
-Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway; 
-Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
-Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"""; Description: Install Database; Flags: runascurrentuser postinstall; Components: developergateway and not database;
-Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"" ""{app}\SQL\createReadOnlyuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database and not developergateway ;
-Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; Components: (developergateway or dnsresponder or dnswebservice or configwebservice) and not developergateway;
-Filename: {app}\install-dev.bat; Parameters: """{app}"""; Description: "Install Gateway (DEVELOPMENT VERSION)"; WorkingDir: "{app}"; Flags: postinstall runascurrentuser unchecked; Components: developergateway;
-Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder and not developergateway;
-Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver and not developergateway;
-Filename: {dotnet4032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
-Filename: {dotnet4064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; Components: not developergateway
-Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\Log\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway and not developergateway;
-Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked; Components: not developergateway; 
+Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway;
+Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"" ""{app}\SQL\createReadOnlyuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database ;
+Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; 
+Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder;
+Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver;
+Filename: {dotnet4032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser;
+Filename: {dotnet4064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; 
+Filename: {app}\installgateway.bat; Parameters:  """{app}"" >> ""{app}\Log\installgateway.log"" 2>&1";  Description: Install Gateway; Flags: runascurrentuser ; Components: directgateway;
+Filename: {app}\createadmin.bat; Description:Create Admin.  (Database must exist); Flags: runascurrentuser postinstall unchecked;  
 
 
 [UninstallRun]
-Filename: {app}\uninstall.bat; Flags: runascurrentuser; RunOnceId: 'RemoveDeveloperGateway';   Components: developergateway;
-Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder and not developergateway;
-Filename: {app}\UninstallMonitorServer.bat; RunOnceId: 'RemoveMonitorServer';  Components: monitorserver and not developergateway;
-Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway and not developergateway;
-Filename: {dotnet4064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
-Filename: {dotnet4032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; Components: developergateway;
+Filename: {app}\uninstallDnsResponder.bat; RunOnceId: 'RemoveDnsResponder';  Components: dnsresponder;
+Filename: {app}\UninstallMonitorServer.bat; RunOnceId: 'RemoveMonitorServer';  Components: monitorserver;
+Filename: {app}\uninstallGateway.bat; RunOnceId: 'RemoveGateway'; Components: directgateway;
+Filename: {dotnet4064}\RegAsm; RunOnceId: 'RemoveTools64'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; 
+Filename: {dotnet4032}\RegAsm.exe; RunOnceId: 'RemoveTools32'; Parameters: Health.Direct.Install.Tools.dll /unregister; WorkingDir:{app}\InstallTools; Flags: runascurrentuser; 
 
 
 [INI]
@@ -1377,7 +1384,7 @@ var
     SmtpTools: Variant;       
 begin
   
-  if(CommandlineParamExists('SkipSmtpCheck')) then
+  if(CommandlineParamExists('p')) then
   begin
     Result := true;
     exit;

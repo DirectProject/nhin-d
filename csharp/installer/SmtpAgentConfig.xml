@@ -3,12 +3,24 @@
   <Domain>DomainName</Domain>  
   <DomainManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url>
+	<CacheSettings>
+      <Cache>true</Cache>
+      <CacheTTLSeconds>60</CacheTTLSeconds>
+    </CacheSettings>
   </DomainManager>
   <AddressManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
+	<CacheSettings>
+      <Cache>true</Cache>
+      <CacheTTLSeconds>60</CacheTTLSeconds>
+    </CacheSettings>
   </AddressManager>
   <MdnMonitor>
     <Url>http://localhost/ConfigService/MonitorService.svc/Dispositions</Url>
+	<CacheSettings>
+      <Cache>true</Cache>
+      <CacheTTLSeconds>60</CacheTTLSeconds>
+    </CacheSettings>
   </MdnMonitor>
   <Log>
     <DirectoryPath>C:\inetpub\logs</DirectoryPath>
@@ -30,20 +42,37 @@
     <ServiceResolver>
       <ClientSettings>
         <Url>http://localhost/ConfigService/CertificateService.svc/Certificates</Url>
+		<CacheSettings>
+          <Cache>true</Cache>
+          <CacheTTLSeconds>60</CacheTTLSeconds>
+        </CacheSettings>
       </ClientSettings>
     </ServiceResolver>    
   </PrivateCerts>
 
   <PublicCerts>
     <DnsResolver>
-      <ServerIP>0.0.0.0</ServerIP>
+      <ServerIP>8.8.8.8</ServerIP>
+	  <BackupServerIP>8.8.4.4</BackupServerIP>
       <Timeout>5000</Timeout>
+	  <Cache>true</Cache>
     </DnsResolver>
     <!--
     <MachineResolver>
       <Name>NHINDExternal</Name>
     </MachineResolver>
     -->
+	<PluginResolver>
+      <Definition>
+        <TypeName>Surescripts.Health.Direct.ResolverPlugins.LdapCertResolverProxy, Surescripts.Health.Direct.ResolverPlugins</TypeName>
+        <Settings>
+          <ServerIP>8.8.8.8</ServerIP>
+		  <BackupServerIP>8.8.4.4</BackupServerIP>
+		  <Timeout>5000</Timeout>
+		  <Cache>true</Cache>
+        </Settings>
+      </Definition>
+    </PluginResolver>
   </PublicCerts>
   <Anchors>
 	<PluginResolver>
@@ -84,23 +113,27 @@
   
   <Trust>
     <MaxIssuerChainLength>4</MaxIssuerChainLength>
-    <RevocationCheckMode>Offline</RevocationCheckMode>
+    <RevocationCheckMode>Online</RevocationCheckMode>
     <Timeout>10000</Timeout>
   </Trust>
   
+  <Cryptographer>
+    <DefaultEncryption>AES128</DefaultEncryption>
+    <DefaultDigest>SHA256</DefaultDigest>
+  </Cryptographer>
   
   <RawMessage>
-    <CopyFolder>C:\inetpub\mailroot\Gateway\raw</CopyFolder>
+    <!--<CopyFolder>C:\inetpub\mailroot\Gateway\raw</CopyFolder>-->
   </RawMessage>
   <BadMessage>
     <CopyFolder>C:\inetpub\mailroot\Gateway\badMail</CopyFolder>
   </BadMessage>
   <ProcessIncoming>
-    <CopyFolder>C:\inetpub\mailroot\Gateway\incoming</CopyFolder>
-    <EnableRelay>false</EnableRelay>
+    <!--<CopyFolder>C:\inetpub\mailroot\Gateway\incoming</CopyFolder>-->
+    <EnableRelay>true</EnableRelay>
   </ProcessIncoming>
   <ProcessOutgoing>
-    <CopyFolder>C:\inetpub\mailroot\Gateway\outgoing</CopyFolder>
+    <!--<CopyFolder>C:\inetpub\mailroot\Gateway\outgoing</CopyFolder>-->
     <EnableRelay>true</EnableRelay>
   </ProcessOutgoing>
 </SmtpAgentConfig>

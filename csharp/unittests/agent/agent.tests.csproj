@@ -178,6 +178,15 @@
     <None Include="Certificates\nhind\Private\fha-crossover.DirectInt.lab_dualUse.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Certificates\nhind\Private\hsm.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\hsm.DirectInt.lab_dualUse.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\nhind\Private\hsm.DirectInt.lab_encipherment.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Certificates\nhind\Private\nhind_umamalga1.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -239,6 +248,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\Private\fha-crossover.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Private\hsm.DirectInt.lab_digitalsignature.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Certificates\redmond\Private\hsm.DirectInt.lab_dualUse.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Certificates\redmond\Private\redmond.pfx">
