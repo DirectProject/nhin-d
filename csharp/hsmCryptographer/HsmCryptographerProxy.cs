@@ -154,16 +154,19 @@ namespace Health.Direct.Hsm
 
         #endregion
         
+        /// <inheritdoc />
         public MimeEntity Encrypt(MimeEntity entity, X509Certificate2 encryptingCertificate)
         {
             return m_innerSoftwareCryptographer.Encrypt(entity, encryptingCertificate);
         }
 
+        /// <inheritdoc />
         public MimeEntity Encrypt(MimeEntity entity, X509Certificate2Collection encryptingCertificates)
         {
             return m_innerSoftwareCryptographer.Encrypt(entity, encryptingCertificates);
         }
 
+        /// <inheritdoc />
         public MimeEntity DecryptEntity(byte[] encryptedBytes, X509Certificate2 decryptingCertificate)
         {
             MimeEntity mimeEntity = null;
@@ -208,6 +211,7 @@ namespace Health.Direct.Hsm
             return mimeEntity;
         }
 
+        /// <inheritdoc />
         public SignedEntity Sign(MimeEntity entity, X509Certificate2 signingCertificate)
         {
             if (m_innerHsmCryptographer == null)
@@ -218,6 +222,7 @@ namespace Health.Direct.Hsm
             return m_innerHsmCryptographer.Sign(entity, signingCertificate);
         }
 
+        /// <inheritdoc />
         public SignedEntity Sign(Message message, X509Certificate2Collection signingCertificates)
         {
             if (m_innerHsmCryptographer == null)
@@ -228,6 +233,7 @@ namespace Health.Direct.Hsm
             return m_innerHsmCryptographer.Sign(message, signingCertificates);
         }
 
+        /// <inheritdoc />
         public SignedEntity Sign(MimeEntity entity, X509Certificate2Collection signingCertificates)
         {
             if (m_innerHsmCryptographer == null)
@@ -260,35 +266,41 @@ namespace Health.Direct.Hsm
             return m_innerSoftwareCryptographer.DeserializeEnvelopedSignature(envelopeEntity);
         }
 
+        /// <inheritdoc />
         public byte[] GetEncryptedBytes(MimeEntity encryptedEntity)
         {
             return m_innerSoftwareCryptographer.GetEncryptedBytes(encryptedEntity);
         }
 
+        /// <inheritdoc />
         public EncryptionAlgorithm EncryptionAlgorithm
         {
             get { return m_innerHsmCryptographer.EncryptionAlgorithm; }
             set { m_innerHsmCryptographer.EncryptionAlgorithm = value; }
         }
 
+        /// <inheritdoc />
         public DigestAlgorithm DigestAlgorithm
         {
             get { return m_innerHsmCryptographer.DigestAlgorithm; }
             set { m_innerHsmCryptographer.DigestAlgorithm = value; }
         }
 
+        /// <inheritdoc />
         public bool IncludeMultipartEpilogueInSignature
         {
             get { return m_innerHsmCryptographer.IncludeMultipartEpilogueInSignature; }
             set { m_innerHsmCryptographer.IncludeMultipartEpilogueInSignature = value; }
         }
 
+        /// <inheritdoc />
         public X509IncludeOption IncludeCertChainInSignature
         {
             get { return m_innerHsmCryptographer.IncludeCertChainInSignature; }
             set { m_innerHsmCryptographer.IncludeCertChainInSignature = value; }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
