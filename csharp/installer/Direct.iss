@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.3.0.0
+AppVerName=Direct Project .NET Gateway 1.3.0.1
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.3.0.0-NET45
+OutputBaseFilename=Direct-1.3.0.1-NET45
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.3.0.0
+VersionInfoVersion=1.3.0.1
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -98,7 +98,8 @@ Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.pdb"; DestDir
 Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Components: monitorserver
 Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
          
-Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway 
+Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway
+Source: "..\resolverPlugin\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway  
 Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: directgateway 
 Source: "SmtpAgentConfig.xml"; DestDir: {app}; Flags: onlyifdoesntexist; Components: directgateway;   
 Source: "..\gateway\smtpEventHandler\bin\x64\{#Configuration}\Health.Direct.SmtpEventHandler.dll"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64 or IsIA64; Components: dnsresponder dnswebservice configwebservice configui directgateway;                            
@@ -111,17 +112,18 @@ Source: "..\tools\agent.console\bin\{#Configuration}\*.exe"; DestDir: "{app}"; E
 Source: "..\tools\agent.console\bin\{#Configuration}\*.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
 
 Source: "..\tools\admin.console\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
+Source: "..\tools\admin.console\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Excludes: "*.vshost.*"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;   
 Source: "..\tools\admin.console\bin\{#Configuration}\*.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
 Source: "..\tools\admin.console\bin\{#Configuration}\*.config"; DestDir: "{app}"; Flags: ignoreversion; Components: dnsresponder monitorserver dnswebservice configwebservice configui directgateway;
                                   
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
-Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: onlyifdoesntexist; Components: configwebservice; 
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice; 
 
 Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
 Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
-Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: onlyifdoesntexist; Components: dnswebservice; 
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
 Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice; 
 
 Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui;
