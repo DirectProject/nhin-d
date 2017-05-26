@@ -6,6 +6,7 @@
     Chris Lomonico
     Umesh Madan     umeshma@microsoft.com
     Ali Emami       aliemami@microsoft.com
+    Joseph Shook    Joseph.Shook@Surescripts.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -16,19 +17,24 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Configuration;
 using System.ServiceProcess;
-
-using Health.Direct.Config.Client;
-using Health.Direct.Common.Diagnostics;
+using ClientSettingsSection = Health.Direct.Config.Client.ClientSettingsSection;
 
 namespace Health.Direct.DnsResponder.WinSrv
 {
+    /// <summary>
+    /// Implemantation of <see cref="ServiceBase"/>
+    /// </summary>
     public partial class DnsResponderWinSrv : ServiceBase
     {
         private DnsServer m_dnsServer;
         private IDnsStore m_store;
-        Diagnostics m_diagnostics;
+        readonly Diagnostics m_diagnostics;
         
+        /// <summary>
+        /// Constructor initializes service.
+        /// </summary>
         public DnsResponderWinSrv()
         {
             InitializeComponent();
@@ -52,17 +58,22 @@ namespace Health.Direct.DnsResponder.WinSrv
             m_diagnostics.ServiceInitializing();
 
             // load the settings from the related sections in app.config
-            DnsServerSettings dnsServerSettings = DnsServerSettingsSection.GetSection().AsDnsServerSettings();
+            var dnsServerSettings = DnsServerSettingsSection.GetSection().AsDnsServerSettings();
 
             if (dnsServerSettings.ResolutionMode == DnsResolutionMode.AuthoritativeResolution)
             {
-                AuthoritativeResolutionSettings settings = 
+                var settings = 
                     AuthoritativeResolutionSettingsSection.GetSection().AsAuthoritativeResolutionSettings(); 
                 m_store = new AuthoritativeRecordResolver(settings);
             }
             else if (dnsServerSettings.ResolutionMode == DnsResolutionMode.RecordStorageService)
             {
-                ClientSettings recordRetrievalSettings = ClientSettingsSection.GetSection().AsClientSettings();
+                var recordRetrievalSettings = ClientSettingsSection.GetSection().AsClientSettings();
+
+                var certPolicyServiceResolverSettings =
+                    ConfigurationManager.GetSection("ServiceSettingsGroup/CertPolicyServiceResolverSettings") as
+                        CertPolicyServiceResolverSettingsSection;
+
                 m_store = new DnsRecordStorageService(recordRetrievalSettings);
             }
             else
@@ -80,6 +91,10 @@ namespace Health.Direct.DnsResponder.WinSrv
             m_diagnostics.ServiceInitializingComplete(dnsServerSettings);
         }
 
+        /// <summary>
+        /// Support stating service from console app.
+        /// </summary>
+        /// <param name="args"></param>
         public void StartService(string[] args)
         {
             try
@@ -99,6 +114,9 @@ namespace Health.Direct.DnsResponder.WinSrv
             }
         }
 
+        /// <summary>
+        /// Support stoppin service from console app.
+        /// </summary>
         public void StopService()
         {
             try
@@ -116,14 +134,16 @@ namespace Health.Direct.DnsResponder.WinSrv
             }
         }
 
+        /// <inheritdoc />
         protected override void OnStart(string[] args)
         {
-            this.StartService(args);
+            StartService(args);
         }
 
+        /// <inheritdoc />
         protected override void OnStop()
         {
-            this.StopService();
+            StopService();
         }
     }
 }

@@ -28,13 +28,23 @@ namespace Health.Direct.Install.Tools.Tests
         [Fact]
         public void QueryTest()
         {
-            XPath editor = new XPath();
+            var editor = new XPath();
             editor.XmlFilePath = "DirectDnsResponderSvc.exe.config";
 
-            string value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
-            string expected = @"http://localhost/DnsService/RecordRetrievalService.svc/Records";
+            var value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
+            var expected = @"http://localhost/DnsService/RecordRetrievalService.svc/Records";
 
             Assert.Equal(expected, value);
+        }
+
+        [Fact]
+        public void QueryFragmentTest()
+        {
+            var editor = new XPath();
+            editor.XmlFilePath = "DirectDnsResponderSvc.exe.config";
+            var value = editor.GetFragment(@"/configuration/ServiceSettingsGroup/DnsServerSettings");
+            
+            Assert.NotEmpty(value);
         }
 
         /// <summary>
@@ -45,11 +55,11 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("DirectDnsResponderSvc.exe.config", "DirectDnsResponderSvc.exe.config.test", true);
-            XPath editor = new XPath();
+            var editor = new XPath();
             editor.XmlFilePath = "DirectDnsResponderSvc.exe.config.test";
 
-            string value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
-            string expected = @"http://localhost/DnsService/RecordRetrievalService.svc/Records";
+            var value = editor.SelectSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url");
+            var expected = @"http://localhost/DnsService/RecordRetrievalService.svc/Records";
             Assert.Equal(expected, value);
 
             editor.SetSingleAttribute(@"/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url",
@@ -70,19 +80,19 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("ConfigService.Web.config", "ConfigService.Web.config.test", true);
-            XPath editor = new XPath();
+            var editor = new XPath();
             editor.XmlFilePath = "ConfigService.Web.config.test";
 
-            string actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString");
-            string expected = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+            var actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString");
+            var expected = @"Data Source=(localdb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
             Assert.Equal(expected, actual);
 
             editor.SetSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString",
-               @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10");
+               @"Data Source=(localdb)\Projects;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10");
 
 
             actual = editor.SelectSingleAttribute("configuration/connectionStrings/add[@name=\"configStore\"]/@connectionString");
-            expected = @"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10";
+            expected = @"Data Source=(localdb)\Projects;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10";
 
             Assert.Equal(expected, actual);
 
@@ -99,7 +109,7 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
-            XPath editor = new XPath();
+            var editor = new XPath();
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
             //
@@ -128,7 +138,7 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
-            XPath editor = new XPath();
+            var editor = new XPath();
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
             editor.CreateFragment("/SmtpAgentConfig/MdnMonitor/Url");
@@ -150,7 +160,7 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
-            string anchorsPlugin = @"<Anchors>
+            var anchorsPlugin = @"<Anchors>
 <PluginResolver>
   <!-- NEW Resolver that COMBINES Anchors from multiple sources into a single list-->
   <Definition>
@@ -187,8 +197,8 @@ namespace Health.Direct.Install.Tools.Tests
 </PluginResolver>    
 </Anchors>";
 
-            string xpath = "/SmtpAgentConfig/Anchors";
-            XPath editor = new XPath();
+            var xpath = "/SmtpAgentConfig/Anchors";
+            var editor = new XPath();
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
             //var original = editor.SelectSingleAttribute("xpath");
@@ -198,12 +208,13 @@ namespace Health.Direct.Install.Tools.Tests
 
 
             //Assert
-            XmlDocument updatedDocument = new XmlDocument();
+            var updatedDocument = new XmlDocument();
             updatedDocument.Load("SmtpAgentConfig.xml.test");
 
-            XmlNode updatedAnchors = updatedDocument.SelectSingleNode(xpath);
+            var updatedAnchors = updatedDocument.SelectSingleNode(xpath);
+            Assert.NotNull(updatedAnchors);
 
-            XmlWriterSettings settings = new XmlWriterSettings();
+            var settings = new XmlWriterSettings();
             settings.NewLineChars = string.Empty;
             settings.Indent = false;
             settings.IndentChars = "";
@@ -233,7 +244,7 @@ namespace Health.Direct.Install.Tools.Tests
                 }
             }
 
-            XmlDocument cleanExpectedFragment = new XmlDocument();
+            var cleanExpectedFragment = new XmlDocument();
             cleanExpectedFragment.LoadXml(expectedFragment);
             expectedFragment = cleanExpectedFragment.OuterXml;
 
@@ -245,16 +256,16 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
-            string emptyFragment = @"";
+            var emptyFragment = @"";
 
-            string xpath = "/SmtpAgentConfig/Domain";
-            XPath editor = new XPath();
+            var xpath = "/SmtpAgentConfig/Domain";
+            var editor = new XPath();
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
             //var original = editor.SelectSingleAttribute("xpath");
-            XmlDocument originalDocument = new XmlDocument();
+            var originalDocument = new XmlDocument();
             originalDocument.Load("SmtpAgentConfig.xml.test");
-            XmlNode domainNode = originalDocument.SelectSingleNode(xpath);
+            var domainNode = originalDocument.SelectSingleNode(xpath);
             Assert.NotNull(domainNode);
 
             //Act
@@ -262,7 +273,7 @@ namespace Health.Direct.Install.Tools.Tests
 
 
             //Assert
-            XmlDocument updatedDocument = new XmlDocument();
+            var updatedDocument = new XmlDocument();
             updatedDocument.Load("SmtpAgentConfig.xml.test");
 
             domainNode = updatedDocument.SelectSingleNode(xpath);
@@ -277,9 +288,9 @@ namespace Health.Direct.Install.Tools.Tests
         {
 
             File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
-            string domainsFragement = @"<Domains><ServiceResolver><AgentName>SmtpAgent1</AgentName><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url></ClientSettings><CacheSettings><Cache>true</Cache><CacheTTLSeconds>20</CacheTTLSeconds></CacheSettings></ServiceResolver></Domains>";
+            var domainsFragement = @"<Domains><ServiceResolver><AgentName>SmtpAgent1</AgentName><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/Domains</Url></ClientSettings><CacheSettings><Cache>true</Cache><CacheTTLSeconds>20</CacheTTLSeconds></CacheSettings></ServiceResolver></Domains>";
 
-            string xpath = "/SmtpAgentConfig/Domains";
+            var xpath = "/SmtpAgentConfig/Domains";
             IPath editor = new XPath();
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
@@ -290,12 +301,13 @@ namespace Health.Direct.Install.Tools.Tests
 
 
             //Assert
-            XmlDocument updatedDocument = new XmlDocument();
+            var updatedDocument = new XmlDocument();
             updatedDocument.Load("SmtpAgentConfig.xml.test");
 
-            XmlNode updatedAnchors = updatedDocument.SelectSingleNode(xpath);
+            var updatedAnchors = updatedDocument.SelectSingleNode(xpath);
+            Assert.NotNull(updatedAnchors);
 
-            XmlWriterSettings settings = new XmlWriterSettings();
+            var settings = new XmlWriterSettings();
             settings.NewLineChars = string.Empty;
             settings.Indent = false;
             settings.IndentChars = "";
@@ -304,7 +316,7 @@ namespace Health.Direct.Install.Tools.Tests
             string actualFragment;
             using (var stringWriter = new StringWriter())
             {
-                using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
+                using (var writer = XmlWriter.Create(stringWriter, settings))
                 {
                     updatedAnchors.WriteTo(writer);
                     writer.Flush();
@@ -315,7 +327,7 @@ namespace Health.Direct.Install.Tools.Tests
             string expectedFragment;
             using (var stringWriter = new StringWriter())
             {
-                using (XmlWriter writer = XmlWriter.Create(stringWriter, settings))
+                using (var writer = XmlWriter.Create(stringWriter, settings))
                 {
                     XmlNode newNode = updatedDocument.CreateDocumentFragment();
                     newNode.InnerXml = domainsFragement;
@@ -325,23 +337,45 @@ namespace Health.Direct.Install.Tools.Tests
                 }
             }
 
-            XmlDocument cleanExpectedFragment = new XmlDocument();
+            var cleanExpectedFragment = new XmlDocument();
             cleanExpectedFragment.LoadXml(expectedFragment);
             expectedFragment = cleanExpectedFragment.OuterXml;
 
             Assert.Equal(expectedFragment, actualFragment);
         }
 
+        /// <summary>
+        /// Fragement does not exist so create a container for it.
+        /// </summary>
+        [Fact]
+        public void CreateFragmentBefore_Create_Test2()
+        {
+            File.Copy("DirectDnsResponderSvc.exe.config", "DirectDnsResponderSvc.exe.config.test", true);
+            var editor = new XPath();
+            editor.XmlFilePath = "DirectDnsResponderSvc.exe.config.test";
+
+            var domainsFragement = "<section name=\"CertPolicyServiceResolverSettings\" type=\"Surescripts.Health.Direct.DnsResponder.CertPolicyServiceResolverSettingsSection, Surescripts.Health.Direct.DnsResponder\" allowLocation=\"true\" allowDefinition=\"Everywhere\"/>";
+            
+
+            //var original = editor.SelectSingleAttribute("xpath");
+
+            //Act
+            editor.CreateFullFragment(domainsFragement, @"/configuration/configSections/sectionGroup");
+
+            
+        }
+
+
         [Fact]
         public void GetDomain_Test()
         {
 
             File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
-            XPath editor = new XPath();
+            var editor = new XPath();
             editor.XmlFilePath = "SmtpAgentConfig.xml.test";
 
-            string actual = editor.SelectSingleAttribute("/SmtpAgentConfig/Domain");
-            string expected = "Direct.North.Hobo.Lab";
+            var actual = editor.SelectSingleAttribute("/SmtpAgentConfig/Domain");
+            var expected = "Direct.North.Hobo.Lab";
             Assert.Equal(expected, actual);
 
             editor.SetSingleAttribute("/SmtpAgentConfig/Domain",

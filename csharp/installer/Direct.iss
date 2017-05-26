@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.3.0.1
+AppVerName=Direct Project .NET Gateway 1.3.0.4
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.3.0.1-NET45
+OutputBaseFilename=Direct-1.3.0.4-NET45_Beta
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.3.0.1
+VersionInfoVersion=1.3.0.4
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -90,12 +90,12 @@ Name: "{app}\Log"
 Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder 
 Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Flags: ignoreversion;  Components: dnsresponder 
 Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: dnsresponder 
-Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Components: dnsresponder
+Source: "..\windows services\dnsResponder.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Flags: onlyifdoesntexist; Excludes: "*.vshost.*,*.dll.config"; Components: dnsresponder
 
 Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: monitorserver 
 Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.exe"; DestDir: "{app}"; Flags: ignoreversion;  Components: monitorserver 
 Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: monitorserver 
-Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Components: monitorserver
+Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: onlyifdoesntexist; Components: monitorserver
 Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
          
 Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway
@@ -118,12 +118,12 @@ Source: "..\tools\admin.console\bin\{#Configuration}\*.config"; DestDir: "{app}"
                                   
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
-Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: onlyifdoesntexist; Components: configwebservice; 
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice; 
 
 Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
 Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
-Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: onlyifdoesntexist; Components: dnswebservice; 
 Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice; 
 
 Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui;
@@ -185,7 +185,8 @@ Name: "{group}\{cm:UninstallProgram,Direct Gateway}"; Filename: "{uninstallexe}"
 Filename: {app}\Libraries\vcredist.exe; Description: "Microsoft Visual C++ 2008 Redistributable Package"; Flags: postinstall runascurrentuser unchecked; Components: directgateway;
 Filename: {app}\createdatabase.bat; Parameters: ".\sqlexpress DirectConfig ""{app}\SQL\Schema.sql"" ""{app}\SQL\createuser.sql"" ""{app}\SQL\createReadOnlyuser.sql"""; Description: Install Database; Flags: runascurrentuser; Components: database ;
 Filename: {app}\createeventlogsource.bat; Parameters: " >> ""{app}\Log\createeventlogsource.log"" 2>&1"; Description:Setup event log; Flags: runascurrentuser; 
-Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser ; Components: dnsresponder;
+Filename: {app}\uninstallDnsResponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: UnInstall previous DNS Responder; Flags: runascurrentuser; Components: dnsresponder;
+Filename: {app}\installdnsresponder.bat; Parameters: """{app}"" >> ""{app}\Log\installdnsresponder.log"" 2>&1"; Description: Install DNS Responder; Flags: runascurrentuser postinstall; Components: dnsresponder;
 Filename: {app}\InstallMonitorServer.bat; Parameters: """{app}"" >> ""{app}\Log\InstallMonitorServer.log"" 2>&1"; Description: Install Monitor Server; Flags: runascurrentuser ; Components: monitorserver;
 Filename: {dotnet4032}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser;
 Filename: {dotnet4064}\RegAsm.exe; Parameters: Health.Direct.Install.Tools.dll /codebase; WorkingDir:{app}\InstallTools; StatusMsg: Installing installer tools; Description: Register tool com visible; Flags: runascurrentuser; 
@@ -421,7 +422,8 @@ begin
   //ShellExecAsOriginalUser('open', DnsServiceTestTextBox.Text, '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode); 
   try      
     RunTestServiceAspx(DnsResponderPage, 'DnsServiceTestLabel', 'DnsServiceTestTextBox');      
-    RunTestConnect(DnsResponderPage, 'DnsServiceLabel', 'DnsServiceUrlText');          
+    RunTestConnect(DnsResponderPage, 'DnsServiceLabel', 'DnsServiceUrlText');
+    RunTestConnect(DnsResponderPage, 'DnsPolicyLabel', 'DnsPolicyUrlText'); 
   except         
     RaiseException(GetExceptionMessage);
   finally
@@ -471,18 +473,7 @@ begin
 end;
 
 
-procedure SetDnsResponderUrl(url: String);
-var
-  tools: Variant;
-begin
-  try                              
-    tools := CreateOleObject('Direct.Installer.XPathTools');
-  except
-    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-    tools.XmlFilePath := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
-    tools.SetSingleAttribute('/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url', url);
-end;
+
 
 
 
@@ -518,48 +509,6 @@ begin
 
 end;
        
-
-
-function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
-var
-  DnsServiceUrlText : TNewEdit;
-begin         
-    DnsServiceUrlText := TNewEdit(Sender.FindComponent('DnsServiceUrlText'));
-    SetDnsResponderUrl(DnsServiceUrlText.Text);
-    Result := True;
-end;
-
-
-//Save connection string
-//Determine which config files to save it to.
-function SetDatabaseConnUrlOnClick(Sender: TWizardPage): Boolean;
-var
-  DbConnStrTextBox : TNewEdit;
-begin  
-  DbConnStrTextBox := TNewEdit(Sender.FindComponent('DbConnStrTextBox')); 
-  SetDatabaseConnSting(Sender, DbConnStrTextBox.Text);
-  Result := True; 
-end;
-
-
-
-
-
-
-function GetConfigSetting(configFile, xpath : String): String;
-var
-  xpathTools: Variant;    
-begin
-  try                              
-    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
-  except
-    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
-  end;
-    xpathTools.XmlFilePath := configFile ;
-    Result := xpathTools.SelectSingleAttribute(xpath);
-end;
-
-
 
 
 procedure WriteConfigItem(wizardPage : TWizardPage; configFile, xpath, objectName : String);
@@ -603,8 +552,64 @@ end;
 
 
 
+function SetDnsResponderUrlOnClick(Sender: TWizardPage): Boolean;
+var
+  configFile  : String;
+  DnsServiceUrlText : TNewEdit;
+begin
+    configFile := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config';     
+      
+    WriteConfigItem(Sender, configFile, '/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url', 'DnsServiceUrlText');
+    WriteConfigItem(Sender, configFile, '/configuration/ServiceSettingsGroup/CertPolicyServiceResolverSettings/ClientSettings/@Url', 'DnsPolicyUrlText');
+
+    Result := True;
+end;
 
 
+//Save connection string
+//Determine which config files to save it to.
+function SetDatabaseConnUrlOnClick(Sender: TWizardPage): Boolean;
+var
+  DbConnStrTextBox : TNewEdit;
+begin  
+  DbConnStrTextBox := TNewEdit(Sender.FindComponent('DbConnStrTextBox')); 
+  SetDatabaseConnSting(Sender, DbConnStrTextBox.Text);
+  Result := True; 
+end;
+
+
+
+
+
+
+function GetConfigSetting(configFile, xpath : String): String;
+var
+  xpathTools: Variant;    
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := configFile ;
+    Result := xpathTools.SelectSingleAttribute(xpath);
+end;
+
+function GetFragment(configFile, xpath : String): String;
+var
+  xpathTools: Variant;    
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := configFile ;
+    Result := xpathTools.GetFragment(xpath);
+end;
+
+
+       
 
 
 
@@ -668,6 +673,18 @@ begin
 end;
 
 
+procedure InsertXmlFragment(configFile, fragement, xPathParent : String);
+var
+  xpathTools: Variant;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    xpathTools.XmlFilePath := configFile;     
+    xpathTools.CreateFullFragment(fragement, xPathParent);     
+end;
 
 procedure InsertXmlFragmentBefore(configFile, fragement, xPathBefore : String);
 var
@@ -750,6 +767,9 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/AddressManager/Url', 'AddressManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');                           
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/CertPolicies/Public/ClientSettings/Url', 'PolicyText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/CertPolicies/Private/ClientSettings/Url', 'PolicyText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/CertPolicies/Trust/ClientSettings/Url', 'PolicyText');
   WriteOrDeleteConfigItem(Sender, configFile, '/SmtpAgentConfig/MdnMonitor', '/SmtpAgentConfig/MdnMonitor/Url', 'MdnMonitorText'); 
   
   BundleText := TNewEdit(Sender.FindComponent('BundleText'));
@@ -811,6 +831,7 @@ begin
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/AnchorManager/Url', 'AnchorsText');
   WriteConfigItem(Sender, configFile, '/ConsoleSettings/DnsRecordManager/Url', 'DnsRecordManagerText');
   WriteOrDeleteConfigItem(Sender, configFile, '/ConsoleSettings/MdnMonitor', '/ConsoleSettings/MdnMonitor/Url', 'MdnMonitorText'); 
+  WriteConfigItem(Sender, configFile, '/ConsoleSettings/CertPolicyManager/Url', 'PolicyText');
   WriteOrDeleteConfigItem(Sender, configFile, '/ConsoleSettings/BundleManager', '/ConsoleSettings/BundleManager/Url', 'BundleText'); 
 
   Result := True;
@@ -877,6 +898,7 @@ begin
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
     RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
     RunTestConnect(GatewayAdminPage, 'BundleLabel', 'BundleText');
+    RunTestConnect(GatewayAdminPage, 'PolicyLabel', 'PolicyText');
   except         
     RaiseException(GetExceptionMessage);
   finally
@@ -903,6 +925,7 @@ begin
     RunTestConnect(GatewayAdminPage, 'PrivateCertsLabel', 'PrivateCertsText');
     RunTestConnect(GatewayAdminPage, 'AnchorsLabel', 'AnchorsText');
     RunTestConnect(GatewayAdminPage, 'MdnMonitorLabel', 'MdnMonitorText');
+    RunTestConnect(GatewayAdminPage, 'PolicyLabel', 'PolicyText');
     RunTestConnect(GatewayAdminpage, 'BundleLabel', 'BundleText');
   except
     RaiseException(GetExceptionMessage);
@@ -977,17 +1000,37 @@ end;
 procedure DnsResponderPageOnActivate(Sender: TWizardPage);
 var
   tools : Variant;
-  DnsServiceUrlText : TNewEdit;
+  DnsServiceUrlText, DnsPolicyUrlText : TNewEdit;
   DnsServiceTestTextBox : TNewEdit;
-  configFile : String;
+  configFile, PolicyManagerFragment, PolicyManager, PolicyManagerSettingsDefFragment, PolicyManagerSettingsDef : String;
 begin
 
   configFile := ExpandConstant('{app}') + '\DirectDnsResponderSvc.exe.config' ;
   
+  // Add address manage and policy if they do not exist.
+  PolicyManagerFragment := '<CertPolicyServiceResolverSettings><ClientSettings Url="http://localhost/ConfigService/DomainManagerService.svc/CertPolicies"/><CacheSettings Cache="true" CacheTTLSeconds="60"/></CertPolicyServiceResolverSettings>';
+  PolicyManagerSettingsDefFragment := '<section name="CertPolicyServiceResolverSettings" type="Health.Direct.DnsResponder.CertPolicyServiceResolverSettingsSection, Health.Direct.DnsResponder" allowLocation="true" allowDefinition="Everywhere"/>';
+      
+  PolicyManagerSettingsDef := GetConfigSetting(configFile, '/configuration/configSections/sectionGroup/section[@name="CertPolicyServiceResolverSettings"]/@name');
+  PolicyManager := GetFragment(configFile, '/configuration/ServiceSettingsGroup/CertPolicyServiceResolverSettings');
+
+  if ( Length(PolicyManagerSettingsDef) = 0 ) then
+  begin
+      InsertXmlFragment(configFile, PolicyManagerSettingsDefFragment, '/configuration/configSections/sectionGroup');             
+  end; 
+
+  if ( Length(PolicyManager) = 0 ) then
+  begin
+      InsertXmlFragment(configFile, PolicyManagerFragment, '/configuration/ServiceSettingsGroup');             
+  end; 
+
   //Set DnsService from config file.
   DnsServiceUrlText := TNewEdit(Sender.FindComponent('DnsServiceUrlText'));
   DnsServiceUrlText.Text :=   GetConfigSetting(configFile, '/configuration/ServiceSettingsGroup/RecordRetrievalServiceSettings/@Url');
   
+  DnsPolicyUrlText := TNewEdit(Sender.FindComponent('DnsPolicyUrlText'));
+  DnsPolicyUrlText.Text :=   GetConfigSetting(configFile, '/configuration/ServiceSettingsGroup/CertPolicyServiceResolverSettings/ClientSettings/@Url');
+
   //Set TestService.aspx by rebuilding Url 
   try                              
     tools := CreateOleObject('Direct.Installer.UrlTools');
@@ -1200,12 +1243,31 @@ end;
 
 procedure GatewayAdminPageTwoOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText: TNewEdit;
-  configFile : String;
+  PolicyText, DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText: TNewEdit;
+  configFile, AddressManagerFragment, PolicyManagerFragment, AddressManager, PolicyManager : String;
 begin
 
   configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   
+  // Add address manage and policy if they do not exist.
+  AddressManagerFragment := '<AddressManager><Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url><Settings><EnableDomainSearch>true</EnableDomainSearch></Settings><CacheSettings><Cache>true</Cache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></AddressManager>';
+  PolicyManagerFragment := '<CertPolicies><Public><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Public><Private><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Private><Trust><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Trust></CertPolicies>';
+
+  AddressManager := GetConfigSetting(configFile, '/SmtpAgentConfig/AddressManager');
+
+  if ( Length(AddressManager) = 0 ) then
+  begin
+      InsertXmlFragmentBefore(configFile, AddressManagerFragment, '/SmtpAgentConfig/Log');             
+  end;         
+
+  PolicyManager := GetConfigSetting(configFile, '/SmtpAgentConfig/CertPolicies');
+
+  if ( Length(PolicyManager) = 0 ) then
+  begin
+      InsertXmlFragmentBefore(configFile, PolicyManagerFragment, '/SmtpAgentConfig/Anchors');             
+  end; 
+
+  //Fill form with web service urls.
   DomainManagerText := TNewEdit(Sender.FindComponent('DomainManagerText'));
   DomainManagerText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/DomainManager/Url');
 
@@ -1223,6 +1285,9 @@ begin
   
   MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
   MdnMonitorText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/MdnMonitor/Url');
+
+  PolicyText := TNewEdit(Sender.FindComponent('PolicyText'));
+  PolicyText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/CertPolicies/Public/ClientSettings/Url');
 
   BundleText := TNewEdit(Sender.FindComponent('BundleText'));
   BundleText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/BundleResolver/ClientSettings/Url');
@@ -1259,11 +1324,22 @@ end;
 
 procedure ConfigConsolePageOneOnActivate(Sender: TWizardPage);
 var
-  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText, BundleText: TNewEdit;
-  configFile : String;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, PropertyText, BlobText, MdnMonitorText, BundleText, PolicyText: TNewEdit;
+  configFile, PolicyManagerFragment, PolicyManager : String;
   bundleString : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\ConfigConsoleSettings.xml';
+
+  // Add address manage and policy if they do not exist.
+  PolicyManagerFragment := '<CertPolicyManager><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></CertPolicyManager>';
+                   
+  PolicyManager := GetConfigSetting(configFile, '/ConsoleSettings/CertPolicyManager');
+
+  if ( Length(PolicyManager) = 0 ) then
+  begin
+      InsertXmlFragmentBefore(configFile, PolicyManagerFragment, '/ConsoleSettings/BundleManager');             
+  end; 
+
 
   DomainManagerText := TNewEdit(Sender.FindComponent('DomainManagerText'));
   DomainManagerText.Text := GetConfigSetting(configFile, '/ConsoleSettings/DomainManager/Url');
@@ -1282,6 +1358,9 @@ begin
                           
   MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
   MdnMonitorText.Text := GetConfigSetting(configFile, '/ConsoleSettings/MdnMonitor/Url');
+
+  PolicyText := TNewEdit(Sender.FindComponent('PolicyText'));
+  PolicyText.Text := GetConfigSetting(configFile, '/ConsoleSettings/CertPolicyManager/Url');
 
   BundleText := TNewEdit(Sender.FindComponent('BundleText'));
   bundleString  := GetConfigSetting(configFile, '/ConsoleSettings/BundleManager/Url');
@@ -1542,8 +1621,8 @@ var
   DnsResponderPage: TWizardPage;
   DnsServiceTestTextBox: TNewEdit;
   Button, HelpButton: TNewButton;
-  DnsServiceEndPointLabel, DnsServiceLabel, DnsServiceTestLabel : TNewStaticText;
-  DnsServiceUrlText : TNewEdit;
+  DnsServiceEndPointLabel, DnsServiceLabel, DnsServiceTestLabel, DnsPolicyLabel : TNewStaticText;
+  DnsServiceUrlText, DnsPolicyUrlText : TNewEdit;
 begin
 
   DnsResponderPage := CreateCustomPage(pageBefore.ID, 'Configure DnsResponder', 'DnsService endpoint stored in DirectDnsResponderSvc.exe.config');
@@ -1594,7 +1673,20 @@ begin
   DnsServiceUrlText.Top := DnsServiceLabel.Top;
   DnsServiceUrlText.Left :=  DnsServiceTestTextBox.Left;
   DnsServiceUrlText.Width := DnsServiceTestTextBox.Width;
-  DnsServiceUrlText.Parent := DnsResponderPage.Surface;     
+  DnsServiceUrlText.Parent := DnsResponderPage.Surface;    
+  
+  DnsPolicyLabel := TNewStaticText.Create(DnsResponderPage);
+  DnsPolicyLabel.Name := 'DnsPolicyLabel';
+  DnsPolicyLabel.Caption := 'Policy Service';
+  DnsPolicyLabel.Top := DnsServiceLabel.Top + DnsServiceTestLabel.Height + ScaleY(16); 
+  DnsPolicyLabel.Parent := DnsResponderPage.Surface;
+
+  DnsPolicyUrlText := TNewEdit.Create(DnsResponderPage);
+  DnsPolicyUrlText.Name := 'DnsPolicyUrlText';   
+  DnsPolicyUrlText.Top := DnsPolicyLabel.Top;
+  DnsPolicyUrlText.Left :=  DnsServiceTestTextBox.Left;
+  DnsPolicyUrlText.Width := DnsServiceTestTextBox.Width;
+  DnsPolicyUrlText.Parent := DnsResponderPage.Surface;     
   
   DnsResponderPage.OnActivate := @DnsResponderPageOnActivate;
   DnsResponderPage.OnNextButtonClick := @SetDnsResponderUrlOnClick;
@@ -1739,8 +1831,8 @@ function CreateGatewayWizardPageTwo(pageBefore: TWizardPage): TWizardPage;
 var
   GatewayAdminPageTwo: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel, MdnMonitorLabel, BundleLabel: TNewStaticText;
-  DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText : TNewEdit;
+  PolicyLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel, MdnMonitorLabel, BundleLabel: TNewStaticText;
+  PolicyText, DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText : TNewEdit;
   
 begin
     GatewayAdminPageTwo := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II', '');
@@ -1856,10 +1948,25 @@ begin
     BundleText.Parent := GatewayAdminPageTwo.Surface;
     
 
+    //Set Trust Policy Manager
+    PolicyLabel := TNewStaticText.Create(GatewayAdminPageTwo);
+    PolicyLabel.Name := 'PolicyLabel';
+    PolicyLabel.Top :=  BundleLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
+    PolicyLabel.Caption := 'Policy Manager: ';
+    PolicyLabel.Parent := GatewayAdminPageTwo.Surface;
+
+    PolicyText := TNewEdit.Create(GatewayAdminPageTwo);
+    PolicyText.Name := 'PolicyText';
+    PolicyText.Top := PolicyLabel.Top;
+    PolicyText.Left := DomainManagerText.Left;
+    PolicyText.Width := DomainManagerText.Width;
+    PolicyText.Parent := GatewayAdminPageTwo.Surface;
+
+
     //Set DnsResolverIp
     DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPageTwo);
     DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
-    DnsResolverIpLabel.Top :=  BundleLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
+    DnsResolverIpLabel.Top :=  PolicyLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
     DnsResolverIpLabel.Caption := 'Dns Resolver IP: ';
     DnsResolverIpLabel.Parent := GatewayAdminPageTwo.Surface;
                               
@@ -2001,8 +2108,8 @@ function CreateConfigConsolePageOne(pageBefore: TWizardPage): TWizardPage;
 var
   ConfigConsolePage: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
-  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, MdnMonitorLabel, BundleLabel: TNewStaticText;
-  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, MdnMonitorText, BundleText: TNewEdit;
+  DomainManagerLabel, AddressManagerLabel, DnsRecordManagerLabel, PrivateCertsLabel, AnchorsLabel, MdnMonitorLabel, BundleLabel, PolicyLabel: TNewStaticText;
+  DomainManagerText, AddressManagerText, DnsRecordManagerText, PrivateCertsText, AnchorsText, MdnMonitorText, BundleText, PolicyText: TNewEdit;
 
 begin
     ConfigConsolePage := CreateCustomPage(pageBefore.ID, 'Configure Gateway Console I', '');
@@ -2119,8 +2226,23 @@ begin
     MdnMonitorText.Parent := ConfigConsolePage.Surface;
 
 
+    //Set Trust Policy Manager
+    PolicyLabel := TNewStaticText.Create(ConfigConsolePage);
+    PolicyLabel.Name := 'PolicyLabel';
+    PolicyLabel.Top :=  MdnMonitorLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
+    PolicyLabel.Caption := 'Policy Manager: ';
+    PolicyLabel.Parent := ConfigConsolePage.Surface;
+
+    PolicyText := TNewEdit.Create(ConfigConsolePage);
+    PolicyText.Name := 'PolicyText';
+    PolicyText.Top := PolicyLabel.Top;
+    PolicyText.Left := DomainManagerText.Left;
+    PolicyText.Width := DomainManagerText.Width;
+    PolicyText.Parent := ConfigConsolePage.Surface;
+
+
     //Set Trust Bundle Manager  (Created above)            
-    BundleLabel.Top :=  MdnMonitorLabel.Top + MdnMonitorLabel.Height + ScaleY(11);      
+    BundleLabel.Top :=  PolicyLabel.Top + MdnMonitorLabel.Height + ScaleY(11);      
     BundleLabel.Parent := ConfigConsolePage.Surface;
 
     BundleText := TNewEdit.Create(ConfigConsolePage);

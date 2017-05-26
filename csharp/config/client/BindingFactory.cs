@@ -18,7 +18,7 @@ using System.ServiceModel;
 
 namespace Health.Direct.Config.Client
 {
-    internal static class BindingFactory
+    public static class BindingFactory
     {
         public static BasicHttpBinding CreateBasic()
         {

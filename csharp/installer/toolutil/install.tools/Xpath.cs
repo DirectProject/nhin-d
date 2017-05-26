@@ -27,9 +27,27 @@ namespace Health.Direct.Install.Tools
     [InterfaceType(ComInterfaceType.InterfaceIsDual)]
     public interface IPath
     {
+        /// <summary>
+        /// Path to document.
+        /// </summary>
         string XmlFilePath { get; set; }
+        /// <summary>
+        /// Get a single attribute
+        /// </summary>
+        /// <param name="xpath"></param>
+        /// <returns></returns>
         string SelectSingleAttribute(string xpath);
+        /// <summary>
+        /// Set a single attribute
+        /// </summary>
+        /// <param name="xpath"></param>
+        /// <param name="value"></param>
         void SetSingleAttribute(string xpath, string value);
+        /// <summary>
+        /// Get xml fragment by xpath
+        /// </summary>
+        /// <param name="xpath"></param>
+        string GetFragment(string xpath);
         /// <summary>
         /// Adds a simple leaf node to the xml document
         /// </summary>
@@ -38,6 +56,16 @@ namespace Health.Direct.Install.Tools
         /// </remarks>
         /// <param name="xpath"></param>
         void CreateFragment(string xpath);
+
+        /// <summary>
+        /// Adds an xml fragment to the xml document
+        /// </summary>
+        /// <remarks>
+        /// Xpath should not contain attributes.
+        /// </remarks>
+        /// <param name="xpathParent"></param>
+        /// <param name="xmlFragment"></param>
+        void CreateFullFragment(string xmlFragment, string xpathParent);
 
         /// <summary>
         /// Add xml fragment at a position in the document.
@@ -86,7 +114,8 @@ namespace Health.Direct.Install.Tools
         }
         public string SelectSingleAttribute(string xpath)
         {
-            XmlNode node = _document.SelectSingleNode(xpath);
+            var node = _document.SelectSingleNode(xpath);
+
             if (node is XmlElement)
             {
                 return node.InnerText;
@@ -96,7 +125,7 @@ namespace Health.Direct.Install.Tools
 
         public void SetSingleAttribute(string xpath, string value)
         {
-            XmlNode node = _document.SelectSingleNode(xpath);
+            var node = _document.SelectSingleNode(xpath);
 
             if (node != null)
             {
@@ -111,6 +140,14 @@ namespace Health.Direct.Install.Tools
                 }
                 _document.Save(XmlFilePath);
             }
+        }
+
+        public string GetFragment(string xpath)
+        {
+            var node = _document.SelectSingleNode(xpath);
+            var nodeText = node?.OuterXml;
+
+            return nodeText;
         }
 
 
@@ -140,13 +177,25 @@ namespace Health.Direct.Install.Tools
             _document.Save(XmlFilePath);
         }
 
+        public void CreateFullFragment(string xmlFragment, string xpathParent)
+        {
+            var node = _document.SelectSingleNode(xpathParent);
+            var newNode = _document.CreateDocumentFragment();
+            newNode.InnerXml = xmlFragment;
+            if (_document.DocumentElement != null)
+            {
+                node.AppendChild(newNode);
+                _document.Save(XmlFilePath);
+            }
+        }
+
 
         public void ReplaceFragment(string xpath, string xmlFragment)
         {
-            XmlNode node = _document.SelectSingleNode(xpath);
-            
-            XmlNode newNode = _document.CreateDocumentFragment();
+            var node = _document.SelectSingleNode(xpath);
+            var newNode = _document.CreateDocumentFragment();
             newNode.InnerXml = xmlFragment;
+
             if (_document.DocumentElement != null)
             {
                 if (node != null) _document.DocumentElement.RemoveChild(node);
@@ -157,7 +206,8 @@ namespace Health.Direct.Install.Tools
 
         public void DeleteFragment(string xpath)
         {
-            XmlNode node = _document.SelectSingleNode(xpath);
+            var node = _document.SelectSingleNode(xpath);
+
             if (_document.DocumentElement != null)
             {
                 if (node != null) _document.DocumentElement.RemoveChild(node);
@@ -167,7 +217,7 @@ namespace Health.Direct.Install.Tools
 
         public void CreateFragmentBefore(string xmlFragment, string xPathBefore)
         {
-            XmlDataDocument newDoc = new XmlDataDocument();
+            var newDoc = new XmlDataDocument();
             newDoc.LoadXml(xmlFragment);
 
             XmlNode newNode = _document.CreateDocumentFragment();
