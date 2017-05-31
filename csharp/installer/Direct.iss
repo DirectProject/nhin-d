@@ -36,7 +36,7 @@
 ArchitecturesInstallIn64BitMode=x64 ia64
 AppId={{995D337A-5620-4537-9704-4B19EC628A39}
 AppName=Direct Project .NET Gateway
-AppVerName=Direct Project .NET Gateway 1.3.0.4
+AppVerName=Direct Project .NET Gateway 1.3.0.5
 AppPublisher=The Direct Project (nhindirect.org)
 AppPublisherURL=http://nhindirect.org
 AppSupportURL=http://nhindirect.org
@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.3.0.4-NET45_Beta
+OutputBaseFilename=Direct-1.3.0.5-NET45_Beta
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.3.0.4
+VersionInfoVersion=1.3.0.5
 SetupLogging=yes
 PrivilegesRequired=admin
 
@@ -118,12 +118,12 @@ Source: "..\tools\admin.console\bin\{#Configuration}\*.config"; DestDir: "{app}"
                                   
 Source: "..\config\service\*.svc"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
 Source: "..\config\service\*.aspx"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
-Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: onlyifdoesntexist; Components: configwebservice; 
+Source: "..\config\service\*.config"; DestDir: "{app}\ConfigService"; Flags: ignoreversion; Components: configwebservice; 
 Source: "..\config\service\bin\*.dll"; DestDir: "{app}\ConfigService\bin"; Flags: ignoreversion recursesubdirs; Components: configwebservice; 
 
 Source: "..\dnsresponder.service\*.svc"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
 Source: "..\dnsresponder.service\*.aspx"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
-Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: onlyifdoesntexist; Components: dnswebservice; 
+Source: "..\dnsresponder.service\*.config"; DestDir: "{app}\DnsService"; Flags: ignoreversion; Components: dnswebservice; 
 Source: "..\dnsresponder.service\bin\*.dll"; DestDir: "{app}\DnsService\bin"; Flags: ignoreversion recursesubdirs; Components: dnswebservice; 
 
 Source: "..\installer\configui\*"; DestDir: "{app}\ConfigUI"; Flags: ignoreversion recursesubdirs; Components: configui;
@@ -159,7 +159,7 @@ Source: "..\config\store\Schema.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion
 Source: "createuser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
 Source: "createReadOnlyUser.sql"; DestDir: "{app}\SQL"; Flags: ignoreversion; Components: database; 
 
-Source: "toolutil\install.tools\bin\{#Configuration}\Health.Direct.Install.Tools.dll"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
+Source: "toolutil\install.tools\bin\{#Configuration}\Health.Direct.Install.Tools.*"; DestDir: "{app}\InstallTools"; Flags: ignoreversion;  
 
                                  
 [UninstallDelete]
@@ -223,7 +223,7 @@ var
   StartDirectMonitorWinSrv : Boolean;
   strDnsServiceNameToCheck : String;
   strDirectMonitorWinSrv : String;
-
+  ConfigServiceConStr, DnsServiceConStr  : String;
    
 
 
@@ -288,7 +288,43 @@ begin
 end;
 
 
+procedure GetConnectionStrings();
+var
+   xpathTools: Variant; 
+   ResultCode : Integer; 
+   configServiceFile, dnsServiceFile : String;
+begin
 
+  if(not toolsRegistered) then
+  begin
+    ExtractTemporaryFile('Health.Direct.Install.Tools.dll');     
+    Exec(ExpandConstant('{dotnet4032}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+    Exec(ExpandConstant('{dotnet4064}\RegAsm.exe'),'Health.Direct.Install.Tools.dll /codebase', ExpandConstant('{tmp}'), SW_SHOW, ewWaitUntilTerminated, ResultCode );
+    toolsRegistered := true;
+  end;
+
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+  
+  configServiceFile := ExpandConstant('{app}') + '\ConfigService\Web.Config';
+
+  if FileExists(configServiceFile) then
+  begin    
+    xpathTools.XmlFilePath := configServiceFile;
+    ConfigServiceConStr := xpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
+  end;
+
+  dnsServiceFile := ExpandConstant('{app}') + '\DnsService\Web.Config';
+   
+  if FileExists(dnsServiceFile) then
+  begin
+    xpathTools.XmlFilePath := dnsServiceFile;
+    DnsServiceConStr := xpathTools.SelectSingleAttribute('configuration/connectionStrings/add[@name="configStore"]/@connectionString');
+  end;       
+end;
 
 
 function InitializeSetup(): Boolean; 
@@ -534,14 +570,52 @@ begin
     begin
       value := labelText.Caption;
     end;
+    
+    xpathTools.XmlFilePath := configFile;
+    existingValue := xpathTools.SelectSingleAttribute(xpath);
 
+    // Remove fragment if the source is empty
+    if ( (Length(value) = 0) and (Length(Trim(existingValue)) > 0)) then
+    begin
+      xpathTools.DeleteNode(xpath);
+      Exit;
+    end;                                                     
+    
+    if ( VarIsNull(existingValue) or (length(existingValue) = 0)) then
+    begin
+      xpathTools.CreateFragment(xpath);
+    end;
+    
+    xpathTools.SetSingleAttribute(xpath, value);
+    
+end;
+
+procedure WriteConfigItemCombo(wizardPage : TWizardPage; configFile, xpath, objectName : String);
+var
+  xpathTools: Variant;     
+  comboBox: TComboBox; 
+  value : String;
+  existingValue : String;
+begin
+  try                              
+    xpathTools := CreateOleObject('Direct.Installer.XPathTools');
+  except
+    RaiseException('Cannot find Direct.Installer.XPathTools.'#13#13'(Error ''' + GetExceptionMessage + ''' occurred)');
+  end;
+    comboBox := TComboBox(wizardPage.FindComponent(objectName));   
+
+    if not (comboBox = nil) then
+    begin
+      value := Trim(comboBox.text);
+    end;
+             
     if ( Length(value) = 0) then Exit;
 
     xpathTools.XmlFilePath := configFile;
     
     existingValue := xpathTools.SelectSingleAttribute(xpath);
     
-    if ( VarIsNull(existingValue)) then
+    if ( VarIsNull(existingValue) or (length(existingValue) = 0)) then
     begin
       xpathTools.CreateFragment(xpath);
     end;
@@ -766,7 +840,6 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/DomainManager/Url', 'DomainManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/AddressManager/Url', 'AddressManagerText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PrivateCerts/ServiceResolver/ClientSettings/Url', 'PrivateCertsText');                           
-  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/CertPolicies/Public/ClientSettings/Url', 'PolicyText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/CertPolicies/Private/ClientSettings/Url', 'PolicyText');
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/CertPolicies/Trust/ClientSettings/Url', 'PolicyText');
@@ -814,6 +887,45 @@ begin
   WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/ProcessOutgoing/CopyFolder', 'OutgoingMessageText');
  
   Result := True;
+end;
+
+function SetConfigAdminPageFourEndpointsOnClick(Sender: TWizardPage): Boolean;
+var                
+  configFile  : String;
+begin
+  
+  configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Trust/MaxIssuerChainLength', 'MaxIssuerChainLengthText');
+  WriteConfigItemCombo(Sender, configFile, '/SmtpAgentConfig/Trust/RevocationCheckMode', 'RevocationCheckModeCombo');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/Trust/Timeout', 'TimeoutText');
+  WriteConfigItemCombo(Sender, configFile, '/SmtpAgentConfig/Cryptographer/DefaultEncryption', 'DefaultEncryptionCombo');
+  WriteConfigItemCombo(Sender, configFile, '/SmtpAgentConfig/Cryptographer/DefaultDigest', 'DefaultDigestCombo');
+ 
+  Result := True;
+end;
+
+
+
+function GatewayDNSResolverPageEndpointsOnClick(Sender: TWizardPage): Boolean;
+var                
+  configFile  : String;
+begin
+  
+  configFile := ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP', 'DnsResolverIpText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/BackupServerIP', 'DnsResolverBackupIpText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/Timeout', 'DnsResolverTimeoutText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/Cache', 'DnsResolverCacheText');
+
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/PluginResolver/Definition/Settings/ServerIP', 'DnsResolverIpText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/PluginResolver/Definition/Settings/BackupServerIP', 'DnsResolverBackupIpText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/PluginResolver/Definition/Settings/Timeout', 'DnsResolverTimeoutText');
+  WriteConfigItem(Sender, configFile, '/SmtpAgentConfig/PublicCerts/PluginResolver/Definition/Settings/Cache', 'DnsResolverCacheText');
+
+  Result := True;   
+                                                                                    
 end;
 
 
@@ -1056,12 +1168,28 @@ begin
   end;
     if (page.Name = 'ConfigService') then
     begin
-      xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config';
+      if(length(ConfigServiceConStr) > 0) then
+      begin
+        dbConnStr := ConfigServiceConStr;
+        Result := dbConnStr;
+        Exit;
+      end
+      else begin
+        xpathTools.XmlFilePath := ExpandConstant('{app}') + '\ConfigService\Web.Config';
+      end;
     end;
     
     if (page.Name = 'DnsService') then
     begin
-      xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config';
+      if(length(DnsServiceConStr) > 0) then
+      begin
+        dbConnStr := DnsServiceConStr;
+        Result := dbConnStr;
+        Exit;
+      end
+      else begin
+        xpathTools.XmlFilePath := ExpandConstant('{app}') + '\DnsService\Web.Config';
+      end;
     end;
 
     if (page.Name = 'MdnMonitorService') then
@@ -1243,14 +1371,16 @@ end;
 
 procedure GatewayAdminPageTwoOnActivate(Sender: TWizardPage);
 var
-  PolicyText, DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText: TNewEdit;
-  configFile, AddressManagerFragment, PolicyManagerFragment, AddressManager, PolicyManager : String;
+  PolicyText, DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, MdnMonitorText, BundleText: TNewEdit;
+  configFile, AddressManagerFragment, PolicyManagerFragment, AddressManager, PolicyManager, LdapResolverFragment, LdapResolver : String;
+  TrustFragment, Trust : String;
+  CryptographerFragment, Cryptographer : String;
 begin
 
   configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   
   // Add address manage and policy if they do not exist.
-  AddressManagerFragment := '<AddressManager><Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url><Settings><EnableDomainSearch>true</EnableDomainSearch></Settings><CacheSettings><Cache>true</Cache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></AddressManager>';
+  AddressManagerFragment := '<AddressManager><Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url><Settings><EnableDomainSearch>true</EnableDomainSearch><CacheSettings><Cache>true</Cache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Settings></AddressManager>';
   PolicyManagerFragment := '<CertPolicies><Public><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Public><Private><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Private><Trust><ClientSettings><Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url></ClientSettings><CacheSettings><Cache>true</Cache><NegativeCache>true</NegativeCache><CacheTTLSeconds>60</CacheTTLSeconds></CacheSettings></Trust></CertPolicies>';
 
   AddressManager := GetConfigSetting(configFile, '/SmtpAgentConfig/AddressManager');
@@ -1267,6 +1397,34 @@ begin
       InsertXmlFragmentBefore(configFile, PolicyManagerFragment, '/SmtpAgentConfig/Anchors');             
   end; 
 
+  // Add LDAP resolver if it does not exist.
+  LdapResolverFragment := '<PluginResolver><Definition><TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName><Settings><ServerIP>8.8.8.8</ServerIP><BackupServerIP>8.8.4.4</BackupServerIP><Timeout>5000</Timeout><Cache>true</Cache></Settings></Definition></PluginResolver>';
+  LdapResolver := GetFragment(configFile, '/SmtpAgentConfig/PublicCerts/PluginResolver');
+
+  if ( Length(LdapResolver) = 0 ) then
+  begin
+      InsertXmlFragment(configFile, LdapResolverFragment, '/SmtpAgentConfig/PublicCerts');             
+  end; 
+          
+  // Add Trust settings if it does not exist, setting to online
+  TrustFragment := '<Trust><MaxIssuerChainLength>4</MaxIssuerChainLength><RevocationCheckMode>Online</RevocationCheckMode><Timeout>2000</Timeout></Trust>';
+  Trust := GetFragment(configFile, '/SmtpAgentConfig/Trust');
+
+  if ( Length(Trust) = 0 ) then
+  begin
+      InsertXmlFragment(configFile, TrustFragment, '/SmtpAgentConfig');             
+  end;          
+             
+  // Add Cryptographer with a default Digest of SHA256 if it does not exist
+  CryptographerFragment := '<Cryptographer><DefaultEncryption>AES128</DefaultEncryption><DefaultDigest>SHA256</DefaultDigest></Cryptographer>';
+  Cryptographer := GetFragment(configFile, '/SmtpAgentConfig/Cryptographer');
+
+  if ( Length(Cryptographer) = 0 ) then
+  begin
+      InsertXmlFragment(configFile, CryptographerFragment, '/SmtpAgentConfig');             
+  end;  
+  
+  
   //Fill form with web service urls.
   DomainManagerText := TNewEdit(Sender.FindComponent('DomainManagerText'));
   DomainManagerText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/DomainManager/Url');
@@ -1279,10 +1437,7 @@ begin
   
   AnchorsText := TNewEdit(Sender.FindComponent('AnchorsText'));
   AnchorsText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Anchors/ServiceResolver/ClientSettings/Url | /SmtpAgentConfig/Anchors/PluginResolver/Definition/Settings/ServiceResolver/ClientSettings/Url');
-  
-  DnsResolverIpText := TNewEdit(Sender.FindComponent('DnsResolverIpText'));
-  DnsResolverIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
-  
+     
   MdnMonitorText := TNewEdit(Sender.FindComponent('MdnMonitorText'));
   MdnMonitorText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/MdnMonitor/Url');
 
@@ -1298,25 +1453,88 @@ end;
 
 procedure GatewayAdminPageThreeOnActivate(Sender: TWizardPage);
 var
-  PickupText, RawMessageText, BadMessageText, IncomingMessageText, OutgoingMessageText : TNewMemo;
+  PickupText, RawMessageText, BadMessageText, IncomingMessageText, OutgoingMessageText : TNewEdit;
   configFile : String;
 begin
   configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
   
-  PickupText := TNewMemo(Sender.FindComponent('PickupText'));
+  PickupText := TNewEdit(Sender.FindComponent('PickupText'));
   PickupText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/InternalMessage/PickupFolder');
 
-  RawMessageText := TNewMemo(Sender.FindComponent('RawMessageText'));
+  RawMessageText := TNewEdit(Sender.FindComponent('RawMessageText'));
   RawMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/RawMessage/CopyFolder');
   
-  BadMessageText := TNewMemo(Sender.FindComponent('BadMessageText'));
+  BadMessageText := TNewEdit(Sender.FindComponent('BadMessageText'));
   BadMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/BadMessage/CopyFolder');
   
-  IncomingMessageText := TNewMemo(Sender.FindComponent('IncomingMessageText'));
+  IncomingMessageText := TNewEdit(Sender.FindComponent('IncomingMessageText'));
   IncomingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessIncoming/CopyFolder');
   
-  OutgoingMessageText := TNewMemo(Sender.FindComponent('OutgoingMessageText'));
+  OutgoingMessageText := TNewEdit(Sender.FindComponent('OutgoingMessageText'));
   OutgoingMessageText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/ProcessOutgoing/CopyFolder');
+
+end;
+
+
+procedure GatewayAdminPageFourOnActivate(Sender: TWizardPage);
+var
+  MaxIssuerChainLengthText, TimeoutText : TNewEdit;
+  DefaultEncryptionCombo, DefaultDigestCombo, RevocationCheckModeCombo : TNewComboBox;
+  configFile, revocationCheckMode : String;
+  R : Longint;
+begin
+  configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
+  MaxIssuerChainLengthText := TNewEdit(Sender.FindComponent('MaxIssuerChainLengthText'));
+  MaxIssuerChainLengthText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Trust/MaxIssuerChainLength');
+
+  RevocationCheckModeCombo := TNewComboBox(Sender.FindComponent('RevocationCheckModeCombo'));
+  revocationCheckMode := GetConfigSetting(configFile, '/SmtpAgentConfig/Trust/RevocationCheckMode');
+  R := CompareText('Online', revocationCheckMode)
+  
+  if(R = 0) then
+  begin
+    RevocationCheckModeCombo.ItemIndex := 0;
+  end 
+  else begin 
+    RevocationCheckModeCombo.ItemIndex := 1;
+  end;
+  
+
+
+  RevocationCheckModeCombo.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Trust/RevocationCheckMode');
+  
+  TimeoutText := TNewEdit(Sender.FindComponent('TimeoutText'));
+  TimeoutText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Trust/Timeout');
+  
+  DefaultEncryptionCombo := TNewComboBox(Sender.FindComponent('DefaultEncryptionCombo'));
+  DefaultEncryptionCombo.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Cryptographer/DefaultEncryption');
+
+  DefaultDigestCombo := TNewComboBox(Sender.FindComponent('DefaultDigestCombo'));
+  DefaultDigestCombo.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/Cryptographer/DefaultDigest');
+
+end;
+
+
+
+procedure GatewayDNSResolverPageOnActivate(Sender: TWizardPage);
+var
+  DnsResolverIpText, DnsResolverBackupIpText, DnsResolverTimeoutText,	DnsResolverCacheText  : TNewEdit;
+  configFile : String;
+begin
+  configFile :=  ExpandConstant('{app}') + '\SmtpAgentConfig.xml';
+  
+  DnsResolverIpText := TNewEdit(Sender.FindComponent('DnsResolverIpText'));
+  DnsResolverIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/ServerIP');
+  
+  DnsResolverBackupIpText := TNewEdit(Sender.FindComponent('DnsResolverBackupIpText'));
+  DnsResolverBackupIpText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/BackupServerIP');     
+
+  DnsResolverTimeoutText := TNewEdit(Sender.FindComponent('DnsResolverTimeoutText'));
+  DnsResolverTimeoutText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/Timeout');     
+
+  DnsResolverCacheText := TNewEdit(Sender.FindComponent('DnsResolverCacheText'));
+  DnsResolverCacheText.Text := GetConfigSetting(configFile, '/SmtpAgentConfig/PublicCerts/DnsResolver/Cache');     
 
 end;
 
@@ -1407,19 +1625,16 @@ begin
   if(Page.Name = 'ConfigService') then
   begin
     Result := (pos( 'configwebservice', WizardSelectedComponents( false)) = 0)
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
   end;
   
   if(Page.Name = 'DnsService') then
   begin
     Result := (pos( 'dnswebservice', WizardSelectedComponents( false)) = 0)
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
   end;
   
   if(Page.Name = 'MdnMonitorService') then
   begin
     Result := (pos( 'monitorserver', WizardSelectedComponents( false)) = 0)
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
   end;
 end;
 
@@ -1432,8 +1647,7 @@ end;
 //Skip this page is not configuring the Config Admin UI
 function ConfigAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := (pos( 'configui', WizardSelectedComponents( false)) = 0)                  
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+  Result := (pos( 'configui', WizardSelectedComponents( false)) = 0) 
 end;
 
 
@@ -1442,8 +1656,7 @@ end;
 //Skip this page is not configuring the Config Admin UI
 function GatewayAdminPage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
-  Result := (pos( 'directgateway', WizardSelectedComponents( false)) = 0)                  
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
+  Result := (pos( 'directgateway', WizardSelectedComponents( false)) = 0)
 end;
 
 
@@ -1451,7 +1664,6 @@ end;
 function ConfigConsolePage_ShouldSkip(Page: TwizardPage): Boolean;
 begin
   Result := (pos( 'directgateway', WizardSelectedComponents( false)) = 0)
-                or (pos( 'developergateway', WizardSelectedComponents( false)) > 0)
 end;
 
 
@@ -1508,6 +1720,8 @@ function NextButtonClick(CurPageID: Integer): Boolean;
           else begin
             Result := True;
           end;
+
+          GetConnectionStrings();
       end
       else begin
         Result := True;
@@ -1542,10 +1756,12 @@ end;
 
 procedure GatewayAdminHelpButtonOnClick(Sender: TObject);
 begin
-  MsgBox('Part I configures Domains' #13#10 +
-    'Part II configures config store endpoints.'  #13#10 +
-    'Part III configures message folders and SMTP pickup up folder.' #13#10 +
-    'Note: Both sending messges to SMTP server and dropping in the pickup folder are supported for sending messages.' #13#10 +
+  MsgBox('- Part I configures Domains' #13#10 +
+    '- Part II configures config store endpoints.'  #13#10 +
+    '- Part III configures message folders and SMTP pickup up folder.' #13#10 +
+    '    Note: Both sending messges to SMTP server and dropping in the pickup folder are supported for sending messages.' #13#10 +
+    '- Part IV configures Trust and Cryptography settings.' #13#10 +
+    '- Part V configures DNS settings for DNS resolver and the LDAP plugin DNS resolver .' #13#10 +
     'The "End Point" labels will be green when they are connecting and red when failing.', mbInformation, mb_Ok);
 end;
 
@@ -1832,7 +2048,7 @@ var
   GatewayAdminPageTwo: TWizardPage;
   HelpButton, EndPointsButton: TNewButton;
   PolicyLabel, DomainManagerLabel, AddressManagerLabel, PrivateCertsLabel, AnchorsLabel, DnsResolverIpLabel, MdnMonitorLabel, BundleLabel: TNewStaticText;
-  PolicyText, DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, DnsResolverIpText, MdnMonitorText, BundleText : TNewEdit;
+  PolicyText, DomainManagerText, AddressManagerText, PrivateCertsText, AnchorsText, MdnMonitorText, BundleText : TNewEdit;
   
 begin
     GatewayAdminPageTwo := CreateCustomPage(pageBefore.ID, 'Configure Gateway part II', '');
@@ -1961,25 +2177,7 @@ begin
     PolicyText.Left := DomainManagerText.Left;
     PolicyText.Width := DomainManagerText.Width;
     PolicyText.Parent := GatewayAdminPageTwo.Surface;
-
-
-    //Set DnsResolverIp
-    DnsResolverIpLabel := TNewStaticText.Create(GatewayAdminPageTwo);
-    DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
-    DnsResolverIpLabel.Top :=  PolicyLabel.Top + MdnMonitorLabel.Height + ScaleY(11);
-    DnsResolverIpLabel.Caption := 'Dns Resolver IP: ';
-    DnsResolverIpLabel.Parent := GatewayAdminPageTwo.Surface;
-                              
-    DnsResolverIpText := TNewEdit.Create(GatewayAdminPageTwo);
-    DnsResolverIpText.Name := 'DnsResolverIpText';
-    DnsResolverIpText.Top := DnsResolverIpLabel.Top;
-    DnsResolverIpText.Left := DomainManagerText.Left;
-    DnsResolverIpText.Width := DomainManagerText.Width;
-    DnsResolverIpText.Parent := GatewayAdminPageTwo.Surface;
-    
-
-
-
+                       
 
     GatewayAdminPageTwo.OnActivate := @GatewayAdminPageTwoOnActivate;
     GatewayAdminPageTwo.OnNextButtonClick := @SetGatewayConfigPageTwoOnClick;
@@ -1996,7 +2194,7 @@ var
   GatewaySmtpAdminPage: TWizardPage;
   HelpButton: TNewButton;
   PickupLabel, RawMessageLabel, BadMessageLabel, IncomingMessageLabel, OutgoingMessageLabel : TNewStaticText;
-  PickupText, RawMessageText, BadMessageText, IncomingMessageText, OutgoingMessageText : TNewMemo;
+  PickupText, RawMessageText, BadMessageText, IncomingMessageText, OutgoingMessageText : TNewEdit;
 begin
     GatewaySmtpAdminPage := CreateCustomPage(pageBefore.ID, 'Configure Gateway part III (SMTP)', '');
 
@@ -2016,14 +2214,11 @@ begin
     PickupLabel.Parent := GatewaySmtpAdminPage.Surface;
     PickupLabel.Width := PickupLabel.Width + ScaleX(4);
                               
-    PickupText := TNewMemo.Create(GatewaySmtpAdminPage);
+    PickupText := TNewEdit.Create(GatewaySmtpAdminPage);
     PickupText.Name := 'PickupText';
     PickupText.Top := HelpButton.Top + HelpButton.Height + ScaleY(14);
     PickupText.Left := PickupLabel.Width + ScaleX(4);
-    PickupText.Width := GatewaySmtpAdminPage.SurfaceWidth - PickupLabel.Width - ScaleX(4);
-    PickupText.Height := PickupText.Height div 4;
-    PickupText.WordWrap := false;
-    PickupText.WantReturns := false;
+    PickupText.Width := GatewaySmtpAdminPage.SurfaceWidth - PickupLabel.Width - ScaleX(4); 
     PickupText.Parent := GatewaySmtpAdminPage.Surface;
 
     //Set Raw Message folder
@@ -2033,14 +2228,11 @@ begin
     RawMessageLabel.Caption := 'Raw Message Folder: ';
     RawMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
                               
-    RawMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    RawMessageText := TNewEdit.Create(GatewaySmtpAdminPage);
     RawMessageText.Name := 'RawMessageText';
     RawMessageText.Top := RawMessageLabel.Top;
     RawMessageText.Left := PickupText.Left;
     RawMessageText.Width := PickupText.Width;
-    RawMessageText.Height := RawMessageText.Height div 4;
-    RawMessageText.WordWrap := false;
-    RawMessageText.WantReturns := false;
     RawMessageText.Parent := GatewaySmtpAdminPage.Surface;
     
     //Set Bad Message Folder
@@ -2050,14 +2242,11 @@ begin
     BadMessageLabel.Caption := 'Bad Message Folder: ';
     BadMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
                               
-    BadMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    BadMessageText := TNewEdit.Create(GatewaySmtpAdminPage);
     BadMessageText.Name := 'BadMessageText';
     BadMessageText.Top := BadMessageLabel.Top;
     BadMessageText.Left := PickupText.Left;
     BadMessageText.Width := PickupText.Width;
-    BadMessageText.Height := BadMessageText.Height div 4;
-    BadMessageText.WordWrap := false;
-    BadMessageText.WantReturns := false;
     BadMessageText.Parent := GatewaySmtpAdminPage.Surface;
 
     //Set Incoming Message Folder
@@ -2067,14 +2256,11 @@ begin
     IncomingMessageLabel.Caption := 'Incoming Message Folder: ';
     IncomingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
                               
-    IncomingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    IncomingMessageText := TNewEdit.Create(GatewaySmtpAdminPage);
     IncomingMessageText.Name := 'IncomingMessageText';
     IncomingMessageText.Top := IncomingMessageLabel.Top;
     IncomingMessageText.Left := PickupText.Left;
     IncomingMessageText.Width := PickupText.Width;
-    IncomingMessageText.Height := IncomingMessageText.Height div 4;
-    IncomingMessageText.WordWrap := false;
-    IncomingMessageText.WantReturns := false;
     IncomingMessageText.Parent := GatewaySmtpAdminPage.Surface;
 
     //Set Outgoing Message Folder
@@ -2084,24 +2270,224 @@ begin
     OutgoingMessageLabel.Caption := 'Outgoing Message Folder: ';
     OutgoingMessageLabel.Parent := GatewaySmtpAdminPage.Surface;
                               
-    OutgoingMessageText := TNewMemo.Create(GatewaySmtpAdminPage);
+    OutgoingMessageText := TNewEdit.Create(GatewaySmtpAdminPage);
     OutgoingMessageText.Name := 'OutgoingMessageText';
     OutgoingMessageText.Top := OutgoingMessageLabel.Top;
     OutgoingMessageText.Left := PickupText.Left;
     OutgoingMessageText.Width := PickupText.Width;
-    OutgoingMessageText.Height := OutgoingMessageText.Height div 4;
-    OutgoingMessageText.WordWrap := false;
-    OutgoingMessageText.WantReturns := false;
     OutgoingMessageText.Parent := GatewaySmtpAdminPage.Surface;
 
-    OutgoingMessageLabel := TNewStaticText.Create(GatewaySmtpAdminPage);
-    OutgoingMessageLabel.Caption := 'Outgoing Folder: ';
         
     GatewaySmtpAdminPage.OnActivate := @GatewayAdminPageThreeOnActivate;
     GatewaySmtpAdminPage.OnNextButtonClick := @SetConfigAdminPageThreeEndpointsOnClick;
     GatewaySmtpAdminPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
 
     Result := GatewaySmtpAdminPage;
+end;
+
+
+function CreateGatewayWizardPageFour(pageBefore: TWizardPage): TWizardPage;
+var
+  GatewayPKIPage: TWizardPage;
+  HelpButton: TNewButton;
+  TrustLabel, MaxIssuerChainLengthLabel, RevocationCheckModeLabel, TimeoutLabel : TNewStaticText;
+  CryptographerLabel, DefaultEncryptionLabel, DefaultDigestLabel : TNewStaticText;
+  MaxIssuerChainLengthText, TimeoutText : TNewEdit;
+  DefaultEncryptionCombo, DefaultDigestCombo, RevocationCheckModeCombo : TNewComboBox;
+begin
+    GatewayPKIPage := CreateCustomPage(pageBefore.ID, 'Configure Trust and Cryptographer', '');
+
+    HelpButton := TNewButton.Create(GatewayPKIPage);      
+    HelpButton.Left := GatewayPKIPage.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);   
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
+    HelpButton.Parent := GatewayPKIPage.Surface;  
+         
+                   
+    //Trust section
+    TrustLabel := TNewStaticText.Create(GatewayPKIPage);
+    TrustLabel.Name := 'TrustLabel';
+    TrustLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
+    TrustLabel.Caption := 'Trust ';
+    TrustLabel.Parent := GatewayPKIPage.Surface;
+    TrustLabel.Width := TrustLabel.Width + ScaleX(4);
+                     
+    MaxIssuerChainLengthLabel := TNewStaticText.Create(GatewayPKIPage);
+    MaxIssuerChainLengthLabel.Name := 'MaxIssuerChainLengthLabel';
+    MaxIssuerChainLengthLabel.Top :=  TrustLabel.Top + TrustLabel.Height + ScaleY(14);
+    MaxIssuerChainLengthLabel.Caption := 'Max Issuer Chain Length: ';
+    MaxIssuerChainLengthLabel.Parent := GatewayPKIPage.Surface;
+    MaxIssuerChainLengthLabel.Width := MaxIssuerChainLengthLabel.Width + ScaleX(4);
+                              
+    MaxIssuerChainLengthText := TNewEdit.Create(GatewayPKIPage);
+    MaxIssuerChainLengthText.Name := 'MaxIssuerChainLengthText';
+    MaxIssuerChainLengthText.Top := MaxIssuerChainLengthLabel.Top;
+    MaxIssuerChainLengthText.Left := MaxIssuerChainLengthLabel.Width + ScaleX(4);
+    MaxIssuerChainLengthText.Width := GatewayPKIPage.SurfaceWidth - MaxIssuerChainLengthLabel.Width - ScaleX(4);
+    MaxIssuerChainLengthText.Parent := GatewayPKIPage.Surface;
+    
+    RevocationCheckModeLabel := TNewStaticText.Create(GatewayPKIPage);
+    RevocationCheckModeLabel.Name := 'RevocationCheckModeLabel';
+    RevocationCheckModeLabel.Top :=  MaxIssuerChainLengthLabel.Top + MaxIssuerChainLengthLabel.Height + ScaleY(14);
+    RevocationCheckModeLabel.Caption := 'Revocation Check Mode: ';
+    RevocationCheckModeLabel.Parent := GatewayPKIPage.Surface;
+                              
+    RevocationCheckModeCombo := TNewComboBox.Create(GatewayPKIPage);
+    RevocationCheckModeCombo.Name := 'RevocationCheckModeCombo';
+    RevocationCheckModeCombo.Top := RevocationCheckModeLabel.Top;
+    RevocationCheckModeCombo.Left := MaxIssuerChainLengthText.Left;
+    RevocationCheckModeCombo.Width := MaxIssuerChainLengthText.Width;
+    RevocationCheckModeCombo.Parent := GatewayPKIPage.Surface;
+    RevocationCheckModeCombo.Style := csDropDownList;
+    RevocationCheckModeCombo.Items.Add('Online');
+    RevocationCheckModeCombo.Items.Add('Offline');
+
+    TimeoutLabel := TNewStaticText.Create(GatewayPKIPage);
+    TimeoutLabel.Name := 'TimeoutLabel';
+    TimeoutLabel.Top :=  RevocationCheckModeLabel.Top + RevocationCheckModeLabel.Height + ScaleY(14);
+    TimeoutLabel.Caption := 'CRL Download Timeout: ';
+    TimeoutLabel.Parent := GatewayPKIPage.Surface;
+                              
+    TimeoutText := TNewEdit.Create(GatewayPKIPage);
+    TimeoutText.Name := 'TimeoutText';
+    TimeoutText.Top := TimeoutLabel.Top;
+    TimeoutText.Left := MaxIssuerChainLengthText.Left;
+    TimeoutText.Width := MaxIssuerChainLengthText.Width;
+    TimeoutText.Parent := GatewayPKIPage.Surface;
+
+    //Cryptographer section
+    //Trust section
+    CryptographerLabel := TNewStaticText.Create(GatewayPKIPage);
+    CryptographerLabel.Name := 'CryptographerLabel';
+    CryptographerLabel.Top :=  TimeoutLabel.Top + TimeoutLabel.Height + ScaleY(14);
+    CryptographerLabel.Caption := 'Cryptographer ';
+    CryptographerLabel.Parent := GatewayPKIPage.Surface;
+    
+
+    DefaultEncryptionLabel := TNewStaticText.Create(GatewayPKIPage);
+    DefaultEncryptionLabel.Name := 'DefaultEncryptionLabel';
+    DefaultEncryptionLabel.Top :=  CryptographerLabel.Top + CryptographerLabel.Height + ScaleY(14);
+    DefaultEncryptionLabel.Caption := 'Default Encryption: ';
+    DefaultEncryptionLabel.Parent := GatewayPKIPage.Surface;
+                                  
+    DefaultEncryptionCombo := TNewComboBox.Create(GatewayPKIPage);
+    DefaultEncryptionCombo.Name := 'DefaultEncryptionCombo';
+    DefaultEncryptionCombo.Top := DefaultEncryptionLabel.Top;
+    DefaultEncryptionCombo.Left := MaxIssuerChainLengthText.Left;
+    DefaultEncryptionCombo.Width := MaxIssuerChainLengthText.Width;
+    DefaultEncryptionCombo.Parent := GatewayPKIPage.Surface;
+    DefaultEncryptionCombo.Style := csDropDown;
+    DefaultEncryptionCombo.Items.Add('RSA_3DES');
+    DefaultEncryptionCombo.Items.Add('AES128');
+    DefaultEncryptionCombo.Items.Add('AES192');
+    DefaultEncryptionCombo.Items.Add('AES256');
+
+    DefaultDigestLabel := TNewStaticText.Create(GatewayPKIPage);
+    DefaultDigestLabel.Name := 'DefaultDigestLabel';
+    DefaultDigestLabel.Top :=  DefaultEncryptionLabel.Top + DefaultEncryptionLabel.Height + ScaleY(14);
+    DefaultDigestLabel.Caption := 'Default Digest: ';
+    DefaultDigestLabel.Parent := GatewayPKIPage.Surface;
+                              
+    DefaultDigestCombo := TNewComboBox.Create(GatewayPKIPage);
+    DefaultDigestCombo.Name := 'DefaultDigestCombo';
+    DefaultDigestCombo.Top := DefaultDigestLabel.Top;
+    DefaultDigestCombo.Left := MaxIssuerChainLengthText.Left;
+    DefaultDigestCombo.Width := MaxIssuerChainLengthText.Width;
+    DefaultDigestCombo.Parent := GatewayPKIPage.Surface;
+    DefaultDigestCombo.Style := csDropDown;
+    DefaultDigestCombo.Items.Add('SHA256');
+    DefaultDigestCombo.Items.Add('SHA384');
+    DefaultDigestCombo.Items.Add('SHA512');
+           
+    GatewayPKIPage.OnActivate := @GatewayAdminPageFourOnActivate;
+    GatewayPKIPage.OnNextButtonClick := @SetConfigAdminPageFourEndpointsOnClick;
+    GatewayPKIPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
+
+    Result := GatewayPKIPage;
+end;
+
+
+
+function CreateGatewayWizardPageFive(pageBefore: TWizardPage): TWizardPage;
+var
+  GatewayDNSResolverPage: TWizardPage;
+  HelpButton: TNewButton;
+  DnsResolverIpLabel, DnsResolverBackupIpLabel, DnsResolverTimeoutLabel, DnsResolverCacheLabel : TNewStaticText;
+  DnsResolverIpText, DnsResolverBackupIpText, DnsResolverTimeoutText, DnsResolverCacheText : TNewEdit;
+begin
+    GatewayDNSResolverPage := CreateCustomPage(pageBefore.ID, 'Configure DNS Resolvers', '');
+
+    HelpButton := TNewButton.Create(GatewayDNSResolverPage);      
+    HelpButton.Left := GatewayDNSResolverPage.Surface.Width - ScaleX(20);
+    HelpButton.Width := ScaleX(20);
+    HelpButton.Height := ScaleY(20);   
+    HelpButton.Caption := '?';
+    HelpButton.OnClick := @GatewayAdminHelpButtonOnClick;
+    HelpButton.Parent := GatewayDNSResolverPage.Surface;  
+                            
+    //Set DnsResolverIp
+    DnsResolverIpLabel := TNewStaticText.Create(GatewayDNSResolverPage);
+    DnsResolverIpLabel.Name := 'DnsResolverIpLabel';
+    DnsResolverIpLabel.Top :=  HelpButton.Top + HelpButton.Height + ScaleY(14);
+    DnsResolverIpLabel.Caption := 'Primary IP: ';
+    DnsResolverIpLabel.Parent := GatewayDNSResolverPage.Surface;
+    DnsResolverIpLabel.Width := DnsResolverIpLabel.Width + ScaleX(4);
+                             
+    DnsResolverIpText := TNewEdit.Create(GatewayDNSResolverPage);
+    DnsResolverIpText.Name := 'DnsResolverIpText';
+    DnsResolverIpText.Top := DnsResolverIpLabel.Top;
+    DnsResolverIpText.Left := DnsResolverIpLabel.Width + ScaleX(4);
+    DnsResolverIpText.Width := GatewayDNSResolverPage.SurfaceWidth - DnsResolverIpLabel.Width - ScaleX(4); 
+    DnsResolverIpText.Parent := GatewayDNSResolverPage.Surface;
+                             
+    //Set DnsResolverIp Backup
+    DnsResolverBackupIpLabel := TNewStaticText.Create(GatewayDNSResolverPage);
+    DnsResolverBackupIpLabel.Name := 'DnsResolverBackupIpLabel';
+    DnsResolverBackupIpLabel.Top :=  DnsResolverIpLabel.Top + DnsResolverIpLabel.Height + ScaleY(11);
+    DnsResolverBackupIpLabel.Caption := 'Backup IP: ';
+    DnsResolverBackupIpLabel.Parent := GatewayDNSResolverPage.Surface;
+                              
+    DnsResolverBackupIpText := TNewEdit.Create(GatewayDNSResolverPage);
+    DnsResolverBackupIpText.Name := 'DnsResolverBackupIpText';
+    DnsResolverBackupIpText.Top := DnsResolverBackupIpLabel.Top;
+    DnsResolverBackupIpText.Left := DnsResolverIpText.Left;
+    DnsResolverBackupIpText.Width := DnsResolverIpText.Width;
+    DnsResolverBackupIpText.Parent := GatewayDNSResolverPage.Surface;
+
+    DnsResolverTimeoutLabel := TNewStaticText.Create(GatewayDNSResolverPage);
+    DnsResolverTimeoutLabel.Name := 'DnsResolverTimeoutLabel';
+    DnsResolverTimeoutLabel.Top :=  DnsResolverBackupIpLabel.Top + DnsResolverBackupIpLabel.Height + ScaleY(11);
+    DnsResolverTimeoutLabel.Caption := 'Dns timeout: ';
+    DnsResolverTimeoutLabel.Parent := GatewayDNSResolverPage.Surface;
+                              
+    DnsResolverTimeoutText := TNewEdit.Create(GatewayDNSResolverPage);
+    DnsResolverTimeoutText.Name := 'DnsResolverTimeoutText';
+    DnsResolverTimeoutText.Top := DnsResolverTimeoutLabel.Top;
+    DnsResolverTimeoutText.Left := DnsResolverIpText.Left;
+    DnsResolverTimeoutText.Width := DnsResolverIpText.Width;
+    DnsResolverTimeoutText.Parent := GatewayDNSResolverPage.Surface;
+
+    DnsResolverCacheLabel := TNewStaticText.Create(GatewayDNSResolverPage);
+    DnsResolverCacheLabel.Name := 'DnsResolverCacheLabel';
+    DnsResolverCacheLabel.Top :=  DnsResolverTimeoutLabel.Top + DnsResolverTimeoutLabel.Height + ScaleY(11);
+    DnsResolverCacheLabel.Caption := 'Cache: ';
+    DnsResolverCacheLabel.Parent := GatewayDNSResolverPage.Surface;
+                              
+    DnsResolverCacheText := TNewEdit.Create(GatewayDNSResolverPage);
+    DnsResolverCacheText.Name := 'DnsResolverCacheText';
+    DnsResolverCacheText.Top := DnsResolverCacheLabel.Top;
+    DnsResolverCacheText.Left := DnsResolverIpText.Left;
+    DnsResolverCacheText.Width := DnsResolverIpText.Width;
+    DnsResolverCacheText.Parent := GatewayDNSResolverPage.Surface;
+
+
+    GatewayDNSResolverPage.OnActivate := @GatewayDNSResolverPageOnActivate;
+    GatewayDNSResolverPage.OnNextButtonClick := @GatewayDNSResolverPageEndpointsOnClick;
+    GatewayDNSResolverPage.OnShouldSkipPage := @GatewayAdminPage_ShouldSkip;
+
+    Result := GatewayDNSResolverPage;
 end;
 
 function CreateConfigConsolePageOne(pageBefore: TWizardPage): TWizardPage;
@@ -2555,9 +2941,11 @@ begin
   Page.Name := 'DnsService';
   Page.Description := '\DnsService\Web.Config';
   
-  Page := CreateGatewayWizardPageOne(Page);      //Gateway part I
-  Page := CreateGatewayWizardPageTwo(Page);      //Gateway part II
-  Page := CreateGatewayWizardPageThree(Page);    //Gateway part III
+  Page := CreateGatewayWizardPageOne(Page);      //Gateway part I    Domain 
+  Page := CreateGatewayWizardPageTwo(Page);      //Gateway part II   Services
+  Page := CreateGatewayWizardPageThree(Page);    //Gateway part III  SMPT folders
+  Page := CreateGatewayWizardPageFour(Page);     //Gateway part IV   Trust and Cryptographer
+  Page := CreateGatewayWizardPageFive(Page);     //Garteay Part V    DNS Resolver 
   Page := CreateConfigConsolePageOne(Page);      //ConfigConsoleSettings.xml.  Almost like part III of Gateway.  It is included as part of the gateway component
   Page := CreateConfigConsolePageTwo(Page);                         
                                               //If you wanted to install the configConsole onto a workstation then pass skipsmtpcheck as a command line parameter to the installer.

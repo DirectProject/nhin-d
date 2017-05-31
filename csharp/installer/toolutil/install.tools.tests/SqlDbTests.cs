@@ -30,18 +30,18 @@ namespace Health.Direct.Install.Tools.Tests
 
             //DnsResponder and ConfigService connection string styles
             Assert.True(
-                sqlDb.TestConnection(@"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;Integrated Security=SSPI;", out exceptionMesage));
+                sqlDb.TestConnection(@"Data Source=(localdb)\.\ProjectsShare;Initial Catalog=DirectConfig;Integrated Security=SSPI;", out exceptionMesage));
             Assert.Empty(exceptionMesage);
             //Assert.True(
-            //    sqlDb.TestConnection(@"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10", out exceptionMesage));
+            //    sqlDb.TestConnection(@"Data Source=(localdb)\.\ProjectsShare;Initial Catalog=DirectConfig;User ID=nhindUser;Password=nhindUser!10", out exceptionMesage));
 
             Assert.False(
-                sqlDb.TestConnection(@"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfig;User ID=xxxx;Password=xxxx", out exceptionMesage));
+                sqlDb.TestConnection(@"Data Source=(localdb)\.\ProjectsShare;Initial Catalog=DirectConfig;User ID=xxxx;Password=xxxx", out exceptionMesage));
 
             Assert.Equal("Login failed for user 'xxxx'.", exceptionMesage);
 
             Assert.False(
-                sqlDb.TestConnection(@"Data Source=.\SQLEXPRESS;Initial Catalog=DirectConfigX;Integrated Security=SSPI;", out exceptionMesage), exceptionMesage);
+                sqlDb.TestConnection(@"Data Source=(localdb)\.\ProjectsShare;Initial Catalog=DirectConfigX;Integrated Security=SSPI;", out exceptionMesage), exceptionMesage);
             Assert.NotEmpty(exceptionMesage);
         }
     }

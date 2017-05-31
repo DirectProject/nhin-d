@@ -1,4 +1,5 @@
 using System.Xml.Serialization;
+using Health.Direct.Common.Caching;
 
 namespace Health.Direct.SmtpAgent.Config
 {
@@ -8,6 +9,9 @@ namespace Health.Direct.SmtpAgent.Config
     [XmlType]
     public class AddressManagerSettings
     {
+        /// <summary>
+        /// Simple constructor
+        /// </summary>
         public AddressManagerSettings()
         {
             EnableDomainSearch = false;
@@ -19,5 +23,15 @@ namespace Health.Direct.SmtpAgent.Config
         /// </summary>
         [XmlElement]
         public bool EnableDomainSearch { get; set; }
+
+        /// <summary>
+        /// Hold <see cref="CacheSettings"/>
+        /// </summary>
+        [XmlElement]
+        public CacheSettings CacheSettings
+        {
+            get;
+            set;
+        }
     }
 }

@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml;
@@ -87,6 +86,12 @@ namespace Health.Direct.Install.Tools
         /// </summary>
         /// <param name="xpath"></param>
         void DeleteFragment(string xpath);
+
+        /// <summary>
+        /// Delete the node at xpath
+        /// </summary>
+        /// <param name="xpath"></param>
+        void DeleteNode(string xpath);
     }
 
     [ComVisible(true), GuidAttribute("142E02A1-CEF8-4305-AB70-9A26F1ED0F41")]
@@ -97,6 +102,7 @@ namespace Health.Direct.Install.Tools
         private readonly XmlDocument _document;
         private string _xmlFilePath;
 
+        /// <inheritdoc />
         public string XmlFilePath
         {
             get { return _xmlFilePath; }
@@ -107,11 +113,15 @@ namespace Health.Direct.Install.Tools
             }
         }
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public XPath()
         {
             _document = new XmlDocument();
         }
+
+        /// <inheritdoc />
         public string SelectSingleAttribute(string xpath)
         {
             var node = _document.SelectSingleNode(xpath);
@@ -120,9 +130,10 @@ namespace Health.Direct.Install.Tools
             {
                 return node.InnerText;
             }
-            return node == null ? null : node.Value;
+            return node?.Value;
         }
 
+        /// <inheritdoc />
         public void SetSingleAttribute(string xpath, string value)
         {
             var node = _document.SelectSingleNode(xpath);
@@ -142,6 +153,7 @@ namespace Health.Direct.Install.Tools
             }
         }
 
+        /// <inheritdoc />
         public string GetFragment(string xpath)
         {
             var node = _document.SelectSingleNode(xpath);
@@ -150,36 +162,44 @@ namespace Health.Direct.Install.Tools
             return nodeText;
         }
 
-
+        /// <inheritdoc />
         public void CreateFragment(string xpath)
         {
-            List<string> nodes = xpath.Split('/').ToList();
+            var nodes = xpath.Split('/').ToList();
             nodes = nodes.FindAll(n => n.Trim().Length > 0);
 
-            XmlNode element = _document.DocumentElement;
+            var element = _document.DocumentElement as XmlNode;
+
             if (element == null)
             {
                 throw new Exception("Cannot find XML document!");
             }
+
             string buildPath = string.Empty;
+
             foreach (string node in nodes)
             {
+                var  buildPathPrevious = buildPath;
                 buildPath = buildPath + "/" + node;
-                XmlNode xmlNode = _document.SelectSingleNode(buildPath);
-                if (xmlNode != null)
+                
+                if (_document.SelectSingleNode(buildPath) != null)
                 {
                     continue;
                 }
-                xmlNode = _document.CreateElement(node);
-                element = element.AppendChild(xmlNode);
+
+                var xmlNode = _document.SelectSingleNode(buildPathPrevious);
+                var newNode = _document.CreateElement(node);
+                xmlNode?.AppendChild(newNode);
             }
 
             _document.Save(XmlFilePath);
         }
-
+        /// <inheritdoc />
         public void CreateFullFragment(string xmlFragment, string xpathParent)
         {
             var node = _document.SelectSingleNode(xpathParent);
+            if (node == null) return;
+
             var newNode = _document.CreateDocumentFragment();
             newNode.InnerXml = xmlFragment;
             if (_document.DocumentElement != null)
@@ -189,7 +209,7 @@ namespace Health.Direct.Install.Tools
             }
         }
 
-
+        /// <inheritdoc />
         public void ReplaceFragment(string xpath, string xmlFragment)
         {
             var node = _document.SelectSingleNode(xpath);
@@ -204,6 +224,8 @@ namespace Health.Direct.Install.Tools
             _document.Save(XmlFilePath);
         }
 
+
+        /// <inheritdoc />
         public void DeleteFragment(string xpath)
         {
             var node = _document.SelectSingleNode(xpath);
@@ -214,15 +236,24 @@ namespace Health.Direct.Install.Tools
                 _document.Save(XmlFilePath);
             }
         }
+        /// <inheritdoc />
+        public void DeleteNode(string xpath)
+        {
+            var node = _document.SelectSingleNode(xpath);
+            if (node == null) return;
+
+            if (_document.DocumentElement != null)
+            {
+                node.ParentNode?.RemoveChild(node);
+                _document.Save(XmlFilePath);
+            }
+        }
 
         public void CreateFragmentBefore(string xmlFragment, string xPathBefore)
         {
-            var newDoc = new XmlDataDocument();
-            newDoc.LoadXml(xmlFragment);
-
-            XmlNode newNode = _document.CreateDocumentFragment();
+            var newNode = _document.CreateDocumentFragment();
             newNode.InnerXml = xmlFragment;
-            XmlNode beforeNode = _document.SelectSingleNode(xPathBefore);
+            var beforeNode = _document.SelectSingleNode(xPathBefore);
 
             if (_document.DocumentElement != null)
             {

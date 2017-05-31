@@ -132,6 +132,55 @@ namespace Health.Direct.Install.Tools.Tests
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void AddingBackupIpNode_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            var editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+
+            //
+            // Ensure I am using it right
+            //
+            var actual = editor.SelectSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            Assert.Null(actual);
+            
+            editor.CreateFragment("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            var expected = "8.8.8.8";
+            editor.SetSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress", expected);
+
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            Assert.Equal(expected, actual);
+
+        }
+
+        [Fact]
+        public void RemovingBackupIpNode_Test()
+        {
+
+            File.Copy("SmtpAgentConfig.xml", "SmtpAgentConfig.xml.test", true);
+            var editor = new XPath();
+            editor.XmlFilePath = "SmtpAgentConfig.xml.test";
+            
+            var actual = editor.SelectSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            Assert.Null(actual);
+
+            editor.CreateFragment("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            var expected = "8.8.8.8";
+            editor.SetSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress", expected);
+
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            Assert.Equal(expected, actual);
+
+            // now delete
+            editor.DeleteNode("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+
+            actual = editor.SelectSingleAttribute("/SmtpAgentConfig/PublicCerts/DnsResolver/BackupIpAddress");
+            Assert.Null(actual);
+
+        }
+
 
         [Fact]
         public void DeletingNodes_Test()

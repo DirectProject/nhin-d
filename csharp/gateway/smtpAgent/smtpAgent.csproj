@@ -82,6 +82,7 @@
     <Compile Include="ConfigService.cs" />
     <Compile Include="Config\AddressManagerSettings.cs" />
     <Compile Include="Config\AnchorServiceResolverSettings.cs" />
+    <Compile Include="Config\DomainManagerSettings.cs" />
     <Compile Include="Config\DomainServiceResolverSettings.cs" />
     <Compile Include="Config\InternalMessageSettings.cs" />
     <Compile Include="Config\MessageProcessingSettings.cs" />

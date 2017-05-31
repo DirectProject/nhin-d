@@ -10,10 +10,9 @@
   </DomainManager>
   <AddressManager>
     <Url>http://localhost/ConfigService/DomainManagerService.svc/Addresses</Url>
-	<CacheSettings>
-      <Cache>true</Cache>
-      <CacheTTLSeconds>60</CacheTTLSeconds>
-    </CacheSettings>
+	<Settings>
+      <EnableDomainSearch>true</EnableDomainSearch>
+    </Settings>
   </AddressManager>
   <MdnMonitor>
     <Url>http://localhost/ConfigService/MonitorService.svc/Dispositions</Url>
@@ -64,7 +63,7 @@
     -->
 	<PluginResolver>
       <Definition>
-        <TypeName>Surescripts.Health.Direct.ResolverPlugins.LdapCertResolverProxy, Surescripts.Health.Direct.ResolverPlugins</TypeName>
+        <TypeName>Health.Direct.ResolverPlugins.LdapCertResolverProxy, Health.Direct.ResolverPlugins</TypeName>
         <Settings>
           <ServerIP>8.8.8.8</ServerIP>
 		  <BackupServerIP>8.8.4.4</BackupServerIP>
@@ -147,7 +146,7 @@
   <Trust>
     <MaxIssuerChainLength>4</MaxIssuerChainLength>
     <RevocationCheckMode>Online</RevocationCheckMode>
-    <Timeout>10000</Timeout>
+    <Timeout>2000</Timeout>
   </Trust>
   
   <Cryptographer>
