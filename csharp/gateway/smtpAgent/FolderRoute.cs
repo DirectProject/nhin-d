@@ -94,7 +94,8 @@ namespace Health.Direct.SmtpAgent
                 return m_loadBalancer;
             }
         }
-        
+
+        /// <inheritdoc />
         public override void Validate()
         {
             base.Validate();
@@ -104,11 +105,25 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
+        /// <inheritdoc />
+        public override Route Clone()
+        {
+            var route = new FolderRoute();
+            route.CopyFolders = this.CopyFolders;
+            route.AddressType = this.AddressType;
+            route.CopyMessageHandler = this.CopyMessageHandler;
+            route.FailedDelivery = this.FailedDelivery;
+
+            return route;
+        }
+
+        /// <inheritdoc />
         public override void Init()
         {
             this.Validate();            
         }
 
+        /// <inheritdoc />
         public override bool Process(ISmtpMessage message)
         {
             return m_loadBalancer.Process(message);

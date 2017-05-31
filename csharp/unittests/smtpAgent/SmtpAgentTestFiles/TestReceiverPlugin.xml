@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SmtpAgentConfig>
+  <Domain>nhind.hsgincubator.com</Domain>
+  <Log>
+    <DirectoryPath>C:\inetpub\logs</DirectoryPath>
+    <NamePrefix>testSmtpAgent</NamePrefix>
+    <RolloverFrequency>Day</RolloverFrequency>
+    <Level>Trace</Level>
+  </Log>
+  <Notifications>
+    <AutoResponse>false</AutoResponse>
+    <AlwaysAck>false</AlwaysAck>
+    <Text>Message Delivery Notification</Text>
+  </Notifications>
+  <PrivateCerts>
+    <MachineResolver>
+      <Name>NHINDPrivate</Name>
+    </MachineResolver>
+  </PrivateCerts>
+  <PublicCerts>
+    <MachineResolver>
+      <Name>NHINDExternal</Name>
+    </MachineResolver>
+  </PublicCerts>
+  <Anchors>
+    <MachineResolver>
+      <Incoming>
+        <Name>NHINDAnchors</Name>
+      </Incoming>
+      <Outgoing>
+        <Name>NHINDAnchors</Name>
+      </Outgoing>
+    </MachineResolver>
+  </Anchors>
+  <IncomingRoutes>
+   <PluginRoute>
+      <AddressType>STUB</AddressType>
+      <Receiver>
+        <TypeName>Health.Direct.SmtpAgent.Tests.StubPluginReciver, Health.Direct.SmtpAgent.Tests</TypeName>
+        <Settings>
+          <CopyFolder>C:\inetpub\mailroot\Incoming</CopyFolder>
+        </Settings>
+      </Receiver>
+    </PluginRoute>
+    <Route>
+      <AddressType>Undeliverable</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\Gateway\Secure\Unknown</CopyFolder>
+    </Route>
+    <Route>
+      <AddressType>NormalCopy</AddressType>
+      <CopyFolder>C:\inetpub\mailroot\Incoming</CopyFolder>
+    </Route>
+  </IncomingRoutes>
+  <Container>
+    <Component>
+      <Service>Health.Direct.Common.Diagnostics.IAuditor, Health.Direct.Common</Service>
+      <Type>Health.Direct.SmtpAgent.Tests.DummyAuditor, Health.Direct.SmtpAgent.Tests</Type>
+      <Scope>Singleton</Scope>
+    </Component>
+  </Container>
+</SmtpAgentConfig>

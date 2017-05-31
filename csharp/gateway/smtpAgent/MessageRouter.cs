@@ -43,7 +43,13 @@ namespace Health.Direct.SmtpAgent
             m_diagnostics = diagnostics;
             m_routes = new Dictionary<string, Route>(StringComparer.OrdinalIgnoreCase);
         }
-        
+
+        internal MessageRouter(AgentDiagnostics diagnostics, Dictionary<string, Route> routes)
+        {
+            m_diagnostics = diagnostics;
+            m_routes = routes;
+        }
+
         internal ILogger Logger
         {
             get
@@ -200,7 +206,25 @@ namespace Health.Direct.SmtpAgent
                 m_diagnostics.Logger.Error("Routing Error {0}, {1}", route.AddressType, ex);
             }
         }
-        
+
+        /// <summary>
+        /// new copy of router instance
+        /// </summary>
+        /// <returns></returns>
+        public MessageRouter Clone()
+        {
+            Dictionary<string, Route> routes = new Dictionary<string, Route>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var mRoute in m_routes)
+            {
+                routes[mRoute.Key] = mRoute.Value.Clone();
+            }
+
+            var messageRouter = new MessageRouter(m_diagnostics, routes);
+
+            return messageRouter;
+        }
+
         public IEnumerator<Route> GetEnumerator()
         {
             return m_routes.Values.GetEnumerator();

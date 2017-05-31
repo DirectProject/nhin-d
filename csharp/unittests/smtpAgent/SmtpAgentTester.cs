@@ -22,6 +22,7 @@ using System.Linq;
 using System.Net.Mime;
 using Health.Direct.Agent;
 using Health.Direct.Common.Cryptography;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
@@ -42,6 +43,17 @@ To: <biff@nhind.hsgincubator.com>, <bob@nhind.hsgincubator.com>
 Subject: Simple Text Message
 Message-ID: {0}
 Date: Mon, 10 May 2010 14:53:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Yo. Wassup?";
+
+        public static string TestMessageLoad =
+            @"From: <toby@redmond.hsgincubator.com>
+To: <jshook@nhind.hsgincubator.com>
+Subject: {1}
+Message-ID: {0}
+Date: Tue, 30 May 2017 22:10:27 -0700
 MIME-Version: 1.0
 Content-Type: text/plain
 
@@ -193,7 +205,8 @@ Yo. Wassup?";
         }
         private void CleanMessages(MessageProcessingSettings settings)
         {
-            if (settings == null) return;
+            if (settings == null || settings.CopyFolder.IsNullOrWhiteSpace()) return;
+
             CleanMessages(settings.CopyFolder);
         }
 
