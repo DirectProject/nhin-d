@@ -291,10 +291,12 @@ namespace Health.Direct.Agent.Certificates
             return false;
         }
 
+        // X509ChainEngine, which is used for CRL validation, requires Windows 2012 to run due to required changes in the CERT_CHAIN_ENGINE_CONFIG structure.
+        // For more information on version numbers, see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832.aspx
         private static bool IsNewerThanWin2008R2()
         {
             return Environment.OSVersion.Version.Major > 6 ||  
-                   (Environment.OSVersion.Version.Major >= 6 && Environment.OSVersion.Version.Minor > 2);
+                   (Environment.OSVersion.Version.Major >= 6 && Environment.OSVersion.Version.Minor >= 2);
         }
 
         private bool ChainElementHasProblems(X509ChainElement chainElement)
