@@ -88,7 +88,8 @@ namespace Health.Direct.Agent.Certificates
                 cbSize = (uint)sizeof(NativeMethods.CERT_CHAIN_ENGINE_CONFIG),
                 dwFlags = NativeMethods.CERT_CHAIN_ENABLE_CACHE_AUTO_UPDATE | NativeMethods.CERT_CHAIN_ENABLE_SHARE_STORE,
                 // Need to retrieve underlying IntPtr. The struct cannot contain a Safehandle field as we need to be able to use sizeof()
-                hExclusiveRoot = this.safeCertStoreHandle.DangerousGetHandle()
+                hExclusiveRoot = this.safeCertStoreHandle.DangerousGetHandle(),
+                dwExclusiveFlags = NativeMethods.CERT_CHAIN_EXCLUSIVE_ENABLE_CA_FLAG
             };
 
             if (!NativeMethods.CertCreateCertificateChainEngine(new IntPtr(&certChainEngineConfig), out this.safeChainEngineHandle))
