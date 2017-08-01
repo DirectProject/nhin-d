@@ -28,11 +28,6 @@ namespace Health.Direct.Common.Mail.Context
     public class ContextStandard
     {
         /// <summary>
-        /// Header indicating conformance to the "Implementation Guide for Expressing Context in Direct Messaging".
-        /// </summary>
-        public static string DirectContext = "X-Direct-Context";
-
-        /// <summary>
         /// Default filename for a <see cref="MimeStandard.DispositionType"/> of <c>attachment</c>
         /// </summary>
         public const string AttachementFileName = "metadata.txt";

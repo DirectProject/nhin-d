@@ -40,7 +40,7 @@ namespace Health.Direct.Common.Mail.Context
                 throw new ArgumentNullException("message");
             }
 
-            var contextBody = message.Body.ToString();
+            var contextBody = MimeEntity.DecodeBody(message).ToString();
             Metadata metadata;
 
             try

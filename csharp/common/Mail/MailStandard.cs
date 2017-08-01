@@ -79,6 +79,10 @@ namespace Health.Direct.Common.Mail
             /// Header value for the <c>References</c> header
             /// </summary>
             public const string References = "References";
+            /// <summary>
+            /// Header indicating conformance to the "Implementation Guide for Expressing Context in Direct Messaging".
+            /// </summary>
+            public static string DirectContext = "X-Direct-Context";
         }
         
         /// <summary>

@@ -1,26 +1,34 @@
 From: Joe <Joe@hobo.lab>
-Date: Mon, 30 Jan 2017 12:59:49 -0800
+Date: Sat, 08 Jul 2017 11:26:18 -0700
 Subject: Need more memory
-Message-Id: <YZO93MNYE0U4.QOV1X3U2R4YO3@SSORDSK-JSHO01>
+Message-Id: <34C73MNYE0U4.6M64WULRWE982@SSORDSK-JSHO02>
 To: Jean <Jean@opsstation.lab>
-X-Direct-Context: 2ff6eaec83894520bbb872e5671ff49e
+X-Direct-Context: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="=-fkoW/LfKMUrjDLKLfCAFyQ=="
+Content-Type: multipart/mixed; boundary="=-+EBGwupd+08aVN7a5xg65w=="
 
---=-fkoW/LfKMUrjDLKLfCAFyQ==
+--=-+EBGwupd+08aVN7a5xg65w==
 Content-Type: text/plain; charset=utf-8
 
 Simple Body
---=-fkoW/LfKMUrjDLKLfCAFyQ==
+--=-+EBGwupd+08aVN7a5xg65w==
 Content-Type: text/plain
-Content-Disposition: attachment; filename=ContextSimple1.txt
+Content-Disposition: attachment; filename=metadata.txt
 Content-Transfer-Encoding: base64
-Content-ID: 2ff6eaec83894520bbb872e5671ff49e
+Content-ID: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
 
-dmVyc2lvbjogMS4wDQppZDogMmZmNmVhZWM4Mzg5NDUyMGJiYjg3MmU1NjcxZmY0OWUNCnBh
-dGllbnQtaWQ6IDIuMTYuODQwLjEuMTEzODgzLjE5Ljk5OTk5OToxMjM0NTY7IDIuMTYuODQw
-LjEuMTEzODgzLjE5Ljg4ODg4ODo3NTc3NA0KdHlwZTogcmFkaW9sb2d5L3JlcG9ydA0KcHVy
-cG9zZTogcmVzZWFyY2gNCnBhdGllbnQ6IGdpdmVuTmFtZT1Kb2huOyBzdXJuYW1lPURvZTsg
-ZGF0ZU9mQmlydGg9MTk2MS0xMi0zMQ0K
+dmVyc2lvbjogMS4wDQppZDogPDIxNDI4NDhAZGlyZWN0LmV4YW1wbGUuY29tPg0KcGF0aWVu
+dC1pZDogMi4xNi44NDAuMS4xMTM4ODMuMTkuOTk5OTk5OjEyMzQ1NjsNCiAyLjE2Ljg0MC4x
+LjExMzg4My4xOS44ODg4ODg6NzU3NzQNCnR5cGU6IHJhZGlvbG9neS9yZXBvcnQNCnB1cnBv
+c2U6IHJlc2VhcmNoDQpwYXRpZW50OiBnaXZlbk5hbWU9Sm9objsgc3VybmFtZT1Eb2U7IG1p
+ZGRsZU5hbWU9SmFjb2I7IGRhdGVPZkJpcnRoPTE5NjEtMTItMzE7IGdlbmRlcj1NOyBwb3N0
+YWxDb2RlPTEyMzQ1DQo=
 
---=-fkoW/LfKMUrjDLKLfCAFyQ==--
+--=-+EBGwupd+08aVN7a5xg65w==
+Content-Type: application/pdf; name=report.pdf
+Content-Disposition: attachment; filename=report.pdf
+Content-Transfer-Encoding: base64
+
+RmFrZSBQREY=
+
+--=-+EBGwupd+08aVN7a5xg65w==--

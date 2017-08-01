@@ -31,7 +31,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>A <see cref="Context"/> object if found.  Null if not found. </returns>
         public static Context DirectContext(this MimeEntity message)
         {
-            var cidIdentifier = message.Headers.GetValue(ContextStandard.DirectContext);
+            var cidIdentifier = message.Headers.GetValue(MailStandard.Headers.DirectContext);
 
             foreach (var mimeEntity in message.GetParts())
             {
@@ -51,7 +51,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns><c>true</c> if this message indicates conformance to the "Implementation Guide for Expressing Context in Direct Messaging"</returns>
         public static bool ContainsDirectContext(this Message message)
         {
-            return message.Headers.Contains(ContextStandard.DirectContext);
+            return message.Headers.Contains(MailStandard.Headers.DirectContext);
         }
     }
 }

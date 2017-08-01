@@ -30,6 +30,11 @@ namespace Health.Direct.Common.Mail.Context
     /// </remarks>
     public class Context: MimeEntity
     {
+        /// <summary>
+        /// Default file name of <see cref="ContentDisposition"/>.
+        /// </summary>
+        public const string FileName = "metadata.txt";
+
         public Metadata Metadata { get; }
 
         /// <summary>
@@ -44,7 +49,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Initializes an empty instances
         /// </summary>
-        public Context(string contentType, string contentId, string filename = "metadata.txt")
+        public Context(string contentType, string contentId, string filename = FileName)
         {
             Metadata = new Metadata();
             Headers.Add(MimeStandard.ContentTypeHeader, contentType);
