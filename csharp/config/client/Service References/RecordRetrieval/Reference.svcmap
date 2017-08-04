@@ -18,16 +18,16 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="http://localhost:6693/RecordRetrievalService.svc" Protocol="http" SourceId="1" />
+    <MetadataSource Address="http://localhost/DnsService/RecordRetrievalService.svc" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="RecordRetrievalService.disco" MetadataType="Disco" ID="fdd486b7-a3be-4d3c-a3b4-3fbdf18d6aec" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?disco" />
-    <MetadataFile FileName="RecordRetrievalService.xsd" MetadataType="Schema" ID="fd512cda-3afa-4144-bf56-fbd0c74109fd" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd0" />
-    <MetadataFile FileName="RecordRetrievalService1.xsd" MetadataType="Schema" ID="1dac8365-9040-438b-9c7d-969fe2e16a39" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd1" />
-    <MetadataFile FileName="RecordRetrievalService2.xsd" MetadataType="Schema" ID="c6d88fe9-0155-4f8c-b5a3-a8aa67bc232b" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd2" />
-    <MetadataFile FileName="RecordRetrievalService3.xsd" MetadataType="Schema" ID="28574140-b9ba-4af2-a68b-b5c399ad0d7a" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?xsd=xsd3" />
-    <MetadataFile FileName="RecordRetrievalService1.wsdl" MetadataType="Wsdl" ID="ee819101-1074-4677-974d-c07626382e39" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?wsdl=wsdl0" />
-    <MetadataFile FileName="RecordRetrievalService.wsdl" MetadataType="Wsdl" ID="2b855a5d-2589-497c-bd06-ba6829aebaae" SourceId="1" SourceUrl="http://localhost:6693/RecordRetrievalService.svc?wsdl" />
+    <MetadataFile FileName="RecordRetrievalService.disco" MetadataType="Disco" ID="36bb910f-52eb-45e6-b5a5-35f3c4adab7d" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?disco" />
+    <MetadataFile FileName="RecordRetrievalService.xsd" MetadataType="Schema" ID="e09e343b-a5ba-4093-a079-93b08e02283f" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?xsd=xsd0" />
+    <MetadataFile FileName="RecordRetrievalService1.xsd" MetadataType="Schema" ID="04897dcd-526d-4685-b860-9136d6b747ed" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?xsd=xsd1" />
+    <MetadataFile FileName="RecordRetrievalService2.xsd" MetadataType="Schema" ID="d8dc20ce-5389-4579-a9ef-6cc15af44231" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?xsd=xsd2" />
+    <MetadataFile FileName="RecordRetrievalService3.xsd" MetadataType="Schema" ID="4e3f5194-f2ee-4ae3-9457-2e8d9580d2d0" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?xsd=xsd3" />
+    <MetadataFile FileName="RecordRetrievalService1.wsdl" MetadataType="Wsdl" ID="10a2820e-ebeb-4b2b-973e-cd179b20bb4f" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="RecordRetrievalService.wsdl" MetadataType="Wsdl" ID="04960b84-84e8-43ae-aeb2-63122f32aa05" SourceId="1" SourceUrl="http://directtest/DnsService/RecordRetrievalService.svc?wsdl" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

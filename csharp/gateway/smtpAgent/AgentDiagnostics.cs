@@ -19,6 +19,7 @@ using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
 using Health.Direct.Common.Certificates;
+using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.Extensions;
 
@@ -99,7 +100,17 @@ namespace Health.Direct.SmtpAgent
                 Logger.Error("Untrusted certificate {0}", cert.Subject);
             }
         }
-        
+
+        internal void OnCryptographerError(ISmimeCryptographer cryptographer, Exception error)
+        {
+            Logger.Error("CRYPTOGRAPHER ERROR {0}, {1}", cryptographer.GetType().Name, error.Message);
+        }
+
+        internal void OnCryptographerWarning(ISmimeCryptographer cryptographer, string message)
+        {
+            Logger.Warn("CRYPTOGRAPHER WARNING {0}, {1}", cryptographer.GetType().Name, message);
+        }
+
         internal void LogEnvelopeHeaders(ISmtpMessage message)
         {       
             if (Logger.IsDebugEnabled && message.HasEnvelope)

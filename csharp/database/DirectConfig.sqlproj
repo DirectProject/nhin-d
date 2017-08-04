@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <!-- Default values for configuration variables -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ErrorReport>send</ErrorReport>
+    <!-- Project name -->
+    <Name>DirectConfig</Name>
+    <ProjectGuid>{2214b078-34fe-4e2e-875a-254addb2f1f8}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureDatabaseSchemaProvider</DSP>
+    <RootNamespace>Health.Direct.Database</RootNamespace>
+    <AssemblyName>Health.Direct.Database</AssemblyName>
+    <!-- Project output -->
+    <OutputType>Database</OutputType>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <SqlTargetName>DirectConfig</SqlTargetName>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
+    <!-- Framework dependencies -->
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <!-- Default build options -->
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatTSqlWarningsAsErrors>True</TreatTSqlWarningsAsErrors>
+    <DefaultFileStructure>BySchemaType</DefaultFileStructure>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <ModelCollation>1033, CI</ModelCollation>
+    <SqlServerVerification>False</SqlServerVerification>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <TargetLanguage>CS</TargetLanguage>
+    <!-- Deployment options -->
+    <RootPath />
+    <DeployToDatabase>True</DeployToDatabase>
+    <GenerateCreateScript>True</GenerateCreateScript>
+    <TargetDatabase>DirectConfig</TargetDatabase>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Tables\" />
+    <Folder Include="Scripts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Tables\Domains.sql" />
+    <Build Include="Tables\DnsRecords.sql" />
+    <Build Include="Tables\Certificates.sql" />
+    <Build Include="Tables\Anchors.sql" />
+    <Build Include="Tables\Administrators.sql" />
+    <Build Include="Tables\Addresses.sql" />
+    <Build Include="Tables\Properties.sql" />
+    <Build Include="Tables\Blobs.sql" />
+    <Build Include="Tables\Bundles.sql" />
+    <Build Include="Tables\Mdns.sql" />
+    <Build Include="Tables\CertPolicyGroups.sql" />
+    <Build Include="Tables\CertPolicies.sql" />
+    <Build Include="Tables\CertPolicyGroupMap.sql" />
+    <Build Include="Tables\CertPolicyGroupDomainMap.sql" />
+    <PostDeploy Include="..\gateway\devInstall\seeddatabase.sql">
+      <Link>Scripts\seeddatabase.sql</Link>
+    </PostDeploy>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LocalDB.publish.xml" />
+    <None Include="SharedLocalDB.publish.xml" />
+  </ItemGroup>
+</Project>

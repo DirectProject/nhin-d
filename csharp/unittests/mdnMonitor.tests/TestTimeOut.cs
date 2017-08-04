@@ -31,6 +31,14 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
     {
         const string PickupFolder = @"c:\inetpub\mailroot\testPickup";
 
+        static TestTimeOut()
+        {
+            if (!Directory.Exists(PickupFolder))
+            {
+                Directory.CreateDirectory(PickupFolder);
+            }
+        }
+
         [Fact]
         public void TestProcessedTimeOutToDSNFail()
         {

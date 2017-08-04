@@ -62,7 +62,8 @@ namespace Health.Direct.Config.Console.Command
             Domain domain = new Domain(args.GetRequiredValue(0))
                                 {
                                     Status = args.GetOptionalEnum(1, EntityStatus.New),
-                                    AgentName = args.GetOptionalValue(2, null)
+                                    AgentName = args.GetOptionalValue(2, null),
+                                    SecurityStandard = args.GetOptionalEnum(3, SecurityStandard.Software)
                                 };
 
             if (Client.DomainExists(domain.Name))
@@ -74,14 +75,15 @@ namespace Health.Direct.Config.Console.Command
                 Client.AddDomain(domain);
                 WriteLine("Added {0}", domain.Name);
             }
-        }                  
-        
+        }
+
         private const string DomainAddUsage
             = "Add a new domain."
-            + Constants.CRLF + "    domainName [status]"
-            + Constants.CRLF + "\t domainName: New domain name"
-            + Constants.CRLF + "\t status: " + Constants.EntityStatusString
-            + Constants.CRLF + "\t agentName: " + "Domain grouping identifier";
+              + Constants.CRLF + "    domainName [status] [agentName] [SecurityStandard]"
+              + Constants.CRLF + "\t domainName: New domain name"
+              + Constants.CRLF + "\t status (Optional): " + Constants.EntityStatusString
+              + Constants.CRLF + "\t agentName (Optional): " + "Domain grouping identifier"
+              + Constants.CRLF + "\t Security Standard (Optional): Software | Fips1402 | Fips1402Wrapped.  Software is default";
         
         /// <summary>
         /// Retrieve a domain
@@ -125,6 +127,26 @@ namespace Health.Direct.Config.Console.Command
               + Constants.CRLF + "    domainName status"
               + Constants.CRLF + "\t domainName: Set status for this domain"
               + Constants.CRLF + "\t status: " + Constants.EntityStatusString;
+
+        /// <summary>
+        /// Set the status for a domain
+        /// </summary>                        
+        [Command(Name = "Domain_SecurityStandard_Set", Usage = DomainSecurityStandardSetUsage)]
+        public void DomainSecurityStatusSet(string[] args)
+        {
+            string name = args.GetRequiredValue(0);
+            SecurityStandard securityStandard = args.GetRequiredEnum<SecurityStandard>(1);
+
+            Domain domain = this.DomainGet(name);
+            domain.SecurityStandard = securityStandard;
+            Client.UpdateDomain(domain);
+        }
+
+        private const string DomainSecurityStandardSetUsage
+            = "Change a domain's status"
+              + Constants.CRLF + "    domainName securityStandard"
+              + Constants.CRLF + "\t domainName: Set status for this domain"
+              + Constants.CRLF + "\t security standard: Software | Fips1402 | Fips1402Wrapped";
 
         /// <summary>
         /// Set the agent name for a domain

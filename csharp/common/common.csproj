@@ -12,7 +12,7 @@
     <AssemblyName>Health.Direct.Common</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -56,6 +56,10 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\build\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -77,12 +81,16 @@
     <Compile Include="Certificates\AnchorBundle.cs" />
     <Compile Include="Certificates\AnchorMetadata.cs" />
     <Compile Include="Certificates\AnchorX509Certificate2.cs" />
+    <Compile Include="Certificates\AbstractBuilder.cs" />
+    <Compile Include="Certificates\CertificateRevocationListBuilder.cs" />
+    <Compile Include="Certificates\CertificateBuilder.cs" />
     <Compile Include="Certificates\CertificateCache.cs" />
     <Compile Include="Certificates\CertificateIndex.cs" />
     <Compile Include="Certificates\CertificateResolver.cs" />
     <Compile Include="Certificates\CertificateResolverCollection.cs" />
     <Compile Include="Certificates\CertificateStore.cs" />
     <Compile Include="Certificates\CryptoUtility.cs" />
+    <Compile Include="Certificates\DirectTrustCertificatePolicies.cs" />
     <Compile Include="Certificates\DnsCertResolver.cs" />
     <Compile Include="Certificates\Extensions.cs" />
     <Compile Include="Certificates\ICertificateResolver.cs" />
@@ -258,6 +266,9 @@
     <Compile Include="Web\WebDownloader.cs">
       <SubType>Component</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

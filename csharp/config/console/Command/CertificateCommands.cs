@@ -536,7 +536,7 @@ namespace Health.Direct.Config.Console.Command
         {
             foreach (X509Certificate2 cert in certs)
             {
-                string owner = cert.ExtractEmailNameOrName();
+                string owner = cert.ExtractEmailNameOrDnsName();
                 try
                 {
                     if (!checkForDupes || !Client.Contains(cert))

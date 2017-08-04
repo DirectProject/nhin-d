@@ -12,7 +12,7 @@
     <AssemblyName>Health.Direct.DnsResponder</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -68,6 +68,8 @@
     </Compile>
     <Compile Include="AuthoritativeResolutionSettings.cs" />
     <Compile Include="AuthoritativeResolutionSettingsSection.cs" />
+    <Compile Include="CertPolicyResolver.cs" />
+    <Compile Include="CertPolicyServiceResolverSettingsSection.cs" />
     <Compile Include="DnsIPEndpointElement.cs" />
     <Compile Include="DnsIPEndpointElementCollection.cs" />
     <Compile Include="DnsIPEndpointSettings.cs" />
@@ -113,6 +115,10 @@
     <ProjectReference Include="..\config\store\config.store.csproj">
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\policy\policy.csproj">
+      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
+      <Name>policy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

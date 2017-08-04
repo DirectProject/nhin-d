@@ -14,7 +14,7 @@
     <AssemblyName>Health.Direct.SmtpAgent.Tests</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -50,6 +50,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -137,10 +138,19 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="SmtpAgentTestFiles\TestReceiverPlugin.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig_BadAuditor_Defaults.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentAuditConfig.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService_HsmCryptographer.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigService_HsmCryptographerBadUrl.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SmtpAgentTestFiles\TestSmtpAgentConfigWithCertPolicy.xml">

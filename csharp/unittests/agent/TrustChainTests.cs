@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+using Health.Direct.Agent.Certificates;
 using Health.Direct.Common.Certificates;
 using Xunit;
 
@@ -44,8 +45,21 @@ namespace Health.Direct.Agent.Tests
         [Fact]
         public void TestValidTrustChain()
         {
+            this.ValidateCertChainWithAnchor(m_trustedAnchors);
+        }
+
+
+        [Fact]
+        public void TestValidTrustedChainIntermediateAnchor()
+        {
+            var trustedIntermediate = m_resolver.GetCertificatesForDomain("inter1.xyz");
+            this.ValidateCertChainWithAnchor(trustedIntermediate);
+        }
+
+        private void ValidateCertChainWithAnchor(X509Certificate2Collection trustedIntermediate)
+        {
             Assert.True(!m_endCerts.IsNullOrEmpty());
-            Assert.True(!m_trustedAnchors.IsNullOrEmpty());
+            Assert.True(!trustedIntermediate.IsNullOrEmpty());
 
             //
             // Ok, verify certs..
@@ -54,7 +68,7 @@ namespace Health.Direct.Agent.Tests
             {
                 X509Certificate2Collection issuers = m_validator.ResolveIntermediateIssuers(cert);
                 Assert.True(!issuers.IsNullOrEmpty() && issuers.Count == 3);
-                Assert.True(m_validator.IsTrustedCertificate(cert, m_trustedAnchors));
+                Assert.True(m_validator.IsTrustedCertificate(cert, trustedIntermediate));
             }
         }
 

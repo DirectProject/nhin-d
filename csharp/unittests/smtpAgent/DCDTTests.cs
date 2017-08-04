@@ -26,6 +26,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Health.Direct.Agent;
+using Health.Direct.Agent.Certificates;
 using Health.Direct.Agent.Config;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
@@ -769,12 +770,12 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         /// <param name="subject"></param>
         /// <param name="ip">Dns server IP</param>
         /// <param name="commonName">Filter extra anchors so it is easier to debug</param>
-        [Theory(Skip = "Will not run on TeamCity build server at hosting provider")]
+        [Theory]
         [InlineData(
-            "d17@domain9.demo31.direct-test.com",
+            "d17@domain9.dcdt31prod.sitenv.org",
             "8.8.8.8",
             "CN=demo31.direct-test.com_ca_root",
-            @".\Anchors\demo31.direct-test.com_ca_root.cer")]
+            @"..\..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
         public void TestD17(string subject, string ip, string commonName, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -810,8 +811,8 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
             var emailAddress = new MailAddress(subject);
 
             outgoingMessage.Sender.TrustAnchors =
-                agent.TrustAnchors.OutgoingAnchors.GetCertificates(outgoingMessage.Sender)
-                    .Where(c => c.Subject == commonName);
+                agent.TrustAnchors.OutgoingAnchors.GetCertificates(outgoingMessage.Sender);
+
             //skip private certs...
             X509Certificate2Collection certs = dnsCertResolver.GetCertificates(emailAddress);
             recipient.Certificates = certs;
@@ -867,7 +868,7 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         [InlineData(
             "d18@domain10.dcdt31prod.sitenv.org",
             "8.8.8.8",
-            @"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
+            @"..\..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der")]
         public void TestD18(string subject, string ip, string anchorFile)
         {
             var anchorText = File.ReadAllBytes(anchorFile);
@@ -902,16 +903,21 @@ Yo. Wassup?", subject, Guid.NewGuid().ToString("N"));
         {
             if (anchor == null)
             {
-                var anchorText = File.ReadAllBytes(@"..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der");
+                var anchorText = File.ReadAllBytes(@"..\..\..\..\unittests\smtpAgent\Anchors\dcdt31prod.sitenv.org_ca_root.der");
                 anchor = new X509Certificate2(anchorText);
             }
-
-            X509Chain chainBuilder = new X509Chain();
-            X509ChainPolicy policy = new X509ChainPolicy();
-            chainBuilder.ChainPolicy.ExtraStore.Add(anchor);
+            
+            var policy = new X509ChainPolicy();
+            policy.ExtraStore.Add(anchor);
             policy.VerificationFlags = X509VerificationFlags.IgnoreWrongUsage;
-            chainBuilder.ChainPolicy = policy;
-            chainBuilder.Build(cert);
+           
+
+            X509Chain chainBuilder;
+            using (X509ChainEngine secureChainEngine = new X509ChainEngine(anchor))
+            {
+                secureChainEngine.BuildChain(cert, policy, out chainBuilder);
+            }
+
             X509ChainElementCollection chainElements = chainBuilder.ChainElements;
 
             // If we don't have a trust chain, then we obviously have a problem...

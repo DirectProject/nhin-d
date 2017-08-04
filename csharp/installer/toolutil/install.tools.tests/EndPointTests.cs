@@ -38,31 +38,31 @@ namespace Health.Direct.Install.Tools.Tests
         {
             EndPoint endPoint = new EndPoint();
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/CertificateService.svc/Certificates"));
+                "http://localhost/ConfigService/CertificateService.svc/Certificates"));
 
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/CertificateService.svc/Anchors"));
+                "http://localhost/ConfigService/CertificateService.svc/Anchors"));
 
             Assert.False(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/CertificateService.svc/Addresses"));
+                "http://localhost/ConfigService/CertificateService.svc/Addresses"));
 
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Addresses"));
+                "http://localhost/ConfigService/DomainManagerService.svc/Addresses"));
 
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Domains"));
+                "http://localhost/ConfigService/DomainManagerService.svc/Domains"));
 
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/DnsRecords"));
+                "http://localhost/ConfigService/DomainManagerService.svc/DnsRecords"));
 
             Assert.False(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/DomainManagerService.svc/Authentication"));
+                "http://localhost/ConfigService/DomainManagerService.svc/Authentication"));
 
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/AuthManagerService.svc/Authentication"));
+                "http://localhost/ConfigService/AuthManagerService.svc/Authentication"));
 
             Assert.False(endPoint.TestWcfSoapConnection(
-                "http://DirectGateway.South.Hobo.Lab/ConfigService/AuthManagerService.svc/Certificates"));
+                "http://localhost/ConfigService/AuthManagerService.svc/Certificates"));
 
             Assert.False(endPoint.TestWcfSoapConnection(
                "http://badhostname/ConfigService/AuthManagerService.svc/Certificates"));
@@ -85,7 +85,7 @@ namespace Health.Direct.Install.Tools.Tests
         {
             EndPoint endPoint = new EndPoint();
             Assert.True(endPoint.TestWcfSoapConnection(
-                "http://engr-dir-be.engr.kryptiq.com/dnsservice/recordretrievalservice.svc/Records"));
+                "http://localhost/dnsservice/recordretrievalservice.svc/Records"));
         }
 
 
@@ -135,9 +135,6 @@ namespace Health.Direct.Install.Tools.Tests
 
             endPoint = new EndPoint();
             Assert.False(endPoint.TestWcfSoapConnection("  "));
-
         }
-
-
     }
 }

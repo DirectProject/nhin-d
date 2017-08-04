@@ -55,7 +55,7 @@ namespace Health.Direct.Config.Client
                 throw new ArgumentNullException("certificate");
             }
 
-            return client.Contains(certificate.ExtractEmailNameOrName(), certificate.Thumbprint);
+            return client.Contains(certificate.ExtractEmailNameOrDnsName(), certificate.Thumbprint);
         }
 
         public static bool Contains(this CertificateStoreClient client, string owner, string thumbprint)

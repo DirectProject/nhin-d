@@ -469,9 +469,10 @@ namespace Health.Direct.Common.Certificates
         public static string ExtractEmailNameOrName(this X509Certificate2 cert, bool issuer)
         {
             string name = cert.GetNameInfo(X509NameType.EmailName, issuer);
+
             if (string.IsNullOrEmpty(name))
             {
-                name = cert.GetNameInfo(X509NameType.SimpleName, issuer);
+                name = cert.GetNameInfo(X509NameType.DnsName, issuer);
             }
 
             return name;

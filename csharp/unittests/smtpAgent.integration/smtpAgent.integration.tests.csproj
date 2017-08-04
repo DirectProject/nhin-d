@@ -14,7 +14,7 @@
     <AssemblyName>Health.Direct.SmtpAgent.Integration.Tests</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -50,6 +50,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -92,7 +93,13 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BundleResolverTests.cs" />
+    <Compile Include="HSM\FailureTests.cs" />
+    <Compile Include="HSM\FromDualUseToSingleUse\TestSmtpAgentMdns.cs" />
+    <Compile Include="HSM\FromSingleUseToDualUse\TestSmtpAgentMdns.cs" />
+    <Compile Include="HSM\SingleUseToSingleUse\TestSmtpAgentMdns.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SingleUseCert\FromDualUseToSingleUse\TestSmtpAgentMdns.cs" />
+    <Compile Include="SingleUseCert\FromSingleUseToDualUse\TestSmtpAgentMdns.cs" />
     <Compile Include="SmtpAgentTester.cs" />
     <Compile Include="TestAgentInit.cs" />
     <Compile Include="TestConfigService.cs" />
@@ -121,6 +128,10 @@
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\hsmCryptographer\hsmCryptographer.csproj">
+      <Project>{3c66e370-68b4-45c7-8c69-622c983c8e43}</Project>
+      <Name>hsmCryptographer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ResolverPlugin\resolverPlugins.csproj">
       <Project>{3b166914-a175-4248-b281-ea16afcfd550}</Project>
       <Name>resolverPlugins</Name>
@@ -128,6 +139,10 @@
     <ProjectReference Include="..\agent\agent.tests.csproj">
       <Project>{6454E90E-984D-4D09-BD6D-566C9565E028}</Project>
       <Name>agent.tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\smtpAgent\smtpAgent.tests.csproj">
+      <Project>{0063ceeb-e7eb-4e87-a0e9-e9962af74548}</Project>
+      <Name>smtpAgent.tests</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

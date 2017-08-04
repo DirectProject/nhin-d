@@ -29,7 +29,7 @@ namespace Health.Direct.Admin.Console.Models
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
         public string Status { get; set; }
-
+        public SecurityStandard SecurityStandard { get; set; }
         public bool IsEnabled
         {
             get { return Status == EntityStatus.Enabled.ToString(); }

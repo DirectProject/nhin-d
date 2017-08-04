@@ -39,53 +39,56 @@ namespace Health.Direct.Install.Tools
     {
         public bool TestWcfSoapConnection(string endpoint)
         {
-            if(string.IsNullOrEmpty(endpoint))
+            if(string.IsNullOrWhiteSpace(endpoint))
             {
                 return false;
             }
 
             string svcEndPoint = GetServiceAddress(endpoint);
             string wsdlUrl = svcEndPoint + "?wsdl";
-            HttpWebRequest request = WebRequest.Create(wsdlUrl) as HttpWebRequest;
+            var request = WebRequest.Create(wsdlUrl) as HttpWebRequest;
+
+            if (request == null)
+            {
+                return false;
+            }
+
             request.Method = "GET";
             request.ContentType = "text/xml; charset=utf-8";
 
             try
             {
+                using (var response = request.GetResponse() as HttpWebResponse)
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    string results = reader.ReadToEnd();
+                    response.Close();
 
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                StreamReader reader = new StreamReader(response.GetResponseStream());
-
-                string results = reader.ReadToEnd();
-
-                reader.Close();
-                response.Close();
-
-                return results.Contains(GetUrlPath(endpoint), StringComparison.OrdinalIgnoreCase);
+                    return results.Contains(GetUrlPath(endpoint), StringComparison.OrdinalIgnoreCase);
+                }
             }
             catch
             {
                 return false;
             }
+            
         }
 
         public bool TestConnection(string endpoint, string expectedFragment)
         {
-            HttpWebRequest request = WebRequest.Create(endpoint) as HttpWebRequest;
+            var request = WebRequest.Create(endpoint) as HttpWebRequest;
             request.Method = "GET";
             request.ContentType = "text/xml; charset=utf-8";
 
             try
             {
-                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                StreamReader reader = new StreamReader(response.GetResponseStream());
-
-                string results = reader.ReadToEnd();
-
-                reader.Close();
-                response.Close();
-
-                return results.Contains(expectedFragment, StringComparison.OrdinalIgnoreCase);
+                using (var response = request.GetResponse() as HttpWebResponse)
+                using (var reader = new StreamReader(response.GetResponseStream()))
+                {
+                    string results = reader.ReadToEnd();
+                    
+                    return results.Contains(expectedFragment, StringComparison.OrdinalIgnoreCase);
+                }
             }
             catch
             {
@@ -95,14 +98,14 @@ namespace Health.Direct.Install.Tools
 
         private string GetUrlPath(string endpoint)
         {
-           Uri uri = new Uri(endpoint);
+           var uri = new Uri(endpoint);
            return uri.PathAndQuery;
         }
 
 
         private string GetServiceAddress(string endpoint)
         {
-            Regex regex = new Regex(@"^.+\.svc");
+            var regex = new Regex(@"^.+\.svc");
             string svcEndPoint = regex.Match(endpoint).Value;
             return svcEndPoint;
         }

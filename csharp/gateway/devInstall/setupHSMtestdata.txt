@@ -1,0 +1,63 @@
+//
+// Commands issued to ConfigConsole.exe to install single use public certs already installed in HSM
+// Dependent on test_certs_InstallInService, typically ran in other setups
+// 
+// Run in a batch by the exe
+//
+
+echo ******************************
+//
+// Add domains for HSM data
+//
+domain_add hsm.DirectInt.lab Enabled Agent1 Fips1402
+domain_add mixed.directmix.lab Enabled Agent1 Fips1402
+
+echo ******************************
+//
+// Install certificates.  
+// HSM certificates are installed as a prerequisite
+// Only the public certs are installed in config store using PKCS11 commands
+//
+
+PKCS11_ADD_CERT .\certificates\nhind\Private\hsm.DirectInt.lab_digitalsignature.cer Null Enabled
+PKCS11_ADD_CERT .\certificates\nhind\Private\hsm.DirectInt.lab_encipherment.cer Null Enabled
+
+PKCS11_ADD_CERT .\support\certificate\mixed.directmix.lab_digitalsignature.cer Null Enabled
+PKCS11_ADD_CERT .\support\certificate\mixed.directmix.lab_encipherment.cer Null Enabled
+certificate_ADD .\support\certificate\mixed.directmix.lab.pfx passw0rd! Enabled
+
+//DNS_MX_ENSURE hsm.DirectInt.lab 	Smtp.DirectInt.lab 3600
+//dns_ns_ensure hsm.DirectInt.lab 	ns1.DirectInt.Lab 3600
+
+echo ******************************
+//
+// Install Policies.  
+//
+
+policy_Add  DigitalSignatureCritical  .\support\policy\DigitalSignature_Critical.dpol
+policy_Add  KeyEnciphermentCritical  .\support\policy\KeyEncipherment_Critical.dpol
+policyGroup_ADD  FHA_HSM
+policy_AddtoGroup  DigitalSignatureCritical  FHA_HSM  PRIVATE_RESOLVER false true
+policy_AddtoGroup  KeyEnciphermentCritical  FHA_HSM  PRIVATE_RESOLVER true false
+policy_AddtoGroup  KeyEnciphermentCritical  FHA_HSM  PUBLIC_RESOLVER
+policyGroup_AddOwner  FHA_HSM  hsm.DirectInt.lab 
+
+
+Policy_Add  AllPublicCerts  .\support\policy\AllPublicCerts.dpol
+PolicyGroup_ADD  Mixed_Test
+Policy_AddtoGroup  AllPublicCerts  Mixed_Test  PUBLIC_RESOLVER
+PolicyGroup_AddOwner  Mixed_Test  mixed.directmix.lab
+		
+		
+echo ******************************
+//
+// Install Anchors for hsm.DirectInt.lab
+//
+// Historicaly test_certs_InstallInService installed all certificates and anchors
+// But having them in context here tells a better story.
+// Trust in and out
+//
+Anchor_Ensure hsm.DirectInt.lab .\certificates\redmond\IncomingAnchors\umamalga1.cer null Enabled
+Anchor_Ensure mixed.directmix.lab .\certificates\redmond\IncomingAnchors\umamalga1.cer null Enabled
+Anchor_Ensure hsm.DirectInt.lab .\certificates\redmond\OutgoingAnchors\kryptiq.lab.cer null Enabled
+

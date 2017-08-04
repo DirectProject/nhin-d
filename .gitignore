@@ -1,4 +1,4 @@
-# Ignore file for Visual Studio 2008, C#, Java
+# Ignore file for Visual Studio, C#, Java
 
 # use glob syntax
 syntax: glob
@@ -36,6 +36,8 @@ java/install/build
 java/config/config-service/src/main/webapp/WEB-INF/beans.xml
 *.war
 *.dat
+*.iml
+Java-Direct-IntelliJ/
 
 nhindconfig/service.properties
 config-service-client/war/config-service.war
@@ -53,11 +55,12 @@ log1.dat
 logmirror.ctrl
 seg0/*
 
-# Ignore Visual Studio 2008 files
+# Ignore Visual Studio files
 *.[Pp]ublish.xml
 *.aps
 *.bak
 *.cache
+*.dbmdl
 *.exe
 *.ilk
 *.lib
@@ -86,6 +89,7 @@ obj/
 [Rr]elease*/
 [Tt]est[Rr]esult*
 [Bb]uild[Ll]og.*
+csharp/build/packages/**
 csharp/unittests/*.bat
 smtpEventHandler_i.h
 
@@ -116,9 +120,10 @@ glob:csharp/installer/configui/Config
 glob:csharp/installer/configui/Content/
 glob:csharp/installer/configui/**
 
-
 # Ignore JetBrains Files
 *.dotCover
+*.DotSettings
+csharp/installer/configui/
 csharp/installer/mdnMonitorSchema.tmp
 csharp/installer/mdnMonitorSchema.sql
 csharp/installer/DirectConfig.tmp
@@ -126,8 +131,7 @@ csharp/installer/DirectConfig.sql
 csharp/installer/*.zip
 tools/trust.bundler/cmdlet/Examples/*.p7*
 tools/trust.bundler/build/packages/**
-csharp/build/packages/**
-*.DotSettings
-Java-Direct-IntelliJ/
-*.iml
-csharp/installer/configui/
+*.wrn
+*.err
+*.jfm
+*.ipch

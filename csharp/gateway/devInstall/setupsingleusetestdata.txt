@@ -1,0 +1,43 @@
+//
+// Commands issued to ConfigConsole.exe to install single use certs 
+// Dependent on test_certs_InstallInService, typically ran in other setups
+// 
+// Run in a batch by the exe
+//
+
+echo ******************************
+//
+// Add domains
+//
+domain_add dev.singleuse.lab Enabled Agent1
+
+echo ******************************
+//
+// Install Single-Use Certificates 
+//
+// The following certs are typically added by test_certs_InstallInService 
+//
+//Certificate_ADD .\Certificates\redmond\Private\dev.singleuse.lab.encipherment.pfx passw0rd! Enabled
+//Certificate_ADD .\Certificates\redmond\Private\dev.singleuse.lab.sign.pfx passw0rd! Enabled
+
+
+//DNS_MX_ENSURE dev.singleuse.lab 	Smtp.DirectInt.lab 3600
+//dns_ns_ensure dev.singleuse.lab 	ns1.DirectInt.Lab 3600
+Policy_Add  DigitalSignature .\Support\Policy\DigitalSignature.dpol
+Policy_Add  KeyEncipherment  .\Support\Policy\KeyEncipherment.dpol
+PolicyGroup_ADD  FHA
+Policy_AddtoGroup  DigitalSignature  FHA  PRIVATE_RESOLVER false true
+Policy_AddtoGroup  KeyEncipherment  FHA  PRIVATE_RESOLVER true false
+Policy_AddtoGroup  KeyEncipherment  FHA  PUBLIC_RESOLVER
+PolicyGroup_AddOwner  FHA  dev.singleuse.lab 
+
+
+echo ******************************
+//
+// Install Anchors for dev.singleuse.lab 
+//
+// Historicaly test_certs_InstallInService installed all certificates and anchors
+// But having them in context here tells a better story.
+// Trust in and out
+//
+Anchor_Ensure dev.singleuse.lab .\Certificates\redmond\IncomingAnchors\umamalga1.cer null Enabled

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="urn:directproject:config/store/082010" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="DomainManagerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:import namespace="urn:directproject:config/store/082010" location="http://localhost:6692/DomainManagerService.svc?wsdl=wsdl0" />
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:i0="urn:directproject:config/store/082010" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="DomainManagerService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:import namespace="urn:directproject:config/store/082010" location="http://directtest/ConfigService/DomainManagerService.svc?wsdl=wsdl0" />
   <wsdl:types />
   <wsdl:binding name="BasicHttpBinding_IAddressManager" type="i0:IAddressManager">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
@@ -772,16 +772,16 @@
   </wsdl:binding>
   <wsdl:service name="DomainManagerService">
     <wsdl:port name="BasicHttpBinding_IAddressManager" binding="tns:BasicHttpBinding_IAddressManager">
-      <soap:address location="http://localhost:6692/DomainManagerService.svc/Addresses" />
+      <soap:address location="http://directtest/ConfigService/DomainManagerService.svc/Addresses" />
     </wsdl:port>
     <wsdl:port name="BasicHttpBinding_IDomainManager" binding="tns:BasicHttpBinding_IDomainManager">
-      <soap:address location="http://localhost:6692/DomainManagerService.svc/Domains" />
+      <soap:address location="http://directtest/ConfigService/DomainManagerService.svc/Domains" />
     </wsdl:port>
     <wsdl:port name="BasicHttpBinding_IDnsRecordManager" binding="tns:BasicHttpBinding_IDnsRecordManager">
-      <soap:address location="http://localhost:6692/DomainManagerService.svc/DnsRecords" />
+      <soap:address location="http://directtest/ConfigService/DomainManagerService.svc/DnsRecords" />
     </wsdl:port>
     <wsdl:port name="BasicHttpBinding_ICertPolicyStore" binding="tns:BasicHttpBinding_ICertPolicyStore">
-      <soap:address location="http://localhost:6692/DomainManagerService.svc/CertPolicies" />
+      <soap:address location="http://directtest/ConfigService/DomainManagerService.svc/CertPolicies" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

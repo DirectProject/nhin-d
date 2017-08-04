@@ -62,7 +62,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Import and add a certificate policy
         /// </summary>
-        [Command(Name = "CertPolicy_Add", Usage = CertPolicyAddUsage)]
+        [Command(Name = "Policy_Add", Usage = PolicyAddUsage)]
         public void CertPolicyAdd(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -78,7 +78,7 @@ namespace Health.Direct.Config.Console.Command
             PushPolicy(name, policyText, description, false);
         }
 
-        private const string CertPolicyAddUsage
+        private const string PolicyAddUsage
             = "Import a certificate policy from a file and push it into the config store."
               + Constants.CRLF + "Policies are associated to policy groups.  Policy groups are linked to owners(domains or emails)."
               + Constants.CRLF + "    name filePath options"
@@ -87,7 +87,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Import and add a certificate policy, if one does not already exist
         /// </summary>
-        [Command(Name = "CertPolicy_Ensure", Usage = CertPolicyEnsureUsage)]
+        [Command(Name = "Policy_Ensure", Usage = PolicyEnsureUsage)]
         public void CertPolicyEnsure(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -103,7 +103,7 @@ namespace Health.Direct.Config.Console.Command
             PushPolicy(name, policyText, description, true);
         }
 
-        private const string CertPolicyEnsureUsage
+        private const string PolicyEnsureUsage
             = "Import a certificate policy from a file and push it into the config store - if not already there."
               + Constants.CRLF + "Policies are associated to policy groups.  Policy groups are linked to owners(domains or emails)."
               + Constants.CRLF + "    name filePath options"
@@ -113,7 +113,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Retrieve a certificate policy
         /// </summary>
-        [Command(Name = "CertPolicy_Get", Usage = CertPolicyGetUsage)]
+        [Command(Name = "Policy_Get", Usage = PolicyGetUsage)]
         public void CertPolicyGet(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -121,14 +121,14 @@ namespace Health.Direct.Config.Console.Command
         }
 
         
-        private const string CertPolicyGetUsage
+        private const string PolicyGetUsage
             = "Retrieve information for an existing certificate policy by name."
               + Constants.CRLF + "    name";
 
         /// <summary>
         /// List all certificate policies
         /// </summary>
-        [Command(Name = "CertPolicies_List", Usage = "List all Policies")]
+        [Command(Name = "Policies_List", Usage = "List all Policies")]
         public void CertPoliciesList(string[] args)
         {
             int chunkSize = args.GetOptionalValue(0, DefaultChunkSize);
@@ -139,7 +139,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// How many certificate policies exist? 
         /// </summary>
-        [Command(Name = "CertPolicies_Count", Usage = "Retrieve # of certificate policies.")]
+        [Command(Name = "Policies_Count", Usage = "Retrieve # of certificate policies.")]
         public void CertPoliciesCount(string[] args)
         {
             WriteLine("{0} certificate polices", Client.GetCertPoliciesCount());
@@ -149,14 +149,14 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Delete policy from system by policy name.
         /// </summary>
-        [Command(Name = "CertPolicy_Delete", Usage = CertPolicyDeleteUsage)]
+        [Command(Name = "Policy_Delete", Usage = PolicyDeleteUsage)]
         public void CertPolicyDelete(string[] args)
         {
             string name = args.GetRequiredValue(0);
             Client.RemovePolicy(name);
         }
 
-        private const string CertPolicyDeleteUsage
+        private const string PolicyDeleteUsage
             = "Delete policy from system by policy name."
               + Constants.CRLF + "policyName"
               + Constants.CRLF + " \t policyName: Name of the policy.  Place the policy name in quotes (\"\") if there are spaces in the name.";
@@ -165,14 +165,14 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Delete policy from a policy group 
         /// </summary>
-        [Command(Name = "CertPolicy_DeleteFromGroup", Usage = CertPolicyDeleteFromGroupUsage)]
+        [Command(Name = "Policy_DeleteFromGroup", Usage = PolicyDeleteFromGroupUsage)]
         public void CertPolicyDeleteFromGroup(string[] args)
         {
             long mapId = args.GetRequiredValue<long>(0);
             Client.RemovePolicyUseFromGroup(mapId);
         }
         
-        private const string CertPolicyDeleteFromGroupUsage
+        private const string PolicyDeleteFromGroupUsage
             = "Delete policy from a policy group ."
               + Constants.CRLF + "mapId"
               + Constants.CRLF + " \t mapId: Id that associates a group to a policy usage.";
@@ -191,7 +191,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Create a certificate policy group
         /// </summary>
-        [Command(Name = "CertPolicyGroup_Add", Usage = CertPolicyGroupAddUsage)]
+        [Command(Name = "PolicyGroup_Add", Usage = PolicyGroupAddUsage)]
         public void CertPolicyGroupAdd(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -199,18 +199,18 @@ namespace Health.Direct.Config.Console.Command
             PushPolicyGroup(name, description, false);
         }
 
-        private const string CertPolicyGroupAddUsage
+        private const string PolicyGroupAddUsage
             = "Create a certificate policy group."
               + Constants.CRLF + "Certificate policy groups are created.  " 
-              + Constants.CRLF + "Use CertPolicy_AddToGroup to join policies to groups and assign usage." 
-              + Constants.CRLF + "Use CertPolicy_AddToOwner to join groups to Domains or emails"
+              + Constants.CRLF + "Use Policy_AddToGroup to join policies to groups and assign usage." 
+              + Constants.CRLF + "Use Policy_AddToOwner to join groups to Domains or emails"
               + Constants.CRLF + "    name options"
               + Constants.CRLF + " \t description: (optional) additional description";
 
         /// <summary>
         /// Create a certificate policy group if one does not already exist
         /// </summary>
-        [Command(Name = "CertPolicyGroup_Ensure", Usage = CertPolicyGroupEnsureUsage)]
+        [Command(Name = "PolicyGroup_Ensure", Usage = PolicyGroupEnsureUsage)]
         public void CertPolicyGroupEnsure(string[] args)
         {
             string name = args.GetRequiredValue(0);
@@ -218,25 +218,25 @@ namespace Health.Direct.Config.Console.Command
             PushPolicyGroup(name, description, true);
         }
 
-        private const string CertPolicyGroupEnsureUsage
+        private const string PolicyGroupEnsureUsage
             = "Create a certificate policy group - if not already there."
               + Constants.CRLF + "Certificate policy groups are created.  "
-              + Constants.CRLF + "Use CertPolicy_AddToGroup to join policies to groups and assign usage."
-              + Constants.CRLF + "Use CertPolicy_AddToOwner to join groups to Domains or emails"
+              + Constants.CRLF + "Use Policy_AddToGroup to join policies to groups and assign usage."
+              + Constants.CRLF + "Use Policy_AddToOwner to join groups to Domains or emails"
               + Constants.CRLF + "    name options"
               + Constants.CRLF + " \t description: (optional) additional description";
 
         /// <summary>
         /// Retrieve a certificate policy group
         /// </summary>
-        [Command(Name = "CertPolicyGroup_Get", Usage = CertPolicyGroupGetUsage)]
+        [Command(Name = "PolicyGroup_Get", Usage = PolicyGroupGetUsage)]
         public void CertPolicyGroupGet(string[] args)
         {
             string name = args.GetRequiredValue(0);
             Print(GetCertPolicyGroup(name));
         }
 
-        private const string CertPolicyGroupGetUsage
+        private const string PolicyGroupGetUsage
            = "Retrieve information for an existing certificate policy group by name."
              + Constants.CRLF + "    name";
 
@@ -244,7 +244,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Create a certificate policy group
         /// </summary>
-        [Command(Name = "CertPolicy_AddToGroup", Usage = CertPolicyAddToGroupUsage)]
+        [Command(Name = "Policy_AddToGroup", Usage = PolicyAddToGroupUsage)]
         public void CertPolicyAddToGroup(string[] args)
         {
             string policyName = args.GetRequiredValue(0);
@@ -261,7 +261,7 @@ namespace Health.Direct.Config.Console.Command
 
         }
 
-        private const string CertPolicyAddToGroupUsage
+        private const string PolicyAddToGroupUsage
             = "Adds an existing policy to a group with a provided usage."
               + Constants.CRLF + "policyName groupNames policyUse incoming outgoing"
               + Constants.CRLF + " \t policyName: Name of the policy to add to the group.  Place the policy name in quotes (\") if there are spaces in the name."
@@ -273,7 +273,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Add policy to group with usage, if one does not already exist
         /// </summary>
-        [Command(Name = "CertPolicy_EnsureToGroup", Usage = CertPolicyEnsureToGroupUsage)]
+        [Command(Name = "Policy_EnsureToGroup", Usage = PolicyEnsureToGroupUsage)]
         public void CertPolicyEnsureToGroup(string[] args)
         {
             string policyName = args.GetRequiredValue(0);
@@ -290,7 +290,7 @@ namespace Health.Direct.Config.Console.Command
 
         }
 
-        private const string CertPolicyEnsureToGroupUsage
+        private const string PolicyEnsureToGroupUsage
              = "Adds an existing policy to a group with a provided usage - if not already there."
               + Constants.CRLF + "policyName groupNames policyUse incoming outgoing"
               + Constants.CRLF + " \t policyName: Name of the policy to add to the group.  Place the policy name in quotes (\") if there are spaces in the name."
@@ -302,7 +302,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// List all polici
         /// </summary>
-        [Command(Name = "CertPolicyGroups_List", Usage = "List all policy groups")]
+        [Command(Name = "PolicyGroups_List", Usage = "List all policy groups")]
         public void CertPolicyGroupList(string[] args)
         {
             int chunkSize = args.GetOptionalValue(0, DefaultChunkSize);
@@ -313,7 +313,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// How many certificate policies exist? 
         /// </summary>
-        [Command(Name = "CertPolicyGroups_Count", Usage = "Retrieve # of certificate policy groups.")]
+        [Command(Name = "PolicyGroups_Count", Usage = "Retrieve # of certificate policy groups.")]
         public void CertPolicyGroupCount(string[] args)
         {
             WriteLine("{0} certificate polices", Client.GetCertPolicyGroupCount());
@@ -322,14 +322,14 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// List all polici
         /// </summary>
-        [Command(Name = "CertPolicyUsage_List", Usage = CertPolicyUsageListUsage)]
+        [Command(Name = "PolicyUsage_List", Usage = PolicyUsageListUsage)]
         public void CertPolicyUsageList(string[] args)
         {
             string groupName = args.GetRequiredValue(0);
             Print(GetCertPolicyGroupWithPolicies(groupName));
         }
 
-        private const string CertPolicyUsageListUsage
+        private const string PolicyUsageListUsage
             = "List policies and their usage with in a policy group."
               + Constants.CRLF + "groupName"
               + Constants.CRLF +
@@ -340,7 +340,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Associate a certificate policy group to an owner
         /// </summary>
-        [Command(Name = "CertPolicyGroup_AddOwner", Usage = CertPolicyGroupAddOwnerUsage)]
+        [Command(Name = "PolicyGroup_AddOwner", Usage = PolicyGroupAddOwnerUsage)]
         public void CertPolicyGroupAddOwner(string[] args)
         {
             string groupName = args.GetRequiredValue(0);
@@ -348,7 +348,7 @@ namespace Health.Direct.Config.Console.Command
             AssociatePolicyGroupToDomain(groupName, owner, false);
         }
 
-        private const string CertPolicyGroupAddOwnerUsage
+        private const string PolicyGroupAddOwnerUsage
             = "Adds an existing policy group to an existing owner."
               + Constants.CRLF + "groupName owner"
               + Constants.CRLF + " \t groupName: Name of the policy group.  Place the policy group name in quotes (\") if there are spaces in the name."
@@ -358,7 +358,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Associate a certificate policy group to an owner, if one does not already exist
         /// </summary>
-        [Command(Name = "CertPolicyGroup_EnsureOwner", Usage = CertPolicyGroupEnsureOwnerUsage)]
+        [Command(Name = "PolicyGroup_EnsureOwner", Usage = PolicyGroupEnsureOwnerUsage)]
         public void CertPolicyGroupEnsureOwner(string[] args)
         {
             string groupName = args.GetRequiredValue(0);
@@ -366,7 +366,7 @@ namespace Health.Direct.Config.Console.Command
             AssociatePolicyGroupToDomain(groupName, owner, true);
         }
         
-        private const string CertPolicyGroupEnsureOwnerUsage
+        private const string PolicyGroupEnsureOwnerUsage
              = "Adds an existing policy group to an existing owner.  - if not already there."
               + Constants.CRLF + "groupName owner"
               + Constants.CRLF + " \t groupName: Name of the policy group.  Place the policy group name in quotes (\") if there are spaces in the name."
@@ -376,14 +376,14 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// List all owners associated to a policy group
         /// </summary>
-        [Command(Name = "CertPolicyGroup_OwnersList", Usage = CertPolicyGroupOwnersListUsage)]
+        [Command(Name = "PolicyGroup_OwnersList", Usage = PolicyGroupOwnersListUsage)]
         public void CertPolicyGroup_OwnersList(string[] args)
         {
             string groupName = args.GetRequiredValue(0);
             Print(getCertPolicyGroupWithOwners(groupName));
         }
 
-        private const string CertPolicyGroupOwnersListUsage
+        private const string PolicyGroupOwnersListUsage
             = "List owners associated with in a policy group."
               + Constants.CRLF + "groupName"
               + Constants.CRLF +
@@ -392,14 +392,14 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Delete policy group from system by group name.
         /// </summary>
-        [Command(Name = "CertPolicyGroup_Delete", Usage = CertPolicyGroupDeleteUsage)]
+        [Command(Name = "PolicyGroup_Delete", Usage = PolicyGroupDeleteUsage)]
         public void CertPolicyGroupDelete(string[] args)
         {
             string name = args.GetRequiredValue(0);
             Client.RemovePolicyGroup(name);
         }
 
-        private const string CertPolicyGroupDeleteUsage
+        private const string PolicyGroupDeleteUsage
             = "Delete policy group from system by group name."
               + Constants.CRLF + "groupName"
               + Constants.CRLF + " \t groupName: Name of the policy group.  Place the group name in quotes (\"\") if there are spaces in the name.";
@@ -408,7 +408,7 @@ namespace Health.Direct.Config.Console.Command
         /// <summary>
         /// Deletes an existing policy group from a owner.
         /// </summary>
-        [Command(Name = "CertPolicyGroup_DeleteFromOwner", Usage = CertPolicyGroupDeleteFromOwnerUsage)]
+        [Command(Name = "PolicyGroup_DeleteFromOwner", Usage = PolicyGroupDeleteFromOwnerUsage)]
         public void CertPolicyGroupDeleteFromOwner(string[] args)
         {
             string groupName = args.GetRequiredValue(0);
@@ -416,7 +416,7 @@ namespace Health.Direct.Config.Console.Command
             Client.DisassociatePolicyGroupFromDomain(groupName, ownerName);
         }
 
-        private const string CertPolicyGroupDeleteFromOwnerUsage
+        private const string PolicyGroupDeleteFromOwnerUsage
             = "Deletes an existing policy group from a owner."
               + Constants.CRLF + "groupName, ownerName"
               + Constants.CRLF + " \t groupId: Name of the policy group to delete from the owner.  Place the policy group name in quotes (\"\") if there are spaces in the name."

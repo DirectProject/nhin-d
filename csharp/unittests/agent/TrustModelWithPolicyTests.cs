@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
+using Health.Direct.Agent.Certificates;
 using Health.Direct.Common.Policies;
 using Moq;
 using Xunit;

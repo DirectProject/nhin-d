@@ -1,0 +1,72 @@
+// Normal HSM test 
+DOMAIN_ADD  hsm.DirectInt.lab Enabled  Agent1 Fips1402
+ANCHOR_ADD  hsm.DirectInt.lab  ..\..\..\..\unittests\agent\Certificates\kryptiq\OutgoingAnchors\umamalga1.cer Null Enabled
+ANCHOR_ADD  hsm.DirectInt.lab  ..\..\..\..\unittests\agent\Certificates\kryptiq\OutgoingAnchors\kryptiq.lab.cer Null Enabled
+
+PKCS11_ADD_CERT ..\..\..\..\unittests\agent\Certificates\kryptiq\private\hsm.DirectInt.lab_digitalsignature.cer Null Enabled
+PKCS11_ADD_CERT ..\..\..\..\unittests\agent\Certificates\kryptiq\public\hsm.DirectInt.lab_encipherment.cer Null Enabled
+
+DNS_SOA_ENSURE hsm.DirectInt.lab  NS1.nhind.hsgincubator.com.  foo.example.domain  20100602  3600
+DNS_ANAME_ENSURE hsm.DirectInt.lab  127.0.0.1 3600
+DNS_MX_ENSURE hsm.DirectInt.lab 	gateway.nhind.hsgincubator.com 3600
+
+
+POLICY_ADD  DigitalSignatureCritical  ..\..\..\..\Support\Policy\DigitalSignature_Critical.dpol
+POLICY_ADD  KeyEnciphermentCritical  ..\..\..\..\Support\Policy\KeyEncipherment_Critical.dpol
+POLICYGROUP_ADD  FHA_HSM
+POLICY_ADDTOGROUP  DigitalSignatureCritical  FHA_HSM  PRIVATE_RESOLVER false true
+POLICY_ADDTOGROUP  KeyEnciphermentCritical  FHA_HSM  PRIVATE_RESOLVER true false
+POLICY_ADDTOGROUP  KeyEnciphermentCritical  FHA_HSM  PUBLIC_RESOLVER
+POLICYGROUP_ADDOWNER  FHA_HSM  hsm.DirectInt.lab 
+
+
+// Cross Over test domain certs.
+//   Hardware
+domain_add  fha-crossover.DirectInt.lab  Enabled  Agent1 Fips1402
+ANCHOR_ADD  fha-crossover.DirectInt.lab  ..\..\..\..\unittests\agent\Certificates\kryptiq\OutgoingAnchors\umamalga1.cer Null Enabled
+
+
+PKCS11_ADD_CERT ..\..\..\..\unittests\agent\Certificates\kryptiq\private\fha-crossover.DirectInt.lab_digitalsignature.cer Null Enabled
+PKCS11_ADD_CERT ..\..\..\..\unittests\agent\Certificates\kryptiq\public\fha-crossover.DirectInt.lab_encipherment.cer Null Enabled
+
+DNS_SOA_ENSURE fha-crossover.DirectInt.lab  NS1.nhind.hsgincubator.com.  foo.example.domain  20100602  3600
+DNS_ANAME_ENSURE fha-crossover.DirectInt.lab  127.0.0.1 3600
+DNS_MX_ENSURE fha-crossover.DirectInt.lab 	gateway.nhind.hsgincubator.com 3600
+
+Policy_Add  DualOnlyCrossover  ..\..\..\..\Support\Policy\DualOnly_Crossover.dpol
+PolicyGroup_ADD  FHA_HSM_CROSSOVER
+Policy_AddtoGroup  DigitalSignatureCritical  FHA_HSM_CROSSOVER  PRIVATE_RESOLVER false true
+Policy_AddtoGroup  DualOnlyCrossover  FHA_HSM_CROSSOVER  PUBLIC_RESOLVER
+PolicyGroup_AddOwner  FHA_HSM_CROSSOVER  fha-crossover.DirectInt.lab
+//   Software
+CERTIFICATE_ADD ..\..\..\..\unittests\agent\Certificates\kryptiq\private\fha-crossover.DirectInt.lab_dualUse.pfx passw0rd! Enabled
+CERTIFICATE_ADD_Machine Private ..\..\..\..\unittests\agent\Certificates\kryptiq\private\fha-crossover.DirectInt.lab_dualUse.pfx passw0rd! Enabled
+
+
+// mixed.directmix.lab
+domain_add  mixed.directmix.lab  Enabled  Agent1 Fips1402
+CERTIFICATE_ADD_Machine  Public ..\..\..\..\unittests\agent\Certificates\kryptiq\private\mixed.directmix.lab.pfx passw0rd! Enabled
+CERTIFICATE_ADD_Machine  Public ..\..\..\..\unittests\agent\Certificates\kryptiq\public\mixed.directmix.lab_encipherment.cer Null Enabled
+CERTIFICATE_ADD_Machine  Public ..\..\..\..\unittests\agent\Certificates\kryptiq\public\fha-crossover.DirectInt.lab_encipherment.cer Null Enabled
+
+ANCHOR_ADD  mixed.directmix.lab  ..\..\..\..\unittests\agent\Certificates\kryptiq\OutgoingAnchors\umamalga1.cer Null Enabled
+ANCHOR_ADD  redmond.hsgincubator.com  ..\..\..\..\unittests\agent\Certificates\kryptiq\OutgoingAnchors\DirectMix.Soft_Cert.cer Null Enabled
+ANCHOR_ADD  redmond.hsgincubator.com  ..\..\..\..\unittests\agent\Certificates\kryptiq\OutgoingAnchors\DirectMix.Hard_Cert.cer Null Enabled
+
+	
+		
+Policy_Add  AllPublicCerts  ..\..\..\..\Support\Policy\AllPublicCerts.dpol
+PolicyGroup_ADD  Mixed_Test
+Policy_AddtoGroup  AllPublicCerts  Mixed_Test  PUBLIC_RESOLVER
+PolicyGroup_AddOwner  Mixed_Test  mixed.directmix.lab
+		
+PKCS11_ADD_CERT ..\..\..\..\unittests\agent\Certificates\kryptiq\private\mixed.directmix.lab_digitalsignature.cer Null Enabled
+PKCS11_ADD_CERT ..\..\..\..\unittests\agent\Certificates\kryptiq\public\mixed.directmix.lab_encipherment.cer Null Enabled
+
+DNS_SOA_ENSURE mixed.directmix.lab  NS1.nhind.hsgincubator.com.  foo.example.domain  20100602  3600
+DNS_ANAME_ENSURE mixed.directmix.lab  127.0.0.1 3600
+DNS_MX_ENSURE mixed.directmix.lab 	gateway.nhind.hsgincubator.com 3600
+
+
+
+

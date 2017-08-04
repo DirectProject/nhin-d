@@ -47,7 +47,7 @@
   <CertPolicies>
     <Public>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -57,7 +57,7 @@
     </Public>
     <Private>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -67,7 +67,7 @@
     </Private>
     <Trust>
       <ClientSettings>
-        <Url>http://localhost:6692/DomainManagerService.svc/CertPolicies</Url>
+        <Url>http://localhost/ConfigService/DomainManagerService.svc/CertPolicies</Url>
       </ClientSettings>
       <CacheSettings>
         <Cache>true</Cache>
@@ -113,7 +113,7 @@
   </IncomingRoutes>
   <InternalMessage>
     <PickupFolder>C:\inetpub\mailroot\TestPickup</PickupFolder>
-    <EnableRelay>false</EnableRelay>
+    <EnableRelay>true</EnableRelay>
   </InternalMessage>
   <RawMessage>
     <CopyFolder>C:\inetpub\mailroot\raw</CopyFolder>

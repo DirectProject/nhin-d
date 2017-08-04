@@ -50,6 +50,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,6 +59,10 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\..\build\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Security.Cryptography, Version=1.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\external\codeplex\Security.Cryptography.dll</HintPath>
@@ -90,6 +95,7 @@
     <Compile Include="Caching\DnsClientWithCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseCacheFacts.cs" />
     <Compile Include="Caching\DnsResponseToBinExample.cs" />
+    <Compile Include="Certificates\CertificateBuilderFacts.cs" />
     <Compile Include="Certificates\CertificateFacts.cs" />
     <Compile Include="Certificates\CertificateResolverBasic.cs" />
     <Compile Include="Certificates\CertificateResolverFacts.cs" />
@@ -139,9 +145,17 @@
     <Compile Include="TestingBase.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\common.metadata\common.metadata.csproj">
+      <Project>{9f832d7a-313c-4761-9f2c-8486ee2d01c5}</Project>
+      <Name>common.metadata</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>
+      <Name>diagnostics.nlog</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -284,7 +284,10 @@ namespace Health.Direct.SmtpAgent
                 
                 this.SubscribeToResolverEvents(m_agent.PublicCertResolver);
                 this.SubscribeToResolverEvents(m_agent.PrivateCertResolver);
-                
+
+                m_agent.Cryptographer.Error += m_diagnostics.OnCryptographerError;
+                m_agent.Cryptographer.Warning += m_diagnostics.OnCryptographerWarning;
+
                 m_agent.TrustModel.CertChainValidator.Problem += m_diagnostics.OnCertificateProblem;
                 m_agent.TrustModel.CertChainValidator.Untrusted += m_diagnostics.OnUntrustedCertificate;
             }
@@ -742,12 +745,12 @@ namespace Health.Direct.SmtpAgent
             
             if (envelope.HasDomainRecipients)
             {
-                DirectAddressCollection routedRecipients = new DirectAddressCollection();                
-                m_router.Route(message, envelope, routedRecipients); 
+                var routedRecipients = new DirectAddressCollection();
+                var messageRoute = m_router.Clone();
+                messageRoute.Route(message, envelope, routedRecipients);
                 
-                this.SendNotifications(envelope, routedRecipients);
-
-                SendDeliveryStatus(m_router, envelope, routedRecipients);
+                SendNotifications(envelope, routedRecipients);
+                SendDeliveryStatus(messageRoute, envelope, routedRecipients);
             }
             //
             // Any recipients that were handled by routes are no longer in the DomainRecipients collection (removed)

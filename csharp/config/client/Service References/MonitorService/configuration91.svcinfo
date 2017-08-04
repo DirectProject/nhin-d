@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="G6tUhT9HHLl85tx/oUuyRhisOS8=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="WjXr5sq7/5yrznxMnuKwvjLtd6c=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IMdnMonitor">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_IMdnMonitor" contract="MonitorService.IMdnMonitor" bindingType="basicHttpBinding" address="http://localhost:6692/MonitorService.svc/Dispositions" bindingConfiguration="BasicHttpBinding_IMdnMonitor">
+    <endpoint name="BasicHttpBinding_IMdnMonitor" contract="MonitorService.IMdnMonitor" bindingType="basicHttpBinding" address="http://directtest/ConfigService/MonitorService.svc/Dispositions" bindingConfiguration="BasicHttpBinding_IMdnMonitor">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://localhost:6692/MonitorService.svc/Dispositions</serializedValue>
+          <serializedValue>http://directtest/ConfigService/MonitorService.svc/Dispositions</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />

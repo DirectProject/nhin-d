@@ -18,6 +18,10 @@
             <span class="editor-validator"><%= Html.ValidationMessageFor(m => m.Name, "*", new {@class = "ui-state-error-text"}) %></span>
             <br class="clear" />
             
+            <span class="display-label"><%= Html.LabelFor(m => m.SecurityStandard) %></span>
+            <span class="display-field"><%= Html.EnumDropDownListFor(m => m.SecurityStandard)%></span>
+            <br class="clear" />
+
             <div class="action-buttons">
                 <input type="submit" value="Save" />
                 <%= Html.ActionLink("Cancel", "Index") %>

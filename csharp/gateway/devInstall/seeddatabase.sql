@@ -3,9 +3,6 @@
 -- This keeps it consistent.
 --
 
-USE [DirectConfig]
-GO
-
 INSERT INTO [dbo].[Domains]
            ([DomainName]
            ,[AgentName]
@@ -18,7 +15,7 @@ INSERT INTO [dbo].[Domains]
            ,GETDATE()
            ,GETDATE()
            ,0
-		   )
+           )
 GO
 
 
@@ -34,7 +31,7 @@ INSERT INTO [dbo].[CertPolicies]
            ,'seedlexicon'
            , CONVERT(varbinary(MAX), '')
            ,GETDATE()
-		   )
+           )
 GO
 
 
@@ -46,5 +43,16 @@ INSERT INTO [dbo].[CertPolicyGroups]
            ('seedname'
            ,'seedname'
            ,GETDATE()
-		   )
+           )
+GO
+
+INSERT [dbo].[Properties] ([Name], [Value]) VALUES (N'TokenSettings', 
+  N'<TokenSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Library>C:\Program Files\SafeNet\LunaClient\cryptoki.dll</Library>
+  <TokenSerial>serialnumber</TokenSerial>
+  <TokenLabel>partionname</TokenLabel>
+  <ApplicationName>DirectProject</ApplicationName>
+  <UserPin>pass</UserPin>
+</TokenSettings>')
+
 GO

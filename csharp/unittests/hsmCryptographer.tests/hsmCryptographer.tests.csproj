@@ -14,7 +14,7 @@
     <AssemblyName>hsmCryptographer.tests</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -35,6 +35,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +54,10 @@
     </Reference>
     <Reference Include="Moq, Version=4.5.30.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\build\packages\Moq.4.5.30\lib\net45\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Pkcs11Interop.StrongName, Version=3.3.0.0, Culture=neutral, PublicKeyToken=c10e9c2d8c006d2a, processorArchitecture=MSIL">
+      <HintPath>..\..\build\packages\Pkcs11Interop.StrongName.3.3.0\lib\net45\Pkcs11Interop.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -101,10 +106,6 @@
     <ProjectReference Include="..\..\hsmCryptographer\hsmCryptographer.csproj">
       <Project>{3c66e370-68b4-45c7-8c69-622c983c8e43}</Project>
       <Name>hsmCryptographer</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\pkcs11Signed\pkcs11Signed.csproj">
-      <Project>{facb2d74-d738-4d41-a595-8396b75277d1}</Project>
-      <Name>pkcs11Signed</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\policy\policy.csproj">
       <Project>{08F5778A-CADF-4CB3-8F58-40B8AD5B09B0}</Project>

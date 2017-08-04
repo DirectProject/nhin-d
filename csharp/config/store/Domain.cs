@@ -135,6 +135,7 @@ namespace Health.Direct.Config.Store
             this.Status = source.Status;
             this.AgentName = source.AgentName;
             this.UpdateDate = DateTimeHelper.Now;
+            this.SecurityStandard = source.SecurityStandard;
         }
         
         public bool IsValidEmailDomain()

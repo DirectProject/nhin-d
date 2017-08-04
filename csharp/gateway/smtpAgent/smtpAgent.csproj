@@ -12,7 +12,7 @@
     <AssemblyName>Health.Direct.SmtpAgent</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -82,6 +82,7 @@
     <Compile Include="ConfigService.cs" />
     <Compile Include="Config\AddressManagerSettings.cs" />
     <Compile Include="Config\AnchorServiceResolverSettings.cs" />
+    <Compile Include="Config\DomainManagerSettings.cs" />
     <Compile Include="Config\DomainServiceResolverSettings.cs" />
     <Compile Include="Config\InternalMessageSettings.cs" />
     <Compile Include="Config\MessageProcessingSettings.cs" />

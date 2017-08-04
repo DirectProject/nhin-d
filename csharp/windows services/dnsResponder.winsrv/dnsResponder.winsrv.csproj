@@ -12,7 +12,7 @@
     <AssemblyName>DirectDnsResponderSvc</AssemblyName>
     <!-- Project output -->
     <OutputType>Exe</OutputType>
-    <OutputPath>..\..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
@@ -89,6 +89,10 @@
     <ProjectReference Include="..\..\config\client\config.client.csproj">
       <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
       <Name>config.client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>
+      <Name>diagnostics.nlog</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\dnsResponder\dnsResponder.csproj">
       <Project>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</Project>

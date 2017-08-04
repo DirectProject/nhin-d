@@ -980,9 +980,6 @@ namespace Health.Direct.Agent
 
         void BindAddresses(OutgoingMessage message)
         {
-            //
-            // Retrieving the sender's private certificate is requied for encryption
-            //
             if (message.UseIncomingTrustAnchors)
             {
                 message.Sender.TrustAnchors = m_trustAnchors.IncomingAnchors.GetCertificates(message.Sender);
@@ -991,12 +988,14 @@ namespace Health.Direct.Agent
             {
                 message.Sender.TrustAnchors = m_trustAnchors.OutgoingAnchors.GetCertificates(message.Sender);
             }
+
             message.Sender.Certificates = this.ResolvePrivateCerts(message.Sender, true, false);
                     
             //
             // Bind each recipient's certs
             //
             DirectAddressCollection recipients = message.Recipients;
+
             for (int i = 0, count = recipients.Count; i < count; ++i)
             {
                 DirectAddress recipient = recipients[i];
@@ -1100,11 +1099,13 @@ namespace Health.Direct.Agent
         X509Certificate2Collection ResolvePrivateCerts(MailAddress address, bool required, bool incoming)
         {
             X509Certificate2Collection certs = null;
+
             try
             {
                 certs = m_privateCertResolver.GetCertificates(address)
                     //Certificate Policy
-                    .Where(cert => FilterCertificateByPolicy(address, cert, m_privatePolicyResolver, incoming)); 
+                    .Where(cert => FilterCertificateByPolicy(address, cert, m_privatePolicyResolver, incoming));
+
                 if (required && certs.IsNullOrEmpty())
                 {
                     throw new AgentException(AgentError.CouldNotResolvePrivateKey, address.Address);

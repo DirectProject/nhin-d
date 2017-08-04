@@ -13,11 +13,14 @@
     <AssemblyName>Health.Direct.DnsResponder.Service</AssemblyName>
     <!-- Project output -->
     <OutputType>Library</OutputType>
-    <OutputPath>..\build\bin\$(Configuration)\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
+    <MSDeployServiceUrl>localhost</MSDeployServiceUrl>
+    <DeployIisAppPath>DnsService</DeployIisAppPath>
+    <DefaultPackageFileName>$(DeployIisAppPath).zip</DefaultPackageFileName>
     <!-- Framework dependencies -->
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
@@ -29,11 +32,8 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <!-- Deployment options -->
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
-    <UseGlobalApplicationHostFile />
+    <AutoAssignPort>false</AutoAssignPort>
+    <DevelopmentServerPort>6693</DevelopmentServerPort>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -90,6 +90,9 @@
       <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
       <Name>diagnostics.nlog</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\Local-IIS.pubxml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" />

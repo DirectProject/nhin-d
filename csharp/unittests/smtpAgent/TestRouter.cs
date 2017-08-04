@@ -18,20 +18,31 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Health.Direct.Agent;
 using Health.Direct.Agent.Tests;
 using Health.Direct.Common.Container;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Routing;
+using Health.Direct.Config.Client;
+using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
+using Health.Direct.SmtpAgent.Config;
+using Moq;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests
 {
-    public class TestRouter : SmtpAgentTester
+    public class TestRouter : SmtpAgentTester, IDisposable
     {
         SmtpAgent m_agent;
         Dictionary<string, int> m_routeCounts;
+
+        public void Dispose()
+        {
+            DisposeReceivers(m_agent?.Router?.ToArray());
+        }
 
         static TestRouter()
         {
@@ -125,6 +136,96 @@ namespace Health.Direct.SmtpAgent.Tests
             }
             this.RouteCannedMessage();
             this.CheckRoutedCounts(1);
+        }
+
+        protected List<Address> AddressMemoryStore = new List<Address>();
+
+        protected Mock<ClientSettings> MockAddressClientSettings()
+        {
+            Mock<ClientSettings> mockClientSettings = new Mock<ClientSettings>();
+            mockClientSettings.SetupAllProperties();
+            Mock<IAddressManager> mockAddressManagerClient = new Mock<IAddressManager>();
+            mockAddressManagerClient.SetupAllProperties();
+
+
+            //
+            // Ensure AddressManagerClient calls to GetAddress uses the internal AddressMemoryStore
+            //
+            mockAddressManagerClient.Setup(
+                    mc => mc.GetAddresses(It.IsAny<string[]>(), It.Is<EntityStatus>(e => e == EntityStatus.Enabled)))
+                .Returns<string[], EntityStatus>(
+                    (x, s) =>
+                    {
+                        var addresses =
+                            AddressMemoryStore.Where(a => x.Contains(a.EmailAddress, StringComparer.OrdinalIgnoreCase) && a.Status == s)
+                                .ToArray();
+                        if (addresses.IsNullOrEmpty())
+                        {
+                            return null;
+                        }
+                        return addresses;
+                    });
+
+
+            //
+            // Ensure we create a AddressManagerClient
+            //
+            mockClientSettings.Setup(c => c.CreateAddressManagerClient())
+                .Returns(mockAddressManagerClient.Object);
+            return mockClientSettings;
+        }
+
+        /// <summary>
+        /// This test asserts that a failed route does not break future messages through the same route.
+        /// Previously route was reused and once the <see cref="Route.FailedDelivery"/> was set then a routes failed.
+        /// </summary>
+        [Fact]
+        public void Test_PluginRouter_Under_Parallel_Load()
+        {
+
+            string configPath = GetSettingsPath("TestReceiverPlugin.xml");
+            var settings = SmtpAgentSettings.LoadSettings(configPath);
+
+            settings.InternalMessage.PickupFolder = TestPickupFolder;
+
+            //
+            // Create the SmtpAgent.  This is the adapter between IIS SMTP and the DirectAgent (security and trust code)
+            //
+            m_agent = SmtpAgentFactory.Create(settings);
+            CleanMessages(m_agent.Settings);
+
+            //
+            // Mocks use the AddressMemoryStore
+            //
+            AddressMemoryStore.Clear();
+            AddressMemoryStore.AddRange(new Address[]
+            {
+                new Address {EmailAddress = "jshook@nhind.hsgincubator.com", Status = EntityStatus.Enabled, Type = "STUB"}
+            });
+
+            var mockAddressClientSettings = MockAddressClientSettings();
+            m_agent.Settings.AddressManager = mockAddressClientSettings.Object;
+            
+
+            DirectAgent agentA = new DirectAgent("redmond.hsgincubator.com");
+
+            Parallel.For(0, 50, new ParallelOptions { MaxDegreeOfParallelism = 10 }, i =>
+            {
+                var message = string.Format(TestMessageLoad, Guid.NewGuid().ToString("N"), i);
+                
+                //
+                // Prep and encrypted message.
+                //
+                var outMessage = agentA.ProcessOutgoing(message).SerializeMessage();
+                var cdoMessage = new CDOSmtpMessage(base.LoadMessage(outMessage));
+
+                m_agent.ProcessMessage(cdoMessage);
+
+            });
+
+
+            Assert.Equal(49, Directory.GetFiles(TestIncomingFolder).Length);
+            Assert.Equal(1, Directory.GetFiles(TestPickupFolder).Length);
         }
 
         void RoundRobinTest(FolderRoute route)
@@ -299,6 +400,21 @@ namespace Health.Direct.SmtpAgent.Tests
             this.UpdateRouteCount(destinationFolder);
             return true;
         }
+
+        public static void DisposeReceivers(Route[] routes)
+        {
+            foreach (var route in routes)
+            {
+                var pluginRoute = route as PluginRoute;
+                if (pluginRoute != null)
+                {
+                    foreach (var receivier in pluginRoute.Receivers.OfType<IDisposable>())
+                    {
+                        receivier.Dispose();
+                    }
+                }
+            }
+        }
     }
 
     public class TestExtendedRoutes : SmtpAgentTester
@@ -409,5 +525,37 @@ namespace Health.Direct.SmtpAgent.Tests
         public string Url;
         public int Timeout;
         public bool Succeed = true;
+    }
+
+    public class StubPluginReciver : IPlugin, IReceiver<ISmtpMessage>
+    {
+        public StubPluginReciver()
+        {
+        }
+
+        public StubPluginReciverSettings Settings;
+
+        public void Init(PluginDefinition pluginDef)
+        {
+            Settings = pluginDef.DeserializeSettings<StubPluginReciverSettings>();
+        }
+
+        public bool Receive(ISmtpMessage message)
+        {
+            if (message.GetEnvelope().Message.SubjectValue == "12")
+            {
+                throw new Exception("Poof");
+            }
+
+            string uniqueFileName = Extensions.CreateUniqueFileName();
+            message.SaveToFile(Path.Combine(Settings.CopyFolder, uniqueFileName));
+
+            return true;
+        }
+    }
+
+    public class StubPluginReciverSettings
+    {
+        public string CopyFolder;
     }
 }

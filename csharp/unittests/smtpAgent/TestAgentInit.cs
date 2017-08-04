@@ -278,7 +278,7 @@ namespace Health.Direct.SmtpAgent.Tests
             if (serviceResolverSettings != null)
             {
                 Assert.True(serviceResolverSettings.AgentName == "Agent1");
-                Assert.True(serviceResolverSettings.ClientSettings.Url == "http://localhost:6692/DomainManagerService.svc/Domains");
+                Assert.True(serviceResolverSettings.ClientSettings.Url == "http://localhost/ConfigService/DomainManagerService.svc/Domains");
             }
         }
     }

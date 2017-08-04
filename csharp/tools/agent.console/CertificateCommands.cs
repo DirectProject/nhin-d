@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Agent;
+using Health.Direct.Agent.Certificates;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
