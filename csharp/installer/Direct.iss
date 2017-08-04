@@ -45,10 +45,10 @@ DefaultDirName={pf}\Direct Project .NET Gateway
 DefaultGroupName=Direct Project .NET Gateway
 AllowNoIcons=yes
 OutputDir=.
-OutputBaseFilename=Direct-1.3.0.5-NET45_Beta
+OutputBaseFilename=Direct-1.3.0.6-NET45_Beta
 Compression=lzma
 SolidCompression=yes
-VersionInfoVersion=1.3.0.5
+VersionInfoVersion=1.3.0.6
 SetupLogging=yes
 PrivilegesRequired=admin
 
