@@ -15,6 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using Health.Direct.Common.Mime;
+using Org.BouncyCastle.Bcpg;
 
 namespace Health.Direct.Common.Mail.Context
 {
@@ -46,228 +47,255 @@ namespace Health.Direct.Common.Mail.Context
         /// Name for the <c>patient-id</c> header
         /// </summary>
         public const string PatientId = "patient-id";
+
+
+
+        public class Type
+        {
+            /// <summary>
+            /// Name for the <c>type</c> header
+            /// </summary>
+            public const string Name = "type";
+
+            internal const string CategoryLaboratory = "laborartory";
+            internal const string CategoryRadiology = "radiology";
+            internal const string CategoryPharmacy = "pharmacy";
+            internal const string CategoryReferral = "referral";
+            internal const string CategoryGeneral = "general";
+
+            /// <summary>
+            /// Normative categories.  i.e., other values are not permitted.
+            /// </summary>
+            public enum Category
+            {
+                /// <summary>
+                /// Unknown.
+                /// </summary>
+                Unknown = 0,
+
+                /// <summary>
+                /// The <c>laboratory category</c>
+                /// </summary>
+                Laboratory,
+
+                /// <summary>
+                /// The <c>radiology category</c>
+                /// </summary>
+                Radiology,
+
+                /// <summary>
+                /// The <c>pharmacy category</c>
+                /// </summary>
+                Pharmacy,
+
+                /// <summary>
+                /// The <c>referral category</c>
+                /// </summary>
+                Referral,
+
+                /// <summary>
+                /// The <c>general category</c>
+                /// </summary>
+                General
+            }
+
+            internal const string ActionOrder = "order";
+            internal const string ActionReport = "report";
+            internal const string ActionResult = "result";
+            internal const string ActionQuery = "query";
+            internal const string ActionResponse = "response";
+            internal const string ActionNotification = "notification";
+
+            /// <summary>
+            /// Intended to identify the role of the  message sender in the transaction sequence, i.e., a query
+            /// action would generally be followed by a response action.
+            /// </summary>
+            public enum Action
+            {
+                /// <summary>
+                /// Unknown.
+                /// </summary>
+                Unknown = 0,
+
+                /// <summary>
+                /// The <c>order action</c>
+                /// </summary>
+                Order,
+
+                /// <summary>
+                /// The <c>report action</c>
+                /// </summary>
+                Report,
+
+                /// <summary>
+                /// The <c>result action</c>
+                /// </summary>
+                Result,
+
+                /// <summary>
+                /// The <c>query action</c>
+                /// </summary>
+                Query,
+
+                /// <summary>
+                /// The <c>response action</c>
+                /// </summary>
+                Response,
+
+                /// <summary>
+                /// The <c>notification action</c>
+                /// </summary>
+                Notification
+            }
+        }
+
+
+        
+
         
         /// <summary>
-        /// Name for the <c>type</c> header
+        /// Context: Purpose types
         /// </summary>
-        public const string Type = "type";
-
-        internal const string CategoryLaboratory = "laborartory";
-        internal const string CategoryRadiology = "radiology";
-        internal const string CategoryPharmacy = "pharmacy";
-        internal const string CategoryReferral = "referral";
-        internal const string CategoryGeneral = "general";
-
-        /// <summary>
-        /// Normative categories.  i.e., other values are not permitted.
-        /// </summary>
-        public enum Category
+        public class Purpose
         {
             /// <summary>
-            /// Unknown.
+            /// Name for the <c>purpose</c> header
             /// </summary>
-            Unknown = 0,
+            public const string Name = "purpose";
+
+            public const string PurposeTreatment = "treatment";
+            public const string PurposePayment = "payment";
+            public const string PurposeOperations = "operations";
+            public const string PurposeEmergency = "emergency";
+            public const string PurposeResearch = "research";
+
 
             /// <summary>
-            /// The <c>laboratory category</c>
+            /// List of purpose names
             /// </summary>
-            Laboratory,
+            public enum PurposeName
+            {
+                /// <summary>
+                /// Unknown.
+                /// </summary>
+                Unknown = 0,
 
-            /// <summary>
-            /// The <c>radiology category</c>
-            /// </summary>
-            Radiology,
+                /// <summary>
+                /// The <c>treatment purpose-name</c>
+                /// </summary>
+                Treatment,
 
-            /// <summary>
-            /// The <c>pharmacy category</c>
-            /// </summary>
-            Pharmacy,
+                /// <summary>
+                /// The <c>payment purpose-name</c>
+                /// </summary>
+                Payment,
 
-            /// <summary>
-            /// The <c>referral category</c>
-            /// </summary>
-            Referral,
+                /// <summary>
+                /// The <c>operations purpose-name</c>
+                /// </summary>
+                Operations,
 
-            /// <summary>
-            /// The <c>general category</c>
-            /// </summary>
-            General
-        }
+                /// <summary>
+                /// The <c>emergency purpose-name</c>
+                /// </summary>
+                Emergency,
 
-        internal const string ActionOrder = "order";
-        internal const string ActionReport = "report";
-        internal const string ActionResult = "result";
-        internal const string ActionQuery = "query";
-        internal const string ActionResponse = "response";
-        internal const string ActionNotification = "notification";
-
-        /// <summary>
-        /// Intended to identify the role of the  message sender in the transaction sequence, i.e., a query
-        /// action would generally be followed by a response action.
-        /// </summary>
-        public enum Action
-        {
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            Unknown = 0,
-
-            /// <summary>
-            /// The <c>order action</c>
-            /// </summary>
-            Order,
-
-            /// <summary>
-            /// The <c>report action</c>
-            /// </summary>
-            Report,
-
-            /// <summary>
-            /// The <c>result action</c>
-            /// </summary>
-            Result,
-
-            /// <summary>
-            /// The <c>query action</c>
-            /// </summary>
-            Query,
-
-            /// <summary>
-            /// The <c>response action</c>
-            /// </summary>
-            Response,
-
-            /// <summary>
-            /// The <c>notification action</c>
-            /// </summary>
-            Notification
+                /// <summary>
+                /// The <c>research purpose-name</c>
+                /// </summary>
+                Research
+            }
         }
 
         /// <summary>
-        /// Name for the <c>purpose</c> header
+        /// 3.6 Patient Matching Paramters defined. 
         /// </summary>
-        public const string Purpose = "purpose";
-
-        internal const string PurposeTreatment = "treatment";
-        internal const string PurposePayment = "payment";
-        internal const string PurposeOperations = "operations";
-        internal const string PurposeEmergency = "emergency";
-        internal const string PurposeResearch = "research";
-
-        /// <summary>
-        /// List of purpose names
-        /// </summary>
-        public enum PurposeName
+        public class Patient
         {
             /// <summary>
-            /// Unknown.
+            /// Name for the <c>patient</c> header
             /// </summary>
-            Unknown = 0,
+            public const string Name = "patient";
+
+            public const string PatientGivenName = "givenName";
+            public const string PatientSurName = "surname";
+            public const string PatientMiddleName = "middleName";
+            public const string PatientDateOfBirth = "dateOfBirth";
+            public const string PatientGender = "gender";
+            public const string PatientSocialSecurityNumber = "socialSecurityNumber";
+            public const string PatientTelephoneNumber = "telephoneNumber";
+            public const string PatientStreetAddress = "streetAddress";
+            public const string PatientPostalCode = "postalCode";
 
             /// <summary>
-            /// The <c>treatment purpose-name</c>
+            /// patient-parameter-value 
             /// </summary>
-            Treatment,
+            public enum PatientParameter
+            {
+                /// <summary>
+                /// Unknown.
+                /// </summary>
+                Unknown = 0,
 
-            /// <summary>
-            /// The <c>payment purpose-name</c>
-            /// </summary>
-            Payment,
+                // <summary>
+                /// The <c>givenName patient-parameter</c>
+                /// </summary>
+                GivenName,
 
-            /// <summary>
-            /// The <c>operations purpose-name</c>
-            /// </summary>
-            Operations,
+                /// <summary>
+                /// The <c>surname patient-parameter</c>
+                /// </summary>
+                Surname,
 
-            /// <summary>
-            /// The <c>emergency purpose-name</c>
-            /// </summary>
-            Emergency,
+                /// <summary>
+                /// The <c>middleName patient-parameter</c>
+                /// </summary>
+                MiddleName,
 
-            /// <summary>
-            /// The <c>research purpose-name</c>
-            /// </summary>
-            Research
+                /// <summary>
+                /// The <c>dateOfBirth patient-parameter</c>
+                /// </summary>
+                DateOfBirth,
+
+                /// <summary>
+                /// The <c>gender patient-parameter</c>
+                /// </summary>
+                Gender,
+
+                /// <summary>
+                /// The <c>socialSecurityNumber patient-parameter</c>
+                /// </summary>
+                SocialSecurityNumber,
+
+                /// <summary>
+                /// The <c>telephoneNumber patient-parameter</c>
+                /// </summary>
+                TelephoneNumber,
+
+                /// <summary>
+                /// The <c>streetAddress patient-parameter</c>
+                /// </summary>
+                StreetAddress,
+
+                /// <summary>
+                /// The <c>postalCode patient-parameter</c>
+                /// </summary>
+                PostalCode
+            }
         }
         
-        /// <summary>
-        /// Name for the <c>patient</c> header
-        /// </summary>
-        public const string Patient = "patient";
-
-        internal const string PatientGivenName = "givenName";
-        internal const string PatientSurName = "surname";
-        internal const string PatientMiddleName = "middleName";
-        internal const string PatientDateOfBirth = "dateOfBirth";
-        internal const string PatientGender = "gender";
-        internal const string PatientSocialSecurityNumber = "socialSecurityNumber";
-        internal const string PatientTelephoneNumber = "telephoneNumber";
-        internal const string PatientStreetAddress = "streetAddress";
-        internal const string PatientPostalCode = "postalCode";
-
-        public enum PatientParameter
-        {
-            /// <summary>
-            /// Unknown.
-            /// </summary>
-            Unknown = 0,
-
-            // <summary>
-            /// The <c>givenName patient-parameter</c>
-            /// </summary>
-            GivenName,
-
-            /// <summary>
-            /// The <c>surname patient-parameter</c>
-            /// </summary>
-            Surname,
-
-            /// <summary>
-            /// The <c>middleName patient-parameter</c>
-            /// </summary>
-            MiddleName,
-
-            /// <summary>
-            /// The <c>dateOfBirth patient-parameter</c>
-            /// </summary>
-            DateOfBirth,
-
-            /// <summary>
-            /// The <c>gender patient-parameter</c>
-            /// </summary>
-            Gender,
-
-            /// <summary>
-            /// The <c>socialSecurityNumber patient-parameter</c>
-            /// </summary>
-            SocialSecurityNumber,
-
-            /// <summary>
-            /// The <c>telephoneNumber patient-parameter</c>
-            /// </summary>
-            TelephoneNumber,
-
-            /// <summary>
-            /// The <c>streetAddress patient-parameter</c>
-            /// </summary>
-            StreetAddress,
-
-            /// <summary>
-            /// The <c>postalCode patient-parameter</c>
-            /// </summary>
-            PostalCode
-        }
-
-        /// <summary>
-        /// Name for the <c>encapsulation</c> header
-        /// </summary>
-        public const string Encapsulation = "encapsulation";
-
+        
         /// <summary>
         /// List of possible <c>encapsulated-message-type</c>s
         /// </summary>
-        public class EncapsulationMessageType
+        public class Encapsulation
         {
+            /// <summary>
+            /// Name for the <c>encapsulation</c> header
+            /// </summary>
+            public const string Name = "encapsulation";
+
+
             /// <summary>
             /// The <c>http encapsulation-message-type</c>
             /// </summary>

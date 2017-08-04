@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Mail.Context
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ContextBuilder
     {
         private readonly  Context context;
@@ -81,7 +85,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Set metadata version
         /// </summary>
-        /// <param name="encoding"></param>
+        /// <param name="version"></param>
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithVersion(string version)
         {
@@ -93,6 +97,9 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Set metadata id
         /// </summary>
+        /// <remarks>
+        /// See 3.2 Transaction ID
+        /// </remarks>
         /// <param name="id"></param>
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithId(string id)
@@ -103,25 +110,21 @@ namespace Health.Direct.Common.Mail.Context
         }
 
         /// <summary>
-        /// Set metadata patientId/s
+        /// Set metadata patientId/s.
+        /// Call multiple times if adding more than one Id.
         /// </summary>
         /// <param name="patientId"></param>
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithPatientId(string patientId)
         {
-            context.Metadata.PatientId = patientId;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Add patientId to  metadata patientIds
-        /// </summary>
-        /// <param name="patientId"></param>
-        /// <returns>ContextBuilder</returns>
-        public ContextBuilder AddPatientId(string patientId)
-        {
-            context.Metadata.PatientId += $"; {patientId}";
+            if (context.Metadata.PatientId.IsNullOrWhiteSpace())
+            {
+                context.Metadata.PatientId = patientId;
+            }
+            else
+            {
+                context.Metadata.PatientId += $"; {patientId}";
+            }
 
             return this;
         }
@@ -129,11 +132,72 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Set metadata type
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="category">Valid <see cref="ContextStandard.Type.Category"/></param>
+        /// <param name="action">Valid <see cref="ContextStandard.Type.Action"/></param>
         /// <returns>ContextBuilder</returns>
-        public ContextBuilder WithType(Context.Type type)
+        public ContextBuilder WithType(string category, string action)
         {
-            context.Metadata.Type = type;
+            context.Metadata.Type = new Type
+            {
+                Category = category,
+                Action = action
+            };
+
+            return this;
+        }
+
+        /// <summary>
+        /// Set metadata type
+        /// </summary>
+        /// <remarks>
+        /// See 3.5 Purpose of Use
+        /// </remarks>
+        /// <param name="purpose">Valid <see cref="ContextStandard.Purpose"/></param>
+        /// <returns>ContextBuilder</returns>
+        public ContextBuilder WithPurpose(string purpose)
+        {
+            context.Metadata.Purpose = purpose;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Set metadata patient attributes
+        /// Paramters must be a valid <see cref="ContextStandard.Patient"/>
+        /// </summary>
+        /// <param name="givenName"></param>
+        /// <param name="surname"></param>
+        /// <param name="middleName"></param>
+        /// <param name="dateOfBirth"></param>
+        /// <param name="gender"></param>
+        /// <param name="socialSecurityNumber"></param>
+        /// <param name="telephoneNumber"></param>
+        /// <param name="streetAddress"></param>
+        /// <param name="postalCode"></param>
+        /// <returns>ContextBuilder</returns>
+        public ContextBuilder WithPatient(
+            string givenName, 
+            string surname,
+            string middleName,
+            string dateOfBirth,
+            string gender,
+            string socialSecurityNumber,
+            string telephoneNumber,
+            string streetAddress,
+            string postalCode)
+        {
+            context.Metadata.Patient = new Patient
+            {
+                GivenName = givenName,
+                SurName = surname,
+                MiddleName = middleName,
+                DateOfBirth = dateOfBirth,
+                Gender = gender,
+                SocialSecurityNumber = socialSecurityNumber,
+                TelephoneNumber = telephoneNumber,
+                StreetAddress = streetAddress,
+                PostalCode = postalCode
+            };
 
             return this;
         }

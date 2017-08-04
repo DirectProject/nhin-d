@@ -54,8 +54,11 @@ namespace Health.Direct.Common.Mail.Context
         }
 
         /// <summary>
-        /// Gets and sets the value of <c>id</c> metadata.  Value is specifically called the <c>unique-identifier</c> 
+        /// Gets and sets the value of <c>id</c> metadata.  Value is specifically called the <c>unique-identifier</c>  
         /// </summary>
+        /// <remarks>
+        /// See 3.2 Transaction ID
+        /// </remarks>
         public string Id
         {
             get
@@ -71,6 +74,9 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Gets and sets the value of <c>patient-id</c> metadata. 
         /// </summary>
+        /// <remarks>
+        /// See 3.3 Patient ID
+        /// </remarks>
         public string PatientId
         {
             get
@@ -86,6 +92,9 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Return IEnumerable list <see cref="PatientIdentifier"/>
         /// </summary>
+        /// <remarks>
+        /// See 3.4 Transaction Type
+        /// </remarks>
         public IEnumerable<PatientIdentifier> PatientIdentifier
         {
             get
@@ -103,11 +112,11 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return ContextParser.ParseType(GetValue(ContextStandard.Type));
+                return ContextParser.ParseType(GetValue(ContextStandard.Type.Name));
             }
             set
             {
-                SetValue(ContextStandard.Type, value.ToString());
+                SetValue(ContextStandard.Type.Name, value.ToString());
             }
         }
 
@@ -119,11 +128,11 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return GetValue(ContextStandard.Purpose);
+                return GetValue(ContextStandard.Purpose.Name);
             }
             set
             {
-                SetValue(ContextStandard.Purpose, value.ToString());
+                SetValue(ContextStandard.Purpose.Name, value);
             }
         }
 
@@ -134,11 +143,11 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return new Patient(GetValue(ContextStandard.Patient));
+                return new Patient(GetValue(ContextStandard.Patient.Name));
             }
             set
             {
-                SetValue(ContextStandard.Patient, value.ToString());
+                SetValue(ContextStandard.Patient.Name, value.ToString());
             }
         }
 
@@ -149,11 +158,11 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return GetValue(ContextStandard.Encapsulation);
+                return GetValue(ContextStandard.Encapsulation.Name);
             }
             set
             {
-                SetValue(ContextStandard.Encapsulation, value.ToString());
+                SetValue(ContextStandard.Encapsulation.Name, value.ToString());
             }
         }
     }

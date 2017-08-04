@@ -55,8 +55,8 @@ namespace Health.Direct.Common.Tests.Mail
             // Type
             //
             Assert.Equal("radiology/report", context.Metadata.Type.ToString());
-            Assert.Equal("radiology", context.Metadata.Type.Category);
-            Assert.Equal("report", context.Metadata.Type.Action);
+            Assert.Equal("radiology", context.Metadata.Type.Category.ToString());
+            Assert.Equal("report", context.Metadata.Type.Action.ToString());
 
             //
             // Purpose

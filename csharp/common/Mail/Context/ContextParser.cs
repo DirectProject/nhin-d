@@ -105,7 +105,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns></returns>
         public static IEnumerable<PatientIdentifier> ParsePatientIdentifier(string headerValue)
         {
-            string[] parts = SplitField(headerValue, ContextError.InvalidPatientId);
+            var parts = SplitField(headerValue, ContextError.InvalidPatientId);
 
             foreach (var part in parts)
             {
@@ -127,31 +127,37 @@ namespace Health.Direct.Common.Mail.Context
         public static Type ParseType(string headerValue)
         {
             var typeValue = Split(headerValue, new[] { '/' }, ContextError.InvalidType);
-            
+
+            var category = typeValue.First();
+            var action = typeValue.Last();
+
+            typeValue.First().AssertEnum<ContextStandard.Type.Category>(ContextError.InvalidType);
+            typeValue.Last().AssertEnum<ContextStandard.Type.Action>(ContextError.InvalidType);
+
             return new Type()
             {
-                Category = typeValue[0],
-                Action = typeValue[1]
+                Category = category,
+                Action = action
             };
         }
         
         static readonly char[] s_fieldSeparator = { ';' };
 
-        public static string[] SplitField(string value, ContextError error)
+        public static List<string> SplitField(string value, ContextError error)
         {
             return Split(value, s_fieldSeparator, error);
         }
 
-        internal static string[] Split(string value, char[] separators, ContextError error)
+        internal static List<string>Split(string value, char[] separators, ContextError error)
         {
             if (string.IsNullOrEmpty(value))
             {
                 throw new ContextException(error);
             }
 
-            string[] parts = value.Split(separators);
+            var parts = value.Split(separators).Select(v => v.Trim()).ToList();
 
-            if (parts.IsNullOrEmpty())
+            if (!parts.Any())
             {
                 throw new ContextException(error);
             }
@@ -161,7 +167,7 @@ namespace Health.Direct.Common.Mail.Context
 
         public static Dictionary<string, string> GetPatientAttributes(string value, ContextError error)
         {
-            string[] parts = ContextParser.SplitField(value, error);
+            var parts = ContextParser.SplitField(value, error);
 
             var patientAttributes = new Dictionary<string, string>();
 

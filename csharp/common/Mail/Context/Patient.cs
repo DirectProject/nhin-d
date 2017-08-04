@@ -7,19 +7,29 @@ namespace Health.Direct.Common.Mail.Context
     public class Patient
     {
         private string originalHeader;
+
+        /// <summary>
+        /// Construct and empty Patient.
+        /// </summary>
+        public Patient(){}
+
+        /// <summary>
+        /// Parse Patient from patient-attributes.
+        /// </summary>
+        /// <param name="headerValue"></param>
         public Patient(string headerValue)
         {
             originalHeader = headerValue;
             var patientAttributes = ContextParser.GetPatientAttributes(headerValue, ContextError.InvalidPatient);
-            GivenName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientGivenName)).Value;
-            SurName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientSurName)).Value;
-            MiddleName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientMiddleName)).Value;
-            DateOfBirth = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientDateOfBirth)).Value;
-            Gender = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientGender)).Value;
-            SocialSecurityNumber = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientSocialSecurityNumber)).Value;
-            TelephoneNumber = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientTelephoneNumber)).Value;
-            StreetAddress = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientStreetAddress)).Value;
-            PostalCode = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.PatientPostalCode)).Value;
+            GivenName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientGivenName)).Value;
+            SurName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientSurName)).Value;
+            MiddleName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientMiddleName)).Value;
+            DateOfBirth = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientDateOfBirth)).Value;
+            Gender = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientGender)).Value;
+            SocialSecurityNumber = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientSocialSecurityNumber)).Value;
+            TelephoneNumber = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientTelephoneNumber)).Value;
+            StreetAddress = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientStreetAddress)).Value;
+            PostalCode = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientPostalCode)).Value;
         }
 
         public string GivenName{get; set; }
@@ -34,61 +44,55 @@ namespace Health.Direct.Common.Mail.Context
 
         public override string ToString()
         {
-            if (!originalHeader.IsNullOrWhiteSpace())
+            var sb = new StringBuilder();
+            var seperator = "; ";
+
+            if (!GivenName.IsNullOrWhiteSpace())
             {
-                return originalHeader;
+                sb.Append(ContextStandard.Patient.PatientGivenName).Append("=").Append(GivenName).Append(seperator);
             }
-            else
+
+            if (!SurName.IsNullOrWhiteSpace())
             {
-                var sb = new StringBuilder();
-
-                if (!GivenName.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientGivenName).Append("=").Append(GivenName);
-                }
-
-                if (!SurName.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientSurName).Append("=").Append(SurName);
-                }
-
-                if (!MiddleName.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientMiddleName).Append("=").Append(MiddleName);
-                }
-
-                if (!DateOfBirth.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientDateOfBirth).Append("=").Append(DateOfBirth);
-                }
-
-                if (!Gender.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientGender).Append("=").Append(Gender);
-                }
-
-                if (!SocialSecurityNumber.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientSocialSecurityNumber).Append("=").Append(SocialSecurityNumber);
-                }
-
-                if (!TelephoneNumber.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientTelephoneNumber).Append("=").Append(TelephoneNumber);
-                }
-
-                if (!StreetAddress.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientStreetAddress).Append("=").Append(StreetAddress);
-                }
-
-                if (!PostalCode.IsNullOrWhiteSpace())
-                {
-                    sb.Append(ContextStandard.PatientPostalCode).Append("=").Append(PostalCode);
-                }
-
-                return sb.ToString();
+                sb.Append(ContextStandard.Patient.PatientSurName).Append("=").Append(SurName).Append(seperator);
             }
+
+            if (!MiddleName.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientMiddleName).Append("=").Append(MiddleName).Append(seperator);
+            }
+
+            if (!DateOfBirth.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientDateOfBirth).Append("=").Append(DateOfBirth).Append(seperator);
+            }
+
+            if (!Gender.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientGender).Append("=").Append(Gender).Append(seperator);
+            }
+
+            if (!SocialSecurityNumber.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientSocialSecurityNumber).Append("=").Append(SocialSecurityNumber).Append(seperator);
+            }
+
+            if (!TelephoneNumber.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientTelephoneNumber).Append("=").Append(TelephoneNumber).Append(seperator);
+            }
+
+            if (!StreetAddress.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientStreetAddress).Append("=").Append(StreetAddress).Append(seperator);
+            }
+
+            if (!PostalCode.IsNullOrWhiteSpace())
+            {
+                sb.Append(ContextStandard.Patient.PatientPostalCode).Append("=").Append(PostalCode).Append(seperator);
+            }
+            
+            return sb.ToString().TrimEnd(';', ' ');
         }
     }
 }
