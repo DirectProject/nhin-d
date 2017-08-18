@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -94,13 +95,13 @@ public class DomainDaoImpl implements DomainDao {
         // Save and clear Address information until the Domain is saved.
         // This is really something that JPA should be doing, but doesn't seem
         // to work.
-        if (item != null) {
+        if (item != null) 
+        {
             String pm = item.getPostMasterEmail();
-            Long pmId = item.getPostmasterAddressId();
             Collection<Address> addresses = item.getAddresses();
-            if ((pmId != null) && (pmId.longValue() == 0)) {
-                item.setPostmasterAddressId((Long) null);
-            }
+
+            item.setPostmasterAddressId((Long) null);
+
             item.setAddresses(null);
 
             item.setCreateTime(Calendar.getInstance());
@@ -115,24 +116,38 @@ public class DomainDaoImpl implements DomainDao {
             if (log.isDebugEnabled())
                 log.debug("Persisted the bare Domain");
 
+            entityManager.detach(item);
+            final Domain newDomain = getDomain(item.getId());
+            
             boolean needUpdate = false;
-            if ((addresses != null) && (addresses.size() > 0)) {
-                item.setAddresses(addresses);
+            if ((addresses != null) && (addresses.size() > 0)) 
+            {
+            	for (Address address : addresses)
+            	{
+            		address.setId(0L);
+            		address.setDomain(newDomain);
+            		entityManager.persist(address);
+            		if (address.getEmailAddress().equals(pm))
+            			newDomain.setPostmasterAddressId(address.getId());
+            		
+            		newDomain.getAddresses().add(address);
+            	}
                 needUpdate = true;
             }
-            if ((pm != null) && (pm.length() > 0)) {
-                item.setPostMasterEmail(pm);
+            if ((pm != null) && (pm.length() > 0)) 
+            {
+            	newDomain.setPostMasterEmail(pm);
                 needUpdate = true;
             }
 
-            if (needUpdate) {
-                if (log.isDebugEnabled())
-                    log.debug("Updating the domain with Address info");
-                update(item);
+            if (needUpdate) 
+            {
+            	entityManager.persist(newDomain);
+                entityManager.flush();
             }
 
             if (log.isDebugEnabled())
-                log.debug("Returned from JPA: Domain ID=" + item.getId());
+                log.debug("Returned from JPA: Domain ID=" + newDomain.getId());
         }
 
         if (log.isDebugEnabled())
@@ -283,8 +298,14 @@ public class DomainDaoImpl implements DomainDao {
         if (name != null) {
             Query select = entityManager.createQuery("SELECT DISTINCT d from Domain d WHERE UPPER(d.domainName) = ?1");
             Query paramQuery = select.setParameter(1, name.toUpperCase(Locale.getDefault()));
-            if (paramQuery.getResultList().size() > 0)
+            try
+            {
             	result = (Domain) paramQuery.getSingleResult();
+            }
+            catch (NoResultException e)
+            {
+            	/* no-op... just return null */
+            }
         }
 
         if (log.isDebugEnabled())

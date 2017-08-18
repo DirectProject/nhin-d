@@ -51,6 +51,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Domain {
 
+	private static long MAGIC_POSTMASTER_ID = -2;
+	
     private String domainName;
 
     private Calendar createTime;
@@ -223,7 +225,7 @@ public class Domain {
     public String getPostMasterEmail() {
         String result = null;
         // return the address that matched the ID
-        if ((getAddresses().size() > 0) && (getPostmasterAddressId() != null) && (getPostmasterAddressId() > 0)) {
+        if ((getAddresses().size() > 0) && (getPostmasterAddressId() != null)) {
             for (Address address : getAddresses()) {
                 if (address.getId().equals(getPostmasterAddressId())) {
                     result = address.getEmailAddress();
@@ -267,6 +269,7 @@ public class Domain {
                 Address postmaster = new Address(this, email);
                 postmaster.setDisplayName("Postmaster");
                 postmaster.setStatus(EntityStatus.NEW);
+                postmaster.setId(MAGIC_POSTMASTER_ID);
                 getAddresses().add(postmaster);
                 addressId = postmaster.getId();
             }
@@ -329,4 +332,27 @@ public class Domain {
                 + " | Addresses: " + getAddresses().size() + "]";
     }
 
+    @Override
+    public boolean equals(Object other)
+    {
+    	boolean result = false;
+    	if (other == null)
+    		return false;
+    	
+    	if (other instanceof Domain)
+    	{
+    		final Domain otherDomain = (Domain)other;
+    		if (otherDomain.id == this.id && otherDomain.domainName.equals(domainName) && otherDomain.postmasterAddressId == postmasterAddressId
+    				&& otherDomain.status.equals(status))
+    		{
+    			if (otherDomain.addresses == null && addresses == null)
+    				result = true;
+    			else if (otherDomain.addresses != null && addresses != null)
+    				result = otherDomain.addresses.size() == addresses.size();
+    		}
+    	}
+    	
+    	return result;
+    }
+    
 }

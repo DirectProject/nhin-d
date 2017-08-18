@@ -45,6 +45,7 @@ import org.nhindirect.config.store.dao.DomainDao;
 import org.nhindirect.config.store.dao.TrustBundleDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -175,7 +176,7 @@ public class TrustBundleDaoImpl implements TrustBundleDao
 	 * {@inheritDoc}
 	 */
 	@Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
 	public TrustBundle getTrustBundleById(long id) throws ConfigurationStoreException
 	{
 		validateState();
@@ -250,22 +251,32 @@ public class TrustBundleDaoImpl implements TrustBundleDao
     	validateState();
     	
     	try
-    	{			
-			final TrustBundle existingBundle = this.getTrustBundleById(trustBundleId);
+    	{		
+    		TrustBundle existingBundle = entityManager.find(TrustBundle.class, new Long(trustBundleId));
 			
 			if (existingBundle == null)
 				throw new ConfigurationStoreException("Trust bundle does not exist");
 			
-			// blow away all the existing bundles
+			// blow away all the existing bundle anchors
 	        final Query delete = entityManager.createQuery("DELETE from TrustBundleAnchor tba where tba.trustBundle = ?1");
 	        delete.setParameter(1, existingBundle);
 	        delete.executeUpdate();
-	        		
-			// now update the bundle		
+			entityManager.flush();	
+	        
+			entityManager.detach(existingBundle);
+			// now update the bundle
+	        existingBundle = entityManager.find(TrustBundle.class, new Long(trustBundleId));
 			existingBundle.setCheckSum(bundleCheckSum);
-			existingBundle.setTrustBundleAnchors(newAnchorSet);
 			existingBundle.setLastRefreshAttempt(attemptTime);
 			existingBundle.setLastSuccessfulRefresh(Calendar.getInstance(Locale.getDefault()));
+			
+			for (TrustBundleAnchor newAnchor : newAnchorSet)
+			{
+				newAnchor.setId(0);
+				newAnchor.setTrustBundle(existingBundle);
+				entityManager.persist(newAnchor);
+				existingBundle.getTrustBundleAnchors().add(newAnchor);
+			}
 			
 			entityManager.persist(existingBundle);
 			entityManager.flush();

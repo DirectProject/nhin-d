@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nhind</groupId>
 	<artifactId>config-store</artifactId>
-	<version>1.7-SNAPSHOT</version>
+	<version>2.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>NHIN Direct Java RI - Configuration Persistence Layer</name>
     <description>NHIN Direct Security And Trust Agent</description>
@@ -67,43 +67,36 @@
 		</dependency>					
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-asm</artifactId>
-			<version>3.0.4.RELEASE</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -116,14 +109,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>${spring.version}</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
@@ -144,14 +137,14 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
+			<version>4.12</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
-			<version>2.4.8</version>
+			<version>2.5.2</version>
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
@@ -165,25 +158,13 @@
 	    <dependency>
 	        <groupId>org.apache.derby</groupId>
 	        <artifactId>derby</artifactId>
-	        <version>10.4.1.3</version>
+	        <version>10.13.1.1</version>
 	        <scope>test</scope>	
-	    </dependency>	
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>1.1</version>
-		</dependency>	    		
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate</artifactId>
-			<version>3.2.7.ga</version> 
-			<type>pom</type>
-			<scope>compile</scope>
-		</dependency>
+	    </dependency>	    		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>3.3.2.GA</version>
+				<version>4.3.2.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
@@ -193,7 +174,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.3.2.GA</version>
+			<version>4.3.2.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.hibernate</groupId>
@@ -202,15 +183,9 @@
 			</exclusions>			
 		</dependency>
 		<dependency>
-			<groupId>geronimo-spec</groupId>
-			<artifactId>geronimo-spec-jta</artifactId>
-			<version>1.0.1B-rc4</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.3.1.GA</version>
+			<groupId>org.hibernate.common</groupId>
+			<artifactId>hibernate-commons-annotations</artifactId>
+				<version>5.0.1.Final</version>
 			<type>jar</type>
 			<scope>compile</scope>
 			<exclusions>
@@ -346,8 +321,8 @@
 					<optimize>true</optimize>
 					<showDeprecation>true</showDeprecation>
 					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -374,23 +349,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				<version>3.0.2</version>
-				<configuration>
-					<jdk>1.6</jdk>
-					<licenseLocation>${project.basedir}/../../licenses/clover.license</licenseLocation>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>instrument</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>	
 			<!--  for releases only 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -402,7 +360,7 @@
 					<docfilessubdirs>false</docfilessubdirs>
 					<detectJavaApiLink>false</detectJavaApiLink>
 					<detectLinks>false</detectLinks>
-					<source>1.6</source>
+					<source>1.8</source>
 					<show>public</show>
 				</configuration>
 	            <executions>
@@ -460,7 +418,7 @@
 					<docfilessubdirs>true</docfilessubdirs>
 					<detectJavaApiLink>true</detectJavaApiLink>
 					<detectLinks>true</detectLinks>
-					<source>1.6</source>
+					<source>1.8</source>
 					<show>protected</show>
 				</configuration>
 			</plugin>
@@ -468,7 +426,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
 				<configuration>
-					<targetJdk>1.6</targetJdk>
+					<targetJdk>1.8</targetJdk>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -535,6 +493,7 @@
 		<password>nhind</password>
 		<originalDataSetFile>../../src/test/data/sample-data.xml</originalDataSetFile>
 		<exportedDataSetFile>${project.build.directory}/dbunit/exported-dataset.xml</exportedDataSetFile>
+		<spring.version>4.3.9.RELEASE</spring.version>	
 	</properties>
 	<distributionManagement>
 		<site>
