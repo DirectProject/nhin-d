@@ -55,7 +55,7 @@ namespace Health.Direct.Common.Mail.Context
             /// <summary>
             /// Name for the <c>type</c> header
             /// </summary>
-            public const string Name = "type";
+            public const string Label = "type";
 
             internal const string CategoryLaboratory = "laborartory";
             internal const string CategoryRadiology = "radiology";
@@ -161,7 +161,7 @@ namespace Health.Direct.Common.Mail.Context
             /// <summary>
             /// Name for the <c>purpose</c> header
             /// </summary>
-            public const string Name = "purpose";
+            public const string Label = "purpose";
 
             public const string PurposeTreatment = "treatment";
             public const string PurposePayment = "payment";
@@ -215,7 +215,7 @@ namespace Health.Direct.Common.Mail.Context
             /// <summary>
             /// Name for the <c>patient</c> header
             /// </summary>
-            public const string Name = "patient";
+            public const string Label = "patient";
 
             public const string PatientGivenName = "givenName";
             public const string PatientSurName = "surname";
@@ -305,6 +305,21 @@ namespace Health.Direct.Common.Mail.Context
             /// The <c>hl7v2 encapsulation-message-type</c>
             /// </summary>
             public const string Hl7V2 = "hl7v2";
+
+            /// <summary>
+            /// encapsulated-message-type
+            /// </summary>
+            public enum Type
+            {
+                /// <summary>
+                /// The <c>http encapsulated-message-type </c>
+                /// </summary>
+                Http,
+                /// <summary>
+                /// The <c>hl7v2 encapsulated-message-type </c>
+                /// </summary>
+                Hl7V2
+            }
         }
     }
 }

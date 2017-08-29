@@ -1,9 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.Context;
 using Health.Direct.Common.Mime;
+using MimeKit;
 using Xunit;
+using MimeEntity = Health.Direct.Common.Mime.MimeEntity;
 
 namespace Health.Direct.Common.Tests.Mail
 {
@@ -83,10 +86,93 @@ namespace Health.Direct.Common.Tests.Mail
         }
 
         [Theory]
-        [InlineData("")]
-        public void TestBuildContext(string encoding)
+        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtBase64")]
+        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtBinary")]
+        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtDefault")]
+        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtEightBit")]
+        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtQuotedPrintable")]
+        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtSevenBit")]
+        public void TestBuildContext(string file)
         {
-            
+            var text = File.ReadAllText(file);
+            var directMessage = Message.Load(text);
+            var context = directMessage.DirectContext();
+
+            var contextBuilder = new ContextBuilder();
+
+            contextBuilder
+                .WithContentType(context.ContentType)
+                .WithContentId(context.ContentID)
+                .WithDisposition(context.ContentDisposition)
+                .WithTransferEncoding(context.ContentTransferEncoding)
+                .WithVersion(context.Metadata.Version)
+                .WithId(context.Metadata.Id)
+                .WithPatientId(context.Metadata.PatientId)
+                .WithType(context.Metadata.Type.Category, context.Metadata.Type.Action)
+                .WithPurpose(context.Metadata.Purpose)
+                .WithPatient(
+                    context.Metadata.Patient.GivenName,
+                    context.Metadata.Patient.SurName,
+                    context.Metadata.Patient.MiddleName,
+                    context.Metadata.Patient.DateOfBirth,
+                    context.Metadata.Patient.Gender,
+                    context.Metadata.Patient.SocialSecurityNumber,
+                    context.Metadata.Patient.TelephoneNumber,
+                    context.Metadata.Patient.StreetAddress,
+                    context.Metadata.Patient.PostalCode)
+                .WithEncapsulation(context.Metadata.Encapsulation?.Type);
+
+            var messageBuilt = contextBuilder.Build();
+
+            //
+            // Now build a message to contain the context.
+            // No good api yet to work with just the MailPart
+            //
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Jean", "Jean@opsstation.lab"));
+            message.To.Add(new MailboxAddress("Joe", "Joe@hobo.lab"));
+            message.Subject = "Need more memory";
+            message.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
+            message.Headers.Add("X-Direct-Context", messageBuilt.ContentID);
+
+            var body = new TextPart("plain")
+            {
+                Text = @"Simple Body"
+            };
+
+            var multipart = new Multipart("mixed");
+            multipart.Add(body);
+            multipart.Add(contextBuilder.BuildMimePart());
+            message.Body = multipart;
+
+
+            var directMessageRebuilt = Message.Load(message.ToString());
+            var messageRebuilt = directMessageRebuilt.DirectContext();
+
+            AssertEqual(context, messageRebuilt);
+        }
+
+        private void AssertEqual(Context context, Context messageRebuilt)
+        {
+            Assert.Equal(context.ContentType, messageRebuilt.ContentType);
+            Assert.Equal(context.ContentID, messageRebuilt.ContentID);
+            Assert.Equal(context.ContentDisposition, messageRebuilt.ContentDisposition);
+
+            Assert.Equal(context.Metadata.Version, messageRebuilt.Metadata.Version);
+            Assert.Equal(context.Metadata.Id, messageRebuilt.Metadata.Id);
+            Assert.Equal(context.Metadata.PatientId, messageRebuilt.Metadata.PatientId);
+
+            Assert.Equal(context.Metadata.Type.Action, messageRebuilt.Metadata.Type.Action);
+            Assert.Equal(context.Metadata.Type.Category, messageRebuilt.Metadata.Type.Category);
+
+            Assert.Equal(context.Metadata.Patient.GivenName, messageRebuilt.Metadata.Patient.GivenName);
+            Assert.Equal(context.Metadata.Patient.SurName, messageRebuilt.Metadata.Patient.SurName);
+            Assert.Equal(context.Metadata.Patient.MiddleName, messageRebuilt.Metadata.Patient.MiddleName);
+            Assert.Equal(context.Metadata.Patient.DateOfBirth, messageRebuilt.Metadata.Patient.DateOfBirth);
+            Assert.Equal(context.Metadata.Patient.Gender, messageRebuilt.Metadata.Patient.Gender);
+            Assert.Equal(context.Metadata.Patient.SocialSecurityNumber, messageRebuilt.Metadata.Patient.SocialSecurityNumber);
+            Assert.Equal(context.Metadata.Patient.StreetAddress, messageRebuilt.Metadata.Patient.StreetAddress);
+            Assert.Equal(context.Metadata.Patient.PostalCode, messageRebuilt.Metadata.Patient.PostalCode);
         }
     }
 }

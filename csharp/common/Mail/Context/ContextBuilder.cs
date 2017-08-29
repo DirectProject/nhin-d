@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Common.Mime;
+using MimeKit;
+using MimePart = MimeKit.MimePart;
 
 namespace Health.Direct.Common.Mail.Context
 {
@@ -12,7 +13,7 @@ namespace Health.Direct.Common.Mail.Context
     /// </summary>
     public class ContextBuilder
     {
-        private readonly  Context context;
+        private readonly  Context directContext;
 
         /// <summary>
         /// Construct Context.
@@ -25,14 +26,9 @@ namespace Health.Direct.Common.Mail.Context
         /// </summary>
         public ContextBuilder()
         {
-            context = new Context();
+            directContext = new Context();
         }
         
-        public Context Build()
-        {
-            return context;
-        }
-
         /// <summary>
         /// Overide contentType
         /// </summary>
@@ -40,7 +36,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithContentType(string contentType)
         {
-            context.ContentType = contentType;
+            directContext.ContentType = contentType;
 
             return this;
         }
@@ -52,7 +48,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithContentId(string contentId)
         {
-            context.ContentType = contentId;
+            directContext.ContentID = contentId;
 
             return this;
         }
@@ -62,10 +58,9 @@ namespace Health.Direct.Common.Mail.Context
         /// </summary>
         /// <param name="fileName"></param>
         /// <returns>ContextBuilder</returns>
-        public ContextBuilder WithFileName(string fileName)
+        public ContextBuilder WithDisposition(string disposition)
         {
-            var disposition = Context.BuildContentDisposition(fileName);
-            context.ContentDisposition = disposition;
+            directContext.ContentDisposition = disposition;
 
             return this;
         }
@@ -77,7 +72,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithTransferEncoding(string encoding)
         {
-            context.ContentTransferEncoding = encoding;
+            directContext.ContentTransferEncoding = encoding;
 
             return this;
         }
@@ -89,7 +84,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithVersion(string version)
         {
-            context.Metadata.Version = version;
+            directContext.Metadata.Version = version;
 
             return this;
         }
@@ -104,7 +99,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithId(string id)
         {
-            context.Metadata.Id = id;
+            directContext.Metadata.Id = id;
 
             return this;
         }
@@ -117,13 +112,13 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithPatientId(string patientId)
         {
-            if (context.Metadata.PatientId.IsNullOrWhiteSpace())
+            if (directContext.Metadata.PatientId.IsNullOrWhiteSpace())
             {
-                context.Metadata.PatientId = patientId;
+                directContext.Metadata.PatientId = patientId;
             }
             else
             {
-                context.Metadata.PatientId += $"; {patientId}";
+                directContext.Metadata.PatientId += $"; {patientId}";
             }
 
             return this;
@@ -137,7 +132,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithType(string category, string action)
         {
-            context.Metadata.Type = new Type
+            directContext.Metadata.Type = new Type
             {
                 Category = category,
                 Action = action
@@ -156,7 +151,7 @@ namespace Health.Direct.Common.Mail.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithPurpose(string purpose)
         {
-            context.Metadata.Purpose = purpose;
+            directContext.Metadata.Purpose = purpose;
 
             return this;
         }
@@ -186,7 +181,7 @@ namespace Health.Direct.Common.Mail.Context
             string streetAddress,
             string postalCode)
         {
-            context.Metadata.Patient = new Patient
+            directContext.Metadata.Patient = new Patient
             {
                 GivenName = givenName,
                 SurName = surname,
@@ -200,6 +195,56 @@ namespace Health.Direct.Common.Mail.Context
             };
 
             return this;
+        }
+
+        /// <summary>
+        /// Set metadata Encapsulation attribute.
+        /// </summary>
+        /// <param name="encapsulation">“http” / “hl7v2”</param>
+        /// <returns></returns>
+        public ContextBuilder WithEncapsulation(string encapsulation)
+        {
+            if (encapsulation.IsNullOrWhiteSpace())
+            {
+                return this;
+            }
+
+            directContext.Metadata.Encapsulation = new Encapsulation
+            {
+                Type = encapsulation
+            };
+
+            return this;
+        }
+
+        /// <summary>
+        /// Return a Context object
+        /// </summary>
+        /// <returns></returns>
+        public Context Build()
+        {
+            return directContext;
+        }
+
+        /// <summary>
+        /// Prepare a RFC 5322 message searialized from a Contxt object 
+        /// </summary>
+        /// <returns></returns>
+        public MimePart BuildMimePart()
+        {
+            var mimePart = new MimePart(directContext.ContentType)
+            {
+                ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                ContentTransferEncoding = ContextMapper.MapContentEncoding(directContext.ContentTransferEncoding)
+            };
+            var contentDist = new System.Net.Mime.ContentDisposition(directContext.ContentDisposition);
+            mimePart.ContentDisposition.FileName = contentDist.FileName;
+            mimePart.Headers.Add(MimeStandard.ContentIDHeader, directContext.ContentID);
+
+            var contextBodyStream = new MemoryStream(Encoding.UTF8.GetBytes(directContext.Metadata.Deserialize()));
+            mimePart.ContentObject = new ContentObject(contextBodyStream);
+            
+            return mimePart;
         }
     }
 }

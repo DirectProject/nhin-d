@@ -15,7 +15,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.Collections.Generic;
+using System.Text;
 using Health.Direct.Common.Mime;
+using MimeKit;
 
 namespace Health.Direct.Common.Mail.Context
 {
@@ -112,11 +114,11 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return ContextParser.ParseType(GetValue(ContextStandard.Type.Name));
+                return ContextParser.ParseType(GetValue(ContextStandard.Type.Label));
             }
             set
             {
-                SetValue(ContextStandard.Type.Name, value.ToString());
+                SetValue(ContextStandard.Type.Label, value.ToString());
             }
         }
 
@@ -128,11 +130,11 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return GetValue(ContextStandard.Purpose.Name);
+                return GetValue(ContextStandard.Purpose.Label);
             }
             set
             {
-                SetValue(ContextStandard.Purpose.Name, value);
+                SetValue(ContextStandard.Purpose.Label, value);
             }
         }
 
@@ -143,27 +145,47 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return new Patient(GetValue(ContextStandard.Patient.Name));
+                return new Patient(GetValue(ContextStandard.Patient.Label));
             }
             set
             {
-                SetValue(ContextStandard.Patient.Name, value.ToString());
+                SetValue(ContextStandard.Patient.Label, value.ToString());
             }
         }
 
         /// <summary>
         /// Gets and sets the value of <c>encapsulation</c> metadata. 
         /// </summary>
-        public string Encapsulation
+        public Encapsulation Encapsulation
         {
             get
             {
-                return GetValue(ContextStandard.Encapsulation.Name);
+                var headerValue = GetValue(ContextStandard.Encapsulation.Name);
+
+                if (headerValue == null)
+                {
+                    return null;
+                }
+
+                return ContextParser.ParseEncapsulation(headerValue); 
             }
             set
             {
                 SetValue(ContextStandard.Encapsulation.Name, value.ToString());
             }
+        }
+
+        public string Deserialize()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"{ContextStandard.Version}: {Version}");
+            sb.AppendLine($"{ContextStandard.Id}: {Id}");
+            sb.AppendLine($"{ContextStandard.PatientId}: {PatientId}");
+            sb.AppendLine($"{ContextStandard.Type.Label}: {Type}");
+            sb.AppendLine($"{ContextStandard.Purpose.Label}: {Purpose}");
+            sb.AppendLine($"{ContextStandard.Patient.Label}: {Patient}");
+
+            return sb.ToString();
         }
     }
 }

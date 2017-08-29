@@ -60,9 +60,14 @@
       <HintPath>..\build\packages\BouncyCastle.1.8.1\lib\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MimeKit, Version=1.18.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
+      <HintPath>..\build\packages\MimeKit.1.18.0\lib\net451\MimeKit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -100,9 +105,11 @@
     <Compile Include="Mail\Context\ContextError.cs" />
     <Compile Include="Mail\Context\ContextException.cs" />
     <Compile Include="Mail\Context\ContextStandard.cs" />
+    <Compile Include="Mail\Context\Encapsulation.cs" />
     <Compile Include="Mail\Context\Extensions.cs" />
     <Compile Include="Mail\Context\Context.cs" />
     <Compile Include="Mail\Context\ContextParser.cs" />
+    <Compile Include="Mail\Context\ContextMapper.cs" />
     <Compile Include="Mail\Context\Metadata.cs" />
     <Compile Include="Mail\Context\Patient.cs" />
     <Compile Include="Mail\Context\PatientIdentifier.cs" />

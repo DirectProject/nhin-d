@@ -119,12 +119,8 @@ namespace Health.Direct.Common.Mail.Context
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="headerValue"></param>
-        /// <returns></returns>
-        public static Type ParseType(string headerValue)
+        
+        internal static Type ParseType(string headerValue)
         {
             var typeValue = Split(headerValue, new[] { '/' }, ContextError.InvalidType);
 
@@ -140,7 +136,18 @@ namespace Health.Direct.Common.Mail.Context
                 Action = action
             };
         }
+
         
+        internal static Encapsulation ParseEncapsulation(string headerValue)
+        {
+            headerValue.AssertEnum<ContextStandard.Encapsulation>(ContextError.InvalidType);
+
+            return new Encapsulation()
+            {
+                Type = headerValue
+            };
+        }
+
         static readonly char[] s_fieldSeparator = { ';' };
 
         public static List<string> SplitField(string value, ContextError error)
