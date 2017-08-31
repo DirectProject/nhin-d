@@ -195,6 +195,9 @@
     <Content Include="Mail\ContextTestFiles\ContextSimple1.txtUUEncode">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Mail\ContextTestFiles\ContextHL7.Default.txtBase64">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Mail\TestFiles\Wrapped_Quoted2.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

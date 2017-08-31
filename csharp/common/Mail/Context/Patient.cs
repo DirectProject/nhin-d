@@ -42,6 +42,10 @@ namespace Health.Direct.Common.Mail.Context
         public string StreetAddress { get; set; }
         public string PostalCode { get; set; }
 
+        /// <summary>
+        /// Format patient-attributes as a header value 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             var sb = new StringBuilder();

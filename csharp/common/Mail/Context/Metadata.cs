@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Collections.Generic;
 using System.Text;
+using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mime;
 using MimeKit;
 
@@ -26,6 +27,8 @@ namespace Health.Direct.Common.Mail.Context
     /// </summary>
     public class Metadata : HeaderCollection
     {
+        private string patient;
+
         /// <summary>
         /// Construct empty Metadata
         /// </summary>
@@ -114,7 +117,14 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return ContextParser.ParseType(GetValue(ContextStandard.Type.Label));
+                var type = GetValue(ContextStandard.Type.Label);
+
+                if (type == null)
+                {
+                    return null;
+                }
+
+                return ContextParser.ParseType(type);
             }
             set
             {
@@ -145,7 +155,14 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                return new Patient(GetValue(ContextStandard.Patient.Label));
+                patient = GetValue(ContextStandard.Patient.Label);
+
+                if (patient == null)
+                {
+                    return null;
+                }
+
+                return new Patient(patient);
             }
             set
             {
@@ -160,7 +177,7 @@ namespace Health.Direct.Common.Mail.Context
         {
             get
             {
-                var headerValue = GetValue(ContextStandard.Encapsulation.Name);
+                var headerValue = GetValue(ContextStandard.Encapsulation.Label);
 
                 if (headerValue == null)
                 {
@@ -171,21 +188,32 @@ namespace Health.Direct.Common.Mail.Context
             }
             set
             {
-                SetValue(ContextStandard.Encapsulation.Name, value.ToString());
+                SetValue(ContextStandard.Encapsulation.Label, value.Type);
             }
         }
 
         public string Deserialize()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"{ContextStandard.Version}: {Version}");
-            sb.AppendLine($"{ContextStandard.Id}: {Id}");
-            sb.AppendLine($"{ContextStandard.PatientId}: {PatientId}");
-            sb.AppendLine($"{ContextStandard.Type.Label}: {Type}");
-            sb.AppendLine($"{ContextStandard.Purpose.Label}: {Purpose}");
-            sb.AppendLine($"{ContextStandard.Patient.Label}: {Patient}");
+            sb.AppendHeader(ContextStandard.Version, Version);
+            sb.AppendHeader(ContextStandard.Id, Id);
+            sb.AppendHeader(ContextStandard.Encapsulation.Label, Encapsulation?.Type);
+            sb.AppendHeader(ContextStandard.PatientId, PatientId);
+            sb.AppendHeader(ContextStandard.Type.Label, Type?.ToString());
+            sb.AppendHeader(ContextStandard.Purpose.Label, Purpose);
+            sb.AppendHeader(ContextStandard.Patient.Label, Patient?.ToString());
 
             return sb.ToString();
+        }
+    }
+
+    public static class Ex{
+        public static void AppendHeader(this StringBuilder sb, string name, string value)
+        {
+            if (! value.IsNullOrWhiteSpace())
+            {
+                sb.AppendLine($"{name}: {value}");
+            }
         }
     }
 }

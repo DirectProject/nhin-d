@@ -140,7 +140,7 @@ namespace Health.Direct.Common.Mail.Context
         
         internal static Encapsulation ParseEncapsulation(string headerValue)
         {
-            headerValue.AssertEnum<ContextStandard.Encapsulation>(ContextError.InvalidType);
+            headerValue.AssertEnum<ContextStandard.Encapsulation.Type>(ContextError.InvalidType);
 
             return new Encapsulation()
             {

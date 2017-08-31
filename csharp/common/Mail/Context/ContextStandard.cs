@@ -293,7 +293,7 @@ namespace Health.Direct.Common.Mail.Context
             /// <summary>
             /// Name for the <c>encapsulation</c> header
             /// </summary>
-            public const string Name = "encapsulation";
+            public const string Label = "encapsulation";
 
 
             /// <summary>

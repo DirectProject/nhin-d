@@ -15,6 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System.Collections.Generic;
+using System.Linq;
 using Health.Direct.Common.Mime;
 
 namespace Health.Direct.Common.Mail.Context
@@ -27,7 +29,6 @@ namespace Health.Direct.Common.Mail.Context
         /// <summary>
         /// Find Direct <see cref="Context"/>
         /// </summary>
-        /// <param name="type">The DSN Action to translate</param>
         /// <returns>A <see cref="Context"/> object if found.  Null if not found. </returns>
         public static Context DirectContext(this MimeEntity message)
         {
@@ -52,6 +53,21 @@ namespace Health.Direct.Common.Mail.Context
         public static bool ContainsDirectContext(this Message message)
         {
             return message.Headers.Contains(MailStandard.Headers.DirectContext);
+        }
+
+        /// <summary>
+        /// Find non Direct Context MimeEntities
+        /// </summary>
+        /// <returns>A <see cref="IEnumerable{MimeEntity}"/></returns>
+        public static IEnumerable<MimeEntity> SelectEncapulations(this MimeEntity message)
+        {
+            var cidIdentifier = message.Headers.GetValue(MailStandard.Headers.DirectContext);
+
+            return message
+                .GetParts()
+                .Skip(1) //Skip the firt entity which all messages have
+                .Where(mimEntity =>
+                ! mimEntity.HasHeader(MimeStandard.ContentIDHeader, cidIdentifier));
         }
     }
 }
