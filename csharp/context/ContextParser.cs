@@ -17,11 +17,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Health.Direct.Common.Extensions;
-using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Mime;
+using Health.Direct.Common.Mail;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     /// <summary>
     /// A set of lightweight <see cref="ContextParser"/> parsing methods

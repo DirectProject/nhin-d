@@ -1,12 +1,10 @@
-﻿using System;
+﻿using MimeKit;
 using System.IO;
 using System.Text;
-using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mime;
-using MimeKit;
 using MimePart = MimeKit.MimePart;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     /// <summary>
     /// 

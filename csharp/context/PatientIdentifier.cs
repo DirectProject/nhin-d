@@ -1,4 +1,4 @@
-﻿/* 
+/* 
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
@@ -14,33 +14,20 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-
-using System;
-
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     /// <summary>
-    /// Exception for Direct <see cref="Context"/> processing errors
+    /// Reprsents a <c>pid-intance</c>.
     /// </summary>
-    public class ContextException : DirectException<ContextError>
+    public class PatientIdentifier
     {
         /// <summary>
-        /// Creates an ContextException with the specified error
+        /// 
         /// </summary>
-        /// <param name="error">error code</param>
-        public ContextException(ContextError error)
-            : base(error)
-        {
-        }
-
+        public string PidContext { get; set; }
         /// <summary>
-        /// Creates an ContextException with the specified error
+        /// 
         /// </summary>
-        /// <param name="error">error code</param>
-        /// <param name="innerException">Inner exception</param>
-        public ContextException(ContextError error, Exception innerException)
-            : base(error, innerException)
-        {
-        }
+        public string LocalPatientId { get; set; }
     }
 }

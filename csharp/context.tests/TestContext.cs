@@ -2,30 +2,29 @@
 using System.IO;
 using System.Linq;
 using Health.Direct.Common.Mail;
-using Health.Direct.Common.Mail.Context;
 using Health.Direct.Common.Mime;
 using MimeKit;
 using Xunit;
 using MimeEntity = Health.Direct.Common.Mime.MimeEntity;
 
-namespace Health.Direct.Common.Tests.Mail
+namespace Health.Direct.Context.Tests
 {
     public class TestContext
     {
         [Theory]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtBase64")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtBinary")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtDefault")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtEightBit")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtQuotedPrintable")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtSevenBit")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtBase64")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtBinary")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtDefault")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtEightBit")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtQuotedPrintable")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtSevenBit")]
         //UUEncode not supported.   
-        //[InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtUUEncode")]
+        //[InlineData("ContextTestFiles\\ContextSimple1.txtUUEncode")]
         public void TestParseContext(string file)
         {
             var text = File.ReadAllText(file);
             var message = Message.Load(text);
-            Assert.Equal("<2ff6eaec83894520bbb872e5671ff49e@hobo.lab>", message.DirectContextID.Value);
+            Assert.Equal("<2ff6eaec83894520bbb872e5671ff49e@hobo.lab>", message.DirectContextId().Value);
             Assert.True(message.ContainsDirectContext());
             var context = message.DirectContext();
             Assert.NotNull(context);
@@ -58,8 +57,8 @@ namespace Health.Direct.Common.Tests.Mail
             // Metatdata Type
             //
             Assert.Equal("radiology/report", context.Metadata.Type.ToString());
-            Assert.Equal("radiology", context.Metadata.Type.Category.ToString());
-            Assert.Equal("report", context.Metadata.Type.Action.ToString());
+            Assert.Equal("radiology", context.Metadata.Type.Category);
+            Assert.Equal("report", context.Metadata.Type.Action);
 
             //
             // Metatdata Purpose
@@ -87,12 +86,12 @@ namespace Health.Direct.Common.Tests.Mail
 
 
         [Theory]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtBase64")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtBinary")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtDefault")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtEightBit")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtQuotedPrintable")]
-        [InlineData("Mail\\ContextTestFiles\\ContextSimple1.txtSevenBit")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtBase64")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtBinary")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtDefault")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtEightBit")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtQuotedPrintable")]
+        [InlineData("ContextTestFiles\\ContextSimple1.txtSevenBit")]
         public void TestBuildContextRoundTrip(string file)
         {
             var text = File.ReadAllText(file);
@@ -154,7 +153,7 @@ namespace Health.Direct.Common.Tests.Mail
         }
 
         [Theory]
-        [InlineData("Mail\\ContextTestFiles\\ContextHL7.Default.txtBase64")]
+        [InlineData("ContextTestFiles\\ContextHL7.Default.txtBase64")]
         public void TestBuildContextEncapsulationRoundTrip(string file)
         {
             var text = File.ReadAllText(file);
@@ -167,6 +166,7 @@ namespace Health.Direct.Common.Tests.Mail
             Assert.Equal("1.0", context.Metadata.Version);
             Assert.Equal("<2142848@direct.example.com>", context.Metadata.Id);
             Assert.Equal("hl7v2", context.Metadata.Encapsulation.Type);
+
             var encapsulations = directMessage.SelectEncapulations().ToList();
             Assert.Equal(1, encapsulations.Count());
             Assert.Equal(@"MSH |^ ~\&| SENDING_APPLICATION | SENDING_FACILITY | RECEIVING_APPLICATION | RECEIVING_FACILITY | 20110613083617 || ADT ^ A01 | 934576120110613083617 | P | 2.3 ||||
@@ -219,6 +219,9 @@ PV1 | 1 | O |||||^^^^^^^^|^^^^^^^^",
 
         private void AssertEqual(Context context, Context messageRebuilt)
         {
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (messageRebuilt == null) throw new ArgumentNullException(nameof(messageRebuilt));
+
             Assert.Equal(context.ContentType, messageRebuilt.ContentType);
             Assert.Equal(context.ContentID, messageRebuilt.ContentID);
             Assert.Equal(context.ContentDisposition, messageRebuilt.ContentDisposition);

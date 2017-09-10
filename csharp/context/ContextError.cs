@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  Copyright (c) 2010, Direct Project
  All rights reserved.
 
@@ -14,22 +14,37 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
-
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
-    /// <summary>
-    /// Reprsents a <c>pid-intance</c>.
-    /// </summary>
-    public class PatientIdentifier
+    public enum ContextError
     {
         /// <summary>
-        /// 
+        /// Unexpected error
         /// </summary>
-        public string PidContext { get; set; }
+        Unexpected = 0,
         /// <summary>
-        /// 
+        /// <c>versioin-identifier</c> is missing
         /// </summary>
-        public string LocalPatientId { get; set; }
+        MissingVersionIdentifier,
+        // <summary>
+        /// Unsupported <c>versioin-identifier</c>.
+        /// </summary>
+        UnsupportedVersionIdentifier,
+        /// <summary>
+        /// Invalid fields in the body of the Direct<see cref="Context"/> message. 
+        /// </summary>
+        InvalidContextMetadataFileds,
+        /// <summary>
+        /// Invalid <c>patient-id</c> metadata.
+        /// </summary>
+        InvalidPatientId,
+        /// <summary>
+        /// Invalid <c>type</c> metadata.
+        /// </summary>
+        InvalidType,
+        /// <summary>
+        /// Invalid <c>patient</c> metadata.
+        /// </summary>
+        InvalidPatient
     }
 }

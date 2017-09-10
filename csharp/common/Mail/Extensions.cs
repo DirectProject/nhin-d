@@ -20,8 +20,6 @@ using System.Text;
 using System.IO;
 using System.Net.Mail;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Common.Mail;
-using Health.Direct.Common.Mail.Context;
 
 namespace Health.Direct.Common.Mail
 {
@@ -150,27 +148,6 @@ namespace Health.Direct.Common.Mail
             }            
             
             return builder.ToString();
-        }
-
-        /// <summary>
-        /// Assert string maps to a valid Enum selection.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="error">Inject error type</param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public static T AssertEnum<T>(this string source, ContextError error)
-        {
-            var type = typeof(T);
-            
-            var result = (T)Enum.Parse(type, source, true);
-
-            if (result == null)
-            {
-                throw new ContextException(error);
-            }
-
-            return result;
         }
     }
 }

@@ -1,8 +1,7 @@
 using System.Linq;
 using System.Text;
-using Health.Direct.Common.Extensions;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     public class Patient
     {

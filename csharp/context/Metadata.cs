@@ -16,11 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Collections.Generic;
 using System.Text;
-using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mime;
-using MimeKit;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     /// <summary>
     /// Direct<see cref="Context"/> metadata container.

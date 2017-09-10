@@ -15,10 +15,22 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using Health.Direct.Common.Mime;
-using Org.BouncyCastle.Bcpg;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
+
+    public class MailStandard
+    {
+        public class Headers
+        {
+            /// <summary>
+            /// Header indicating conformance to the "Implementation Guide for Expressing Context in Direct Messaging".
+            /// </summary>
+            public static string DirectContext = "X-Direct-Context";
+        }
+    }
+
+   
     /// <summary>
     /// Provides constants and utility functions for working with <see cref="Context"/>
     /// </summary>

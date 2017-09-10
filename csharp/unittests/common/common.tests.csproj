@@ -117,7 +117,6 @@
     <Compile Include="Mail\MessageIDFacts.cs" />
     <Compile Include="Mail\RFC822DateFacts.cs" />
     <Compile Include="Mail\RoundTripFacts.cs" />
-    <Compile Include="Mail\TestContext.cs" />
     <Compile Include="Mail\TestDSN.cs" />
     <Compile Include="Mail\TestMDN.cs" />
     <Compile Include="Mail\TimelyAndReliableFacts.cs" />
@@ -173,30 +172,6 @@
     </None>
     <None Include="DnsResolver\DnsTestCerts\umesh.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtBase64">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtBinary">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtDefault">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtEightBit">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtQuotedPrintable">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtSevenBit">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mail\ContextTestFiles\ContextSimple1.txtUUEncode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="Mail\ContextTestFiles\ContextHL7.Default.txtBase64">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Mail\TestFiles\Wrapped_Quoted2.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

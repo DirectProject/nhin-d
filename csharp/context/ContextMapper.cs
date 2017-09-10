@@ -1,7 +1,7 @@
 ﻿using Health.Direct.Common.Mime;
 using MimeKit;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     internal static class ContextMapper
     {

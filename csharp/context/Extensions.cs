@@ -15,11 +15,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
 
-namespace Health.Direct.Common.Mail.Context
+
+namespace Health.Direct.Context
 {
     ///<summary>
     /// Extension methods related to <see cref="Context"/>
@@ -68,6 +71,40 @@ namespace Health.Direct.Common.Mail.Context
                 .Skip(1) //Skip the firt entity which all messages have
                 .Where(mimEntity =>
                 ! mimEntity.HasHeader(MimeStandard.ContentIDHeader, cidIdentifier));
+        }
+
+        /// <summary>
+        /// Assert string maps to a valid Enum selection.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="error">Inject error type</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T AssertEnum<T>(this string source, ContextError error)
+        {
+            var type = typeof(T);
+
+            var result = (T)Enum.Parse(type, source, true);
+
+            if (result == null)
+            {
+                throw new ContextException(error);
+            }
+
+            return result;
+        }
+        
+        public static bool IsNullOrWhiteSpace(this string item)
+        {
+            return string.IsNullOrWhiteSpace(item);
+        }
+
+        /// <summary>
+        /// Returns The <c>X-Direct-Context</c> header
+        /// </summary>
+        public static Header DirectContextId(this Message message)
+        {
+            return message.Headers[MailStandard.Headers.DirectContext];
         }
     }
 }

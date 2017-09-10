@@ -18,7 +18,7 @@ using System;
 using System.Net.Mime;
 using Health.Direct.Common.Mime;
 
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     /// <summary>
     /// Express context of a Direct message.

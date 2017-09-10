@@ -194,22 +194,7 @@ namespace Health.Direct.Common.Mail
                 this.Headers[MailStandard.Headers.MessageID] = value;
             }
         }
-
-        /// <summary>
-        /// The <c>message-id</c> header
-        /// </summary>
-        public Header DirectContextID
-        {
-            get
-            {
-                return this.Headers[MailStandard.Headers.DirectContext];
-            }
-            set
-            {
-                this.Headers[MailStandard.Headers.DirectContext] = value;
-            }
-        }
-
+        
         /// <summary>
         /// The <c>date</c> header
         /// </summary>

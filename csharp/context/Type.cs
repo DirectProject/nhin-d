@@ -1,4 +1,4 @@
-namespace Health.Direct.Common.Mail.Context
+namespace Health.Direct.Context
 {
     /// <summary>
     /// Reprsents a <c>type</c>.

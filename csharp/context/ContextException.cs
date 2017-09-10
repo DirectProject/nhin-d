@@ -14,37 +14,34 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-namespace Health.Direct.Common.Mail.Context
+
+using System;
+using Health.Direct.Common;
+
+namespace Health.Direct.Context
 {
-    public enum ContextError
+    /// <summary>
+    /// Exception for Direct <see cref="Context"/> processing errors
+    /// </summary>
+    public class ContextException : DirectException<ContextError>
     {
         /// <summary>
-        /// Unexpected error
+        /// Creates an ContextException with the specified error
         /// </summary>
-        Unexpected = 0,
+        /// <param name="error">error code</param>
+        public ContextException(ContextError error)
+            : base(error)
+        {
+        }
+
         /// <summary>
-        /// <c>versioin-identifier</c> is missing
+        /// Creates an ContextException with the specified error
         /// </summary>
-        MissingVersionIdentifier,
-        // <summary>
-        /// Unsupported <c>versioin-identifier</c>.
-        /// </summary>
-        UnsupportedVersionIdentifier,
-        /// <summary>
-        /// Invalid fields in the body of the Direct<see cref="Context"/> message. 
-        /// </summary>
-        InvalidContextMetadataFileds,
-        /// <summary>
-        /// Invalid <c>patient-id</c> metadata.
-        /// </summary>
-        InvalidPatientId,
-        /// <summary>
-        /// Invalid <c>type</c> metadata.
-        /// </summary>
-        InvalidType,
-        /// <summary>
-        /// Invalid <c>patient</c> metadata.
-        /// </summary>
-        InvalidPatient
+        /// <param name="error">error code</param>
+        /// <param name="innerException">Inner exception</param>
+        public ContextException(ContextError error, Exception innerException)
+            : base(error, innerException)
+        {
+        }
     }
 }

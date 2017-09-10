@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Org.BouncyCastle.Bcpg;
-
-namespace Health.Direct.Common.Mail.Context
+﻿namespace Health.Direct.Context
 {
     /// <summary>
     /// 3.7 Encapsulation of Other Data Types
