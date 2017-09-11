@@ -17,9 +17,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Health.Direct.Common.Mail;
-using Health.Direct.Common.Mime;
+using System.Text;
+using MimeKit;
 
 
 namespace Health.Direct.Context
@@ -33,15 +34,13 @@ namespace Health.Direct.Context
         /// Find Direct <see cref="Context"/>
         /// </summary>
         /// <returns>A <see cref="Context"/> object if found.  Null if not found. </returns>
-        public static Context DirectContext(this MimeEntity message)
+        public static Context DirectContext(this MimeMessage message)
         {
-            var cidIdentifier = message.Headers.GetValue(MailStandard.Headers.DirectContext);
-
-            foreach (var mimeEntity in message.GetParts())
+            foreach (var mimeEntity in message.Attachments.Where(a => a is MimePart))
             {
-                if (mimeEntity.HasHeader(MimeStandard.ContentIDHeader, cidIdentifier))
+                if (mimeEntity.ContentId == message.DirectContextId())
                 {
-                    return ContextParser.Parse(mimeEntity, "1.0");
+                    return ContextParser.Parse(mimeEntity as MimePart, "1.0");
                 }
             }
 
@@ -53,7 +52,7 @@ namespace Health.Direct.Context
         /// </summary>
         /// <param name="message">The message to test.</param>
         /// <returns><c>true</c> if this message indicates conformance to the "Implementation Guide for Expressing Context in Direct Messaging"</returns>
-        public static bool ContainsDirectContext(this Message message)
+        public static bool ContainsDirectContext(this MimeMessage message)
         {
             return message.Headers.Contains(MailStandard.Headers.DirectContext);
         }
@@ -62,15 +61,30 @@ namespace Health.Direct.Context
         /// Find non Direct Context MimeEntities
         /// </summary>
         /// <returns>A <see cref="IEnumerable{MimeEntity}"/></returns>
-        public static IEnumerable<MimeEntity> SelectEncapulations(this MimeEntity message)
+        public static IEnumerable<MimePart> SelectEncapulations(this MimeMessage message)
         {
-            var cidIdentifier = message.Headers.GetValue(MailStandard.Headers.DirectContext);
+            var attachments = message
+                .Attachments
+                .Where(m => m is MimePart)
+                .Skip(1);
 
-            return message
-                .GetParts()
-                .Skip(1) //Skip the firt entity which all messages have
-                .Where(mimEntity =>
-                ! mimEntity.HasHeader(MimeStandard.ContentIDHeader, cidIdentifier));
+            foreach (var mimeEntity in attachments)
+            {
+                var attachment = (MimePart) mimeEntity;
+
+                yield return attachment;
+            }
+        }
+
+        public static string DecodeBody(this MimePart message)
+        {
+            using (var stream = new MemoryStream())
+            {
+                message.ContentObject.DecodeTo(stream);
+                stream.Position = 0;
+                var sr = new StreamReader(stream);
+                return sr.ReadToEnd();
+            }
         }
 
         /// <summary>
@@ -102,9 +116,9 @@ namespace Health.Direct.Context
         /// <summary>
         /// Returns The <c>X-Direct-Context</c> header
         /// </summary>
-        public static Header DirectContextId(this Message message)
+        public static string DirectContextId(this MimeMessage message)
         {
-            return message.Headers[MailStandard.Headers.DirectContext];
+            return message.Headers[MailStandard.Headers.DirectContext].TrimStart('<').TrimEnd('>');
         }
     }
 }

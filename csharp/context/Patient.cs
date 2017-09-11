@@ -5,8 +5,6 @@ namespace Health.Direct.Context
 {
     public class Patient
     {
-        private string originalHeader;
-
         /// <summary>
         /// Construct and empty Patient.
         /// </summary>
@@ -18,7 +16,6 @@ namespace Health.Direct.Context
         /// <param name="headerValue"></param>
         public Patient(string headerValue)
         {
-            originalHeader = headerValue;
             var patientAttributes = ContextParser.GetPatientAttributes(headerValue, ContextError.InvalidPatient);
             GivenName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientGivenName)).Value;
             SurName = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientSurName)).Value;

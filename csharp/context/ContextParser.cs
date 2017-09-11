@@ -16,9 +16,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Health.Direct.Common.Mime;
-using Health.Direct.Common.Mail;
+using System.Text;
+using MimeKit;
 
 namespace Health.Direct.Context
 {
@@ -32,67 +33,76 @@ namespace Health.Direct.Context
         /// </summary>
         /// <param name="message"><see cref="Health.Direct.Common.Mail.Message"/></param>
         /// <returns><see cref="Context"/>object</returns>
-        public static Context Parse(MimeEntity message, string version)
+        public static Context Parse(MimePart message, string version)
         {
             if (message == null)
             {
                 throw new ArgumentNullException("message");
             }
 
-            var contextBody = MimeEntity.DecodeBody(message).ToString();
             Metadata metadata;
 
             try
             {
-                metadata = new Metadata(contextBody);
-
+                using (var stream = new MemoryStream())
+                {
+                    message.ContentObject.DecodeTo(stream);
+                    stream.Position = 0;
+                    metadata = new Metadata(stream);
+                }
             }
             catch (Exception ex)
             {
-                throw new ContextException(ContextError.InvalidContextMetadataFileds, ex);
+                throw new ContextException(ContextError.InvalidContextMetadataFields, ex);
             }
 
             VerifyVersion(metadata, version);
-            VerifyPatientId(metadata);
-            VerifyType(metadata);
-            VerifyUse(metadata);
-            VerifyPatientId(metadata);
-            VerifyEncapsulation(metadata);
+            VerifyPatientId(metadata.Headers);
+            VerifyType(metadata.Headers);
+            VerifyUse(metadata.Headers);
+            VerifyPatientId(metadata.Headers);
+            VerifyEncapsulation(metadata.Headers);
             
-            var context = new Context(message.Headers, metadata);
+            var context = new Context(
+                message.ContentType.MediaType, 
+                message.ContentType.MediaSubtype, 
+                message.ContentId,
+                metadata);
 
             return context;
         }
 
         
-        private static void VerifyVersion(Metadata headers, string version)
+        private static void VerifyVersion(Metadata metadata, string version)
         {
-            if (!headers.Contains(ContextStandard.Version))
+            if (!metadata.Headers.Contains(ContextStandard.Version))
             {
                 throw new ContextException(ContextError.MissingVersionIdentifier);
             }
 
-            if (!headers.HasHeader(ContextStandard.Version, "1.0"))
+            if (!metadata.Headers.Select(h => 
+                h.Field == ContextStandard.Version &&
+                h.Value == "1.0").Any())
             {
                 throw new ContextException(ContextError.UnsupportedVersionIdentifier);
             }
         }
         
 
-        private static void VerifyPatientId(HeaderCollection message)
+        private static void VerifyPatientId(HeaderList message)
         {
 
         }
-        private static void VerifyType(HeaderCollection message)
+        private static void VerifyType(HeaderList message)
         {
 
         }
-        private static void VerifyUse(HeaderCollection message)
+        private static void VerifyUse(HeaderList message)
         {
             
         }
 
-        private static void VerifyEncapsulation(HeaderCollection message)
+        private static void VerifyEncapsulation(HeaderList message)
         {
             
         }

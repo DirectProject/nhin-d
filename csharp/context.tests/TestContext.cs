@@ -1,11 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Health.Direct.Common.Mail;
-using Health.Direct.Common.Mime;
 using MimeKit;
 using Xunit;
-using MimeEntity = Health.Direct.Common.Mime.MimeEntity;
 
 namespace Health.Direct.Context.Tests
 {
@@ -22,9 +20,8 @@ namespace Health.Direct.Context.Tests
         //[InlineData("ContextTestFiles\\ContextSimple1.txtUUEncode")]
         public void TestParseContext(string file)
         {
-            var text = File.ReadAllText(file);
-            var message = Message.Load(text);
-            Assert.Equal("<2ff6eaec83894520bbb872e5671ff49e@hobo.lab>", message.DirectContextId().Value);
+            var message = MimeMessage.Load(file);
+            Assert.Equal("2ff6eaec83894520bbb872e5671ff49e@hobo.lab", message.DirectContextId());
             Assert.True(message.ContainsDirectContext());
             var context = message.DirectContext();
             Assert.NotNull(context);
@@ -32,9 +29,11 @@ namespace Health.Direct.Context.Tests
             //
             // Headers
             //
-            Assert.Equal("text/plain", context.ContentType);
-            Assert.Equal("attachment; filename=metadata.txt", context.ContentDisposition);
-            Assert.Equal("<2ff6eaec83894520bbb872e5671ff49e@hobo.lab>", context.ContentID);
+            Assert.Equal("text", context.ContentType.MediaType);
+            Assert.Equal("plain", context.ContentType.MediaSubtype);
+            Assert.Equal("attachment", context.ContentDisposition.Disposition);
+            Assert.Equal("metadata.txt", context.ContentDisposition.FileName);
+            Assert.Equal("2ff6eaec83894520bbb872e5671ff49e@hobo.lab", context.ContentId);
 
             //
             // Metadata
@@ -45,7 +44,7 @@ namespace Health.Direct.Context.Tests
             //
             // Metatdata PatientId
             //
-            Assert.Equal("2.16.840.1.113883.19.999999:123456;2.16.840.1.113883.19.888888:75774", context.Metadata.PatientId);
+            Assert.Equal("2.16.840.1.113883.19.999999:123456; 2.16.840.1.113883.19.888888:75774", context.Metadata.PatientId);
             Assert.Equal(2, context.Metadata.PatientIdentifier.Count());
             var patientIdentifiers = context.Metadata.PatientIdentifier.ToList();
             Assert.Equal("2.16.840.1.113883.19.999999", patientIdentifiers[0].PidContext);
@@ -79,9 +78,11 @@ namespace Health.Direct.Context.Tests
         public void TestConstructContext()
         {
             var context = new Context();
-            Assert.NotNull(context.ContentID);
-            Assert.Equal(MimeStandard.MediaType.TextPlain, context.ContentType);
-            Assert.Equal($"attachment; filename={Context.FileName}", context.ContentDisposition);
+            Assert.NotNull(context.ContentId);
+            Assert.Equal("text", context.ContentType.MediaType);
+            Assert.Equal("plain", context.ContentType.MediaSubtype);
+            Assert.Equal("attachment", context.ContentDisposition.Disposition);
+            Assert.Equal(Context.FileNameValue, context.ContentDisposition.FileName);
         }
 
 
@@ -94,16 +95,15 @@ namespace Health.Direct.Context.Tests
         [InlineData("ContextTestFiles\\ContextSimple1.txtSevenBit")]
         public void TestBuildContextRoundTrip(string file)
         {
-            var text = File.ReadAllText(file);
-            var directMessage = Message.Load(text);
+            var directMessage = MimeMessage.Load(file);
             var context = directMessage.DirectContext();
 
             var contextBuilder = new ContextBuilder();
 
             contextBuilder
-                .WithContentType(context.ContentType)
-                .WithContentId(context.ContentID)
-                .WithDisposition(context.ContentDisposition)
+                .WithContentType(context.ContentType.MediaType, context.ContentType.MediaSubtype)
+                .WithContentId(context.ContentId)
+                .WithDisposition(context.ContentDisposition.FileName)
                 .WithTransferEncoding(context.ContentTransferEncoding)
                 .WithVersion(context.Metadata.Version)
                 .WithId(context.Metadata.Id)
@@ -133,7 +133,7 @@ namespace Health.Direct.Context.Tests
             message.To.Add(new MailboxAddress("Joe", "Joe@hobo.lab"));
             message.Subject = "Need more memory";
             message.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
-            message.Headers.Add("X-Direct-Context", messageBuilt.ContentID);
+            message.Headers.Add("X-Direct-Context", messageBuilt.ContentId);
 
             var body = new TextPart("plain")
             {
@@ -146,7 +146,7 @@ namespace Health.Direct.Context.Tests
             message.Body = multipart;
 
 
-            var directMessageRebuilt = Message.Load(message.ToString());
+            var directMessageRebuilt = MimeMessage.Load(message.ToString().ToStream());
             var messageRebuilt = directMessageRebuilt.DirectContext();
 
             AssertEqual(context, messageRebuilt);
@@ -156,8 +156,7 @@ namespace Health.Direct.Context.Tests
         [InlineData("ContextTestFiles\\ContextHL7.Default.txtBase64")]
         public void TestBuildContextEncapsulationRoundTrip(string file)
         {
-            var text = File.ReadAllText(file);
-            var directMessage = Message.Load(text);
+            var directMessage = MimeMessage.Load(file);
             var context = directMessage.DirectContext();
 
             //
@@ -173,58 +172,39 @@ namespace Health.Direct.Context.Tests
 EVN | A01 | 20110613083617 |||
 PID | 1 || 135769 || MOUSE ^ MICKEY ^|| 19281118 | M ||| 123 Main St.^^ Lake Buena Vista ^ FL ^ 32830 || (407)939 - 1289 ^^^ theMainMouse@disney.com ||||| 1719 | 99999999 ||||||||||||||||||||
 PV1 | 1 | O |||||^^^^^^^^|^^^^^^^^",
-                MimeEntity.DecodeBody(encapsulations.Single()).ToString());
+                encapsulations.Single().DecodeBody());
 
-            var contextBuilder = new ContextBuilder();
-
-            contextBuilder
-                .WithContentType(context.ContentType)
-                .WithContentId(context.ContentID)
-                .WithDisposition(context.ContentDisposition)
-                .WithTransferEncoding(context.ContentTransferEncoding)
-                .WithVersion(context.Metadata.Version)
-                .WithId(context.Metadata.Id)
-                .WithEncapsulation(context.Metadata.Encapsulation?.Type);
-
-            var messageBuilt = contextBuilder.Build();
-
-            //
-            // Now build a message to contain the context.
-            // No good api yet to work with just the MailPart
-            //
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Jean", "Jean@opsstation.lab"));
-            message.To.Add(new MailboxAddress("Joe", "Joe@hobo.lab"));
-            message.Subject = "Need more memory";
-            message.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
-            message.Headers.Add("X-Direct-Context", messageBuilt.ContentID);
-
-            var body = new TextPart("plain")
-            {
-                Text = @"Simple Body"
-            };
-
-            var multipart = new Multipart("mixed");
-            multipart.Add(body);
-            multipart.Add(contextBuilder.BuildMimePart());
-            message.Body = multipart;
-
-
-            var directMessageRebuilt = Message.Load(message.ToString());
-            var messageRebuilt = directMessageRebuilt.DirectContext();
+            var echoMessage = EchoContext.Process(directMessage);
+            var messageRebuilt = echoMessage.DirectContext();
 
             AssertEqual(context, messageRebuilt);
+            AssertEqual(directMessage.SelectEncapulations().ToList(), echoMessage.SelectEncapulations().ToList());
         }
 
+        private void AssertEqual(List<MimePart> expected, List<MimePart> actual)
+        {
+            if (expected == null) throw new ArgumentNullException(nameof(expected));
+            if (actual == null) throw new ArgumentNullException(nameof(actual));
+
+            Assert.Equal(expected.Count, actual.Count);
+
+            for(int i = 0; i < expected.Count ; i++)
+            {
+                Assert.True(actual[i].DecodeBody().Trim().Length > 5);  // just ensure content exits
+                Assert.Equal(expected[i].DecodeBody(), actual[i].DecodeBody());
+            }
+        }
 
         private void AssertEqual(Context context, Context messageRebuilt)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (messageRebuilt == null) throw new ArgumentNullException(nameof(messageRebuilt));
 
-            Assert.Equal(context.ContentType, messageRebuilt.ContentType);
-            Assert.Equal(context.ContentID, messageRebuilt.ContentID);
-            Assert.Equal(context.ContentDisposition, messageRebuilt.ContentDisposition);
+            Assert.Equal(context.ContentType.MediaType, messageRebuilt.ContentType.MediaType);
+            Assert.Equal(context.ContentType.MediaSubtype, messageRebuilt.ContentType.MediaSubtype);
+            Assert.Equal(context.ContentId, messageRebuilt.ContentId);
+            Assert.Equal(context.ContentDisposition.Disposition, messageRebuilt.ContentDisposition.Disposition);
+            Assert.Equal(context.ContentDisposition.FileName, messageRebuilt.ContentDisposition.FileName);
 
             Assert.Equal(context.Metadata.Version, messageRebuilt.Metadata.Version);
             Assert.Equal(context.Metadata.Id, messageRebuilt.Metadata.Id);
@@ -244,9 +224,20 @@ PV1 | 1 | O |||||^^^^^^^^|^^^^^^^^",
             Assert.Equal(context.Metadata.Patient?.PostalCode, messageRebuilt.Metadata.Patient?.PostalCode);
 
             Assert.Equal(context.Metadata.Encapsulation?.Type, messageRebuilt.Metadata.Encapsulation?.Type);
-            
         }
     }
 
 
+    public static class Extensions
+    {
+        public static Stream ToStream(this string str)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(str);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+    }
 }

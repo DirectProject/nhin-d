@@ -14,8 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using Health.Direct.Common.Mime;
-
 namespace Health.Direct.Context
 {
 
@@ -30,7 +28,17 @@ namespace Health.Direct.Context
         }
     }
 
-   
+    public class MimeStandard
+    {
+        public class DispositionType
+        {
+            /// <summary>
+            /// The <c>Attachment Disposition Type</c>
+            /// </summary>
+            public const string Attachment = "attachment";
+        }
+    }
+
     /// <summary>
     /// Provides constants and utility functions for working with <see cref="Context"/>
     /// </summary>
@@ -40,6 +48,11 @@ namespace Health.Direct.Context
     /// </remarks>
     public class ContextStandard
     {
+        /// <summary>
+        /// The standard string representation of the <c>Content-ID</c> MIME header
+        /// </summary>
+        public const string ContentIdHeader = "Content-ID";
+
         /// <summary>
         /// Default filename for a <see cref="MimeStandard.DispositionType"/> of <c>attachment</c>
         /// </summary>

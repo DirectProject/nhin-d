@@ -16,14 +16,13 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using Health.Direct.Common;
 
 namespace Health.Direct.Context
 {
     /// <summary>
     /// Exception for Direct <see cref="Context"/> processing errors
     /// </summary>
-    public class ContextException : DirectException<ContextError>
+    public class ContextException : ContextException<ContextError>
     {
         /// <summary>
         /// Creates an ContextException with the specified error
@@ -42,6 +41,122 @@ namespace Health.Direct.Context
         public ContextException(ContextError error, Exception innerException)
             : base(error, innerException)
         {
+        }
+    }
+
+    /// <summary>
+    /// Exception for Direct <see cref="Context"/> processing errors
+    /// </summary>
+    public class BaseContextException : Exception
+    {
+        /// <summary>
+        /// Initializes a new instance of an <see cref="BaseContextException"/>.
+        /// </summary>
+        public BaseContextException()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of an <see cref="BaseContextException"/> with a specified error message
+        /// </summary>
+        /// <param name="message">The message that describes the error. </param>
+        public BaseContextException(string message)
+            : base(message)
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance of an <see cref="BaseContextException"/> with a reference 
+        /// to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The message that describes the error. </param>
+        /// <param name="innerException">The inner exception reference.</param>
+        public BaseContextException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Represents Direct specific exceptions specialized to a specific type of error
+    /// </summary>
+    /// <remarks>
+    /// The generic version of this class is used to create specialized exceptions with an enumeration error type
+    /// that provides the subtype of error.
+    /// </remarks>
+    /// <typeparam name="T">The type of error this exception type is specialized to, generally an enumeration</typeparam>
+    [Serializable]
+    public class ContextException<T> : BaseContextException
+    {
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="BaseContextException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        public ContextException(T error)
+            : base(FormatMessage(error, ""))
+        {
+            Error = error;
+        }
+
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="BaseContextException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        /// <param name="message">The message that describes the error. </param>
+        public ContextException(T error, string message)
+            : base(FormatMessage(error, message))
+        {
+            Error = error;
+        }
+
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="BaseContextException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        /// <param name="innerException">The inner exception reference.</param>
+        public ContextException(T error, Exception innerException)
+            : this(error, string.Empty, innerException)
+        {
+            Error = error;
+        }
+
+        /// <summary>
+        /// Initializes a new specialized instance of an <see cref="BaseContextException"/>
+        /// </summary>
+        /// <param name="error">The error type for this instance.</param>
+        /// <param name="message">The message that describes the error. </param>
+        /// <param name="innerException">The inner exception reference.</param>
+        public ContextException(T error, string message, Exception innerException)
+            : base(FormatMessage(error, message), innerException)
+        {
+            Error = error;
+        }
+
+        /// <summary>
+        /// Private helper method to format the message passed to the base exception ctor.
+        /// </summary>
+        /// <param name="error">The error object</param>
+        /// <param name="message">The message</param>
+        /// <returns>Returns a formatted error message</returns>
+        private static string FormatMessage(T error, string message)
+        {
+            string msg = "Error=" + error;
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                msg += Environment.NewLine + message;
+            }
+
+            return msg;
+        }
+
+        /// <summary>
+        /// The specific error type for this instance.
+        /// </summary>
+        public T Error
+        {
+            get;
         }
     }
 }

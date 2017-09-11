@@ -19,6 +19,7 @@ Content-ID: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
 version: 1.0
 id: <2142848@direct.example.com>
 encapsulation: hl7v2
+
 --=-UM9iEJGuFrn47U1X1JORSw==
 Content-Type: application/x-direct-encapsulated+hl7v2; name=adt-sample.hl7
 Content-Disposition: attachment; filename=adt-sample.hl7

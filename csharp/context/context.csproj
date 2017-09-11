@@ -49,9 +49,9 @@
     <Compile Include="ContextBuilder.cs" />
     <Compile Include="ContextError.cs" />
     <Compile Include="ContextException.cs" />
-    <Compile Include="ContextMapper.cs" />
     <Compile Include="ContextParser.cs" />
     <Compile Include="ContextStandard.cs" />
+    <Compile Include="EchoContext.cs" />
     <Compile Include="Encapsulation.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Metadata.cs" />
@@ -59,12 +59,6 @@
     <Compile Include="PatientIdentifier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Type.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\common\common.csproj">
-      <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
-      <Name>common</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

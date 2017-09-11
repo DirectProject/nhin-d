@@ -15,30 +15,45 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
-using Health.Direct.Common.Mime;
+using MimeKit;
 
 namespace Health.Direct.Context
 {
     /// <summary>
     /// Direct<see cref="Context"/> metadata container.
     /// </summary>
-    public class Metadata : HeaderCollection
+    public class Metadata 
     {
         private string patient;
-
+        
         /// <summary>
         /// Construct empty Metadata
         /// </summary>
         public Metadata() 
         {
+            Headers = new HeaderList();
         }
+
         /// <summary>
-        /// Construct Metadata from text that can parse to a <see cref="HeaderCollection"/>
+        /// Construct Metadata from <see cref="MimePart.ContentObject"/>
         /// </summary>
         /// <param name="metadata"></param>
-        public Metadata(string metadata): base(MimeSerializer.Default.DeserializeHeaders(metadata))
+        /// <param name="encapsulated">Set if mediaSubtype is x-direct-encapsulated+hl7v2 </param>
+        public Metadata(Stream metadata)
         {
+            Headers = MimeEntity.Load(metadata).Headers;
+        }
+
+        /// <summary>
+        /// Gets the list of headers.
+        /// </summary>
+        /// <value>The list of headers.</value>
+        public HeaderList Headers
+        {
+            get; private set;
         }
 
         /// <summary>
@@ -187,6 +202,23 @@ namespace Health.Direct.Context
             set
             {
                 SetValue(ContextStandard.Encapsulation.Label, value.Type);
+            }
+        }
+
+        private string GetValue(string headerName)
+        {
+            return Headers[headerName];
+        }
+
+        private void SetValue(string headerName, string headerValue)
+        {
+            if (Headers.Contains(headerName))
+            {
+                Headers[headerName] = headerValue;
+            }
+            else
+            {
+                Headers.Add(headerName, headerValue);
             }
         }
 

@@ -15,8 +15,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Net.Mime;
-using Health.Direct.Common.Mime;
+using MimeKit;
+using MimePart = MimeKit.MimePart;
 
 namespace Health.Direct.Context
 {
@@ -28,61 +28,52 @@ namespace Health.Direct.Context
     /// <remarks>
     /// Location of document...
     /// </remarks>
-    public class Context: MimeEntity
+    public class Context: MimePart
     {
         /// <summary>
-        /// Default file name of <see cref="ContentDisposition"/>.
+        /// Default file name of <see cref="MimeKit.ContentDisposition"/>.
         /// </summary>
-        public const string FileName = "metadata.txt";
+        public const string FileNameValue = "metadata.txt";
 
         public Metadata Metadata { get; }
 
         /// <summary>
         /// Initializes an empty instances
         /// </summary>
-        public Context()
-            : this(MimeStandard.MediaType.TextPlain, Guid.NewGuid().ToString())
+        public Context(): this("text", "plain")
         {
+            Metadata = new Metadata();
+            ContentId = Guid.NewGuid().ToString("N");
+            ContentDisposition = new ContentDisposition(MimeStandard.DispositionType.Attachment);
+            ContentDisposition.FileName = FileNameValue;
+        }
 
+        private Context(string mediaType, string mediaSubtype) : base (mediaType, mediaSubtype)
+        {
+            Metadata = new Metadata();
         }
 
         /// <summary>
         /// Initializes an empty instances
         /// </summary>
-        public Context(string contentType, string contentId, string filename = FileName)
+        public Context(string mediaType, string mediaSubtype, string contentId, string filename = FileNameValue) 
+            : base (mediaType, mediaSubtype)
         {
             Metadata = new Metadata();
-            Headers.Add(MimeStandard.ContentTypeHeader, contentType);
-            Headers.Add(MimeStandard.ContentIDHeader, contentId);
-            Headers.Add(MimeStandard.ContentDispositionHeader, BuildContentDisposition(filename));
+            ContentId = contentId;
+            ContentDisposition.FileName = filename;
         }
 
         /// <summary>
-        /// Initialize an instance with headers and <see cref="Metadata"/>
+        /// Initializes an empty instances
         /// </summary>
-        /// <param name="headers"></param>
-        /// <param name="metaData"></param>
-        public Context(HeaderCollection headers, Metadata metaData)
+        public Context(string mediaType, string mediaSubtype, string contentId, Metadata metadata, string filename = FileNameValue)
+            : base(mediaType, mediaSubtype)
         {
-            Headers = headers;
-            Metadata = metaData;
+            Metadata = metadata;
+            ContentId = contentId;
+            ContentDisposition = new ContentDisposition(MimeStandard.DispositionType.Attachment);
+            ContentDisposition.FileName = filename;
         }
-        
-        /// <summary>
-        /// Construct a <c>Content-Disposition</c> header
-        /// </summary>
-        /// <param name="fileName"></param>
-        /// <returns></returns>
-        public static string BuildContentDisposition(string fileName)
-        {
-            var cd = new ContentDisposition
-            {
-                DispositionType = "attachment",
-                FileName = fileName
-            };
-
-            return cd.ToString();
-        }
-        
     }
 }

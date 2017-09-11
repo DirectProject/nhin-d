@@ -33,7 +33,7 @@ namespace Health.Direct.Context
         /// <summary>
         /// Invalid fields in the body of the Direct<see cref="Context"/> message. 
         /// </summary>
-        InvalidContextMetadataFileds,
+        InvalidContextMetadataFields,
         /// <summary>
         /// Invalid <c>patient-id</c> metadata.
         /// </summary>
