@@ -112,6 +112,11 @@ namespace Health.Direct.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithPatientId(string patientId)
         {
+            if (string.IsNullOrEmpty(patientId))
+            {
+                return this;
+            }
+
             if (_directContext.Metadata.PatientId.IsNullOrWhiteSpace())
             {
                 _directContext.Metadata.PatientId = patientId;
@@ -151,48 +156,24 @@ namespace Health.Direct.Context
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithPurpose(string purpose)
         {
+            if (string.IsNullOrEmpty(purpose))
+            {
+                return this;
+            }
+
             _directContext.Metadata.Purpose = purpose;
 
             return this;
         }
 
-        /// <summary>
-        /// Set metadata patient attributes
-        /// Paramters must be a valid <see cref="ContextStandard.Patient"/>
-        /// </summary>
-        /// <param name="givenName"></param>
-        /// <param name="surname"></param>
-        /// <param name="middleName"></param>
-        /// <param name="dateOfBirth"></param>
-        /// <param name="gender"></param>
-        /// <param name="socialSecurityNumber"></param>
-        /// <param name="telephoneNumber"></param>
-        /// <param name="streetAddress"></param>
-        /// <param name="postalCode"></param>
-        /// <returns>ContextBuilder</returns>
-        public ContextBuilder WithPatient(
-            string givenName, 
-            string surname,
-            string middleName,
-            string dateOfBirth,
-            string gender,
-            string socialSecurityNumber,
-            string telephoneNumber,
-            string streetAddress,
-            string postalCode)
+        public ContextBuilder WithPatient(Patient patient)
         {
-            _directContext.Metadata.Patient = new Patient
+            if (patient == null)
             {
-                GivenName = givenName,
-                SurName = surname,
-                MiddleName = middleName,
-                DateOfBirth = dateOfBirth,
-                Gender = gender,
-                SocialSecurityNumber = socialSecurityNumber,
-                TelephoneNumber = telephoneNumber,
-                StreetAddress = streetAddress,
-                PostalCode = postalCode
-            };
+                return this;
+            }
+
+            _directContext.Metadata.Patient = patient;
 
             return this;
         }
@@ -237,6 +218,7 @@ namespace Health.Direct.Context
                 ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
                 ContentTransferEncoding = _directContext.ContentTransferEncoding
             };
+
             var contentDist = _directContext.ContentDisposition;
             mimePart.ContentDisposition.FileName = contentDist.FileName;
             mimePart.ContentId = _directContext.ContentId;

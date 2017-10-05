@@ -141,7 +141,7 @@ namespace Health.Direct.Context
         /// <returns>Returns a formatted error message</returns>
         private static string FormatMessage(T error, string message)
         {
-            string msg = "Error=" + error;
+            string msg = "Context Error=" + error;
 
             if (!string.IsNullOrEmpty(message))
             {

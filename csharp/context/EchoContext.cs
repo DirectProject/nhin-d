@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Linq;
 using MimeKit;
 
 namespace Health.Direct.Context
 {
     public static class EchoContext
     {
+        /// <summary>
+        /// Used for testing only.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static MimeMessage Process(MimeMessage message)
         {
             var context = message.DirectContext();
@@ -13,21 +19,30 @@ namespace Health.Direct.Context
 
             contextBuilder
                 .WithContentType(context.ContentType.MediaType, context.ContentType.MediaSubtype)
-                .WithContentId(context.ContentId)
+                .WithContentId($"<{Guid.NewGuid():N}@{Environment.MachineName}>")
                 .WithDisposition(context.ContentDisposition.FileName)
                 .WithTransferEncoding(context.ContentTransferEncoding)
                 .WithVersion(context.Metadata.Version)
+                //
+                // Section 3.2 Implementation Guide for Expressing Context in Direct Messageing.
+                // retain the unique and persisten identifier assigned by the originating party
+                // to uniquely identify a sequence of related transactions.
+                //
                 .WithId(context.Metadata.Id)
+                .WithPatientId(context.Metadata.PatientId)
+                .WithType(context.Metadata.Type?.Category, context.Metadata.Type?.Action)
+                .WithPurpose(context.Metadata.Purpose)
+                .WithPatient(context.Metadata.Patient)
                 .WithEncapsulation(context.Metadata.Encapsulation?.Type);
 
             var messageBuilt = contextBuilder.Build();
 
-            var echo = new MimeMessage();
-            echo.From.Add(new MailboxAddress("Jean", "Jean@opsstation.lab"));
-            echo.To.Add(new MailboxAddress("Joe", "Joe@hobo.lab"));
-            echo.Subject = "Need more memory";
-            echo.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
-            echo.Headers.Add("X-Direct-Context", messageBuilt.ContentId);
+            var echoMessage = new MimeMessage();
+            echoMessage.From.Add(message.To.Mailboxes.First());
+            echoMessage.To.Add(message.From.Mailboxes.First());
+            echoMessage.Subject = message.Subject;
+            echoMessage.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
+            echoMessage.Headers.Add(MailStandard.Headers.DirectContext, messageBuilt.ContentId);
             
             var body = new TextPart("plain")
             {
@@ -43,9 +58,9 @@ namespace Health.Direct.Context
                 multipart.Add(selectEncapulation);
             }
 
-            message.Body = multipart;
+            echoMessage.Body = multipart;
 
-            return message;
+            return echoMessage;
         } 
     }
 }

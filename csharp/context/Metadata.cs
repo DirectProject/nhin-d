@@ -132,7 +132,7 @@ namespace Health.Direct.Context
             {
                 var type = GetValue(ContextStandard.Type.Label);
 
-                if (type == null)
+                if (type == null || type == "/")
                 {
                     return null;
                 }

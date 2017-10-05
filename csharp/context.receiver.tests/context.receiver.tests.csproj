@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F1A6EBDB-2AB1-40D4-9BC3-4DA75F6DE332}</ProjectGuid>
+    <ProjectGuid>{0014C11B-13F4-4B59-BBF5-D59182DF6372}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Direct.Context.Tests</RootNamespace>
-    <AssemblyName>Health.Direct.Context.Tests</AssemblyName>
+    <RootNamespace>Health.Direct.Context.Receiver.tests</RootNamespace>
+    <AssemblyName>Health.Direct.Context.Receiver.tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -30,8 +30,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Interop.CDO">
+      <HintPath>..\build\libraries\smtpagent_com_interop\Interop.CDO.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="MimeKitLite, Version=1.18.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
       <HintPath>..\build\packages\MimeKitLite.1.18.1\lib\net451\MimeKitLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\build\packages\NLog.1.0.0.505\lib\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -61,52 +69,37 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestReceiver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestContext.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ContextTestFiles\ContextHL7.Default.txtBase64">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtBase64">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtBinary">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtDefault">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtEightBit">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtQuotedPrintable">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtSevenBit">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="ContextTestFiles\ContextSimple1.txtUUEncode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Include="ContextTestFiles\BadContext\ContextUnparsablePatient.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ContextTestFiles\BadContext\ContextUnparsableType.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ContextTestFiles\BadContext\NoDirectContextHeader.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ContextTestFiles\BadContext\ContextMissing.eml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\context\context.csproj">
-      <Project>{f66c2e77-ec9a-4f59-9c2a-764f38fbdfcf}</Project>
-      <Name>context</Name>
+    <ProjectReference Include="..\agent\agent.csproj">
+      <Project>{bc563499-b6f2-492a-ac91-d2d18e2fcfdd}</Project>
+      <Name>agent</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\common\common.csproj">
+      <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
+      <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\context.receiver\context.receiver.csproj">
+      <Project>{53ff4765-58b8-4747-93e7-6ee9416e2036}</Project>
+      <Name>context.receiver</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\context.tests\context.tests.csproj">
+      <Project>{f1a6ebdb-2ab1-40d4-9bc3-4da75f6de332}</Project>
+      <Name>context.tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\diagnostics\diagnostics.nlog.csproj">
+      <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>
+      <Name>diagnostics.nlog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\gateway\smtpAgent\smtpAgent.csproj">
+      <Project>{a9b11aad-3461-4ddb-a447-91779bd41a78}</Project>
+      <Name>smtpAgent</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

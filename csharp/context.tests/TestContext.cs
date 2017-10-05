@@ -97,58 +97,9 @@ namespace Health.Direct.Context.Tests
         {
             var directMessage = MimeMessage.Load(file);
             var context = directMessage.DirectContext();
-
-            var contextBuilder = new ContextBuilder();
-
-            contextBuilder
-                .WithContentType(context.ContentType.MediaType, context.ContentType.MediaSubtype)
-                .WithContentId(context.ContentId)
-                .WithDisposition(context.ContentDisposition.FileName)
-                .WithTransferEncoding(context.ContentTransferEncoding)
-                .WithVersion(context.Metadata.Version)
-                .WithId(context.Metadata.Id)
-                .WithPatientId(context.Metadata.PatientId)
-                .WithType(context.Metadata.Type.Category, context.Metadata.Type.Action)
-                .WithPurpose(context.Metadata.Purpose)
-                .WithPatient(
-                    context.Metadata.Patient.GivenName,
-                    context.Metadata.Patient.SurName,
-                    context.Metadata.Patient.MiddleName,
-                    context.Metadata.Patient.DateOfBirth,
-                    context.Metadata.Patient.Gender,
-                    context.Metadata.Patient.SocialSecurityNumber,
-                    context.Metadata.Patient.TelephoneNumber,
-                    context.Metadata.Patient.StreetAddress,
-                    context.Metadata.Patient.PostalCode)
-                .WithEncapsulation(context.Metadata.Encapsulation?.Type);
-
-            var messageBuilt = contextBuilder.Build();
-
-            //
-            // Now build a message to contain the context.
-            // No good api yet to work with just the MailPart
-            //
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Jean", "Jean@opsstation.lab"));
-            message.To.Add(new MailboxAddress("Joe", "Joe@hobo.lab"));
-            message.Subject = "Need more memory";
-            message.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
-            message.Headers.Add("X-Direct-Context", messageBuilt.ContentId);
-
-            var body = new TextPart("plain")
-            {
-                Text = @"Simple Body"
-            };
-
-            var multipart = new Multipart("mixed");
-            multipart.Add(body);
-            multipart.Add(contextBuilder.BuildMimePart());
-            message.Body = multipart;
-
-
+            var message = EchoContext.Process(directMessage);
             var directMessageRebuilt = MimeMessage.Load(message.ToString().ToStream());
             var messageRebuilt = directMessageRebuilt.DirectContext();
-
             AssertEqual(context, messageRebuilt);
         }
 
@@ -202,7 +153,7 @@ PV1 | 1 | O |||||^^^^^^^^|^^^^^^^^",
 
             Assert.Equal(context.ContentType.MediaType, messageRebuilt.ContentType.MediaType);
             Assert.Equal(context.ContentType.MediaSubtype, messageRebuilt.ContentType.MediaSubtype);
-            Assert.Equal(context.ContentId, messageRebuilt.ContentId);
+            Assert.NotEqual(context.ContentId, messageRebuilt.ContentId);
             Assert.Equal(context.ContentDisposition.Disposition, messageRebuilt.ContentDisposition.Disposition);
             Assert.Equal(context.ContentDisposition.FileName, messageRebuilt.ContentDisposition.FileName);
 

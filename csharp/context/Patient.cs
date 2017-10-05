@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -27,7 +29,7 @@ namespace Health.Direct.Context
             StreetAddress = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientStreetAddress)).Value;
             PostalCode = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientPostalCode)).Value;
         }
-
+        
         public string GivenName{get; set; }
         public string SurName { get; set; }
         public string MiddleName { get; set; }

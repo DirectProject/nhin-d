@@ -97,11 +97,13 @@ namespace Health.Direct.Context
         public static T AssertEnum<T>(this string source, ContextError error)
         {
             var type = typeof(T);
+            T result;
 
-            var result = (T)Enum.Parse(type, source, true);
-
-            if (result == null)
+            try
             {
+                result = (T) Enum.Parse(type, source, true);
+            }
+            catch { 
                 throw new ContextException(error);
             }
 

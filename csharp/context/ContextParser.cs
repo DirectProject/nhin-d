@@ -183,17 +183,26 @@ namespace Health.Direct.Context
 
         public static Dictionary<string, string> GetPatientAttributes(string value, ContextError error)
         {
-            var parts = ContextParser.SplitField(value, error);
-
-            var patientAttributes = new Dictionary<string, string>();
-
-            foreach (var part in parts)
+            try
             {
-                var attribute = Split(part, new[] { '=' }, error);
-                patientAttributes.Add(attribute[0].Trim(), attribute[1].Trim());
-            }
+                var parts = ContextParser.SplitField(value, error);
 
-            return patientAttributes;
+                var patientAttributes = new Dictionary<string, string>();
+
+                foreach (var part in parts)
+                {
+                    var attribute = Split(part, new[] {'='}, error);
+                    attribute[0].AssertEnum<ContextStandard.Patient.PatientParameter>(ContextError.InvalidPatient);
+
+                    patientAttributes.Add(attribute[0].Trim(), attribute[1].Trim());
+                }
+
+                return patientAttributes;
+            }
+            catch
+            {
+                throw new ContextException(error);
+            }
         }
     }
 }
