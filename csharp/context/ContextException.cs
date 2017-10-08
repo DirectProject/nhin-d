@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2010-2017, Direct Project
  All rights reserved.
 
  Authors:

@@ -101,6 +101,9 @@
     <None Include="ContextTestFiles\BadContext\ContextMissing.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="ContextTestFiles\ContextSimple.PatienIdOnly.txtDefault">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2010-2017, Direct Project
  All rights reserved.
 
  Authors:
@@ -82,11 +82,11 @@ namespace Health.Direct.Context
             /// </summary>
             public const string Label = "type";
 
-            internal const string CategoryLaboratory = "laborartory";
-            internal const string CategoryRadiology = "radiology";
-            internal const string CategoryPharmacy = "pharmacy";
-            internal const string CategoryReferral = "referral";
-            internal const string CategoryGeneral = "general";
+            public const string CategoryLaboratory = "laborartory";
+            public const string CategoryRadiology = "radiology";
+            public const string CategoryPharmacy = "pharmacy";
+            public const string CategoryReferral = "referral";
+            public const string CategoryGeneral = "general";
 
             /// <summary>
             /// Normative categories.  i.e., other values are not permitted.
@@ -124,12 +124,12 @@ namespace Health.Direct.Context
                 General
             }
 
-            internal const string ActionOrder = "order";
-            internal const string ActionReport = "report";
-            internal const string ActionResult = "result";
-            internal const string ActionQuery = "query";
-            internal const string ActionResponse = "response";
-            internal const string ActionNotification = "notification";
+            public const string ActionOrder = "order";
+            public const string ActionReport = "report";
+            public const string ActionResult = "result";
+            public const string ActionQuery = "query";
+            public const string ActionResponse = "response";
+            public const string ActionNotification = "notification";
 
             /// <summary>
             /// Intended to identify the role of the  message sender in the transaction sequence, i.e., a query

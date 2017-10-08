@@ -1,6 +1,24 @@
-﻿using MimeKit;
+﻿/* 
+ Copyright (c) 2010-2017, Direct Project
+ All rights reserved.
+
+ Authors:
+    Joseph Shook    Joseph.Shook@Surescripts.com
+  
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Neither the name of The Direct Project (directproject.org) nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+*/
+
+using System.Collections.Generic;
+using MimeKit;
 using System.IO;
 using System.Text;
+using ContentDisposition = MimeKit.ContentDisposition;
 using MimePart = MimeKit.MimePart;
 
 namespace Health.Direct.Context
@@ -25,20 +43,6 @@ namespace Health.Direct.Context
         public ContextBuilder()
         {
             _directContext = new Context();
-        }
-
-        /// <summary>
-        /// Build the Content Type.
-        /// </summary>
-        /// <param name="mediaType">The media type.</param>
-        /// <param name="mediaSubtype">The media subtype.</param>
-        /// <returns>ContextBuilder</returns>
-        public ContextBuilder WithContentType(string mediaType, string mediaSubtype)
-        {
-            _directContext.ContentType.MediaType = mediaType;
-            _directContext.ContentType.MediaSubtype = mediaSubtype;
-
-            return this;
         }
 
         /// <summary>
@@ -130,6 +134,32 @@ namespace Health.Direct.Context
         }
 
         /// <summary>
+        /// Set metadata patientId/s.
+        /// Call multiple times if adding more than one Id.
+        /// </summary>
+        /// <param name="patientId"></param>
+        /// <returns>ContextBuilder</returns>
+        public ContextBuilder WithPatientId(IEnumerable<PatientInstance> patients)
+        {
+            foreach (var patientInstance in patients)
+            {
+                var patientId = $"{patientInstance.PidContext}:{patientInstance.LocalPatientId}";
+
+                if (_directContext.Metadata.PatientId.IsNullOrWhiteSpace())
+                {
+                    _directContext.Metadata.PatientId = patientId;
+                }
+                else
+                {
+                    _directContext.Metadata.PatientId += $"; {patientId}";
+                }
+            }
+            
+            return this;
+        }
+
+
+        /// <summary>
         /// Set metadata type
         /// </summary>
         /// <param name="category">Valid <see cref="ContextStandard.Type.Category"/></param>
@@ -166,6 +196,14 @@ namespace Health.Direct.Context
             return this;
         }
 
+        /// <summary>
+        /// Patient matching parameters.
+        /// </summary>
+        /// <remarks>
+        /// If a patient-id-element is included for the recipient’s domain, the recipient SHOULD disregard the patient-data-element. 
+        /// </remarks>
+        /// <param name="patient"></param>
+        /// <returns></returns>
         public ContextBuilder WithPatient(Patient patient)
         {
             if (patient == null)

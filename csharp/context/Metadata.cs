@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2010-2017, Direct Project
  All rights reserved.
 
  Authors:
@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Text;
 using MimeKit;
 
@@ -113,7 +112,7 @@ namespace Health.Direct.Context
         /// <remarks>
         /// See 3.4 Transaction Type
         /// </remarks>
-        public IEnumerable<PatientIdentifier> PatientIdentifier
+        public IEnumerable<PatientInstance> PatientIdentifier
         {
             get
             {

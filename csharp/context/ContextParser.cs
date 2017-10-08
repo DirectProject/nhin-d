@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2010-2017, Direct Project
  All rights reserved.
 
  Authors:
@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using MimeKit;
 
 namespace Health.Direct.Context
@@ -28,16 +27,19 @@ namespace Health.Direct.Context
     /// </summary>
     public static class ContextParser
     {
+        public static string Version = "1.0";
+
         /// <summary>
         /// Extract <see cref="Context"/> from a message (Health Content Container)
         /// </summary>
         /// <param name="message"><see cref="Health.Direct.Common.Mail.Message"/></param>
+        /// <param name="version"></param>
         /// <returns><see cref="Context"/>object</returns>
         public static Context Parse(MimePart message, string version)
         {
             if (message == null)
             {
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException(nameof(message));
             }
 
             Metadata metadata;
@@ -57,11 +59,6 @@ namespace Health.Direct.Context
             }
 
             VerifyVersion(metadata, version);
-            VerifyPatientId(metadata.Headers);
-            VerifyType(metadata.Headers);
-            VerifyUse(metadata.Headers);
-            VerifyPatientId(metadata.Headers);
-            VerifyEncapsulation(metadata.Headers);
             
             var context = new Context(
                 message.ContentType.MediaType, 
@@ -88,31 +85,13 @@ namespace Health.Direct.Context
             }
         }
         
-
-        private static void VerifyPatientId(HeaderList message)
-        {
-
-        }
-        private static void VerifyType(HeaderList message)
-        {
-
-        }
-        private static void VerifyUse(HeaderList message)
-        {
-            
-        }
-
-        private static void VerifyEncapsulation(HeaderList message)
-        {
-            
-        }
-
+        
         /// <summary>
-        /// Parse a <c>patient-id</c> metadata value into <see cref="PatientIdentifier"/>s.
+        /// Parse a <c>patient-id</c> metadata value into <see cref="PatientInstance"/>s.
         /// </summary>
         /// <param name="headerValue"></param>
         /// <returns></returns>
-        public static IEnumerable<PatientIdentifier> ParsePatientIdentifier(string headerValue)
+        public static IEnumerable<PatientInstance> ParsePatientIdentifier(string headerValue)
         {
             var parts = SplitField(headerValue, ContextError.InvalidPatientId);
 
@@ -120,7 +99,7 @@ namespace Health.Direct.Context
             {
                 var patientId = Split(part, new[]{ ':' }, ContextError.InvalidPatientId);
 
-                yield return new PatientIdentifier()
+                yield return new PatientInstance()
                 {
                     PidContext = patientId[0].Trim(),
                     LocalPatientId = patientId[1].Trim()
@@ -171,7 +150,7 @@ namespace Health.Direct.Context
                 throw new ContextException(error);
             }
 
-            var parts = value.Split(separators).Select(v => v.Trim()).ToList();
+            var parts = Enumerable.ToList(value.Split(separators).Select(v => v.Trim()));
 
             if (!parts.Any())
             {

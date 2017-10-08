@@ -1,5 +1,5 @@
 ﻿/* 
- Copyright (c) 2010, Direct Project
+ Copyright (c) 2010-2017, Direct Project
  All rights reserved.
 
  Authors:
@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using MimeKit;
 
 
@@ -41,6 +40,25 @@ namespace Health.Direct.Context
                 if (mimeEntity.ContentId == message.DirectContextId())
                 {
                     return ContextParser.Parse(mimeEntity as MimePart, "1.0");
+                }
+            }
+
+            return null;
+        }
+
+        public static MimePart DirectContext(this MimeMessage message, string version)
+        {
+            foreach (var mimeEntity in message.Attachments.Where(a => a is MimePart))
+            {
+                if (mimeEntity.ContentId == message.DirectContextId())
+                {
+                    if (version == ContextParser.Version)
+                    {
+                        return ContextParser.Parse(mimeEntity as MimePart, version);
+                    }     
+                    //
+                    // Future versions
+                    //               
                 }
             }
 
@@ -116,11 +134,24 @@ namespace Health.Direct.Context
         }
 
         /// <summary>
-        /// Returns The <c>X-Direct-Context</c> header
+        /// Returns The <c>X-Direct-Context</c> header value
         /// </summary>
         public static string DirectContextId(this MimeMessage message)
         {
             return message.Headers[MailStandard.Headers.DirectContext].TrimStart('<').TrimEnd('>');
+        }
+
+        /// <summary>
+        /// Make a list from a single type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static List<T> ToList<T>(this T source)
+        {
+            var result = new List<T> {source};
+
+            return result;
         }
     }
 }
