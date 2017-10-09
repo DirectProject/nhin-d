@@ -20,7 +20,6 @@ using System.Text;
 using System.IO;
 using System.Net.Mail;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Common.Mail;
 
 namespace Health.Direct.Common.Mail
 {

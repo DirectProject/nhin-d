@@ -1,0 +1,35 @@
+From: Joe <Joe@hobo.lab>
+Date: Sat, 08 Jul 2017 11:30:57 -0700
+Subject: Need more memory
+Message-Id: <34C73MNYE0U4.6M64WULRWE982@SSORDSK-JSHO02>
+To: Jean <Jean@opsstation.lab>
+X-Direct-Context: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="=-qOObRauiSrZluuB5HiV5sQ=="
+
+--=-qOObRauiSrZluuB5HiV5sQ==
+Content-Type: text/plain; charset=utf-8
+
+Simple Body
+--=-qOObRauiSrZluuB5HiV5sQ==
+Content-Type: text/plain
+Content-Disposition: attachment; filename=metadata.txt
+Content-Transfer-Encoding: binary
+Content-ID: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
+
+version: 1.0
+id: <2142848@direct.example.com>
+patient-id: 2.16.840.1.113883.19.999999:123456;
+ 2.16.840.1.113883.19.888888:75774
+type: radiology/report
+purpose: research
+patient: givenName=John; surname=Doe; middleName=Jacob; dateOfBirth=1961-12-31; gender=M; postalCode=12345
+
+--=-qOObRauiSrZluuB5HiV5sQ==
+Content-Type: application/pdf; name=report.pdf
+Content-Disposition: attachment; filename=report.pdf
+Content-Transfer-Encoding: base64
+
+RmFrZSBQREY=
+
+--=-qOObRauiSrZluuB5HiV5sQ==--

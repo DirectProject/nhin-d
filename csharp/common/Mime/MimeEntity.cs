@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
+using System.Text;
 
 namespace Health.Direct.Common.Mime
 {
@@ -132,6 +133,24 @@ namespace Health.Direct.Common.Mime
             {
                 this.Headers.SetValue(MimeStandard.ContentTypeHeader, value);
                 m_contentType = null;
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets the value of <c>Content-Id</c>.
+        /// </summary>
+        /// <remarks>
+        /// Content-ID is defined in RFC 2045 section 7.
+        /// </remarks>
+        public virtual string ContentID
+        {
+            get
+            {
+                return this.Headers.GetValue(MimeStandard.ContentIDHeader);
+            }
+            set
+            {
+                this.Headers.SetValue(MimeStandard.ContentIDHeader, value);
             }
         }
 
@@ -442,6 +461,41 @@ namespace Health.Direct.Common.Mime
         void ClearParsedHeaders()
         {
             m_contentType = null;
+        }
+
+        /// <summary>
+        /// Decode body of a MimeEntity
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        /// <exception cref="MimeException"></exception>
+        public static StringSegment DecodeBody(MimeEntity message)
+        {
+            StringSegment innerMessageText = message.Body.SourceText;
+            TransferEncoding encoding = message.GetTransferEncoding();
+
+            switch (encoding)
+            {
+                case TransferEncoding.QuotedPrintable:
+                    string decodedText = QuotedPrintableDecoder.Decode(innerMessageText);
+                    innerMessageText = new StringSegment(decodedText);
+                    break;
+
+                case TransferEncoding.Base64:
+                    byte[] bytes = Convert.FromBase64String(innerMessageText.ToString());
+                    string textFromBytes = Encoding.ASCII.GetString(bytes);
+                    innerMessageText = new StringSegment(textFromBytes);
+                    break;
+
+                //
+                // Case UUEncoding
+                // Not supported.
+                // TransferEncoding is a System.Net.Mime type without support for UUEncoding
+                // Code would need to be refactored to accomodate.  
+                //
+            }
+
+            return innerMessageText;
         }
     }
 }

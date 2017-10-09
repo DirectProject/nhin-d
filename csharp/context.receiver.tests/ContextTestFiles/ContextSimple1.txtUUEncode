@@ -1,0 +1,38 @@
+From: Joe <Joe@hobo.lab>
+Date: Sat, 08 Jul 2017 11:29:39 -0700
+Subject: Need more memory
+Message-Id: <34C73MNYE0U4.6M64WULRWE982@SSORDSK-JSHO02>
+To: Jean <Jean@opsstation.lab>
+X-Direct-Context: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="=-8Oju9BPJiN86XvhLX7iekQ=="
+
+--=-8Oju9BPJiN86XvhLX7iekQ==
+Content-Type: text/plain; charset=utf-8
+
+Simple Body
+--=-8Oju9BPJiN86XvhLX7iekQ==
+Content-Type: text/plain
+Content-Disposition: attachment; filename=metadata.txt
+Content-Transfer-Encoding: x-uuencode
+Content-ID: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
+
+begin 0644 metadata.txt
+M=F5R<VEO;CH@,2XP#0II9#H@/#(Q-#(X-#A`9&ER96-T+F5X86UP;&4N8V]M
+M/@T*<&%T:65N="UI9#H@,BXQ-BXX-#`N,2XQ,3,X.#,N,3DN.3DY.3DY.C$R
+M,S0U-CL-"B`R+C$V+C@T,"XQ+C$Q,S@X,RXQ.2XX.#@X.#@Z-S4W-S0-"G1Y
+M<&4Z(')A9&EO;&]G>2]R97!O<G0-"G!U<G!O<V4Z(')E<V5A<F-H#0IP871I
+M96YT.B!G:79E;DYA;64]2F]H;CL@<W5R;F%M93U$;V4[(&UI9&1L94YA;64]
+M2F%C;V([(&1A=&5/9D)I<G1H/3$Y-C$M,3(M,S$[(&=E;F1E<CU-.R!P;W-T
+.86Q#;V1E/3$R,S0U#0H`
+`
+end
+
+--=-8Oju9BPJiN86XvhLX7iekQ==
+Content-Type: application/pdf; name=report.pdf
+Content-Disposition: attachment; filename=report.pdf
+Content-Transfer-Encoding: base64
+
+RmFrZSBQREY=
+
+--=-8Oju9BPJiN86XvhLX7iekQ==--

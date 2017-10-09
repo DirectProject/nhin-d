@@ -1,0 +1,37 @@
+﻿From: Joe <Joe@hobo.lab>
+Date: Wed, 30 Aug 2017 22:17:46 -0700
+Subject: Need more memory
+Message-Id: <34C73MNYE0U4.6M64WULRWE982@SSORDSK-JSHO02>
+To: Jean <Jean@opsstation.lab>
+X-Direct-Context: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="=-UM9iEJGuFrn47U1X1JORSw=="
+
+--=-UM9iEJGuFrn47U1X1JORSw==
+Content-Type: text/plain; charset=utf-8
+
+Simple Body
+--=-UM9iEJGuFrn47U1X1JORSw==
+Content-Type: text/plain
+Content-Disposition: attachment; filename=metadata.txt
+Content-ID: <2ff6eaec83894520bbb872e5671ff49e@hobo.lab>
+
+version: 1.0
+id: <2142848@direct.example.com>
+encapsulation: hl7v2
+
+--=-UM9iEJGuFrn47U1X1JORSw==
+Content-Type: application/x-direct-encapsulated+hl7v2; name=adt-sample.hl7
+Content-Disposition: attachment; filename=adt-sample.hl7
+Content-Transfer-Encoding: base64
+
+TVNIIHxeIH5cJnwgU0VORElOR19BUFBMSUNBVElPTiB8IFNFTkRJTkdfRkFDSUxJVFkgfCBS
+RUNFSVZJTkdfQVBQTElDQVRJT04gfCBSRUNFSVZJTkdfRkFDSUxJVFkgfCAyMDExMDYxMzA4
+MzYxNyB8fCBBRFQgXiBBMDEgfCA5MzQ1NzYxMjAxMTA2MTMwODM2MTcgfCBQIHwgMi4zIHx8
+fHwNCkVWTiB8IEEwMSB8IDIwMTEwNjEzMDgzNjE3IHx8fA0KUElEIHwgMSB8fCAxMzU3Njkg
+fHwgTU9VU0UgXiBNSUNLRVkgXnx8IDE5MjgxMTE4IHwgTSB8fHwgMTIzIE1haW4gU3QuXl4g
+TGFrZSBCdWVuYSBWaXN0YSBeIEZMIF4gMzI4MzAgfHwgKDQwNyk5MzkgLSAxMjg5IF5eXiB0
+aGVNYWluTW91c2VAZGlzbmV5LmNvbSB8fHx8fCAxNzE5IHwgOTk5OTk5OTkgfHx8fHx8fHx8
+fHx8fHx8fHx8fHwNClBWMSB8IDEgfCBPIHx8fHx8Xl5eXl5eXl58Xl5eXl5eXl4=
+
+--=-UM9iEJGuFrn47U1X1JORSw==--

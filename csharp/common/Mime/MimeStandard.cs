@@ -105,15 +105,37 @@ namespace Health.Direct.Common.Mime
         /// The standard string representation for the ASCII quoted printable <c>Content-Transfer-Encoding</c>
         /// </summary>
         public const string TransferEncodingQuoted = "quoted-printable";
+
+        //
+        // Mime/Content-Disposition
+        //
+
+
+        /// <summary>
+        /// Default <c>disposition-type</c> from RFC 2183
+        /// </summary>
+        public class DispositionType
+        {
+            /// <summary>
+            /// The <c>Inline Disposition Type</c>
+            /// </summary>
+            public const string Inline = "inline";
+            /// <summary>
+            /// The <c>Attachment Disposition Type</c>
+            /// </summary>
+            public const string Attachment = "attachment";
+        }
+
         //
         // Mime/Content-Type
         //
+
         /// <summary>
         /// Default <c>Content-Type</c> media type values as per the IANA registry.
         /// </summary>
         public class MediaType
         {
-            /// <summary>
+            /// <summary>mediaType
             /// The <c>text/plain media type</c>
             /// </summary>
             public const string TextPlain = "text/plain";
@@ -126,7 +148,7 @@ namespace Health.Direct.Common.Mime
             /// </summary>
             public const string Multipart = "multipart";
             /// <summary>
-            /// The <c>multipart/mixed</c> media type.
+            /// The <c>multipart/mixed</c> media type.sub
             /// </summary>
             public const string MultipartMixed = "multipart/mixed";
 
