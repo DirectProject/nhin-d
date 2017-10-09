@@ -74,6 +74,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ContextTestFiles\BadContext\ContextMissing.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\BadContext\ContextUnparsablePatient.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\BadContext\ContextUnparsableType.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\BadContext\NoDirectContextHeader.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextHL7.Default.txtBase64">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple.PatienIdOnly.txtDefault">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtBase64">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtBinary">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtDefault">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtEightBit">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtQuotedPrintable">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtSevenBit">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\ContextSimple1.txtUUEncode">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -88,10 +127,6 @@
     <ProjectReference Include="..\context.receiver\context.receiver.csproj">
       <Project>{53ff4765-58b8-4747-93e7-6ee9416e2036}</Project>
       <Name>context.receiver</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\context.tests\context.tests.csproj">
-      <Project>{f1a6ebdb-2ab1-40d4-9bc3-4da75f6de332}</Project>
-      <Name>context.tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\diagnostics\diagnostics.nlog.csproj">
       <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>

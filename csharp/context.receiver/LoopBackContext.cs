@@ -16,8 +16,24 @@ namespace Health.Direct.Context.Receiver
     /// <summary>
     /// Test only receiver.
     /// The LoopBack receiver receives messages to a specific email address and parses context if it exists.  Then is rebuilds the context and sends a reply to the sender with the same context.
-    /// The value of such a receiver is to allow testing partners to test a context implemenation with with the .net RI context implemenation.
+    /// The value of such a receiver is to allow testing partners to test a context implementation with with the .net RI context implemenation.
     /// </summary>
+    /*
+       <IncomingRoutes>
+           <PluginRoute>
+             <AddressType>LoopBackContext</AddressType>
+             <Receiver>
+                <TypeName>Health.Direct.Context.Receiver.LoopBackContext, Health.Direct.Context.Receiver</TypeName>
+                <Settings>                
+                    <PickupFolder>c:\inetpub\mailroot\pickup</PickupFolder>
+                </Settings>
+              </Receiver>
+            </PluginRoute>
+
+            ...
+
+        </IncomingRoutes>
+     */
     public class LoopBackContext : IReceiver<ISmtpMessage>, IPlugin
     {
         PongContextSettings m_settings;
@@ -135,31 +151,7 @@ namespace Health.Direct.Context.Receiver
 
             return statusMessage;
         } 
-
-        //private MimeMessage ReturnNoContextMessage(MimeMessage directMessage, string bodyMessage)
-        //{
-        //    var message = new MimeMessage();
-        //    var dsn = new MessageDeliveryStatus();
-
-        //    message.From.Add(directMessage.To.Mailboxes.First());
-        //    message.To.Add(directMessage.From.Mailboxes.First());
-        //    message.Subject = "Pong Context";
-        //    message.MessageId = $"<{Guid.NewGuid():N}@{Environment.MachineName}>";
-
-        //    var body = new TextPart("plain")
-        //    {
-        //        Text = "Delivery Status Notification"
-        //    };
-
-        //    var multipart = new Multipart("report");
-        //    multipart.Add(body);
-            
-        //    multipart.Add(dsn);
-        //    message.Body = multipart;
-
-        //    return message;
-        //}
-
+        
         private string m_fileName;
 
         /// <summary>

@@ -30,6 +30,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Health.Direct.Context, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\build\packages\DirectProject.DotNet.Context.1.0.0.2-beta\lib\net452\Health.Direct.Context.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MimeKitLite, Version=1.18.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
       <HintPath>..\build\packages\MimeKitLite.1.18.1\lib\net451\MimeKitLite.dll</HintPath>
       <Private>True</Private>
@@ -58,10 +62,6 @@
     <ProjectReference Include="..\common\common.csproj">
       <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
       <Name>common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\context\context.csproj">
-      <Project>{f66c2e77-ec9a-4f59-9c2a-764f38fbdfcf}</Project>
-      <Name>context</Name>
     </ProjectReference>
     <ProjectReference Include="..\diagnostics\diagnostics.nlog.csproj">
       <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>
