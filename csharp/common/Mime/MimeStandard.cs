@@ -135,7 +135,7 @@ namespace Health.Direct.Common.Mime
         /// </summary>
         public class MediaType
         {
-            /// <summary>mediaType
+            /// <summary>
             /// The <c>text/plain media type</c>
             /// </summary>
             public const string TextPlain = "text/plain";
@@ -148,7 +148,7 @@ namespace Health.Direct.Common.Mime
             /// </summary>
             public const string Multipart = "multipart";
             /// <summary>
-            /// The <c>multipart/mixed</c> media type.sub
+            /// The <c>multipart/mixed</c> media type
             /// </summary>
             public const string MultipartMixed = "multipart/mixed";
 
