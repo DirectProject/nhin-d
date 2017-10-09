@@ -35,6 +35,9 @@ namespace Health.Direct.Context
         /// </summary>
         public const string FileNameValue = "metadata.txt";
 
+        /// <summary>
+        /// <see cref="Metadata"/> content
+        /// </summary>
         public Metadata Metadata { get; }
 
         /// <summary>

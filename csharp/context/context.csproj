@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Health.Direct.Context.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Health.Direct.Context.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MimeKitLite, Version=1.18.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
@@ -61,6 +63,7 @@
     <Compile Include="Type.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="context.nuspec" />
     <None Include="NOTICE.md" />
     <None Include="packages.config" />
     <None Include="README.md" />

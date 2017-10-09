@@ -29,7 +29,7 @@ The easiest way to install MimeKit is via [NuGet](https://www.nuget.org/packages
 In Visual Studio's [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console),
 simply enter the following command:
 
-    Install-Package DirectProjectDotNetContext
+    Install-Package DirectProject.DotNet.Context
 
 
 ### Building Context
@@ -172,3 +172,4 @@ Assert.Equal("Doe", contextParsed.Metadata.Patient.SurName);
 Assert.Equal("1961-12-31", contextParsed.Metadata.Patient.DateOfBirth);
 ```
 
+The above code can also be ran from the context.tests project.

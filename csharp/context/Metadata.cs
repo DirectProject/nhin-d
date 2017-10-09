@@ -40,7 +40,6 @@ namespace Health.Direct.Context
         /// Construct Metadata from <see cref="MimePart.ContentObject"/>
         /// </summary>
         /// <param name="metadata"></param>
-        /// <param name="encapsulated">Set if mediaSubtype is x-direct-encapsulated+hl7v2 </param>
         public Metadata(Stream metadata)
         {
             Headers = MimeEntity.Load(metadata).Headers;
@@ -221,7 +220,7 @@ namespace Health.Direct.Context
             }
         }
 
-        public string Deserialize()
+        internal string Deserialize()
         {
             var sb = new StringBuilder();
             sb.AppendHeader(ContextStandard.Version, Version);
@@ -233,16 +232,6 @@ namespace Health.Direct.Context
             sb.AppendHeader(ContextStandard.Patient.Label, Patient?.ToString());
 
             return sb.ToString();
-        }
-    }
-
-    public static class Ex{
-        public static void AppendHeader(this StringBuilder sb, string name, string value)
-        {
-            if (! value.IsNullOrWhiteSpace())
-            {
-                sb.AppendLine($"{name}: {value}");
-            }
         }
     }
 }

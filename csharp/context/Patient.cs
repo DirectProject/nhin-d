@@ -19,6 +19,9 @@ using System.Text;
 
 namespace Health.Direct.Context
 {
+    /// <summary>
+    /// Patient class holds patient matching parameters
+    /// </summary>
     public class Patient
     {
         /// <summary>
@@ -44,14 +47,41 @@ namespace Health.Direct.Context
             PostalCode = patientAttributes.SingleOrDefault(p => p.Key.Equals(ContextStandard.Patient.PatientPostalCode)).Value;
         }
         
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string GivenName{get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string SurName { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string MiddleName { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string DateOfBirth { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string Gender { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string SocialSecurityNumber { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string TelephoneNumber { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string StreetAddress { get; set; }
+        /// <summary>
+        /// Patient matching parameter
+        /// </summary>
         public string PostalCode { get; set; }
 
         /// <summary>

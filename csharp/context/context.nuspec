@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>DirectProject.DotNet.Context</id>
+    <version>$version$</version>
+    <title>DirectProject DotNet Context</title>
+    <authors>Joseph Shook</authors>
+    <owners>Joseph Shook</owners>
+    <licenseUrl>https://github.com/DirectProject/DotNetContext/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/DirectProject/DotNetContext</projectUrl>
+    <iconUrl>http://wiki.directproject.org/space/showlogo/1481311307/logo.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>
+      Context is an Open Source library for parsing and building Context in Direct Messaging.
+      See Implementation Guide: http://wiki.directproject.org/file/detail/Implementation+Guide+for+Expressing+Context+in+Direct+Messaging+v1.0-DRAFT-2016122901.docx
+    </summary>
+    <description>
+      Context is an Open Source library for parsing and building Context in Direct Messaging.
+      See Implementation Guide: http://wiki.directproject.org/file/detail/Implementation+Guide+for+Expressing+Context+in+Direct+Messaging+v1.0-DRAFT-2016122901.docx
+      
+      Context in Direct Messaging defines an extensible mechanism to express the context of a Direct message exchange by providing a framework for the inclusion of contextual metadata by the message sender. Such metadata may be helpful for routing and processing of Direct messages, such as in cases where the payload format contains limited or no intrinsic metadata, or when the reason for the transmission may not be easily determined from the payload content.
+      The framework was designed so that the metadata could also be available to users of non-conforming applications in a human-readable format. A separate attachment containing the payload metadata was selected over a series of RFC 822 headers, as such headers may not be as easily viewed by all Mail User Agents (MUAs). Similarly, human-readable metadata parameters and values were selected over Object Identifiers (OIDs) or other non-human-readable representations.
+    </description>
+    <releaseNotes>
+      * First release
+    </releaseNotes>
+    <copyright>Copyright (c) 2010-2017, Direct Project</copyright>
+    <tags>csharp c# directproject</tags>
+  </metadata>
+</package>

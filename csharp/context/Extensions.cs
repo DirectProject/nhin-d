@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using MimeKit;
 
 
@@ -46,6 +47,12 @@ namespace Health.Direct.Context
             return null;
         }
 
+        /// <summary>
+        /// Find Direct <see cref="Context"/> by version.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
         public static MimePart DirectContext(this MimeMessage message, string version)
         {
             foreach (var mimeEntity in message.Attachments.Where(a => a is MimePart))
@@ -94,6 +101,11 @@ namespace Health.Direct.Context
             }
         }
 
+        /// <summary>
+        /// Decode a MimePart
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public static string DecodeBody(this MimePart message)
         {
             using (var stream = new MemoryStream())
@@ -127,7 +139,12 @@ namespace Health.Direct.Context
 
             return result;
         }
-        
+
+        /// <summary>
+        /// Helper for <see cref="string.IsNullOrWhiteSpace"/>
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public static bool IsNullOrWhiteSpace(this string item)
         {
             return string.IsNullOrWhiteSpace(item);
@@ -152,6 +169,20 @@ namespace Health.Direct.Context
             var result = new List<T> {source};
 
             return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public static void AppendHeader(this StringBuilder sb, string name, string value)
+        {
+            if (!value.IsNullOrWhiteSpace())
+            {
+                sb.AppendLine($"{name}: {value}");
+            }
         }
     }
 }

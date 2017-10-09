@@ -16,6 +16,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 namespace Health.Direct.Context
 {
+    /// <summary>
+    /// Categorize context errors
+    /// </summary>
     public enum ContextError
     {
         /// <summary>
@@ -23,11 +26,11 @@ namespace Health.Direct.Context
         /// </summary>
         Unexpected = 0,
         /// <summary>
-        /// <c>versioin-identifier</c> is missing
+        /// <c>version-identifier</c> is missing
         /// </summary>
         MissingVersionIdentifier,
-        // <summary>
-        /// Unsupported <c>versioin-identifier</c>.
+        /// <summary>
+        /// Unsupported <c>version-identifier</c>
         /// </summary>
         UnsupportedVersionIdentifier,
         /// <summary>

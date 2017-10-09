@@ -17,8 +17,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 namespace Health.Direct.Context
 {
 
+    /// <summary>
+    /// Declare well known Mail headers
+    /// </summary>
     public class MailStandard
     {
+        /// <summary>
+        /// Organize by Mail headers
+        /// </summary>
         public class Headers
         {
             /// <summary>
@@ -28,8 +34,14 @@ namespace Health.Direct.Context
         }
     }
 
+    /// <summary>
+    /// Declare well known Mime headers
+    /// </summary>
     public class MimeStandard
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public class DispositionType
         {
             /// <summary>
@@ -56,7 +68,7 @@ namespace Health.Direct.Context
         /// <summary>
         /// Default filename for a <see cref="MimeStandard.DispositionType"/> of <c>attachment</c>
         /// </summary>
-        public const string AttachementFileName = "metadata.txt";
+        public const string AttachmentFileName = "metadata.txt";
 
         /// <summary>
         /// Name for the <c>version</c> header
@@ -74,7 +86,12 @@ namespace Health.Direct.Context
         public const string PatientId = "patient-id";
 
 
-
+        /// <summary>
+        /// Transaction type 
+        /// </summary>
+        /// <remarks>
+        /// See <a href="http://wiki.directproject.org/file/detail/Implementation+Guide+for+Expressing+Context+in+Direct+Messaging+v1.0-DRAFT-2016122901.docx"> Context in Direct</a>.
+        /// </remarks>
         public class Type
         {
             /// <summary>
@@ -82,10 +99,25 @@ namespace Health.Direct.Context
             /// </summary>
             public const string Label = "type";
 
-            public const string CategoryLaboratory = "laborartory";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>category</c> value of "laboratory"
+            /// </summary>
+            public const string CategoryLaboratory = "laboratory";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>category</c> value of "radiology"
+            /// </summary>
             public const string CategoryRadiology = "radiology";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>category</c> value of "pharmacy"
+            /// </summary>
             public const string CategoryPharmacy = "pharmacy";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>category</c> value of "referral"
+            /// </summary>
             public const string CategoryReferral = "referral";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>category</c> value of "general"
+            /// </summary>
             public const string CategoryGeneral = "general";
 
             /// <summary>
@@ -124,11 +156,29 @@ namespace Health.Direct.Context
                 General
             }
 
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>action</c> value of "order"
+            /// </summary>
             public const string ActionOrder = "order";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>action</c> value of "report"
+            /// </summary>
             public const string ActionReport = "report";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>action</c> value of "result"
+            /// </summary>
             public const string ActionResult = "result";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>action</c> value of "query"
+            /// </summary>
             public const string ActionQuery = "query";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>action</c> value of "response"
+            /// </summary>
             public const string ActionResponse = "response";
+            /// <summary>
+            /// Transaction <c>Type</c>'s <c>action</c> value of "notification"
+            /// </summary>
             public const string ActionNotification = "notification";
 
             /// <summary>
@@ -188,10 +238,25 @@ namespace Health.Direct.Context
             /// </summary>
             public const string Label = "purpose";
 
+            /// <summary>
+            /// <c>purpose-name</c> value of "treatment"
+            /// </summary>
             public const string PurposeTreatment = "treatment";
+            /// <summary>
+            /// <c>purpose-name</c> value of "payment"
+            /// </summary>
             public const string PurposePayment = "payment";
+            /// <summary>
+            /// <c>purpose-name</c> value of "operations"
+            /// </summary>
             public const string PurposeOperations = "operations";
+            /// <summary>
+            /// <c>purpose-name</c> value of "emergency"
+            /// </summary>
             public const string PurposeEmergency = "emergency";
+            /// <summary>
+            /// <c>purpose-name</c> value of "research"
+            /// </summary>
             public const string PurposeResearch = "research";
 
 
@@ -242,14 +307,41 @@ namespace Health.Direct.Context
             /// </summary>
             public const string Label = "patient";
 
+            /// <summary>
+            /// <c>patient-parameter</c> value of "givenName"
+            /// </summary>
             public const string PatientGivenName = "givenName";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "surname"
+            /// </summary>
             public const string PatientSurName = "surname";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "middleName"
+            /// </summary>
             public const string PatientMiddleName = "middleName";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "dateOfBirth"
+            /// </summary>
             public const string PatientDateOfBirth = "dateOfBirth";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "gender"
+            /// </summary>
             public const string PatientGender = "gender";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "socialSecurityNumber"
+            /// </summary>
             public const string PatientSocialSecurityNumber = "socialSecurityNumber";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "telephoneNumber"
+            /// </summary>
             public const string PatientTelephoneNumber = "telephoneNumber";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "streetAddress"
+            /// </summary>
             public const string PatientStreetAddress = "streetAddress";
+            /// <summary>
+            /// <c>patient-parameter</c> value of "postalCode"
+            /// </summary>
             public const string PatientPostalCode = "postalCode";
 
             /// <summary>
@@ -262,7 +354,7 @@ namespace Health.Direct.Context
                 /// </summary>
                 Unknown = 0,
 
-                // <summary>
+                /// <summary>
                 /// The <c>givenName patient-parameter</c>
                 /// </summary>
                 GivenName,

@@ -27,12 +27,18 @@ namespace Health.Direct.Context
     /// </summary>
     public static class ContextParser
     {
+        /// <summary>
+        /// Parser version
+        /// </summary>
+        /// <remarks>
+        /// Will be used in the future for selecting and identifying a version
+        /// </remarks>
         public static string Version = "1.0";
 
         /// <summary>
         /// Extract <see cref="Context"/> from a message (Health Content Container)
         /// </summary>
-        /// <param name="message"><see cref="Health.Direct.Common.Mail.Message"/></param>
+        /// <param name="message"><see cref="MimePart"/></param>
         /// <param name="version"></param>
         /// <returns><see cref="Context"/>object</returns>
         public static Context Parse(MimePart message, string version)
@@ -138,7 +144,7 @@ namespace Health.Direct.Context
 
         static readonly char[] s_fieldSeparator = { ';' };
 
-        public static List<string> SplitField(string value, ContextError error)
+        private static List<string> SplitField(string value, ContextError error)
         {
             return Split(value, s_fieldSeparator, error);
         }
@@ -160,7 +166,7 @@ namespace Health.Direct.Context
             return parts;
         }
 
-        public static Dictionary<string, string> GetPatientAttributes(string value, ContextError error)
+        internal static Dictionary<string, string> GetPatientAttributes(string value, ContextError error)
         {
             try
             {

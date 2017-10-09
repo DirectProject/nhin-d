@@ -20,6 +20,11 @@ using MimeKit;
 
 namespace Health.Direct.Context
 {
+    /// <summary>
+    /// Used for testing only.
+    /// 
+    /// Transform incoming context to a response context.
+    /// </summary>
     public static class EchoContext
     {
         /// <summary>

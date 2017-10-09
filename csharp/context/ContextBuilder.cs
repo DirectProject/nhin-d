@@ -135,9 +135,8 @@ namespace Health.Direct.Context
 
         /// <summary>
         /// Set metadata patientId/s.
-        /// Call multiple times if adding more than one Id.
         /// </summary>
-        /// <param name="patientId"></param>
+        /// <param name="patients"></param>
         /// <returns>ContextBuilder</returns>
         public ContextBuilder WithPatientId(IEnumerable<PatientInstance> patients)
         {

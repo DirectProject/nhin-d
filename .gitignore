@@ -135,3 +135,5 @@ tools/trust.bundler/build/packages/**
 *.err
 *.jfm
 *.ipch
+*.nupkg
+csharp/context/Packages/

@@ -20,7 +20,7 @@ namespace Health.Direct.Context
     /// Represents a <c>pid-instance</c>. 
     /// </summary>
     /// <remarks>
-    /// See <a href="http://wiki.directproject.org/file/detail/Implementation+Guide+for+Expressing+Context+in+Direct+Messaging+v1.0-DRAFT-2016122901.docx">Context in Direct</a>.
+    /// See <a href="http://wiki.directproject.org/file/detail/Implementation+Guide+for+Expressing+Context+in+Direct+Messaging+v1.0-DRAFT-2016122901.docx"> Context in Direct</a>.
     /// 
     /// patient-id-element = “patient-id:” pid-instance *(“;” pid-instance)
     /// pid-instance = pid-context “:” local-patient-id
