@@ -745,12 +745,12 @@ namespace Health.Direct.SmtpAgent
             
             if (envelope.HasDomainRecipients)
             {
-                DirectAddressCollection routedRecipients = new DirectAddressCollection();                
-                m_router.Route(message, envelope, routedRecipients); 
+                var routedRecipients = new DirectAddressCollection();
+                var messageRoute = m_router.Clone();
+                messageRoute.Route(message, envelope, routedRecipients);
                 
-                this.SendNotifications(envelope, routedRecipients);
-
-                SendDeliveryStatus(m_router, envelope, routedRecipients);
+                SendNotifications(envelope, routedRecipients);
+                SendDeliveryStatus(messageRoute, envelope, routedRecipients);
             }
             //
             // Any recipients that were handled by routes are no longer in the DomainRecipients collection (removed)

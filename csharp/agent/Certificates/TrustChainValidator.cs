@@ -48,13 +48,28 @@ namespace Health.Direct.Agent.Certificates
         /// Chain validations status treated as failing trust validation with the certificate.
         /// </summary>
         public static readonly X509ChainStatusFlags DefaultProblemFlags =
-            X509ChainStatusFlags.NotTimeValid |
-            X509ChainStatusFlags.Revoked |
-            X509ChainStatusFlags.NotSignatureValid |
-            X509ChainStatusFlags.InvalidBasicConstraints |
-            X509ChainStatusFlags.CtlNotTimeValid |
-            X509ChainStatusFlags.OfflineRevocation |
-            X509ChainStatusFlags.CtlNotSignatureValid;
+            BuildDefaultProblemFlags();
+
+        private static X509ChainStatusFlags BuildDefaultProblemFlags()
+        {
+            if (IsNewerThanWin2008R2())
+            {
+                return X509ChainStatusFlags.NotTimeValid |
+                       X509ChainStatusFlags.Revoked |
+                       X509ChainStatusFlags.NotSignatureValid |
+                       X509ChainStatusFlags.InvalidBasicConstraints |
+                       X509ChainStatusFlags.CtlNotTimeValid |
+                       X509ChainStatusFlags.OfflineRevocation |
+                       X509ChainStatusFlags.CtlNotSignatureValid;
+            }
+            
+            return X509ChainStatusFlags.NotTimeValid |
+                    X509ChainStatusFlags.Revoked |
+                    X509ChainStatusFlags.NotSignatureValid |
+                    X509ChainStatusFlags.InvalidBasicConstraints |
+                    X509ChainStatusFlags.CtlNotTimeValid |
+                    X509ChainStatusFlags.CtlNotSignatureValid;
+        }
 
         int m_maxIssuerChainLength = DefaultMaxIssuerChainLength;
 
@@ -215,9 +230,19 @@ namespace Health.Direct.Agent.Certificates
                 }
                 
                 X509Chain chainBuilder;
-                using (X509ChainEngine secureChainEngine = new X509ChainEngine(trustedRoots.Enumerate()))
+
+                if (IsNewerThanWin2008R2())
                 {
-                    secureChainEngine.BuildChain(certificate, chainPolicy, out chainBuilder);
+                    using (X509ChainEngine secureChainEngine = new X509ChainEngine(trustedRoots.Enumerate()))
+                    {
+                        secureChainEngine.BuildChain(certificate, chainPolicy, out chainBuilder);
+                    }
+                }
+                else
+                {
+                    chainBuilder = new X509Chain();
+                    chainBuilder.ChainPolicy = chainPolicy;
+                    chainBuilder.Build(certificate);
                 }
 
                 // We're using the system class as a helper to build the chain
@@ -264,6 +289,14 @@ namespace Health.Direct.Agent.Certificates
 
             this.NotifyUntrusted(certificate);
             return false;
+        }
+
+        // X509ChainEngine, which is used for CRL validation, requires Windows 2012 to run due to required changes in the CERT_CHAIN_ENGINE_CONFIG structure.
+        // For more information on version numbers, see https://msdn.microsoft.com/en-us/library/windows/desktop/ms724832.aspx
+        private static bool IsNewerThanWin2008R2()
+        {
+            return Environment.OSVersion.Version.Major > 6 ||  
+                   (Environment.OSVersion.Version.Major >= 6 && Environment.OSVersion.Version.Minor >= 2);
         }
 
         private bool ChainElementHasProblems(X509ChainElement chainElement)

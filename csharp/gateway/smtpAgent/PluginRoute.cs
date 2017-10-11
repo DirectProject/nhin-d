@@ -119,7 +119,7 @@ namespace Health.Direct.SmtpAgent
                 return (!this.Receivers.IsNullOrEmpty());
             }
         }
-
+        /// <inheritdoc />
         public override void Validate()
         {
             base.Validate();
@@ -136,7 +136,20 @@ namespace Health.Direct.SmtpAgent
                 }
             }            
         }
-        
+
+        /// <inheritdoc />
+        public override Route Clone()
+        {
+            var route = new PluginRoute();
+            route.AddressType = this.AddressType;
+            route.m_plugins = this.ReceiverDefinitions;
+            route.Receivers = this.Receivers;
+            route.FailedDelivery = this.FailedDelivery;
+            route.m_loadBalancer = this.m_loadBalancer;
+
+            return route;
+        }
+
         public override void Init()
         {
             m_loadBalancer = new LoadBalancer<ISmtpMessage>(this.Receivers);

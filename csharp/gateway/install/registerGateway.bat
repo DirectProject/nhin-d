@@ -49,8 +49,8 @@ call :PrintBold Registering Dlls
 call regasm.bat Health.Direct.SmtpAgent.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
-call :PrintBold Registering smtpEventHandler COM Dll
-call regsvr32 /s smtpEventHandler.dll
+call :PrintBold Registering Health.Direct.SmtpEventHandler.dll COM Dll
+call regsvr32 /s Health.Direct.SmtpEventHandler.dll
 if %ERRORLEVEL% NEQ 0 goto :EOF
 
 call :PrintBold Ensuring Machine Stores

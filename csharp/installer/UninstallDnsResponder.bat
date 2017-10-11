@@ -11,7 +11,8 @@ echo Succeeded
 goto :done
 
 :error
-pause
+echo error uninstalling DirectDnsResponderSvc
+
 
 :done
 echo ******************
@@ -19,4 +20,3 @@ echo.
 echo Script complete. Please review status messages.
 echo.
 echo ******************
-pause

@@ -26,6 +26,7 @@ using Health.Direct.Policy.Impl;
 
 namespace Health.Direct.SmtpAgent.Policy
 {
+    /// <inheritdoc />
     public class CertPolicyIndex : IPolicyIndex
     {
         ClientSettings m_clientSettings;
@@ -48,7 +49,7 @@ namespace Health.Direct.SmtpAgent.Policy
             get
             {
                 IList<IPolicyExpression> matches;
-                using (CertPolicyStoreClient client = this.CreateClient())
+                using (CertPolicyStoreClient client = CreateClient())
                 {
                     if (m_incoming) //incoming
                     {
@@ -77,6 +78,9 @@ namespace Health.Direct.SmtpAgent.Policy
             return new CertPolicyStoreClient(m_clientSettings.Binding, m_clientSettings.Endpoint);
         }
 
+        /// <summary>
+        /// Gets the policy expression used for filtering certificates
+        /// </summary>
         public IPolicyExpression GetPolicyExpression(byte[] policy)
         {
             try

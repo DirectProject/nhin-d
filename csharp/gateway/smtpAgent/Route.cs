@@ -14,12 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Health.Direct.Agent;
-using Health.Direct.Config.Store;
-using Health.Direct.Common.Extensions;
 using System.Xml.Serialization;
 
 namespace Health.Direct.SmtpAgent
@@ -33,10 +27,16 @@ namespace Health.Direct.SmtpAgent
     {
         string m_addressType;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public Route()
         {
         }
-
+        
+        /// <summary>
+        /// Marker to indicate which router can route an email address
+        /// </summary>
         [XmlElement]
         public string AddressType
         {
@@ -55,32 +55,62 @@ namespace Health.Direct.SmtpAgent
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public event Action<Route, Exception> Error;
 
-        public abstract void Init();        
+        /// <summary>
+        /// Initialize router
+        /// </summary>
+        public abstract void Init();
+        
+        /// <summary>
+        /// Process message though route
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public abstract bool Process(ISmtpMessage message);
+
+        /// <summary>
+        /// Validate route config settings.
+        /// </summary>
         public virtual void Validate()
         {
-            if (string.IsNullOrEmpty(this.AddressType))
+            if (string.IsNullOrEmpty(AddressType))
             {
                 throw new SmtpAgentException(SmtpAgentError.MissingAddressTypeInRoute);
             }
         }
                 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ex"></param>
         protected void NotifyError(Exception ex)
         {
-            if (this.Error != null)
+            if (Error != null)
             {
                 try
                 {
-                    this.Error(this, ex);
+                    Error(this, ex);
                 }
                 catch
                 {
+                    // ignored
                 }
             }
         }
 
+        /// <summary>
+        /// Mark route as failed
+        /// </summary>
         public bool FailedDelivery { get; set; }
+
+        /// <summary>
+        /// Copy route
+        /// </summary>
+        /// <returns></returns>
+        public abstract Route Clone();
     }
 }

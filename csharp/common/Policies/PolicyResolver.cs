@@ -83,7 +83,7 @@ namespace Health.Direct.Common.Policies
         /// <returns>
         /// The list of <see cref="IPolicyExpression"/>s of for the requested domain name.
         /// </returns>
-        protected virtual IList<IPolicyExpression> Resolve(string domainName)
+        public virtual IList<IPolicyExpression> Resolve(string domainName)
         {
             IList<IPolicyExpression> matches = null;
 
