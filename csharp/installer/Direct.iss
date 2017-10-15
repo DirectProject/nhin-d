@@ -98,6 +98,10 @@ Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.pdb"; DestDir
 Source: "..\windows services\monitor.winsrv\bin\{#Configuration}\*.config"; DestDir: "{app}"; Excludes: "*.vshost.*,*.dll.config"; Flags: onlyifdoesntexist; Components: monitorserver
 Source: "jobs.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist; Components: monitorserver;
          
+
+Source: "..\context.receiver\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway
+Source: "..\context.receiver\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: directgateway 
+
 Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway
 Source: "..\resolverPlugin\bin\{#Configuration}\*.dll"; DestDir: "{app}"; Flags: ignoreversion;  Components: directgateway  
 Source: "..\gateway\smtpAgent\bin\{#Configuration}\*.pdb"; DestDir: "{app}"; Flags: ignoreversion; Check: IsDebug; Components: directgateway 
