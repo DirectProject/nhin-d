@@ -76,7 +76,7 @@ namespace Health.Direct.Context.Receiver
                     var dsnMessage = ReturnNoContextMessage(directMessage, @"No Context found");
                     DropMessage(dsnMessage);
 
-                    return false;
+                    return true;
                 }
 
                 var pongMessage = EchoContext.Process(directMessage);
@@ -92,8 +92,7 @@ namespace Health.Direct.Context.Receiver
 
                 var dsnMessage = ReturnNoContextMessage(directMessage, ex.Message);
                 DropMessage(dsnMessage);
-
-                return false;
+                
             }
             
             return true;

@@ -61,7 +61,7 @@ namespace Health.Direct.Context.Receiver.tests
             };
 
             receiver.Settings = settings;
-            Assert.False(receiver.Receive(smtpMessage));
+            Assert.True(receiver.Receive(smtpMessage));
             
             var resultMessage = MimeMessage.Load(
                 Path.Combine(
@@ -90,7 +90,7 @@ namespace Health.Direct.Context.Receiver.tests
             };
 
             receiver.Settings = settings;
-            Assert.False(receiver.Receive(smtpMessage));
+            Assert.True(receiver.Receive(smtpMessage));
 
             var resultMessage = MimeMessage.Load(
                 Path.Combine(
@@ -119,7 +119,7 @@ namespace Health.Direct.Context.Receiver.tests
             };
 
             receiver.Settings = settings;
-            Assert.False(receiver.Receive(smtpMessage));
+            Assert.True(receiver.Receive(smtpMessage));
 
             var resultMessage = MimeMessage.Load(
                 Path.Combine(
@@ -147,7 +147,7 @@ namespace Health.Direct.Context.Receiver.tests
             };
 
             receiver.Settings = settings;
-            Assert.False(receiver.Receive(smtpMessage));
+            Assert.True(receiver.Receive(smtpMessage));
 
             var resultMessage = MimeMessage.Load(
                 Path.Combine(
