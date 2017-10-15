@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Health.Direct.Context.Receiver
+namespace Health.Direct.Context.Loopback.Receiver
 {
     public static class Extensions
     {

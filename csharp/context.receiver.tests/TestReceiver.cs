@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using Health.Direct.Context.Loopback.Receiver;
 using Health.Direct.SmtpAgent;
 using MimeKit;
 using Xunit;

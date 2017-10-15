@@ -5,14 +5,13 @@ using System.Linq;
 using System.Net.Mail;
 using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
-using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Routing;
 using Health.Direct.SmtpAgent;
 using MimeKit;
 
-namespace Health.Direct.Context.Receiver
+namespace Health.Direct.Context.Loopback.Receiver
 {
     /// <summary>
     /// Test only receiver.
@@ -24,7 +23,7 @@ namespace Health.Direct.Context.Receiver
            <PluginRoute>
              <AddressType>LoopBackContext</AddressType>
              <Receiver>
-                <TypeName>Health.Direct.Context.Receiver.LoopBackContext, Health.Direct.Context.Receiver</TypeName>
+                <TypeName>Health.Direct.Context.Loopback.Receiver.LoopBackContext, Health.Direct.Context.Loopback.Receiver</TypeName>
                 <Settings>                
                     <PickupFolder>c:\inetpub\mailroot\pickup</PickupFolder>
                 </Settings>

@@ -76,6 +76,15 @@
         </Settings>
       </Receiver>
     </PluginRoute>
+    <PluginRoute>
+      <AddressType>LoopBackContext</AddressType>
+      <Receiver>
+        <TypeName>Health.Direct.Context.Loopback.Receiver.LoopBackContext, Health.Direct.Context.Loopback.Receiver</TypeName>
+        <Settings>                
+          <PickupFolder>c:\inetpub\mailroot\pickup</PickupFolder>
+        </Settings>
+      </Receiver>
+    </PluginRoute>
   </IncomingRoutes>
   <Container>
     <Component>

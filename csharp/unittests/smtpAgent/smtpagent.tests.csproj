@@ -190,6 +190,10 @@
       <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
       <Name>config.store</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\context.receiver\context.loopback.receiver.csproj">
+      <Project>{53ff4765-58b8-4747-93e7-6ee9416e2036}</Project>
+      <Name>context.loopback.receiver</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\gateway\smtpAgent\smtpAgent.csproj">
       <Project>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</Project>
       <Name>smtpAgent</Name>

@@ -7,8 +7,8 @@
     <ProjectGuid>{0014C11B-13F4-4B59-BBF5-D59182DF6372}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Direct.Context.Receiver.tests</RootNamespace>
-    <AssemblyName>Health.Direct.Context.Receiver.tests</AssemblyName>
+    <RootNamespace>Health.Direct.Context.Loopback.Receiver.tests</RootNamespace>
+    <AssemblyName>Health.Direct.Context.Loopback.Receiver.tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -130,9 +130,9 @@
       <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
       <Name>common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\context.receiver\context.receiver.csproj">
+    <ProjectReference Include="..\context.receiver\context.loopback.receiver.csproj">
       <Project>{53ff4765-58b8-4747-93e7-6ee9416e2036}</Project>
-      <Name>context.receiver</Name>
+      <Name>context.loopback.receiver</Name>
     </ProjectReference>
     <ProjectReference Include="..\diagnostics\diagnostics.nlog.csproj">
       <Project>{eb202550-ace7-40cc-9f1c-68ba4d138ebb}</Project>

@@ -2,7 +2,7 @@ using System.IO;
 using System.Xml.Serialization;
 using Health.Direct.SmtpAgent;
 
-namespace Health.Direct.Context.Receiver
+namespace Health.Direct.Context.Loopback.Receiver
 {
     [XmlType("PongContextSettings")]
     public class PongContextSettings

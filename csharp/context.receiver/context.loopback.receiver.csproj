@@ -7,8 +7,8 @@
     <ProjectGuid>{53FF4765-58B8-4747-93E7-6EE9416E2036}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Health.Direct.Context.Receiver</RootNamespace>
-    <AssemblyName>Health.Direct.Context.Receiver</AssemblyName>
+    <RootNamespace>Health.Direct.Context.Loopback.Receiver</RootNamespace>
+    <AssemblyName>Health.Direct.Context.Loopback.Receiver</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
