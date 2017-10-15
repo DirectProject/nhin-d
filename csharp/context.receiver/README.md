@@ -50,7 +50,7 @@ In SmtpAgentConfig.xml add the Health.Direct.Context.Loopback.Receiver plugin re
   </IncomingRoutes>
 ```
 
-Now run the cli tool, "ConfigConsole.exe".  The following two commands will add a route for only the PingPong@Direct.North.Hobo.Lab email address to the Health.Direct.Context.Loopback.Receiver plugin receiver and set it's status to enabled.  After this restart with IISReset.
+Now run the cli tool, "ConfigConsole.exe".  The following two commands will add a route for only the PingPong@Direct.North.Hobo.Lab email address to the Health.Direct.Context.Loopback.Receiver plugin receiver and set it's status to enabled.  After this restart with IISReset. <br />
 
-Address_Add  PingPong@Direct.North.Hobo.Lab LoopBackContext
-Address_Status_Set PingPong@Direct.North.Hobo.Lab Enabled
+Address_Add  PingPong@Direct.North.Hobo.Lab LoopBackContext <br />
+Address_Status_Set PingPong@Direct.North.Hobo.Lab Enabled <br />
