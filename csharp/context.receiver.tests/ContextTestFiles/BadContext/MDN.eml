@@ -1,0 +1,29 @@
+﻿MIME-Version: 1.0
+To: Joe <Joe@hobo.lab>
+From: "Jean" <Jean@opsstation.lab>
+Content-Transfer-Encoding: 7bit
+Content-Type: multipart/report;
+	boundary="1c1983cc46bd440eaa7aebab441cf876";
+	report-type=disposition-notification
+Subject: processed:Test Subject 40bec126-77d3-4364-9e63-b98c282209ba
+Message-ID: <cad6c4e5daa14a5ab05bc1b2409f1f49@Direct.West.Hobo.Lab>
+Date: Sat, 14 Oct 2017 04:02:25 -0700
+
+This is a multi-part message in MIME format.
+
+--1c1983cc46bd440eaa7aebab441cf876
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;
+	charset="iso-8859-1"
+
+Message Delivery Notification
+--1c1983cc46bd440eaa7aebab441cf876
+Content-Transfer-Encoding: 7bit
+Content-Type: message/disposition-notification
+
+Disposition:automatic-action/MDN-sent-automatically;processed
+Reporting-UA:Direct.West.Hobo.Lab;Direct Security Agent
+Original-Message-ID:<c8a0389fd14c40c185956ff9108bab07@Direct.Surescripts.com>
+Final-Recipient:rfc822;Jean@opsstation.lab
+
+--1c1983cc46bd440eaa7aebab441cf876--

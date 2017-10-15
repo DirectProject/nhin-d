@@ -7,6 +7,7 @@ using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Common.Mail.DSN;
+using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Routing;
 using Health.Direct.SmtpAgent;
 using MimeKit;
@@ -64,6 +65,21 @@ namespace Health.Direct.Context.Receiver
         public bool Receive(ISmtpMessage data)
         {
             var message = data.GetEnvelope().Message;
+
+            if (message.IsDSN())
+            {
+                Log.For<LoopBackContext>().Debug("Ignore DSN");
+
+                return true;
+            }
+
+            if (message.IsMDN())
+            {
+                Log.For<LoopBackContext>().Debug("Ignore MDN");
+
+                return true;
+            }
+
             var directMessage = MimeMessage.Load(message.ToString().ToStream());
             
             try

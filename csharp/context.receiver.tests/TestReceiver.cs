@@ -44,6 +44,59 @@ namespace Health.Direct.Context.Receiver.tests
         }
 
         [Theory]
+        [InlineData("ContextTestFiles\\BadContext\\MDN.eml")]
+        public void TestConstructContextIgnoreMDN(string file)
+        {
+            var smtpMessage = new CDOSmtpMessage(SmtpAgent.Extensions.LoadCDOMessage(file));
+            var testFileName = SmtpAgent.Extensions.CreateUniqueFileName();
+
+            var receiver = new LoopBackContext
+            {
+                TestFilename = testFileName
+            };
+
+            var settings = new PongContextSettings()
+            {
+                PickupFolder = TestPickupFolder
+            };
+
+            receiver.Settings = settings;
+            Assert.True(receiver.Receive(smtpMessage));
+
+            Assert.False(File.Exists(Path.Combine(
+                settings.PickupFolder,
+                testFileName)));
+
+        }
+
+        [Theory]
+        [InlineData("ContextTestFiles\\BadContext\\DSN.eml")]
+        public void TestConstructContextIgnorDSN(string file)
+        {
+            var smtpMessage = new CDOSmtpMessage(SmtpAgent.Extensions.LoadCDOMessage(file));
+            var testFileName = SmtpAgent.Extensions.CreateUniqueFileName();
+
+            var receiver = new LoopBackContext
+            {
+                TestFilename = testFileName
+            };
+
+            var settings = new PongContextSettings()
+            {
+                PickupFolder = TestPickupFolder
+            };
+
+            receiver.Settings = settings;
+            Assert.True(receiver.Receive(smtpMessage));
+
+            Assert.False(File.Exists(Path.Combine(
+                settings.PickupFolder,
+                testFileName)));
+
+        }
+
+
+        [Theory]
         [InlineData("ContextTestFiles\\BadContext\\ContextMissing.eml")]
         public void TestConstructContextNoContext(string file)
         {

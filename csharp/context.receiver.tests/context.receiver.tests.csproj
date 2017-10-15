@@ -83,6 +83,12 @@
     <None Include="ContextTestFiles\BadContext\ContextUnparsableType.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ContextTestFiles\BadContext\DSN.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ContextTestFiles\BadContext\MDN.eml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="ContextTestFiles\BadContext\NoDirectContextHeader.eml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
