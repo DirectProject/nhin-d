@@ -80,9 +80,7 @@ public class SMIMEStandard extends MailStandard
             throw new IllegalArgumentException();
        
         
-        return (SMIMEStandard.isContentCms(contentType)
-                &&  contentType.getParameter(SMIMEStandard.SmimeTypeParameterKey) != null && 
-                contentType.getParameter(SMIMEStandard.SmimeTypeParameterKey).equals(SMIMEStandard.EnvelopedDataSmimeType));
+        return SMIMEStandard.isContentCms(contentType);
     }   
     
     public static boolean isContentEnvelopedSignature(ContentType contentType)
