@@ -271,26 +271,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>    
-        <plugin>
-            <groupId>com.atlassian.maven.plugins</groupId>
-            <artifactId>maven-clover2-plugin</artifactId>
-			<version>3.3.0</version>
-            <configuration>
-                <jdk>1.6</jdk>
-			<licenseLocation>
-				${project.basedir}/../licenses/clover.license
-			</licenseLocation>
-            </configuration>
-            <executions>
-                <execution>
-                    <phase>pre-site</phase>
-                    <goals>
-                        <goal>instrument</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>	    
+      </plugin>    	    
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
@@ -429,17 +410,14 @@
     <pluginManagement>
        <plugins>
           <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-release-plugin</artifactId>
-             <version>2.0</version>
-             <configuration>
-                <tagBase>scm:hg:https://nhin-d.googlecode.com/hg/nhin-d/java/tags</tagBase>
-             </configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
           </plugin>
-           <plugin>
+          <plugin>
              <groupId>org.apache.maven.plugins</groupId>
              <artifactId>maven-site-plugin</artifactId>
-             <version>2.1.1</version>
+             <version>3.6</version>
              <dependencies>
                <dependency>
                 <groupId>commons-httpclient</groupId>
@@ -451,24 +429,24 @@
                    <artifactId>commons-logging</artifactId>
                  </exclusion>
                </exclusions>
-             </dependency>         
+             </dependency>
             </dependencies>
-          </plugin>
+          </plugin>	
        </plugins>
     </pluginManagement>		    
   </build>                        
   <reporting>
 		<plugins>
-          <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-site-plugin</artifactId>
-             <version>2.1.1</version>          
-          </plugin>  
-          <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-project-info-reports-plugin</artifactId>
-             <version>2.4</version>
-          </plugin>    
+	       <plugin>
+	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-site-plugin</artifactId>
+	          <version>3.6</version>
+	       </plugin>   
+	       <plugin>
+	          <groupId>org.apache.maven.plugins</groupId>
+	          <artifactId>maven-project-info-reports-plugin</artifactId>
+	          <version>2.9</version>
+	       </plugin>   
 	      <plugin>
 	      	<groupId>org.apache.maven.plugins</groupId> 
 	        <artifactId>maven-javadoc-plugin</artifactId>
@@ -493,12 +471,10 @@
           			<targetJdk>1.6</targetJdk>
         		</configuration>					
 			</plugin>
-                <!--
 		    <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
 		        <artifactId>maven-surefire-report-plugin</artifactId>
 		    </plugin>
-                -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jxr-plugin</artifactId>
@@ -530,17 +506,7 @@
 	                    <tag>@deprecated</tag>
 	                </tags>
 	            </configuration>
-	        </plugin>	
-			<plugin>
-	            <groupId>com.atlassian.maven.plugins</groupId>
-	            <artifactId>maven-clover2-plugin</artifactId>
-			    <version>3.3.0</version>
-				<configuration>
-					<licenseLocation>
-						${project.basedir}/../licenses/clover.license
-					</licenseLocation>
-				</configuration>
-			</plugin>	                   
+	        </plugin>	                   
 		</plugins>
   </reporting>
   <distributionManagement>
