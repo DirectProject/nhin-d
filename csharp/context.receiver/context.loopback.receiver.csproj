@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Health.Direct.Context, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\build\packages\DirectProject.DotNet.Context.1.0.0.2-beta\lib\net452\Health.Direct.Context.dll</HintPath>
+    <Reference Include="Health.Direct.Context, Version=1.0.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\build\packages\DirectProject.DotNet.Context.1.0.0.4-beta\lib\net452\Health.Direct.Context.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MimeKitLite, Version=1.18.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">

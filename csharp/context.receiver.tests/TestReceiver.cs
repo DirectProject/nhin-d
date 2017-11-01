@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net.Mail;
+﻿using System.IO;
 using Health.Direct.Context.Loopback.Receiver;
 using Health.Direct.SmtpAgent;
 using MimeKit;
@@ -33,7 +30,12 @@ namespace Health.Direct.Context.Receiver.tests
         public void TestConstructContextSuccess(string file)
         {
             var smtpMessage = new CDOSmtpMessage(SmtpAgent.Extensions.LoadCDOMessage(file));
-            var receiver = new LoopBackContext();
+            var testFileName = SmtpAgent.Extensions.CreateUniqueFileName();
+
+            var receiver = new LoopBackContext
+            {
+                TestFilename = testFileName
+            };
 
             var settings = new PongContextSettings()
             {
@@ -42,6 +44,13 @@ namespace Health.Direct.Context.Receiver.tests
 
             receiver.Settings = settings;
             Assert.True(receiver.Receive(smtpMessage));
+
+            var mimeMessage = MimeMessage.Load(Path.Combine(
+                settings.PickupFolder,
+                testFileName));
+
+            Assert.StartsWith("<",mimeMessage.Headers["X-Direct-Context"]);
+            Assert.EndsWith(">", mimeMessage.Headers["X-Direct-Context"]);
         }
 
         [Theory]
