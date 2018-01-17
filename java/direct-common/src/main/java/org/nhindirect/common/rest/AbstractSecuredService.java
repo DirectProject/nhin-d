@@ -24,7 +24,7 @@ package org.nhindirect.common.rest;
 import java.io.IOException;
 
 import org.apache.http.client.HttpClient;
-import org.nhindirect.common.rest.exceptions.AuthException;
+import org.nhindirect.common.rest.exceptions.AuthorizationException;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 
 
@@ -100,7 +100,7 @@ public abstract class AbstractSecuredService extends AbstractUnsecuredService
                    return request.call();
                } 
                ///CLOVER:OFF
-               catch (AuthException e) 
+               catch (AuthorizationException e) 
                {
                    if ((retries-- > 0)) 
                    {

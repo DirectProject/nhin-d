@@ -617,7 +617,8 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 		} 
 		catch (Exception e) 
 		{
-			LOGGER.warn("Could not get key entry on first attemp.  Will attempt to reload the key store and try again");
+			LOGGER.warn("Loading key " + alias);
+			LOGGER.warn("Could not get key entry on first attemp.  Will attempt to reload the key store and try again", e);
 			reloadAndRetry = true;
 		}
 		
@@ -648,7 +649,8 @@ public abstract class AbstractPKCS11TokenKeyStoreProtectionManager implements Mu
 		} 
 		catch (Exception e) 
 		{
-			LOGGER.warn("Could not get entry on first attemp.  Will attempt to reload the key store and try again");
+			LOGGER.info("Loading key " + alias);
+			LOGGER.warn("Could not get entry on first attemp.  Will attempt to reload the key store and try again", e);
 			reloadAndRetry = true;
 		}
 		

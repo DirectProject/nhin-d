@@ -3,6 +3,7 @@ package org.nhindirect.common.crypto.tools.commands;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.AlgorithmParameters;
 import java.security.Key;
@@ -136,6 +137,20 @@ public class PKCS11Commands
     		"\r\n\t  p12FileName Full path of the p12 file " +      		
     		"\r\n\t  keyStorePass Optional keystore password.  Using empty quotes if empty " +
     		"\r\n\t  privKeyPass Optional private key password.  Using empty quotes if empty ";
+ 
+    private static final String IMPORT_P12_FILE = "Imports a p12 file and creates an store entry in the HSM.\r\n " +
+    		"\r\n  p12FileName entryName keyStorePass privKeyPass " +
+    		"\r\n\t  p12FileName Full path of the p12 file " +  
+    		"\r\n\t  entryName Name that the private key will be given in the key store. " +     		
+    		"\r\n\t  keyStorePass Optional keystore password.  Using empty quotes if empty " +
+    		"\r\n\t  privKeyPass Optional private key password.  Using empty quotes if empty ";
+    
+    private static final String TEST_OAEP_ENC_DEC = "Tests the RSA OAEP decryption.\r\n " +
+    		"\r\n  privateKeyName file" +
+    		"\r\n\t  privateKeyName The private key used to decrypt the data " +      		
+    		"\r\n\t  file File containing the data to decrypt "; 
+  
+    private static final String LIST_SLOTS = "For Gemalto Luna based devices, lists the available slots..\r\n ";
     
     private static final String INFINITE_READ = "Enters an infinite loop for reading secret keys\r\n";
     
@@ -534,6 +549,7 @@ public class PKCS11Commands
 		}
 	}
 	
+
 	
 	@Command(name = "CreateCSR", usage = CREATE_CSR)
     public void createCSR(String[] args)
@@ -746,6 +762,50 @@ public class PKCS11Commands
 		}
 	}
 	
+	@Command(name = "ListSlots", usage = LIST_SLOTS)
+	public void listSlots(String[] args)
+	{
+		if (!mgr.getKS().getProvider().getName().contains("LunaProvider"))
+		{
+			System.err.println("Connected token is not Luna device.");
+			return;
+		}
+		
+		try
+		{
+			final Class<?> slotMgrClass = getClass().getClassLoader().loadClass("com.safenetinc.luna.LunaSlotManager");
+			final Method getInstanceMethod = slotMgrClass.getMethod("getInstance");
+			final Method getNumSlotsMethod = slotMgrClass.getDeclaredMethod("getNumberOfSlots");
+			final Method isTokenPresentMethod = slotMgrClass.getDeclaredMethod("isTokenPresent", int.class);
+			final Method getTokenLabelMethod = slotMgrClass.getDeclaredMethod("getTokenLabel", int.class);
+			
+			final Object slotManager = getInstanceMethod.invoke(null);
+			final Integer numSlot = (Integer)getNumSlotsMethod.invoke(slotManager);
+			System.out.println("Number of slots: " + numSlot);
+			
+			if (numSlot > 0)
+			{
+				for (int i = 0; i < numSlot; ++i)
+				{
+					final Boolean tokenPresent = (Boolean)isTokenPresentMethod.invoke(slotManager, i);
+					if (tokenPresent.booleanValue())
+					{
+						final String tokenLabel = (String)getTokenLabelMethod.invoke(slotManager, i);
+						System.out.println("Slot: " + i + " token label: " + tokenLabel);
+					}
+	
+				}
+			}
+			else
+				System.out.println("No slots found.");
+		}
+		catch (Exception e)
+		{
+			System.err.println("Error finding slots: " + e.getMessage());
+			throw new RuntimeException(e);
+		}
+	}	
+	
 	@Command(name = "ExportKeyPairCert", usage = EXPORT_PUB_KEY_CERTIFICATE)
     public void exportPublicKeyCert(String[] args)
 	{
@@ -837,8 +897,135 @@ public class PKCS11Commands
 		}
 	}
 	
-	//@Command(name = "ImportP12FileForTempKey", usage = IMPORT_P12_FILE_FOR_TEMP_KEY)
+	@Command(name = "testOAEP", usage = TEST_OAEP_ENC_DEC)
+    public void oaepTest(String[] args)
+	{
+		final String privKeyAlias = StringArrayUtil.getRequiredValue(args, 0);
+		//final int size = Integer.parseInt(StringArrayUtil.getRequiredValue(args, 1));
+		final String file = StringArrayUtil.getRequiredValue(args, 1);
+		//final String p12File = StringArrayUtil.getOptionalValue(args, 2, "");
+		
+		try
+		{
+			//byte[] newData = new byte[size];
+			
+			PrivateKey p12Entry = null;
+			
+			// get the p12 data if requested
+			/*
+			if (StringUtils.isNotEmpty(p12File))
+			{
+				final KeyStore store = KeyStore.getInstance("pkcs12");
+				store.load(FileUtils.openInputStream(new File(p12File)), "".toCharArray());
+				final String alias = store.aliases().nextElement();
+				p12Entry = (PrivateKey)store.getKey(alias, "".toCharArray());
+			}
+			*/
+			// load the data
+
+			byte[] data = FileUtils.readFileToByteArray(new File(file));
+			if (data == null || data.length == 0)
+			{
+				System.out.println("Invalid file " + file);
+				return;
+			}
+
+			
+			if (p12Entry != null)
+			{	
+				final Cipher c = Cipher.getInstance("1.2.840.113549.1.1.7", "BC");
+				
+	            c.init(Cipher.DECRYPT_MODE, p12Entry);
+	            byte[] keyData = c.doFinal(data);
+	            System.out.println("Decrypted data with BC library");
+			}
+
+			final KeyStore ks = mgr.getKS();
+			
+			if (!ks.containsAlias(privKeyAlias))
+			{
+				System.out.println("Private key with name " + privKeyAlias + " does not exist.");
+				return;
+			}
+			
+			final X509Certificate pubCert = (X509Certificate)ks.getCertificate(privKeyAlias);
+			final PrivateKey privKey = (PrivateKey)ks.getKey(privKeyAlias, "".toCharArray());
+			if (privKey == null)
+			{
+				System.out.println("Key name " + privKeyAlias + " does not contain a private key");
+				return;
+			}
+			
+			/// Encrypt some data
+			/*
+		    Cipher cipher = Cipher.getInstance("RSA/None/OAEPWithSHA1AndMGF1Padding", ks.getProvider().getName());   
+		    cipher.init(Cipher.ENCRYPT_MODE, pubCert);  
+		    
+		    for (int i = 0; i < newData.length; ++ i)
+		    	newData[i] = (byte)i;
+		    byte[] encData =  cipher.doFinal(newData);
+			*/
+		    
+		    // now Decrypt it
+		    Cipher cipher = Cipher.getInstance("RSA/None/OAEPWithSHA1AndMGF1Padding", ks.getProvider().getName());
+			
+		    cipher.init(Cipher.DECRYPT_MODE, privKey);
+            byte[] keyData = cipher.doFinal(data);
+            
+            //Key key = new SecretKeySpec(keyData, alg);
+            System.out.println("OAEP decryption successfull");
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.err.println("Test failed: " + e.getMessage());
+		}
+	}
+	
+	@Command(name = "ImportP12File", usage = IMPORT_P12_FILE)
 	public void importPrivateKeyFile(String[] args)
+	{
+		if (!(mgr instanceof WrappableKeyProtectionManager))
+		{
+			System.out.println("Key store manager does not support wrapping.");
+			return;
+		}
+		
+		final String fileName = StringArrayUtil.getRequiredValue(args, 0);
+		final String entryName = StringArrayUtil.getRequiredValue(args, 1);
+		final String keyStorePass = StringArrayUtil.getOptionalValue(args, 2, "");
+		final String privKeyPass = StringArrayUtil.getOptionalValue(args, 3, "");
+		
+		try
+		{	
+			final KeyStore pkcs11Store = mgr.getKS();
+			
+			final String providerName = pkcs11Store.getProvider().getName();
+			
+			System.out.println("Provider Name: " + providerName);
+			
+			final KeyStore store = KeyStore.getInstance("pkcs12");
+			store.load(FileUtils.openInputStream(new File(fileName)), keyStorePass.toCharArray());
+			// there should only be on entry
+			final String alias = store.aliases().nextElement();
+			final PrivateKey entry = (PrivateKey)store.getKey(alias, privKeyPass.toCharArray());
+			final X509Certificate cert = (X509Certificate)store.getCertificate(alias);
+			
+	        mgr.getKS().setKeyEntry(entryName, entry, "".toCharArray(), new X509Certificate[] {cert});
+	        
+	        System.out.println("Import " + fileName + " as entry " + entryName);
+			
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+	}
+	
+	//@Command(name = "ImportP12FileForTempKey", usage = IMPORT_P12_FILE_FOR_TEMP_KEY)
+	public void importPrivateKeyFileForTempKey(String[] args)
 	{
 		
 		if (!(mgr instanceof WrappableKeyProtectionManager))

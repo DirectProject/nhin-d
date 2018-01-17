@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.nhindirect.common.rest.auth.BasicAuthValidator;
 import org.nhindirect.common.rest.auth.exceptions.BasicAuthException;
 
@@ -123,6 +124,20 @@ public class BasicAuthFilter implements Filter
         {
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
+        }
+        
+        final String str = httpRequest.getHeader("origin");
+        final String origin = (StringUtils.isEmpty(str)) ? "*" : str;
+        
+    	httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+    	httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+    	httpResponse.setHeader("Access-Control-Allow-Methods:", "POST, PUT, DELETE, GET, OPTIONS");
+        // check for the options parameters
+        if (httpRequest.getMethod() != null && httpRequest.getMethod().compareToIgnoreCase("options") == 0)
+        {
+        	httpResponse.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+        	httpResponse.sendError(HttpServletResponse.SC_OK);
+        	return;
         }
         
         if (isPrincipal(httpRequest))
