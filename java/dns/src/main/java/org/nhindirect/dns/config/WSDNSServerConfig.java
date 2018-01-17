@@ -54,7 +54,7 @@ public class WSDNSServerConfig implements DNSServerConfig
 	/**
 	 * Construct and configuration component with the location of the configuration file and an optional provider for creating
 	 * instances of the DNSServer.
-	 * @param configFile The full path of the XML configuration file.
+	 * @param configServiceLocation The full path of the XML configuration file.
 	 * @param storeProvider An option provider used for creating instances of the {@link DNSStore}.  If the provider is
 	 * null, a default provider is used.
 	 */

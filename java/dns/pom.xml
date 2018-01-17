@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dns</artifactId>    
     <name>Direct Project DNS services</name>
-    <version>1.6-SNAPSHOT</version>
+    <version>2.0-SNAPSHOT</version>
     <description>Direct Project DNS services</description>
     <inceptionYear>2010</inceptionYear>
     <url>http://api.nhindirect.org/x/www/api.nhindirect.org/java/site/dns/${project.version}</url> 
@@ -115,7 +115,7 @@
 		<dependency>
 		    <groupId>org.nhind</groupId>
 		    <artifactId>config-store</artifactId>
-		    <version>1.6</version>  
+		    <version>2.0.0</version>  
 			<exclusions>
 				<exclusion>
 					<groupId>org.hibernate</groupId>
@@ -244,8 +244,8 @@
 			<optimize>true</optimize>
 			<showDeprecation>true</showDeprecation>
 			<encoding>UTF-8</encoding>
-			<source>1.6</source>
-			<target>1.6</target>
+			<source>1.8</source>
+			<target>1.8</target>
 		</configuration>
 	</plugin>	     
       <plugin>
@@ -259,26 +259,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>    
-        <plugin>
-            <groupId>com.atlassian.maven.plugins</groupId>
-            <artifactId>maven-clover2-plugin</artifactId>
-            <version>3.0.2</version>
-            <configuration>
-                <jdk>1.6</jdk>
-			<licenseLocation>
-				${project.basedir}/../licenses/clover.license
-			</licenseLocation>
-            </configuration>
-            <executions>
-                <execution>
-                    <phase>pre-site</phase>
-                    <goals>
-                        <goal>instrument</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>	    
+      </plugin>    	    
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
@@ -593,7 +574,7 @@
 	          <docfilessubdirs>true</docfilessubdirs>
               <detectJavaApiLink>true</detectJavaApiLink>
               <detectLinks>true</detectLinks>
-	          <source>1.6</source>
+	          <source>1.8</source>
 	          <show>public</show>    
 	          <excludePackageNames>
 	              org.nhindirect.dns.tools.utils
@@ -604,7 +585,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
        			<configuration>
-          			<targetJdk>1.6</targetJdk>
+          			<targetJdk>1.8</targetJdk>
         		</configuration>					
 			</plugin>
 		    <plugin>
