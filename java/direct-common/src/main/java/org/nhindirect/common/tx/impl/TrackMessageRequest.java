@@ -35,14 +35,16 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nhindirect.common.rest.UnsecuredServiceRequestBase;
+import org.nhindirect.common.rest.OpenServiceSecurityManager;
+import org.nhindirect.common.rest.SecuredServiceRequestBase;
+import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.tx.TxDetailParser;
 import org.nhindirect.common.tx.TxUtil;
 import org.nhindirect.common.tx.model.Tx;
 import org.nhindirect.common.tx.model.TxDetail;
 
 
-public class TrackMessageRequest extends UnsecuredServiceRequestBase<Object, RuntimeException>
+public class TrackMessageRequest extends SecuredServiceRequestBase<Object, RuntimeException>
 {
 	private final Tx tx;
 	
@@ -84,17 +86,35 @@ public class TrackMessageRequest extends UnsecuredServiceRequestBase<Object, Run
 	
     public TrackMessageRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, MimeMessage msg) 
     {
-        this(httpClient, txServiceUrl, jsonMapper, parser, convertMimeMessageToTx(msg, parser));
+        this(httpClient, txServiceUrl, jsonMapper, parser, convertMimeMessageToTx(msg, parser), new OpenServiceSecurityManager());
     }
     
+    public TrackMessageRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, 
+    		MimeMessage msg, ServiceSecurityManager mgr) 
+    {
+        this(httpClient, txServiceUrl, jsonMapper, parser, convertMimeMessageToTx(msg, parser), mgr);
+    }
+	
     public TrackMessageRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, InternetHeaders headers) 
     {
-        this(httpClient, txServiceUrl, jsonMapper, parser, convertHeadersToMessage(headers));
+        this(httpClient, txServiceUrl, jsonMapper, parser, convertHeadersToMessage(headers), new OpenServiceSecurityManager());
     }
-		
+    
+    public TrackMessageRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, 
+    		InternetHeaders headers, ServiceSecurityManager mgr) 
+    {
+        this(httpClient, txServiceUrl, jsonMapper, parser, convertHeadersToMessage(headers), mgr);
+    }
+    
     public TrackMessageRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, Tx tx) 
     {
-        super(httpClient, txServiceUrl, jsonMapper);
+    	this(httpClient, txServiceUrl, jsonMapper, parser, tx, new OpenServiceSecurityManager());
+    }
+    
+    public TrackMessageRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, 
+    		Tx tx, ServiceSecurityManager mgr) 
+    {
+        super(httpClient, txServiceUrl, jsonMapper, mgr);
         
         if (tx == null) 
         {

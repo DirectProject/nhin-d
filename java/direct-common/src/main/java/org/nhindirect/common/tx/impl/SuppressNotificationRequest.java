@@ -33,7 +33,9 @@ import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nhindirect.common.rest.UnsecuredServiceRequestBase;
+import org.nhindirect.common.rest.OpenServiceSecurityManager;
+import org.nhindirect.common.rest.SecuredServiceRequestBase;
+import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.tx.TxDetailParser;
 import org.nhindirect.common.tx.TxUtil;
@@ -42,7 +44,7 @@ import org.nhindirect.common.tx.model.TxDetail;
 import org.nhindirect.common.tx.model.TxDetailType;
 import org.nhindirect.common.tx.model.TxMessageType;
 
-public class SuppressNotificationRequest extends UnsecuredServiceRequestBase<Boolean, RuntimeException>
+public class SuppressNotificationRequest extends SecuredServiceRequestBase<Boolean, RuntimeException>
 {
 	private final Tx notificationMessage;
 	private final TxDetailParser parser;
@@ -81,12 +83,24 @@ public class SuppressNotificationRequest extends UnsecuredServiceRequestBase<Boo
 	
     public SuppressNotificationRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, MimeMessage msg) 
     {
-        this(httpClient, txServiceUrl, jsonMapper, parser, convertMimeMessageToTx(msg, parser));
+        this(httpClient, txServiceUrl, jsonMapper, parser, convertMimeMessageToTx(msg, parser), new OpenServiceSecurityManager());
     }
-		
+	
+    public SuppressNotificationRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, 
+    		MimeMessage msg, ServiceSecurityManager mgr) 
+    {
+        this(httpClient, txServiceUrl, jsonMapper, parser, convertMimeMessageToTx(msg, parser), mgr);
+    }
+    
     public SuppressNotificationRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, Tx notificationMessage) 
     {
-        super(httpClient, txServiceUrl, jsonMapper);
+    	this(httpClient, txServiceUrl, jsonMapper, parser, notificationMessage, new OpenServiceSecurityManager());
+    }
+ 
+    public SuppressNotificationRequest(HttpClient httpClient, String txServiceUrl, ObjectMapper jsonMapper, TxDetailParser parser, 
+    		Tx notificationMessage,  ServiceSecurityManager mgr) 
+    {
+        super(httpClient, txServiceUrl, jsonMapper, mgr);
         
         if (notificationMessage == null) 
         {
@@ -102,7 +116,7 @@ public class SuppressNotificationRequest extends UnsecuredServiceRequestBase<Boo
         
         this.parser = parser;
         this.notificationMessage = notificationMessage;
-    }
+    }    
     
     /*
      * The request uses an overloaded post pattern to perform the operation.

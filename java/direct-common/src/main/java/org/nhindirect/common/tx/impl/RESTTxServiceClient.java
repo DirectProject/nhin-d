@@ -26,52 +26,62 @@ import javax.mail.internet.InternetHeaders;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.http.client.HttpClient;
-import org.nhindirect.common.rest.AbstractUnsecuredService;
+import org.nhindirect.common.rest.AbstractSecuredService;
+import org.nhindirect.common.rest.OpenServiceSecurityManager;
+import org.nhindirect.common.rest.ServiceSecurityManager;
 import org.nhindirect.common.rest.exceptions.ServiceException;
 import org.nhindirect.common.tx.TxDetailParser;
 import org.nhindirect.common.tx.TxService;
 import org.nhindirect.common.tx.model.Tx;
 
-public class RESTTxServiceClient extends AbstractUnsecuredService implements TxService
+public class RESTTxServiceClient extends AbstractSecuredService implements TxService
 {
 
 	protected final TxDetailParser parser;
 	
     public RESTTxServiceClient(String certServiceUrl, HttpClient httpClient, TxDetailParser parser) 
     {	
-        super(certServiceUrl, httpClient);
+        super(certServiceUrl, httpClient, new OpenServiceSecurityManager());
         
         this.parser = parser;
     }
 	
+    public RESTTxServiceClient(String certServiceUrl, HttpClient httpClient, TxDetailParser parser, 
+    		ServiceSecurityManager securityManager) 
+    {	
+        super(certServiceUrl, httpClient, securityManager);
+        
+        this.parser = parser;
+    }
+    
 	@Override
 	public void trackMessage(MimeMessage msg) throws ServiceException
 	{
-		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, msg));
+		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, msg, securityManager));
 	}
 
 	@Override
 	public void trackMessage(InternetHeaders headers) throws ServiceException
 	{
-		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, headers));
+		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, headers, securityManager));
 	}
 
 	@Override
 	public void trackMessage(Tx tx) throws ServiceException
 	{
-		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, tx));
+		callWithRetry(new TrackMessageRequest(httpClient, serviceURL, jsonMapper, parser, tx, securityManager));
 	}
 
 	@Override
 	public boolean suppressNotification(MimeMessage msg) throws ServiceException 
 	{
-		return callWithRetry(new SuppressNotificationRequest(httpClient, serviceURL, jsonMapper, parser, msg));
+		return callWithRetry(new SuppressNotificationRequest(httpClient, serviceURL, jsonMapper, parser, msg, securityManager));
 	}
 
 	@Override
 	public boolean suppressNotification(Tx notificationMessage) throws ServiceException 
 	{
-		return callWithRetry(new SuppressNotificationRequest(httpClient, serviceURL, jsonMapper, parser, notificationMessage));
+		return callWithRetry(new SuppressNotificationRequest(httpClient, serviceURL, jsonMapper, parser, notificationMessage, securityManager));
 	}
 	
 }
