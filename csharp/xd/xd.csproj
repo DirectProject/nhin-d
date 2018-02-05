@@ -75,6 +75,7 @@
     <Compile Include="Name.cs" />
     <Compile Include="ExternalIdentifier.cs" />
     <Compile Include="Slot.cs" />
+    <Compile Include="StringWriterWithEncoding.cs" />
     <Compile Include="XdError.cs" />
     <Compile Include="XDMetadataConsumer.cs" />
     <Compile Include="XdMetadataException.cs" />
