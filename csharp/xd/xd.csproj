@@ -88,6 +88,10 @@
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\xd.common\xd.common.csproj">
+      <Project>{25dddde7-3ba6-4e66-8870-a95abdf0549e}</Project>
+      <Name>xd.common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
