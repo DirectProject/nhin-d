@@ -161,10 +161,7 @@ namespace Health.Direct.Xd
             new List<Pair<Object, Func<XObject>>>
             {
                 Map(dm.MediaType,         () => new XAttribute(XDMetadataStandard.Attrs.MimeType, dm.MediaType) ),
-                // XSD requires the following order: name, description, slots, classifications, external identifiers
-                Map(dm.Title,             () => new Name(dm.Title) ),
-                Map(dm.Comments,          () => new Description(dm.Comments)),
-                Map(dm.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName, AuthorSlots(dm.Author))),
+                // XSD requires the following order: slots, name, description, classifications, external identifiers
                 Map(dm.CreatedOn,         () => new Slot(XDMetadataStandard.Slots.CreationTime, dm.CreatedOn.ToHL7Date())),
                 Map(dm.Hash,              () => new Slot(XDMetadataStandard.Slots.Hash, dm.Hash)),
                 Map(dm.LanguageCode,      () => new Slot(XDMetadataStandard.Slots.LanguageCode, dm.LanguageCode)),
@@ -175,6 +172,9 @@ namespace Health.Direct.Xd
                 Map(dm.SourcePtId,        () => new Slot(XDMetadataStandard.Slots.SourcePatientID, dm.SourcePtId.ToEscapedCx()) ),
                 Map(dm.Patient,           () => new Slot(XDMetadataStandard.Slots.SourcePatientInfo, dm.Patient.ToSourcePatientInfoValues(dm.SourcePtId))),
                 Map(dm.Uri,               () => new Slot(XDMetadataStandard.Slots.Uri, UriValues(dm.Uri))),
+                Map(dm.Title,             () => new Name(dm.Title) ),
+                Map(dm.Comments,          () => new Description(dm.Comments)),
+                Map(dm.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName, AuthorSlots(dm.Author))),
                 Map(dm.Class,             () => new CodedValueClassification(XDAttribute.ClassCode, documentName, dm.Class)),
                 Map(dm.Confidentiality,   () => new CodedValueClassification(XDAttribute.ConfidentialityCode, documentName, dm.Confidentiality)),
                 Map(dm.EventCodes,        () => EventCodeClassifications(dm.EventCodes, documentName)),
