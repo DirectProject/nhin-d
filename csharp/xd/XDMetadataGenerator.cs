@@ -108,18 +108,18 @@ namespace Health.Direct.Xd
         {
             string packageId = MakeUUID();
             XElement packageMetadata = new XElement(XDMetadataStandard.Elts.SubmissionSet,
-                                                    new XAttribute(XDMetadataStandard.Attrs.Id, packageId),
-                                                    new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId));
+                                                    new XAttribute(XDMetadataStandard.Attrs.Id, packageId));
 
             List<Pair<Object, Func<XObject>>> specs = 
             new List<Pair<Object, Func<XObject>>>
             {   
-                // XSD requires the following order: name, description, slots, classifications, external identifiers
-                Map(dp.Title,             () => new Name(dp.Title)),
-                Map(dp.Comments,          () => new Description(dp.Comments)),
-                Map(dp.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId, AuthorSlots(dp.Author))),
+                // XSD requires the following order: slots, name, description, classifications, external identifiers
                 Map(dp.IntendedRecipients,() => new Slot(XDMetadataStandard.Slots.IntendedRecipient, dp.IntendedRecipients.Select(r => r.ToXONXCNXTN()))),
                 Map(dp.SubmissionTime,    () => new Slot(XDMetadataStandard.Slots.SubmissionTime, dp.SubmissionTime.ToHL7Date())),
+                Map(dp.Title,             () => new Name(dp.Title)),
+                Map(dp.Comments,          () => new Description(dp.Comments)),
+                Map(packageId,            () => new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId)),
+                Map(dp.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId, AuthorSlots(dp.Author))),
                 Map(dp.ContentTypeCode,   () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, dp.ContentTypeCode)),
                 Map(dp.PatientId,         () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetPatientId, dp.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
                 Map(dp.SourceId,          () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetSourceId, dp.SourceId, "XDSSubmissionSet.sourceId")),
