@@ -96,6 +96,8 @@ namespace Health.Direct.Xd
                 packageList.Add(doc);
                 packageList.Add(assoc);
             }
+            submitObjectsRequest.SetDefaultNamespace(XDMetadataStandard.Ns.Rim);
+
             return submitObjectsRequest;
         }
 
