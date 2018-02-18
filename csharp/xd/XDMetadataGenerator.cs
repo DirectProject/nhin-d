@@ -230,6 +230,8 @@ namespace Health.Direct.Xd
                 yield return new Slot(XDMetadataStandard.Slots.AuthorInstitutions, a.Institutions.Select(i => i.ToXON()));
             if (a.Person != null)
                 yield return new Slot(XDMetadataStandard.Slots.AuthorPerson, a.Person.ToXCN());
+            if (a.TelecomAddress.Email != null)
+                yield return new Slot(XDMetadataStandard.Slots.AuthorTelecommunication, a.TelecomAddress.ToXTN());
         }
 
         /// <summary>
