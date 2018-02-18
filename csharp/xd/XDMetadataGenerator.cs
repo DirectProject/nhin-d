@@ -222,11 +222,11 @@ namespace Health.Direct.Xd
         {
             if (a == null)
                 yield break;
-            if (a.Specialities != null)
+            if (a.Specialities != null && a.Specialities.Any())
                 yield return new Slot(XDMetadataStandard.Slots.AuthorSpecialities, a.Specialities);
-            if (a.Roles != null)
+            if (a.Roles != null && a.Roles.Any())
                 yield return new Slot(XDMetadataStandard.Slots.AuthorRoles, a.Roles);
-            if (a.Institutions != null)
+            if (a.Institutions != null && a.Institutions.Any())
                 yield return new Slot(XDMetadataStandard.Slots.AuthorInstitutions, a.Institutions.Select(i => i.ToXON()));
             if (a.Person != null)
                 yield return new Slot(XDMetadataStandard.Slots.AuthorPerson, a.Person.ToXCN());
