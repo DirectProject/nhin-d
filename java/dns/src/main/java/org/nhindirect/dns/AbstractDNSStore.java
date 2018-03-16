@@ -14,6 +14,7 @@ import org.nhindirect.policy.PolicyFilter;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Flags;
 import org.xbill.DNS.Header;
+import org.xbill.DNS.InvalidTypeException;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Opcode;
@@ -99,30 +100,34 @@ public abstract class AbstractDNSStore implements DNSStore
 		if (header.getOpcode() != Opcode.QUERY)
 			throw new DNSException(DNSError.newError(Rcode.NOTIMP));	
 		
-        Record question = request.getQuestion();
+        Record queryRecord = request.getQuestion();
         
-        if (question == null || question.getDClass() != DClass.IN)
+        if (queryRecord == null || queryRecord.getDClass() != DClass.IN)
         {
         	throw new DNSException(DNSError.newError(Rcode.NOTIMP));
         }
 
-        Record queryRecord = request.getQuestion();
         Name name = queryRecord.getName();
     	int type = queryRecord.getType();
+    	String typeString = null;
+    	try {
+    		typeString = Type.string(type);
+    	} catch(InvalidTypeException e) {
+    	}
         
     	if (LOGGER.isDebugEnabled())
     	{
-    		StringBuilder builder = new StringBuilder("Recieved Query Request:");
+    		StringBuilder builder = new StringBuilder("Received Query Request:");
     		builder.append("\r\n\tName: " + name.toString());
-    		builder.append("\r\n\tType: " + type);
+    		builder.append("\r\n\tType: " + (typeString == null ? type : typeString));
     		builder.append("\r\n\tDClass: " + queryRecord.getDClass());
     		LOGGER.debug(builder.toString());
     	}
 
-    	LOGGER.info("Process record for DNS request type " + question.getType() + " and name " + name.toString());
+    	LOGGER.info("Process record for DNS request type " + (typeString == null ? type : typeString) + " and name " + name.toString());
     	
     	Collection<Record> lookupRecords= null;
-        switch (question.getType())
+        switch (type)
         {
         	case Type.A:
         	case Type.MX:
@@ -188,8 +193,8 @@ public abstract class AbstractDNSStore implements DNSStore
         	}
         	default:
         	{
-        		LOGGER.debug("Query Type " + type + " not implemented");
-        		throw new DNSException(DNSError.newError(Rcode.NOTIMP), "Query Type " + type + " not implemented"); 
+        		LOGGER.debug("Query Type " + (typeString == null ? type : typeString) + " not implemented");
+        		throw new DNSException(DNSError.newError(Rcode.NOTIMP), "Query Type " + (typeString == null ? type : typeString) + " not implemented"); 
         	}        	
         }
      
