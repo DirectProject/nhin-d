@@ -26,11 +26,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Security;
+import java.security.cert.CRL;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
+import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateParsingException;
+import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
 import java.security.cert.X509Certificate;
@@ -60,6 +63,8 @@ import org.nhindirect.stagent.CryptoExtensions;
 import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.CertificateResolver;
 import org.nhindirect.stagent.cert.Thumbprint;
+
+import org.nhindirect.stagent.cert.impl.CRLRevocationManager;
 
 /**
  * Validates the trust chain of a certificate with a set of anchors.  If a certificate resolver is present, the validator will search
@@ -166,11 +171,11 @@ public class TrustChainValidator
         	/*
         	 *  Disable CRL checking in cert path validation for now until a better implementation is put together
         	 */
-        	params.setRevocationEnabled(false);
+        	//params.setRevocationEnabled(false);
         	// JCE will only allow OSCP checking when revocation checking is enabled
         	// however some implementations will fail if revocation checking is turned on, but the CRL
         	// extension does not exist. for compatibility reasons, only turn this on if CRL extension points are defined
-	        /*
+	        
         	params.setRevocationEnabled(CRLRevocationManager.isCRLDispPointDefined(certificate));
 	        {
 	        	// populate the CRL store from the revocation manager
@@ -180,7 +185,7 @@ public class TrustChainValidator
 	        	CertStore crlStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(crls), CryptoExtensions.getJCEProviderName()); 
 	        	params.addCertStore(crlStore);
 	        }
-            */
+            
         	
         	certPath = factory.generateCertPath(certs);
         	CertPathValidator pathValidator = CertPathValidator.getInstance("PKIX", CryptoExtensions.getJCEProviderNameForTypeAndAlgorithm("CertPathValidator", "PKIX"));    		
