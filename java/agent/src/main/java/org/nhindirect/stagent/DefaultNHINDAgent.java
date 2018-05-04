@@ -1122,7 +1122,8 @@ public class DefaultNHINDAgent implements NHINDAgent, MutableAgent
                 }
                 catch (Exception e)
                 {
-                	LOGGER.info("Could not decrypt with message private cert subject " + cert.getSubjectDN().getName(), e);
+                	LOGGER.info("Could not decrypt with message private cert subject " + cert.getSubjectDN().getName() + " and serial number "
+                			+ cert.getSerialNumber().toString(16), e);
                 }
             }
         }

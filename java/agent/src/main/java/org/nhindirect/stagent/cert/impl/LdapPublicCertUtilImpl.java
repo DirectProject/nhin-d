@@ -187,7 +187,13 @@ public class LdapPublicCertUtilImpl implements LdapCertUtil{
 		}
 		catch (Exception e)
 		{
-			throw new NHINDException("", e);
+			/*
+			 * Throwing an exception here results in the entire
+			 * certificate resolution process stopping.  Return null so the process
+			 * continues.
+			 */
+			LOGGER.warn("Failure to lookup certificate through LDAP resolver.  Returning default value of null.", e);
+			return null;
 		}
 		finally
 		{

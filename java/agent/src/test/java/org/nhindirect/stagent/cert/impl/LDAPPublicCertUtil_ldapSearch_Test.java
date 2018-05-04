@@ -400,7 +400,7 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 		}.perform();
 	}
 	
-	public void testLDAPSearch_exceptionInSearch_assertExeption() throws Exception
+	public void testLDAPSearch_exceptionInSearch_assertNull() throws Exception
 	{
 		new TestPlan()
 		{
@@ -429,18 +429,11 @@ public class LDAPPublicCertUtil_ldapSearch_Test extends AbstractServerTest
 				return "gm2552@cerner.com";
 			}
 			
-			@Override
-			protected void assertException(Exception exception) throws Exception 
-			{
-				// default case should not throw an exception
-				assertNotNull(exception);
-				//assertTrue(exception instanceof NHINDException);
-			}
 			
 			@Override
 			protected void doAssertions(Collection<X509Certificate> certs) throws Exception
 			{
-				
+				assertNull(certs);
 			}
 
 		}.perform();

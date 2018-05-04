@@ -2,6 +2,7 @@ package org.nhindirect.stagent.cert.tools;
 
 import java.io.File;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.cert.CertStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -16,6 +17,9 @@ import org.bouncycastle.asn1.DERBitString;
 import org.bouncycastle.asn1.DERObject;
 import org.bouncycastle.asn1.x509.KeyUsage;
 import org.bouncycastle.cms.CMSSignedData;
+import org.bouncycastle.cms.KeyTransRecipientInformation;
+import org.bouncycastle.cms.RecipientId;
+import org.bouncycastle.cms.RecipientInformationStore;
 import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.mail.smime.SMIMEEnveloped;
@@ -89,6 +93,16 @@ public class MessageEncEnvInfoInspector
         	final SMIMEEnveloped env = new SMIMEEnveloped(new MimeMessage(null, inStream)); 
         	
         	String OID = env.getEncryptionAlgOID();
+        	final RecipientInformationStore recipients = env.getRecipientInfos();
+        	Collection<KeyTransRecipientInformation> reps = recipients.getRecipients();
+        	for (KeyTransRecipientInformation repInfo : reps)
+        	{
+        		RecipientId recId = repInfo.getRID();
+        		BigInteger serialNum = recId.getSerialNumber();
+        		
+        		System.out.println(recId.toString());
+        		System.out.println("HEX Serial: " + serialNum.toString(16));
+        	}
         	
         	System.out.println("Encryption OID: " + OID);
         	
