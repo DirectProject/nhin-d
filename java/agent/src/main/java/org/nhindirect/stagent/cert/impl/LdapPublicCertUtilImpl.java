@@ -45,7 +45,6 @@ import javax.naming.directory.SearchResult;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nhindirect.stagent.NHINDException;
 import org.nhindirect.stagent.cert.impl.util.Lookup;
 import org.nhindirect.stagent.cert.impl.util.LookupFactory;
 import org.xbill.DNS.ExtendedResolver;
