@@ -150,7 +150,7 @@ public class TxsResource
     public Response supressNotification(Tx notificationMessage) 
     {
     	if (dupStateManager == null)
-    		throw new IllegalStateException("Duplicatoin state manager cannot be null.  Please examine the txs resource configuration");
+    		throw new IllegalStateException("Duplication state manager cannot be null.  Please examine the txs resource configuration");
     	
     	try
     	{

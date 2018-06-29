@@ -5,9 +5,8 @@ import java.io.InputStreamReader;
 
 import org.apache.mina.util.AvailablePortFinder;
 import org.junit.Test;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.bio.SocketConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 public class MonitorServiceRunner
 {
@@ -65,18 +64,12 @@ public class MonitorServiceRunner
 			/*
 			 * Setup the configuration service server
 			 */
-			server = new Server();
-			SocketConnector connector = new SocketConnector();
-			
 			HTTPPort = AvailablePortFinder.getNextAvailable( 8090 );
-			connector.setPort(HTTPPort);
+			server = new Server(HTTPPort);
+			
 
 			// certificate service
-			WebAppContext context = new WebAppContext("src/test/resources/webapp-liverun", "/");
-			    	
-			server.setSendServerVersion(false);
-			server.addConnector(connector);
-			server.addHandler(context);
+			new WebAppContext(server, "src/test/resources/webapp-liverun", "/");
 		
 			server.start();
 			

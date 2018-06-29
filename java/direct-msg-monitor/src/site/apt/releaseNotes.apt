@@ -6,6 +6,28 @@
         Greg Meyer
         ---
 
+{2.0}
+
+    Changes included with release 20
+    
+    []
+    
+    Enhancements
+    
+    * Requires Java 8
+    
+ 	* Updated spring version to 4.3.18.Release
+ 	
+ 	* Added Spring Data Streams for ability to track messages via queueing.  This is an alternative option to uses the REST method.
+ 	
+ 	* Moved testing DB from derby to hsqldb.
+    
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
 {1.1.8}
 
     Changes included with release 1.1.8

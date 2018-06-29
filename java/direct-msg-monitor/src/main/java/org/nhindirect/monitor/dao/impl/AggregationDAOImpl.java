@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.Query;
 
@@ -151,7 +150,7 @@ public class AggregationDAOImpl implements AggregationDAO
 				
 				
 				// now lock the row and update lock time and the count
-				entityManager.lock(entity, LockModeType.WRITE);
+				//entityManager.lock(entity, LockModeType.WRITE);
 				final Calendar newRecoveryLockTime = Calendar.getInstance(Locale.getDefault());
 				newRecoveryLockTime.add(Calendar.SECOND, recoveredEntityLockInterval);
 				entity.setRecoveryLockedUntilDtTm(newRecoveryLockTime);
@@ -198,7 +197,7 @@ public class AggregationDAOImpl implements AggregationDAO
 					throw new AggregationVersionException("Version number of aggreation does not match what is in the store.");
 				
 				// lock the aggregation for update
-				entityManager.lock(existingAggr, LockModeType.WRITE);
+				//entityManager.lock(existingAggr, LockModeType.WRITE);
 				existingAggr.setExchangeBlob(aggr.getExchangeBlob());
 				entityManager.persist(existingAggr);
 			}
@@ -245,7 +244,7 @@ public class AggregationDAOImpl implements AggregationDAO
 					throw new AggregationVersionException("Version number of aggreation does not match what is in the store.");		
 				
 				// lock for removal
-				entityManager.lock(existingAgg, LockModeType.WRITE);
+				//entityManager.lock(existingAgg, LockModeType.WRITE);
 				entityManager.remove(existingAgg);
 			}
 			else

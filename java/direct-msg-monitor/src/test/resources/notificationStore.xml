@@ -24,7 +24,7 @@
 			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 				<property name="showSql" value="false" />
 				<property name="generateDdl" value="true" />
-				<property name="databasePlatform" value="org.hibernate.dialect.DerbyDialect" />
+				<property name="databasePlatform" value="org.hibernate.dialect.HSQLDialect" />
 			</bean>
 		</property>
 		<property name="dataSource" ref="dataSource"/>
@@ -33,10 +33,10 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
-		<property name="driverClassName" value="org.apache.derby.jdbc.EmbeddedDriver" />
-		<property name="url" value="jdbc:derby:target/msg-monitor-dup-check-service;create=true" />
-		<property name="username" value="notification" />
-		<property name="password" value="service" />
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:msg-monitor-service-integration" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
 	</bean> 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
 </beans>

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.apache.camel.test.junit4.CamelSpringTestSupport;
+import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.junit.Test;
 import org.nhindirect.common.mail.MDNStandard;
 import org.nhindirect.common.tx.model.Tx;
@@ -102,8 +102,8 @@ public class TestTimedOutMonitorRoute extends CamelSpringTestSupport
 		assertEquals(2, messages.size());
 		
 		assertEquals("timeout", exchange.getProperty(Exchange.AGGREGATED_COMPLETED_BY));
-		// make sure the aggregated timeout decayed properly... it should now be <= 500 ms
-		assertTrue((Long)exchange.getProperty(Exchange.AGGREGATED_TIMEOUT) <= 500);
+		// make sure the aggregated timeout decayed properly... it should now be <= 1000 ms
+		assertTrue((Long)exchange.getProperty(Exchange.AGGREGATED_TIMEOUT) <= 1000);
 	}
 	
 	

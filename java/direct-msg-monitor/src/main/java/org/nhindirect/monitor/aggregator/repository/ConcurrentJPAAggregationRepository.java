@@ -104,7 +104,7 @@ public class ConcurrentJPAAggregationRepository extends ServiceSupport implement
         try 
         {
         	// serialize the exchange to a blob
-            final byte[] blob = codec.marshallExchange(camelContext, exchange).getData();
+            final byte[] blob = codec.marshallExchange(camelContext, exchange, true).getData();
  
             // get the current version of the exchange... if this is the first time the exchange with the
             // given key is added, this should result in null
@@ -180,7 +180,7 @@ public class ConcurrentJPAAggregationRepository extends ServiceSupport implement
         	Integer currentEntityVersion = (Integer)exchange.getProperty(AGGREGATION_ENTITY_VERSON);
         	
         	// serialize the exchange to a byte array
-            final byte[] blob = codec.marshallExchange(camelContext, exchange).getData();
+            final byte[] blob = codec.marshallExchange(camelContext, exchange, true).getData();
 
             Aggregation agg = new Aggregation();
         	agg.setExchangeBlob(blob);

@@ -95,7 +95,7 @@ public class AggregationDAOImpl_removeAggregationTest
 		final AggregationCompleted completed = notifDao.getAggregationCompleted("12345", true);
 		assertNotNull(completed);
 		assertEquals("12345", completed.getId());
-		assertEquals(3, completed.getVersion());
+		assertEquals(2, completed.getVersion());
 		assertTrue(Arrays.equals(remove.getExchangeBlob(), completed.getExchangeBlob()));
 	}
 	

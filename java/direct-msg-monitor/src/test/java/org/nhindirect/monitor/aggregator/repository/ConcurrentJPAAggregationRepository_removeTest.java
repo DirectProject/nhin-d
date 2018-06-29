@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultExchange;
-import org.apache.camel.test.junit4.CamelSpringTestSupport;
+import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,7 +90,9 @@ public class ConcurrentJPAAggregationRepository_removeTest extends CamelSpringTe
 		
 		repo.remove(context, "12345", exchange);
 		
-		assertNull(repo.get(context, "12345"));
+		final Exchange ex = repo.get(context, "12345");
+		
+		assertNull(ex);
 		
 		final Exchange completedExchange = repo.recover(context, exchange.getExchangeId());
 		assertNotNull(completedExchange);
