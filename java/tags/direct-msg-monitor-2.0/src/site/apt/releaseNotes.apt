@@ -1,0 +1,189 @@
+~~ $Id$
+
+        ---
+        Release Notes
+        ---
+        Greg Meyer
+        ---
+
+{2.0}
+
+    Changes included with release 20
+    
+    []
+    
+    Enhancements
+    
+    * Requires Java 8
+    
+ 	* Updated spring version to 4.3.18.Release
+ 	
+ 	* Added Spring Data Streams for ability to track messages via queueing.  This is an alternative option to uses the REST method.
+ 	
+ 	* Moved testing DB from derby to hsqldb.
+    
+    [] 
+     
+    Bug Fixes
+
+    * NA
+
+{1.1.8}
+
+    Changes included with release 1.1.8
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue where completed aggregations were not clearing out of the database if all attempts were exhausted.
+
+{1.1.7}
+
+    Changes included with release 1.1.7
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Updating spring dependencies that were incompatible with Java 8. 
+
+{1.1.6}
+
+    Changes included with release 1.1.6
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with comparison of MDN final recipient using case sensitivity.
+    
+    * Fixed issue with MDN final recipients not utilizing rfc822 in the field.    
+
+{1.1.5}
+
+    Changes included with release 1.1.5
+    
+    []
+    
+    Enhancements
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=239}239}}: Resolved issue with matching final recipients in MDN and DNS messages.
+
+{1.1.4}
+
+    Changes included with release 1.1.4
+    
+    []
+    
+    Enhancements    
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=196}196}}: Resolved issues with duplicate message suppression for timely and reliable messaging.
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=193}193}}: Fixed issue where DSN messages did not have a date field.    
+
+{1.1.3}
+
+    Changes included with release 1.1.3
+    
+    []
+    
+    Enhancements    
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue with notifications not being mapped to the original message and being marked as complete.
+
+{1.1.2}
+
+    Changes included with release 1.1.2
+    
+    []
+    
+    Enhancements    
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Updated to latest direct-common components.
+
+
+{1.1.1}
+
+    Changes included with release 1.1.1
+    
+    []
+    
+    Enhancements    
+    
+ 	* NA
+    
+    [] 
+     
+    Bug Fixes
+
+    * Fixed issue where MDN final recipients with rfc822; prefixes were not matching up to the original recipient list causing incorrect completion failure conditions.
+
+{1.1}
+
+    Changes included with release 1.1
+    
+    []
+    
+ 	* NA
+    
+    [] 
+     
+    Enhancements
+
+    * Added distributed state AggregationRepository to support scalability, fail over, and high availability of the monitoring service across multiple service instances, JVMs, and clustered nodes.
+
+{1.0}
+
+    Changes included with release 1.0
+
+    []
+    
+    * {{{http://code.google.com/p/nhin-d/issues/detail?id=187}187}}: Added message monitoring to support implementation guide for delivery notification.
+    
+	* Initial Release 
+
+    * Requires Java SE 1.6 or greater.
+	
