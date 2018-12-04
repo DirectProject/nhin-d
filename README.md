@@ -1,5 +1,5 @@
 # nhin-d
-** NOTE ** The Java Reference Implementation has been moved to its own organization and repositories.  It can be found here:  https://github.com/DirectProjectJavaRI
+**NOTE** The Java Reference Implementation has been moved to its own organization and repositories.  It can be found here:  https://github.com/DirectProjectJavaRI
 
 Automatically exported from code.google.com/p/nhin-d
 
