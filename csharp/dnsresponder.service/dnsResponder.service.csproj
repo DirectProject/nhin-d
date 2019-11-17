@@ -22,7 +22,7 @@
     <DeployIisAppPath>DnsService</DeployIisAppPath>
     <DefaultPackageFileName>$(DeployIisAppPath).zip</DefaultPackageFileName>
     <!-- Framework dependencies -->
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>

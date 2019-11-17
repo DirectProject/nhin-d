@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "smtpAgent", "..\gateway\smtpAgent\smtpAgent.csproj", "{A9B11AAD-3461-4DDB-A447-91779BD41A78}"
 EndProject
@@ -68,8 +68,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "policy.tests", "..\unittests\policy.tests\policy.tests.csproj", "{0F787328-E1BD-418E-AA6C-F412FD1C1F70}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "policy.ui", "..\policy.ui\policy.ui.csproj", "{4CF6DA9F-4954-493C-A5AA-2477B36760E4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "config.service.rest", "..\config\service.rest\config.service.rest.csproj", "{2054207F-26B6-4B17-AD3F-A76549D72EB7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseAuditor", "..\auditors\DatabaseAuditor\DatabaseAuditor.csproj", "{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}"
 EndProject
@@ -233,10 +231,6 @@ Global
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CF6DA9F-4954-493C-A5AA-2477B36760E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2054207F-26B6-4B17-AD3F-A76549D72EB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F3D3DAF-D5B3-44FC-BEE8-716B49CBB4AA}.Release|Any CPU.ActiveCfg = Release|Any CPU

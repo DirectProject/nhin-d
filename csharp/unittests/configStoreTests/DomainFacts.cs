@@ -19,7 +19,7 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    class DomainFacts : ConfigStoreTestBase
+    public class DomainFacts : ConfigStoreTestBase
     {
         /// <summary>
         ///A test for UpdateDate

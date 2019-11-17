@@ -148,7 +148,7 @@ namespace Health.Direct.Common.Tests.Caching
         /// <param name="domain">domain name to be resolved</param>
         [Theory]
         //[InlineData("nhind.hsgincubator.com")]
-        [InlineData("direct.healthvault-ppe.com")]
+        //[InlineData("direct.healthvault-ppe.com")]
         [InlineData("www.microsoft.com")]
         public void ResolveMXEnsureInCache(string domain)
         {
