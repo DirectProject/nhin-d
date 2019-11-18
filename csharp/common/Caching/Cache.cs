@@ -14,10 +14,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Web;
-using System.Web.Caching;
 
 namespace Health.Direct.Common.Caching
 {

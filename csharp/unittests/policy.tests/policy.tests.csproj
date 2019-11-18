@@ -1,122 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <!-- Default build options -->
     <!-- Default values for configuration variables -->
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ErrorReport>send</ErrorReport>
     <!-- Project name -->
-    <ProjectGuid>{0F787328-E1BD-418E-AA6C-F412FD1C1F70}</ProjectGuid>
     <RootNamespace>Health.Direct.Policy.Tests</RootNamespace>
     <AssemblyName>Health.Direct.Policy.Tests</AssemblyName>
     <!-- Project output -->
-    <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
-    <!-- Framework dependencies -->
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-    <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <FileAlignment>512</FileAlignment>
     <RunCodeAnalysis>false</RunCodeAnalysis>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <!-- Deployment options -->
+    <AssemblyTitle>policy.tests</AssemblyTitle>
+    <Product>policy.tests</Product>
+    <Copyright>Copyright ©  2013</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
+    <ProjectReference Include="..\..\common\common.csproj" />
+    <ProjectReference Include="..\..\policy\policy.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryBooleanPolicyOperatorExecutor_executeTest.cs" />
-    <Compile Include="BinaryCollectionPolicyOperatorExecutor_executeTest.cs" />
-    <Compile Include="BinaryIntegerPolicyOperatorExecutor_executeTest.cs" />
-    <Compile Include="DefaultPolicyFilter_isCompliantTest.cs" />
-    <Compile Include="LiteralPolicyExpressionFactory_getInstanceTest.cs" />
-    <Compile Include="OperationPolicyExpression_getInstanceTest.cs" />
-    <Compile Include="PolicyFilter_simpleTextLexiconTest.cs" />
-    <Compile Include="PolicyFilter_textConversionToIntegerComplianceTest.cs" />
-    <Compile Include="PolicyOperator_getEnumAttributesTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleTextV1LexiconPolicyParser_buildExpressionTest.cs" />
-    <Compile Include="SimpleTextV1LexiconPolicyParser_buildExtensionFieldTest.cs" />
-    <Compile Include="SimpleTextV1LexiconPolicyParser_buildTBSFieldTest.cs" />
-    <Compile Include="SimpleTextV1LexiconPolicyParser_buildX509FieldTest.cs" />
-    <Compile Include="SimpleTextV1LexiconPolicyParser_parseTest.cs" />
-    <Compile Include="SimpleTextV1LexiconPolicyParser_parseToTokensTest.cs" />
-    <Compile Include="UnaryBooleanPolicyOperatorExecutor_executeTest.cs" />
-    <Compile Include="UnaryIntegerPolicyOperatorExecutor_executeTest.cs" />
-    <Compile Include="x509\AuthorityInfoAccessExtentionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\AuthorityInfoAccessMethodIdentifier_getAttributesTest.cs" />
-    <Compile Include="x509\AuthorityInfoAccessOCSPLocExtentionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\AuthorityKeyIdentifierKeyIdExtensionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\BasicContraintsExtensionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\CertificatePolicyCpsUriExtensionField_getExtensionIdentifierTest.cs" />
-    <Compile Include="x509\CertificatePolicyCpsUriExtensionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\CertificatePolicyIndentifierExtensionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\CRLDistributionPointNameExtentionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\ExtendedKeyUsageExtensionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\ExtensionField_getFieldNameTest.cs" />
-    <Compile Include="x509\ExtensionField_isCriticalTest.cs" />
-    <Compile Include="x509\ExtentionIdentifier_getAttributesTest.cs" />
-    <Compile Include="x509\IssuerAttributeField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\KeyBitUsage_getAttributesTest.cs" />
-    <Compile Include="x509\KeyUsageExtensionField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\PublicKeyAlgorithmIdentifier_getAttributesTest.cs" />
-    <Compile Include="x509\RDNAttributeIdentifier_getAttributesTest.cs" />
-    <Compile Include="x509\SerialNumberAttributeField_getTBSFieldNameTest.cs" />
-    <Compile Include="x509\SerialNumberAttributeField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\SignatureAlgorithmField_getX509FieldTypeTest.cs" />
-    <Compile Include="x509\SignatureAlgorithmField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\SignatureAlgorithmIdentifier_GetAttributestTest.cs" />
-    <Compile Include="x509\SubjectAltNameExtensionField_InjectReferenceValueTest.cs" />
-    <Compile Include="x509\SubjectAttributeField_injectReferenceValueTest.cs" />
-    <Compile Include="x509\SubjectKeyIdentifierExtensionField_InjectReferenceValueTest.cs" />
-    <Compile Include="x509\SubjectPublicKeyAlgorithmField_getFieldNameTest.cs" />
-    <Compile Include="x509\SubjectPublicKeyAlgorithmField_InjectReferenceValueTest.cs" />
-    <Compile Include="x509\SubjectPublicKeySizeField_getFieldNameTest.cs" />
-    <Compile Include="x509\SubjectPublicKeySizeField_InjectReferenceValueTest.cs" />
-    <Compile Include="x509\TBSFieldName_getAttributesTest.cs" />
-    <Compile Include="x509\TBSField_getX509FieldTypeTest.cs" />
-    <Compile Include="x509\X509FieldType_getAttributesTest.cs" />
-    <Compile Include="XMLLexiconPolicyParser_serializeTest.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\common\common.csproj">
-      <Project>{87a47bbf-c056-43c8-8c4a-34d25a63d1f9}</Project>
-      <Name>common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\policy\policy.csproj">
-      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
-      <Name>policy</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
     <None Include="resources\certs\AlAnderson%40hospitalA.direct.visionshareinc.com.der">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -190,27 +103,17 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FluentAssertions">
-      <Version>4.18.0</Version>
-    </PackageReference>
-    <PackageReference Include="Moq">
-      <Version>4.13.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.core">
-      <Version>2.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.console">
-      <Version>2.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.msbuild">
-      <Version>2.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.1.0</Version>
+    <PackageReference Include="FluentAssertions" Version="4.18.0" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.6.0" />
+    <PackageReference Include="Moq" Version="4.13.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.core" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Remove="PolicyValueFactory_GetInstanceTest.cs" />
+  </ItemGroup>
 </Project>

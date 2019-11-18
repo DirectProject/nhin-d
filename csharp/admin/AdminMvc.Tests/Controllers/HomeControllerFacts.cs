@@ -14,8 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System.Web.Mvc;
-using Xunit;
 using Health.Direct.Admin.Console.Controllers;
+using Xunit;
 
 namespace Health.Direct.Admin.Console.Tests.Controllers
 {

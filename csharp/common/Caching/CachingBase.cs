@@ -17,10 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Web;
-using System.Web.Caching;
-
+using System.Runtime.Caching;
+//TODO: Revisit 
 namespace Health.Direct.Common.Caching
 {
     /// <summary>
@@ -34,14 +32,16 @@ namespace Health.Direct.Common.Caching
     public class CachingBase <T> where T : class
     {
         HashSet<string> m_keys;  // Set of keys added to the cache
-        CacheItemRemovedCallback m_removeCallback;        
+        CacheEntryRemovedCallback m_removeCallback;        
         CacheItemPriority m_priority;
-        
+        private static ObjectCache _cache = MemoryCache.Default;
+        private CacheItemPolicy policy = null;
+
         /// <summary>
         /// Initializes a new instance of CachingBase
         /// </summary>
         public CachingBase()
-            : this(CacheItemPriority.Normal)
+            : this(CacheItemPriority.Default)
         {
         }
                 
@@ -51,7 +51,7 @@ namespace Health.Direct.Common.Caching
         protected CachingBase(CacheItemPriority priority)
         {
             m_keys = new HashSet<string>();
-            m_removeCallback = new CacheItemRemovedCallback(this.OnCachedItemRemoved);
+            m_removeCallback = new CacheEntryRemovedCallback(this.OnCachedItemRemoved);
             m_priority = priority;
         }
         
@@ -80,7 +80,7 @@ namespace Health.Direct.Common.Caching
         public T Get(string key)
         {
             // Delegate parameter checking to the Cache object
-            return HttpRuntime.Cache[key] as T;
+            return _cache[key] as T;
         }
         
         /// <summary>
@@ -124,39 +124,41 @@ namespace Health.Direct.Common.Caching
         /// <param name="ttl">Timepsan used to denote the duration of an items existence in the cache</param>
         public void Put(string key, T value, TimeSpan? ttl)
         {
-            //
-            // Http Cache has its own thread safety logic
-            //
-            // make use of insert to replace an existing item matching the key in the cache
-            HttpRuntime.Cache.Insert(key
-                                     , value
-                                     , null
-                                     , (ttl != null) ? DateTime.UtcNow.Add(ttl.Value) : Cache.NoAbsoluteExpiration
-                                     , Cache.NoSlidingExpiration
-                                     , m_priority
-                                     , m_removeCallback);
 
+            policy = new CacheItemPolicy();
+            policy.Priority = m_priority;
+            if (ttl != null)
+            {
+                policy.AbsoluteExpiration = DateTime.UtcNow.Add(ttl.Value);
+            }
+            else
+            {
+                policy.AbsoluteExpiration = DateTime.MaxValue;
+            }
+            policy.RemovedCallback = m_removeCallback;
+
+            // Add inside cache 
+            _cache.Set(key, value, policy);
             this.AddKey(key);
         }
 
         /// <summary>
-        /// Provides callback funcationality when an item is removed from the cache
+        /// Provides callback functionality when an item is removed from the cache
         /// </summary>
         /// <remarks>
         /// Only when an item has expired in the cache should it be removed from the cache keys list
         /// </remarks>
-        /// <param name="key">String containing the key of the item that was removed</param>
-        /// <param name="value">Object that was removed from the cache</param>
-        /// <param name="reason">Reason as to why object was invalidated in the cache</param>
-        protected void OnCachedItemRemoved(string key, object value, CacheItemRemovedReason reason)
+       /// <param name="args"><seealso cref="CacheEntryRemovedArguments"/></param>
+        protected void OnCachedItemRemoved(CacheEntryRemovedArguments args) 
+            // string key, object value, CacheEntryRemovedReason reason)
         {
-            if (reason == CacheItemRemovedReason.Removed) 
+            if (args.RemovedReason == CacheEntryRemovedReason.Removed) 
             {
                 return;
             }
             
-            this.RemoveKey(key);
-            this.NotifyExpired(key);
+            this.RemoveKey(args.CacheItem.Key);
+            this.NotifyExpired(args.CacheItem.Key);
         }
 
         /// <summary>
@@ -169,7 +171,7 @@ namespace Health.Direct.Common.Caching
             {
                 // Delegate parameter checking to the Cache object
                 // Runtime cache does its own thread safety
-                HttpRuntime.Cache.Remove(key);
+                _cache.Remove(key);
                 return this.RemoveKey(key);
             }
             catch

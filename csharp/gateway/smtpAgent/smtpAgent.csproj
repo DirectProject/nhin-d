@@ -1,30 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
- <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Default values for configuration variables -->
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ErrorReport>send</ErrorReport>
     <!-- Project name -->
-    <ProjectGuid>{A9B11AAD-3461-4DDB-A447-91779BD41A78}</ProjectGuid>
     <RootNamespace>Health.Direct.SmtpAgent</RootNamespace>
     <AssemblyName>Health.Direct.SmtpAgent</AssemblyName>
     <!-- Project output -->
-    <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
     <!-- Framework dependencies -->
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFramework>net472</TargetFramework>
     <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <FileAlignment>512</FileAlignment>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <!-- Deployment options -->
     <PublishUrl>publish\</PublishUrl>
@@ -42,25 +31,17 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  <Target Name="ExportTypeLibraries" AfterTargets="CopyFilesToOutputDirectory" Outputs="$(OutputPath)$(AssemblyName).tlb" Inputs="$(OutputPath)$(AssemblyName)$(TargetExt)">
+    <Exec Command="&quot;$(TargetFrameworkSDKToolsDirectory)tlbexp.exe&quot; /silent /verbose $(TargetPath)" WorkingDirectory="$(OutputPath)" />
+  </Target>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Xml" />
     <Reference Include="Interop.ADODB">
       <HintPath>..\..\build\libraries\smtpagent_com_interop\Interop.ADODB.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -71,55 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AgentDiagnostics.cs" />
-    <Compile Include="AgentSetup.cs" />
-    <Compile Include="CDOSmtpMessage.cs" />
-    <Compile Include="ConfigAnchorResolver.cs" />
-    <Compile Include="ConfigCertificateResolver.cs" />
-    <Compile Include="ConfigService.cs" />
-    <Compile Include="Config\AddressManagerSettings.cs" />
-    <Compile Include="Config\AnchorServiceResolverSettings.cs" />
-    <Compile Include="Config\DomainManagerSettings.cs" />
-    <Compile Include="Config\DomainServiceResolverSettings.cs" />
-    <Compile Include="Config\InternalMessageSettings.cs" />
-    <Compile Include="Config\MessageProcessingSettings.cs" />
-    <Compile Include="Config\NotificationSettings.cs" />
-    <Compile Include="Config\CertServiceResolverSettings.cs" />
-    <Compile Include="Config\PluginProducerSettings.cs" />
-    <Compile Include="Config\PolicyServiceResolverSettings.cs" />
-    <Compile Include="Config\SmtpAgentSettings.cs" />
-    <Compile Include="Diagnostics\IAuditor.cs" />
-    <Compile Include="Diagnostics\IBuildAuditLogMessage.cs" />
-    <Compile Include="Diagnostics\SimpleAuditLogBuilder.cs" />
-    <Compile Include="Diagnostics\SmtpAgentEventLogAuditor.cs" />
-    <Compile Include="DomainCache.cs" />
-    <Compile Include="DomainServiceResolver.cs" />
-    <Compile Include="FolderRoute.cs" />
-    <Compile Include="INotificationProducer.cs" />
-    <Compile Include="ISmtpMessage.cs" />
-    <Compile Include="MonitorService.cs" />
-    <Compile Include="NotificationProducer.cs" />
-    <Compile Include="MessageRouter.cs" />
-    <Compile Include="PluginRoute.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="DomainPostmasters.cs" />
-    <Compile Include="Policy\CertPolicyIndex.cs" />
-    <Compile Include="Policy\PrivatePolicyResolver.cs" />
-    <Compile Include="Policy\TrustPolicyResolver.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Policy\PublicPolicyResolver.cs" />
-    <Compile Include="Route.cs" />
-    <Compile Include="SettingsInitializer.cs" />
-    <Compile Include="SmtpAgentException.cs" />
-    <Compile Include="SmtpAgentFactory.cs" />
-    <Compile Include="MessageArrivalHandler.cs" />
-    <Compile Include="SmtpAgent.cs" />
-    <Compile Include="ExtensibleXmlSerializer.cs" />
-    <Compile Include="SmtpAgentSettingsException.cs" />
-    <Compile Include="SmtpMessageForwarder.cs" />
+    <Compile Include="..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="regasm.bat">
@@ -132,54 +65,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\agent\agent.csproj">
-      <Project>{BC563499-B6F2-492A-AC91-D2D18E2FCFDD}</Project>
-      <Name>agent</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\common\common.csproj">
-      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
-      <Name>common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\config\client\config.client.csproj">
-      <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
-      <Name>config.client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\config\store\config.store.csproj">
-      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>config.store</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj">
-      <Project>{EB202550-ACE7-40CC-9F1C-68BA4D138EBB}</Project>
-      <Name>diagnostics.nlog</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\policy\policy.csproj">
-      <Project>{08f5778a-cadf-4cb3-8f58-40b8ad5b09b0}</Project>
-      <Name>policy</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\..\agent\agent.csproj" />
+    <ProjectReference Include="..\..\common\common.csproj" />
+    <ProjectReference Include="..\..\config\client\config.client.csproj" />
+    <ProjectReference Include="..\..\config\store\config.store.csproj" />
+    <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj" />
+    <ProjectReference Include="..\..\policy\policy.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!--
-  Registering the assembly for COM interop has side effects that are undesirable on a build machine.
-  Type library exporter is a safer way to generate the type library, without altering the registry.
-  -->
-  <Target Name="ExportTypeLibraries" AfterTargets="CopyFilesToOutputDirectory" Outputs="$(OutputPath)$(AssemblyName).tlb" Inputs="$(OutputPath)$(AssemblyName)$(TargetExt)">
-    <Exec Command="&quot;$(TargetFrameworkSDKToolsDirectory)tlbexp.exe&quot; /silent /verbose $(TargetPath)" WorkingDirectory="$(OutputPath)" />
-  </Target>
 </Project>

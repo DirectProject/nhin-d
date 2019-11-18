@@ -17,8 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Mail;
 using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Pkcs;
+using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Extensions;
 
 namespace Health.Direct.Common.Certificates

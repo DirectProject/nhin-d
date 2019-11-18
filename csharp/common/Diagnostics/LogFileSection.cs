@@ -15,8 +15,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 using System;
 using System.Configuration;
-using System.Web;
-using System.Web.Hosting;
+using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Health.Direct.Common.Diagnostics
 {
@@ -43,7 +42,7 @@ namespace Health.Direct.Common.Diagnostics
         /// <summary>
         /// This is a utility method to convert the values found in the LogFileSection
         /// to <see cref="LogFileSettings"/> and to substitute the appearance of a '~'
-        /// for a call to <see cref="HttpServerUtility.MapPath"/> if this is run inside
+        /// for a call to PlatformServices.Default.Application.ApplicationBasePath if this is run inside
         /// of a web context, or use the <see cref="Environment.CurrentDirectory"/>.
         /// </summary>
         /// <remarks>This assumes that there is &lt;logging /&gt; section in the app.config </remarks>
@@ -59,7 +58,8 @@ namespace Health.Direct.Common.Diagnostics
             LogFileSettings settings = section.ToSettings();
             if (settings.DirectoryPath.Contains("~"))
             {
-                string appDirectory = HostingEnvironment.ApplicationPhysicalPath ?? Environment.CurrentDirectory;
+                string appDirectory = PlatformServices.Default.Application.ApplicationBasePath
+                                      ?? Environment.CurrentDirectory;
                 settings.DirectoryPath = settings.DirectoryPath.Replace("~", appDirectory);
             }
 

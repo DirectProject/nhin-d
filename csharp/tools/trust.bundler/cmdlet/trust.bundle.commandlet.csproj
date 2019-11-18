@@ -1,64 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
- <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+  <TargetFramework>netcoreapp2.1</TargetFramework>
     <!-- Default values for configuration variables -->
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ErrorReport>send</ErrorReport>
     <!-- Project name -->
-    <ProjectGuid>{7456C8AF-C1BF-4EE4-B3FF-C5FB5E0BCAEA}</ProjectGuid>
     <RootNamespace>Health.Direct.Trust.Commandlet</RootNamespace>
     <AssemblyName>Health.Direct.Trust.Commandlet</AssemblyName>
     <!-- Project output -->
-    <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
-    <!-- Framework dependencies -->
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <AssemblyOriginatorKeyFile>..\..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>    
     <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <FileAlignment>512</FileAlignment>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <!-- Deployment options -->
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AssemblyTitle>cmdlet</AssemblyTitle>
+    <Product>cmdlet</Product>
+    <Copyright>Copyright ©  2013</Copyright>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration.Install" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Management.Automation" />
+    <Compile Update="TrustBundlePsSnapIn.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BundleAnchorsCommand.cs" />
-    <Compile Include="SignBundleCommand.cs" />
-    <Compile Include="TrustBundlePsSnapIn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\bundle\trust.bundle.csproj">
-      <Project>{c4bee214-90be-425e-837e-16d399c4d4c9}</Project>
-      <Name>trust.bundle</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\bundle\trust.bundle.csproj" />    
   </ItemGroup>
   <ItemGroup>
     <None Include="Examples\CreateSignedTrustBundleWithMetaData.ps1" />
@@ -68,5 +37,7 @@
     <None Include="Examples\CreateTrustBundle.ps1" />
     <None Include="Examples\InstallBundleSnap-in.ps1" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="System.Management.Automation" Version="6.2.3" />
+  </ItemGroup>
 </Project>

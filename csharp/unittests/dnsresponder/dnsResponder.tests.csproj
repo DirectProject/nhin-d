@@ -1,30 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <!-- Default values for configuration variables -->
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ErrorReport>send</ErrorReport>
     <!-- Project name -->
-    <ProjectGuid>{032D3352-7B6C-48D1-866C-986AED4E5E69}</ProjectGuid>
     <RootNamespace>Health.Direct.DnsResponder.Tests</RootNamespace>
     <AssemblyName>Health.Direct.DnsResponder.Tests</AssemblyName>
     <!-- Project output -->
-    <OutputType>Library</OutputType>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
     <!-- Framework dependencies -->
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFramework>net472</TargetFramework>
     <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <FileAlignment>512</FileAlignment>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <!-- Deployment options -->
     <PublishUrl>publish\</PublishUrl>
@@ -42,163 +31,71 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <Compile Include="..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="AuthoritativeRecordResolverTest.cs" />
-    <Compile Include="BadClient.cs" />
-    <Compile Include="BadClientTests.cs" />
-    <Compile Include="BasicTest.cs" />
-    <Compile Include="DnsRecordStoreageServiceTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RetryTester.cs" />
-    <Compile Include="TestTCPClient.cs" />
-    <Compile Include="TestBase.cs" />
-    <Compile Include="Tester.cs" />
-    <Compile Include="TestServer.cs" />
-    <Compile Include="TestStore.cs" />
+    <ProjectReference Include="..\..\common\common.csproj" />
+    <ProjectReference Include="..\..\config\client\config.client.csproj" />
+    <ProjectReference Include="..\..\config\store\config.store.csproj" />
+    <ProjectReference Include="..\..\dnsResponder\dnsResponder.csproj" />
+    <ProjectReference Include="..\smtpAgent\smtpAgent.tests.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\common.csproj">
-      <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
-      <Name>common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\config\client\config.client.csproj">
-      <Project>{2EA3D265-4E39-4631-85F3-1DC6B5103C71}</Project>
-      <Name>config.client</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\config\store\config.store.csproj">
-      <Project>{8A3A4FB1-2DDA-4A51-890D-DC558C7A4E11}</Project>
-      <Name>config.store</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\dnsResponder\dnsResponder.csproj">
-      <Project>{A0C03E4C-549D-4868-8B03-DF2C467C1A47}</Project>
-      <Name>dnsResponder</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\smtpAgent\smtpAgent.tests.csproj">
-      <Project>{0063CEEB-E7EB-4E87-A0E9-E9962AF74548}</Project>
-      <Name>smtpAgent.tests</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
     <None Include="metadata\Certificates\redmond.cer">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="metadata\DnsRecords\aname.apple.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.bing.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.cerner.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.epic.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.google.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.ibm.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.microsoft.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.nhindirect.org.bin">
-    </None>
-    <None Include="metadata\DnsRecords\aname.yahoo.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.apple.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.bing.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.cerner.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.epic.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.google.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.ibm.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.microsoft.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.nhindirect.org.bin">
-    </None>
-    <None Include="metadata\DnsRecords\mx.yahoo.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.apple.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.bing.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.cerner.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.epic.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.google.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.ibm.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.microsoft.com.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.nhindirect.org.bin">
-    </None>
-    <None Include="metadata\DnsRecords\soa.yahoo.com.bin">
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
+    <None Include="metadata\DnsRecords\aname.apple.com.bin" />
+    <None Include="metadata\DnsRecords\aname.bing.com.bin" />
+    <None Include="metadata\DnsRecords\aname.cerner.com.bin" />
+    <None Include="metadata\DnsRecords\aname.epic.com.bin" />
+    <None Include="metadata\DnsRecords\aname.google.com.bin" />
+    <None Include="metadata\DnsRecords\aname.ibm.com.bin" />
+    <None Include="metadata\DnsRecords\aname.microsoft.com.bin" />
+    <None Include="metadata\DnsRecords\aname.nhindirect.org.bin" />
+    <None Include="metadata\DnsRecords\aname.yahoo.com.bin" />
+    <None Include="metadata\DnsRecords\mx.apple.com.bin" />
+    <None Include="metadata\DnsRecords\mx.bing.com.bin" />
+    <None Include="metadata\DnsRecords\mx.cerner.com.bin" />
+    <None Include="metadata\DnsRecords\mx.epic.com.bin" />
+    <None Include="metadata\DnsRecords\mx.google.com.bin" />
+    <None Include="metadata\DnsRecords\mx.ibm.com.bin" />
+    <None Include="metadata\DnsRecords\mx.microsoft.com.bin" />
+    <None Include="metadata\DnsRecords\mx.nhindirect.org.bin" />
+    <None Include="metadata\DnsRecords\mx.yahoo.com.bin" />
+    <None Include="metadata\DnsRecords\soa.apple.com.bin" />
+    <None Include="metadata\DnsRecords\soa.bing.com.bin" />
+    <None Include="metadata\DnsRecords\soa.cerner.com.bin" />
+    <None Include="metadata\DnsRecords\soa.epic.com.bin" />
+    <None Include="metadata\DnsRecords\soa.google.com.bin" />
+    <None Include="metadata\DnsRecords\soa.ibm.com.bin" />
+    <None Include="metadata\DnsRecords\soa.microsoft.com.bin" />
+    <None Include="metadata\DnsRecords\soa.nhindirect.org.bin" />
+    <None Include="metadata\DnsRecords\soa.yahoo.com.bin" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="xunit">
-      <Version>2.4.1</Version>
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.analyzers" Version="0.10.0" />
+    <PackageReference Include="xunit.core" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.console" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.analyzers">
-      <Version>0.10.0</Version>
+    <PackageReference Include="xunit.runner.msbuild" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.core">
-      <Version>2.4.1</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.console">
-      <Version>2.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.msbuild">
-      <Version>2.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.1.0</Version>
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
