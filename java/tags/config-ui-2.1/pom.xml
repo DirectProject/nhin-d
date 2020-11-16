@@ -283,7 +283,7 @@
 		<dependency>
   			<groupId>org.eclipse.jetty</groupId>
   			<artifactId>jetty-webapp</artifactId>
-  			<version>9.0.7.v20131107</version>
+  			<version>9.4.34.v20201102</version>
 			<scope>test</scope>  			
 		</dependency>	
 		<dependency>
