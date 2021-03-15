@@ -49,11 +49,6 @@ import org.nhindirect.xd.common.DirectMessage;
 public class SmtpMailClient implements MailClient
 {
     final static int BUFFER = 2048;
-    
-    private MimeMessage mmessage;
-    private Multipart mailBody;
-    private MimeBodyPart mainBody;
-    private MimeBodyPart mimeAttach;
    
     private String hostname = null;
     private String username = null;
@@ -76,6 +71,11 @@ public class SmtpMailClient implements MailClient
      */
     public void mail(DirectMessage message, String messageId, String suffix) throws MessagingException
     {
+        MimeMessage mmessage;
+        Multipart mailBody;
+        MimeBodyPart mainBody;
+        MimeBodyPart mimeAttach;  
+    	
         boolean debug = false;
         java.security.Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
 

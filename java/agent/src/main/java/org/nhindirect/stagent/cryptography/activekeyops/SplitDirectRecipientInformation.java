@@ -172,14 +172,27 @@ public class SplitDirectRecipientInformation extends KeyTransRecipientInformatio
 	
     private String getExchangeEncryptionAlgorithmName(DERObjectIdentifier oid)
     {
+    	final StringBuilder builder = new StringBuilder("Searching for exchange encryption algorithm");
+    	builder.append("\r\n\tEncrytpion algorithm OID: " + oid.getId());
+    	builder.append("\r\n\tEncrytpion Provider: " + keyEncProvider);
+    	
+    	
+    	LOGGER.debug(builder.toString());
+    	
         if (PKCSObjectIdentifiers.rsaEncryption.equals(oid))
         {
+        	LOGGER.debug("getExchangeEncryptionAlgorithmName returning algorithm: RSA/ECB/PKCS1Padding");
+        	
             return "RSA/ECB/PKCS1Padding";
         }
-        else if (PKCSObjectIdentifiers.id_RSAES_OAEP.equals(oid) && !encProvider.equalsIgnoreCase("BC"))
+        else if (PKCSObjectIdentifiers.id_RSAES_OAEP.equals(oid) && !keyEncProvider.equalsIgnoreCase("BC"))
         {
+        	LOGGER.debug("getExchangeEncryptionAlgorithmName returning algorithm: RSA/ECB/OAEP");
+        	
         	return "RSA/ECB/OAEP";
         }
+        
+        LOGGER.debug("getExchangeEncryptionAlgorithmName returning algorithm: " + oid.getId());
         
         return oid.getId();
     }
