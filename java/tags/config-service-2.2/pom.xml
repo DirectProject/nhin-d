@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>4.3.19.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
