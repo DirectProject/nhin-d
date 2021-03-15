@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>xd</artifactId>
     <name>NHIN Direct XD* Web Endpoint</name>
-    <version>1.0.4</version>
+    <version>1.1-SNAPSHOT</version>
     <description>NHIN Direct XD Component</description>
     <inceptionYear>2010</inceptionYear>
     <packaging>war</packaging>
@@ -288,7 +288,6 @@
 		                    <excludePackageNames>
 		                        oasis.names.tc.ebxml_regrep.xsd:ihe.iti.xds_b._2007
 		                    </excludePackageNames>
-		                    <additionalparam>-Xdoclint:none</additionalparam>
 		                </configuration>
 			            <executions>
 			              <execution>
@@ -341,7 +340,6 @@
                     <excludePackageNames>
                         oasis.names.tc.ebxml_regrep.xsd:ihe.iti.xds_b._2007
                     </excludePackageNames>
-                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
             <plugin>
