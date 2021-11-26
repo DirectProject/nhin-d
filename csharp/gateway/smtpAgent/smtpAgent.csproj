@@ -11,7 +11,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
     <!-- Framework dependencies -->
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -41,7 +41,6 @@
   </Target>
   <ItemGroup>
     <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="Interop.ADODB">
       <HintPath>..\..\build\libraries\smtpagent_com_interop\Interop.ADODB.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -71,5 +70,13 @@
     <ProjectReference Include="..\..\config\store\config.store.csproj" />
     <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj" />
     <ProjectReference Include="..\..\policy\policy.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ServiceModel.Duplex" Version="4.8.1" />
+    <PackageReference Include="System.ServiceModel.NetTcp" Version="4.8.1" />
+    <PackageReference Include="System.ServiceModel.Federation" Version="4.8.1" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
