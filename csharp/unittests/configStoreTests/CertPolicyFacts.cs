@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Text;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests

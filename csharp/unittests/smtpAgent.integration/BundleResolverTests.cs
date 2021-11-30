@@ -22,6 +22,7 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.ResolverPlugins;
 using Xunit;
 

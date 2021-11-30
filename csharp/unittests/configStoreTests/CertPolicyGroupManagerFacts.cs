@@ -17,7 +17,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
 using Xunit;
 
@@ -91,13 +93,13 @@ namespace Health.Direct.Config.Store.Tests
         /// A test for Add PolicyGroup
         /// </summary>
         [Fact]
-        public void AddPolicyGroup()
+        public async Task AddPolicyGroup()
         {
             InitCertPolicyGroupRecords();
-            CertPolicyGroupManager mgr = CreateManager();
+            var mgr = CreateManager();
 
-            CertPolicyGroup expectedPolicy = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest PolicyGroup Description");
-            CertPolicyGroup actualCertPolicy = mgr.Add(expectedPolicy);
+            var expectedPolicy = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest PolicyGroup Description");
+            var actualCertPolicy = await mgr.Add(expectedPolicy);
 
             expectedPolicy.Name.Should().BeEquivalentTo("UnitTestPolicyGroup");
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
@@ -107,12 +109,12 @@ namespace Health.Direct.Config.Store.Tests
         /// Associate @group to policy session based style
         /// </summary>
         [Fact(Skip = "Broken.  Thinks it is adding a new certpolicy with the same name.  This session technique is probably not going to be used.")]
-        public void AssociatePolicyToGroupSessionTest()
+        public async Task AssociatePolicyToGroupSessionTest()
         {
             InitCertPolicyRecords();
             InitCertPolicyGroupRecords();
 
-            using (ConfigDatabase db = CreateConfigDatabase(CertPolicyGroupManager.DataLoadOptions))
+            await using (ConfigDatabase db = CreateConfigDatabase())
             {
                 CertPolicyGroupManager mgr = CreateManager();
                 CertPolicyGroup policyGroup = mgr.Get(db, "PolicyGroup1");
@@ -121,7 +123,7 @@ namespace Health.Direct.Config.Store.Tests
                 CertPolicy certPolicy = policyMgr.Get("Policy1");
 
                 policyGroup.CertPolicies.Add(certPolicy);
-                db.SubmitChanges();
+                await db.SaveChangesAsync();
                 policyGroup = mgr.Get("PolicyGroup1");
                 policyGroup.CertPolicies.Count.Should().Be(1);
             }
@@ -158,20 +160,20 @@ namespace Health.Direct.Config.Store.Tests
         /// A test for Update Policy
         /// </summary>
         [Fact]
-        public void UpdatePolicyGroupDescriptionTest()
+        public async Task UpdatePolicyGroupDescriptionTest()
         {
             InitCertPolicyGroupRecords();
-            CertPolicyGroupManager mgr = CreateManager();
+            var mgr = CreateManager();
 
-            CertPolicyGroup newCertPolicyGroup = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest Policy Description");
-            mgr.Add(newCertPolicyGroup);
-            CertPolicyGroup actualCertPolicy = mgr.Get("UnitTestPolicyGroup");
+            var newCertPolicyGroup = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest Policy Description");
+            await mgr.Add(newCertPolicyGroup);
+            var actualCertPolicy = mgr.Get("UnitTestPolicyGroup");
             actualCertPolicy.Should().NotBeNull();
 
             actualCertPolicy.Description = "blank";
             mgr.Update(actualCertPolicy);
 
-            CertPolicyGroup updatedCertPolicy = mgr.Get("UnitTestPolicyGroup");
+            var updatedCertPolicy = mgr.Get("UnitTestPolicyGroup");
             updatedCertPolicy.Description.ShouldBeEquivalentTo("blank");
         }
 

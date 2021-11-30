@@ -20,6 +20,7 @@ using System.Linq;
 using Health.Direct.Common.Caching;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Tests

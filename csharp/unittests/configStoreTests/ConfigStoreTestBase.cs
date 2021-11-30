@@ -20,8 +20,10 @@ using System.Collections.Generic;
 using System.Data.Linq;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
 using Xunit;
 
@@ -756,7 +758,7 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitCertPolicyRecords(CertPolicyManager mgr
+        protected async Task InitCertPolicyRecords(CertPolicyManager mgr
                                          , ConfigDatabase db)
         {
             //----------------------------------------------------------------------------------------------------
@@ -770,7 +772,7 @@ namespace Health.Direct.Config.Store.Tests
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            db.SubmitChanges();
+            await db.SaveChangesAsync();
 
             foreach (CertPolicy val in TestCertPolicies)
             {

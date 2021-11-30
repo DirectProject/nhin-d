@@ -20,6 +20,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

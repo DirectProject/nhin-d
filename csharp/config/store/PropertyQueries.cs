@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Data.Linq;
 using System.Data.Linq.SqlClient;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

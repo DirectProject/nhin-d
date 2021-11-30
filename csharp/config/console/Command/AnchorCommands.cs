@@ -28,6 +28,7 @@ using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 using System.IO;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Console.Command
 {

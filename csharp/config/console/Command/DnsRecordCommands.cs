@@ -23,6 +23,7 @@ using Health.Direct.Config.Store;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 using Health.Direct.Common.DnsResolver;
+using Health.Direct.Config.Store.Entity;
 
 
 namespace Health.Direct.Config.Console.Command

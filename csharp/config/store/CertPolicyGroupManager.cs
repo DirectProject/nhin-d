@@ -19,7 +19,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
+using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {
@@ -39,31 +41,13 @@ namespace Health.Direct.Config.Store
                 return m_store;
             }
         }
-
-        public static readonly DataLoadOptions DataLoadOptions = new DataLoadOptions();
-        public static readonly DataLoadOptions GroupMapDataLoadOptions = new DataLoadOptions();
-        public static readonly DataLoadOptions OwnerMapDataLoadOptions = new DataLoadOptions();
-
         
-
-        static CertPolicyGroupManager()
+        public async Task<CertPolicyGroup> Add(CertPolicyGroup @group)
         {
-            DataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMaps);
-            DataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
-            DataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMaps);
-
-            GroupMapDataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
-            GroupMapDataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicyGroup);
-
-            OwnerMapDataLoadOptions.LoadWith<CertPolicyGroupDomainMap>(map => map.CertPolicyGroup);
-        }
-
-        public CertPolicyGroup Add(CertPolicyGroup @group)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            await using (ConfigDatabase db = this.Store.CreateContext())
             {
                 this.Add(db, @group);
-                db.SubmitChanges();
+                await db.SaveChangesAsync();
                 return @group;
             }
         }
@@ -79,22 +63,15 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroup);
             }
 
-            db.CertPolicyGroups.InsertOnSubmit(@group);
+            db.CertPolicyGroups.Add(@group);
+
             return @group;
         }
 
-        public int Count()
-        {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.CertPolicyGroups.GetCount();
-            }
-        }
-
-
+        
         public CertPolicyGroup Get(long id)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 var certPolicyGroup = this.Get(db, id);
                 FixUpModel(certPolicyGroup);
@@ -109,7 +86,7 @@ namespace Health.Direct.Config.Store
         /// <returns></returns>
         public CertPolicyGroup Get(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 var certPolicyGroup = this.Get(db, name);
                 FixUpModel(certPolicyGroup);
@@ -124,7 +101,7 @@ namespace Health.Direct.Config.Store
         /// <returns></returns>
         public CertPolicyGroupMap[] GetWithPolicies(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(GroupMapDataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 var maps = this.GetWithPolicies(db, name);
                 return maps;
@@ -138,7 +115,7 @@ namespace Health.Direct.Config.Store
         /// <returns></returns>
         public CertPolicyGroupDomainMap[] GetWithOwners(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(OwnerMapDataLoadOptions))
+            using (ConfigDatabase db = this.Store.CreateContext())
             {
                 var maps = this.GetWithOwners(db, name);
                 return maps;

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests

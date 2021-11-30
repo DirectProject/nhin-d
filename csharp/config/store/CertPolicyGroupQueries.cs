@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
 using Health.Direct.Common.Mail;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

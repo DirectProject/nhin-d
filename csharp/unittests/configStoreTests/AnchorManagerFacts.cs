@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 using Xunit.Samples;
 
@@ -106,9 +108,9 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for SetStatus
         ///</summary>
         [Fact, AutoRollback]
-        public void SetStatusTest1()
+        public async Task SetStatusTest1()
         {
-            using (ConfigDatabase db = CreateConfigDatabase())
+            await using (ConfigDatabase db = CreateConfigDatabase())
             {
                 foreach (string domain in TestDomainNames)
                 {
@@ -125,7 +127,7 @@ namespace Health.Direct.Config.Store.Tests
                     }
 
                     target.SetStatus(db, subject, EntityStatus.Enabled);
-                    db.SubmitChanges();
+                    await db.SaveChangesAsync();
                     actual = target.Get(subject);
                     Assert.NotNull(actual);
                     Assert.Equal(MAXCERTPEROWNER, actual.Length);
@@ -243,7 +245,7 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for Remove
         ///</summary>
         [Fact, AutoRollback]
-        public void RemoveTest2()
+        public async Task RemoveTest2Async()
         {
             using (ConfigDatabase db = CreateConfigDatabase())
             {
@@ -251,7 +253,7 @@ namespace Health.Direct.Config.Store.Tests
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
                 string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
                 target.Remove(db, ownerName);
-                db.SubmitChanges();
+                await db.SaveChangesAsync();
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER - MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             }
         }
@@ -503,14 +505,14 @@ namespace Health.Direct.Config.Store.Tests
         ///</summary>
         [Theory, AutoRollback]
         [MemberData("TestAnchors")]
-        public void AddTest(Anchor anc)
+        public async Task AddTest(Anchor anc)
         {
             AnchorManager target = CreateManager();
-            using (ConfigDatabase db = CreateConfigDatabase())
+            await using (ConfigDatabase db = CreateConfigDatabase())
             {
                 target.RemoveAll();
                 target.Add(db, anc);
-                db.SubmitChanges();
+                await db.SaveChangesAsync();
                 Anchor certNew = target.Get(anc.Owner, anc.Thumbprint); //---should always be 1 (table was truncated above);
                 Assert.NotNull(anc);
                 Assert.Equal(anc.Owner, certNew.Owner);

@@ -19,6 +19,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Config.Store.Entity;
+using Microsoft.Data.SqlClient;
 using Xunit;
 using Xunit.Samples;
 

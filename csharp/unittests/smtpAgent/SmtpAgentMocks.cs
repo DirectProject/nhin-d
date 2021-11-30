@@ -26,6 +26,7 @@ using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Client.MonitorService;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Moq;
 using Xunit;
 

@@ -2,6 +2,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

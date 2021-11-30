@@ -21,6 +21,7 @@ using System.IO;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.SettingsManager;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 

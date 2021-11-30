@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using Health.Direct.Config.Store.Entity;
+using Microsoft.Data.SqlClient;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests

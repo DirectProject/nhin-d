@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Collections;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

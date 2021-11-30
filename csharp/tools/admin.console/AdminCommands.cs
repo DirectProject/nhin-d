@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.Config.Tools;
 using Health.Direct.Config.Tools.Command;
 

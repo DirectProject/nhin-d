@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 using Xunit.Samples;
 
@@ -161,9 +163,9 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for SetStatus
         ///</summary>
         [Fact, AutoRollback]
-        public void SetStatusTest3()
+        public async Task SetStatusTest3()
         {
-            using (ConfigDatabase db = CreateConfigDatabase())
+            await using (ConfigDatabase db = CreateConfigDatabase())
             {
                 foreach (string domain in TestDomainNames)
                 {
@@ -180,7 +182,7 @@ namespace Health.Direct.Config.Store.Tests
                     }
 
                     target.SetStatus(db, subject, EntityStatus.Enabled);
-                    db.SubmitChanges();
+                    await db.SaveChangesAsync();
                     actual = target.Get(subject);
                     Assert.NotNull(actual);
                     Assert.Equal(MAXCERTPEROWNER, actual.Length);
@@ -605,14 +607,14 @@ namespace Health.Direct.Config.Store.Tests
         ///</summary>
         [Theory, AutoRollback]
         [MemberData("TestCertificates")]
-        public void AddTest(Certificate cert)
+        public async Task AddTest(Certificate cert)
         {
-            using (ConfigDatabase db = CreateConfigDatabase())
+            await using (ConfigDatabase db = CreateConfigDatabase())
             {
                 CertificateManager target = CreateManager();
                 target.RemoveAll();
                 target.Add(db, cert);
-                db.SubmitChanges();
+                await db.SaveChangesAsync();
                 Certificate certNew = target.Get(1); //---should always be 1 (table was truncated above);
                 Assert.NotNull(cert);
                 Assert.Equal(cert.Owner, certNew.Owner);

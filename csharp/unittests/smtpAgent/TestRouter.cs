@@ -28,6 +28,7 @@ using Health.Direct.Common.Routing;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.DomainManager;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.SmtpAgent.Config;
 using Moq;
 using Xunit;

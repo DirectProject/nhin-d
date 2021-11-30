@@ -25,6 +25,7 @@ using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Common.Mime;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.SmtpAgent.Integration.Tests

@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
+using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

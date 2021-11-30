@@ -4,7 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-    Joe Shook       jshook@kryptiq.com
+    Joe Shook       Joseph.Shook@Surescripts.com
   
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -15,309 +15,81 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System.Data;
-using System.Data.Common;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
-using System.Linq;
+using Health.Direct.Config.Store.Entity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Debug;
 
 namespace Health.Direct.Config.Store
 {
-    [Database(Name="DirectConfig")]
-    public class ConfigDatabase : DataContext
+    /// <inheritdoc />
+    public class ConfigDatabase : DbContext
     {
-        static MappingSource s_mappingSource = new AttributeMappingSource();
+        public virtual DbSet<Address> Addresses { get; set; } = null!;
+        public virtual DbSet<Administrator> Administrators { get; set; } = null!;
+        public virtual DbSet<Anchor> Anchors { get; set; } = null!;
+        public virtual DbSet<NamedBlob> Blobs { get; set; } = null!;
+        public virtual DbSet<Bundle> Bundles { get; set; } = null!;
+        public virtual DbSet<CertPolicy> CertPolicies { get; set; } = null!;
+        public virtual DbSet<CertPolicyGroup> CertPolicyGroups { get; set; } = null!;
+        public virtual DbSet<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; } = null!;
+        public virtual DbSet<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; } = null!;
+        public virtual DbSet<Certificate> Certificates { get; set; } = null!;
+        public virtual DbSet<DnsRecord> DnsRecords { get; set; } = null!;
+        public virtual DbSet<Domain> Domains { get; set; } = null!;
+        public virtual DbSet<Mdn> Mdns { get; set; } = null!;
+        public virtual DbSet<Property> Properties { get; set; } = null!;
+
+        private static string _connectionString;
+        private readonly int _timeout = 10;
+
+        private static readonly LoggerFactory MyLoggerFactory =
+            new LoggerFactory(new[]
+            {
+                new DebugLoggerProvider()
+            });
         
-        Table<Certificate> m_certs;
-        Table<Administrator> m_administrators;
-        Table<Anchor> m_anchors;
-        Table<Domain> m_domains;
-        Table<Address> m_addresses;
-        Table<DnsRecord> m_dnsRecords;
-        Table<Property> m_properties;
-        Table<NamedBlob> m_blobs;
-        Table<Mdn> m_mdns;
-        Table<CertPolicy> m_certPolicies;
-        Table<CertPolicyGroupMap> m_certPolicyGroupMap;
-        Table<CertPolicyGroupDomainMap> m_certPolicyGroupDomainMap;
-        Table<CertPolicyGroup> m_certPolicyGroups;
-        Table<Bundle> m_bundles;
-        
-        DbTransaction m_transaction;
-
-        private static string m_removeRecordMtoMConnectionString ;    
-        
-        public ConfigDatabase(string connectString)
-            : base(connectString, s_mappingSource)
+        public ConfigDatabase(string connectionString)
         {
-            m_removeRecordMtoMConnectionString = connectString;
-            //LoadOptions = _dataLoadOptions;
+            _connectionString = connectionString;
         }
 
-        public ConfigDatabase(string connectString, DataLoadOptions dataLoadOptions)
-            : base(connectString, s_mappingSource)
+        public ConfigDatabase(string connectionString, int commandTimeout)
+            : this(connectionString)
         {
-            m_removeRecordMtoMConnectionString = connectString;
-            LoadOptions = dataLoadOptions;
+            _timeout = commandTimeout;
         }
-         
-        //static readonly DataLoadOptions _dataLoadOptions = new DataLoadOptions();
 
-        //static ConfigDatabase()
-        //{
-        //    _dataLoadOptions.LoadWith<CertPolicyGroup>(c => c.CertPolicyGroupMap);
-        //    _dataLoadOptions.LoadWith<CertPolicyGroupMap>(map => map.CertPolicy);
-        //    _dataLoadOptions.LoadWith<CertPolicyGroup>(map => map.CertPolicyGroupDomainMap);
-        //}
-        
-        public Table<Address> Addresses
+        /// <inheritdoc />
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            get
+            if (!optionsBuilder.IsConfigured)
             {
-                if (m_addresses == null)
-                {
-                    m_addresses = this.GetTable<Address>();
-                }
-
-                return m_addresses;
-            }
-        }
-
-        public Table<Administrator> Administrators
-        {
-            get
-            {
-                if (m_administrators == null)
-                {
-                    m_administrators = this.GetTable<Administrator>();
-                }
-
-                return m_administrators;
-            }
-        }
-
-        public Table<Anchor> Anchors
-        {
-            get
-            {
-                if (m_anchors == null)
-                {
-                    m_anchors = this.GetTable<Anchor>();
-                }
-
-                return m_anchors;
-            }
-        }
-        public Table<Certificate> Certificates
-        {
-            get
-            {
-                if (m_certs == null)
-                {
-                    m_certs = this.GetTable<Certificate>();
-                }
-
-                return m_certs;
-            }
-        }
-
-        public Table<DnsRecord> DnsRecords
-        {
-            get
-            {
-                if (m_dnsRecords == null)
-                {
-                    m_dnsRecords = this.GetTable<DnsRecord>();
-                }
-
-                return m_dnsRecords;
-            }
-        }
-
-        public Table<Domain> Domains
-        {
-            get
-            {
-                if (m_domains == null)
-                {
-                    m_domains = this.GetTable<Domain>();
-                }
-
-                return m_domains;
-            }
-        }
-        
-        public Table<Property> Properties
-        {
-            get
-            {
-                if (m_properties == null)
-                {
-                    m_properties = this.GetTable<Property>();
-                }
-
-                return m_properties;
-            }
-        }
-
-        public Table<NamedBlob> Blobs
-        {
-            get
-            {
-                if (m_blobs == null)
-                {
-                    m_blobs = this.GetTable<NamedBlob>();
-                }
-
-                return m_blobs;
-            }
-        }
-
-        public Table<Bundle> Bundles
-        {
-            get
-            {
-                if (m_bundles == null)
-                {
-                    m_bundles = this.GetTable<Bundle>();
-                }
-
-                return m_bundles;
-            }
-        }
-
-        public Table<Mdn> Mdns
-        {
-            get
-            {
-                if (m_mdns == null)
-                {
-                    m_mdns = this.GetTable<Mdn>();
-                }
-
-                return m_mdns;
-            }
-        }
-
-        public Table<CertPolicy> CertPolicies
-        {
-            get
-            {
-                if (m_certPolicies == null)
-                {
-                    m_certPolicies = this.GetTable<CertPolicy>();
-                }
-
-                return m_certPolicies;
-            }
-        }
-
-        public Table<CertPolicyGroupMap> CertPolicyGroupMaps
-        {
-            get
-            {
-                if (m_certPolicyGroupMap == null)
-                {
-                    m_certPolicyGroupMap = this.GetTable<CertPolicyGroupMap>();
-                }
-
-                return m_certPolicyGroupMap;
-            }
-        }
-
-        public Table<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps
-        {
-            get
-            {
-                if (m_certPolicyGroupDomainMap == null)
-                {
-                    m_certPolicyGroupDomainMap = this.GetTable<CertPolicyGroupDomainMap>();
-                }
-
-                return m_certPolicyGroupDomainMap;
-            }
-        }
-        
-        
-        public Table<CertPolicyGroup> CertPolicyGroups
-        {
-            get
-            {
-                if (m_certPolicyGroups == null)
-                {
-                    m_certPolicyGroups = this.GetTable<CertPolicyGroup>();
-                }
-
-                return m_certPolicyGroups;
+                optionsBuilder
+                    .EnableSensitiveDataLogging()
+                    .UseLoggerFactory(MyLoggerFactory)
+                    .UseSqlServer(
+                        _connectionString, 
+                        providerOptions => providerOptions.CommandTimeout(_timeout));
             }
         }
 
         //
         // datacontext for many to many relationship 
         //
-        private static ConfigDatabase removeRecordContext = null;
-        public static void RemoveAssociativeRecord<T>(T association) where T : class
-        {
-            if (removeRecordContext == null)
-                removeRecordContext = new ConfigDatabase(m_removeRecordMtoMConnectionString);
-
-            Table<T> tableData = removeRecordContext.GetTable<T>();
-            var record = tableData.SingleOrDefault(r => r == association);
-            if (record != null)
-            {
-                tableData.DeleteOnSubmit(record);
-            }
-        }
-
-        public void BeginTransaction()
-        {
-            if (this.Connection == null || this.Connection.State == ConnectionState.Closed)
-            {
-                this.Connection.Open();
-            }
-
-            m_transaction = this.Connection.BeginTransaction();
-            this.Transaction = m_transaction;
-        }
-        
-        public void Commit()
-        {
-            if (m_transaction != null)
-            {
-                m_transaction.Commit();
-                m_transaction = null;
-                this.Transaction = null;
-            }
-        }
-        
-        public void Rollback()
-        {
-            this.Rollback(false);
-        }
-        
-        public void Rollback(bool disposing)
-        {
-            if (m_transaction != null)
-            {
-                try
-                {
-                    m_transaction.Rollback();
-                }
-                catch
-                {
-                }
-                m_transaction = null;
-                if (!disposing)
-                {
-                    this.Transaction = null;
-                }
-            }
-        }
-        
-        protected override void Dispose(bool disposing)
-        {
-            this.Rollback(disposing);         
-            base.Dispose(disposing);
-        }
+        // private static ConfigDatabase removeRecordContext = null;
+        //
+        // public static void RemoveAssociativeRecord<T>(T association) where T : class
+        // {
+        //     if (removeRecordContext == null)
+        //         removeRecordContext = new ConfigDatabase(_connectionString);
+        //
+        //     Table<T> tableData = removeRecordContext.GetTable<T>();
+        //     var record = tableData.SingleOrDefault(r => r == association);
+        //     if (record != null)
+        //     {
+        //         tableData.DeleteOnSubmit(record);
+        //     }
+        // }
     }
 }

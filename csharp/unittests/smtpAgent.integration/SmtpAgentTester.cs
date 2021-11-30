@@ -26,6 +26,7 @@ using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.DSN;
 using Health.Direct.Common.Mail.Notifications;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Health.Direct.SmtpAgent.Config;
 using Xunit;
 

@@ -20,6 +20,7 @@ using System.Linq;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.DnsResponder.Tests
