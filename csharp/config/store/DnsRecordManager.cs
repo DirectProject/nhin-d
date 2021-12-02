@@ -4,7 +4,8 @@
 
  Authors:
     Chris Lomonico      chris.lomonico@surescripts.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -41,11 +42,9 @@ namespace Health.Direct.Config.Store
 
         public void Add(DnsRecord record)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, record);
-                db.SubmitChanges();
-            }    
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, record);
+            db.SubmitChanges();
         }
 
         public void Add(ConfigDatabase db, DnsRecord record)
@@ -64,11 +63,9 @@ namespace Health.Direct.Config.Store
         
         public void Add(DnsRecord[] dnsRecords)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, dnsRecords);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, dnsRecords);
+            db.SubmitChanges();
         }
 
         public void Add(ConfigDatabase db
@@ -91,10 +88,8 @@ namespace Health.Direct.Config.Store
 
         public DnsRecord Get(long recordID)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, recordID);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, recordID);
         }
 
         public DnsRecord Get(ConfigDatabase db, long recordID)
@@ -114,11 +109,8 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-               return db.DnsRecords.Get(recordIDs).ToArray();
-               
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.DnsRecords.Get(recordIDs).ToArray();
         }
 
 
@@ -129,12 +121,9 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db
-                    , domainName).ToArray();
-
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db
+                , domainName).ToArray();
         }
 
 
@@ -152,13 +141,11 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
             }
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db
-                    , domainName
-                    , typeID).ToArray();
 
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db
+                , domainName
+                , typeID).ToArray();
         }
 
 
@@ -174,13 +161,11 @@ namespace Health.Direct.Config.Store
             , int maxResults
             , Common.DnsResolver.DnsStandard.RecordType typeID)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db
-                    , lastRecordID
-                    , maxResults
-                    , typeID).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db
+                , lastRecordID
+                , maxResults
+                , typeID).ToArray();
         }
         
         public IEnumerable<DnsRecord> Get(ConfigDatabase db
@@ -195,10 +180,8 @@ namespace Health.Direct.Config.Store
 
         public DnsRecord[] Get(long lastRecordID, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastRecordID, maxResults).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, lastRecordID, maxResults).ToArray();
         }
         
         public IEnumerable<DnsRecord> Get(ConfigDatabase db, long lastRecordID, int maxResults)
@@ -212,12 +195,10 @@ namespace Health.Direct.Config.Store
         /// <param name="dnsRecord">DnsRecord instance to be removed</param>
         public void Remove(DnsRecord dnsRecord)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                db.DnsRecords.Attach(dnsRecord);
-                this.Remove(db
-                    , dnsRecord);
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            db.DnsRecords.Attach(dnsRecord);
+            this.Remove(db
+                , dnsRecord);
         }
 
         /// <summary>
@@ -237,11 +218,9 @@ namespace Health.Direct.Config.Store
         /// <param name="recordID">long holding the id of the record to be deleted</param>
         public void Remove(long recordID)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                this.Remove(db
-                    , recordID);
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            this.Remove(db
+                , recordID);
         }
 
         /// <summary>
@@ -260,10 +239,8 @@ namespace Health.Direct.Config.Store
         /// </summary>
         public void RemoveAll()
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                this.RemoveAll(db);
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            this.RemoveAll(db);
         }
 
         /// <summary>
@@ -277,11 +254,9 @@ namespace Health.Direct.Config.Store
 
         public void Update(DnsRecord dnsRecord)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                Update(db, dnsRecord);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            Update(db, dnsRecord);
+            db.SubmitChanges();
         }
 
         public void Update(IEnumerable<DnsRecord> dnsRecords)
@@ -290,14 +265,13 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("DnsRecords");
             }
-            using (ConfigDatabase db = this.Store.CreateContext())
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach (DnsRecord dnsRecord in dnsRecords)
             {
-                foreach (DnsRecord dnsRecord in dnsRecords)
-                {
-                    Update(db, dnsRecord);
-                }
-                db.SubmitChanges();
+                Update(db, dnsRecord);
             }
+            db.SubmitChanges();
         }
 
         public void Update(ConfigDatabase db, DnsRecord dnsRecord)
@@ -318,10 +292,8 @@ namespace Health.Direct.Config.Store
 
         public int Count(Common.DnsResolver.DnsStandard.RecordType? recordType)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.DnsRecords.GetCount((int?)recordType.Value);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.DnsRecords.GetCount((int?)recordType.Value);
         }
     }
 }

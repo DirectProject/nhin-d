@@ -4,7 +4,7 @@
 
  Authors:
     Chris Lomonico  chris.lomonico@surescripts.com
-    Joe Shook	    jshook@kryptiq.com
+    Joe Shook     Joseph.Shook@Surescripts.com
  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -905,9 +904,9 @@ namespace Health.Direct.Config.Store.Tests
         /// This method will clean, load and verify Anchor records based on the certs stored in the
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
-        protected void InitAnchorRecords()
+        protected async Task InitAnchorRecords()
         {
-            this.InitAnchorRecords(new AnchorManager(CreateConfigStore())
+            await InitAnchorRecords(new AnchorManager(CreateConfigStore())
                                    , new ConfigDatabase(ConnectionString));
         }
 
@@ -922,10 +921,12 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitAnchorRecords(AnchorManager mgr
+        protected async Task InitAnchorRecords(AnchorManager mgr
                                          , ConfigDatabase db)
         {
-            mgr.RemoveAll(db);
+            await AnchorUtil.RemoveAll(db);
+
+            //mgr.RemoveAll(db);
             for (int i = 1; i <= MAXDOMAINCOUNT; i++)
             {
                 //----------------------------------------------------------------------------------------------------
@@ -938,7 +939,7 @@ namespace Health.Direct.Config.Store.Tests
 
                     anc.ForIncoming = true;
                     anc.ForOutgoing = true;
-                    mgr.Add(GetAnchorFromTestCertPfx(i, t));
+                    await mgr.Add(GetAnchorFromTestCertPfx(i, t));
 
                 }
             }

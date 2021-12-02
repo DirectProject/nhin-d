@@ -49,12 +49,10 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("blob");
             }
-            
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, blob);
-                db.SubmitChanges();
-            }
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, blob);
+            db.SubmitChanges();
         }
         
         public void Add(ConfigDatabase db, NamedBlob blob)
@@ -72,10 +70,8 @@ namespace Health.Direct.Config.Store
         
         public NamedBlob Get(string name)
         {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, name);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, name);
         }
         
         public NamedBlob Get(ConfigDatabase db, string name)
@@ -94,10 +90,8 @@ namespace Health.Direct.Config.Store
                         
         public NamedBlob[] GetNameStartsWith(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return GetNameStartsWith(db, name).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return GetNameStartsWith(db, name).ToArray();
         }
 
         public IEnumerable<NamedBlob> GetNameStartsWith(ConfigDatabase db, string name)
@@ -121,11 +115,9 @@ namespace Health.Direct.Config.Store
                 throw new ArgumentNullException("blob");
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                Update(db, blob);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            Update(db, blob);
+            db.SubmitChanges();
         }
         
         protected void Update(ConfigDatabase db, NamedBlob blob)
@@ -168,10 +160,8 @@ namespace Health.Direct.Config.Store
 
         public void Remove(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, name);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, name);
         }
 
         public void Remove(ConfigDatabase db, string name)
@@ -186,10 +176,8 @@ namespace Health.Direct.Config.Store
         
         public string[] ListNamesStartWith(string prefix)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.ListNamesStartWith(db, prefix).ToArray();
-            }            
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.ListNamesStartWith(db, prefix).ToArray();
         }
                 
         public IEnumerable<string> ListNamesStartWith(ConfigDatabase db, string prefix)
@@ -209,10 +197,8 @@ namespace Health.Direct.Config.Store
 
         public bool Contains(string blobName)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Contains(db, blobName);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Contains(db, blobName);
         }
         
         public bool Contains(ConfigDatabase db, string blobName)
@@ -227,12 +213,10 @@ namespace Health.Direct.Config.Store
 
         public IEnumerator<NamedBlob> GetEnumerator()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach (NamedBlob blob in db.Blobs)
             {
-                foreach (NamedBlob blob in db.Blobs)
-                {
-                    yield return blob;
-                }
+                yield return blob;
             }
         }
     

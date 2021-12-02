@@ -4,7 +4,7 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -41,11 +41,9 @@ namespace Health.Direct.Config.Store
         
         public void Add(string name)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, name);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, name);
+            db.SubmitChanges();
         }
         
         public Domain Add(ConfigDatabase db, string name)
@@ -55,12 +53,10 @@ namespace Health.Direct.Config.Store
 
         public Domain Add(Domain domain)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, domain);
-                db.SubmitChanges();
-                return domain;
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, domain);
+            db.SubmitChanges();
+            return domain;
         }
 
         public Domain Add(ConfigDatabase db, Domain domain)
@@ -85,18 +81,14 @@ namespace Health.Direct.Config.Store
         
         public int Count()
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.Domains.GetCount();
-            }            
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.Domains.GetCount();
         }
                 
         public Domain Get(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, name);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, name);
         }
 
         public Domain Get(ConfigDatabase db, string name)
@@ -125,18 +117,14 @@ namespace Health.Direct.Config.Store
 
         public Domain[] Get(string[] names, EntityStatus? status)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, names, status).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, names, status).ToArray();
         }
 
         public Domain[] Get(string groupName, EntityStatus? status)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, groupName, status).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, groupName, status).ToArray();
         }
         
         public IEnumerable<Domain> Get(ConfigDatabase db, string[] names, EntityStatus? status)
@@ -179,10 +167,8 @@ namespace Health.Direct.Config.Store
 
         public Domain[] Get(string lastDomain, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastDomain, maxResults).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, lastDomain, maxResults).ToArray();
         }
 
         public IEnumerable<Domain> Get(ConfigDatabase db, string lastDomain, int maxResults)
@@ -197,10 +183,8 @@ namespace Health.Direct.Config.Store
 
         public Domain Get(long id)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                return this.Get(db, id);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            return this.Get(db, id);
         }
 
         public Domain Get(ConfigDatabase db, long id)
@@ -217,11 +201,9 @@ namespace Health.Direct.Config.Store
 
         public void Update(Domain domain)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Update(db, domain);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Update(db, domain);
+            db.SubmitChanges();
         }
         
         protected void Update(ConfigDatabase db, Domain domain)
@@ -244,10 +226,8 @@ namespace Health.Direct.Config.Store
                 
         public void Remove(string name)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, name);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, name);
         }
 
         public void Remove(ConfigDatabase db, string name)
@@ -274,20 +254,16 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.RemoveAll(db);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.RemoveAll(db);
         }
 
         public IEnumerator<Domain> GetEnumerator()
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach(Domain domain in db.Domains)
             {
-                foreach(Domain domain in db.Domains)
-                {
-                    yield return domain;
-                }       
+                yield return domain;
             }
         }
 

@@ -17,539 +17,566 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
+using Microsoft.EntityFrameworkCore;
 
-namespace Health.Direct.Config.Store
+namespace Health.Direct.Config.Store;
+
+/// <summary>
+/// Manage certificate policy data access 
+/// </summary>
+public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 {
-    public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
+    internal CertPolicyGroupManager(ConfigStore store)
     {
-        ConfigStore m_store;
+        Store = store;
+    }
 
-        internal CertPolicyGroupManager(ConfigStore store)
+    internal ConfigStore Store { get; }
+
+    public async Task<CertPolicyGroup> Add(CertPolicyGroup @group)
+    {
+        await using var db = Store.CreateContext();
+        await Add(db, @group);
+        await db.SaveChangesAsync();
+
+        return @group;
+    }
+
+    public async Task Add(ConfigDatabase db, CertPolicyGroup @group)
+    {
+        if (db == null)
         {
-            m_store = store;
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (@group == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroup);
         }
 
-        internal ConfigStore Store
+        await db.CertPolicyGroups.AddAsync(@group);
+    }
+
+    
+    public async Task<CertPolicyGroup> Get(long id)
+    {
+        await using var db = Store.CreateContext();
+        var certPolicyGroup = await Get(db, id);
+            
+        return certPolicyGroup;
+    }
+
+    /// <summary>
+    /// Get PolicyGroup by name
+    /// </summary>
+    /// <param name="name">Name of the policy</param>
+    /// <returns></returns>
+    public async Task<CertPolicyGroup> Get(string name)
+    {
+        await using var db = Store.CreateContext();
+        var certPolicyGroup = await Get(db, name);
+
+        return certPolicyGroup;
+    }
+    
+    /// <summary>
+    /// Get PolicyGroupOwnerMap by name with owners
+    /// </summary>
+    /// <param name="name">Name of the policy</param>
+    /// <returns></returns>
+    public async Task<List<CertPolicyGroupDomainMap>> GetWithOwners(string name)
+    {
+        await using var db = Store.CreateContext();
+        var maps = await GetWithOwners(db, name);
+
+        return maps;
+    }
+
+
+
+    public async Task<CertPolicyGroup> Get(ConfigDatabase db, string name)
+    {
+        if (db == null)
         {
-            get
-            {
-                return m_store;
-            }
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
+        }
+
+        return  await db.CertPolicyGroups
+            .Where(e => e.Name == name)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<List<CertPolicyGroupDomainMap>> GetWithOwners(ConfigDatabase db, string name)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
         }
         
-        public async Task<CertPolicyGroup> Add(CertPolicyGroup @group)
+        var entities = await  db.CertPolicyGroupDomainMaps
+            .Include(cpg => cpg.CertPolicyGroup)
+            .Where(e => e.CertPolicyGroup.Name == name)
+            .ToListAsync();
+
+        return entities;
+    }
+
+
+    public async Task<CertPolicyGroup> Get(ConfigDatabase db, long id)
+    {
+        if (db == null)
         {
-            await using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, @group);
-                await db.SaveChangesAsync();
-                return @group;
-            }
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public CertPolicyGroup Add(ConfigDatabase db, CertPolicyGroup @group)
+        var entity = await db.CertPolicyGroups
+            .Where(e => e.ID == id)
+            .SingleOrDefaultAsync();
+
+        return entity;
+    }
+
+
+    public async Task<List<CertPolicyGroup>> GetByDomains(string[] owners)
+    {
+        if (owners.IsNullOrEmpty())
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (@group == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroup);
-            }
-
-            db.CertPolicyGroups.Add(@group);
-
-            return @group;
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        
-        public CertPolicyGroup Get(long id)
+        await using var db = Store.CreateReadContext();
+        var entities = await db.CertPolicyGroupDomainMaps
+            .Where(certDomainMap => owners.Contains(certDomainMap.Owner))
+            .Include(certDomainMap => certDomainMap.CertPolicyGroup)
+            .Select(e => e.CertPolicyGroup)
+            .ToListAsync();
+
+        return entities;
+    }
+
+    public async Task<List<CertPolicyGroup>> Get(long lastID, int maxResults)
+    {
+        using ConfigDatabase db = Store.CreateReadContext();
+        return await Get(db, lastID, maxResults);
+    }
+
+    public async Task<List<CertPolicyGroup>> Get(ConfigDatabase db, long lastID, int maxResults)
+    {
+        if (db == null)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                var certPolicyGroup = this.Get(db, id);
-                FixUpModel(certPolicyGroup);
-                return certPolicyGroup;
-            }
+            throw new ArgumentNullException(nameof(db));
         }
 
-        /// <summary>
-        /// Get PolicyGroup by name
-        /// </summary>
-        /// <param name="name">Name of the policy</param>
-        /// <returns></returns>
-        public CertPolicyGroup Get(string name)
+        var entities = await db.CertPolicyGroups
+            .Where(cpg => cpg.ID > lastID)
+            .OrderBy(cpg => cpg.ID)
+            .Take(maxResults)
+            .ToListAsync();
+
+        return entities;
+    }
+
+    public async Task<bool> PolicyGroupMapExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+    {
+        await using var db = Store.CreateReadContext();
+        bool exists = await db.CertPolicyGroupMaps
+            .Include(cpgm => cpgm.CertPolicy)
+            .Include(cpgm => cpgm.CertPolicyGroup)
+            .AnyAsync(cpgm => 
+                cpgm.CertPolicy.Name == policyName
+                && cpgm.CertPolicyGroup.Name == groupName
+                && cpgm.PolicyUse == policyUse
+                && cpgm.ForIncoming == incoming
+                && cpgm.ForOutgoing == outgoing
+            );
+
+        return exists;
+    }
+
+    public async Task<bool> PolicyGroupMapExists(string groupName, string owner)
+    {
+        await using var db = Store.CreateReadContext();
+        bool exists = await db.CertPolicyGroupDomainMaps
+            .Include(cpg => cpg.CertPolicyGroup)
+            .AnyAsync(cpg =>
+                cpg.CertPolicyGroup.Name == groupName
+                && cpg.Owner == owner
+            );
+
+        return exists;
+    }
+
+    public async Task Update(CertPolicyGroup policyGroup)
+    {
+        await using var db = Store.CreateContext();
+        Update(db, policyGroup);
+
+        await db.SaveChangesAsync();
+    }
+
+
+    protected void Update(ConfigDatabase db, CertPolicyGroup policyGroup)
+    {
+        if (db == null)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                var certPolicyGroup = this.Get(db, name);
-                FixUpModel(certPolicyGroup);
-                return certPolicyGroup;
-            }
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (policyGroup == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
 
-        /// <summary>
-        /// Get PolicyGroupMap by name with policies
-        /// </summary>
-        /// <param name="name">Name of the policy</param>
-        /// <returns></returns>
-        public CertPolicyGroupMap[] GetWithPolicies(string name)
+        var update = new CertPolicyGroup();
+        update.CopyFixed(policyGroup);
+        db.CertPolicyGroups.Attach(update);
+        update.ApplyChanges(policyGroup);
+    }
+
+
+
+    public async Task AddPolicyUse(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+    {
+        await using var db = Store.CreateContext();
+        AddPolicyUse(db, policyName, groupName, policyUse, incoming, outgoing);
+        await db.SaveChangesAsync();
+    }
+
+
+    protected async Task AddPolicyUse(ConfigDatabase db, string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+    {
+        if (db == null)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                var maps = this.GetWithPolicies(db, name);
-                return maps;
-            }
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(policyName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
+        }
+        if (string.IsNullOrEmpty(groupName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
         }
 
-        /// <summary>
-        /// Get PolicyGroupOwnerMap by name with owners
-        /// </summary>
-        /// <param name="name">Name of the policy</param>
-        /// <returns></returns>
-        public CertPolicyGroupDomainMap[] GetWithOwners(string name)
+        var group = await db.CertPolicyGroups
+            .Where(cpg => cpg.Name == groupName)
+            .SingleOrDefaultAsync();
+
+        var policy = await db.CertPolicies
+            .Where(g => g.Name == policyName)
+            .SingleOrDefaultAsync();
+
+        group.CertPolicies.Add(policy);
+        var map = group.CertPolicyGroupMaps.First(m => m.IsNew);
+        map.PolicyUse = policyUse;
+        map.ForIncoming = incoming;
+        map.ForOutgoing = outgoing;
+    }
+
+
+    public async Task AssociateToOwner(string groupName, string owner)
+    {
+        await using var db = Store.CreateContext();
+        AssociateToOwner(db, groupName, owner);
+        await db.SaveChangesAsync();
+    }
+
+    protected async Task AssociateToOwner(ConfigDatabase db, string groupName, string owner)
+    {
+        if (db == null)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                var maps = this.GetWithOwners(db, name);
-                return maps;
-            }
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
+        var group = await db.CertPolicyGroups
+            .Where(cpg => cpg.Name == groupName)
+            .SingleOrDefaultAsync();
 
-
-        //
-        // This object mapping is missing.  Not sure why it was not automatic
-        //
-        private static void FixUpModel(CertPolicyGroup certPolicyGroup)
+        CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
         {
-            if (certPolicyGroup == null) return;
-            foreach (var certPolicyGroupMap in certPolicyGroup.CertPolicyGroupMaps)
-            {
-                certPolicyGroupMap.CertPolicyGroup = certPolicyGroup;
-            }
-        }
-
-        public CertPolicyGroup Get(ConfigDatabase db, string name)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-            }
-
-            return db.CertPolicyGroups.Get(name);
-        }
-
-
-        public CertPolicyGroupMap[] GetWithPolicies(ConfigDatabase db, string name)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-            }
-
-            return db.CertPolicyGroups.GetWithPolicies(name).ToArray();
-        }
-
-
-        public CertPolicyGroupDomainMap[] GetWithOwners(ConfigDatabase db, string name)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-            }
-
-            return db.CertPolicyGroups.GetWithOwners(name).ToArray();
-        }
-
-
-        public CertPolicyGroup Get(ConfigDatabase db, long id)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            return db.CertPolicyGroups.Get(id);
-        }
-
-
-        public CertPolicyGroup[] GetByDomains(string[] owners)
-        {
-            if (owners.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                var cpgs = db.CertPolicyGroups.GetByOwners(owners);
-                return cpgs.ToArray();
-            }
-        }
-
-        public CertPolicyGroup[] Get(long lastID, int maxResults)
-        {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastID, maxResults).ToArray();
-            }
-        }
-
-        public IEnumerable<CertPolicyGroup> Get(ConfigDatabase db, long lastID, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            return db.CertPolicyGroups.Get(lastID, maxResults);
-        }
-
-        public bool PolicyGroupMapExists(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
-        {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.CertPolicyGroupMaps.Exists(policyName, groupName, policyUse, incoming, outgoing);
-
-            }
-        }
-
-        public bool PolicyGroupMapExists(string groupName, string owner)
-        {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.CertPolicyGroupDomainMaps.Exists(groupName, owner);
-
-            }
-        }
-
-        public void Update(CertPolicyGroup policyGroup)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Update(db, policyGroup);
-                db.SubmitChanges();
-            }
-        }
-
-
-        protected void Update(ConfigDatabase db, CertPolicyGroup policyGroup)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (policyGroup == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
-            }
-
-            CertPolicyGroup update = new CertPolicyGroup();
-            update.CopyFixed(policyGroup);
-            db.CertPolicyGroups.Attach(update);
-            update.ApplyChanges(policyGroup);
-
-        }
-
-
-
-        public void AddPolicyUse(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.AddPolicyUse(db, policyName, groupName, policyUse, incoming, outgoing);
-                db.SubmitChanges();
-            }
-        }
-
-
-        protected void AddPolicyUse(ConfigDatabase db, string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (String.IsNullOrEmpty(policyName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
-            }
-            if (String.IsNullOrEmpty(groupName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
-            }
-            CertPolicyGroup group = db.CertPolicyGroups.Get(groupName);
-            CertPolicy policy = db.CertPolicyGroups.GetPolicy(policyName);
-            group.CertPolicies.Add(policy);
-            CertPolicyGroupMap map = group.CertPolicyGroupMaps.First(m => m.IsNew);
-            map.Use = policyUse;
-            map.ForIncoming = incoming;
-            map.ForOutgoing = outgoing;
-        }
-
-
-        public void AssociateToOwner(string groupName, string owner)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.AssociateToOwner(db, groupName, owner);
-                db.SubmitChanges();
-            }
-        }
-
-        protected void AssociateToOwner(ConfigDatabase db, string groupName, string owner)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            CertPolicyGroup group = db.CertPolicyGroups.Get(groupName);
-
-            CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
-            {
-                CertPolicyGroup = group,
-                Owner = owner
-            };
-            group.CertPolicyGroupDomainMaps.Add(map);
-
-        }
-
-        public void DisassociateFromDomain(string owner, long policyGroupID)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                CertPolicyGroup policyGroup = db.CertPolicyGroups.Get(policyGroupID);
-                if (policyGroup.CertPolicyGroupDomainMaps.Any(map => map.Owner == owner))
-                {
-                    CertPolicyGroupDomainMap[] maps =
-                    {
-                        new CertPolicyGroupDomainMap(true)
-                        {
-                            CertPolicyGroup = policyGroup,
-                            Owner = owner
-                        }
-                    };
-                    this.RemoveDomain(db, maps);
-                    // We don't commit, because we execute deletes directly
-                }
-            }
-        }
-
-        /// <summary>
-        /// Disassociate all Policy Groups associated to an owner
-        /// </summary>
-        /// <param name="owner"></param>
-        public void DisassociateFromDomain(string owner)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                db.CertPolicyGroupDomainMaps.ExecDelete(owner);
-            }
-        }
-
-        /// <summary>
-        /// Remove all 
-        /// </summary>
-        /// <param name="policyGroupId"></param>
-        public void DisassociateFromDomains(long policyGroupId)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                db.CertPolicyGroupDomainMaps.ExecDelete(policyGroupId);
-            }
-        }
-
-
-        public void Remove(long policyGroupId)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, policyGroupId);
-            }
-        }
-
-        public void Remove(ConfigDatabase db, long policyGroupId)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            db.CertPolicyGroups.ExecDelete(policyGroupId);
-        }
-
-        public void Remove(long[] policyGroupIds)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, policyGroupIds);
-                // We don't commit, because we execute deletes directly
-            }
-        }
-
-        public void Remove(ConfigDatabase db, long[] policyGroupIds)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (policyGroupIds.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            for (int i = 0; i < policyGroupIds.Length; ++i)
-            {
-                db.CertPolicyGroups.ExecDelete(policyGroupIds[i]);
-            }
-        }
-
-        public void Remove(string groupName)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.Remove(db, groupName);
-                // We don't commit, because we execute deletes directly
-            }
-        }
-
-        public void Remove(ConfigDatabase db, string groupName)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(groupName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
-            }
-            db.CertPolicyGroups.ExecDelete(groupName);
-        }
-
-        public void RemovePolicy(CertPolicyGroupMap[] map)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.RemovePolicy(db, map);
-                // We don't commit, because we execute deletes directly
-            }
-        }
-
-
-        public void RemovePolicy(ConfigDatabase db, CertPolicyGroupMap[] map)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (map.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            for (int i = 0; i < map.Length; ++i)
-            {
-                db.CertPolicyGroups.ExecDeleteGroupMap(map[i]);
-            }
-        }
-
-        public void RemoveDomain(CertPolicyGroupDomainMap[] map)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.RemoveDomain(db, map);
-                // We don't commit, because we execute deletes directly
-            }
-        }
-
-        public void RemoveDomain(ConfigDatabase db, CertPolicyGroupDomainMap[] map)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (map.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            for (int i = 0; i < map.Length; ++i)
-            {
-                db.CertPolicyGroups.ExecDeleteDomainMap(map[i]);
-            }
-        }
-
-        public void RemovePolicyUseFromGroup(long mapId)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.RemovePolicyUseFromGroup(db, mapId);
-                // We don't commit, because we execute deletes directly
-            }
-        }
-
-        public void RemovePolicyUseFromGroup(ConfigDatabase db, long mapId)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            db.CertPolicyGroupMaps.ExecDeleteGroupMap(mapId);
-        }
-
-
-        public void RemoveAll(ConfigDatabase db)
-        {
-            db.CertPolicyGroups.ExecDeleteAll();
-        }
-
-        public void RemoveAll()
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.RemoveAll(db);
-            }
-        }
-
-        public IEnumerator<CertPolicyGroup> GetEnumerator()
-        {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                foreach (CertPolicyGroup policy in db.CertPolicyGroups)
-                {
-                    yield return policy;
-                }
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-
+            CertPolicyGroup = group,
+            Owner = owner
+        };
+        group.CertPolicyGroupDomainMaps.Add(map);
 
     }
+
+    public async Task DisassociateFromDomain(string owner, long policyGroupID)
+    {
+        using var db = Store.CreateContext();
+        var policyGroup = await db.CertPolicyGroups
+            .Where(cpg => cpg.ID == policyGroupID)
+            .SingleOrDefaultAsync();
+
+        if (policyGroup.CertPolicyGroupDomainMaps.Any(map => map.Owner == owner))
+        {
+            CertPolicyGroupDomainMap[] maps =
+            {
+                new CertPolicyGroupDomainMap(true)
+                {
+                    CertPolicyGroup = policyGroup,
+                    Owner = owner
+                }
+            };
+            await RemoveDomain(db, maps);
+            await db.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Disassociate all Policy Groups associated to an owner
+    /// </summary>
+    /// <param name="owner"></param>
+    public async Task DisassociateFromDomain(string owner)
+    {
+        await using var db = Store.CreateContext();
+        var certPolicyGroupDomainMap = await db.CertPolicyGroupDomainMaps
+            .SingleOrDefaultAsync(m => m.Owner == owner);
+
+        if (certPolicyGroupDomainMap != null)
+        {
+            db.CertPolicyGroupDomainMaps.Remove(certPolicyGroupDomainMap);
+            await db.SaveChangesAsync();
+        }
+    }
+
+    /// <summary>
+    /// Remove all 
+    /// </summary>
+    /// <param name="policyGroupId"></param>
+    public async Task DisassociateFromDomains(long policyGroupId)
+    {
+        await using var db = Store.CreateContext();
+        var certPolicyGroupDomainMap = await db.CertPolicyGroupDomainMaps
+            .SingleOrDefaultAsync(m => m.CertPolicyGroupId == policyGroupId);
+
+        if (certPolicyGroupDomainMap != null)
+        {
+            db.CertPolicyGroupDomainMaps.Remove(certPolicyGroupDomainMap);
+            await db.SaveChangesAsync();
+        }
+    }
+
+
+    public async Task Remove(long policyGroupId)
+    {
+        await using ConfigDatabase db = Store.CreateContext();
+        await Remove(db, policyGroupId);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Remove(ConfigDatabase db, long policyGroupId)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        var certPolicyGroupDomainMap = await db.CertPolicyGroups
+            .SingleOrDefaultAsync(m => m.ID == policyGroupId);
+
+        if (certPolicyGroupDomainMap != null)
+        {
+            db.CertPolicyGroups.Remove(certPolicyGroupDomainMap);
+        }
+    }
+
+    public async Task Remove(long[] policyGroupIds)
+    {
+        using ConfigDatabase db = Store.CreateContext();
+        await Remove(db, policyGroupIds);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Remove(ConfigDatabase db, long[] policyGroupIds)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (policyGroupIds.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+        
+        for (int i = 0; i < policyGroupIds.Length; ++i)
+        {
+            await Remove(db, policyGroupIds[i]);
+        }
+    }
+
+    public async Task Remove(string groupName)
+    {
+        await using ConfigDatabase db = Store.CreateContext();
+        await Remove(db, groupName);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Remove(ConfigDatabase db, string groupName)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(groupName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
+        }
+
+        var certPolicyGroupDomainMap = await db.CertPolicyGroups
+            .SingleOrDefaultAsync(m => m.Name == groupName);
+
+        if (certPolicyGroupDomainMap != null)
+        {
+            db.CertPolicyGroups.Remove(certPolicyGroupDomainMap);
+        }
+    }
+
+    public async Task RemovePolicy(CertPolicyGroupMap[] map)
+    {
+        await using var db = Store.CreateContext();
+        await RemovePolicy(db, map);
+        await db.SaveChangesAsync();
+    }
+
+
+    public async Task RemovePolicy(ConfigDatabase db, CertPolicyGroupMap[] map)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (map.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        for (int i = 0; i < map.Length; ++i)
+        {
+            var certPolicyGroupMaps = await db.CertPolicyGroupMaps
+                .SingleOrDefaultAsync(m =>
+                    m.CertPolicyId == map[i].CertPolicyId
+                    && m.CertPolicyGroupId == map[i].CertPolicyGroupId);
+
+            db.CertPolicyGroupMaps.Remove(certPolicyGroupMaps);
+        }
+    }
+
+    /// <summary>
+    /// Delete record from CertPolicyGroupDomainMap by CertPolicyGroupId and Owner fields
+    ///
+    /// User is responsible for saving.
+    /// </summary>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    public async Task RemoveDomain(CertPolicyGroupDomainMap[] map)
+    {
+        await using var db = Store.CreateContext();
+        await RemoveDomain(db, map);
+        await db.SaveChangesAsync();
+    }
+
+    /// <summary>Delete record from CertPolicyGroupDomainMap by CertPolicyGroupId and Owner fields
+    ///
+    /// User is responsible for saving. 
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="map"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ConfigStoreException"></exception>
+    public async Task RemoveDomain(ConfigDatabase db, CertPolicyGroupDomainMap[] map)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (map.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        for (int i = 0; i < map.Length; ++i)
+        {
+            var certPolicyGroupDomainMap = await db.CertPolicyGroupDomainMaps
+                .SingleOrDefaultAsync(m => 
+                    m.CertPolicyGroupId == map[i].CertPolicyGroupId
+                    && m.Owner == map[i].Owner);
+
+            if (certPolicyGroupDomainMap != null)
+            {
+                db.CertPolicyGroupDomainMaps.Remove(certPolicyGroupDomainMap);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Remove a policy from a group by MapId in CertPolicyGroupMap table.
+    /// </summary>
+    /// <param name="mapId"></param>
+    /// <returns></returns>
+    public async Task RemovePolicyUseFromGroup(long mapId)
+    {
+        await using var db = Store.CreateContext();
+        await RemovePolicyUseFromGroup(db, mapId);
+        await db.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Remove a policy from a group by MapId in CertPolicyGroupMap table.
+    ///
+    /// User is responsible for saving.
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="mapId"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public async Task RemovePolicyUseFromGroup(ConfigDatabase db, long mapId)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        var certPolicyGroupMap = await db.CertPolicyGroupMaps
+            .SingleOrDefaultAsync(m => m.ID == mapId);
+
+        if (certPolicyGroupMap != null)
+        {
+            db.CertPolicyGroupMaps.Remove(certPolicyGroupMap);
+        }
+    }
+
+
+    /// <inheritdoc />
+    public IEnumerator<CertPolicyGroup> GetEnumerator()
+    {
+        using ConfigDatabase db = Store.CreateContext();
+        foreach (CertPolicyGroup policy in db.CertPolicyGroups)
+        {
+            yield return policy;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+
+
 }
+

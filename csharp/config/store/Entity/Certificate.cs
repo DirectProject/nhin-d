@@ -158,10 +158,8 @@ namespace Health.Direct.Config.Store.Entity
         {
             if (this.HasData)
             {
-                using(DisposableX509Certificate2 cert = this.ToX509CertificateNoKeys())
-                {
-                    this.SetX509Certificate(cert, false);
-                }
+                using DisposableX509Certificate2 cert = this.ToX509CertificateNoKeys();
+                this.SetX509Certificate(cert, false);
             }
         }
 

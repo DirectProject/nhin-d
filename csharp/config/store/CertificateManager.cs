@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -43,12 +44,10 @@ namespace Health.Direct.Config.Store
                 
         public Certificate Add(Certificate cert)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, cert);
-                db.SubmitChanges();
-                return cert;
-            }                        
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, cert);
+            db.SubmitChanges();
+            return cert;
         }
 
         public void Add(IEnumerable<Certificate> certs)
@@ -56,15 +55,14 @@ namespace Health.Direct.Config.Store
             if (certs == null)
             {
                 throw new ArgumentNullException("certs");
-            }            
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                foreach(Certificate cert in certs)
-                {
-                    this.Add(db, cert);
-                }
-                db.SubmitChanges();
             }
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach(Certificate cert in certs)
+            {
+                this.Add(db, cert);
+            }
+            db.SubmitChanges();
         }
         
         public void Add(ConfigDatabase db, Certificate cert)
@@ -85,12 +83,10 @@ namespace Health.Direct.Config.Store
 
         public Certificate AddHsm(Certificate cert)
         {
-            using (var db = Store.CreateContext())
-            {
-                AddHsm(db, cert);
-                db.SubmitChanges();
-                return cert;
-            }
+            using var db = Store.CreateContext();
+            AddHsm(db, cert);
+            db.SubmitChanges();
+            return cert;
         }
 
         public void AddHsm(ConfigDatabase db, Certificate cert)
@@ -119,10 +115,8 @@ namespace Health.Direct.Config.Store
 
         public Certificate Get(long certID)
         {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, certID);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, certID);
         }
 
         public Certificate[] Get(long[] certIDs)
@@ -131,11 +125,9 @@ namespace Health.Direct.Config.Store
             {
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
-            
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.Certificates.Get(certIDs).ToArray();
-            }
+
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.Certificates.Get(certIDs).ToArray();
         }
         
         public Certificate Get(ConfigDatabase db, long certID)
@@ -150,10 +142,8 @@ namespace Health.Direct.Config.Store
         
         public Certificate[] Get(long lastCertID, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastCertID, maxResults).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, lastCertID, maxResults).ToArray();
         }
 
         public IEnumerable<Certificate> Get(ConfigDatabase db, long lastCertID, int maxResults)
@@ -168,10 +158,8 @@ namespace Health.Direct.Config.Store
         
         public Certificate Get(string owner, string thumbprint)
         {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, owner, thumbprint);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, owner, thumbprint);
         }
         
         public Certificate Get(ConfigDatabase db, string owner, string thumbprint)
@@ -186,10 +174,8 @@ namespace Health.Direct.Config.Store
 
         public Certificate[] Get(string owner)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {                
-                return this.Get(db, owner).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, owner).ToArray();
         }
 
         public IEnumerable<Certificate> Get(ConfigDatabase db, string owner)
@@ -199,10 +185,8 @@ namespace Health.Direct.Config.Store
 
         public Certificate[] Get(string owner, EntityStatus? status)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, owner, status).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, owner, status).ToArray();
         }
 
         public IEnumerable<Certificate> Get(ConfigDatabase db, string owner, EntityStatus? status)
@@ -232,26 +216,22 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            //
+            // Todo: optimize this by using an 'in' query.. 
+            //
+            for (int i = 0; i < certificateIDs.Length; ++i)
             {
-                //
-                // Todo: optimize this by using an 'in' query.. 
-                //
-                for (int i = 0; i < certificateIDs.Length; ++i)
-                {
-                    this.SetStatus(db, certificateIDs[i], status);
-                }
-                //db.SubmitChanges(); // Not needed, since we do a direct update
+                this.SetStatus(db, certificateIDs[i], status);
             }
+            //db.SubmitChanges(); // Not needed, since we do a direct update
         }
         
         public void SetStatus(long certificateID, EntityStatus status)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.SetStatus(db, certificateID, status);
-                //db.SubmitChanges(); // Not needed, since we do a direct update
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.SetStatus(db, certificateID, status);
+            //db.SubmitChanges(); // Not needed, since we do a direct update
         }
         
         public void SetStatus(ConfigDatabase db, long certificateID, EntityStatus status)
@@ -266,11 +246,9 @@ namespace Health.Direct.Config.Store
 
         public void SetStatus(string owner, EntityStatus status)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.SetStatus(db, owner, status);
-                //db.SubmitChanges(); // Not needed, since we do a direct update
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.SetStatus(db, owner, status);
+            //db.SubmitChanges(); // Not needed, since we do a direct update
         }
 
         public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
@@ -285,10 +263,8 @@ namespace Health.Direct.Config.Store
            
         public void Remove(long certificateID)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, certificateID);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, certificateID);
         }
         
         public void Remove(ConfigDatabase db, long certificateID)
@@ -303,12 +279,10 @@ namespace Health.Direct.Config.Store
         
         public void Remove(long[] certificateIDs)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, certificateIDs);
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, certificateIDs);
 
-                // We don't commit, because we execute deletes directly
-            }
+            // We don't commit, because we execute deletes directly
         }
         
         public void Remove(ConfigDatabase db, long[] certificateIDs)
@@ -332,10 +306,8 @@ namespace Health.Direct.Config.Store
         
         public void Remove(string ownerName)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, ownerName);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, ownerName);
         }
 
         public void Remove(ConfigDatabase db, string ownerName)
@@ -360,10 +332,8 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                RemoveAll(db);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            RemoveAll(db);
         }
 
         public X509Certificate2Collection this[string subjectName]

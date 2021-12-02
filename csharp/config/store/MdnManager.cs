@@ -47,20 +47,16 @@ namespace Health.Direct.Config.Store
 
         public void Start(Mdn mdn)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                Start(db, new []{mdn});
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            Start(db, new []{mdn});
+            db.SubmitChanges();
         }
 
         public void Start(Mdn[] mdns)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                Start(db, mdns);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            Start(db, mdns);
+            db.SubmitChanges();
         }
         
         public void Start(ConfigDatabase db, Mdn[] mdns)
@@ -83,23 +79,19 @@ namespace Health.Direct.Config.Store
 
         public void TimeOut(Mdn mdn)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                TimeOut(db, mdn);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            TimeOut(db, mdn);
+            db.SubmitChanges();
         }
 
         public void TimeOut(Mdn[] mdns)
         {
-            using (ConfigDatabase db = Store.CreateContext())
+            using ConfigDatabase db = Store.CreateContext();
+            foreach (var mdn in mdns)
             {
-                foreach (var mdn in mdns)
-                {
-                    TimeOut(db, mdn);
-                }
-                db.SubmitChanges();
+                TimeOut(db, mdn);
             }
+            db.SubmitChanges();
         }
 
         public void TimeOut(ConfigDatabase db, Mdn mdn)
@@ -119,31 +111,27 @@ namespace Health.Direct.Config.Store
 
         public void Update(Mdn mdn)
         {
-            using (ConfigDatabase db = Store.CreateContext())
+            using ConfigDatabase db = Store.CreateContext();
+            try
             {
-                try
-                {
-                    Update(db, mdn);
-                    db.SubmitChanges();
-                }
-                catch
-                {
-                    ThrowMdnFaultException(mdn);
-                    throw;
-                }
+                Update(db, mdn);
+                db.SubmitChanges();
+            }
+            catch
+            {
+                ThrowMdnFaultException(mdn);
+                throw;
             }
         }
                
         public void Update(Mdn[] mdns)
         {
-            using (ConfigDatabase db = Store.CreateContext())
+            using ConfigDatabase db = Store.CreateContext();
+            foreach (var mdn in mdns)
             {
-                foreach (var mdn in mdns)
-                {
-                    Update(db, mdn);
-                }
-                db.SubmitChanges();
+                Update(db, mdn);
             }
+            db.SubmitChanges();
         }
         
         public void Update(ConfigDatabase db, Mdn mdn)
@@ -207,18 +195,14 @@ namespace Health.Direct.Config.Store
 
         public int Count()
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return db.Mdns.GetCount();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return db.Mdns.GetCount();
         }
 
         public Mdn Get(string mdnIdentifier)
         {
-            using (var db = Store.CreateReadContext())
-            {
-                return Get(db, mdnIdentifier);
-            }
+            using var db = Store.CreateReadContext();
+            return Get(db, mdnIdentifier);
         }
 
         public Mdn Get(ConfigDatabase db, string mdnIdentifier)
@@ -237,10 +221,8 @@ namespace Health.Direct.Config.Store
 
         public Mdn[] Get(string lastMdn, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastMdn, maxResults).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, lastMdn, maxResults).ToArray();
         }
 
         public IEnumerable<Mdn> Get(ConfigDatabase db, string lastMdn, int maxResults)
@@ -256,32 +238,24 @@ namespace Health.Direct.Config.Store
 
         public Mdn[] GetTimedOut()
         {
-            using (var db = Store.CreateReadContext())
-            {
-                return db.Mdns.GetTimedOut().ToArray();
-            }
+            using var db = Store.CreateReadContext();
+            return db.Mdns.GetTimedOut().ToArray();
         }
         
         public Mdn[] GetExpiredProcessed(TimeSpan expiredLimit, int maxResults)
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return GetExpiredProcessed(db, expiredLimit, maxResults).ToArray();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return GetExpiredProcessed(db, expiredLimit, maxResults).ToArray();
         }
         public Mdn[] GetExpiredProcessed(TimeSpan expiredLimit)
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return GetExpiredProcessed(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS).ToArray();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return GetExpiredProcessed(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS).ToArray();
         }
         public Mdn[] GetExpiredProcessed()
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return GetExpiredProcessed(db, TimeSpan.FromMinutes(DEFAULT_PROCESSED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS).ToArray();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return GetExpiredProcessed(db, TimeSpan.FromMinutes(DEFAULT_PROCESSED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS).ToArray();
         }   
         public IEnumerable<Mdn> GetExpiredProcessed(ConfigDatabase db, TimeSpan expiredLimit, int maxResults)
         {
@@ -296,24 +270,18 @@ namespace Health.Direct.Config.Store
 
         public Mdn[] GetExpiredDispatched(TimeSpan expiredLimit, int maxResults)
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return GetExpiredDispatched(db, expiredLimit, maxResults).ToArray();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return GetExpiredDispatched(db, expiredLimit, maxResults).ToArray();
         }
         public Mdn[] GetExpiredDispatched(TimeSpan expiredLimit)
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return GetExpiredDispatched(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS).ToArray();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return GetExpiredDispatched(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS).ToArray();
         }
         public Mdn[] GetExpiredDispatched()
         {
-            using (ConfigDatabase db = Store.CreateReadContext())
-            {
-                return GetExpiredDispatched(db, TimeSpan.FromMinutes(DEFAULT_DISPATCHED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS).ToArray();
-            }
+            using ConfigDatabase db = Store.CreateReadContext();
+            return GetExpiredDispatched(db, TimeSpan.FromMinutes(DEFAULT_DISPATCHED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS).ToArray();
         }
         public IEnumerable<Mdn> GetExpiredDispatched(ConfigDatabase db, TimeSpan expiredLimit, int maxResults)
         {
@@ -327,11 +295,8 @@ namespace Health.Direct.Config.Store
 
         public void Remove(Mdn mdn)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                Remove(db, mdn);
-            }
-
+            using ConfigDatabase db = Store.CreateContext();
+            Remove(db, mdn);
         }
 
         public void Remove(ConfigDatabase db, Mdn mdn)
@@ -346,11 +311,8 @@ namespace Health.Direct.Config.Store
 
         public void RemoveTimedOut(TimeSpan limitTime, int bulkCount)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                RemoveTimedOut(db, limitTime, bulkCount);
-            }
-
+            using ConfigDatabase db = Store.CreateContext();
+            RemoveTimedOut(db, limitTime, bulkCount);
         }
 
         public void RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
@@ -365,10 +327,8 @@ namespace Health.Direct.Config.Store
 
         public void RemoveDispositions(TimeSpan limitTime, int bulkCount)
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                RemoveDispositions(db, limitTime, bulkCount);
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            RemoveDispositions(db, limitTime, bulkCount);
         }
 
         public void RemoveDispositions(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
@@ -389,21 +349,17 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = Store.CreateContext())
-            {
-                RemoveAll(db);
-            }
+            using ConfigDatabase db = Store.CreateContext();
+            RemoveAll(db);
         }
 
 
         public IEnumerator<Mdn> GetEnumerator()
         {
-            using (ConfigDatabase db = Store.CreateContext())
+            using ConfigDatabase db = Store.CreateContext();
+            foreach (Mdn mdn in db.Mdns)
             {
-                foreach (Mdn mdn in db.Mdns)
-                {
-                    yield return mdn;
-                }
+                yield return mdn;
             }
         }
 

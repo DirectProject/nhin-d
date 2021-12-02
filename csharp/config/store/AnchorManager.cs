@@ -4,7 +4,8 @@
 
  Authors:
     Umesh Madan     umeshma@microsoft.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -16,352 +17,375 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
+using Microsoft.EntityFrameworkCore;
 
-namespace Health.Direct.Config.Store
+namespace Health.Direct.Config.Store;
+
+/// <summary>
+/// Manage anchor data access 
+/// </summary>
+public class AnchorManager
 {
-    public class AnchorManager
+    internal AnchorManager(ConfigStore store)
     {
-        ConfigStore m_store;
-        
-        internal AnchorManager(ConfigStore store)
+        Store = store;
+    }
+
+    internal ConfigStore Store { get; }
+
+
+    public async Task<Anchor> Add(Anchor anchor)
+    {
+        await using ConfigDatabase db = Store.CreateContext();
+        await Add(db, anchor);
+        await db.SaveChangesAsync();
+        return anchor;
+    }
+
+    public async Task Add(IEnumerable<Anchor> anchors)
+    {
+        if (anchors == null)
         {
-            m_store = store;
+            throw new ArgumentNullException(nameof(anchors));
         }
 
-        internal ConfigStore Store
-        {
-            get
-            {
-                return m_store;
-            }
-        }
+        await using ConfigDatabase db = Store.CreateContext();
         
-        
-        public Anchor Add(Anchor anchor)
+        foreach(var anchor in anchors)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, anchor);
-                db.SubmitChanges();
-                return anchor;
-            }
+            await Add(db, anchor);
         }
 
-        public void Add(IEnumerable<Anchor> anchors)
+        await db.SaveChangesAsync();
+    }
+    
+    public async Task Add(ConfigDatabase db, Anchor anchor)
+    {
+        if (db == null)
         {
-            if (anchors == null)
-            {
-                throw new ArgumentNullException("anchors");
-            }
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                foreach(Anchor anchor in anchors)
-                {
-                    this.Add(db, anchor);
-                }
-                db.SubmitChanges();
-            }
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (anchor == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidAnchor);
         }
         
-        public void Add(ConfigDatabase db, Anchor anchor)
+        await db.Anchors.AddAsync(anchor);
+    }
+
+    public async Task<List<Anchor>> Get(long[] certificateIDs)
+    {
+        if (certificateIDs.IsNullOrEmpty())
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (anchor == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidAnchor);
-            }
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        await using ConfigDatabase db = Store.CreateReadContext();
+
+        return await db.Anchors
+            .Where(a => certificateIDs.Contains(a.ID))
+            .ToListAsync();
+    }
+
+    public async Task<List<Anchor>> Get(long lastCertID, int maxResults)
+    {
+        await using ConfigDatabase db = Store.CreateReadContext();
+        return await Get(db, lastCertID, maxResults);
+    }
+
+    public async Task<List<Anchor>> Get(ConfigDatabase db, long lastCertId, int maxResults)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        var entities = await db.Anchors
+            .Where(a => a.ID > lastCertId)
+            .OrderBy(a => a.ID)
+            .Take(maxResults)
+            .ToListAsync();
+
+        return entities;
+    }
+
+    public async Task<List<Anchor>> Get(string owner)
+    {
+        await using ConfigDatabase db = Store.CreateContext();
+        return await Get(db, owner);
+    }
+
+    public async Task<List<Anchor>> Get(ConfigDatabase db, string owner)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        return await db.Anchors
+            .Where(e => e.Owner == owner)
+            .ToListAsync();
+    }
+
+    public async Task<List<Anchor>> GetIncoming(string ownerName)
+    {
+        return await GetIncoming(ownerName, null);
+    }
+
+    public async Task<List<Anchor>> GetIncoming(string ownerName, EntityStatus? status)
+    {
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        await using ConfigDatabase db = Store.CreateContext();
+        List<Anchor> matches;
+
+        if (status == null)
+        {
+            matches = await db.Anchors
+                .Where(a => 
+                    a.ForIncoming == true
+                    && a.Owner == ownerName)
+                .ToListAsync();
+        }
+        else
+        {
+            matches = await db.Anchors
+                    .Where(a =>
+                        a.ForIncoming == true
+                        && a.Owner == ownerName
+                        && a.Status == status.Value)
+                    .ToListAsync();
+        }
             
-            db.Anchors.InsertOnSubmit(anchor);
+        return matches;
+    }
+
+    public async Task<List<Anchor>> GetOutgoing(string ownerName)
+    {
+        return await GetOutgoing(ownerName, null);
+    }
+
+    public async Task<List<Anchor>> GetOutgoing(string ownerName, EntityStatus? status)
+    {
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        public Anchor[] Get(long[] certificateIDs)
-        {
-            if (certificateIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
+        await using ConfigDatabase db = Store.CreateReadContext();
+        List<Anchor> matches;
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.Anchors.Get(certificateIDs).ToArray();
-            }
+        if (status == null)
+        {
+            matches = await db.Anchors
+                .Where(a =>
+                    a.ForOutgoing == true
+                    && a.Owner == ownerName)
+                .ToListAsync();
+        }
+        else
+        {
+            matches = await db.Anchors
+                .Where(a =>
+                    a.ForOutgoing == true
+                    && a.Owner == ownerName
+                    && a.Status == status.Value)
+                .ToListAsync();
         }
 
-        public Anchor[] Get(long lastCertID, int maxResults)
+        return matches;
+    }
+
+    public async Task SetStatus(ConfigDatabase db, long anchorID, EntityStatus status)
+    {
+        if (db == null)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastCertID, maxResults).ToArray();
-            }
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public IEnumerable<Anchor> Get(ConfigDatabase db, long lastCertID, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
+        var entity = await db.Anchors.SingleOrDefaultAsync(a => a.ID == anchorID);
 
-            return db.Anchors.Get(lastCertID, maxResults);
+        if (entity != null)
+        {
+            entity.Status = status;
+        }
+    }
+
+    public async Task<Anchor> Get(string owner, string thumbprint)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, owner, thumbprint);
+    }
+
+    public async Task<Anchor> Get(ConfigDatabase db, string owner, string thumbprint)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(owner))            
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+        if (string.IsNullOrEmpty(thumbprint))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
         }
 
-        public Anchor[] Get(string owner)
+        return await db.Anchors
+            .Where(a => a.Owner == owner
+                        && a.Thumbprint == thumbprint)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task SetStatus(string owner, EntityStatus status)
+    {
+        if (string.IsNullOrEmpty(owner))
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                return this.Get(db, owner).ToArray();
-            }
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        public IEnumerable<Anchor> Get(ConfigDatabase db, string owner)
+        await using ConfigDatabase db = Store.CreateContext();
+        await SetStatus(db, owner, status);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task SetStatus(long[] anchorIDs, EntityStatus status)
+    {
+        if (anchorIDs.IsNullOrEmpty())
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            
-            return db.Anchors.Get(owner);
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
         }
 
-        public Anchor[] GetIncoming(string ownerName)
+        await using ConfigDatabase db = Store.CreateContext();
+        
+        foreach (var t in anchorIDs)
         {
-            return this.GetIncoming(ownerName, null);
+            await SetStatus(db, t, status);
+        }
+        
+        await db.SaveChangesAsync();
+    }
+
+    public async Task SetStatus(ConfigDatabase db, string owner, EntityStatus status)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public Anchor[] GetIncoming(string ownerName, EntityStatus? status)
-        {
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
+        var entity = await db.Anchors.SingleOrDefaultAsync(a => a.Owner == owner);
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+        if (entity != null)
+        {
+            entity.Status = status;
+        }
+    }
+
+    public async Task Remove(long[] certificateIDs)
+    {
+        await using ConfigDatabase db = Store.CreateContext();
+        await Remove(db, certificateIDs);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Remove(ConfigDatabase db, long[] certificateIDs)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (certificateIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+        
+        for (int i = 0; i < certificateIDs.Length; ++i)
+        {
+            var anchor = await db.Anchors
+                .SingleOrDefaultAsync(m => m.ID == certificateIDs[i]);
+
+            if (anchor != null)
             {
-                IEnumerable<Anchor> matches;
-                if (status == null)
-                {
-                    matches = db.Anchors.GetIncoming(ownerName);
-                }
-                else
-                {
-                    matches = db.Anchors.GetIncoming(ownerName, status.Value);
-                }
-                
-                return matches.ToArray();
+                db.Anchors.Remove(anchor);
             }
         }
+    }
 
-        public Anchor[] GetOutgoing(string ownerName)
+    public async Task Remove(string owner, string thumbprint)
+    {
+        await using var db = Store.CreateContext();
+        await Remove(db, owner, thumbprint);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Remove(ConfigDatabase db, string owner, string thumbprint)
+    {
+        if (db == null)
         {
-            return this.GetOutgoing(ownerName, null);
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+        if (string.IsNullOrEmpty(thumbprint))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
         }
 
-        public Anchor[] GetOutgoing(string ownerName, EntityStatus? status)
-        {
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
+        var anchors = await db.Anchors
+            .Where(m => 
+                m.Owner == owner
+                && m.Thumbprint == thumbprint)
+            .ToListAsync();
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                IEnumerable<Anchor> matches;
-                
-                if (status == null)
-                {
-                    matches = db.Anchors.GetOutgoing(ownerName);
-                }
-                else
-                {
-                    matches = db.Anchors.GetOutgoing(ownerName, status.Value);
-                }
-                
-                return matches.ToArray();                    
-            }
+        foreach (var anchor in anchors)
+        {
+            db.Anchors.Remove(anchor);
+        }
+    }
+
+    public async Task Remove(string ownerName)
+    {
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        public void SetStatus(ConfigDatabase db, long anchorID, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
+        using var db = Store.CreateContext();
+        await Remove(db, ownerName);
+    }
 
-            db.Anchors.ExecUpdateStatus(anchorID, status);
+    public async Task Remove(ConfigDatabase db, string owner)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        public Anchor Get(string owner, string thumbprint)
+        var anchors = await db.Anchors
+            .Where(m =>
+                m.Owner == owner)
+            .ToListAsync();
+
+        foreach (var anchor in anchors)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, owner, thumbprint);
-            }
-        }
-
-        public Anchor Get(ConfigDatabase db, string owner, string thumbprint)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(owner))            
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            if (string.IsNullOrEmpty(thumbprint))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
-            }
-            return db.Anchors.Get(owner, thumbprint);
-        }
-
-        public void SetStatus(string owner, EntityStatus status)
-        {
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.SetStatus(db, owner, status);
-            }
-        }
-
-        public void SetStatus(long[] anchorIDs, EntityStatus status)
-        {
-            if (anchorIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                //
-                // Todo: optimize this by using an 'in' query.. 
-                //
-                for (int i = 0; i < anchorIDs.Length; ++i)
-                {
-                    this.SetStatus(db, anchorIDs[i], status);
-                }
-                //db.SubmitChanges(); // Not needed, since we do a direct update
-            }
-        }
-
-        public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            db.Anchors.ExecUpdateStatus(owner, status);
-        }
-
-        public void Remove(long[] certificateIDs)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, certificateIDs);
-
-                // We don't commit, because we execute deletes directly
-            }
-        }
-
-        public void Remove(ConfigDatabase db, long[] certificateIDs)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (certificateIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-            //
-            // Todo: this in a single query
-            //
-            for (int i = 0; i < certificateIDs.Length; ++i)
-            {
-                db.Anchors.ExecDelete(certificateIDs[i]);
-            }
-        }
-
-        public void Remove(string owner, string thumbprint)
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, owner, thumbprint);
-            }
-        }
-
-        public void Remove(ConfigDatabase db, string owner, string thumbprint)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            if (string.IsNullOrEmpty(thumbprint))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidThumbprint);
-            }
-            
-            db.Anchors.ExecDelete(owner, thumbprint);
-        }
-
-        public void Remove(string ownerName)
-        {
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, ownerName);
-            }
-        }
-
-        public void Remove(ConfigDatabase db, string ownerName)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            db.Anchors.ExecDelete(ownerName);
-        }
-
-
-        public void RemoveAll(ConfigDatabase db)
-        {
-            db.Anchors.ExecTruncate();
-        }
-
-        public void RemoveAll()
-        {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                RemoveAll(db);
-            }
+            db.Anchors.Remove(anchor);
         }
     }
 }

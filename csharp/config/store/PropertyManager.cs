@@ -53,12 +53,10 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("property");
             }
-            
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, property);
-                db.SubmitChanges();
-            }
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, property);
+            db.SubmitChanges();
         }
         
         public void Add(ConfigDatabase db, Property property)
@@ -73,11 +71,9 @@ namespace Health.Direct.Config.Store
 
         public void Add(IEnumerable<Property> properties)
         {
-            using(ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, properties);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, properties);
+            db.SubmitChanges();
         }
 
         public void Add(ConfigDatabase db, IEnumerable<Property> properties)
@@ -92,10 +88,8 @@ namespace Health.Direct.Config.Store
         
         public Property Get(string name)
         {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return Get(db, name);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return Get(db, name);
         }
         
         public Property Get(ConfigDatabase db, string name)
@@ -114,10 +108,8 @@ namespace Health.Direct.Config.Store
 
         public Property[] Get(string[] names)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return Get(db, names).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return Get(db, names).ToArray();
         }
 
         public IEnumerable<Property> Get(ConfigDatabase db, string[] names)
@@ -136,10 +128,8 @@ namespace Health.Direct.Config.Store
 
         public Property[] GetStartsWith(string namePrefix)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return GetStartsWith(db, namePrefix).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return GetStartsWith(db, namePrefix).ToArray();
         }
 
         public IEnumerable<Property> GetStartsWith(ConfigDatabase db, string namePrefix)
@@ -163,11 +153,9 @@ namespace Health.Direct.Config.Store
                 throw new ArgumentNullException("property");
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                Set(db, property);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            Set(db, property);
+            db.SubmitChanges();
         }
 
         public void Set(IEnumerable<Property> properties)
@@ -177,14 +165,12 @@ namespace Health.Direct.Config.Store
                 throw new ArgumentNullException("properties");
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach (Property property in properties)
             {
-                foreach (Property property in properties)
-                {
-                    Set(db, property);
-                }
-                db.SubmitChanges();
+                Set(db, property);
             }
+            db.SubmitChanges();
         }
         
         protected void Set(ConfigDatabase db, Property property)
@@ -212,11 +198,9 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentException("name");
             }
-            
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, name);
-            }
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, name);
         }
 
         public void Remove(string[] names)
@@ -226,12 +210,10 @@ namespace Health.Direct.Config.Store
                 throw new ArgumentException("names");
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach(string name in names)
             {
-                foreach(string name in names)
-                {
-                    Remove(db, name);
-                }
+                Remove(db, name);
             }
         }
 
@@ -251,12 +233,10 @@ namespace Health.Direct.Config.Store
         
         public IEnumerator<Property> GetEnumerator()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach (Property property in db.Properties)
             {
-                foreach (Property property in db.Properties)
-                {
-                    yield return property;
-                }
+                yield return property;
             }
         }
     

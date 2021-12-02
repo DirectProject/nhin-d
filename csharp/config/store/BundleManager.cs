@@ -4,7 +4,8 @@
 
  Authors:
     Sean Nolan      sean.nolan@microsoft.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -42,12 +43,10 @@ namespace Health.Direct.Config.Store
         
         public Bundle Add(Bundle bundle)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, bundle);
-                db.SubmitChanges();
-                return bundle;
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, bundle);
+            db.SubmitChanges();
+            return bundle;
         }
 
         public void Add(IEnumerable<Bundle> bundles)
@@ -56,14 +55,13 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("bundles");
             }
-            using (ConfigDatabase db = this.Store.CreateContext())
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach(Bundle bundle in bundles)
             {
-                foreach(Bundle bundle in bundles)
-                {
-                    this.Add(db, bundle);
-                }
-                db.SubmitChanges();
+                this.Add(db, bundle);
             }
+            db.SubmitChanges();
         }
         
         public void Add(ConfigDatabase db, Bundle bundle)
@@ -87,18 +85,14 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.Bundles.Get(bundleIDs).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.Bundles.Get(bundleIDs).ToArray();
         }
 
         public Bundle[] Get(long lastBundleID, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastBundleID, maxResults).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, lastBundleID, maxResults).ToArray();
         }
 
         public IEnumerable<Bundle> Get(ConfigDatabase db, long lastBundleID, int maxResults)
@@ -113,10 +107,8 @@ namespace Health.Direct.Config.Store
 
         public Bundle[] Get(string owner)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                return this.Get(db, owner).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            return this.Get(db, owner).ToArray();
         }
 
         public IEnumerable<Bundle> Get(ConfigDatabase db, string owner)
@@ -145,20 +137,18 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            IEnumerable<Bundle> matches;
+            if (status == null)
             {
-                IEnumerable<Bundle> matches;
-                if (status == null)
-                {
-                    matches = db.Bundles.GetIncoming(ownerName);
-                }
-                else
-                {
-                    matches = db.Bundles.GetIncoming(ownerName, status.Value);
-                }
-                
-                return matches.ToArray();
+                matches = db.Bundles.GetIncoming(ownerName);
             }
+            else
+            {
+                matches = db.Bundles.GetIncoming(ownerName, status.Value);
+            }
+                
+            return matches.ToArray();
         }
 
         public Bundle[] GetOutgoing(string ownerName)
@@ -173,21 +163,19 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            IEnumerable<Bundle> matches;
+                
+            if (status == null)
             {
-                IEnumerable<Bundle> matches;
-                
-                if (status == null)
-                {
-                    matches = db.Bundles.GetOutgoing(ownerName);
-                }
-                else
-                {
-                    matches = db.Bundles.GetOutgoing(ownerName, status.Value);
-                }
-                
-                return matches.ToArray();                    
+                matches = db.Bundles.GetOutgoing(ownerName);
             }
+            else
+            {
+                matches = db.Bundles.GetOutgoing(ownerName, status.Value);
+            }
+                
+            return matches.ToArray();
         }
 
         public void SetStatus(ConfigDatabase db, long BundleID, EntityStatus status)
@@ -206,10 +194,8 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.SetStatus(db, owner, status);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.SetStatus(db, owner, status);
         }
 
         public void SetStatus(long[] bundleIDs, EntityStatus status)
@@ -219,17 +205,15 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            //
+            // Todo: optimize this by using an 'in' query.. 
+            //
+            for (int i = 0; i < bundleIDs.Length; ++i)
             {
-                //
-                // Todo: optimize this by using an 'in' query.. 
-                //
-                for (int i = 0; i < bundleIDs.Length; ++i)
-                {
-                    this.SetStatus(db, bundleIDs[i], status);
-                }
-                //db.SubmitChanges(); // Not needed, since we do a direct update
+                this.SetStatus(db, bundleIDs[i], status);
             }
+            //db.SubmitChanges(); // Not needed, since we do a direct update
         }
 
         public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
@@ -244,12 +228,10 @@ namespace Health.Direct.Config.Store
 
         public void Remove(long[] bundleIDs)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, bundleIDs);
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, bundleIDs);
 
-                // We don't commit, because we execute deletes directly
-            }
+            // We don't commit, because we execute deletes directly
         }
 
         public void Remove(ConfigDatabase db, long[] bundleIDs)
@@ -278,10 +260,8 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Remove(db, ownerName);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Remove(db, ownerName);
         }
 
         public void Remove(ConfigDatabase db, string ownerName)
@@ -306,10 +286,8 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                RemoveAll(db);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            RemoveAll(db);
         }
     }
 }

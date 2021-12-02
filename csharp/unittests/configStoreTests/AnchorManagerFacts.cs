@@ -4,7 +4,8 @@
 
  Authors:
     Chris Lomonico  chris.lomonico@surescripts.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -203,14 +204,14 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for Remove
         ///</summary>
         [Fact, AutoRollback]
-        public void RemoveTest5()
+        public async Task RemoveTest5()
         {
             using (ConfigDatabase db = CreateConfigDatabase())
             {
                 AnchorManager target = CreateManager();
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
                 long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
-                target.Remove(db, certificateIDs);
+                await target.Remove(db, certificateIDs);
                 Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER - certificateIDs.Length, target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1).Count());
             }
         }

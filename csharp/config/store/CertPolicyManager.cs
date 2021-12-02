@@ -61,12 +61,10 @@ namespace Health.Direct.Config.Store
 
         public CertPolicy Add(CertPolicy policy)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                this.Add(db, policy);
-                db.SubmitChanges();
-                return policy;
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            this.Add(db, policy);
+            db.SubmitChanges();
+            return policy;
         }
 
         public CertPolicy Add(ConfigDatabase db, CertPolicy policy)
@@ -96,31 +94,26 @@ namespace Health.Direct.Config.Store
             {
                 throw new ArgumentNullException("policies");
             }
-            using (ConfigDatabase db = this.Store.CreateContext())
+
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach (CertPolicy policy in policies)
             {
-                foreach (CertPolicy policy in policies)
-                {
-                    this.Add(db, policy);
-                }
-                db.SubmitChanges();
+                this.Add(db, policy);
             }
+            db.SubmitChanges();
         }
 
         public int Count()
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.CertPolicies.GetCount();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.CertPolicies.GetCount();
         }
 
 
         public CertPolicy Get(string name)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext(DataLoadOptions))
-            {
-                return this.Get(db, name);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext(DataLoadOptions);
+            return this.Get(db, name);
         }
 
         public CertPolicy Get(ConfigDatabase db, string name)
@@ -139,10 +132,8 @@ namespace Health.Direct.Config.Store
 
         public CertPolicy Get(long policyID)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.CertPolicies.Get(policyID);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.CertPolicies.Get(policyID);
         }
 
         public CertPolicy[] Get(long[] policyIDs)
@@ -152,18 +143,14 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return db.CertPolicies.Get(policyIDs).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return db.CertPolicies.Get(policyIDs).ToArray();
         }
 
         public CertPolicy[] Get(long lastID, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return this.Get(db, lastID, maxResults).ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return this.Get(db, lastID, maxResults).ToArray();
         }
 
         public IEnumerable<CertPolicy> Get(ConfigDatabase db, long lastID, int maxResults)
@@ -184,11 +171,9 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext(DataLoadOptions))
-            {
-                var cpgs = db.CertPolicies.GetIncoming(owner);
-                return cpgs.ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext(DataLoadOptions);
+            var cpgs = db.CertPolicies.GetIncoming(owner);
+            return cpgs.ToArray();
         }
 
         public CertPolicy[] GetIncomingByOwner(string owner, CertPolicyUse use)
@@ -198,11 +183,9 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                var cpgs = db.CertPolicies.GetIncoming(owner, use);
-                return cpgs.ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            var cpgs = db.CertPolicies.GetIncoming(owner, use);
+            return cpgs.ToArray();
         }
 
         public CertPolicy[] GetOutgoingByOwner(string owner)
@@ -212,11 +195,9 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                var cpgs = db.CertPolicies.GetOutgoing(owner);
-                return cpgs.ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            var cpgs = db.CertPolicies.GetOutgoing(owner);
+            return cpgs.ToArray();
         }
 
         public CertPolicy[] GetOutgoingByOwner(string owner, CertPolicyUse use)
@@ -226,21 +207,17 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
             }
 
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                var cpgs = db.CertPolicies.GetOutgoing(owner, use);
-                return cpgs.ToArray();
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            var cpgs = db.CertPolicies.GetOutgoing(owner, use);
+            return cpgs.ToArray();
         }
 
 
         public void Update(CertPolicy policy)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.Update(db, policy);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext(DataLoadOptions);
+            this.Update(db, policy);
+            db.SubmitChanges();
         }
 
 
@@ -275,10 +252,8 @@ namespace Health.Direct.Config.Store
 
         public void Remove(long policyId)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.Remove(db, policyId);
-            }
+            using ConfigDatabase db = this.Store.CreateContext(DataLoadOptions);
+            this.Remove(db, policyId);
         }
 
         public void Remove(ConfigDatabase db, long policyId)
@@ -293,11 +268,9 @@ namespace Health.Direct.Config.Store
 
         public void Remove(long[] policyIds)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.Remove(db, policyIds);
-                // We don't commit, because we execute deletes directly
-            }
+            using ConfigDatabase db = this.Store.CreateContext(DataLoadOptions);
+            this.Remove(db, policyIds);
+            // We don't commit, because we execute deletes directly
         }
 
         public void Remove(ConfigDatabase db, long[] policyIds)
@@ -319,11 +292,9 @@ namespace Health.Direct.Config.Store
 
         public void Remove(string policyName)
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.Remove(db, policyName);
-                // We don't commit, because we execute deletes directly
-            }
+            using ConfigDatabase db = this.Store.CreateContext(DataLoadOptions);
+            this.Remove(db, policyName);
+            // We don't commit, because we execute deletes directly
         }
 
         public void Remove(ConfigDatabase db, string policyName)
@@ -346,20 +317,16 @@ namespace Health.Direct.Config.Store
 
         public void RemoveAll()
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
-            {
-                this.RemoveAll(db);
-            }
+            using ConfigDatabase db = this.Store.CreateContext(DataLoadOptions);
+            this.RemoveAll(db);
         }
 
         public IEnumerator<CertPolicy> GetEnumerator()
         {
-            using (ConfigDatabase db = this.Store.CreateContext(DataLoadOptions))
+            using ConfigDatabase db = this.Store.CreateContext(DataLoadOptions);
+            foreach (CertPolicy policy in db.CertPolicies)
             {
-                foreach (CertPolicy policy in db.CertPolicies)
-                {
-                    yield return policy;
-                }
+                yield return policy;
             }
         }
 

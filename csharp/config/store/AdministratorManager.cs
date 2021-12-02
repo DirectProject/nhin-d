@@ -4,7 +4,8 @@
 
  Authors:
     John Theisen
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -46,63 +47,49 @@ namespace Health.Direct.Config.Store
         /// <param name="administrator">administrator object</param>
         public Administrator Add(Administrator administrator)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                Add(db, administrator);
-                db.SubmitChanges();
-                return administrator;
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            Add(db, administrator);
+            db.SubmitChanges();
+            return administrator;
         }
 
         public void Update(Administrator administrator)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                Update(db, administrator);
-                db.SubmitChanges();
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            Update(db, administrator);
+            db.SubmitChanges();
         }
 
         public Administrator Get(string username)
         {
-            using(ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return Get(db, username);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return Get(db, username);
         }
 
         public Administrator Get(long administratorID)
         {
-            using (ConfigDatabase db = this.Store.CreateReadContext())
-            {
-                return Get(db, administratorID);
-            }
+            using ConfigDatabase db = this.Store.CreateReadContext();
+            return Get(db, administratorID);
         }
 
         public void Remove(string username)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                Remove(db, username);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            Remove(db, username);
         }
 
         public void SetStatus(string username, EntityStatus status)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
-            {
-                db.Addresses.ExecSetStatus(username, status);
-            }
+            using ConfigDatabase db = this.Store.CreateContext();
+            db.Addresses.ExecSetStatus(username, status);
         }
 
         public IEnumerable<Administrator> Get(string lastUsername, int maxResults)
         {
-            using (ConfigDatabase db = this.Store.CreateContext())
+            using ConfigDatabase db = this.Store.CreateContext();
+            foreach (Administrator admin in Get(db, lastUsername, maxResults))
             {
-                foreach (Administrator admin in Get(db, lastUsername, maxResults))
-                {
-                    yield return admin;
-                }
+                yield return admin;
             }
         }
 
