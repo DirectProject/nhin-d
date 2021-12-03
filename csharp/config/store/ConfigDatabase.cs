@@ -25,20 +25,20 @@ namespace Health.Direct.Config.Store
     /// <inheritdoc />
     public class ConfigDatabase : DbContext
     {
-        public virtual DbSet<Address> Addresses { get; set; } = null!;
-        public virtual DbSet<Administrator> Administrators { get; set; } = null!;
-        public virtual DbSet<Anchor> Anchors { get; set; } = null!;
-        public virtual DbSet<NamedBlob> Blobs { get; set; } = null!;
-        public virtual DbSet<Bundle> Bundles { get; set; } = null!;
-        public virtual DbSet<CertPolicy> CertPolicies { get; set; } = null!;
-        public virtual DbSet<CertPolicyGroup> CertPolicyGroups { get; set; } = null!;
-        public virtual DbSet<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; } = null!;
-        public virtual DbSet<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; } = null!;
-        public virtual DbSet<Certificate> Certificates { get; set; } = null!;
-        public virtual DbSet<DnsRecord> DnsRecords { get; set; } = null!;
-        public virtual DbSet<Domain> Domains { get; set; } = null!;
-        public virtual DbSet<Mdn> Mdns { get; set; } = null!;
-        public virtual DbSet<Property> Properties { get; set; } = null!;
+        public DbSet<Address> Addresses { get; set; } = null!;
+        public DbSet<Administrator> Administrators { get; set; } = null!;
+        public DbSet<Anchor> Anchors { get; set; } = null!;
+        // public DbSet<NamedBlob> Blobs { get; set; } = null!;
+        public DbSet<Bundle> Bundles { get; set; } = null!;
+        public DbSet<CertPolicy> CertPolicies { get; set; } = null!;
+        public DbSet<CertPolicyGroup> CertPolicyGroups { get; set; } = null!;
+        public DbSet<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; } = null!;
+        public DbSet<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; } = null!;
+        public DbSet<Certificate> Certificates { get; set; } = null!;
+        public DbSet<DnsRecord> DnsRecords { get; set; } = null!;
+        public DbSet<Domain> Domains { get; set; } = null!;
+        public DbSet<Mdn> Mdns { get; set; } = null!;
+        // public DbSet<Property> Properties { get; set; } = null!;
 
         private static string _connectionString;
         private readonly int _timeout = 10;
@@ -60,6 +60,22 @@ namespace Health.Direct.Config.Store
             _timeout = commandTimeout;
         }
 
+        public ConfigDatabase(string connectionString, int commandTimeout, bool objectTracking)
+            : this(connectionString, commandTimeout)
+        {
+            if (objectTracking) return;
+
+            Domains.AsNoTracking();
+            Addresses.AsNoTracking();
+            Anchors.AsNoTracking();
+            Certificates.AsNoTracking();
+            DnsRecords.AsNoTracking();
+            Bundles.AsNoTracking();
+            Mdns.AsNoTracking();
+
+
+        }
+
         /// <inheritdoc />
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -73,23 +89,6 @@ namespace Health.Direct.Config.Store
                         providerOptions => providerOptions.CommandTimeout(_timeout));
             }
         }
-
-        //
-        // datacontext for many to many relationship 
-        //
-        // private static ConfigDatabase removeRecordContext = null;
-        //
-        // public static void RemoveAssociativeRecord<T>(T association) where T : class
-        // {
-        //     if (removeRecordContext == null)
-        //         removeRecordContext = new ConfigDatabase(_connectionString);
-        //
-        //     Table<T> tableData = removeRecordContext.GetTable<T>();
-        //     var record = tableData.SingleOrDefault(r => r == association);
-        //     if (record != null)
-        //     {
-        //         tableData.DeleteOnSubmit(record);
-        //     }
-        // }
+        
     }
 }

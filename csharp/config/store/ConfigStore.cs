@@ -33,8 +33,8 @@ namespace Health.Direct.Config.Store
         AnchorManager m_anchors;
         DnsRecordManager m_dnsRecords;
         AdministratorManager m_administrators;
-        PropertyManager m_properties;
-        NamedBlobManager m_blobs;
+        // PropertyManager m_properties;
+        // NamedBlobManager m_blobs;
         BundleManager m_bundles;
         MdnManager m_Mdns;
         CertPolicyManager m_certPolicies;
@@ -63,9 +63,9 @@ namespace Health.Direct.Config.Store
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
             m_dnsRecords = new DnsRecordManager(this);
-            m_administrators = new AdministratorManager(this);
-            m_properties = new PropertyManager(this);
-            m_blobs = new NamedBlobManager(this);
+            // m_administrators = new AdministratorManager(this);
+            // m_properties = new PropertyManager(this);
+            // m_blobs = new NamedBlobManager(this);
             m_Mdns = new MdnManager(this);
             m_bundles = new BundleManager(this);
             m_certPolicies = new CertPolicyManager(this, new CertPolicyParseValidator());
@@ -145,21 +145,21 @@ namespace Health.Direct.Config.Store
             }
         }
         
-        public PropertyManager Properties
-        {
-            get
-            {
-                return m_properties;
-            }
-        }
-        
-        public NamedBlobManager Blobs
-        {
-            get
-            {
-                return m_blobs;
-            }
-        }
+        // public PropertyManager Properties
+        // {
+        //     get
+        //     {
+        //         return m_properties;
+        //     }
+        // }
+        //
+        // public NamedBlobManager Blobs
+        // {
+        //     get
+        //     {
+        //         return m_blobs;
+        //     }
+        // }
 
         public MdnManager Mdns 
         {
@@ -196,34 +196,13 @@ namespace Health.Direct.Config.Store
         
         public ConfigDatabase CreateContext()
         {
-            return new ConfigDatabase(m_connectString) {CommandTimeout = this.TimeoutSeconds};
+            return new ConfigDatabase(m_connectString, TimeoutSeconds);
         }
 
 
         public ConfigDatabase CreateReadContext()
         {
-            return new ConfigDatabase(m_connectString)
-                       {
-                           CommandTimeout = this.TimeoutSeconds,
-                           ObjectTrackingEnabled = false
-                       };
+            return new ConfigDatabase(m_connectString, TimeoutSeconds, false);
         }
-
-
-        public ConfigDatabase CreateContext(DataLoadOptions dataLoadOptions)
-        {
-            return new ConfigDatabase(m_connectString, dataLoadOptions) { CommandTimeout = this.TimeoutSeconds };
-        }
-
-
-        public ConfigDatabase CreateReadContext(DataLoadOptions dataLoadOptions)
-        {
-            return new ConfigDatabase(m_connectString, dataLoadOptions)
-            {
-                CommandTimeout = this.TimeoutSeconds,
-                ObjectTrackingEnabled = false
-            };
-        }
-
     }
 }

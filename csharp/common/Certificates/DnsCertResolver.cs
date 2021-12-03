@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Threading.Tasks;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Dns;
 using Health.Direct.Common.DnsResolver;
@@ -214,7 +214,7 @@ namespace Health.Direct.Common.Certificates
         /// <param name="domain">The domain for which certificates should be resolved.</param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        public X509Certificate2Collection GetCertificatesForDomain(string domain)
+        public Task<X509Certificate2Collection> GetCertificatesForDomain(string domain)
         {
             if (string.IsNullOrEmpty(domain))
             {

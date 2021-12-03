@@ -504,14 +504,14 @@ namespace Health.Direct.Config.Store.Tests
             {
                 string owner = string.Format("{0}", BuildDomainName(GetRndDomainID()));
                 EntityStatus? status = EntityStatus.New;
-                Certificate[] actual = target.Get(db, owner, status).ToArray();
+                Certificate[] actual = target.GetAsync(db, owner, status).ToArray();
                 Assert.Equal(MAXCERTPEROWNER, actual.Count());
                 foreach (Certificate cert in actual)
                 {
                     Assert.Equal(EntityStatus.New, cert.Status);
                 }
                 target.SetStatus(actual.First().ID, EntityStatus.Enabled);
-                actual = target.Get(db, owner, status).ToArray();
+                actual = target.GetAsync(db, owner, status).ToArray();
                 Assert.Equal(MAXCERTPEROWNER - 1, actual.Count());
             }
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net.Mail;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using Health.Direct.Common.Collections;
 
 namespace Health.Direct.Common.Certificates
@@ -93,7 +94,7 @@ namespace Health.Direct.Common.Certificates
         /// <returns>
         /// A <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2Collection"/> or null if there are no matches.
         /// </returns>
-        public virtual X509Certificate2Collection GetCertificatesForDomain(string domain)
+        public virtual Task<X509Certificate2Collection> GetCertificatesForDomain(string domain)
         {
             X509Certificate2Collection matches = null;
             foreach (ICertificateResolver resolver in this)

@@ -16,7 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
-
+using Health.Direct.Common;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Config.Store.Entity;
 
@@ -95,11 +95,11 @@ namespace Health.Direct.Config.Store
                     Anchor[] anchors = null;
                     if (m_incoming)
                     {
-                        anchors = m_anchorManager.GetIncoming(domain);
+                        anchors = SyncOverAsyncHelper.RunSync(() => m_anchorManager.GetIncoming(domain)).ToArray();
                     }
                     else
                     {
-                        anchors = m_anchorManager.GetOutgoing(domain);
+                        anchors = SyncOverAsyncHelper.RunSync(() => m_anchorManager.GetOutgoing(domain)).ToArray();
                     }
 
                     return this.ToCerts(anchors);

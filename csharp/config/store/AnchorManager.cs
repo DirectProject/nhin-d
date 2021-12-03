@@ -14,6 +14,9 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -218,16 +221,17 @@ public class AnchorManager
         if (entity != null)
         {
             entity.Status = status;
+            db.Entry(entity).State = EntityState.Modified;
         }
     }
 
-    public async Task<Anchor> Get(string owner, string thumbprint)
+    public async Task<Anchor?> Get(string owner, string thumbprint)
     {
         await using var db = Store.CreateReadContext();
         return await Get(db, owner, thumbprint);
     }
 
-    public async Task<Anchor> Get(ConfigDatabase db, string owner, string thumbprint)
+    public async Task<Anchor?> Get(ConfigDatabase db, string owner, string thumbprint)
     {
         if (db == null)
         {
@@ -269,9 +273,9 @@ public class AnchorManager
 
         await using ConfigDatabase db = Store.CreateContext();
         
-        foreach (var t in anchorIDs)
+        foreach (var anchorId in anchorIDs)
         {
-            await SetStatus(db, t, status);
+            await SetStatus(db, anchorId, status);
         }
         
         await db.SaveChangesAsync();
@@ -310,7 +314,7 @@ public class AnchorManager
             throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
         }
         
-        for (int i = 0; i < certificateIDs.Length; ++i)
+        for (var i = 0; i < certificateIDs.Length; ++i)
         {
             var anchor = await db.Anchors
                 .SingleOrDefaultAsync(m => m.ID == certificateIDs[i]);
@@ -363,8 +367,9 @@ public class AnchorManager
             throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        using var db = Store.CreateContext();
+        await using var db = Store.CreateContext();
         await Remove(db, ownerName);
+        await db.SaveChangesAsync();
     }
 
     public async Task Remove(ConfigDatabase db, string owner)

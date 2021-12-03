@@ -14,334 +14,345 @@ Neither the name of The Direct Project (directproject.org) nor the names of its 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 */
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Threading.Tasks;
+using Health.Direct.Common;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
+using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
 
-namespace Health.Direct.Config.Store
+namespace Health.Direct.Config.Store;
+
+public class CertificateManager : IX509CertificateIndex
 {
-    public class CertificateManager : IX509CertificateIndex
+    internal CertificateManager(ConfigStore store)
     {
-        ConfigStore m_store;
+        Store = store;
+    }
 
-        internal CertificateManager(ConfigStore store)
+    internal ConfigStore Store { get; }
+
+    public async Task<Certificate> Add(Certificate cert)
+    {
+        await using var db = Store.CreateContext();
+        await Add(db, cert);
+        await db.SaveChangesAsync();
+        return cert;
+    }
+
+    public async Task Add(IEnumerable<Certificate> certs)
+    {
+        if (certs == null)
         {
-            m_store = store;
+            throw new ArgumentNullException(nameof(certs));
         }
 
-        internal ConfigStore Store
+        await using var db = Store.CreateContext();
+        foreach (var cert in certs)
         {
-            get
-            {
-                return m_store;
-            }
+            await Add(db, cert);
         }
-                
-        public Certificate Add(Certificate cert)
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Add(ConfigDatabase db, Certificate cert)
+    {
+        if (db == null)
         {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Add(db, cert);
-            db.SubmitChanges();
-            return cert;
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public void Add(IEnumerable<Certificate> certs)
+        if (cert == null)
         {
-            if (certs == null)
-            {
-                throw new ArgumentNullException("certs");
-            }
-
-            using ConfigDatabase db = this.Store.CreateContext();
-            foreach(Certificate cert in certs)
-            {
-                this.Add(db, cert);
-            }
-            db.SubmitChanges();
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
         }
+
+        cert.ValidateHasData();
+        await db.Certificates.AddAsync(cert);
+    }
+
+    public async Task<Certificate> AddHsm(Certificate cert)
+    {
+        await using var db = Store.CreateContext();
+        await AddHsm(db, cert);
+        await db.SaveChangesAsync();
+        return cert;
+    }
+
+    public async Task AddHsm(ConfigDatabase db, Certificate cert)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        if (cert == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
+        }
+
+        cert.ValidateHasData();
+        var domain = db.Domains.SingleOrDefault(d => d.Name == cert.Owner);
+
+        if (domain == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.MissingDomain);
+        }
+
+        domain.SecurityStandard = SecurityStandard.Fips1402;
+        await db.Certificates.AddAsync(cert);
+    }
+
+    public async Task<Certificate?> Get(long certId)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, certId);
+    }
+
+    public async Task<List<Certificate>> Get(long[] certIDs)
+    {
+        if (certIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        await using var db = Store.CreateReadContext();
+
+        return await db.Certificates
+            .Where(c => certIDs.Contains(c.ID))
+            .ToListAsync();
+    }
+
+    public async Task<Certificate?> Get(ConfigDatabase db, long certID)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        return await db.Certificates
+            .Where(c => c.ID == certID)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<List<Certificate>> Get(long lastCertID, int maxResults)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, lastCertID, maxResults);
+    }
+
+    public async Task<List<Certificate>> Get(ConfigDatabase db, long lastCertID, int maxResults)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        return await db.Certificates
+            .Where(c => c.ID > lastCertID)
+            .OrderBy(c => c.ID)
+            .Take(maxResults)
+            .ToListAsync();
+    }
+
+    public async Task<Certificate?> Get(string owner, string thumbprint)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, owner, thumbprint);
+    }
+
+    public async Task<Certificate?> Get(ConfigDatabase db, string owner, string thumbprint)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        return await db.Certificates
+            .FirstOrDefaultAsync(c =>
+                c.Owner == owner
+                && c.Thumbprint == thumbprint);
+    }
+
+    public async Task<List<Certificate>> Get(string owner)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, owner);
+    }
+
+    public async Task<List<Certificate>> Get(ConfigDatabase db, string owner)
+    {
+        return await GetAsync(db, owner, (EntityStatus?)null);
+    }
+
+    public async Task<List<Certificate>> Get(string owner, EntityStatus? status)
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetAsync(db, owner, status);
+    }
+
+    public async Task<List<Certificate>> GetAsync(ConfigDatabase db, string owner, EntityStatus? status)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        if (status == null)
+        {
+            return await db.Certificates
+                .Where(c => c.Owner == owner)
+                .ToListAsync();
+        }
+
+        return await db.Certificates
+            .Where(c => c.Owner == owner && c.Status == status)
+            .ToListAsync();
+    }
+
+    public async Task SetStatus(long[] certificateIDs, EntityStatus status)
+    {
+        if (certificateIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        await using var db = Store.CreateContext();
         
-        public void Add(ConfigDatabase db, Certificate cert)
+        foreach (var id in certificateIDs)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            if (cert == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
-            }
-            
-            cert.ValidateHasData();
-            db.Certificates.InsertOnSubmit(cert);
+            SetStatus(db, id, status);
         }
 
-        public Certificate AddHsm(Certificate cert)
+        await db.SaveChangesAsync();
+    }
+
+    public async Task SetStatus(long certificateID, EntityStatus status)
+    {
+        await using var db = Store.CreateContext();
+        await SetStatus(db, certificateID, status);
+        await db.SaveChangesAsync(); 
+    }
+
+    public async Task SetStatus(ConfigDatabase db, long certificateID, EntityStatus status)
+    {
+        if (db == null)
         {
-            using var db = Store.CreateContext();
-            AddHsm(db, cert);
-            db.SubmitChanges();
-            return cert;
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public void AddHsm(ConfigDatabase db, Certificate cert)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (cert == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidCertificate);
-            }
-
-            cert.ValidateHasData();
-            var domain = db.Domains.SingleOrDefault(d => d.Name == cert.Owner);
-
-            if (domain == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.MissingDomain);
-            }
-
-            domain.SecurityStandard = SecurityStandard.Fips1402;
-            db.Certificates.InsertOnSubmit(cert);
-        }
-
-        public Certificate Get(long certID)
-        {
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return this.Get(db, certID);
-        }
-
-        public Certificate[] Get(long[] certIDs)
-        {
-            if (certIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return db.Certificates.Get(certIDs).ToArray();
-        }
+        var certificate = await db.Certificates.SingleOrDefaultAsync(c => c.ID == certificateID);
         
-        public Certificate Get(ConfigDatabase db, long certID)
+        if (certificate != null)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            return db.Certificates.Get(certID);
+            certificate.Status = status;
+            db.Entry(certificate).State = EntityState.Modified;
         }
-        
-        public Certificate[] Get(long lastCertID, int maxResults)
+    }
+
+    public async Task SetStatus(string owner, EntityStatus status)
+    {
+        await using var db = Store.CreateContext();
+        await SetStatus(db, owner, status);
+        await db.SaveChangesAsync(); 
+    }
+
+    public async Task SetStatus(ConfigDatabase db, string owner, EntityStatus status)
+    {
+        if (db == null)
         {
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return this.Get(db, lastCertID, maxResults).ToArray();
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public IEnumerable<Certificate> Get(ConfigDatabase db, long lastCertID, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
+        var entity = await db.Certificates.SingleOrDefaultAsync(c => c.Owner == owner);
 
-            return db.Certificates.Get(lastCertID, maxResults).ToArray();
-        }
-        
-        public Certificate Get(string owner, string thumbprint)
+        if (entity != null)
         {
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return this.Get(db, owner, thumbprint);
+            entity.Status = status;
+            db.Entry(entity).State = EntityState.Modified;
         }
-        
-        public Certificate Get(ConfigDatabase db, string owner, string thumbprint)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
+    }
 
-            return db.Certificates.Get(owner, thumbprint);
+    public async Task Remove(long certificateID)
+    {
+        await using var db = Store.CreateContext();
+        await Remove(db, certificateID);
+    }
+
+    public async Task Remove(ConfigDatabase db, long certificateID)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public Certificate[] Get(string owner)
+        var certificate = await db.Certificates.SingleAsync(c => c.ID == certificateID);
+        db.Certificates.Remove(certificate);
+    }
+
+    public async Task Remove(long[] certificateIDs)
+    {
+        await using var db = Store.CreateContext();
+        await Remove(db, certificateIDs);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Remove(ConfigDatabase db, long[] certificateIDs)
+    {
+        if (db == null)
         {
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return this.Get(db, owner).ToArray();
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (certificateIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
         }
 
-        public IEnumerable<Certificate> Get(ConfigDatabase db, string owner)
+        var certificates = await db.Certificates
+            .Where(c => certificateIDs.Contains(c.ID))
+            .ToListAsync();
+
+        db.Certificates.RemoveRange(certificates);
+    }
+
+    public void Remove(string ownerName)
+    {
+        using var db = Store.CreateContext();
+        Remove(db, ownerName);
+    }
+
+    public async Task<int> Remove(ConfigDatabase db, string ownerName)
+    {
+        if (db == null)
         {
-            return this.Get(db, owner, (EntityStatus?) null);
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public Certificate[] Get(string owner, EntityStatus? status)
+        if (string.IsNullOrEmpty(ownerName))
         {
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return this.Get(db, owner, status).ToArray();
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        public IEnumerable<Certificate> Get(ConfigDatabase db, string owner, EntityStatus? status)
+        return await db.Database.ExecuteSqlRawAsync("DELETE from Certificates where Owner = {0}", ownerName);
+    }
+    
+    public X509Certificate2Collection this[string subjectName]
+    {
+        get
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            
-            if (status == null)
-            {
-                return db.Certificates.Get(owner);
-            }
-            
-            return db.Certificates.Get(owner, status.Value);
-        }
-                
-        public void SetStatus(long[] certificateIDs, EntityStatus status)
-        {
-            if (certificateIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            using ConfigDatabase db = this.Store.CreateContext();
-            //
-            // Todo: optimize this by using an 'in' query.. 
-            //
-            for (int i = 0; i < certificateIDs.Length; ++i)
-            {
-                this.SetStatus(db, certificateIDs[i], status);
-            }
-            //db.SubmitChanges(); // Not needed, since we do a direct update
-        }
-        
-        public void SetStatus(long certificateID, EntityStatus status)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.SetStatus(db, certificateID, status);
-            //db.SubmitChanges(); // Not needed, since we do a direct update
-        }
-        
-        public void SetStatus(ConfigDatabase db, long certificateID, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            db.Certificates.ExecUpdateStatus(certificateID, status);
-        }
-
-        public void SetStatus(string owner, EntityStatus status)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.SetStatus(db, owner, status);
-            //db.SubmitChanges(); // Not needed, since we do a direct update
-        }
-
-        public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            db.Certificates.ExecUpdateStatus(owner, status);
-        }
-           
-        public void Remove(long certificateID)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Remove(db, certificateID);
-        }
-        
-        public void Remove(ConfigDatabase db, long certificateID)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            db.Certificates.ExecDelete(certificateID);
-        }
-        
-        public void Remove(long[] certificateIDs)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Remove(db, certificateIDs);
-
-            // We don't commit, because we execute deletes directly
-        }
-        
-        public void Remove(ConfigDatabase db, long[] certificateIDs)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (certificateIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-            //
-            // Todo: this in a single query
-            //
-            for (int i = 0; i < certificateIDs.Length; ++i)
-            {
-                db.Certificates.ExecDelete(certificateIDs[i]);
-            }
-        }
-        
-        public void Remove(string ownerName)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Remove(db, ownerName);
-        }
-
-        public void Remove(ConfigDatabase db, string ownerName)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            
-            db.Certificates.ExecDelete(ownerName);
-        }
-
-        public void RemoveAll(ConfigDatabase db)
-        {
-            db.Certificates.ExecTruncate();
-        }
-
-        public void RemoveAll()
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            RemoveAll(db);
-        }
-
-        public X509Certificate2Collection this[string subjectName]
-        {
-            get 
-            { 
-                return Certificate.ToX509Collection(this.Get(subjectName));
-            }
+            return Certificate.ToX509Collection(SyncOverAsyncHelper.RunSync(() => Get(subjectName)).ToArray());
         }
     }
 }

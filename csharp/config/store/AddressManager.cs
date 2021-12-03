@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Operators;
 
 namespace Health.Direct.Config.Store;
 
@@ -72,7 +73,7 @@ public class AddressManager : IEnumerable<Address>
         }
 
         await using var db = Store.CreateContext();
-        Add(db, mailAddress, status, addressType);
+        await Add(db, mailAddress, status, addressType);
         await db.SaveChangesAsync();
     }
 
@@ -100,7 +101,7 @@ public class AddressManager : IEnumerable<Address>
             throw new ArgumentNullException(nameof(mailAddress));
         }
 
-        var domain = Store.Domains.Get(db, mailAddress.Host);
+        var domain = await Store.Domains.Get(db, mailAddress.Host);
         if (domain == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
@@ -219,7 +220,13 @@ public class AddressManager : IEnumerable<Address>
         db.Addresses.Attach(update);
         update.ApplyChanges(address);             
     }
-    
+
+    public async Task<int> Count()
+    {
+        await using var db = Store.CreateReadContext();
+        return await db.Addresses.CountAsync();
+    }
+
     public async Task<int> Count(long domainID)
     {
         await using var db = Store.CreateReadContext();
@@ -280,7 +287,7 @@ public class AddressManager : IEnumerable<Address>
         return await Get(emailAddresses, domainSearchEnabled, null);
     }
 
-    public async Task<IEnumerable<Address>> Get(ConfigDatabase db, string[] emailAddresses)
+    public async Task<List<Address>> Get(ConfigDatabase db, string[] emailAddresses)
     {
         return await Get(db, emailAddresses, null);
     }
@@ -318,10 +325,10 @@ public class AddressManager : IEnumerable<Address>
     }
 
 
-    private void AutoMapDomains(string enclosureEmailAddress, List<Address> addressList, EntityStatus? status)
+    private async Task AutoMapDomains(string enclosureEmailAddress, List<Address> addressList, EntityStatus? status)
     {
         var mailAddress = new MailAddress(enclosureEmailAddress);
-        var domain = Store.Domains.Get(mailAddress.Host);
+        var domain = await Store.Domains.Get(mailAddress.Host);
 
         if (domain == null || 
             (status.HasValue && domain.Status != status)
@@ -490,12 +497,13 @@ public class AddressManager : IEnumerable<Address>
         }
     }
 
-    public void Remove(IEnumerable<string> emailAddresses)
+    public async Task Remove(IEnumerable<string> emailAddresses)
     {
-        using var db = Store.CreateContext();
+        await using var db = Store.CreateContext();
+
         foreach(string emailAddress in emailAddresses)
         {
-            Remove(db, emailAddress);
+            await Remove(db, emailAddress);
         }
     }
     

@@ -17,277 +17,311 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
+using Microsoft.EntityFrameworkCore;
 
-namespace Health.Direct.Config.Store
+namespace Health.Direct.Config.Store;
+
+
+public class BundleManager
 {
-    public class BundleManager
+    internal BundleManager(ConfigStore store)
     {
-        ConfigStore m_store;
+        Store = store;
+    }
+
+    internal ConfigStore Store { get; }
+
+
+    public async Task<Bundle> Add(Bundle bundle)
+    {
+        await using var db = Store.CreateContext();
+        await Add(db, bundle);
+        await db.SaveChangesAsync();
+
+        return bundle;
+    }
+
+    public async Task Add(IEnumerable<Bundle> bundles)
+    {
+        if (bundles == null)
+        {
+            throw new ArgumentNullException(nameof(bundles));
+        }
+
+        await using var db = Store.CreateContext();
+        foreach (var bundle in bundles)
+        {
+            await Add(db, bundle);
+        }
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Add(ConfigDatabase db, Bundle bundle)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (bundle == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidBundle);
+        }
+
+        await db.Bundles.AddAsync(bundle);
+    }
+
+    public async Task<List<Bundle>> Get(long[] bundleIDs)
+    {
+        if (bundleIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        await using var db = Store.CreateReadContext();
         
-        internal BundleManager(ConfigStore store)
+        return await db.Bundles
+            .Where(b => bundleIDs.Contains(b.ID))
+            .ToListAsync();
+    }
+
+    public async Task<List<Bundle>> Get(long lastBundleId, int maxResults)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, lastBundleId, maxResults);
+    }
+
+    public async Task<List<Bundle>> Get(ConfigDatabase db, long lastBundleId, int maxResults)
+    {
+        if (db == null)
         {
-            m_store = store;
+            throw new ArgumentNullException(nameof(db));
         }
 
-        internal ConfigStore Store
+        return await db.Bundles
+            .Where(b => b.ID > lastBundleId)
+            .OrderBy(b => b.ID)
+            .Take(maxResults)
+            .ToListAsync();
+    }
+
+    public async Task<List<Bundle>> Get(string owner)
+    {
+        await using var db = Store.CreateContext();
+        return await Get(db, owner);
+    }
+
+    public async Task<List<Bundle>> Get(ConfigDatabase db, string owner)
+    {
+        if (db == null)
         {
-            get
-            {
-                return m_store;
-            }
+            throw new ArgumentNullException(nameof(db));
         }
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        return await db.Bundles
+            .Where(b => b.Owner.ToUpper() == owner.ToUpper())
+            .ToListAsync();
+    }
+
+    public async Task<List<Bundle>> GetIncoming(string ownerName)
+    {
+        return await GetIncoming(ownerName, null);
+    }
+
+    public async Task<List<Bundle>> GetIncoming(string ownerName, EntityStatus? status)
+    {
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        await using var db = Store.CreateContext();
+        List<Bundle> matches;
         
+        if (status == null)
+        {
+            matches = await db.Bundles
+                .Where(b =>
+                    b.ForIncoming == true
+                    && b.Owner == ownerName)
+                .ToListAsync();
+        }
+        else
+        {
+            matches = await db.Bundles
+                .Where(b =>
+                    b.ForIncoming == true
+                    && b.Owner == ownerName
+                    && b.Status == status.Value)
+                .ToListAsync();
+        }
+
+        return matches;
+    }
+
+    public async Task<List<Bundle>> GetOutgoing(string ownerName)
+    {
+        return await GetOutgoing(ownerName, null);
+    }
+
+    public async Task<List<Bundle>> GetOutgoing(string ownerName, EntityStatus? status)
+    {
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        await using var db = Store.CreateReadContext();
+        List<Bundle> matches;
+
+        if (status == null)
+        {
+            matches = await db.Bundles
+                .Where(b =>
+                    b.ForOutgoing == true
+                    && b.Owner == ownerName)
+                .ToListAsync();
+        }
+        else
+        {
+            matches = await db.Bundles
+                .Where(b =>
+                    b.ForOutgoing == true
+                    && b.Owner == ownerName
+                    && b.Status == status.Value)
+                .ToListAsync();
+        }
+
+        return matches;
+    }
+
+    public async Task SetStatus(ConfigDatabase db, long BundleID, EntityStatus status)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        var entity = await db.Bundles.SingleOrDefaultAsync(a => a.ID == BundleID);
+
+        if (entity != null)
+        {
+            entity.Status = status;
+        }
+    }
+
+    public async Task SetStatus(string owner, EntityStatus status)
+    {
+        if (string.IsNullOrEmpty(owner))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
+        }
+
+        await using var db = Store.CreateContext();
+        await SetStatus(db, owner, status);
+    }
+
+    public async Task SetStatus(long[] bundleIDs, EntityStatus status)
+    {
+        if (bundleIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
+        }
+
+        await using var db = Store.CreateContext();
         
-        public Bundle Add(Bundle bundle)
+        foreach (var bundleId in bundleIDs)
         {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Add(db, bundle);
-            db.SubmitChanges();
-            return bundle;
+            await SetStatus(db, bundleId, status);
         }
 
-        public void Add(IEnumerable<Bundle> bundles)
-        {
-            if (bundles == null)
-            {
-                throw new ArgumentNullException("bundles");
-            }
+        await db.SaveChangesAsync();
+    }
 
-            using ConfigDatabase db = this.Store.CreateContext();
-            foreach(Bundle bundle in bundles)
-            {
-                this.Add(db, bundle);
-            }
-            db.SubmitChanges();
-        }
-        
-        public void Add(ConfigDatabase db, Bundle bundle)
+    public async Task SetStatus(ConfigDatabase db, string owner, EntityStatus status)
+    {
+        if (db == null)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (bundle == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidBundle);
-            }
-            
-            db.Bundles.InsertOnSubmit(bundle);
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public Bundle[] Get(long[] bundleIDs)
-        {
-            if (bundleIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
+        var entity = await db.Bundles.SingleOrDefaultAsync(a => a.Owner == owner);
 
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return db.Bundles.Get(bundleIDs).ToArray();
+        if (entity != null)
+        {
+            entity.Status = status;
+            db.Entry(entity).State = EntityState.Modified;
+        }
+    }
+
+    public void Remove(long[] bundleIDs)
+    {
+        using var db = Store.CreateContext();
+        Remove(db, bundleIDs);
+
+        // We don't commit, because we execute deletes directly
+    }
+
+    public async Task Remove(ConfigDatabase db, long[] bundleIDs)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (bundleIDs.IsNullOrEmpty())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
         }
 
-        public Bundle[] Get(long lastBundleID, int maxResults)
+        for (var i = 0; i < bundleIDs.Length; ++i)
         {
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            return this.Get(db, lastBundleID, maxResults).ToArray();
-        }
+            var bundle = await db.Bundles
+                .SingleOrDefaultAsync(m => m.ID == bundleIDs[i]);
 
-        public IEnumerable<Bundle> Get(ConfigDatabase db, long lastBundleID, int maxResults)
-        {
-            if (db == null)
+            if (bundle != null)
             {
-                throw new ArgumentNullException("db");
-            }
-
-            return db.Bundles.Get(lastBundleID, maxResults);
-        }
-
-        public Bundle[] Get(string owner)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            return this.Get(db, owner).ToArray();
-        }
-
-        public IEnumerable<Bundle> Get(ConfigDatabase db, string owner)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-            
-            return db.Bundles.Get(owner);
-        }
-
-        public Bundle[] GetIncoming(string ownerName)
-        {
-            return this.GetIncoming(ownerName, null);
-        }
-
-        public Bundle[] GetIncoming(string ownerName, EntityStatus? status)
-        {
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using ConfigDatabase db = this.Store.CreateContext();
-            IEnumerable<Bundle> matches;
-            if (status == null)
-            {
-                matches = db.Bundles.GetIncoming(ownerName);
-            }
-            else
-            {
-                matches = db.Bundles.GetIncoming(ownerName, status.Value);
-            }
-                
-            return matches.ToArray();
-        }
-
-        public Bundle[] GetOutgoing(string ownerName)
-        {
-            return this.GetOutgoing(ownerName, null);
-        }
-
-        public Bundle[] GetOutgoing(string ownerName, EntityStatus? status)
-        {
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using ConfigDatabase db = this.Store.CreateReadContext();
-            IEnumerable<Bundle> matches;
-                
-            if (status == null)
-            {
-                matches = db.Bundles.GetOutgoing(ownerName);
-            }
-            else
-            {
-                matches = db.Bundles.GetOutgoing(ownerName, status.Value);
-            }
-                
-            return matches.ToArray();
-        }
-
-        public void SetStatus(ConfigDatabase db, long BundleID, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            db.Bundles.ExecUpdateStatus(BundleID, status);
-        }
-
-        public void SetStatus(string owner, EntityStatus status)
-        {
-            if (string.IsNullOrEmpty(owner))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.SetStatus(db, owner, status);
-        }
-
-        public void SetStatus(long[] bundleIDs, EntityStatus status)
-        {
-            if (bundleIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-
-            using ConfigDatabase db = this.Store.CreateContext();
-            //
-            // Todo: optimize this by using an 'in' query.. 
-            //
-            for (int i = 0; i < bundleIDs.Length; ++i)
-            {
-                this.SetStatus(db, bundleIDs[i], status);
-            }
-            //db.SubmitChanges(); // Not needed, since we do a direct update
-        }
-
-        public void SetStatus(ConfigDatabase db, string owner, EntityStatus status)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-
-            db.Bundles.ExecUpdateStatus(owner, status);
-        }
-
-        public void Remove(long[] bundleIDs)
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Remove(db, bundleIDs);
-
-            // We don't commit, because we execute deletes directly
-        }
-
-        public void Remove(ConfigDatabase db, long[] bundleIDs)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (bundleIDs.IsNullOrEmpty())
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
-            }
-            //
-            // Todo: this in a single query
-            //
-            for (int i = 0; i < bundleIDs.Length; ++i)
-            {
-                db.Bundles.ExecDelete(bundleIDs[i]);
+                db.Bundles.Remove(bundle);
             }
         }
+    }
 
-        public void Remove(string ownerName)
+    public async Task Remove(string ownerName)
+    {
+        if (string.IsNullOrEmpty(ownerName))
         {
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
-
-            using ConfigDatabase db = this.Store.CreateContext();
-            this.Remove(db, ownerName);
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        public void Remove(ConfigDatabase db, string ownerName)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException("db");
-            }
-            if (string.IsNullOrEmpty(ownerName))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
-            }
+        await using var db = Store.CreateContext();
+        await Remove(db, ownerName);
+        await db.SaveChangesAsync();
+    }
 
-            db.Bundles.ExecDelete(ownerName);
+    public async Task Remove(ConfigDatabase db, string ownerName)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(ownerName))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
+        var bundles = await db.Bundles
+            .Where(m =>
+                m.Owner == ownerName)
+            .ToListAsync();
 
-        public void RemoveAll(ConfigDatabase db)
+        foreach (var bundle in bundles)
         {
-            db.Bundles.ExecTruncate();
-        }
-
-        public void RemoveAll()
-        {
-            using ConfigDatabase db = this.Store.CreateContext();
-            RemoveAll(db);
+            db.Bundles.Remove(bundle);
         }
     }
 }
