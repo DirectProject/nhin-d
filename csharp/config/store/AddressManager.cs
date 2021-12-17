@@ -22,7 +22,6 @@ using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Operators;
 
 namespace Health.Direct.Config.Store;
 
@@ -109,7 +108,7 @@ public class AddressManager : IEnumerable<Address>
 
         var address = new Address(domain.ID, mailAddress) {Type = addressType, Status = status};
 
-        return await Add(db, address);
+        return Add(db, address);
     }
     
     /// <summary>
@@ -119,7 +118,7 @@ public class AddressManager : IEnumerable<Address>
     public async Task<Address> Add(Address address)
     {
         await using var db = Store.CreateContext();
-        await Add(db, address);
+        Add(db, address);
         await db.SaveChangesAsync();
 
         return address;
@@ -140,7 +139,7 @@ public class AddressManager : IEnumerable<Address>
 
         foreach(var address in addresses)
         {
-            await Add(db, address);
+            Add(db, address);
         }
             
         await db.SaveChangesAsync();
@@ -152,7 +151,7 @@ public class AddressManager : IEnumerable<Address>
     /// </summary>
     /// <param name="db">database context to use</param>
     /// <param name="address">address object</param>
-    public async Task<Address> Add(ConfigDatabase db, Address address)
+    public Address Add(ConfigDatabase db, Address address)
     {
         if (db == null)
         {
@@ -169,7 +168,7 @@ public class AddressManager : IEnumerable<Address>
             throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
         }
         
-        var entity = await db.Addresses.AddAsync(address);
+        var entity = db.Addresses.Add(address);
 
         return entity.Entity;
     }
@@ -251,7 +250,7 @@ public class AddressManager : IEnumerable<Address>
 
         var entities = await db.Addresses
             .Include(a => a.Domain)
-            .Where(a => String.Compare(a.Domain.Name, domainName) > 0)
+            .Where(a => a.Domain.Name.ToUpper().Contains(domainName.ToUpper()))
             .OrderBy(a => a.EmailAddress)
             .Take(maxResults)
             .ToListAsync();
@@ -310,13 +309,13 @@ public class AddressManager : IEnumerable<Address>
                 string enclosureEmailAddress = emailAddress;
                 var existingAddress = addresses
                     .SingleOrDefault(a => 
-                        a.EmailAddress.Equals(enclosureEmailAddress, StringComparison.OrdinalIgnoreCase));
+                        a.EmailAddress.ToUpper() == enclosureEmailAddress.ToUpper());
                 if (existingAddress != null)
                 {
                     addressList.Add(existingAddress);
                     continue;
                 }
-                AutoMapDomains(enclosureEmailAddress, addressList, status);
+                await AutoMapDomains(enclosureEmailAddress, addressList, status);
             }
             return addressList;
         }
@@ -478,6 +477,7 @@ public class AddressManager : IEnumerable<Address>
     {
         await using var db = Store.CreateContext();
         await Remove(db, emailAddress);
+        await db.SaveChangesAsync();
     }
     
     public async Task Remove(ConfigDatabase db, string emailAddress)
@@ -505,12 +505,15 @@ public class AddressManager : IEnumerable<Address>
         {
             await Remove(db, emailAddress);
         }
+
+        await db.SaveChangesAsync();
     }
     
     public async Task RemoveDomain(long domainID)
     {
         await using var db = Store.CreateContext();
         await RemoveDomain(db, domainID);
+        await db.SaveChangesAsync();
     }
 
     public async Task RemoveDomain(ConfigDatabase db, long domainId)
@@ -531,8 +534,7 @@ public class AddressManager : IEnumerable<Address>
         await using var db = Store.CreateContext();
 
         var addresses = await db.Addresses
-            .Where(a => a.DomainID == domainId
-                        && a.Status == status)
+            .Where(a => a.DomainID == domainId)
             .ToListAsync();
 
         foreach (var address in addresses)
@@ -542,6 +544,8 @@ public class AddressManager : IEnumerable<Address>
                 address.Status = status;
             }
         }
+
+        await db.SaveChangesAsync();
     }
     
     void VerifyEmailAddresses(string[] emailAddresses)

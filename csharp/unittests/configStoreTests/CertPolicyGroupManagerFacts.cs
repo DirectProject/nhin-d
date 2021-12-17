@@ -52,9 +52,9 @@ namespace Health.Direct.Config.Store.Tests
         /// A test for GetEnumerator
         /// </summary>
         [Fact]
-        public void GetEnumeratorTest()
+        public async Task GetEnumeratorTest()
         {
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyGroupRecords();
             IEnumerable<CertPolicyGroup> mgr = CreateManager();
             Assert.Equal(3, mgr.Count());
         }
@@ -66,7 +66,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetPolicyGroupByName()
         {
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyGroupRecords();
             CertPolicyGroupManager mgr = CreateManager();
             CertPolicyGroup @group = await mgr.Get("PolicyGroup1");
             @group.Name.Should().BeEquivalentTo("PolicyGroup1");
@@ -95,7 +95,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task AddPolicyGroup()
         {
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyGroupRecords();
             var mgr = CreateManager();
 
             var expectedPolicy = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest PolicyGroup Description");
@@ -111,8 +111,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact(Skip = "Broken.  Thinks it is adding a new certpolicy with the same name.  This session technique is probably not going to be used.")]
         public async Task AssociatePolicyToGroupSessionTest()
         {
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             await using (ConfigDatabase db = CreateConfigDatabase())
             {
@@ -120,7 +120,7 @@ namespace Health.Direct.Config.Store.Tests
                 CertPolicyGroup policyGroup = await mgr.Get(db, "PolicyGroup1");
                 policyGroup.CertPolicies.Count.Should().Be(0);
                 CertPolicyManager policyMgr = CreatePolicyManager();
-                CertPolicy certPolicy = policyMgr.Get("Policy1");
+                CertPolicy certPolicy = await policyMgr.Get("Policy1");
 
                 policyGroup.CertPolicies.Add(certPolicy);
                 await db.SaveChangesAsync();
@@ -136,20 +136,20 @@ namespace Health.Direct.Config.Store.Tests
         public async Task AddPolicyUseTest()
         {
             //arrange
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager mgr = CreateManager();
 
             //act
-            mgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            await mgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
 
             //assert 1
             CertPolicyGroup policyGroup = await mgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
 
             //act
-            mgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, false, true);
+            await mgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, false, true);
 
             //assert 2
             policyGroup = await mgr.Get("PolicyGroup1");
@@ -162,7 +162,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task UpdatePolicyGroupDescriptionTest()
         {
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyGroupRecords();
             var mgr = CreateManager();
 
             var newCertPolicyGroup = new CertPolicyGroup("UnitTestPolicyGroup", "UnitTest Policy Description");
@@ -183,19 +183,19 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task DisassociatePolicyFromGroupTest()
         {
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager mgr = CreateManager();
 
             //act
-            mgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            await mgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
 
             CertPolicyGroup policyGroup = await mgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
 
             CertPolicyGroupMap[] map = new CertPolicyGroupMap[] { policyGroup.CertPolicyGroupMaps.First() };
-            mgr.RemovePolicy(map);
+            await mgr.RemovePolicy(map);
 
             policyGroup = await mgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
@@ -204,16 +204,16 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task AssociatePolicyGroupToDomain_Test()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
@@ -222,27 +222,27 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task DisassociatePolicyGroupFromomain_Test()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
 
             // now disassociate 
-            groupMgr.DisassociateFromDomain("domain1.test.com", policyGroup.ID);
+            await groupMgr.DisassociateFromDomain("domain1.test.com", policyGroup.ID);
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
-            groupMgr.DisassociateFromDomain("domain2.test.com", policyGroup.ID);
+            await groupMgr.DisassociateFromDomain("domain2.test.com", policyGroup.ID);
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
@@ -254,16 +254,16 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task Disassociate_All_PolicyGroups_ByDomain_Test()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
@@ -271,11 +271,11 @@ namespace Health.Direct.Config.Store.Tests
             //group2
             CertPolicyGroup policyGroup2 = await groupMgr.Get("PolicyGroup2");
             policyGroup2.CertPolicies.Count.Should().Be(0);
-            groupMgr.AssociateToOwner(policyGroup2.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup2.Name, "domain1.test.com");
             policyGroup2 = await groupMgr.Get("PolicyGroup2");
             policyGroup2.CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
-            groupMgr.DisassociateFromDomain("domain1.test.com");
+            await groupMgr.DisassociateFromDomain("domain1.test.com");
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(1);
@@ -290,21 +290,21 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task Disassociate_All_Domains_From_PolicyGroup_Test()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup.Name, "domain2.test.com");
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(2);
 
-            groupMgr.DisassociateFromDomains(policyGroup.ID);
+            await groupMgr.DisassociateFromDomains(policyGroup.ID);
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicyGroupDomainMaps.Count.Should().Be(0);
@@ -316,9 +316,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetPolicyGroupsByDomains()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup1 = await groupMgr.Get("PolicyGroup1");
@@ -330,27 +330,27 @@ namespace Health.Direct.Config.Store.Tests
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
-            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
+            await groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
 
             var policyGroups = await groupMgr.GetByDomains(new string[] { "domain1.test.com" });
-            policyGroups.Count().Should().Be(1);
+            policyGroups.Count.Should().Be(1);
             policyGroups.First().CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
             policyGroups = await groupMgr.GetByDomains(new string[] { "domain2.test.com" });
-            policyGroups.Count().Should().Be(2);
+            policyGroups.Count.Should().Be(2);
             policyGroups.Where(cpg => cpg.Name == "PolicyGroup1").Select(cpg => cpg.CertPolicyGroupDomainMaps).ToList().Count.Should().Be(1);
             policyGroups.Where(cpg => cpg.Name == "PolicyGroup2").Select(cpg => cpg.CertPolicyGroupDomainMaps).ToList().Count.Should().Be(1);
 
             policyGroups = await groupMgr.GetByDomains(new string[] { "domain1.test.com", "domain2.test.com" });
-            policyGroups.Count().Should().Be(2);
+            policyGroups.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
 
             policyGroups = await groupMgr.GetByDomains(new string[] { "domain1.test.com", "domain2.test.com", "domain3.test.com" });
-            policyGroups.Count().Should().Be(2);
+            policyGroups.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(3);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
         }
@@ -361,9 +361,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetPolicyGroupsByDomainsWithPoliciesTest()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
 
             CertPolicyGroupManager groupMgr = CreateManager();
             CertPolicyGroup policyGroup1 = await groupMgr.Get("PolicyGroup1");
@@ -375,20 +375,20 @@ namespace Health.Direct.Config.Store.Tests
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
-            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain3.test.com");
+            await groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
 
             //
             // Map cert policy group to policy
             //
-            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PUBLIC_RESOLVER, true, true);
-            groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PUBLIC_RESOLVER, true, true);
-            groupMgr.AddPolicyUse("Policy2", "PolicyGroup2", CertPolicyUse.PUBLIC_RESOLVER, true, true);
+            await groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PUBLIC_RESOLVER, true, true);
+            await groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PUBLIC_RESOLVER, true, true);
+            await groupMgr.AddPolicyUse("Policy2", "PolicyGroup2", CertPolicyUse.PUBLIC_RESOLVER, true, true);
 
             var policyGroups = await groupMgr.GetByDomains(new string[] { "domain1.test.com" });
-            policyGroups.Count().Should().Be(1);
+            policyGroups.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicies.Count.Should().Be(2);
@@ -399,21 +399,21 @@ namespace Health.Direct.Config.Store.Tests
             }
 
             policyGroups = await groupMgr.GetByDomains(new string[] { "domain2.test.com" });
-            policyGroups.Count() .Should().Be(2);
+            policyGroups.Count .Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupMaps.Count.Should().Be(1);
 
             policyGroups = await groupMgr.GetByDomains(new string[] { "domain1.test.com", "domain2.test.com" });
-            policyGroups.Count().Should().Be(2);
+            policyGroups.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupMaps.Count.Should().Be(1);
 
             policyGroups = await groupMgr.GetByDomains(new string[] { "domain1.test.com", "domain2.test.com", "domain3.test.com" });
-            policyGroups.Count().Should().Be(2);
+            policyGroups.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupDomainMaps.Count.Should().Be(3);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup1").CertPolicyGroupMaps.Count.Should().Be(2);
             policyGroups.Single(cpg => cpg.Name == "PolicyGroup2").CertPolicyGroupDomainMaps.Count.Should().Be(1);

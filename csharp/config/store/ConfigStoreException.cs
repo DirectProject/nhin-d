@@ -17,10 +17,10 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Runtime.Serialization;
 using System.Data.Common;
-using System.Data.Linq;
-using System.Data.SqlClient;
 
 using Health.Direct.Common;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store
 {
@@ -113,21 +113,17 @@ namespace Health.Direct.Config.Store
                 return ce.Error;
             }
 
-            ChangeConflictException conflict = ex as ChangeConflictException;
-            if (conflict != null)
+            if (ex is DbUpdateConcurrencyException)
             {
                 return ConfigStoreError.Conflict;
             }
 
-            SqlException sqlex = ex as SqlException;
-            if (sqlex != null)
+            if (ex is SqlException sqlEx)
             {
-                ConfigStoreError errorCode = ConfigStoreError.DatabaseError;
-                switch (sqlex.Number)
-                {
-                    default:
-                        break;
+                var errorCode = ConfigStoreError.DatabaseError;
 
+                switch (sqlEx.Number)
+                {
                     case (int)SqlErrorCodes.DuplicatePrimaryKey:
                     case (int)SqlErrorCodes.UniqueConstraintViolation:
                         errorCode = ConfigStoreError.UniqueConstraint;
@@ -141,8 +137,7 @@ namespace Health.Direct.Config.Store
                 return errorCode;
             }
 
-            DbException dbex = ex as DbException;
-            if (dbex != null)
+            if (ex is DbException)
             {
                 return ConfigStoreError.DatabaseError;
             }
@@ -211,27 +206,22 @@ namespace Health.Direct.Config.Store
         
         public static ConfigStoreFault ToFault(Exception ex)
         {
-            ConfigStoreException ce = ex as ConfigStoreException;
-            if (ce != null)
+            if (ex is ConfigStoreException ce)
             {
                 return ce.ToFault();
             }
-            
-            ChangeConflictException conflict = ex as ChangeConflictException;
-            if (conflict != null)
+
+            if (ex is DbUpdateConcurrencyException conflict)
             {
                 return new ConfigStoreFault(ConfigStoreError.Conflict, conflict.Message);
             }
-            
-            SqlException sqlex = ex as SqlException;
-            if (sqlex != null)
+
+            if (ex is SqlException sqlEx)
             {
-                ConfigStoreError errorCode = ConfigStoreError.DatabaseError;
-                switch (sqlex.Number)
+                var errorCode = ConfigStoreError.DatabaseError;
+
+                switch (sqlEx.Number)
                 {
-                    default:
-                        break;
-                    
                     case (int) SqlErrorCodes.DuplicatePrimaryKey:
                     case (int) SqlErrorCodes.UniqueConstraintViolation:
                         errorCode = ConfigStoreError.UniqueConstraint;
@@ -242,13 +232,12 @@ namespace Health.Direct.Config.Store
                         break;                                                               
                 }
                 
-                return new ConfigStoreFault(errorCode, sqlex.Message);
+                return new ConfigStoreFault(errorCode, sqlEx.Message);
             }
-            
-            DbException dbex = ex as DbException;
-            if (dbex != null)
+
+            if (ex is DbException dbEx)
             {
-                return new ConfigStoreFault(ConfigStoreError.DatabaseError, dbex.Message);
+                return new ConfigStoreFault(ConfigStoreError.DatabaseError, dbEx.Message);
             }
             
             return new ConfigStoreFault(ConfigStoreError.Unknown, ex.Message);

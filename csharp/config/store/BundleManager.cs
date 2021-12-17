@@ -38,7 +38,7 @@ public class BundleManager
     public async Task<Bundle> Add(Bundle bundle)
     {
         await using var db = Store.CreateContext();
-        await Add(db, bundle);
+        Add(db, bundle);
         await db.SaveChangesAsync();
 
         return bundle;
@@ -54,12 +54,12 @@ public class BundleManager
         await using var db = Store.CreateContext();
         foreach (var bundle in bundles)
         {
-            await Add(db, bundle);
+            Add(db, bundle);
         }
         await db.SaveChangesAsync();
     }
 
-    public async Task Add(ConfigDatabase db, Bundle bundle)
+    public void Add(ConfigDatabase db, Bundle bundle)
     {
         if (db == null)
         {
@@ -70,7 +70,7 @@ public class BundleManager
             throw new ConfigStoreException(ConfigStoreError.InvalidBundle);
         }
 
-        await db.Bundles.AddAsync(bundle);
+        db.Bundles.Add(bundle);
     }
 
     public async Task<List<Bundle>> Get(long[] bundleIDs)

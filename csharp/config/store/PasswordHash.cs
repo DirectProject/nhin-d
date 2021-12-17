@@ -1,12 +1,11 @@
 using System;
-using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {
-    [DataContract]
+    
     public class PasswordHash : IEquatable<PasswordHash>
     {
         private string m_hashedPassword;
@@ -37,7 +36,9 @@ namespace Health.Direct.Config.Store
             return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(source)));
         }
 
-        [DataMember(IsRequired = true)]
+        internal string PasswordHashDB { get; set; }
+
+       
         public string HashedPassword
         {
             get

@@ -20,75 +20,79 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 
-namespace Health.Direct.Config.Store
+namespace Health.Direct.Config.Store;
+
+/// <inheritdoc />
+public class ConfigDatabase : DbContext
 {
-    /// <inheritdoc />
-    public class ConfigDatabase : DbContext
-    {
-        public DbSet<Address> Addresses { get; set; } = null!;
-        public DbSet<Administrator> Administrators { get; set; } = null!;
-        public DbSet<Anchor> Anchors { get; set; } = null!;
-        // public DbSet<NamedBlob> Blobs { get; set; } = null!;
-        public DbSet<Bundle> Bundles { get; set; } = null!;
-        public DbSet<CertPolicy> CertPolicies { get; set; } = null!;
-        public DbSet<CertPolicyGroup> CertPolicyGroups { get; set; } = null!;
-        public DbSet<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; } = null!;
-        public DbSet<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; } = null!;
-        public DbSet<Certificate> Certificates { get; set; } = null!;
-        public DbSet<DnsRecord> DnsRecords { get; set; } = null!;
-        public DbSet<Domain> Domains { get; set; } = null!;
-        public DbSet<Mdn> Mdns { get; set; } = null!;
-        // public DbSet<Property> Properties { get; set; } = null!;
+    public DbSet<Address> Addresses { get; set; } = null!;
+    public DbSet<Administrator> Administrators { get; set; } = null!;
+    public DbSet<Anchor> Anchors { get; set; } = null!;
+    // public DbSet<NamedBlob> Blobs { get; set; } = null!;
+    public DbSet<Bundle> Bundles { get; set; } = null!;
+    public DbSet<CertPolicy> CertPolicies { get; set; } = null!;
+    public DbSet<CertPolicyGroup> CertPolicyGroups { get; set; } = null!;
+    public DbSet<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; } = null!;
+    public DbSet<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; } = null!;
+    public DbSet<Certificate> Certificates { get; set; } = null!;
+    public DbSet<DnsRecord> DnsRecords { get; set; } = null!;
+    public DbSet<Domain> Domains { get; set; } = null!;
+    public DbSet<Mdn> Mdns { get; set; } = null!;
+    // public DbSet<Property> Properties { get; set; } = null!;
 
-        private static string _connectionString;
-        private readonly int _timeout = 10;
+    private static string _connectionString;
+    private readonly int _timeout = 10;
 
-        private static readonly LoggerFactory MyLoggerFactory =
-            new LoggerFactory(new[]
-            {
+    private static readonly LoggerFactory MyLoggerFactory =
+        new LoggerFactory(new[]
+        {
                 new DebugLoggerProvider()
-            });
-        
-        public ConfigDatabase(string connectionString)
+        });
+
+    public ConfigDatabase(string connectionString)
+    {
+        _connectionString = connectionString;
+    }
+
+    public ConfigDatabase(string connectionString, int commandTimeout)
+        : this(connectionString)
+    {
+        _timeout = commandTimeout;
+    }
+
+    public ConfigDatabase(string connectionString, int commandTimeout, bool objectTracking)
+        : this(connectionString, commandTimeout)
+    {
+        if (objectTracking) return;
+
+        Domains.AsNoTracking();
+        Addresses.AsNoTracking();
+        Anchors.AsNoTracking();
+        Certificates.AsNoTracking();
+        DnsRecords.AsNoTracking();
+        Bundles.AsNoTracking();
+        Mdns.AsNoTracking();
+
+
+    }
+
+    /// <inheritdoc />
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
         {
-            _connectionString = connectionString;
+            optionsBuilder
+                .EnableSensitiveDataLogging()
+                .UseLoggerFactory(MyLoggerFactory)
+                .UseSqlServer(
+                    _connectionString,
+                    providerOptions => providerOptions.CommandTimeout(_timeout));
         }
+    }
 
-        public ConfigDatabase(string connectionString, int commandTimeout)
-            : this(connectionString)
-        {
-            _timeout = commandTimeout;
-        }
-
-        public ConfigDatabase(string connectionString, int commandTimeout, bool objectTracking)
-            : this(connectionString, commandTimeout)
-        {
-            if (objectTracking) return;
-
-            Domains.AsNoTracking();
-            Addresses.AsNoTracking();
-            Anchors.AsNoTracking();
-            Certificates.AsNoTracking();
-            DnsRecords.AsNoTracking();
-            Bundles.AsNoTracking();
-            Mdns.AsNoTracking();
-
-
-        }
-
-        /// <inheritdoc />
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder
-                    .EnableSensitiveDataLogging()
-                    .UseLoggerFactory(MyLoggerFactory)
-                    .UseSqlServer(
-                        _connectionString, 
-                        providerOptions => providerOptions.CommandTimeout(_timeout));
-            }
-        }
-        
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        var assemblyWithConfigurations = GetType().Assembly;
+        modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
     }
 }

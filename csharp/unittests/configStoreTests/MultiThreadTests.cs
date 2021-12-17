@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Data.SqlClient;
 using System.Threading;
+using Health.Direct.Common;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.Data.SqlClient;
 using Xunit;
@@ -56,7 +57,7 @@ namespace Health.Direct.Config.Store.Tests
         Domain EnsureDomain()
         {
             Domain domain;
-            if ((domain = s_store.Domains.Get(TestDomain)) == null)
+            if ((domain = SyncOverAsyncHelper.RunSync(() => s_store.Domains.Get(TestDomain))) == null)
             {
                 domain = new Domain(TestDomain);
                 s_store.Domains.Add(domain);
@@ -68,9 +69,9 @@ namespace Health.Direct.Config.Store.Tests
         void EnsureAddress(string address)
         {
             Address addressObj;
-            if ((addressObj = s_store.Addresses.Get(address)) != null)
+            if ((addressObj = SyncOverAsyncHelper.RunSync(() => s_store.Addresses.Get(address))) != null)
             {
-                s_store.Addresses.Remove(addressObj.EmailAddress);
+                SyncOverAsyncHelper.RunSync(() => s_store.Addresses.Remove(addressObj.EmailAddress));
             }
             addressObj = new Address(m_domain.ID, address);
             s_store.Addresses.Add(addressObj);
@@ -79,9 +80,9 @@ namespace Health.Direct.Config.Store.Tests
 
         void UpdateAddress(string address)
         {
-            Address addressObj = s_store.Addresses.Get(address);
+            Address addressObj = SyncOverAsyncHelper.RunSync(() => s_store.Addresses.Get(address));
             addressObj.Status = (addressObj.Status == EntityStatus.Enabled) ? EntityStatus.Disabled : EntityStatus.Enabled;
-            s_store.Addresses.Update(addressObj);
+            SyncOverAsyncHelper.RunSync(() => s_store.Addresses.Update(addressObj));
         }
 
         static string[] CreateAddressStrings(int prefix, int count)

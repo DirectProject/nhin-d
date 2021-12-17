@@ -17,123 +17,123 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Xunit;
 using Xunit.Samples;
 
-namespace Health.Direct.Config.Store.Tests
+namespace Health.Direct.Config.Store.Tests;
+
+public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
 {
-    public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
+    private readonly ConfigDatabase m_database;
+    private readonly AdministratorManager m_manager;
+    private readonly string m_username;
+    private readonly string m_password;
+
+    public AdministratorManagerFacts()
     {
-        private readonly ConfigDatabase m_database;
-        private readonly AdministratorManager m_manager;
-        private readonly string m_username;
-        private readonly string m_password;
+        m_database = CreateConfigDatabase();
+        m_manager = new AdministratorManager(CreateConfigStore());
+        m_username = Guid.NewGuid().ToString("N");
+        m_password = "asdf1234";
+    }
 
-        public AdministratorManagerFacts()
+    public void Dispose()
+    {
+        m_database.Dispose();
+    }
+
+    [Fact, AutoRollback]
+    public async Task<Administrator> Add()
+    {
+        var origAdmin = new Administrator(m_username, m_password);
+        await m_manager.Add(origAdmin);
+
+        var admin = (m_database.Administrators.Where(a => a.Username == m_username)).SingleOrDefault();
+
+        Assert.NotNull(admin);
+        Assert.True(admin.ID > 0);
+        Assert.Equal(origAdmin.Username, admin.Username);
+        Assert.Equal(origAdmin.CreateDate, admin.CreateDate, new DbDateTimeComparer());
+        Assert.Equal(origAdmin.UpdateDate, admin.UpdateDate, new DbDateTimeComparer());
+        Assert.Equal(origAdmin.Status, admin.Status);
+        Assert.True(admin.CheckPassword(m_password));
+
+        return admin;
+    }
+
+    [Fact, AutoRollback]
+    public async Task Update()
+    {
+        var origAdmin = await Add();
+
+        origAdmin.Status = EntityStatus.Enabled;
+        origAdmin.SetPassword("qwerty");
+        await m_manager.Update(origAdmin);
+
+        var admin = (m_database.Administrators.Where(a => a.Username == m_username)).SingleOrDefault();
+
+        Assert.NotNull(admin);
+        Assert.True(admin.ID > 0);
+        Assert.Equal(origAdmin.Username, admin.Username);
+        Assert.Equal(origAdmin.CreateDate, admin.CreateDate, new DbDateTimeComparer());
+        Assert.Equal(origAdmin.UpdateDate, admin.UpdateDate, new DbDateTimeComparer());
+        Assert.Equal(origAdmin.Status, admin.Status);
+        Assert.True(admin.CheckPassword("qwerty"));
+    }
+
+    [Fact, AutoRollback]
+    public async Task GetByUsername()
+    {
+        Add();
+
+        var admin = await m_manager.Get(m_username);
+        Assert.NotNull(admin);
+        Assert.Equal(m_username, admin.Username);
+        Assert.Equal(EntityStatus.New, admin.Status);
+        Assert.True(admin.CheckPassword(m_password));
+    }
+
+    [Fact, AutoRollback]
+    public async Task GetByID()
+    {
+        var added = await Add();
+
+        var admin = await m_manager.Get(added.ID);
+        Assert.NotNull(admin);
+        Assert.Equal(m_username, admin.Username);
+    }
+
+    [Fact, AutoRollback]
+    public async Task Remove()
+    {
+        await Add();
+        await m_manager.Remove(m_username);
+        Assert.Null(await m_manager.Get(m_username));
+    }
+
+    [Fact, AutoRollback]
+    public async Task SetStatus()
+    {
+        await Add();
+        await m_manager.SetStatus(m_username, EntityStatus.Disabled);
+
+        var admin = await m_manager.Get(m_username);
+        Assert.NotNull(admin);
+        Assert.Equal(EntityStatus.Disabled, admin.Status);
+    }
+
+    public class DbDateTimeComparer : IEqualityComparer<DateTime>
+    {
+        public bool Equals(DateTime x, DateTime y)
         {
-            m_database = CreateConfigDatabase();
-            m_manager = new AdministratorManager(CreateConfigStore());
-            m_username = Guid.NewGuid().ToString("N");
-            m_password = "asdf1234";
+            return x.ToString() == y.ToString();
         }
 
-        public void Dispose()
+        public int GetHashCode(DateTime obj)
         {
-            m_database.Dispose();
-        }
-
-        [Fact, AutoRollback]
-        public Administrator Add()
-        {
-            var origAdmin = new Administrator(m_username, m_password);
-            m_manager.Add(origAdmin);
-
-            var admin = (m_database.Administrators.Where(a => a.Username == m_username)).SingleOrDefault();
-
-            Assert.NotNull(admin);
-            Assert.True(admin.ID > 0);
-            Assert.Equal(origAdmin.Username, admin.Username);
-            Assert.Equal(origAdmin.CreateDate, admin.CreateDate, new DbDateTimeComparer());
-            Assert.Equal(origAdmin.UpdateDate, admin.UpdateDate, new DbDateTimeComparer());
-            Assert.Equal(origAdmin.Status, admin.Status);
-            Assert.True(admin.CheckPassword(m_password));
-
-            return admin;
-        }
-
-        [Fact, AutoRollback]
-        public void Update()
-        {
-            var origAdmin = Add();
-
-            origAdmin.Status = EntityStatus.Enabled;
-            origAdmin.SetPassword("qwerty");
-            m_manager.Update(origAdmin);
-
-            var admin = (m_database.Administrators.Where(a => a.Username == m_username)).SingleOrDefault();
-
-            Assert.NotNull(admin);
-            Assert.True(admin.ID > 0);
-            Assert.Equal(origAdmin.Username, admin.Username);
-            Assert.Equal(origAdmin.CreateDate, admin.CreateDate, new DbDateTimeComparer());
-            Assert.Equal(origAdmin.UpdateDate, admin.UpdateDate, new DbDateTimeComparer());
-            Assert.Equal(origAdmin.Status, admin.Status);
-            Assert.True(admin.CheckPassword("qwerty"));
-        }
-
-        [Fact, AutoRollback]
-        public void GetByUsername()
-        {
-            Add();
-
-            var admin = m_manager.Get(m_username);
-            Assert.NotNull(admin);
-            Assert.Equal(m_username, admin.Username);
-            Assert.Equal(EntityStatus.New, admin.Status);
-            Assert.True(admin.CheckPassword(m_password));
-        }
-
-        [Fact, AutoRollback]
-        public void GetByID()
-        {
-            var added = Add();
-
-            var admin = m_manager.Get(added.ID);
-            Assert.NotNull(admin);
-            Assert.Equal(m_username, admin.Username);
-        }
-
-        [Fact, AutoRollback]
-        public void Remove()
-        {
-            Add();
-            m_manager.Remove(m_username);
-            Assert.Null(m_manager.Get(m_username));
-        }
-
-        [Fact, AutoRollback]
-        public void SetStatus()
-        {
-            Add();
-            m_manager.SetStatus(m_username, EntityStatus.Disabled);
-
-            var admin = m_manager.Get(m_username);
-            Assert.NotNull(admin);
-            Assert.Equal(EntityStatus.Disabled, admin.Status);
-        }
-
-        public class DbDateTimeComparer : IEqualityComparer<DateTime>
-        {
-            public bool Equals(DateTime x, DateTime y)
-            {
-                return x.ToString() == y.ToString();
-            }
-
-            public int GetHashCode(DateTime obj)
-            {
-                return obj.GetHashCode();
-            }
+            return obj.GetHashCode();
         }
     }
 }

@@ -214,7 +214,7 @@ namespace Health.Direct.Common.Certificates
         /// <param name="domain">The domain for which certificates should be resolved.</param>
         /// <returns>An <see cref="X509Certificate2Collection"/> of X509 certifiates for the address,
         /// or <c>null</c> if no certificates are found.</returns>
-        public Task<X509Certificate2Collection> GetCertificatesForDomain(string domain)
+        public X509Certificate2Collection GetCertificatesForDomain(string domain)
         {
             if (string.IsNullOrEmpty(domain))
             {

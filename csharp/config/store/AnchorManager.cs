@@ -43,7 +43,7 @@ public class AnchorManager
     public async Task<Anchor> Add(Anchor anchor)
     {
         await using ConfigDatabase db = Store.CreateContext();
-        await Add(db, anchor);
+        Add(db, anchor);
         await db.SaveChangesAsync();
         return anchor;
     }
@@ -59,13 +59,13 @@ public class AnchorManager
         
         foreach(var anchor in anchors)
         {
-            await Add(db, anchor);
+            Add(db, anchor);
         }
 
         await db.SaveChangesAsync();
     }
     
-    public async Task Add(ConfigDatabase db, Anchor anchor)
+    public void Add(ConfigDatabase db, Anchor anchor)
     {
         if (db == null)
         {
@@ -76,7 +76,7 @@ public class AnchorManager
             throw new ConfigStoreException(ConfigStoreError.InvalidAnchor);
         }
         
-        await db.Anchors.AddAsync(anchor);
+        db.Anchors.Add(anchor);
     }
 
     public async Task<List<Anchor>> Get(long[] certificateIDs)

@@ -19,8 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Data.Linq;
-using System.Data.Linq.Mapping;
 using System.Linq;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Policy.Impl;
@@ -34,10 +32,7 @@ namespace Health.Direct.Config.Store.Entity
 
         string m_Name;
         string m_Description = String.Empty;
-
-        // don't remove
-        private EntitySet<CertPolicyGroupMap> m_certPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
-
+        
         public virtual ICollection<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; }
 
         public CertPolicy()
@@ -84,18 +79,10 @@ namespace Health.Direct.Config.Store.Entity
             set; 
         }
 
-        [Association(Name = "FK_CertPolicyGroupMap_CertPolicies", Storage = "m_certPolicyGroupMap", ThisKey = "ID", OtherKey = "m_certPolicyId")]
         public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
         {
-            set
-            {
-               m_certPolicyGroupMap.Assign(value);
-            }
-            get
-            {
-                //  initialization needed for serialization 
-                return m_certPolicyGroupMap ??  new EntitySet<CertPolicyGroupMap>();
-            }
+            get;
+            set;
         }
 
         
@@ -159,58 +146,8 @@ namespace Health.Direct.Config.Store.Entity
             get;
             set;
         }
-
-
-        public ICollection<CertPolicyGroup> CertPolicyGroups
-        {
-            get
-            {
-                if (CertPolicyGroupMap == null)
-                {
-                    return null;
-                }
-                var policyGroups = new ObservableCollection<CertPolicyGroup>(
-                        from groupMap in CertPolicyGroupMap select groupMap.CertPolicyGroup);
-                policyGroups.CollectionChanged += CertPolicyGroupCollectionChanged;
-                return policyGroups;
-            }
-        }
-
-        private void CertPolicyGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (NotifyCollectionChangedAction.Add == e.Action)
-            {
-                foreach (CertPolicyGroup policyGroup in e.NewItems)
-                    OnPolicyGroupAdded(policyGroup);
-            }
-
-            if (NotifyCollectionChangedAction.Remove == e.Action)
-            {
-                foreach (CertPolicyGroup policyGroup in e.OldItems)
-                    OnPolicyGroupRemoved(policyGroup);
-            }
-        }
-
-
-        private void OnPolicyGroupAdded(CertPolicyGroup policyGroup)
-        {
-            CertPolicyGroupMap map = new CertPolicyGroupMap(true);
-            map.CertPolicy = this;
-            map.CertPolicyGroup = policyGroup;
-        }
-
-        private void OnPolicyGroupRemoved(CertPolicyGroup policyGroup)
-        {
-            CertPolicyGroupMap map =
-                CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicy == this && pg.CertPolicyGroup == policyGroup);
-            if (map != null)
-            {
-                map.Remove();
-            }
-        }
-
         
-
+        
         public bool HasData
         {
             get

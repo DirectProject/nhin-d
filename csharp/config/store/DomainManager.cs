@@ -43,20 +43,20 @@ public class DomainManager : IEnumerable<Domain>
     public async Task<Domain> Add(ConfigDatabase db, string name)
     {
         var domain = new Domain(name);
-        await Add(db, domain);
+        Add(db, domain);
         return domain;
     }
 
     public async Task<Domain> Add(Domain domain)
     {
         await using var db = Store.CreateContext();
-        await Add(db, domain);
+        Add(db, domain);
         await db.SaveChangesAsync();
 
         return domain;
     }
 
-    public async Task Add(ConfigDatabase db, Domain domain)
+    public void Add(ConfigDatabase db, Domain domain)
     {
         if (db == null)
         {
@@ -72,7 +72,7 @@ public class DomainManager : IEnumerable<Domain>
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
         
-        await db.Domains.AddAsync(domain);
+        db.Domains.Add(domain);
     }
     
     public async Task<int> Count()

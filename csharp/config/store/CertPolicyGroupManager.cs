@@ -37,27 +37,27 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 
     internal ConfigStore Store { get; }
 
-    public async Task<CertPolicyGroup> Add(CertPolicyGroup @group)
+    public async Task<CertPolicyGroup> Add(CertPolicyGroup group)
     {
         await using var db = Store.CreateContext();
-        await Add(db, @group);
+        Add(db, group);
         await db.SaveChangesAsync();
 
-        return @group;
+        return group;
     }
 
-    public async Task Add(ConfigDatabase db, CertPolicyGroup @group)
+    public void Add(ConfigDatabase db, CertPolicyGroup group)
     {
         if (db == null)
         {
             throw new ArgumentNullException(nameof(db));
         }
-        if (@group == null)
+        if (group == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroup);
         }
 
-        await db.CertPolicyGroups.AddAsync(@group);
+        db.CertPolicyGroups.Add(group);
     }
 
     
@@ -167,7 +167,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 
     public async Task<List<CertPolicyGroup>> Get(long lastID, int maxResults)
     {
-        using ConfigDatabase db = Store.CreateReadContext();
+        await using var db = Store.CreateReadContext();
         return await Get(db, lastID, maxResults);
     }
 
@@ -248,7 +248,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
     public async Task AddPolicyUse(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
     {
         await using var db = Store.CreateContext();
-        AddPolicyUse(db, policyName, groupName, policyUse, incoming, outgoing);
+        await AddPolicyUse(db, policyName, groupName, policyUse, incoming, outgoing);
         await db.SaveChangesAsync();
     }
 
@@ -276,18 +276,21 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
             .Where(g => g.Name == policyName)
             .SingleOrDefaultAsync();
 
-        group.CertPolicies.Add(policy);
-        var map = group.CertPolicyGroupMaps.First(m => m.IsNew);
-        map.PolicyUse = policyUse;
-        map.ForIncoming = incoming;
-        map.ForOutgoing = outgoing;
+        if (@group != null)
+        {
+            @group.CertPolicies.Add(policy);
+            var map = @group.CertPolicyGroupMaps.First(m => m.IsNew);
+            map.PolicyUse = policyUse;
+            map.ForIncoming = incoming;
+            map.ForOutgoing = outgoing;
+        }
     }
 
 
     public async Task AssociateToOwner(string groupName, string owner)
     {
         await using var db = Store.CreateContext();
-        AssociateToOwner(db, groupName, owner);
+        await AssociateToOwner(db, groupName, owner);
         await db.SaveChangesAsync();
     }
 
@@ -306,7 +309,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
             .Where(cpg => cpg.Name == groupName)
             .SingleOrDefaultAsync();
 
-        CertPolicyGroupDomainMap map = new CertPolicyGroupDomainMap(true)
+        var map = new CertPolicyGroupDomainMap(true)
         {
             CertPolicyGroup = group,
             Owner = owner
@@ -317,12 +320,12 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 
     public async Task DisassociateFromDomain(string owner, long policyGroupID)
     {
-        using var db = Store.CreateContext();
+        await using var db = Store.CreateContext();
         var policyGroup = await db.CertPolicyGroups
             .Where(cpg => cpg.ID == policyGroupID)
             .SingleOrDefaultAsync();
 
-        if (policyGroup.CertPolicyGroupDomainMaps.Any(map => map.Owner == owner))
+        if (policyGroup != null && policyGroup.CertPolicyGroupDomainMaps.Any(map => map.Owner == owner))
         {
             CertPolicyGroupDomainMap[] maps =
             {
@@ -374,7 +377,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 
     public async Task Remove(long policyGroupId)
     {
-        await using ConfigDatabase db = Store.CreateContext();
+        await using var db = Store.CreateContext();
         await Remove(db, policyGroupId);
         await db.SaveChangesAsync();
     }
@@ -397,7 +400,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 
     public async Task Remove(long[] policyGroupIds)
     {
-        using ConfigDatabase db = Store.CreateContext();
+        await using ConfigDatabase db = Store.CreateContext();
         await Remove(db, policyGroupIds);
         await db.SaveChangesAsync();
     }

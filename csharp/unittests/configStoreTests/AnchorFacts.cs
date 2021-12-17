@@ -262,7 +262,7 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for ToX509Certificate
         ///</summary>
         [Theory]
-        [MemberData("TestAnchors")]
+        [MemberData(nameof(TestAnchors))]
         public void ToX509CertificateTest(Anchor target)
         {
             X509Certificate2 expected = new X509Certificate2(target.ToX509Certificate().GetRawCertData());
@@ -274,7 +274,7 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for IsValid
         ///</summary>
         [Theory]
-        [MemberData("TestAnchors")]
+        [MemberData(nameof(TestAnchors))]
         public void IsValidTest(Anchor target)
         {
             Assert.True(target.IsValid(DateTime.UtcNow));
@@ -286,7 +286,7 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for ClearData
         ///</summary>
         [Theory]
-        [MemberData("TestAnchors")]
+        [MemberData(nameof(TestAnchors))]
         public void ClearDataTest(Anchor target)
         {
             Assert.NotNull(target.Data);

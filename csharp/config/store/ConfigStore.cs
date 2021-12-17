@@ -15,7 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
-using System.Data.Linq;
 
 namespace Health.Direct.Config.Store
 {
@@ -63,7 +62,7 @@ namespace Health.Direct.Config.Store
             m_certificates = new CertificateManager(this);
             m_anchors = new AnchorManager(this);
             m_dnsRecords = new DnsRecordManager(this);
-            // m_administrators = new AdministratorManager(this);
+            m_administrators = new AdministratorManager(this);
             // m_properties = new PropertyManager(this);
             // m_blobs = new NamedBlobManager(this);
             m_Mdns = new MdnManager(this);

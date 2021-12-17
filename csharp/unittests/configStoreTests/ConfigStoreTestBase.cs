@@ -657,7 +657,8 @@ namespace Health.Direct.Config.Store.Tests
         /// <returns>List of type string containing all domain names</returns>
         protected static List<string> AllMXDomainNames()
         {
-            List<string> names = new List<string>(MAXDOMAINCOUNT * MAXSMTPCOUNT);
+            var names = new List<string>(MAXDOMAINCOUNT * MAXSMTPCOUNT);
+
             for (int i = 1; i <= MAXDOMAINCOUNT; i++)
             {
                 for (int t = 1; t <= MAXSMTPCOUNT; t++)
@@ -665,6 +666,7 @@ namespace Health.Direct.Config.Store.Tests
                     names.Add(BuildSMTPDomainName(i, t));
                 }
             }
+
             return names;
         }
 
@@ -677,34 +679,40 @@ namespace Health.Direct.Config.Store.Tests
         /// they must be copied to the metadata\dns responses folder in this project and marked as copy to output
         /// directory, if newer
         /// </remarks>
-        protected void InitDnsRecords()
+        protected async Task InitDnsRecords()
         {
             List<string> domains = DnsRecordDomainNames.ToList();
 
-            DnsRecordManager mgr = new DnsRecordManager(CreateConfigStore());
-            mgr.RemoveAll();
+
+            await using (var db = new ConfigDatabase(ConnectionString))
+            {
+                await DnsRecordUtil.RemoveAll(db);
+            }
+
+            var mgr = new DnsRecordManager(CreateConfigStore());
+            
 
             //----------------------------------------------------------------------------------------------------
             //---go through all domains and load up the corresponding record types
             foreach (string domainName in domains)
             {
-                mgr.Add(new DnsRecord(domainName
+                await mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.MX
                     , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DNSRECORDSEPATH
-                        , string.Format("mx.{0}.bin", domainName)))
-                    , string.Format("some test notes for mx domain{0}", domainName)));
+                        , $"mx.{domainName}.bin"))
+                    , $"some test notes for mx domain{domainName}"));
 
-                mgr.Add(new DnsRecord(domainName
+                await mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.SOA
                     , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DNSRECORDSEPATH
-                        , string.Format("soa.{0}.bin", domainName)))
-                    , string.Format("some test notes for soa domain{0}", domainName)));
+                        , $"soa.{domainName}.bin"))
+                    , $"some test notes for soa domain{domainName}"));
 
-                mgr.Add(new DnsRecord(domainName
+                await mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.ANAME
                     , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DNSRECORDSEPATH
-                        , string.Format("aname.{0}.bin", domainName)))
-                    , string.Format("some test notes for aname domain{0}", domainName)));
+                        , $"aname.{domainName}.bin"))
+                    , $"some test notes for aname domain{domainName}"));
 
             }
         }
@@ -737,14 +745,14 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
         /// </summary>
-        protected void InitCertPolicyRecords()
+        protected async Task InitCertPolicyRecords()
         {
             //var dataLoadOptions = new DataLoadOptions();
             //dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
 
             ConfigStore configStore = CreateConfigStore();
-            this.InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
-                                   , new ConfigDatabase(ConnectionString, CertPolicyManager.DataLoadOptions));
+            await InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
+                                   , new ConfigDatabase(ConnectionString));
         }
 
         /// <summary>
@@ -762,8 +770,8 @@ namespace Health.Direct.Config.Store.Tests
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
-            mgr.RemoveAll();
-
+            await CertPolicyUtil.RemoveAll(db);
+            await db.SaveChangesAsync();
             foreach (CertPolicy val in TestCertPolicies)
             {
                 mgr.Add(db, val);
@@ -783,10 +791,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// This method will clean, load and verify CertPolcyGroup records in the DB for testing purposes
         /// </summary>
-        protected void InitCertPolicyGroupRecords()
+        protected async Task InitCertPolicyGroupRecords()
         {
-            ConfigStore configStore = CreateConfigStore();
-            this.InitCertPolicyGroupRecords(new CertPolicyGroupManager(configStore));
+            var configStore = CreateConfigStore();
+            await InitCertPolicyGroupRecords(new CertPolicyGroupManager(configStore));
         }
 
         /// <summary>
@@ -799,36 +807,37 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitCertPolicyGroupRecords(CertPolicyGroupManager mgr)
+        protected async Task InitCertPolicyGroupRecords(CertPolicyGroupManager mgr)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
-            mgr.RemoveAll();
 
-            using (var db = new ConfigDatabase(ConnectionString, CertPolicyGroupManager.DataLoadOptions))
+
+            await using var db = new ConfigDatabase(ConnectionString);
+            await CertPolicyGroupUtil.RemoveAll(db);
+            await db.SaveChangesAsync();
+
+            foreach (CertPolicyGroup val in TestCertPolicyGroups)
             {
-                foreach (CertPolicyGroup val in TestCertPolicyGroups)
-                {
-                    mgr.Add(db, val);
-                }
+                mgr.Add(db, val);
+            }
 
-                //----------------------------------------------------------------------------------------------------
-                //---submit changes to db and verify existence of records
-                db.SubmitChanges();
+            //----------------------------------------------------------------------------------------------------
+            //---submit changes to db and verify existence of records
+            await db.SaveChangesAsync();
 
-                foreach (CertPolicyGroup val in TestCertPolicyGroups)
-                {
-                    Assert.NotNull(mgr.Get(db, val.Name));
-                }
+            foreach (CertPolicyGroup val in TestCertPolicyGroups)
+            {
+                Assert.NotNull(mgr.Get(db, val.Name));
             }
         }
 
         /// <summary>
         /// This method will clean, load and verify Domain records in the DB for testing purposes
         /// </summary>
-        protected void InitDomainRecords()
+        protected async Task InitDomainRecords()
         {
-            this.InitDomainRecords(new DomainManager(CreateConfigStore())
+            await InitDomainRecords(new DomainManager(CreateConfigStore())
                                    , new ConfigDatabase(ConnectionString));
         }
 
@@ -842,12 +851,13 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitDomainRecords(DomainManager mgr
+        protected async Task InitDomainRecords(DomainManager mgr
                                          , ConfigDatabase db)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
-            mgr.RemoveAll();
+            await DomainUtil.RemoveAll(db);
+            
             foreach (string val in TestDomainNames)
             {
                 mgr.Add(db, new Domain(val));
@@ -855,7 +865,8 @@ namespace Health.Direct.Config.Store.Tests
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            db.SubmitChanges();
+            await db.SaveChangesAsync();
+
             foreach (string val in TestDomainNames)
             {
                 Assert.NotNull(mgr.Get(val));
@@ -867,9 +878,9 @@ namespace Health.Direct.Config.Store.Tests
         /// This method will clean, load and verify Certificate records based on the certs stored in the
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
-        protected void InitCertRecords()
+        protected async Task InitCertRecords()
         {
-            this.InitCertRecords(new CertificateManager(CreateConfigStore())
+            await InitCertRecords(new CertificateManager(CreateConfigStore())
                                  , new ConfigDatabase(ConnectionString));
         }
 
@@ -884,17 +895,18 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitCertRecords(CertificateManager mgr
+        protected async Task InitCertRecords(CertificateManager mgr
                                        , ConfigDatabase db)
         {
-            mgr.RemoveAll(db);
+            await CertificateUtil.RemoveAll(db);
+
             for (int i = 1; i <= MAXDOMAINCOUNT; i++)
             {
                 //----------------------------------------------------------------------------------------------------
                 //---cheezy but will add MAXCERTPEROWNER certs per each relative domain
                 for (int t = 1; t <= MAXCERTPEROWNER; t++)
                 {
-                    mgr.Add(GetCertificateFromTestCertPfx(i, t));
+                    await mgr.Add(GetCertificateFromTestCertPfx(i, t));
                 }
             }
         }
@@ -925,8 +937,7 @@ namespace Health.Direct.Config.Store.Tests
                                          , ConfigDatabase db)
         {
             await AnchorUtil.RemoveAll(db);
-
-            //mgr.RemoveAll(db);
+            
             for (int i = 1; i <= MAXDOMAINCOUNT; i++)
             {
                 //----------------------------------------------------------------------------------------------------
@@ -948,9 +959,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// This method will clean, load and verify address records in the DB for testing purposes
         /// </summary>
-        protected void InitAddressRecords()
+        protected async Task InitAddressRecords()
         {
-            this.InitAddressRecords(new AddressManager(CreateConfigStore())
+            await InitAddressRecords(new AddressManager(CreateConfigStore())
                                     , new ConfigDatabase(ConnectionString));
         }
 
@@ -964,12 +975,12 @@ namespace Health.Direct.Config.Store.Tests
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
-        protected void InitAddressRecords(AddressManager mgr
+        protected async Task InitAddressRecords(AddressManager mgr
                                           , ConfigDatabase db)
         {
             //----------------------------------------------------------------------------------------------------
             //---init domain records as well we want them fresh too
-            InitDomainRecords(new DomainManager(CreateConfigStore()), db);
+            await InitDomainRecords(new DomainManager(CreateConfigStore()), db);
             foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
             {
                 //----------------------------------------------------------------------------------------------------
@@ -979,7 +990,8 @@ namespace Health.Direct.Config.Store.Tests
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            db.SubmitChanges();
+            await db.SaveChangesAsync();
+
             foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
             {
                 Assert.NotNull(mgr.Get(kp.Value.Value));
@@ -1010,14 +1022,15 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         /// <param name="mgr">MdnManager instance used for controlling the Mdn records</param>
         /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
-        protected void InitMdnRecords(MdnManager mgr, ConfigDatabase db)
+        protected async Task InitMdnRecords(MdnManager mgr, ConfigDatabase db)
         {
-            mgr.RemoveAll();
+            await MdnUtil.RemoveAll(db);
             mgr.Start(db, TestMdns.ToArray());
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            db.SubmitChanges();
+            await db.SaveChangesAsync();
+
             foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
             {
                 //Assert.NotNull(mgr.Get(kp.Value.Value));
@@ -1029,14 +1042,15 @@ namespace Health.Direct.Config.Store.Tests
         /// </summary>
         /// <param name="mgr">MdnManager instance used for controlling the Mdn records</param>
         /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
-        protected void InitOldMdnRecords(MdnManager mgr, ConfigDatabase db)
+        protected async Task InitOldMdnRecords(MdnManager mgr, ConfigDatabase db)
         {
-            mgr.RemoveAll();
+            await MdnUtil.RemoveAll(db);
             mgr.Start(db, TestOldMdns.ToArray());
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            db.SubmitChanges();
+            await db.SaveChangesAsync();
+
             foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
             {
                 //Assert.NotNull(mgr.Get(kp.Value.Value));
@@ -1195,14 +1209,12 @@ namespace Health.Direct.Config.Store.Tests
             {
                 throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
             }
-            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
+            var path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
                 , CERTSRECORDSPATH
                 , domainID
                 , subId);
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                return new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
-            }
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            return new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
         }
 
         /// <summary>
@@ -1231,11 +1243,6 @@ namespace Health.Direct.Config.Store.Tests
         protected static ConfigDatabase CreateConfigDatabase()
         {
             return new ConfigDatabase(ConnectionString);
-        }
-
-        protected static ConfigDatabase CreateConfigDatabase(DataLoadOptions dataLoadOptions)
-        {
-            return new ConfigDatabase(ConnectionString, dataLoadOptions);
         }
     }
 }

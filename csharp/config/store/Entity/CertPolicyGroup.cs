@@ -17,8 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Data.Linq;
 using System.Linq;
 
 namespace Health.Direct.Config.Store.Entity
@@ -29,28 +27,12 @@ namespace Health.Direct.Config.Store.Entity
         public const int MaxDescriptionLength = 255;
 
         string m_Name;
-        string m_Description = String.Empty;
-
-        // don't remove
-        private EntitySet<CertPolicyGroupMap> m_certPolicyGroupMap = new EntitySet<CertPolicyGroupMap>();
-        // don't remove
-        private EntitySet<CertPolicyGroupDomainMap> m_certPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>();
+        string m_Description = string.Empty;
 
         public CertPolicyGroup()
         {
-            CreateDate = DateTimeHelper.Now;
-            m_certPolicyGroupDomainMap = new EntitySet<CertPolicyGroupDomainMap>(OnDomainMapAdded, OnDomainMapRemoved);
-        }
-
-        private void OnDomainMapAdded(CertPolicyGroupDomainMap obj)
-        {
-            obj.CertPolicyGroup = this;
-        }
-
-        private void OnDomainMapRemoved(CertPolicyGroupDomainMap obj)
-        {
-            obj.CertPolicyGroup = null;
-        }
+            CreateDate = DateTimeHelper.Now; }
+        
 
         public CertPolicyGroup(string name)
             : this()
@@ -119,27 +101,11 @@ namespace Health.Direct.Config.Store.Entity
             }
         }
 
-        public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps
-        {
-            set
-            {
-                m_certPolicyGroupMap.Assign(value);
-            }
-            get
-            {
-                //initialization needed for serialization
-                return m_certPolicyGroupMap ?? new EntitySet<CertPolicyGroupMap>();
-            }
-        }
+        public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; }
 
-        public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps
-        {
-            set
-            {
-                m_certPolicyGroupDomainMap.Assign(value);
-            }
-            get { return m_certPolicyGroupDomainMap; }
-        }
+
+
+        public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; }
 
         public DateTime CreateDate
         {
@@ -157,47 +123,11 @@ namespace Health.Direct.Config.Store.Entity
                 }
                 var policies = new ObservableCollection<CertPolicy>(
                         from groupMap in CertPolicyGroupMaps select groupMap.CertPolicy);
-                policies.CollectionChanged += CertPolicyGroupCollectionChanged;
+
                 return policies;
             }
         }
-        
-        private void CertPolicyGroupCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (NotifyCollectionChangedAction.Add == e.Action)
-            {
-                foreach (CertPolicy policy in e.NewItems)
-                    OnPolicyAdded(policy);
-            }
 
-            if (NotifyCollectionChangedAction.Remove == e.Action)
-            {
-                foreach (CertPolicy policy in e.OldItems)
-                    OnPolicyRemoved(policy);
-            }
-        }
-
-
-        private void OnPolicyAdded(CertPolicy policyGroup)
-        {
-            CertPolicyGroupMap map = new CertPolicyGroupMap(true);
-            map.CertPolicyGroup = this;
-            map.CertPolicy = policyGroup;
-
-        }
-
-        private void OnPolicyRemoved(CertPolicy policy)
-        {
-            CertPolicyGroupMap map =
-                CertPolicyGroupMaps.SingleOrDefault(pg => pg.CertPolicyGroup == this && pg.CertPolicy == policy);
-            //CertPolicyGroupMap map =
-            //    CertPolicyGroupMap.SingleOrDefault(pg => pg.CertPolicy == policy);
-            if (map != null)
-            {
-                map.Remove();
-            }
-        }
-                
         internal void CopyFixed(CertPolicyGroup source)
         {
             this.ID = source.ID;
@@ -212,11 +142,7 @@ namespace Health.Direct.Config.Store.Entity
             //this.CertPolicyGroupMap = source.CertPolicyGroupMap;
             //this.m_certPolicyGroupDomainMap.Assign(source.CertPolicyGroupDomainMap);
         }
-
-        public bool IsNew()
-        {
-            return ID <= 0;
-        }
+        
     }
 
     

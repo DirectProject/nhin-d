@@ -439,7 +439,7 @@ namespace Health.Direct.Config.Store.Tests
             {
                 string name = BuildDomainName(GetRndDomainID());
                 Domain domain = new Domain(name);
-                await target.Add(db, domain);
+                target.Add(db, domain);
                 await db.SaveChangesAsync();
                 Assert.NotNull(await target.Get(name));
             }

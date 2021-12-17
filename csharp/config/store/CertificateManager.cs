@@ -42,7 +42,7 @@ public class CertificateManager : IX509CertificateIndex
     public async Task<Certificate> Add(Certificate cert)
     {
         await using var db = Store.CreateContext();
-        await Add(db, cert);
+        Add(db, cert);
         await db.SaveChangesAsync();
         return cert;
     }
@@ -57,12 +57,12 @@ public class CertificateManager : IX509CertificateIndex
         await using var db = Store.CreateContext();
         foreach (var cert in certs)
         {
-            await Add(db, cert);
+            Add(db, cert);
         }
         await db.SaveChangesAsync();
     }
 
-    public async Task Add(ConfigDatabase db, Certificate cert)
+    public void Add(ConfigDatabase db, Certificate cert)
     {
         if (db == null)
         {
@@ -75,18 +75,18 @@ public class CertificateManager : IX509CertificateIndex
         }
 
         cert.ValidateHasData();
-        await db.Certificates.AddAsync(cert);
+        db.Certificates.Add(cert);
     }
 
     public async Task<Certificate> AddHsm(Certificate cert)
     {
         await using var db = Store.CreateContext();
-        await AddHsm(db, cert);
+        AddHsm(db, cert);
         await db.SaveChangesAsync();
         return cert;
     }
 
-    public async Task AddHsm(ConfigDatabase db, Certificate cert)
+    public void AddHsm(ConfigDatabase db, Certificate cert)
     {
         if (db == null)
         {
@@ -107,7 +107,7 @@ public class CertificateManager : IX509CertificateIndex
         }
 
         domain.SecurityStandard = SecurityStandard.Fips1402;
-        await db.Certificates.AddAsync(cert);
+        db.Certificates.Add(cert);
     }
 
     public async Task<Certificate?> Get(long certId)
@@ -189,16 +189,16 @@ public class CertificateManager : IX509CertificateIndex
 
     public async Task<List<Certificate>> Get(ConfigDatabase db, string owner)
     {
-        return await GetAsync(db, owner, (EntityStatus?)null);
+        return await Get(db, owner, (EntityStatus?)null);
     }
 
     public async Task<List<Certificate>> Get(string owner, EntityStatus? status)
     {
         await using var db = Store.CreateReadContext();
-        return await GetAsync(db, owner, status);
+        return await Get(db, owner, status);
     }
 
-    public async Task<List<Certificate>> GetAsync(ConfigDatabase db, string owner, EntityStatus? status)
+    public async Task<List<Certificate>> Get(ConfigDatabase db, string owner, EntityStatus? status)
     {
         if (db == null)
         {
@@ -233,7 +233,7 @@ public class CertificateManager : IX509CertificateIndex
         
         foreach (var id in certificateIDs)
         {
-            SetStatus(db, id, status);
+            await SetStatus(db, id, status);
         }
 
         await db.SaveChangesAsync();
@@ -327,10 +327,10 @@ public class CertificateManager : IX509CertificateIndex
         db.Certificates.RemoveRange(certificates);
     }
 
-    public void Remove(string ownerName)
+    public async Task Remove(string ownerName)
     {
-        using var db = Store.CreateContext();
-        Remove(db, ownerName);
+        await using var db = Store.CreateContext();
+        await Remove(db, ownerName);
     }
 
     public async Task<int> Remove(ConfigDatabase db, string ownerName)

@@ -38,7 +38,10 @@ public class AdministratorEntityMap : IEntityTypeConfiguration<Administrator>
             .HasColumnType("datetime")
             .HasDefaultValueSql("(getdate())");
 
-        builder.Property(e => e.PasswordHash)
+        builder.Ignore(e => e.PasswordHash);
+            
+        builder.Property(e => e.PasswordHashDB)
+            .HasColumnName("PasswordHash")
             .HasMaxLength(50)
             .IsUnicode(false);
 

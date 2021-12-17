@@ -52,10 +52,10 @@ namespace Health.Direct.Config.Store.Entity
         public long CertPolicyGroupId { get; set; }
         public long CertPolicyId { get; set; }
 
-        public virtual CertPolicyGroup CertPolicyGroup { get; set; } = null!;
+        public CertPolicyGroup CertPolicyGroup { get; set; }
 
 
-        public virtual CertPolicy CertPolicy { get; set; } = null!;
+        public CertPolicy CertPolicy { get; set; }
 
 
         public CertPolicyUse PolicyUse

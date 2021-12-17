@@ -56,7 +56,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task UpdateTest2()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
 
             var mgr = CreateManager();
             IEnumerable<Address> addresses = await mgr.Get(1, String.Empty, MAXADDRESSCOUNT);
@@ -84,7 +84,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task UpdateTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
 
             var mgr = CreateManager();
             var add = await mgr.Get(BuildEmailAddress(1, 1));
@@ -104,9 +104,9 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for System.Collections.IEnumerable.GetEnumerator
         ///</summary>
         [Fact]
-        public void GetEnumeratorTest1()
+        public async Task GetEnumeratorTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             IEnumerable<Address> mgr = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXADDRESSCOUNT, mgr.Count());
         }
@@ -117,7 +117,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task SetStatusTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             const long domainID = STARTID;
             const EntityStatus status = EntityStatus.Enabled;
@@ -137,7 +137,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task RemoveDomainTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             const long domainId = 1;
 
@@ -158,7 +158,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task RemoveDomainTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             const long domainId = 1;
 
@@ -166,9 +166,10 @@ namespace Health.Direct.Config.Store.Tests
             //----------------------------------------------------------------------------------------------------
             //---make sure that we have max addresses for the given domain
             var addresses = await mgr.Get(db, domainId, string.Empty, MAXADDRESSCOUNT + 1);
-            Assert.Equal(MAXADDRESSCOUNT, addresses.Count());
+            Assert.Equal(MAXADDRESSCOUNT, addresses.Count);
 
             await mgr.RemoveDomain(db, domainId);
+            await db.SaveChangesAsync();
             addresses = await mgr.Get(db, domainId, string.Empty, MAXADDRESSCOUNT + 1);
             Assert.Empty(addresses);
         }
@@ -179,7 +180,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task RemoveTest2()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             Assert.Equal(emailAddresses.Length, (await mgr.Get(emailAddresses)).Count);
@@ -194,13 +195,13 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task RemoveTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             await mgr.Get(emailAddress);
             Assert.NotNull(emailAddress);
             await mgr.Remove(emailAddress);
-            Assert.Null(mgr.Get(emailAddress));
+            Assert.Null(await mgr.Get(emailAddress));
         }
 
         /// <summary>
@@ -209,23 +210,23 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task RemoveTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
 
             var mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             await mgr.Get(emailAddress);
             Assert.NotNull(emailAddress);
             await mgr.Remove(emailAddress);
-            Assert.Null(mgr.Get(emailAddress));
+            Assert.Null(await mgr.Get(emailAddress));
         }
 
         /// <summary>
         ///A test for GetEnumerator
         ///</summary>
         [Fact]
-        public void GetEnumeratorTest()
+        public async Task GetEnumeratorTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             IEnumerable<Address> mgr = CreateManager();
             Assert.Equal(MAXADDRESSCOUNT * MAXDOMAINCOUNT, mgr.Count());
         }
@@ -236,13 +237,13 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetByDomainTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             string domainName = BuildDomainName(1);
-            var addressess = await mgr.GetAllForDomain(domainName.ToUpper()
+            var addresses = await mgr.GetAllForDomain(domainName.ToUpper()
                 , int.MaxValue);
-            Assert.Equal(MAXADDRESSCOUNT, addressess.Count);
-            foreach (var addr in addressess)
+            Assert.Equal(MAXADDRESSCOUNT, addresses.Count);
+            foreach (var addr in addresses)
             {
                 Assert.Equal(1, addr.DomainID);
             }
@@ -254,9 +255,9 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetByDomainTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             await using ConfigDatabase db = CreateConfigDatabase();
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             string domainName = BuildDomainName(1);
             var addresses = await mgr.GetAllForDomain(db, domainName.ToUpper(), int.MaxValue);
@@ -273,14 +274,14 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest13()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
             await using ConfigDatabase db = CreateConfigDatabase();
             var emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             var actual = await mgr.Get(db, emailAddresses);
             Assert.Equal(emailAddresses.Length, actual.Count);
 
-            for (var t = 0; t < actual.Count(); t++)
+            for (var t = 0; t < actual.Count; t++)
             {
                 Assert.Contains(actual.ToArray()[t].EmailAddress, emailAddresses);
             }
@@ -292,14 +293,14 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest12()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var mgr = CreateManager();
 
             string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             var actual = await mgr.Get(emailAddresses, EntityStatus.New);
-            Assert.Equal(emailAddresses.Length, actual.Count());
+            Assert.Equal(emailAddresses.Length, actual.Count);
 
-            for (int t = 0; t < actual.Count(); t++)
+            for (int t = 0; t < actual.Count; t++)
             {
                 Assert.Contains(actual.ToArray()[t].EmailAddress, emailAddresses);
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
@@ -312,16 +313,16 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task Get_AddressOrDomainTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             string addressType = "SMTP";
 
             var dMgr = new DomainManager(CreateConfigStore());
             var domain = new Domain("address1.domain1.com");
             domain.Status = EntityStatus.New;
-            dMgr.Add(domain);
+            await dMgr.Add(domain);
             domain = new Domain("address2.domain2.com");
             domain.Status = EntityStatus.Enabled;
-            dMgr.Add(domain);
+            await dMgr.Add(domain);
 
             var mgr = CreateManager();
 
@@ -337,7 +338,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Empty(actual);
 
             actual = await mgr.Get(emailAddresses, true, EntityStatus.New);
-            Assert.Equal(emailAddresses.Length, actual.Count());
+            Assert.Equal(emailAddresses.Length, actual.Count);
 
             for (var t = 0; t < actual.Count; t++)
             {
@@ -348,14 +349,14 @@ namespace Health.Direct.Config.Store.Tests
 
             emailAddresses = new[] { "NewGuy@address2.domain2.com", "AnotherNewGuy@address2.domain2.com" };
             actual = await mgr.Get(emailAddresses, true, EntityStatus.Enabled);
-            Assert.Equal(emailAddresses.Length, actual.Count());
+            Assert.Equal(emailAddresses.Length, actual.Count);
 
             //
             // domainSearchEnabled and no status.
             //
             actual = await mgr.Get(emailAddresses, true);
-            Assert.Equal(emailAddresses.Length, actual.Count());
-            for (var t = 0; t < actual.Count(); t++)
+            Assert.Equal(emailAddresses.Length, actual.Count);
+            for (var t = 0; t < actual.Count; t++)
             {
                 Assert.Contains(actual.ToArray()[t].EmailAddress, emailAddresses);
                 Assert.Equal(EntityStatus.Enabled, actual.ToArray()[t].Status);
@@ -369,13 +370,13 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task Get_AddressAndDomainTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             string addressType = "SMTP";
 
             var dMgr = new DomainManager(CreateConfigStore());
             var domain = new Domain("address1.domain1.com");
             domain.Status = EntityStatus.New;
-            dMgr.Add(domain);
+            await dMgr.Add(domain);
 
             //
             // test@address1.domain10.com aready exists
@@ -395,9 +396,9 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Empty(actual);
 
             actual = await mgr.Get(emailAddresses, true, EntityStatus.New);
-            Assert.Equal(emailAddresses.Length, actual.Count());
+            Assert.Equal(emailAddresses.Length, actual.Count);
 
-            for (int t = 0; t < actual.Count(); t++)
+            for (int t = 0; t < actual.Count; t++)
             {
                 Assert.Contains(emailAddresses, e => e.Equals(actual.ToArray()[t].EmailAddress, StringComparison.OrdinalIgnoreCase));
                 Assert.Equal(EntityStatus.New, actual.ToArray()[t].Status);
@@ -411,11 +412,11 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task Get_RoutedAddress()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             var dMgr = new DomainManager(CreateConfigStore());
             var domain = new Domain("address1.domain1.com");
             domain.Status = EntityStatus.Enabled;
-            dMgr.Add(domain);
+            await dMgr.Add(domain);
 
             string addressType = "Undeliverable";
             var aMgr = new AddressManager(CreateConfigStore());
@@ -476,7 +477,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest11()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             IEnumerable<Address> actual = await mgr.Get(emailAddresses);
@@ -494,7 +495,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest10()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             Address add = await mgr.Get(emailAddress);
@@ -507,7 +508,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest9()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
             await using ConfigDatabase db = CreateConfigDatabase();
@@ -521,7 +522,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest8()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
 
             string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
@@ -542,7 +543,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest7()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             await using ConfigDatabase db = CreateConfigDatabase();
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -560,7 +561,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest6()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
 
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -579,7 +580,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task GetTest5()
         {
 
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             await using ConfigDatabase db = CreateConfigDatabase();
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -598,7 +599,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest4()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
 
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -617,7 +618,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTestLast3()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             using (ConfigDatabase db = CreateConfigDatabase())
             {
@@ -662,7 +663,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTestLast2()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
@@ -705,7 +706,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest1()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
@@ -736,8 +737,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest()
         {
-            InitAddressRecords();
-            using (ConfigDatabase db = CreateConfigDatabase())
+            await InitAddressRecords();
+            await using (ConfigDatabase db = CreateConfigDatabase())
             {
                 AddressManager mgr = CreateManager();
 
@@ -770,7 +771,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task CountTest()
         {
-            InitAddressRecords();
+            await InitAddressRecords();
             AddressManager mgr = CreateManager();
             Assert.Equal(MAXADDRESSCOUNT, await mgr.Count(1));
         }
@@ -783,7 +784,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             //----------------------------------------------------------------------------------------------------
             //---only init the domain records which will force a cleaning of the address records
-            InitDomainRecords();
+            await InitDomainRecords();
             AddressManager mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
@@ -812,7 +813,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             //----------------------------------------------------------------------------------------------------
             //---only init the domain records which will force a cleaning of the address records
-            InitDomainRecords();
+            await InitDomainRecords();
             var mgr = CreateManager();
 
             //----------------------------------------------------------------------------------------------------
@@ -841,7 +842,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task AddTest()
         {
-            InitDomainRecords();
+            await InitDomainRecords();
             AddressManager mgr = CreateManager();
             List<Address> addresses = new List<Address>();
 

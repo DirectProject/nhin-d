@@ -20,8 +20,6 @@ using System.Runtime.Serialization;
 
 namespace Health.Direct.Config.Store.Entity
 {
-    [Table("Administrators")]
-    [DataContract(Namespace = ConfigStore.Namespace)]
     public class Administrator
     {
         public Administrator()

@@ -14,9 +14,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
@@ -25,18 +25,19 @@ using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests
 {
-    public class CertPolicyTestFixture : ConfigStoreTestBase, IDisposable
+    public class CertPolicyTestFixture : ConfigStoreTestBase, IAsyncLifetime
     {
-        public CertPolicyTestFixture()
+        public async Task InitializeAsync()
         {
-            InitDomainRecords();
-            InitCertPolicyRecords();
-            InitCertPolicyGroupRecords();
+            await InitDomainRecords();
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
         }
+        
 
-        public void Dispose()
+        public Task DisposeAsync()
         {
-            // Do "global" teardown here; Only called once.
+            return Task.CompletedTask;
         }
     }
 
@@ -83,100 +84,100 @@ namespace Health.Direct.Config.Store.Tests
         /// Get policy by name
         /// </summary>
         [Fact]
-        public void GetPolicyByName()
+        public async Task GetPolicyByName()
         {
             CertPolicyManager mgr = CreateManager();
-            CertPolicy policy = mgr.Get("Policy1");
+            CertPolicy policy = await mgr.Get("Policy1");
             policy.Name.Should().BeEquivalentTo("Policy1");
         }
 
         [Fact, AutoRollback]
-        public void GetIncomingAndOutgoingCertPolicieByOwnerTest()
+        public async Task GetIncomingAndOutgoingCertPolicyByOwnerTest()
         {
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
-            CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
+            CertPolicyGroup policyGroup1 = await groupMgr.Get("PolicyGroup1");
             policyGroup1.CertPolicies.Count.Should().Be(0);
-            CertPolicyGroup policyGroup2 = groupMgr.Get("PolicyGroup2");
+            CertPolicyGroup policyGroup2 = await groupMgr.Get("PolicyGroup2");
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
 
             //
             // Map cert policy group to policy
             //
-            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
-            groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, true, false);
+            await groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            await groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.TRUST, true, false);
 
             CertPolicyManager policyMgr = CreateManager();
-            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com");
-            policies.Length.Should().Be(2);
-            policies = policyMgr.GetOutgoingByOwner("domain1.test.com");
-            policies.Length.Should().Be(1);
+            List<CertPolicy> policies = await policyMgr.GetIncomingByOwner("domain1.test.com");
+            policies.Count.Should().Be(2);
+            policies = await policyMgr.GetOutgoingByOwner("domain1.test.com");
+            policies.Count.Should().Be(1);
 
-            policies = policyMgr.GetIncomingByOwner("domain2.test.com");
-            policies.Length.Should().Be(0);
+            policies = await policyMgr.GetIncomingByOwner("domain2.test.com");
+            policies.Count.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByOwner("domain3.test.com");
-            policies.Length.Should().Be(0);
+            policies = await policyMgr.GetIncomingByOwner("domain3.test.com");
+            policies.Count.Should().Be(0);
 
         }
 
         [Fact, AutoRollback]
-        public void GetIncomingAndOutgoingCertPolicieByOwnerAndUsage_Test()
+        public async Task GetIncomingAndOutgoingCertPolicyByOwnerAndUsage_Test()
         {
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
-            CertPolicyGroup policyGroup1 = groupMgr.Get("PolicyGroup1");
+            CertPolicyGroup policyGroup1 = await groupMgr.Get("PolicyGroup1");
             policyGroup1.CertPolicies.Count.Should().Be(0);
-            CertPolicyGroup policyGroup2 = groupMgr.Get("PolicyGroup2");
+            CertPolicyGroup policyGroup2 = await groupMgr.Get("PolicyGroup2");
             policyGroup1.CertPolicies.Count.Should().Be(0);
             policyGroup2.CertPolicies.Count.Should().Be(0);
 
             //
             // Map cert policy group to domains
             //
-            groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
-            groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
+            await groupMgr.AssociateToOwner(policyGroup1.Name, "domain1.test.com");
+            await groupMgr.AssociateToOwner(policyGroup2.Name, "domain2.test.com");
 
             //
             // Map cert policy group to policy
             //
-            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
-            groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, false);
+            await groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
+            await groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, false);
 
             CertPolicyManager policyMgr = CreateManager();
-            CertPolicy[] policies = policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.TRUST);
-            policies.Length.Should().Be(1);
-            policies = policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.PUBLIC_RESOLVER);
-            policies.Length.Should().Be(0);
-            policies = policyMgr.GetOutgoingByOwner("domain1.test.com", CertPolicyUse.TRUST);
-            policies.Length.Should().Be(1);
-            policies = policyMgr.GetOutgoingByOwner("domain1.test.com", CertPolicyUse.PRIVATE_RESOLVER);
-            policies.Length.Should().Be(0);
+            List<CertPolicy> policies = await policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.TRUST);
+            policies.Count.Should().Be(1);
+            policies = await policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.PUBLIC_RESOLVER);
+            policies.Count.Should().Be(0);
+            policies = await policyMgr.GetOutgoingByOwner("domain1.test.com", CertPolicyUse.TRUST);
+            policies.Count.Should().Be(1);
+            policies = await policyMgr.GetOutgoingByOwner("domain1.test.com", CertPolicyUse.PRIVATE_RESOLVER);
+            policies.Count.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByOwner("domain2.test.com", CertPolicyUse.PRIVATE_RESOLVER);
-            policies.Length.Should().Be(0);
+            policies = await policyMgr.GetIncomingByOwner("domain2.test.com", CertPolicyUse.PRIVATE_RESOLVER);
+            policies.Count.Should().Be(0);
 
-            policies = policyMgr.GetIncomingByOwner("domain3.test.com", CertPolicyUse.PRIVATE_RESOLVER);
-            policies.Length.Should().Be(0);
+            policies = await policyMgr.GetIncomingByOwner("domain3.test.com", CertPolicyUse.PRIVATE_RESOLVER);
+            policies.Count.Should().Be(0);
         }
 
         /// <summary>
         /// A test for Add Policy
         /// </summary>
         [Fact, AutoRollback]
-        public void AddPolicy()
+        public async Task AddPolicy()
         {
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy expectedPolicy = new CertPolicy("UnitTestPolicy", "", "1 = 1".ToBytesUtf8());
-            mgr.Add(expectedPolicy);
+            await mgr.Add(expectedPolicy);
 
-            CertPolicy actualCertPolicy = mgr.Get("UnitTestPolicy");
+            CertPolicy actualCertPolicy = await mgr.Get("UnitTestPolicy");
             expectedPolicy.Name.Should().BeEquivalentTo("UnitTestPolicy");
             expectedPolicy.CreateDate.Should().BeCloseTo(actualCertPolicy.CreateDate);
         }
@@ -185,11 +186,11 @@ namespace Health.Direct.Config.Store.Tests
         /// Remove Policy
         /// </summary>
         [Fact, AutoRollback]
-        public void DeletePolicyTest()
+        public async Task DeletePolicyTest()
         {
             CertPolicyManager mgr = CreateManager();
-            CertPolicy policy = mgr.Get("Policy2");
-            mgr.Remove(policy.ID);
+            CertPolicy policy = await mgr.Get("Policy2");
+            await mgr.Remove(policy.ID);
 
             mgr.Get("Policy2").Should().BeNull();
         }
@@ -198,12 +199,12 @@ namespace Health.Direct.Config.Store.Tests
         /// Remove Multiple Policies
         /// </summary>
         [Fact, AutoRollback]
-        public void DeletePoliciesTest()
+        public async Task DeletePoliciesTest()
         {
             CertPolicyManager mgr = CreateManager();
-            mgr.Count().Should().Be(9);
+            (await mgr.Count()).Should().Be(9);
             long[] ids = mgr.Select(certPolicy => certPolicy.ID).ToArray();
-            mgr.Remove(ids);
+            await mgr.Remove(ids);
 
             mgr.Count().Should().Be(0);
         }
@@ -212,11 +213,11 @@ namespace Health.Direct.Config.Store.Tests
         /// Remove Multiple Policies
         /// </summary>
         [Fact, AutoRollback]
-        public void Delete2PoliciesTest()
+        public async Task Delete2PoliciesTest()
         {
             CertPolicyManager mgr = CreateManager();
             mgr.Count().Should().Be(9);
-            mgr.Remove(new long[] { 1, 2 });
+            await mgr.Remove(new long[] { 1, 2 });
 
             mgr.Count().Should().Be(7);
         }
@@ -225,23 +226,23 @@ namespace Health.Direct.Config.Store.Tests
         /// Delete policy and its associations
         /// </summary>
         [Fact, AutoRollback]
-        public void DeletePolicyWithAssociations()
+        public async Task DeletePolicyWithAssociations()
         {
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
-            CertPolicyGroup policyGroup = groupMgr.Get("PolicyGroup1");
+            CertPolicyGroup policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(0);
 
             CertPolicyManager policyMgr = CreateManager();
             policyMgr.Get("Policy1").Should().NotBeNull();
 
-            groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, true);
+            await groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, true);
 
-            policyGroup = groupMgr.Get("PolicyGroup1");
+            policyGroup = await groupMgr.Get("PolicyGroup1");
             policyGroup.CertPolicies.Count.Should().Be(1);
 
             CertPolicyManager mgr = CreateManager();
-            CertPolicy policy = mgr.Get("Policy1");
-            mgr.Remove(policy.ID);
+            CertPolicy policy = await mgr.Get("Policy1");
+            await mgr.Remove(policy.ID);
             policyMgr.Get("Policy1").Should().BeNull();
         }
 
@@ -249,19 +250,19 @@ namespace Health.Direct.Config.Store.Tests
         /// A test for Update Policy
         /// </summary>
         [Fact, AutoRollback]
-        public void UpdatePolicyDataTest()
+        public async Task UpdatePolicyDataTest()
         {
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
-            mgr.Add(newCertPolicy);
-            CertPolicy actualCertPolicy = mgr.Get("UnitTestPolicy");
+            await mgr.Add(newCertPolicy);
+            CertPolicy actualCertPolicy = await mgr.Get("UnitTestPolicy");
             actualCertPolicy.Should().NotBeNull();
 
             actualCertPolicy.Data = "1 != 1".ToBytesUtf8();
-            mgr.Update(actualCertPolicy);
+            await mgr.Update(actualCertPolicy);
 
-            CertPolicy updatedCertPolicy = mgr.Get("UnitTestPolicy");
+            CertPolicy updatedCertPolicy = await mgr.Get("UnitTestPolicy");
             updatedCertPolicy.Data.ToUtf8String().ShouldBeEquivalentTo("1 != 1");
         }
 
@@ -269,19 +270,19 @@ namespace Health.Direct.Config.Store.Tests
         /// A test for Update Policy
         /// </summary>
         [Fact, AutoRollback]
-        public void UpdatePolicyDescriptionTest()
+        public async Task UpdatePolicyDescriptionTest()
         {
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
-            mgr.Add(newCertPolicy);
-            CertPolicy actualCertPolicy = mgr.Get("UnitTestPolicy");
+            await mgr.Add(newCertPolicy);
+            CertPolicy actualCertPolicy = await mgr.Get("UnitTestPolicy");
             actualCertPolicy.Should().NotBeNull();
 
             actualCertPolicy.Description = "blank";
-            mgr.Update(actualCertPolicy);
+            await mgr.Update(actualCertPolicy);
 
-            CertPolicy updatedCertPolicy = mgr.Get("UnitTestPolicy");
+            CertPolicy updatedCertPolicy = await mgr.Get("UnitTestPolicy");
             updatedCertPolicy.Description.ShouldBeEquivalentTo("blank");
         }
     }

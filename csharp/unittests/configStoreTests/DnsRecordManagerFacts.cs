@@ -14,6 +14,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Xunit;
 
@@ -38,24 +40,24 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         [Fact]
-        public void GetTest10()
+        public async Task GetTest10()
         {
             InitDnsRecords();
 
             DnsRecordManager mgr = CreateManager();
-            DnsRecord[] recs = mgr.Get("microsoft.com");
-            Assert.Equal(3, recs.Length);
-            recs = mgr.Get("microsoft11.com");
-            Assert.Equal(0, recs.Length);
+            List<DnsRecord> recs = await mgr.Get("microsoft.com");
+            Assert.Equal(3, recs.Count);
+            recs = await mgr.Get("microsoft11.com");
+            Assert.Equal(0, recs.Count);
 
-            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.AAAA);
-            Assert.Equal(0, recs.Length);
-            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.SOA);
-            Assert.Equal(1, recs.Length);
-            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.MX);
-            Assert.Equal(1, recs.Length);
-            recs = mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.ANAME);
-            Assert.Equal(1, recs.Length);
+            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.AAAA);
+            Assert.Equal(0, recs.Count);
+            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.SOA);
+            Assert.Equal(1, recs.Count);
+            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.MX);
+            Assert.Equal(1, recs.Count);
+            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.ANAME);
+            Assert.Equal(1, recs.Count);
         }
 
         /*
@@ -68,13 +70,13 @@ namespace Health.Direct.Config.Store.Tests
             InitDnsRecords();
 
             DnsRecordManager mgr = CreateManager();
-            DnsRecord dnsRecord = mgr.Get(1);
+            DnsRecord dnsRecord = await mgr.Get(1);
             dnsRecord.RecordData = System.Text.Encoding.UTF8.GetBytes("this is a test");
             dnsRecord.Notes = "these are the notes";
             dnsRecord.DomainName = "someothername.com";
             mgr.Update(dnsRecord);
 
-            dnsRecord = mgr.Get(1);
+            dnsRecord = await mgr.Get(1);
             Assert.Equal("these are notes", dnsRecord.Notes);
  
 
@@ -156,7 +158,7 @@ namespace Health.Direct.Config.Store.Tests
             long[] recordIDs = null; 
             DnsRecord[] expected = null; 
             DnsRecord[] actual;
-            actual = mgr.Get(recordIDs);
+            actual = await mgr.Get(recordIDs);
             Assert.Equal(expected, actual);
             
         }
@@ -173,7 +175,7 @@ namespace Health.Direct.Config.Store.Tests
             long recordID = 0; 
             DnsRecord expected = null; 
             DnsRecord actual;
-            actual = mgr.Get(db, recordID);
+            actual = await mgr.Get(db, recordID);
             Assert.Equal(expected, actual);
             
         }
@@ -189,7 +191,7 @@ namespace Health.Direct.Config.Store.Tests
             long recordID = 0; 
             DnsRecord expected = null; 
             DnsRecord actual;
-            actual = mgr.Get(recordID);
+            actual = await mgr.Get(recordID);
             Assert.Equal(expected, actual);
             
         }
@@ -207,7 +209,7 @@ namespace Health.Direct.Config.Store.Tests
             Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID = Health.Direct.Common.DnsResolver.DnsStandard.RecordType.AAAA;
             DnsRecord[] expected = null; 
             DnsRecord[] actual;
-            actual = mgr.Get(lastRecordID, maxResults, typeID);
+            actual = await mgr.Get(lastRecordID, maxResults, typeID);
             Assert.Equal(expected, actual);
             
         }
@@ -226,7 +228,7 @@ namespace Health.Direct.Config.Store.Tests
             Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID = Health.Direct.Common.DnsResolver.DnsStandard.RecordType.AAAA;
             IEnumerable<DnsRecord> expected = null; 
             IEnumerable<DnsRecord> actual;
-            actual = mgr.Get(db, lastRecordID, maxResults, typeID);
+            actual = await mgr.Get(db, lastRecordID, maxResults, typeID);
             Assert.Equal(expected, actual);
             
         }

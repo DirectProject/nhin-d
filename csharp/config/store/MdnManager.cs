@@ -23,195 +23,195 @@ using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace Health.Direct.Config.Store
+namespace Health.Direct.Config.Store;
+
+public class MdnManager : IEnumerable<Mdn>
 {
-    public class MdnManager : IEnumerable<Mdn>
+    const int DEFAULT_PROCESSED_TIMEOUT_MINUTES = 10;
+    const int DEFAULT_DISPATCHED_TIMEOUT_MINUTES = 10;
+    private const int DEFAULT_TIMEOUT_RECORDS = 10;
+
+
+    public MdnManager(ConfigStore store)
     {
-        const int DEFAULT_PROCESSED_TIMEOUT_MINUTES = 10;
-        const int DEFAULT_DISPATCHED_TIMEOUT_MINUTES = 10;
-        private const int DEFAULT_TIMEOUT_RECORDS = 10;
+        Store = store;
+    }
 
+    internal ConfigStore Store { get; }
 
-        public MdnManager(ConfigStore store)
+    public async Task Start(Mdn mdn)
+    {
+        await using var db = Store.CreateContext();
+        Start(db, new[] { mdn });
+        await db.SaveChangesAsync();
+    }
+
+    public async Task Start(Mdn[] mdns)
+    {
+        await using var db = Store.CreateContext();
+        Start(db, mdns);
+        await db.SaveChangesAsync();
+    }
+
+    public void Start(ConfigDatabase db, Mdn[] mdns)
+    {
+        if (db == null)
         {
-            Store = store;
+            throw new ArgumentNullException(nameof(db));
         }
 
-        internal ConfigStore Store { get; }
-
-        public async Task Start(Mdn mdn)
+        if (mdns.Length.Equals(0))
         {
-            await using var db = Store.CreateContext();
-            await Start(db, new[] { mdn });
+            return;
+        }
+
+        foreach (var mdn in mdns)
+        {
+            db.Mdns.Add(mdn);
+        }
+    }
+
+    public async Task TimeOut(Mdn mdn)
+    {
+        await using var db = Store.CreateContext();
+        TimeOut(db, mdn);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task TimeOut(List<Mdn> mdns)
+    {
+        await using var db = Store.CreateContext();
+        foreach (var mdn in mdns)
+        {
+            TimeOut(db, mdn);
+        }
+        await db.SaveChangesAsync();
+    }
+
+    public void TimeOut(ConfigDatabase db, Mdn mdn)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
+        }
+
+        if (mdn == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
+        }
+        mdn.Status = MdnStatus.TimedOut;
+        db.Mdns.Add(mdn);
+    }
+
+    public async Task Update(Mdn mdn)
+    {
+        await using var db = Store.CreateContext();
+        try
+        {
+            Update(db, mdn);
             await db.SaveChangesAsync();
         }
-
-        public async Task Start(Mdn[] mdns)
+        catch
         {
-            await using var db = Store.CreateContext();
-            await Start(db, mdns);
-            await db.SaveChangesAsync();
+            ThrowMdnFaultException(mdn);
+            throw;
+        }
+    }
+
+    public async Task Update(Mdn[] mdns)
+    {
+        await using var db = Store.CreateContext();
+        foreach (var mdn in mdns)
+        {
+            Update(db, mdn);
+        }
+        await db.SaveChangesAsync();
+    }
+
+    public void Update(ConfigDatabase db, Mdn mdn)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public async Task Start(ConfigDatabase db, Mdn[] mdns)
+        if (mdn == null)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (mdns == null || mdns.Length.Equals(0))
-            {
-                return;
-            }
-
-            foreach (var mdn in mdns)
-            {
-                await db.Mdns.AddAsync(mdn);
-            }
+            throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
         }
 
-        public async Task TimeOut(Mdn mdn)
+        db.Mdns.Add(mdn);
+
+    }
+
+    private static void ThrowMdnFaultException(Mdn mdn)
+    {
+
+        if (mdn.Status == null)
         {
-            await using var db = Store.CreateContext();
-            await TimeOut(db, mdn);
-            await db.SaveChangesAsync();
+            throw new ConfigStoreException(ConfigStoreError.DuplicateMdnStart);
         }
 
-        public async Task TimeOut(Mdn[] mdns)
+        if (mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
         {
-            await using var db = Store.CreateContext();
-            foreach (var mdn in mdns)
-            {
-                await TimeOut(db, mdn);
-            }
-            await db.SaveChangesAsync();
+            //
+            // Duplicate processed MDN
+            //
+            throw new ConfigStoreException(ConfigStoreError.DuplicateProcessedMdn);
         }
 
-        public async Task TimeOut(ConfigDatabase db, Mdn mdn)
+        if (mdn.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase))
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (mdn == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
-            }
-            mdn.Status = MdnStatus.TimedOut;
-            await db.Mdns.AddAsync(mdn);
+            //
+            // Duplicate failed MDN
+            //
+            throw new ConfigStoreException(ConfigStoreError.DuplicateFailedMdn);
         }
 
-        public async Task Update(Mdn mdn)
+        if (mdn.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase))
         {
-            await using var db = Store.CreateContext();
-            try
-            {
-                Update(db, mdn);
-                await db.SaveChangesAsync();
-            }
-            catch
-            {
-                ThrowMdnFaultException(mdn);
-                throw;
-            }
+            //
+            // Duplicate Dispatched MDN
+            //
+            throw new ConfigStoreException(ConfigStoreError.DuplicateDispatchedMdn);
         }
 
-        public async Task Update(Mdn[] mdns)
+        if (mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
         {
-            await using var db = Store.CreateContext();
-            foreach (var mdn in mdns)
-            {
-                Update(db, mdn);
-            }
-            await db.SaveChangesAsync();
+            //
+            // Dispatched MDN already sent
+            //
+            throw new ConfigStoreException(ConfigStoreError.MdnPreviouslyProcessed);
         }
 
-        public async Task Update(ConfigDatabase db, Mdn mdn)
+    }
+
+
+    public async Task<int> Count()
+    {
+        await using var db = Store.CreateReadContext();
+        return await db.Mdns.CountAsync();
+    }
+
+    public async Task<Mdn?> Get(string mdnIdentifier)
+    {
+        await using var db = Store.CreateReadContext();
+        return await Get(db, mdnIdentifier);
+    }
+
+    public async Task<Mdn?> Get(ConfigDatabase db, string mdnIdentifier)
+    {
+        if (db == null)
         {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (mdn == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
-            }
-
-            await db.Mdns.AddAsync(mdn);
-
+            throw new ArgumentNullException(nameof(db));
+        }
+        if (string.IsNullOrEmpty(mdnIdentifier))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidMdnIdentifier);
         }
 
-        private static void ThrowMdnFaultException(Mdn mdn)
-        {
-
-            if (mdn.Status == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.DuplicateMdnStart);
-            }
-
-            if (mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
-            {
-                //
-                // Duplicate processed MDN
-                //
-                throw new ConfigStoreException(ConfigStoreError.DuplicateProcessedMdn);
-            }
-
-            if (mdn.Status.Equals(MdnStatus.Failed, StringComparison.OrdinalIgnoreCase))
-            {
-                //
-                // Duplicate failed MDN
-                //
-                throw new ConfigStoreException(ConfigStoreError.DuplicateFailedMdn);
-            }
-
-            if (mdn.Status.Equals(MdnStatus.Dispatched, StringComparison.OrdinalIgnoreCase))
-            {
-                //
-                // Duplicate Dispatched MDN
-                //
-                throw new ConfigStoreException(ConfigStoreError.DuplicateDispatchedMdn);
-            }
-
-            if (mdn.Status.Equals(MdnStatus.Processed, StringComparison.OrdinalIgnoreCase))
-            {
-                //
-                // Dispatched MDN already sent
-                //
-                throw new ConfigStoreException(ConfigStoreError.MdnPreviouslyProcessed);
-            }
-
-        }
-
-
-        public async Task<int> Count()
-        {
-            await using var db = Store.CreateReadContext();
-            return await db.Mdns.CountAsync();
-        }
-
-        public async Task<Mdn?> Get(string mdnIdentifier)
-        {
-            await using var db = Store.CreateReadContext();
-            return await Get(db, mdnIdentifier);
-        }
-
-        public async Task<Mdn?> Get(ConfigDatabase db, string mdnIdentifier)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-            if (string.IsNullOrEmpty(mdnIdentifier))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidMdnIdentifier);
-            }
-
-            return await db.Mdns
-                .FromSqlRaw(@"
+        return await db.Mdns
+            .FromSqlRaw(@"
                             Declare @notifyRequest tinyint;
                             set @notifyRequest =
                             (   select max(Cast(m2.NotifyDispatched as tinyint))
@@ -235,65 +235,65 @@ namespace Health.Direct.Config.Store
                             From Mdns
                             Where MdnIdentifier= {0}
                 ", mdnIdentifier)
-                .SingleOrDefaultAsync();
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<List<Mdn>> Get(string lastMdn, int maxResults)
+    {
+        await using var db = this.Store.CreateReadContext();
+        return await Get(db, lastMdn, maxResults);
+    }
+
+    public async Task<List<Mdn>> Get(ConfigDatabase db, string lastMdn, int maxResults)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public async Task<List<Mdn>> Get(string lastMdn, int maxResults)
+        if (string.IsNullOrEmpty(lastMdn))
         {
-            await using var db = this.Store.CreateReadContext();
-            return await Get(db, lastMdn, maxResults);
-        }
-
-        public async Task<List<Mdn>> Get(ConfigDatabase db, string lastMdn, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (string.IsNullOrEmpty(lastMdn))
-            {
-                return await db.Mdns
-                    .FromSqlRaw("SELECT TOP ({0}) * from Mdns order by CreateDate desc", maxResults)
-                .ToListAsync();
-            }
-
             return await db.Mdns
-                .FromSqlRaw("SELECT TOP ({0}) * from Mdns where CreateDate > {1} order by CreateDate asc", maxResults, lastMdn)
-                .ToListAsync();
+                .FromSqlRaw("SELECT TOP ({0}) * from Mdns order by CreateDate desc", maxResults)
+            .ToListAsync();
         }
 
+        return await db.Mdns
+            .FromSqlRaw("SELECT TOP ({0}) * from Mdns where CreateDate > {1} order by CreateDate asc", maxResults, lastMdn)
+            .ToListAsync();
+    }
 
-        public async Task<List<Mdn>> GetTimedOut()
+
+    public async Task<List<Mdn>> GetTimedOut()
+    {
+        await using var db = Store.CreateReadContext();
+        return await db.Mdns.Where(m => m.Status == MdnStatus.TimedOut).ToListAsync();
+    }
+
+    public async Task<List<Mdn>> GetExpiredProcessed(TimeSpan expiredLimit, int maxResults)
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetExpiredProcessed(db, expiredLimit, maxResults);
+    }
+    public async Task<List<Mdn>> GetExpiredProcessed(TimeSpan expiredLimit)
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetExpiredProcessed(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS);
+    }
+    public async Task<List<Mdn>> GetExpiredProcessed()
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetExpiredProcessed(db, TimeSpan.FromMinutes(DEFAULT_PROCESSED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS);
+    }
+    public async Task<List<Mdn>> GetExpiredProcessed(ConfigDatabase db, TimeSpan expiredLimit, int maxResults)
+    {
+        if (db == null)
         {
-            await using var db = Store.CreateReadContext();
-            return await db.Mdns.Where(m => m.Status == MdnStatus.TimedOut).ToListAsync();
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public async Task<List<Mdn>> GetExpiredProcessed(TimeSpan expiredLimit, int maxResults)
-        {
-            await using var db = Store.CreateReadContext();
-            return await GetExpiredProcessed(db, expiredLimit, maxResults);
-        }
-        public async Task<List<Mdn>> GetExpiredProcessed(TimeSpan expiredLimit)
-        {
-            await using var db = Store.CreateReadContext();
-            return await GetExpiredProcessed(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS);
-        }
-        public async Task<List<Mdn>> GetExpiredProcessed()
-        {
-            await using var db = Store.CreateReadContext();
-            return await GetExpiredProcessed(db, TimeSpan.FromMinutes(DEFAULT_PROCESSED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS);
-        }
-        public async Task<List<Mdn>> GetExpiredProcessed(ConfigDatabase db, TimeSpan expiredLimit, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            return await db.Mdns
-                .FromSqlRaw(@"  ;With timeOuts as (
+        return await db.Mdns
+            .FromSqlRaw(@"  ;With timeOuts as (
 	                            Select MessageId
 	                            From Mdns	
 	                            Where status = 'timedout'
@@ -310,33 +310,33 @@ namespace Health.Direct.Config.Store
 	                            CreateDate <  {0}
                             Order by CreateDate desc
                         ", expiredLimit, maxResults)
-                .ToListAsync();
-        }
+            .ToListAsync();
+    }
 
 
-        public async Task<List<Mdn>> GetExpiredDispatched(TimeSpan expiredLimit, int maxResults)
+    public async Task<List<Mdn>> GetExpiredDispatched(TimeSpan expiredLimit, int maxResults)
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetExpiredDispatched(db, expiredLimit, maxResults);
+    }
+    public async Task<List<Mdn>> GetExpiredDispatched(TimeSpan expiredLimit)
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetExpiredDispatched(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS);
+    }
+    public async Task<List<Mdn>> GetExpiredDispatched()
+    {
+        await using var db = Store.CreateReadContext();
+        return await GetExpiredDispatched(db, TimeSpan.FromMinutes(DEFAULT_DISPATCHED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS);
+    }
+    public async Task<List<Mdn>> GetExpiredDispatched(ConfigDatabase db, TimeSpan expiredLimit, int maxResults)
+    {
+        if (db == null)
         {
-            await using var db = Store.CreateReadContext();
-            return await GetExpiredDispatched(db, expiredLimit, maxResults);
+            throw new ArgumentNullException(nameof(db));
         }
-        public async Task<List<Mdn>> GetExpiredDispatched(TimeSpan expiredLimit)
-        {
-            await using var db = Store.CreateReadContext();
-            return await GetExpiredDispatched(db, expiredLimit, DEFAULT_TIMEOUT_RECORDS);
-        }
-        public async Task<List<Mdn>> GetExpiredDispatched()
-        {
-            await using var db = Store.CreateReadContext();
-            return await GetExpiredDispatched(db, TimeSpan.FromMinutes(DEFAULT_DISPATCHED_TIMEOUT_MINUTES), DEFAULT_TIMEOUT_RECORDS);
-        }
-        public async Task<List<Mdn>> GetExpiredDispatched(ConfigDatabase db, TimeSpan expiredLimit, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
 
-            return await db.Mdns.FromSqlRaw(@"  ;With timeOuts as (
+        return await db.Mdns.FromSqlRaw(@"  ;With timeOuts as (
 	                        Select MessageId
 	                        From Mdns	
 	                        Where status = 'timedout'
@@ -363,40 +363,40 @@ namespace Health.Direct.Config.Store
 	                        CreateDate <  {0}
                         Order by CreateDate desc
                     ", expiredLimit, maxResults)
-                .ToListAsync();
+            .ToListAsync();
+    }
+
+    public async Task Remove(Mdn mdn)
+    {
+        await using var db = Store.CreateContext();
+        await Remove(db, mdn);
+    }
+
+    public async Task Remove(ConfigDatabase db, Mdn mdn)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public async Task Remove(Mdn mdn)
+        db.Mdns.Remove(mdn);
+        await db.SaveChangesAsync();
+    }
+
+    public async Task RemoveTimedOut(TimeSpan limitTime, int bulkCount)
+    {
+        await using var db = Store.CreateContext();
+        await RemoveTimedOut(db, limitTime, bulkCount);
+    }
+
+    public async Task<int> RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
+    {
+        if (db == null)
         {
-            await using var db = Store.CreateContext();
-            await Remove(db, mdn);
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public async Task Remove(ConfigDatabase db, Mdn mdn)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            db.Mdns.Remove(mdn);
-            await db.SaveChangesAsync();
-        }
-
-        public async Task RemoveTimedOut(TimeSpan limitTime, int bulkCount)
-        {
-            await using var db = Store.CreateContext();
-            await RemoveTimedOut(db, limitTime, bulkCount);
-        }
-
-        public async Task<int> RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            return await db.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
+        return await db.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
                             ;With Candidates as (
 	                            Select top ({1})
 		                              MessageId
@@ -417,23 +417,23 @@ namespace Health.Direct.Config.Store
 	                            MessageId in (select MessageId from Candidates)
 	                            and
 	                            RecipientAddress in (select RecipientAddress from Candidates)
-                        ",limitTime.ToString(), bulkCount);
+                        ", limitTime.ToString(), bulkCount);
+    }
+
+    public async Task RemoveDispositions(TimeSpan limitTime, int bulkCount)
+    {
+        await using var db = Store.CreateContext();
+        await RemoveDispositions(db, limitTime, bulkCount);
+    }
+
+    public async Task<int> RemoveDispositions(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
+    {
+        if (db == null)
+        {
+            throw new ArgumentNullException(nameof(db));
         }
 
-        public void RemoveDispositions(TimeSpan limitTime, int bulkCount)
-        {
-            using var db = Store.CreateContext();
-            RemoveDispositions(db, limitTime, bulkCount);
-        }
-
-        public async Task<int> RemoveDispositions(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            return await db.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
+        return await db.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
                 ;With Candidates as (
 	                Select top ({1})
 		                  MessageId
@@ -467,23 +467,23 @@ namespace Health.Direct.Config.Store
                     
                
             ", limitTime, bulkCount);
-        }
-
-        public IEnumerator<Mdn> GetEnumerator()
-        {
-            using var db = Store.CreateContext();
-            foreach (Mdn mdn in db.Mdns)
-            {
-                yield return mdn;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-
-
     }
+
+    public IEnumerator<Mdn> GetEnumerator()
+    {
+        using var db = Store.CreateContext();
+        foreach (Mdn mdn in db.Mdns)
+        {
+            yield return mdn;
+        }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+
+
 }
+
