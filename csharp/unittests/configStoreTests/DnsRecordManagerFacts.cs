@@ -21,6 +21,7 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
+    [Collection("ManagerFacts")]
     public class DnsRecordManagerFacts : ConfigStoreTestBase
     {
         private new static DnsRecordManager CreateManager()
@@ -42,7 +43,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest10()
         {
-            InitDnsRecords();
+            await InitDnsRecords();
 
             DnsRecordManager mgr = CreateManager();
             List<DnsRecord> recs = await mgr.Get("microsoft.com");

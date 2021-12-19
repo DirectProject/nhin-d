@@ -200,7 +200,7 @@ public class DnsRecordManager
     }
 
     /// <summary>
-    /// simple method to remove an dns record by ID 
+    /// simple method to remove an dns record by CertPolicyId 
     /// </summary>
     /// <param name="dnsRecord">DnsRecord instance to be removed</param>
     public async Task Remove(DnsRecord dnsRecord)
@@ -212,7 +212,7 @@ public class DnsRecordManager
     }
 
     /// <summary>
-    /// simple method to remove an dns record by ID 
+    /// simple method to remove an dns record by CertPolicyId 
     /// </summary>
     ///  <param name="db">database context to use</param>
     /// <param name="dnsRecord">DnsRecord instance to be removed</param>
@@ -222,7 +222,7 @@ public class DnsRecordManager
     }
 
     /// <summary>
-    /// simple method to remove an dns record by ID 
+    /// simple method to remove an dns record by CertPolicyId 
     /// </summary>
     /// <param name="recordId">long holding the id of the record to be deleted</param>
     public async Task Remove(long recordId)
@@ -232,7 +232,7 @@ public class DnsRecordManager
     }
 
     /// <summary>
-    /// simple method to remove an dns record by ID 
+    /// simple method to remove an dns record by CertPolicyId 
     /// </summary>
     /// <param name="db">database context to use</param>
     /// <param name="recordId">long holding the id of the record to be deleted</param>

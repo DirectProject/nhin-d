@@ -84,17 +84,17 @@
 //             );
 //
 //         static readonly Func<ConfigDatabase, long, IQueryable<CertPolicyGroup>> CertPolicyGroupByID = CompiledQuery.Compile(
-//            (ConfigDatabase db, long ID) =>
+//            (ConfigDatabase db, long CertPolicyId) =>
 //            from policyGroup in db.CertPolicyGroups
-//            where policyGroup.ID == ID
+//            where policyGroup.CertPolicyId == CertPolicyId
 //            select policyGroup
 //            );
 //
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<CertPolicyGroup>> EnumPoliciyGroupsByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastPolicyID, int maxResults) =>
 //             (from certPolicyGroup in db.CertPolicyGroups
-//              where certPolicyGroup.ID > lastPolicyID
-//              orderby certPolicyGroup.ID ascending
+//              where certPolicyGroup.CertPolicyId > lastPolicyID
+//              orderby certPolicyGroup.CertPolicyId ascending
 //              select certPolicyGroup).Take(maxResults)
 //             );
 //
@@ -106,7 +106,7 @@
 //         public static int GetCount(this Table<CertPolicyGroup> table)
 //         {
 //             return (from policyGroup in table.GetDB().CertPolicyGroups
-//                     select policyGroup.ID).Count();
+//                     select policyGroup.CertPolicyId).Count();
 //         }
 //
 //         public static CertPolicyGroup Get(this Table<CertPolicyGroup> table, string name)
@@ -151,14 +151,14 @@
 //                     .AsEnumerable() //key to this working.
 //                     .Select(cpg => new CertPolicyGroup
 //                                    {
-//                                        ID = cpg.CertPolicyGroup.ID,
+//                                        CertPolicyId = cpg.CertPolicyGroup.CertPolicyId,
 //                                        Name = cpg.CertPolicyGroup.Name,
 //                                        Description = cpg.CertPolicyGroup.Description,
 //                                        CreateDate = cpg.CertPolicyGroup.CreateDate,
 //                                        CertPolicyGroupDomainMaps =
 //                                            (from map in table.GetDB().CertPolicyGroupDomainMaps
 //                                             where owners.Contains(map.Owner)
-//                                             && cpg.CertPolicyGroup.ID == map.CertPolicyGroup.ID
+//                                             && cpg.CertPolicyGroup.CertPolicyId == map.CertPolicyGroup.CertPolicyId
 //                                             select map).ToList(),
 //                                        CertPolicyGroupMaps =
 //                                           (from map in table.GetDB().CertPolicyGroupMaps
@@ -200,12 +200,12 @@
 //
 //         public static void ExecDeleteGroupMap(this Table<CertPolicyGroup> table, CertPolicyGroupMap map)
 //         {
-//             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupMap, map.CertPolicy.ID, map.CertPolicyGroup.ID);
+//             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupMap, map.CertPolicy.CertPolicyId, map.CertPolicyGroup.CertPolicyId);
 //         }
 //
 //         public static void ExecDeleteDomainMap(this Table<CertPolicyGroup> table, CertPolicyGroupDomainMap map)
 //         {
-//             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupDomainMap, map.CertPolicyGroup.ID, map.Owner);
+//             table.Context.ExecuteCommand(Sql_DeleteCertPolicyGroupDomainMap, map.CertPolicyGroup.CertPolicyId, map.Owner);
 //         }
 //         
 //         public static void ExecDelete(this Table<CertPolicyGroup> table, string policyName)

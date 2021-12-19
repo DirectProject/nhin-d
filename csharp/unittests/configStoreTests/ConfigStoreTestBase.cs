@@ -45,6 +45,8 @@ namespace Health.Direct.Config.Store.Tests
         private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
         private const string DNSRECORDSEPATH = @"DnsRecords";
         private const string CERTSRECORDSPATH = @"certs";
+        protected const string CERT_PASSWORD = "passw0rd!";
+
         protected Dictionary<string, DnsResponse> m_DomainResponses;
 
         // if true dump will be sent to the delegate specified by DumpLine
@@ -785,7 +787,6 @@ namespace Health.Direct.Config.Store.Tests
             {
                 Assert.NotNull(mgr.Get(db, val.Name));
             }
-
         }
 
         /// <summary>
@@ -1002,18 +1003,18 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// This method will clean, load and verify MDN records in the DB for testing purposes
         /// </summary>
-        protected void InitMdnRecords()
+        protected async Task InitMdnRecords()
         {
-            this.InitMdnRecords(new MdnManager(CreateConfigStore())
+            await InitMdnRecords(new MdnManager(CreateConfigStore())
                                     , new ConfigDatabase(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify MDN records in the DB for testing purposes
         /// </summary>
-        protected void InitOldMdnRecords()
+        protected async Task InitOldMdnRecords()
         {
-            this.InitOldMdnRecords(new MdnManager(CreateConfigStore())
+            await InitOldMdnRecords(new MdnManager(CreateConfigStore())
                                     , new ConfigDatabase(ConnectionString));
         }
 
@@ -1110,11 +1111,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             if (domainID > MAXDOMAINCOUNT || domainID <= 0)
             {
-                throw new Exception(string.Format("Domain ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             if (subId > MAXCERTPEROWNER || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
                 , CERTSRECORDSPATH
@@ -1125,7 +1126,7 @@ namespace Health.Direct.Config.Store.Tests
             {
                 cert = new Anchor(string.Format("CN=domain{0}.test.com", domainID)
                                   , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
-                                  , String.Empty);
+                                  , CERT_PASSWORD);
                 //cert.Owner = string.Format("domain{0}.test.com", domainID);
                 //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
@@ -1142,11 +1143,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             if (domainID > MAXDOMAINCOUNT || domainID <= 0)
             {
-                throw new Exception(string.Format("Domain ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             if (subId > MAXCERTPEROWNER || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
                 , CERTSRECORDSPATH
@@ -1157,7 +1158,7 @@ namespace Health.Direct.Config.Store.Tests
             {
                 cert = new Certificate(string.Format("domain{0}.test.com", domainID)
                                        , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
-                                       , String.Empty);
+                                       , CERT_PASSWORD);
                 //cert.Owner = string.Format("domain{0}.test.com", domainID);
                 //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
@@ -1180,17 +1181,17 @@ namespace Health.Direct.Config.Store.Tests
         {
             if (domainID > MAXDOMAINCOUNT || domainID <= 0)
             {
-                throw new Exception(string.Format("Domain ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             if (subId > MAXCERTPEROWNER || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
                 , CERTSRECORDSPATH
                 , domainID
                 , subId);
-            return new System.Security.Cryptography.X509Certificates.X509Certificate2(path, String.Empty);
+            return new System.Security.Cryptography.X509Certificates.X509Certificate2(path, CERT_PASSWORD);
         }
 
         /// <summary>
@@ -1203,11 +1204,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             if (domainID > MAXDOMAINCOUNT || domainID <= 0)
             {
-                throw new Exception(string.Format("Domain ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             if (subId > MAXCERTPEROWNER || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub ID is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
             }
             var path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
                 , CERTSRECORDSPATH

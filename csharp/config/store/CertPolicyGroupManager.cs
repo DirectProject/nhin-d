@@ -108,7 +108,10 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
             throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyGroupName);
         }
 
-        return  await db.CertPolicyGroups
+        return await db.CertPolicyGroups
+            .Include(e => e.CertPolicyGroupMaps)
+            .ThenInclude(m => m.CertPolicy)
+            .Include(e => e.CertPolicyGroupDomainMaps)
             .Where(e => e.Name == name)
             .SingleOrDefaultAsync();
     }
@@ -156,13 +159,19 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
         }
 
         await using var db = Store.CreateReadContext();
-        var entities = await db.CertPolicyGroupDomainMaps
-            .Where(certDomainMap => owners.Contains(certDomainMap.Owner))
-            .Include(certDomainMap => certDomainMap.CertPolicyGroup)
-            .Select(e => e.CertPolicyGroup)
+        var entities = await db.CertPolicyGroups
+            .Include(g => g.CertPolicyGroupDomainMaps
+                .Where(m => owners.Contains(m.Owner)))
+            .Include(g => g.CertPolicyGroupMaps)
+            .ThenInclude(m => m.CertPolicy)
             .ToListAsync();
+        //
+        // TODO: Is there a more efficient way to get SQL to do the work without writing SQL and creating a DTO dedicated to this?
+        // Have not found simple way to force the inner join to CertPolicyGroupDomainMaps.
+        //
+         var groups = entities.Where(g => g.CertPolicyGroupDomainMaps.Any()).ToList();
 
-        return entities;
+        return groups;
     }
 
     public async Task<List<CertPolicyGroup>> Get(long lastID, int maxResults)
@@ -269,6 +278,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
         }
 
         var group = await db.CertPolicyGroups
+            .Include(g => g.CertPolicyGroupMaps)
             .Where(cpg => cpg.Name == groupName)
             .SingleOrDefaultAsync();
 
@@ -278,11 +288,11 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
 
         if (@group != null)
         {
-            @group.CertPolicies.Add(policy);
+            // @group.CertPolicies.Add(policy);
+            @group.CertPolicyGroupMaps.Add(new CertPolicyGroupMap(policyUse, incoming, outgoing));
             var map = @group.CertPolicyGroupMaps.First(m => m.IsNew);
-            map.PolicyUse = policyUse;
-            map.ForIncoming = incoming;
-            map.ForOutgoing = outgoing;
+            map.CertPolicy = policy;
+            
         }
     }
 
@@ -322,19 +332,13 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
     {
         await using var db = Store.CreateContext();
         var policyGroup = await db.CertPolicyGroups
+            .Include(cpg => cpg.CertPolicyGroupDomainMaps)
             .Where(cpg => cpg.ID == policyGroupID)
             .SingleOrDefaultAsync();
 
         if (policyGroup != null && policyGroup.CertPolicyGroupDomainMaps.Any(map => map.Owner == owner))
         {
-            CertPolicyGroupDomainMap[] maps =
-            {
-                new CertPolicyGroupDomainMap(true)
-                {
-                    CertPolicyGroup = policyGroup,
-                    Owner = owner
-                }
-            };
+            var maps = policyGroup.CertPolicyGroupDomainMaps.Where(map => map.Owner == owner).ToArray();
             await RemoveDomain(db, maps);
             await db.SaveChangesAsync();
         }
@@ -348,11 +352,12 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
     {
         await using var db = Store.CreateContext();
         var certPolicyGroupDomainMap = await db.CertPolicyGroupDomainMaps
-            .SingleOrDefaultAsync(m => m.Owner == owner);
+            .Where(m => m.Owner == owner)
+            .ToListAsync();
 
-        if (certPolicyGroupDomainMap != null)
+        foreach (var policyGroupDomainMap in certPolicyGroupDomainMap)
         {
-            db.CertPolicyGroupDomainMaps.Remove(certPolicyGroupDomainMap);
+            db.CertPolicyGroupDomainMaps.Remove(policyGroupDomainMap);
             await db.SaveChangesAsync();
         }
     }
@@ -365,11 +370,12 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
     {
         await using var db = Store.CreateContext();
         var certPolicyGroupDomainMap = await db.CertPolicyGroupDomainMaps
-            .SingleOrDefaultAsync(m => m.CertPolicyGroupId == policyGroupId);
+            .Where(m => m.CertPolicyGroupId == policyGroupId)
+            .ToListAsync();
 
-        if (certPolicyGroupDomainMap != null)
+        foreach (var policyGroupDomainMap in certPolicyGroupDomainMap)
         {
-            db.CertPolicyGroupDomainMaps.Remove(certPolicyGroupDomainMap);
+            db.CertPolicyGroupDomainMaps.Remove(policyGroupDomainMap);
             await db.SaveChangesAsync();
         }
     }

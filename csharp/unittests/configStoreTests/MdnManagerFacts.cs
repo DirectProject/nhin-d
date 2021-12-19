@@ -25,6 +25,9 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
+
+    [Collection("ManagerFacts")]
+
     public class MdnManagerFacts : ConfigStoreTestBase
     {
         /// <summary>
@@ -33,8 +36,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void StoreTest()
         {
-            MdnManager target = CreateManager();
-            ConfigStore actual = target.Store;
+            var target = CreateManager();
+            var actual = target.Store;
             Assert.Equal(target.Store, actual);
         }
 
@@ -44,7 +47,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task AddTest()
         {
-            MdnManager target = CreateManager();
+            var target = CreateManager();
             await using (var db = CreateConfigDatabase())
             {
                 await MdnUtil.RemoveAll(db);
@@ -63,13 +66,17 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for duplicate key violation.
         ///</summary>
         [Fact]
-        public void AddExceptionTest()
+        public async Task AddExceptionTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
             string messageId = Guid.NewGuid().ToString();
-            Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
-            Assert.Contains("Cannot insert duplicate key", Assert.ThrowsAsync<SqlException>(async () => await target.Start(new Mdn[] { mdn })).Result.Message);
+            var mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
+            Assert.Contains(
+                "Cannot insert duplicate key", 
+                Assert.ThrowsAsync<SqlException>(async () => 
+                    await target
+                        .Start(new Mdn[] { mdn })).Result.Message);
         }
 
         /// <summary>
@@ -78,8 +85,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetByMdnIdentifierTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
             Assert.Equal(61, await target.Count());
             Assert.NotNull(await target.Get("9C2458C2370E2C00E2E8701EE3064B6B"));
         }
@@ -90,8 +97,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task UpdateStatusTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
             var mdn = await target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
@@ -112,8 +119,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task UpdateDispatchedTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
             var mdn = await target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
@@ -134,8 +141,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task UpdateTimeoutTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
             var mdn = await target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
@@ -155,8 +162,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetProcessExpiredTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             //timespan and max records set
             var mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 10);
@@ -189,8 +196,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task ProcessingProcessExpiredTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             //timespan and max records set
             var mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
@@ -210,8 +217,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetDispatchedExpiredTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             //timespan and max records set
             var mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 20);
@@ -241,8 +248,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task ProcessingDispatchedExpiredTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             //timespan and max records set
             var mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 2);
@@ -265,8 +272,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTimeoutTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             //This would run often enough to keep the Mdns table peformant
             List<Mdn> mdns = await target.GetTimedOut();
@@ -314,8 +321,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task CleanProcessedAndDispatched()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             //
             // Ensure all test data is procesed or dispatched 
@@ -349,8 +356,8 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task DuplicateMdnTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             string messageId = Guid.NewGuid().ToString();
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", "pRocessed");
@@ -378,10 +385,10 @@ namespace Health.Direct.Config.Store.Tests
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
         //[Fact ] May want this check to go into the timeout job.
-        public void MissingAggregateMdnTest()
+        public async Task MissingAggregateMdnTest()
         {
-            MdnManager target = CreateManager();
-            InitMdnRecords();
+            var target = CreateManager();
+            await InitMdnRecords();
 
             string messageId = Guid.NewGuid().ToString();
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com",

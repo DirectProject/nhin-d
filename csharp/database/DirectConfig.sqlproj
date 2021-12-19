@@ -9,7 +9,7 @@
     <!-- Project name -->
     <Name>DirectConfig</Name>
     <ProjectGuid>{2214b078-34fe-4e2e-875a-254addb2f1f8}</ProjectGuid>
-    <DSP>Microsoft.Data.Tools.Schema.Sql.SqlAzureDatabaseSchemaProvider</DSP>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql150DatabaseSchemaProvider</DSP>
     <RootNamespace>Health.Direct.Database</RootNamespace>
     <AssemblyName>Health.Direct.Database</AssemblyName>
     <!-- Project output -->

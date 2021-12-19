@@ -28,10 +28,6 @@ public class CertPolicyGroupMapEntityMap : IEntityTypeConfiguration<CertPolicyGr
 
         builder.ToTable("CertPolicyGroupMap");
 
-        builder.Property(e => e.ForOutgoing).HasDefaultValueSql("((1))");
-
-        builder.Property(e => e.ForIncoming).HasDefaultValueSql("((1))");
-
         builder.Property(e => e.CreateDate)
             .HasColumnType("datetime")
             .HasDefaultValueSql("(getdate())");

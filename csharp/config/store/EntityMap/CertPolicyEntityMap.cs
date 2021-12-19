@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System.ComponentModel.DataAnnotations.Schema;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -26,6 +27,11 @@ public class CertPolicyEntityMap : IEntityTypeConfiguration<CertPolicy>
     {
         builder.HasIndex(e => e.Name, "IX_CertPolicies")
             .IsUnique();
+
+        builder.HasKey(e => e.CertPolicyId);
+        
+        builder.Property(e => e.CertPolicyId)
+            .ValueGeneratedOnAdd();
 
         builder.Property(e => e.CreateDate)
             .HasColumnType("datetime")
@@ -42,5 +48,6 @@ public class CertPolicyEntityMap : IEntityTypeConfiguration<CertPolicy>
         builder.Property(e => e.Name)
             .HasMaxLength(255)
             .IsUnicode(false);
+        
     }
 }

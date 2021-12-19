@@ -53,7 +53,7 @@ namespace Health.Direct.Policy.X509
             try
             {
                 PublicKey pubKey = Certificate.PublicKey;
-                if (pubKey.Key is RSACryptoServiceProvider || pubKey.Key is DSACryptoServiceProvider)
+                // if (pubKey.Key is RSACryptoServiceProvider || pubKey.Key is DSACryptoServiceProvider)
                 {
                     retVal = pubKey.Key.KeySize;
                 }

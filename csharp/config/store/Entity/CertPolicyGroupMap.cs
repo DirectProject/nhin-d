@@ -93,7 +93,7 @@ namespace Health.Direct.Config.Store.Entity
             //ConfigDatabase.RemoveAssociativeRecord(this);
 
             CertPolicy originalCertPolicy = CertPolicy;
-            originalCertPolicy.CertPolicyGroupMap.Remove(this);
+            originalCertPolicy.CertPolicyGroupMaps.Remove(this);
 
             CertPolicyGroup originalCertPolicyGroup = CertPolicyGroup;
             originalCertPolicyGroup.CertPolicyGroupMaps.Remove(this);

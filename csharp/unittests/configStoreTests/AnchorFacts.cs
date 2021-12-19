@@ -135,7 +135,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        ///A test for ID
+        ///A test for CertPolicyId
         ///</summary>
         [Fact]
         public void IDTest()

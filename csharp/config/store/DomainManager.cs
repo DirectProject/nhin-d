@@ -248,6 +248,7 @@ public class DomainManager : IEnumerable<Domain>
     {
         await using ConfigDatabase db = Store.CreateContext();
         await Remove(db, name);
+        await db.SaveChangesAsync();
     }
 
     public async Task Remove(ConfigDatabase db, string name)

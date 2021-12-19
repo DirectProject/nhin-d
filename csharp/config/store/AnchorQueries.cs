@@ -33,7 +33,7 @@
 //         static readonly Func<ConfigDatabase, long, IQueryable<Anchor>> AnchorByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long id) =>
 //             from anchor in db.Anchors
-//             where anchor.ID == id
+//             where anchor.CertPolicyId == id
 //             select anchor
 //             );
 //
@@ -47,8 +47,8 @@
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<Anchor>> AllAnchors = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastCertID, int maxResults) =>
 //             (from anchor in db.Anchors
-//              where anchor.ID > lastCertID
-//              orderby anchor.ID
+//              where anchor.CertPolicyId > lastCertID
+//              orderby anchor.CertPolicyId
 //              select anchor).Take(maxResults)
 //             );
 //
@@ -111,7 +111,7 @@
 //         public static IEnumerable<Anchor> Get(this Table<Anchor> table, long[] certIDs)
 //         {
 //             return from anchor in table.GetDB().Anchors
-//                    where certIDs.Contains(anchor.ID)
+//                    where certIDs.Contains(anchor.CertPolicyId)
 //                    select anchor;
 //         }
 //         

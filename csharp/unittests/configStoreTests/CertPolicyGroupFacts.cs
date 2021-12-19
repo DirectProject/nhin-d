@@ -23,7 +23,7 @@ namespace Health.Direct.Config.Store.Tests
     public class CertPolicyGroupFacts : ConfigStoreTestBase
     {
         /// <summary>
-        ///A test for ID
+        ///A test for CertPolicyId
         ///</summary>
         [Fact]
         public void IDTest()

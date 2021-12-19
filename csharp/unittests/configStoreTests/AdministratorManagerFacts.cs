@@ -44,7 +44,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         m_database.Dispose();
     }
 
-    [Fact, AutoRollback]
+    [Fact]
     public async Task<Administrator> Add()
     {
         var origAdmin = new Administrator(m_username, m_password);
@@ -63,7 +63,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         return admin;
     }
 
-    [Fact, AutoRollback]
+    [Fact]
     public async Task Update()
     {
         var origAdmin = await Add();
@@ -83,7 +83,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         Assert.True(admin.CheckPassword("qwerty"));
     }
 
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetByUsername()
     {
         Add();
@@ -95,7 +95,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         Assert.True(admin.CheckPassword(m_password));
     }
 
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetByID()
     {
         var added = await Add();
@@ -105,7 +105,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         Assert.Equal(m_username, admin.Username);
     }
 
-    [Fact, AutoRollback]
+    [Fact]
     public async Task Remove()
     {
         await Add();
@@ -113,7 +113,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         Assert.Null(await m_manager.Get(m_username));
     }
 
-    [Fact, AutoRollback]
+    [Fact]
     public async Task SetStatus()
     {
         await Add();

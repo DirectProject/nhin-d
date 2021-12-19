@@ -24,6 +24,8 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
+
+    
     public class CertificateFacts : ConfigStoreTestBase
     {
         /// <summary>
@@ -136,7 +138,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        ///A test for ID
+        ///A test for CertPolicyId
         ///</summary>
         [Fact]
         public void IDTest()
@@ -289,7 +291,7 @@ namespace Health.Direct.Config.Store.Tests
         [MemberData("TestCertsBytes")]
         public void ImportTest(byte[] sourceFileBytes)
         {
-            string password = string.Empty;
+            string password = CERT_PASSWORD;
             X509Certificate2 expected = new X509Certificate2(sourceFileBytes, password);
             X509Certificate2 actual = Certificate.Import(sourceFileBytes, password);
             Assert.Equal(expected, actual);

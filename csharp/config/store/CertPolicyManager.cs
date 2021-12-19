@@ -91,7 +91,9 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
     public async Task<int> Count()
     {
         await using var db = Store.CreateReadContext();
-        return await db.CertPolicies.CountAsync();
+        var joe = await db.CertPolicies.CountAsync();
+
+        return joe;
     }
 
 
@@ -122,7 +124,7 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         await using var db = Store.CreateReadContext();
 
         return await db.CertPolicies
-            .Where(cp => cp.ID == policyId)
+            .Where(cp => cp.CertPolicyId == policyId)
             .SingleOrDefaultAsync();
     }
 
@@ -136,7 +138,7 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         await using var db = Store.CreateReadContext();
 
         return await db.CertPolicies
-            .Where(cp => policyIDs.Contains(cp.ID))
+            .Where(cp => policyIDs.Contains(cp.CertPolicyId))
             .ToListAsync();
     }
 
@@ -155,8 +157,8 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
 
 
         return await db.CertPolicies
-            .Where(cp => cp.ID > lastId)
-            .OrderBy(cp => cp.ID)
+            .Where(cp => cp.CertPolicyId > lastId)
+            .OrderBy(cp => cp.CertPolicyId)
             .Take(maxResults)
             .ToListAsync();
     }
@@ -178,8 +180,11 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
             .ThenInclude(cpg => cpg.CertPolicyGroupDomainMaps
                 .Where(e => e.Owner == owner))
             .ToListAsync();
-            
-        return certPolicies;
+
+        return certPolicies
+            .Where(p => p.CertPolicyGroupMaps
+                .Any(m => m.CertPolicyGroup.CertPolicyGroupDomainMaps.Any()))
+            .ToList();
     }
 
     public async Task<List<CertPolicy>> GetIncomingByOwner(string owner, CertPolicyUse use)
@@ -194,13 +199,16 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         var certPolicies = await db.CertPolicies
             .Include(cp => cp.CertPolicyGroupMaps
                 .Where(e => e.ForIncoming
-                && e.PolicyUse == use))
+                         && e.PolicyUse == use))
             .ThenInclude(cpGroup => cpGroup.CertPolicyGroup)
             .ThenInclude(cpg => cpg.CertPolicyGroupDomainMaps
                 .Where(e => e.Owner == owner))
             .ToListAsync();
 
-        return certPolicies;
+        return certPolicies
+            .Where(p => p.CertPolicyGroupMaps
+                .Any(m => m.CertPolicyGroup.CertPolicyGroupDomainMaps.Any()))
+            .ToList();
     }
 
     public async Task<List<CertPolicy>> GetOutgoingByOwner(string owner)
@@ -220,7 +228,10 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
                 .Where(e => e.Owner == owner))
             .ToListAsync();
 
-        return certPolicies;
+        return certPolicies
+            .Where(p => p.CertPolicyGroupMaps
+                .Any(m => m.CertPolicyGroup.CertPolicyGroupDomainMaps.Any()))
+            .ToList();
     }
 
     public async Task<List<CertPolicy>> GetOutgoingByOwner(string owner, CertPolicyUse use)
@@ -241,7 +252,10 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
                 .Where(e => e.Owner == owner))
             .ToListAsync();
 
-        return certPolicies;
+        return certPolicies
+            .Where(p => p.CertPolicyGroupMaps
+                .Any(m => m.CertPolicyGroup.CertPolicyGroupDomainMaps.Any()))
+            .ToList();
     }
 
 
@@ -286,6 +300,7 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
     {
         await using var db = Store.CreateContext();
         await Remove(db, policyId);
+        await db.SaveChangesAsync();
     }
 
     public async Task Remove(ConfigDatabase db, long policyId)
@@ -295,12 +310,21 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
             throw new ArgumentNullException(nameof(db));
         }
         
-        var entity = await db.CertPolicies
-            .SingleOrDefaultAsync(m => m.ID == policyId);
+        var certPolicy = await db.CertPolicies
+            .SingleOrDefaultAsync(m => m.CertPolicyId == policyId);
 
-        if (entity != null)
+        if (certPolicy != null)
         {
-            db.CertPolicies.Remove(entity);
+            db.CertPolicies.Remove(certPolicy);
+
+            var groupMaps = await db.CertPolicyGroupMaps
+                .Where(e => e.CertPolicyId == policyId)
+                .ToListAsync();
+
+            foreach (var certPolicyGroupMap in groupMaps)
+            {
+                db.CertPolicyGroupMaps.Remove(certPolicyGroupMap);
+            }
         }
     }
 
@@ -325,13 +349,15 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         for (int i = 0; i < policyIds.Length; ++i)
         {
             var certPolicy = await db.CertPolicies
-                .SingleOrDefaultAsync(m => m.ID == policyIds[i]);
+                .SingleOrDefaultAsync(m => m.CertPolicyId == policyIds[i]);
 
             if (certPolicy != null)
             {
                 db.CertPolicies.Remove(certPolicy);
             }
         }
+
+        await db.SaveChangesAsync();
     }
 
     public async Task Remove(string policyName)

@@ -35,7 +35,7 @@
 //             m_store = CreateConfigStore();
 //         }
 //
-//         [Fact, AutoRollback]
+//         [Fact]
 //         public void TestAdd()
 //         {
 //             TestUserSettings settingsSrc = TestUserSettings.Create();
@@ -47,7 +47,7 @@
 //             Assert.Throws<SqlException>(() => m_store.Blobs.Add(blobSrc));
 //         }
 //
-//         [Fact, AutoRollback]
+//         [Fact]
 //         public void TestUpdate()
 //         {
 //             TestUserSettings settingsSrc = TestUserSettings.Create();
@@ -77,7 +77,7 @@
 //             }
 //         }
 //
-//         [Fact, AutoRollback]
+//         [Fact]
 //         public void TestRoundtrip()
 //         {
 //             TestUserSettings settingsSrc = TestUserSettings.Create();
@@ -114,7 +114,7 @@
 //             Assert.True(settingsSrc.Compare(settingsDest));
 //         }
 //
-//         [Fact, AutoRollback]
+//         [Fact]
 //         public void TestContains()
 //         {
 //             TestUserSettings settingsSrc = TestUserSettings.Create();

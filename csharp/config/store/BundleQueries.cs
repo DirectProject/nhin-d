@@ -32,7 +32,7 @@
 //         static readonly Func<ConfigDatabase, long, IQueryable<Bundle>> BundleByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long id) =>
 //             from b in db.Bundles
-//             where b.ID == id
+//             where b.CertPolicyId == id
 //             select b
 //             );
 //
@@ -46,8 +46,8 @@
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<Bundle>> AllBundles = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastBundleID, int maxResults) =>
 //             (from b in db.Bundles
-//              where b.ID > lastBundleID
-//              orderby b.ID
+//              where b.CertPolicyId > lastBundleID
+//              orderby b.CertPolicyId
 //              select b).Take(maxResults)
 //             );
 //
@@ -105,7 +105,7 @@
 //         public static IEnumerable<Bundle> Get(this Table<Bundle> table, long[] bundleIDs)
 //         {
 //             return from b in table.GetDB().Bundles
-//                    where bundleIDs.Contains(b.ID)
+//                    where bundleIDs.Contains(b.CertPolicyId)
 //                    select b;
 //         }
 //         

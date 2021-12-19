@@ -258,7 +258,6 @@ public class CertificateManager : IX509CertificateIndex
         if (certificate != null)
         {
             certificate.Status = status;
-            db.Entry(certificate).State = EntityState.Modified;
         }
     }
 
@@ -276,12 +275,13 @@ public class CertificateManager : IX509CertificateIndex
             throw new ArgumentNullException(nameof(db));
         }
 
-        var entity = await db.Certificates.SingleOrDefaultAsync(c => c.Owner == owner);
+        var certificates = await db.Certificates
+            .Where(c => c.Owner == owner)
+            .ToListAsync();
 
-        if (entity != null)
+        foreach (var certificate in certificates)
         {
-            entity.Status = status;
-            db.Entry(entity).State = EntityState.Modified;
+            certificate.Status = status;
         }
     }
 
@@ -289,6 +289,7 @@ public class CertificateManager : IX509CertificateIndex
     {
         await using var db = Store.CreateContext();
         await Remove(db, certificateID);
+        await db.SaveChangesAsync();
     }
 
     public async Task Remove(ConfigDatabase db, long certificateID)

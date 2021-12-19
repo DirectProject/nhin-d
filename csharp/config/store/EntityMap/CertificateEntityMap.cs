@@ -35,6 +35,9 @@ public class CertificateEntityMap : IEntityTypeConfiguration<Certificate>
 
         builder.Property(e => e.Thumbprint).HasMaxLength(64);
 
+        builder.Property(e => e.Data)
+            .HasColumnName("CertificateData");
+
         builder.Property(e => e.ID)
             .ValueGeneratedOnAdd()
             .HasColumnName("CertificateID");

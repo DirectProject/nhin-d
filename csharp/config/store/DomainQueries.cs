@@ -38,8 +38,8 @@
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<Domain>> EnumDomainsByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastDomainID, int maxResults) =>
 //             (from domain in db.Domains
-//              where domain.ID > lastDomainID
-//              orderby domain.ID ascending
+//              where domain.CertPolicyId > lastDomainID
+//              orderby domain.CertPolicyId ascending
 //              select domain).Take(maxResults)
 //             );
 //         
@@ -57,7 +57,7 @@
 //         public static int GetCount(this Table<Domain> table)
 //         {
 //             return (from domain in table.GetDB().Domains
-//                     select domain.ID).Count();
+//                     select domain.CertPolicyId).Count();
 //         }
 //         
 //         public static Domain Get(this Table<Domain> table, string domainName)

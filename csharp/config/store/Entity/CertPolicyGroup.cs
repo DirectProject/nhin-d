@@ -101,11 +101,12 @@ namespace Health.Direct.Config.Store.Entity
             }
         }
 
-        public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; }
+        public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; } = new List<CertPolicyGroupMap>();
 
 
 
-        public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; }
+        public ICollection<CertPolicyGroupDomainMap> CertPolicyGroupDomainMaps { get; set; } =
+            new List<CertPolicyGroupDomainMap>();
 
         public DateTime CreateDate
         {
@@ -117,9 +118,9 @@ namespace Health.Direct.Config.Store.Entity
         {
             get
             {
-                if (CertPolicyGroupMaps == null)
+                if (!CertPolicyGroupMaps.Any())
                 {
-                    return null;
+                    return new List<CertPolicy>();
                 }
                 var policies = new ObservableCollection<CertPolicy>(
                         from groupMap in CertPolicyGroupMaps select groupMap.CertPolicy);
@@ -155,9 +156,9 @@ namespace Health.Direct.Config.Store.Entity
             // Find the new map and add Use attributes
             foreach (var certPolicy in policies)
             {
-                foreach (var policyGroupMap in certPolicy.CertPolicyGroupMap)
+                foreach (var policyGroupMap in certPolicy.CertPolicyGroupMaps)
                 {
-                    if (policyGroupMap.CertPolicy.ID == certPolicyGroupMap.CertPolicy.ID
+                    if (policyGroupMap.CertPolicy.CertPolicyId == certPolicyGroupMap.CertPolicy.CertPolicyId
                         && policyGroupMap.CertPolicyGroup.ID == certPolicyGroupMap.CertPolicyGroup.ID)
                     {
                         policyGroupMap.PolicyUse = certPolicyGroupMap.PolicyUse;

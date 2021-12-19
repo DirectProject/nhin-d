@@ -32,7 +32,6 @@ namespace Health.Direct.Config.Store.Entity
 
         public DnsRecord()
         {
-            ID = -1;
             this.CreateDate = DateTimeHelper.Now;
             this.UpdateDate = this.CreateDate;
         }

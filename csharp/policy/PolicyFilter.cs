@@ -69,7 +69,7 @@ namespace Health.Direct.Policy
 
             return IsCompliant(cert, expression);
         }
-
+         
         public bool IsCompliant(X509Certificate2 cert, IPolicyExpression expression)
         {
             if (m_compiler == null)

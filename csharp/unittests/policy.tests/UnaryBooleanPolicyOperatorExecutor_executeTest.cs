@@ -61,7 +61,7 @@ namespace Health.Direct.Policy.Tests
 
             // host not found
             Assert.False(PolicyOperator<string>.URI_VALIDATE.Execute("http://bogus.unit.test.ccc"));
-            Assert.Equal("http://bogus.unit.test.ccc:The remote name could not be resolved: 'bogus.unit.test.ccc'", fakeDiagnostics.ActualErrorMessages[1]);
+            Assert.Equal("http://bogus.unit.test.ccc:No such host is known. (bogus.unit.test.ccc:80)", fakeDiagnostics.ActualErrorMessages[1]);
 
             // invalid
             Assert.False(PolicyOperator<string>.URI_VALIDATE.Execute("htt://invalid.lab"));

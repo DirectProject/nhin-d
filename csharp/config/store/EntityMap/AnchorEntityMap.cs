@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -29,6 +30,9 @@ public class AnchorEntityMap : IEntityTypeConfiguration<Anchor>
         builder.Property(e => e.Owner)
             .HasMaxLength(400)
             .IsUnicode(false);
+
+        builder.Property(e => e.Data)
+            .HasColumnName("CertificateData");
 
         builder.Property(e => e.Thumbprint).HasMaxLength(64);
 

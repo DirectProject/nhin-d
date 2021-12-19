@@ -38,7 +38,7 @@
 //         static readonly Func<ConfigDatabase, long, IQueryable<Certificate>> CertByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long id) =>
 //             from cert in db.Certificates
-//             where cert.ID == id
+//             where cert.CertPolicyId == id
 //             select cert
 //             );
 //         
@@ -59,8 +59,8 @@
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<Certificate>> AllCerts = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastCertID, int maxResults) =>
 //             (from cert in db.Certificates
-//              where cert.ID > lastCertID
-//              orderby cert.ID
+//              where cert.CertPolicyId > lastCertID
+//              orderby cert.CertPolicyId
 //              select cert).Take(maxResults)
 //             );
 //
@@ -85,7 +85,7 @@
 //         {
 //             //return table.GetDB().ExecuteQuery<Certificate>(Sql_AllCertsByID, certIDs.ToIn());
 //             return from cert in table.GetDB().Certificates
-//                    where certIDs.Contains(cert.ID)
+//                    where certIDs.Contains(cert.CertPolicyId)
 //                    select cert;
 //         }
 //

@@ -46,23 +46,23 @@
 //         static readonly Func<ConfigDatabase, long, long, int, IQueryable<Address>> DomainAddresses = CompiledQuery.Compile(
 //             (ConfigDatabase db, long domainID, long lastAddressID, int maxResults) =>
 //             (from address in db.Addresses
-//              where address.DomainID == domainID && address.ID > lastAddressID
-//              orderby address.ID
+//              where address.DomainID == domainID && address.CertPolicyId > lastAddressID
+//              orderby address.CertPolicyId
 //              select address).Take(maxResults)
 //             );
 //
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<Address>> AllAddresses = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastAddressID, int maxResults) =>
 //             (from address in db.Addresses
-//              where address.ID > lastAddressID
-//              orderby address.ID
+//              where address.CertPolicyId > lastAddressID
+//              orderby address.CertPolicyId
 //              select address).Take(maxResults)
 //             );
 //         
 //         static readonly Func<ConfigDatabase, long, IQueryable<Address>> IDToAddress = CompiledQuery.Compile(
 //             (ConfigDatabase db, long addressID) =>
 //             from address in db.Addresses
-//             where address.ID == addressID
+//             where address.CertPolicyId == addressID
 //             select address
 //             );
 //         
@@ -75,7 +75,7 @@
 //         {
 //             return (from address in table.GetDB().Addresses
 //                     where address.DomainID == domainID
-//                     select address.ID).Count();
+//                     select address.CertPolicyId).Count();
 //         }
 //         
 //         public static Address Get(this Table<Address> table, string emailAddress)
@@ -127,7 +127,7 @@
 //             // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
 //             //
 //             return from address in table.GetDB().Addresses
-//                    where ids.Contains(address.ID)
+//                    where ids.Contains(address.CertPolicyId)
 //                    select address;
 //         }
 //
@@ -137,7 +137,7 @@
 //             // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
 //             //
 //             return from address in table.GetDB().Addresses
-//                    where ids.Contains(address.ID) && address.Status == status
+//                    where ids.Contains(address.CertPolicyId) && address.Status == status
 //                    select address;
 //         }
 //         

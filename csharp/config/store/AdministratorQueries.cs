@@ -40,7 +40,7 @@
 //         static readonly Func<ConfigDatabase, long, IQueryable<Administrator>> IDToAdministrator = CompiledQuery.Compile(
 //             (ConfigDatabase db, long administratorID) =>
 //             from administrator in db.Administrators
-//             where administrator.ID == administratorID
+//             where administrator.CertPolicyId == administratorID
 //             select administrator
 //             );
 //

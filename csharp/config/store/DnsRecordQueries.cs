@@ -37,24 +37,24 @@
 //         static readonly Func<ConfigDatabase, long, IQueryable<DnsRecord>> DnsRecordByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long recordID) =>
 //             from dnsrecords in db.DnsRecords
-//             where dnsrecords.ID == recordID
+//             where dnsrecords.CertPolicyId == recordID
 //             select dnsrecords
 //             );
 //
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<DnsRecord>> AllDnsRecords = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastRecordID, int maxResults) =>
 //             (from dnsrecords in db.DnsRecords
-//              where dnsrecords.ID > lastRecordID
-//              orderby dnsrecords.ID ascending
+//              where dnsrecords.CertPolicyId > lastRecordID
+//              orderby dnsrecords.CertPolicyId ascending
 //              select dnsrecords).Take(maxResults)
 //             );
 //
 //         static readonly Func<ConfigDatabase, long, int, int, IQueryable<DnsRecord>> AllDnsRecordsForType = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastRecordID, int maxResults, int typeID) =>
 //             (from dnsrecords in db.DnsRecords
-//              where dnsrecords.ID > lastRecordID
+//              where dnsrecords.CertPolicyId > lastRecordID
 //              && dnsrecords.TypeID == typeID
-//              orderby dnsrecords.ID ascending
+//              orderby dnsrecords.CertPolicyId ascending
 //              select dnsrecords).Take(maxResults)
 //             );
 //
@@ -92,11 +92,11 @@
 //             {
 //                 return (from dnsrecords in table.GetDB().DnsRecords
 //                         where dnsrecords.TypeID == typeID.Value
-//                         select dnsrecords.ID).Count();
+//                         select dnsrecords.CertPolicyId).Count();
 //
 //             }
 //             return (from dnsrecords in table.GetDB().DnsRecords
-//                     select dnsrecords.ID).Count();
+//                     select dnsrecords.CertPolicyId).Count();
 //
 //         }
 //
@@ -124,7 +124,7 @@
 //         public static IEnumerable<DnsRecord> Get(this Table<DnsRecord> table, long[] recordIDs)
 //         {
 //             return from dnsrecords in table.GetDB().DnsRecords
-//                    where recordIDs.Contains(dnsrecords.ID)
+//                    where recordIDs.Contains(dnsrecords.CertPolicyId)
 //                    select dnsrecords;
 //         }
 //

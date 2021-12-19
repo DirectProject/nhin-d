@@ -27,6 +27,11 @@ public class CertPolicyGroupEntityMap : IEntityTypeConfiguration<CertPolicyGroup
         builder.HasIndex(e => e.Name, "IX_CertPolicyGroups_Name")
             .IsUnique();
 
+        builder.HasKey(e => e.ID);
+
+        builder.Property(e => e.ID)
+            .HasColumnName("CertPolicyGroupId");
+
         builder.Property(e => e.CreateDate)
             .HasColumnType("datetime")
             .HasDefaultValueSql("(getdate())");
@@ -38,5 +43,7 @@ public class CertPolicyGroupEntityMap : IEntityTypeConfiguration<CertPolicyGroup
         builder.Property(e => e.Name)
             .HasMaxLength(255)
             .IsUnicode(false);
+
+        builder.Ignore(e => e.CertPolicies);
     }
 }

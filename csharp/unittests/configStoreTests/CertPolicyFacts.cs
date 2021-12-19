@@ -24,15 +24,15 @@ namespace Health.Direct.Config.Store.Tests
     public class CertPolicyFacts : ConfigStoreTestBase
     {
         /// <summary>
-        ///A test for ID
+        ///A test for CertPolicyId
         ///</summary>
         [Fact]
         public void IDTest()
         {
             CertPolicy target = new CertPolicy();
             long expected = new Random().Next(1, 10);
-            target.ID = expected;
-            long actual = target.ID;
+            target.CertPolicyId = expected;
+            long actual = target.CertPolicyId;
             Assert.Equal(expected, actual);
         }
 
@@ -125,12 +125,9 @@ namespace Health.Direct.Config.Store.Tests
         public void AddCertPolicyGroupTest()
         {
             CertPolicy target = new CertPolicy();
-            target.ID = 99;
+            target.CertPolicyId = 99;
             CertPolicyGroupMap targetChild = new CertPolicyGroupMap();
-            target.CertPolicyGroupMap.Add(targetChild);
+            target.CertPolicyGroupMaps.Add(targetChild);
         }
-
-
-
     }
 }

@@ -12,7 +12,12 @@ namespace Health.Direct.Policy.X509
 
         static ExtensionIdentifier()
         {
-            var extensionfield = Expression.Parameter(typeof(IExtensionField<>), "extensionField");
+            //
+            // Todo:  This line used to exist before .NET Core but not sure why.
+            // Expression.Parameter(,) cannot take a generic first param.  
+            // Maybe check back later.
+            //
+            // var extensionfield = Expression.Parameter(typeof(IExtensionField<>), "extensionField");
 
             TokenFieldMap = new Dictionary<string, ExtensionIdentifier>();
 

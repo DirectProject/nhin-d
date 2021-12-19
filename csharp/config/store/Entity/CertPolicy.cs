@@ -17,9 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Policy.Impl;
 
@@ -33,8 +30,6 @@ namespace Health.Direct.Config.Store.Entity
         string m_Name;
         string m_Description = String.Empty;
         
-        public virtual ICollection<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; }
-
         public CertPolicy()
         {
             CertPolicyGroupMaps = new HashSet<CertPolicyGroupMap>();
@@ -66,25 +61,21 @@ namespace Health.Direct.Config.Store.Entity
 
         public CertPolicy(CertPolicy policy) : this()
         {
-            ID = policy.ID;
+            CertPolicyId = policy.CertPolicyId;
             Name = policy.Name;
             Description = policy.Description;
             Lexicon = policy.Lexicon;
             Data = policy.Data;
         }
         
-        public long ID 
+        public long CertPolicyId 
         { 
             get; 
             set; 
         }
 
-        public ICollection<CertPolicyGroupMap> CertPolicyGroupMap
-        {
-            get;
-            set;
-        }
-
+        public ICollection<CertPolicyGroupMap> CertPolicyGroupMaps { get; set; }
+    
         
         public string Name
         {
@@ -166,7 +157,7 @@ namespace Health.Direct.Config.Store.Entity
 
         internal void CopyFixed(CertPolicy source)
         {
-            this.ID = source.ID;
+            this.CertPolicyId = source.CertPolicyId;
             this.CreateDate = source.CreateDate;
             this.Name = source.Name;
         }
@@ -180,7 +171,7 @@ namespace Health.Direct.Config.Store.Entity
 
         public bool IsNew()
         {
-            return ID <= 0;
+            return CertPolicyId <= 0;
         }
     }
 }

@@ -25,6 +25,9 @@ using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests
 {
+
+    [Collection("ManagerFacts")]
+
     public class CertPolicyTestFixture : ConfigStoreTestBase, IAsyncLifetime
     {
         public async Task InitializeAsync()
@@ -73,8 +76,9 @@ namespace Health.Direct.Config.Store.Tests
         /// A test for GetEnumerator
         /// </summary>
         [Fact]
-        public void GetEnumeratorTest()
+        public async Task GetEnumeratorTest()
         {
+            await InitCertPolicyRecords();
             IEnumerable<CertPolicy> mgr = CreateManager();
             Assert.Equal(9, mgr.Count());
         }
@@ -91,15 +95,15 @@ namespace Health.Direct.Config.Store.Tests
             policy.Name.Should().BeEquivalentTo("Policy1");
         }
 
-        [Fact, AutoRollback]
+        [Fact]
         public async Task GetIncomingAndOutgoingCertPolicyByOwnerTest()
         {
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = await groupMgr.Get("PolicyGroup1");
-            policyGroup1.CertPolicies.Count.Should().Be(0);
+            policyGroup1.CertPolicies?.Count.Should().Be(0);
             CertPolicyGroup policyGroup2 = await groupMgr.Get("PolicyGroup2");
-            policyGroup1.CertPolicies.Count.Should().Be(0);
-            policyGroup2.CertPolicies.Count.Should().Be(0);
+            policyGroup1.CertPolicies?.Count.Should().Be(0);
+            policyGroup2.CertPolicies?.Count.Should().Be(0);
 
             //
             // Map cert policy group to domains
@@ -127,15 +131,18 @@ namespace Health.Direct.Config.Store.Tests
 
         }
 
-        [Fact, AutoRollback]
+        [Fact]
         public async Task GetIncomingAndOutgoingCertPolicyByOwnerAndUsage_Test()
         {
+            await InitCertPolicyRecords();
+            await InitCertPolicyGroupRecords();
+
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup1 = await groupMgr.Get("PolicyGroup1");
-            policyGroup1.CertPolicies.Count.Should().Be(0);
+            policyGroup1.CertPolicies?.Count.Should().Be(0);
             CertPolicyGroup policyGroup2 = await groupMgr.Get("PolicyGroup2");
-            policyGroup1.CertPolicies.Count.Should().Be(0);
-            policyGroup2.CertPolicies.Count.Should().Be(0);
+            policyGroup1.CertPolicies?.Count.Should().Be(0);
+            policyGroup2.CertPolicies?.Count.Should().Be(0);
 
             //
             // Map cert policy group to domains
@@ -149,8 +156,8 @@ namespace Health.Direct.Config.Store.Tests
             await groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.TRUST, true, true);
             await groupMgr.AddPolicyUse("Policy2", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, false);
 
-            CertPolicyManager policyMgr = CreateManager();
-            List<CertPolicy> policies = await policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.TRUST);
+            var policyMgr = CreateManager();
+            var policies = await policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.TRUST);
             policies.Count.Should().Be(1);
             policies = await policyMgr.GetIncomingByOwner("domain1.test.com", CertPolicyUse.PUBLIC_RESOLVER);
             policies.Count.Should().Be(0);
@@ -169,9 +176,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// A test for Add Policy
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task AddPolicy()
         {
+            await InitCertPolicyRecords();
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy expectedPolicy = new CertPolicy("UnitTestPolicy", "", "1 = 1".ToBytesUtf8());
@@ -185,73 +193,78 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Remove Policy
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task DeletePolicyTest()
         {
-            CertPolicyManager mgr = CreateManager();
-            CertPolicy policy = await mgr.Get("Policy2");
-            await mgr.Remove(policy.ID);
+            await InitCertPolicyRecords();
+            var mgr = CreateManager();
+            var policy = await mgr.Get("Policy2");
+            await mgr.Remove(policy.CertPolicyId);
 
-            mgr.Get("Policy2").Should().BeNull();
+            (await mgr.Get("Policy2")).Should().BeNull();
         }
 
         /// <summary>
         /// Remove Multiple Policies
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task DeletePoliciesTest()
         {
+            await InitCertPolicyRecords();
             CertPolicyManager mgr = CreateManager();
             (await mgr.Count()).Should().Be(9);
-            long[] ids = mgr.Select(certPolicy => certPolicy.ID).ToArray();
+            long[] ids = mgr.Select(certPolicy => certPolicy.CertPolicyId).ToArray();
             await mgr.Remove(ids);
 
-            mgr.Count().Should().Be(0);
+            (await mgr.Count()).Should().Be(0);
         }
 
         /// <summary>
         /// Remove Multiple Policies
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task Delete2PoliciesTest()
         {
-            CertPolicyManager mgr = CreateManager();
-            mgr.Count().Should().Be(9);
+            await InitCertPolicyRecords();
+            var mgr = CreateManager();
+            (await mgr.Count()).Should().Be(9);
             await mgr.Remove(new long[] { 1, 2 });
 
-            mgr.Count().Should().Be(7);
+            (await mgr.Count()).Should().Be(7);
         }
 
         /// <summary>
         /// Delete policy and its associations
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task DeletePolicyWithAssociations()
         {
+            // await InitCertPolicyRecords();
             CertPolicyGroupManager groupMgr = CreatePolicyGroupManager();
             CertPolicyGroup policyGroup = await groupMgr.Get("PolicyGroup1");
-            policyGroup.CertPolicies.Count.Should().Be(0);
+            policyGroup.CertPolicies?.Count.Should().Be(0);
 
             CertPolicyManager policyMgr = CreateManager();
-            policyMgr.Get("Policy1").Should().NotBeNull();
+            (await policyMgr.Get("Policy1")).Should().NotBeNull();
 
             await groupMgr.AddPolicyUse("Policy1", "PolicyGroup1", CertPolicyUse.PRIVATE_RESOLVER, true, true);
 
             policyGroup = await groupMgr.Get("PolicyGroup1");
-            policyGroup.CertPolicies.Count.Should().Be(1);
+            policyGroup.CertPolicies?.Count.Should().Be(1);
 
             CertPolicyManager mgr = CreateManager();
             CertPolicy policy = await mgr.Get("Policy1");
-            await mgr.Remove(policy.ID);
-            policyMgr.Get("Policy1").Should().BeNull();
+            await mgr.Remove(policy.CertPolicyId);
+            (await policyMgr.Get("Policy1")).Should().BeNull();
         }
 
         /// <summary>
         /// A test for Update Policy
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task UpdatePolicyDataTest()
         {
+            await InitCertPolicyRecords();
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());
@@ -269,9 +282,10 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// A test for Update Policy
         /// </summary>
-        [Fact, AutoRollback]
+        [Fact]
         public async Task UpdatePolicyDescriptionTest()
         {
+            await InitCertPolicyRecords();
             CertPolicyManager mgr = CreateManager();
 
             CertPolicy newCertPolicy = new CertPolicy("UnitTestPolicy", "UnitTest Policy Description", "1 = 1".ToBytesUtf8());

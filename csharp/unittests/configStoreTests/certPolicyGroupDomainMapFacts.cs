@@ -20,6 +20,9 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
+
+    [Collection("ManagerFacts")]
+
     public class CertPolicyGroupDomainMapFacts : ConfigStoreTestBase
     {
         /// <summary>

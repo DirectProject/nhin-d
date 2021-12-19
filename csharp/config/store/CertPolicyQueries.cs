@@ -54,17 +54,17 @@
 //             );
 //
 //         static readonly Func<ConfigDatabase, long, IQueryable<CertPolicy>> CertPolicyByID = CompiledQuery.Compile(
-//            (ConfigDatabase db, long ID) =>
+//            (ConfigDatabase db, long CertPolicyId) =>
 //            from certPolicy in db.CertPolicies
-//            where certPolicy.ID == ID
+//            where certPolicy.CertPolicyId == CertPolicyId
 //            select certPolicy
 //            );
 //
 //         static readonly Func<ConfigDatabase, long, int, IQueryable<CertPolicy>> EnumPoliciesByID = CompiledQuery.Compile(
 //             (ConfigDatabase db, long lastPolicyID, int maxResults) =>
 //             (from certPolicy in db.CertPolicies
-//              where certPolicy.ID > lastPolicyID
-//              orderby certPolicy.ID ascending
+//              where certPolicy.CertPolicyId > lastPolicyID
+//              orderby certPolicy.CertPolicyId ascending
 //              select certPolicy).Take(maxResults)
 //             );
 //
@@ -78,7 +78,7 @@
 //         public static int GetCount(this Table<CertPolicy> table)
 //         {
 //             return (from certPolicy in table.GetDB().CertPolicies
-//                     select certPolicy.ID).Count();
+//                     select certPolicy.CertPolicyId).Count();
 //         }
 //
 //         public static CertPolicy Get(this Table<CertPolicy> table, string name)
@@ -161,7 +161,7 @@
 //         public static IEnumerable<CertPolicy> Get(this Table<CertPolicy> table, long[] policyIDs)
 //         {
 //             return from cp in table.GetDB().CertPolicies
-//                    where policyIDs.Contains(cp.ID)
+//                    where policyIDs.Contains(cp.CertPolicyId)
 //                    select cp;
 //         }
 //

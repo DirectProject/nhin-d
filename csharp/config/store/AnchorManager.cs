@@ -288,9 +288,11 @@ public class AnchorManager
             throw new ArgumentNullException(nameof(db));
         }
 
-        var entity = await db.Anchors.SingleOrDefaultAsync(a => a.Owner == owner);
+        var entities = await db.Anchors
+            .Where(a => a.Owner == owner)
+            .ToListAsync();
 
-        if (entity != null)
+        foreach (var entity in entities)
         {
             entity.Status = status;
         }
