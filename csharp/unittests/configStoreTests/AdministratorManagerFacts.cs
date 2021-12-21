@@ -24,6 +24,7 @@ using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests;
 
+[Collection("ManagerFacts")]
 public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
 {
     private readonly ConfigDatabase m_database;

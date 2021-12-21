@@ -1026,6 +1026,7 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitMdnRecords(MdnManager mgr, ConfigDatabase db)
         {
             await MdnUtil.RemoveAll(db);
+            await db.SaveChangesAsync();
             mgr.Start(db, TestMdns.ToArray());
 
             //----------------------------------------------------------------------------------------------------

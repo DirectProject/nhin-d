@@ -24,6 +24,7 @@ using Xunit;
 
 namespace Health.Direct.Config.Store.Tests
 {
+    [Collection("ManagerFacts")]
     public class MultiThreadTests : ConfigStoreTestBase
     {
         public const string ConnectionStringTimeout = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;Connection Timeout=120";

@@ -21,13 +21,9 @@ using FluentAssertions;
 using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
 using Xunit;
-using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests
 {
-
-    [Collection("ManagerFacts")]
-
     public class CertPolicyTestFixture : ConfigStoreTestBase, IAsyncLifetime
     {
         public async Task InitializeAsync()
@@ -44,6 +40,7 @@ namespace Health.Direct.Config.Store.Tests
         }
     }
 
+    [Collection("ManagerFacts")]
     public class CertPolicyManagerFacts : ConfigStoreTestBase, IClassFixture<CertPolicyTestFixture>
     {
         private new static CertPolicyManager CreateManager()

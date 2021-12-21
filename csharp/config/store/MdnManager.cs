@@ -100,7 +100,7 @@ public class MdnManager : IEnumerable<Mdn>
             throw new ConfigStoreException(ConfigStoreError.InvalidMdn);
         }
         mdn.Status = MdnStatus.TimedOut;
-        db.Mdns.Add(mdn);
+        db.Mdns.Update(mdn);
     }
 
     public async Task Update(Mdn mdn)
@@ -210,7 +210,7 @@ public class MdnManager : IEnumerable<Mdn>
             throw new ConfigStoreException(ConfigStoreError.InvalidMdnIdentifier);
         }
 
-        return await db.Mdns
+        var mdns = await db.Mdns
             .FromSqlRaw(@"
                             Declare @notifyRequest tinyint;
                             set @notifyRequest =
@@ -235,7 +235,9 @@ public class MdnManager : IEnumerable<Mdn>
                             From Mdns
                             Where MdnIdentifier= {0}
                 ", mdnIdentifier)
-            .SingleOrDefaultAsync();
+            .ToListAsync();
+
+        return mdns.SingleOrDefault();
     }
 
     public async Task<List<Mdn>> Get(string lastMdn, int maxResults)
@@ -292,6 +294,8 @@ public class MdnManager : IEnumerable<Mdn>
             throw new ArgumentNullException(nameof(db));
         }
 
+        var expiredDateLimit = DateTime.Now - expiredLimit;
+
         return await db.Mdns
             .FromSqlRaw(@"  ;With timeOuts as (
 	                            Select MessageId
@@ -309,7 +313,7 @@ public class MdnManager : IEnumerable<Mdn>
                             And
 	                            CreateDate <  {0}
                             Order by CreateDate desc
-                        ", expiredLimit, maxResults)
+                        ", expiredDateLimit, maxResults)
             .ToListAsync();
     }
 
@@ -335,6 +339,8 @@ public class MdnManager : IEnumerable<Mdn>
         {
             throw new ArgumentNullException(nameof(db));
         }
+
+        var expiredDateLimit = DateTime.Now - expiredLimit;
 
         return await db.Mdns.FromSqlRaw(@"  ;With timeOuts as (
 	                        Select MessageId
@@ -362,7 +368,7 @@ public class MdnManager : IEnumerable<Mdn>
                         And
 	                        CreateDate <  {0}
                         Order by CreateDate desc
-                    ", expiredLimit, maxResults)
+                    ", expiredDateLimit, maxResults)
             .ToListAsync();
     }
 
@@ -387,6 +393,7 @@ public class MdnManager : IEnumerable<Mdn>
     {
         await using var db = Store.CreateContext();
         await RemoveTimedOut(db, limitTime, bulkCount);
+        await db.SaveChangesAsync();
     }
 
     public async Task<int> RemoveTimedOut(ConfigDatabase db, TimeSpan limitTime, int bulkCount)
@@ -395,6 +402,8 @@ public class MdnManager : IEnumerable<Mdn>
         {
             throw new ArgumentNullException(nameof(db));
         }
+
+        var expiredDateLimit = DateTime.Now - limitTime;
 
         return await db.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
                             ;With Candidates as (
@@ -417,7 +426,7 @@ public class MdnManager : IEnumerable<Mdn>
 	                            MessageId in (select MessageId from Candidates)
 	                            and
 	                            RecipientAddress in (select RecipientAddress from Candidates)
-                        ", limitTime.ToString(), bulkCount);
+                        ", expiredDateLimit, bulkCount);
     }
 
     public async Task RemoveDispositions(TimeSpan limitTime, int bulkCount)
@@ -432,6 +441,8 @@ public class MdnManager : IEnumerable<Mdn>
         {
             throw new ArgumentNullException(nameof(db));
         }
+
+        var expiredDateLimit = DateTime.Now - limitTime;
 
         return await db.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
                 ;With Candidates as (
@@ -466,7 +477,7 @@ public class MdnManager : IEnumerable<Mdn>
                        )
                     
                
-            ", limitTime, bulkCount);
+            ", expiredDateLimit, bulkCount);
     }
 
     public IEnumerator<Mdn> GetEnumerator()

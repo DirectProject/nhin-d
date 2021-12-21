@@ -22,6 +22,9 @@ using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Microsoft.Data.SqlClient;
 using Xunit;
+using Xunit.Abstractions;
+using DbUpdateConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
+using DbUpdateException = Microsoft.EntityFrameworkCore.DbUpdateException;
 
 namespace Health.Direct.Config.Store.Tests
 {
@@ -30,6 +33,13 @@ namespace Health.Direct.Config.Store.Tests
 
     public class MdnManagerFacts : ConfigStoreTestBase
     {
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public MdnManagerFacts(ITestOutputHelper testOutputHelper)
+        {
+            _testOutputHelper = testOutputHelper;
+        }
+
         /// <summary>
         ///A test for Store
         ///</summary>
@@ -74,9 +84,9 @@ namespace Health.Direct.Config.Store.Tests
             var mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
             Assert.Contains(
                 "Cannot insert duplicate key", 
-                Assert.ThrowsAsync<SqlException>(async () => 
+                Assert.ThrowsAsync<DbUpdateException>(async () => 
                     await target
-                        .Start(new Mdn[] { mdn })).Result.Message);
+                        .Start(new Mdn[] { mdn })).Result.InnerException?.Message ?? string.Empty);
         }
 
         /// <summary>
@@ -103,10 +113,12 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
             mdn.Status = MdnStatus.Processed;
+            mdn.Id = 0;
             await target.Update(mdn);
             mdn = await target.Get("0335BF2715F5607DE9FC5BF249BEF7F9");
             Assert.Equal(MdnStatus.Processed, mdn.Status);
             mdn.Status = MdnStatus.Dispatched;
+            mdn.Id = 0;
             await target.Update(mdn);
             mdn = await target.Get("543AE91DFFDE40754BCB0A11CEEED059");
             Assert.Equal(MdnStatus.Dispatched, mdn.Status);
@@ -129,6 +141,7 @@ namespace Health.Direct.Config.Store.Tests
             // An external timer will move to Timed out
             //
             mdn.Status = MdnStatus.Dispatched;
+            mdn.Id = 0;
             await target.Update(mdn);
             mdn = await target.Get("543AE91DFFDE40754BCB0A11CEEED059");
             Assert.Equal(MdnStatus.Dispatched, mdn.Status);
@@ -175,6 +188,7 @@ namespace Health.Direct.Config.Store.Tests
 
             //timespan and max records set
             mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            
             Assert.Equal(20, mdns.Count);
 
             //timespan and max records set
@@ -207,7 +221,7 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(18, mdns.Count);
             await target.TimeOut(mdns);
             mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
-            Assert.Equal(0, mdns.Count);
+            Assert.Empty(mdns);
         }
 
 
@@ -332,6 +346,7 @@ namespace Health.Direct.Config.Store.Tests
                 foreach (var mdn in mdns)
                 {
                     mdn.Status = MdnStatus.Processed;
+                    mdn.Id = 0;
                     await target.Update(mdn);
                 }
 
@@ -339,6 +354,7 @@ namespace Health.Direct.Config.Store.Tests
                 foreach (var mdn in mdns)
                 {
                     mdn.Status = MdnStatus.Dispatched;
+                    mdn.Id = 0;
                     await target.Update(mdn);
                 }
             }
@@ -363,22 +379,31 @@ namespace Health.Direct.Config.Store.Tests
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", "pRocessed");
 
             //Record first processed.
-            Assert.Null(Record.ExceptionAsync(async () => await target.Update(new Mdn[] { mdn })));
+            await target.Update(new Mdn[] { mdn });
 
+            mdn.Id = 0;
             //Throw duplicate processed
-            Assert.Equal(ConfigStoreError.DuplicateProcessedMdn, Assert.ThrowsAsync<ConfigStoreException>(async () => await target.Update(mdn)).Result.Error);
+            Assert.Equal(ConfigStoreError.DuplicateProcessedMdn, 
+                Assert.ThrowsAsync<ConfigStoreException>(async () =>
+                    await target.Update(mdn)).Result.Error);
 
+            mdn.Id = 0;
             //Record first dispatched.
             mdn.Status = "disPatched";
-            Assert.Null(Record.ExceptionAsync(async () => await target.Update(mdn)));
+            await target.Update(mdn);
 
-            //Throw duplicate dispached
-            Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn, Assert.ThrowsAsync<ConfigStoreException>(async () => await target.Update(mdn)).Result.Error);
+            mdn.Id = 0;
+            //Throw duplicate dispatched
+            Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn, 
+                Assert.ThrowsAsync<ConfigStoreException>(async () =>
+                    await target.Update(mdn)).Result.Error);
 
             mdn = BuildMdn(Guid.NewGuid().ToString(), "Name1@nhind.hsgincubator.com", "FailedTest@domain1.test.com", "To dispatch or not dispatch", "fAiled");
             await target.Start(new Mdn[] { mdn });
 
-            Assert.Equal(ConfigStoreError.DuplicateFailedMdn, Assert.ThrowsAsync<ConfigStoreException>(async () => await target.Update(mdn)).Result.Error);
+            Assert.Equal(ConfigStoreError.DuplicateFailedMdn, 
+                Assert.ThrowsAsync<ConfigStoreException>(async () =>
+                    await target.Update(mdn)).Result.Error);
         }
 
         /// <summary>
