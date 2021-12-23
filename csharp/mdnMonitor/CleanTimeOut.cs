@@ -1,34 +1,41 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
 
-namespace Health.Direct.MdnMonitor
+namespace Health.Direct.MdnMonitor;
+
+/// <summary>
+/// Clean up incomplete MDNs
+/// </summary>
+public class CleanTimeOut : Cleanup<CleanTimeOut>, IJob
 {
     /// <summary>
-    /// Clean up incomplete MDNs
+    /// Create CleanTimeOut Quartz.net job
     /// </summary>
-    public class CleanTimeOut : Cleanup, IJob
+    /// <param name="logger"></param>
+    public CleanTimeOut(ILogger<CleanTimeOut> logger)
+        : base(logger) { }
+
+    /// <summary>
+    /// Entry point called when trigger fires.
+    /// </summary>
+    /// <param name="context"></param>
+    public async Task Execute(IJobExecutionContext context)
     {
-        /// <summary>
-        /// Entry point called when trigger fires.
-        /// </summary>
-        /// <param name="context"></param>
-        public void Execute(JobExecutionContext context)
+        var settings = Load(context);
+
+        try
         {
-            var settings = Load(context);
-
-
-            try
-            {
-                Store.Mdns.RemoveTimedOut(TimeSpan.FromDays(settings.Days), settings.BulkCount);
-            }
-            catch(Exception e)
-            {
-                Logger.Error("Error in job!");
-                Logger.Error(e.Message);
-                var je = new JobExecutionException(e);
-                throw je;
-            }
+            await Store.Mdns.RemoveTimedOut(TimeSpan.FromDays(settings.Days), settings.BulkCount);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error in job!");
+            var je = new JobExecutionException(e);
+            throw je;
         }
     }
 }
+

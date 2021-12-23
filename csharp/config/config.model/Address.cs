@@ -3,9 +3,8 @@
  All rights reserved.
 
  Authors:
-    Umesh Madan     umeshma@microsoft.com
     Joe Shook       Joseph.Shook@Surescripts.com
-
+  
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -15,72 +14,30 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System;
 
-namespace Health.Direct.Config.Store.Entity
+namespace Health.Direct.Config.Model
 {
-    public class Property
+    public class Address
     {
-        public const int MaxNameLength = 255;
-        public const int MaxValueLength = 1024;
-        
-        string m_name;
-        string m_value;
-              
-        public Property()
-        {
-        }
-        
-        public Property(string name, string value)
-            : this()
-        {
-            this.Name = name;
-            this.Value = value;
-        }
 
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ConfigStoreException(ConfigStoreError.InvalidPropertyName);
-                }
-                if (value.Length > MaxNameLength)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.InvalidPropertyNameLength);
-                }
+        public string EmailAddress { get; set; }
 
-                m_name = value;
-            }
-        }
+        public long ID { get; set; }
 
-        public string Value
-        {
-            get
-            {
-                return m_value;
-            }
-            set
-            {
-                m_value = value;
-            }            
-        }
+        public long DomainID { get; set; }
 
-        public long PropertyId { get; set; }
+        public string DisplayName { get; set; }
 
-        internal void CopyFixed(Property source)
-        {
-            this.Name = source.Name;
-            this.Value = source.Value;
-        }
+        public DateTime CreateDate { get; set; }
 
-        internal void ApplyChanges(Property source)
-        {
-            this.Value = source.Value;
-        }
+        public DateTime UpdateDate { get; set; }
+
+        public EntityStatus Status { get; set; }
+
+        public string Type { get; set; }
+
+        public Domain Domain { get; set; }
+
     }
 }

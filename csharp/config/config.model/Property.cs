@@ -16,71 +16,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 
-namespace Health.Direct.Config.Store.Entity
+namespace Health.Direct.Config.Model
 {
     public class Property
     {
-        public const int MaxNameLength = 255;
-        public const int MaxValueLength = 1024;
-        
-        string m_name;
-        string m_value;
-              
-        public Property()
-        {
-        }
-        
-        public Property(string name, string value)
-            : this()
-        {
-            this.Name = name;
-            this.Value = value;
-        }
+        public string Name { get; set; }
 
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ConfigStoreException(ConfigStoreError.InvalidPropertyName);
-                }
-                if (value.Length > MaxNameLength)
-                {
-                    throw new ConfigStoreException(ConfigStoreError.InvalidPropertyNameLength);
-                }
-
-                m_name = value;
-            }
-        }
-
-        public string Value
-        {
-            get
-            {
-                return m_value;
-            }
-            set
-            {
-                m_value = value;
-            }            
-        }
+        public string Value { get; set; }
 
         public long PropertyId { get; set; }
-
-        internal void CopyFixed(Property source)
-        {
-            this.Name = source.Name;
-            this.Value = source.Value;
-        }
-
-        internal void ApplyChanges(Property source)
-        {
-            this.Value = source.Value;
-        }
     }
 }

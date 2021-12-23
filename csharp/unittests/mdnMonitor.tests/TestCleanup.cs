@@ -1,10 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading.Tasks;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Store.Tests;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Moq;
 using Quartz;
+using Quartz.Impl;
+using Quartz.Impl.Triggers;
 using Quartz.Spi;
 using Xunit;
 
@@ -12,83 +15,109 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
 {
     public class TestCleanup : ConfigStoreTestBase
     {
+        public static IConfiguration InitConfiguration()
+        {
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json").Build();
+            return config;
+        }
+
         [Fact]
-        public void TestDispatchedCleanup()
+        public async Task TestDispatchedCleanup()
         {
             //
             // Sample data
             //
             MdnManager target = CreateManager();
-            InitOldMdnRecords();
+            await InitOldMdnRecords();
 
-            CleanDispositions dispositions = new CleanDispositions();
+            CleanDispositions dispositions = new CleanDispositions(new Mock<ILogger<CleanDispositions>>().Object);
 
-            //Assert.Equal(41, target.Count());
+            //Assert.Equal(41, await target.Count());
             
             //No records older than 10 days.
-            JobExecutionContext context = CreateCleanDispositionsJobExecutionContext(11);
-            dispositions.Execute(context);
-            Assert.Equal(91, target.Count());
+            IJobExecutionContext context = CreateCleanDispositionsIJobExecutionContext(11);
+            await dispositions.Execute(context);
+            Assert.Equal(91, await target.Count());
 
             //Should clean up 10 processed and 10 dispatched and their corresponding starts
-            context = CreateCleanDispositionsJobExecutionContext(9);
-            dispositions.Execute(context);
-            Assert.Equal(51, target.Count());
+            context = CreateCleanDispositionsIJobExecutionContext(9);
+            await dispositions.Execute(context);
+            Assert.Equal(51, await target.Count());
 
         }
 
 
         [Fact]
-        public void TestTimeoutCleanup()
+        public async Task TestTimeoutCleanup()
         {
             //
             // Sample data
             //
             MdnManager target = CreateManager();
-            InitOldMdnRecords();
+            await InitOldMdnRecords();
 
-            CleanDispositions dispositions = new CleanDispositions();
+            CleanDispositions dispositions = new CleanDispositions(new Mock<ILogger<CleanDispositions>>().Object);
 
-            Assert.Equal(91, target.Count());
+            Assert.Equal(91, await target.Count());
 
             //No records older than 10 days.
-            JobExecutionContext context = CreateCleanTimeoutJobExecutionContext(11);
-            dispositions.Execute(context);
-            Assert.Equal(91, target.Count());
+            IJobExecutionContext context = CreateCleanTimeoutIJobExecutionContext(11);
+            await dispositions.Execute(context);
+            Assert.Equal(91, await target.Count());
 
             //Should clean up 10 dispatched timeout and 10 processed timeout and their corresponding starts
-            context = CreateCleanTimeoutJobExecutionContext(9);
-            dispositions.Execute(context);
-            Assert.Equal(51, target.Count());
+            context = CreateCleanTimeoutIJobExecutionContext(9);
+            await dispositions.Execute(context);
+            Assert.Equal(51, await target.Count());
         }
 
 
-        protected virtual JobExecutionContext CreateCleanDispositionsJobExecutionContext(int days)
+        protected virtual IJobExecutionContext CreateCleanDispositionsIJobExecutionContext(int days)
         {
-            SimpleTrigger trigger = new SimpleTrigger();
+            IOperableTrigger trigger = new SimpleTriggerImpl();
 
-            JobExecutionContext ctx = new JobExecutionContext(
+            IJobExecutionContext ctx = new JobExecutionContextImpl(
                 null,
                 CreateFiredBundleWithTypedJobDetail(typeof(MdnProcessedTimeout), trigger),
                 null);
+            
             ctx.JobDetail.JobDataMap.Put("Days", days);
+
+            var mdnSettings = CreateMdnSettings();
+            ctx.JobDetail.JobDataMap.Put(MdnSettings.ProductNameName, mdnSettings.ProductName);
+            ctx.JobDetail.JobDataMap.Put(MdnSettings.ConnectionStringName, mdnSettings.ConnectionString);
+            ctx.JobDetail.JobDataMap.Put(MdnSettings.QueryTimeoutName, mdnSettings.QueryTimeout);
+
             return ctx;
         }
 
 
-        protected virtual JobExecutionContext CreateCleanTimeoutJobExecutionContext(int days)
+        protected virtual IJobExecutionContext CreateCleanTimeoutIJobExecutionContext(int days)
         {
-            SimpleTrigger trigger = new SimpleTrigger();
+            IOperableTrigger trigger = new SimpleTriggerImpl();
 
-            JobExecutionContext ctx = new JobExecutionContext(
+            IJobExecutionContext ctx = new JobExecutionContextImpl(
                 null,
                 CreateFiredBundleWithTypedJobDetail(typeof(CleanDispositions), trigger),
                 null);
+
             ctx.JobDetail.JobDataMap.Put("Days", days);
+
+            var mdnSettings = CreateMdnSettings();
+            ctx.JobDetail.JobDataMap.Put(MdnSettings.ProductNameName, mdnSettings.ProductName);
+            ctx.JobDetail.JobDataMap.Put(MdnSettings.ConnectionStringName, mdnSettings.ConnectionString);
+            ctx.JobDetail.JobDataMap.Put(MdnSettings.QueryTimeoutName, mdnSettings.QueryTimeout);
+
             return ctx;
         }
 
-
+        protected virtual MdnSettings CreateMdnSettings()
+        {
+            var config = InitConfiguration();
+            var mdnSettings = config.GetSection("MdnSettings").Get<MdnSettings>();
+            return mdnSettings;
+        }
 
         /// <summary>
         /// Creates a simple fired bundle
@@ -96,11 +125,11 @@ namespace Health.Direct.MdnMonitor.MdnMonitor.Tests
         /// <param name="jobType">Type of job.</param>
         /// <param name="trigger">Trigger instance</param>
         /// <returns>Simple TriggerFiredBundle</returns>
-        public static TriggerFiredBundle CreateFiredBundleWithTypedJobDetail(Type jobType, Trigger trigger)
+        public static TriggerFiredBundle CreateFiredBundleWithTypedJobDetail(Type jobType, IOperableTrigger trigger)
         {
-            JobDetail jobDetail = new JobDetail("jobName", "jobGroup", jobType);
+            IJobDetail jobDetail = new JobDetailImpl("jobName", "jobGroup", jobType);
             TriggerFiredBundle bundle = new TriggerFiredBundle(
-                jobDetail, trigger, null, false, null, null, null, null);
+                jobDetail, trigger, null, false, DateTimeOffset.UtcNow, null, null, null);
             return bundle;
         }
     }

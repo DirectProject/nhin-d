@@ -17,7 +17,7 @@ using Xunit;
 
 namespace hsmCryptographer.tests
 {
-    public class HsmCryptographerFailureTests : HsmCryptographerTestsBase
+    public class HsmCryptographerFailureTests 
     {
         X509Certificate2 m_softSenderCertWithoutKey;
         X509Certificate2 m_dualUseCertWithPrivateKey;
@@ -67,14 +67,13 @@ namespace hsmCryptographer.tests
         {
             var tokensettings = TokenSettings;
             tokensettings.NormalUserPin = "badpin";
-            var resolverSettings = MockTokenResolverSettings(tokensettings);
-
+            
             // Hardware Cryptographer Agent
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokensettings))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(resolverSettings);
+                
 
                 var agentB = AgentTester.CreateAgent(
                     "hsm.DirectInt.lab",
@@ -93,15 +92,14 @@ namespace hsmCryptographer.tests
         {
             var tokensettings = TokenSettings;
             tokensettings.Pkcs11LibraryPath = "badpath";
-            var resolverSettings = MockTokenResolverSettings(tokensettings);
-
+            
             // Hardware Cryptographer Agent
 
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokensettings))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(resolverSettings);
+                
                 var agentB = AgentTester.CreateAgent(
                     "hsm.DirectInt.lab",
                     AgentTester.MakeCertificatesPath(Directory.GetCurrentDirectory(), "nhind"),
@@ -119,15 +117,14 @@ namespace hsmCryptographer.tests
         {
             var tokensettings = TokenSettings;
             tokensettings.TokenLabel = "badlabel";
-            var resolverSettings = MockTokenResolverSettings(tokensettings);
-
+            
             // Hardware Cryptographer Agent
 
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokensettings))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(resolverSettings);
+                
                 var agentB = AgentTester.CreateAgent(
                     "hsm.DirectInt.lab",
                     AgentTester.MakeCertificatesPath(Directory.GetCurrentDirectory(), "nhind"),
@@ -145,14 +142,12 @@ namespace hsmCryptographer.tests
         [Fact]
         public void TestHSM_To_Soft_HsmObjectNotFoundException()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
-
             // Hardware Cryptographer Agent
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(TokenSettings))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(resolverSettings);
+                
 
                 var agentB = AgentTester.CreateAgent(
                     "hsm.DirectInt.lab",
@@ -260,14 +255,13 @@ namespace hsmCryptographer.tests
         [Fact]
         public void TestSoft_To_HSM_Failover()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
-
+            
             // Hardware Cryptographer Agent
 
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(TokenSettings))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
-                hsmCryptographer.Init(resolverSettings);
+               
                 hsmCryptographer.Error += diagnostics.OnResolverError;
                 hsmCryptographer.Warning += diagnostics.OnResolverWarning;
 
@@ -336,15 +330,14 @@ namespace hsmCryptographer.tests
             var tokensettings = TokenSettings;
             var pin = tokensettings.NormalUserPin;
             tokensettings.NormalUserPin = "badpin";
-            var resolverSettings = MockTokenResolverSettings(tokensettings);
-
+            
             // Hardware Cryptographer Agent
 
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokensettings))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(resolverSettings);
+                
                 hsmCryptographer.Error += diagnostics.OnResolverError;
                 hsmCryptographer.Warning += diagnostics.OnResolverWarning;
                 Assert.Equal(1, diagnostics.ActualErrorMessages.Count);
@@ -408,13 +401,10 @@ namespace hsmCryptographer.tests
         [Fact]
         public void TestSoft_To_HSM_DecryptException_NoCerts()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
-
             // Hardware Cryptographer Agent
 
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(TokenSettings))
             {
-                hsmCryptographer.Init(resolverSettings);
 
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.Error += diagnostics.OnResolverError;
@@ -466,11 +456,8 @@ namespace hsmCryptographer.tests
         [Fact(Skip = "Manually break the network")]
         public void TestDispositionHeaders_Soft_To_HSM()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
-
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(TokenSettings))
             {
-                hsmCryptographer.Init(resolverSettings);
 
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.Error += diagnostics.OnResolverError;
@@ -554,17 +541,13 @@ namespace hsmCryptographer.tests
                   <DefaultEncryption>AES256</DefaultEncryption>
                   <DefaultDigest>SHA256</DefaultDigest>
                 </TokenSettings>";
-
-            var resolverSettings = MockTokenResolverSettings(tokenSettings.FromXml<TokenSettings>());
-
-            pluginDef.Setup(p => p.DeserializeSettings<TokenResolverSettings>())
-                .Returns(resolverSettings);
-
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            
+            
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokenSettings.FromXml<TokenSettings>()))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(pluginDef.Object);
+                
                 Assert.Equal(1, diagnostics.ActualErrorMessages.Count);
 
                 Assert.Equal(
@@ -622,17 +605,12 @@ namespace hsmCryptographer.tests
             TokenSettings ts = TokenSettings;
             ts.NormalUserPin = null;
             tokenSettings = ts.ToXml();
-
-            resolverSettings = MockTokenResolverSettings(tokenSettings.FromXml<TokenSettings>());
-
-            pluginDef.Setup(p => p.DeserializeSettings<TokenResolverSettings>())
-                .Returns(resolverSettings);
-
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokenSettings.FromXml<TokenSettings>()))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(pluginDef.Object);
+                
 
                 var agentB = AgentTester.CreateAgent(
                    "hsm.DirectInt.lab",
@@ -678,17 +656,12 @@ namespace hsmCryptographer.tests
                   <DefaultDigest>SHA256</DefaultDigest>
                 </TokenSettings>";
 
-            resolverSettings = MockTokenResolverSettings(tokenSettings.FromXml<TokenSettings>());
-
-            pluginDef.Setup(p => p.DeserializeSettings<TokenResolverSettings>())
-                .Returns(resolverSettings);
-
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            
+            using (var hsmCryptographer = new HsmCryptographerProxy(tokenSettings.FromXml<TokenSettings>()))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(resolverSettings);
-
+                
                 var agentB = AgentTester.CreateAgent(
                    "hsm.DirectInt.lab",
                    AgentTester.MakeCertificatesPath(Directory.GetCurrentDirectory(), "nhind"),
@@ -730,17 +703,11 @@ namespace hsmCryptographer.tests
         [Fact]
         public void TestPluginInitNullTokenSettings()
         {
-            var pluginDef = new Mock<PluginDefinition>();
-            pluginDef.Object.TypeName = "Surescripts.Health.Direct.Hsm.HsmCryptographerProxy, Surescripts.Health.Direct.Hsm";
-
-            pluginDef.Setup(p => p.DeserializeSettings<TokenResolverSettings>())
-                .Returns(null as TokenResolverSettings);
-
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(null))
             {
                 var diagnostics = new FakeDiagnostics(typeof(HsmCryptographerProxy));
                 hsmCryptographer.ProxyError += diagnostics.OnResolverError;
-                hsmCryptographer.Init(pluginDef.Object);
+                
             }
         }
 

@@ -16,8 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Net.Mail;
-using System.Runtime.CompilerServices;
-using Health.Direct.Common.Mail;
 
 
 namespace Health.Direct.Config.Store.Entity
@@ -165,21 +163,7 @@ namespace Health.Direct.Config.Store.Entity
             
             return new MailAddress(this.EmailAddress);
         }
-                
-        public bool Match(MailAddress address)
-        {
-            if (address == null)
-            {
-                throw new ArgumentNullException("address");
-            }
-            
-            return this.Match(address.Address);
-        }
-        
-        public bool Match(string emailAddress)
-        {
-            return MailStandard.Equals(this.EmailAddress, emailAddress);
-        }
+       
         
         internal void CopyFixed(Address source)
         {

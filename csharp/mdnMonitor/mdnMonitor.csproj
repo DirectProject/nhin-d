@@ -11,7 +11,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
     <!-- Framework dependencies -->
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net60</TargetFramework>
     <!-- Default build options -->
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -37,11 +37,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Quartz, Version=1.0.3.2, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
-      <HintPath>..\external\Quartz\Quartz.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System.Transactions" />
+    <Compile Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="FakesAssemblies\**" />
+    <None Remove="FakesAssemblies\**" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
@@ -49,11 +47,11 @@
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj" />
     <ProjectReference Include="..\config\store\config.store.csproj" />
-    <ProjectReference Include="..\diagnostics\diagnostics.nlog.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Quartz" Version="3.3.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 </Project>

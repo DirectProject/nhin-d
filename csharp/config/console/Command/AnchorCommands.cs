@@ -428,7 +428,7 @@ namespace Health.Direct.Config.Console.Command
             
             if (cert.HasData)
             {
-                X509Certificate2 x509 = cert.ToX509Certificate();
+                X509Certificate2 x509 = new X509Certificate2(cert.Data);
                 this.CertCommands.Print(x509);
             }
         }        
@@ -442,7 +442,7 @@ namespace Health.Direct.Config.Console.Command
         {
             int matchCount = 0;
             var matches = from anchor in query
-                where filter(anchor.ToX509Certificate())
+                where filter(new X509Certificate2(anchor.Data))
                 select anchor;
 
             foreach (Anchor match in matches)

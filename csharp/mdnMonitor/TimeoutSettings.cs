@@ -4,22 +4,21 @@ using Quartz;
 namespace Health.Direct.MdnMonitor
 {
     /// <summary>
-    /// <c>TimeoutSettings</c> represent the quartznet job-data-map name value store in the jobs.xml config file.
+    /// <c>TimeoutSettings</c> represent the quartz.net job-data-map name value store in the jobs.xml config file.
     /// </summary>
     public class TimeoutSettings : MdnSettings
     {
-        const string BulkCountSetting = "BulkCount";
-        const string ExpiredMinutesSetting = "ExpiredMinutes";
-        const string PickupFolderSettings = "PickupFolder";
+        public const string BulkCountSetting = "BulkCount";
+        public const string ExpiredMinutesSetting = "ExpiredMinutes";
+        public const string PickupFolderSettings = "PickupFolder";
 
-        private TimeSpan m_exiredMinutes;
+        private TimeSpan _expiredMinutes;
         
         /// <summary>
         /// Create <c>TimeoutSettings</c> from Job context in the jobs.xml config file.
         /// </summary>
         /// <param name="context"></param>
-        public TimeoutSettings(JobExecutionContext context)
-            : base()
+        public TimeoutSettings(IJobExecutionContext context)
         {
             Load(context);
         }
@@ -33,10 +32,8 @@ namespace Health.Direct.MdnMonitor
         /// <summary>
         /// The number of minutes until a notification correlation is considered expired.
         /// </summary>
-        public TimeSpan ExpiredMinutes
-        {
-            get { return m_exiredMinutes; }
-        }
+        public TimeSpan ExpiredMinutes => _expiredMinutes;
+
         /// <summary>
         /// Location of the pickup folder for message delivery
         /// </summary>
@@ -48,15 +45,15 @@ namespace Health.Direct.MdnMonitor
         public string ErrorCode { get; set; }
 
         
-        private void Load(JobExecutionContext context)
+        private void Load(IJobExecutionContext context)
         {
             BulkCount = context.JobDetail.JobDataMap.GetInt(BulkCountSetting);
-
             int minutes = context.JobDetail.JobDataMap.GetInt(ExpiredMinutesSetting);
-            m_exiredMinutes = TimeSpan.FromMinutes(minutes);
-
+            _expiredMinutes = TimeSpan.FromMinutes(minutes);
             PickupFolder = context.JobDetail.JobDataMap.GetString(PickupFolderSettings);
-
+            ProductName = context.JobDetail.JobDataMap.GetString(ProductNameName);
+            ConnectionString = context.JobDetail.JobDataMap.GetString(ConnectionStringName);
+            QueryTimeout = context.JobDetail.JobDataMap.GetTimeSpanValue(QueryTimeoutName);
         }
     }
 }

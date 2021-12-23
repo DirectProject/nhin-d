@@ -117,10 +117,12 @@ namespace Health.Direct.Config.Store
                 {
                     return null;
                 }
-                X509Certificate2Collection certs = new X509Certificate2Collection();
+
+                var certs = new X509Certificate2Collection();
+
                 for (int i = 0; i < anchors.Length; ++i)
                 {
-                    certs.Add(anchors[i].ToX509Certificate());
+                    certs.Add(new X509Certificate2(anchors[i].Data));
                 }
 
                 return certs;

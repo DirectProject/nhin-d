@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-
+using System.Threading.Tasks;
 using Health.Direct.Config.Store;
 using Health.Direct.Config.Store.Entity;
 using Health.Direct.Config.Tools;
@@ -20,12 +20,12 @@ namespace Health.Direct.Tools.Admin
         }
 
         [Command(Name="User_Add", Usage = AddUserUsage)]
-        public void AddUser(string[] args)
+        public async Task AddUser(string[] args)
         {
             string username = args.GetRequiredValue(0);
             string password = args.GetRequiredValue(1);
 
-            m_manager.Add(new Administrator(username, password));
+            await m_manager.Add(new Administrator(username, password));
             WriteLine("User added.");
         }
 
@@ -36,11 +36,11 @@ namespace Health.Direct.Tools.Admin
               + Constants.CRLF + "\t password: the password for the administrator.";
 
         [Command(Name = "User_Remove", Usage = RemoveUserUsage)]
-        public void RemoveUser(string[] args)
+        public async Task RemoveUser(string[] args)
         {
             string username = args.GetRequiredValue(0);
 
-            m_manager.Remove(username);
+            await m_manager.Remove(username);
             WriteLine("User removed.");
         }
 
@@ -50,12 +50,12 @@ namespace Health.Direct.Tools.Admin
               + Constants.CRLF + "\t username: the username to remove.";
 
         [Command(Name = "User_Status_Set", Usage = SetUserStatusUsage)]
-        public void SetUserStatus(string[] args)
+        public async Task SetUserStatus(string[] args)
         {
             string username = args.GetRequiredValue(0);
             EntityStatus status = args.GetRequiredEnum<EntityStatus>(1);
 
-            m_manager.SetStatus(username, status);
+            await m_manager.SetStatus(username, status);
             WriteLine("User status updated to '{0}'.", status);
         }
 
@@ -66,16 +66,16 @@ namespace Health.Direct.Tools.Admin
               + Constants.CRLF + "\t status: New | Enabled | Disabled.";
 
         [Command(Name = "User_Change_Password", Usage = ChangeUserPasswordUsage)]
-        public void ChangeUserPassword(string[] args)
+        public async Task ChangeUserPassword(string[] args)
         {
             string username = args.GetRequiredValue(0);
             string password = args.GetRequiredValue(1);
 
-            var user = m_manager.Get(username);
+            var user = await m_manager.Get(username);
             if (user != null)
             {
                 user.SetPassword(password);
-                m_manager.Update(user);
+                await m_manager.Update(user);
                 WriteLine("User password successfully changed.");
             }
             else
@@ -91,9 +91,10 @@ namespace Health.Direct.Tools.Admin
               + Constants.CRLF + "\t password: the new password for the user";
 
         [Command(Name = "User_ListAll", Usage = UserListAllUsage)]
-        public void ListUsers(string[] args)
+        public async Task ListUsers(string[] args)
         {
-            Print(m_manager.Get("", int.MaxValue));
+            var users = await m_manager.Get("", int.MaxValue);
+            Print(users);
         }
 
         private const string UserListAllUsage

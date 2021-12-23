@@ -16,17 +16,11 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.IO;
-
 using Health.Direct.Common.Diagnostics;
-
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using NLog.Win32.Targets;
-
-// these have been renamed in the NLog 2.0 version
-using ArchiveNumberingMode = NLog.Targets.FileTarget.ArchiveNumberingMode;
-using FileArchivePeriod = NLog.Targets.FileTarget.ArchiveEveryMode;
+using ILogger = Health.Direct.Common.Diagnostics.ILogger;
 
 namespace Health.Direct.Diagnostics.NLog
 {

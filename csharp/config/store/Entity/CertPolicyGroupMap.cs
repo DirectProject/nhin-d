@@ -18,7 +18,6 @@ using System;
 
 namespace Health.Direct.Config.Store.Entity
 {
-#pragma warning disable 0169        // Ignore warnings. Fields used by LINQ
 
     public class CertPolicyGroupMap
     {

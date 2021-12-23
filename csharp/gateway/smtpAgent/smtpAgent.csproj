@@ -67,7 +67,6 @@
     <ProjectReference Include="..\..\agent\agent.csproj" />
     <ProjectReference Include="..\..\common\common.csproj" />
     <ProjectReference Include="..\..\config\client\config.client.csproj" />
-    <ProjectReference Include="..\..\config\store\config.store.csproj" />
     <ProjectReference Include="..\..\diagnostics\diagnostics.nlog.csproj" />
     <ProjectReference Include="..\..\policy\policy.csproj" />
   </ItemGroup>

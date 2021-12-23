@@ -33,7 +33,7 @@ using Xunit;
 
 namespace hsmCryptographer.tests
 {
-    public class HsmCryptographerTests : HsmCryptographerTestsBase, IDisposable
+    public class HsmCryptographerTests : IDisposable
     {
         readonly AgentTester m_tester;
         readonly X509Certificate2 m_softSenderCertWithKeyRedomond;
@@ -53,8 +53,6 @@ namespace hsmCryptographer.tests
 
         public HsmCryptographerTests()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
-
             // Software Cryptographer Agent
             var agentA = AgentTester.CreateAgent(
                 AgentTester.DefaultDomainA,
@@ -62,8 +60,7 @@ namespace hsmCryptographer.tests
                 //new TestSmimeCryptographer(EncryptionAlgorithm.AES128, DigestAlgorithm.SHA256));
                 SMIMECryptographer.Default);
 
-            var hsmCryptographer = new HsmCryptographerProxy();
-            hsmCryptographer.Init(resolverSettings);
+            var hsmCryptographer = new HsmCryptographerProxy(TokenSettings);
 
             // Hardware Cryptographer Agent
             var agentB = AgentTester.CreateAgent(
@@ -549,8 +546,7 @@ namespace hsmCryptographer.tests
             var tokenSettings = TokenSettings;
             tokenSettings.DefaultDigest = digestAlgorithm;
             tokenSettings.DefaultEncryption = encryptionAlgorithm;
-            var resolverSettings = MockTokenResolverSettings(tokenSettings);
-
+            
             m_tester.AgentA = AgentTester.CreateAgent(
                 new StaticDomainResolver(
                     AgentTester.DefaultDomainA.Split(',')),
@@ -561,8 +557,7 @@ namespace hsmCryptographer.tests
             m_tester.AgentA.Cryptographer.EncryptionAlgorithm = encryptionAlgorithm;
             m_tester.AgentA.Cryptographer.DigestAlgorithm = digestAlgorithm;
 
-            var hsmCryptographer = new HsmCryptographerProxy();
-            hsmCryptographer.Init(resolverSettings);
+            var hsmCryptographer = new HsmCryptographerProxy(tokenSettings);
 
             m_tester.AgentB = AgentTester.CreateAgent(
                 staticDomainResolverMock.Object,
@@ -606,11 +601,9 @@ namespace hsmCryptographer.tests
             var tokenSettings = TokenSettings;
             tokenSettings.DefaultDigest = digestAlgorithm;
             tokenSettings.DefaultEncryption = encryptionAlgorithm;
-            var resolverSettings = MockTokenResolverSettings(tokenSettings);
-
-            var hsmCryptographer = new HsmCryptographerProxy();
-            hsmCryptographer.Init(resolverSettings);
-
+            
+            var hsmCryptographer = new HsmCryptographerProxy(tokenSettings);
+            
             m_tester.AgentA = AgentTester.CreateAgent(
                 staticDomainResolverMock.Object,
                 AgentTester.MakeCertificatesPath(Directory.GetCurrentDirectory(), "nhind"),
@@ -636,12 +629,10 @@ namespace hsmCryptographer.tests
         [Fact]
         public void TestHardDeserializeDetatchedSignature()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
             // Hardware Cryptographer Agent
 
-            using (var hsmCryptographer = new HsmCryptographerProxy())
+            using (var hsmCryptographer = new HsmCryptographerProxy(TokenSettings))
             {
-                hsmCryptographer.Init(resolverSettings);
                 var agentB = AgentTester.CreateAgent(
                     "hsm.DirectInt.lab",
                     AgentTester.MakeCertificatesPath(Directory.GetCurrentDirectory(), "nhind"),
@@ -688,10 +679,8 @@ namespace hsmCryptographer.tests
         [Fact]
         public void TestHsmCrypto_Explore_methods()
         {
-            var resolverSettings = MockTokenResolverSettings(TokenSettings);
-
-            var hsmCryptographer = new HsmCryptographerProxy();
-            hsmCryptographer.Init(resolverSettings);
+            var hsmCryptographer = new HsmCryptographerProxy(TokenSettings);
+            
             var agentB = AgentTester.CreateAgent(
                 "hsm.DirectInt.lab",
                 AgentTester.MakeCertificatesPath(Directory.GetCurrentDirectory(), "nhind"),

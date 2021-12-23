@@ -3,7 +3,7 @@
 namespace Health.Direct.MdnMonitor
 {
     /// <summary>
-    /// <c>CleanupSettins</c> represent the quartznet job-data-map name value store in the jobs.xml config file.
+    /// <c>CleanupSettings</c> represent the quartz.net job-data-map name value store in the jobs.xml config file.
     /// </summary>
     public class CleanupSettings : MdnSettings
     {
@@ -15,8 +15,7 @@ namespace Health.Direct.MdnMonitor
         /// Create <c>TimeoutSettings</c> from Job context in the jobs.xml config file.
         /// </summary>
         /// <param name="context"></param>
-        public CleanupSettings(JobExecutionContext context)
-            : base()
+        public CleanupSettings(IJobExecutionContext context)
         {
             Load(context);
         }
@@ -32,14 +31,19 @@ namespace Health.Direct.MdnMonitor
         /// </summary>
         public int BulkCount { get; set; }
 
-        private void Load(JobExecutionContext context)
+        private void Load(IJobExecutionContext context)
         {
             Days = context.JobDetail.JobDataMap.GetInt(DaysSetting);
             BulkCount = context.JobDetail.JobDataMap.GetInt(BulkCountSetting);
+            
             if (BulkCount == 0)
             {
                 BulkCount = BulkCountDefault; 
             }
+
+            ProductName = context.JobDetail.JobDataMap.GetString(ProductNameName);
+            ConnectionString = context.JobDetail.JobDataMap.GetString(ConnectionStringName);
+            QueryTimeout = context.JobDetail.JobDataMap.GetTimeSpanValue(QueryTimeoutName);
         }
 }
 }

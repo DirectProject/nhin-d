@@ -42,7 +42,8 @@
     <ProjectReference Include="..\common\common.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="1.0.0.505" />
+    <PackageReference Include="NLog" Version="4.7.13" />
+    <PackageReference Include="NLog.WindowsEventLog" Version="4.7.13" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
       <PrivateAssets>all</PrivateAssets>

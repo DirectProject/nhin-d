@@ -5,7 +5,8 @@
  Authors:
     Umesh Madan     umeshma@microsoft.com
     Sean Nolan      seannol@microsoft.com
- 
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -45,7 +46,7 @@ namespace Health.Direct.Common.DnsResolver
             }
 
             // This will also create a key tag
-            this.Certificate = new X509Certificate2(Convert.FromBase64String(this.NormalizeInputCertString(certificate)));
+            this.Certificate = new X509Certificate2(Convert.FromBase64String(NormalizeInputCertString(certificate)));
         }
         
         /// <summary>
@@ -199,7 +200,7 @@ namespace Health.Direct.Common.DnsResolver
                 throw new ArgumentException("value was null or empty", "dnsDomain");
             }
 
-            string exported = this.NormalizeOutputCertString(Convert.ToBase64String(m_cert.Export(X509ContentType.Cert)));
+            string exported = NormalizeOutputCertString(Convert.ToBase64String(m_cert.Export(X509ContentType.Cert)));
             string certName = m_name;
             if (!certName.EndsWith(dnsDomain))
             {
@@ -216,22 +217,21 @@ namespace Health.Direct.Common.DnsResolver
             }
         }
 
-        void ExtractTag()
+        private void ExtractTag()
         {
-            RSACryptoServiceProvider rsaProvider = m_cert.PublicKey.Key as RSACryptoServiceProvider;
-            if (rsaProvider == null)
+            if (!(m_cert.PublicKey.Key is RSA rsaProvider))
             {
                 throw new NotSupportedException();
             }
 
-            RSAParameters rsaParams = rsaProvider.ExportParameters(false);
+            var rsaParams = rsaProvider.ExportParameters(false);
             byte[] modulus = rsaParams.Modulus;
 
             m_keyTag = (ushort)((modulus[modulus.Length - 2] << 8) | (modulus[modulus.Length - 1]));
         }
 
 
-        string NormalizeInputCertString(string cert)
+        private static string NormalizeInputCertString(string cert)
         {
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < cert.Length; ++i)
@@ -246,9 +246,9 @@ namespace Health.Direct.Common.DnsResolver
             return builder.ToString();
         }
 
-        string NormalizeOutputCertString(string cert)
+        private static string NormalizeOutputCertString(string cert)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             builder.AppendLine("(");
             for (int i = 0; i < cert.Length; ++i)
             {

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Transactions;
-using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mail.DSN;
-using Health.Direct.Common.Mail.Notifications;
-using Health.Direct.Config.Store;
+using Health.Direct.Config.Store.Entity;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace Health.Direct.MdnMonitor
@@ -16,34 +16,37 @@ namespace Health.Direct.MdnMonitor
     /// <summary>
     /// Find expired dispatched MDNs, mark expired and send a failed DSNs
     /// </summary>
-    public class MdnDispatchedTimeout : Timeout, IStatefulJob //Will limit to one job at a time.
+    [DisallowConcurrentExecution]
+    public class MdnDispatchedTimeout : Timeout<MdnDispatchedTimeout>, IJob 
     {
+        /// <summary>
+        /// Create MdnProcessedTimeout Quartz.net job
+        /// </summary>
+        /// <param name="logger"></param>
+        public MdnDispatchedTimeout(ILogger<MdnDispatchedTimeout> logger)
+            : base(logger) { }
+
         /// <summary>
         /// Entry point called when trigger fires.
         /// </summary>
         /// <param name="context"></param>
-        public void Execute(JobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             var settings = Load(context);
 
             try
             {
-                foreach (var mdn in ExpiredMdns(settings))
+                foreach (var mdn in await ExpiredMdns(settings))
                 {
-                    using (TransactionScope scope = new TransactionScope())
-                    {
-                        var message = CreateNotificationMessage(mdn, settings);
-                        string filePath = Path.Combine(settings.PickupFolder, UniqueFileName());
-                        MDNManager.TimeOut(mdn);
-                        message.Save(filePath);
-                        scope.Complete();
-                    }
+                    var message = CreateNotificationMessage(mdn, settings);
+                    string filePath = Path.Combine(settings.PickupFolder, UniqueFileName());
+                    await MdnManager.TimeOut(mdn);
+                    message.Save(filePath);
                 }
             }
             catch(Exception e)
             {
-                Logger.Error("Error in job!");
-                Logger.Error(e.Message);
+                Logger.LogError(e, "Error in job!");
                 var je = new JobExecutionException(e);
                 throw je;
             }
@@ -56,14 +59,13 @@ namespace Health.Direct.MdnMonitor
         /// </summary>
         /// <param name="settings"></param>
         /// <returns></returns>
-        protected override IList<Mdn> ExpiredMdns(TimeoutSettings settings)
+        protected override async Task<IList<Mdn>> ExpiredMdns(TimeoutSettings settings)
         {
-            IList<Mdn> mdns;
+            IList<Mdn> mdns = await MdnManager.GetExpiredDispatched(settings.ExpiredMinutes, settings.BulkCount);
             
-            mdns = MDNManager.GetExpiredDispatched(settings.ExpiredMinutes, settings.BulkCount).ToList();
-            if(mdns.Count() > 0)
+            if(mdns.Any())
             {
-                Logger.Debug("Processing {0} expired dispatched mdns", mdns.Count());
+                Logger.LogDebug("Processing {0} expired dispatched MDNs", mdns.Count);
             }
             
             return mdns;
@@ -84,7 +86,7 @@ namespace Health.Direct.MdnMonitor
             var sender = new MailAddress(mdn.Sender);
             var notificationMessage = new DSNMessage(sender.Address, new MailAddress("Postmaster@" + sender.Host).Address, notification);
             notificationMessage.AssignMessageID();
-            notificationMessage.SubjectValue = string.Format("{0}:{1}", "Rejected", mdn.SubjectValue);
+            notificationMessage.SubjectValue = $"Rejected:{mdn.SubjectValue}";
             notificationMessage.Timestamp();
             return notificationMessage;
         }

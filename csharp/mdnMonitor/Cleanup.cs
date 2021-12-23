@@ -1,67 +1,51 @@
 ﻿using System;
-using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Store;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace Health.Direct.MdnMonitor
+namespace Health.Direct.MdnMonitor;
+
+/// <summary>
+/// An object with execution code to clean up expired data.
+/// </summary>
+public abstract class Cleanup<T>
 {
+    protected ILogger<T> Logger;
+
     /// <summary>
-    /// An object with execution code to clean up expired data.
+    /// Base for Quartz.Net Cleanup jobs.
     /// </summary>
-    public abstract class Cleanup
+    /// <param name="logger"></param>
+    protected Cleanup(ILogger<T> logger)
     {
-        private ConfigStore m_store;
-        private ILogger m_logger;
+        Logger = logger;
+    }
 
-        /// <summary>
-        /// Config Store 
-        /// Configured in <c>Load</c>
-        /// </summary>
-        public ConfigStore Store
+    /// <summary>
+    /// Config Store 
+    /// Configured in <c>Load</c>
+    /// </summary>
+    public ConfigStore Store { get; private set; }
+
+
+    /// <summary>
+    /// Load application settings.
+    /// </summary>
+    protected CleanupSettings Load(IJobExecutionContext context)
+    {
+        try
         {
-            get
-            {
-                return m_store;
-            }
+            var settings = new CleanupSettings(context);
+            Store = new ConfigStore(settings.ConnectionString, settings.QueryTimeout);
+
+            return settings;
         }
-
-        /// <summary>
-        /// Logger
-        /// Configured in <c>Load</c>.
-        /// </summary>
-        public ILogger Logger
+        catch (Exception e)
         {
-            get { return m_logger; }
-        }
-
-        /// <summary>
-        /// Load applicatioin settings.
-        /// </summary>
-        protected CleanupSettings Load(JobExecutionContext context)
-        {
-            try
-            {
-                var settings = new CleanupSettings(context);
-                m_store = new ConfigStore(settings.ConnectionString, settings.QueryTimeout);
-                m_logger = Log.For(this);
-
-                return settings;
-            }
-            catch (Exception e)
-            {
-                WriteToEventLog(e);
-                var je = new JobExecutionException(e);
-                je.UnscheduleAllTriggers = true;
-                throw je;
-            }
-        }
-
-        private static void WriteToEventLog(Exception ex)
-        {
-            const string source = "Health.Direct.MdnMonitor";
-
-            EventLogHelper.WriteError(source, ex.Message);
-            EventLogHelper.WriteError(source, ex.GetBaseException().ToString());
+            Logger.LogError(e, "Failed to load Cleanup application settings");
+            var je = new JobExecutionException(e);
+            je.UnscheduleAllTriggers = true;
+            throw je;
         }
     }
 }

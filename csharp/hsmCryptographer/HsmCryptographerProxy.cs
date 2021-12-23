@@ -16,16 +16,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 
 using System;
-using System.Linq;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Common.Container;
+using System.Threading.Tasks;
 using Health.Direct.Common.Cryptography;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
-using Health.Direct.Config.Client.SettingsManager;
-using Health.Direct.Config.Store;
+using Health.Direct.Config.Client;
 
 namespace Health.Direct.Hsm
 {
@@ -33,7 +31,7 @@ namespace Health.Direct.Hsm
     /// <summary>
     /// This plugin resolver actually loads a <see cref="HsmCryptographer"/>... and proxies calls to it (See Init method)
     /// </summary>
-    public class HsmCryptographerProxy : ISmimeCryptographer, IPlugin, IDisposable
+    public class HsmCryptographerProxy : ISmimeCryptographer, IDisposable
     {
         HsmCryptographer m_innerHsmCryptographer;
         ISmimeCryptographer m_innerSoftwareCryptographer;
@@ -87,8 +85,21 @@ namespace Health.Direct.Hsm
         /// <summary>
         /// Required default constructor to be activated as a plugin.
         /// </summary>
-        public HsmCryptographerProxy()
+        public HsmCryptographerProxy(TokenSettings tokenSettings)
         {
+            try
+            {
+                m_innerSoftwareCryptographer = new SMIMECryptographer(
+                    tokenSettings.DefaultEncryption,
+                    tokenSettings.DefaultDigest);
+
+                tokenSettings.Error += ProxyError;
+                m_innerHsmCryptographer = tokenSettings.Create();
+            }
+            catch (Exception ex)
+            {
+                ProxyError.NotifyEvent(this, ex);
+            }
         }
 
         /// <summary>
@@ -108,49 +119,6 @@ namespace Health.Direct.Hsm
             set { m_innerSoftwareCryptographer = value; }
         }
 
-        /// <summary>
-        /// Initialize cryptographer from <see cref="TokenSettings"/>
-        /// <remarks>
-        /// Setting the <see cref="DefaultCryptographer"/> to the Direct Project's <see cref="SMIMECryptographer"/>
-        /// </remarks>
-        /// </summary>
-        /// <param name="pluginDef"></param>
-        public void Init(PluginDefinition pluginDef)
-        {
-            try
-            {
-                var settings = pluginDef.DeserializeSettings<TokenResolverSettings>();
-                Init(settings);
-            }
-            catch (Exception ex)
-            {
-                ProxyError.NotifyEvent(this, ex);
-                // Do not remove. Exceptions here can cause the Direct Project to not bind to SMTP. 
-            }
-        }
-
-        public void Init(TokenResolverSettings resolverSettings)
-        {
-            try
-            {
-                IPropertyManager client = resolverSettings.ClientSettings.CreatePropertyManagerClient();
-                Property[] properties = client.GetProperties(new [] {"TokenSettings"});
-                string tokenSettingsXml = properties.SingleOrDefault().Value;
-                var tokenSettings = tokenSettingsXml.FromXml<TokenSettings>();
-
-                m_innerSoftwareCryptographer = new SMIMECryptographer(
-                    tokenSettings.DefaultEncryption,
-                    tokenSettings.DefaultDigest);
-
-                tokenSettings.Error += ProxyError;
-                m_innerHsmCryptographer = tokenSettings.Create();
-            }
-            catch (Exception ex)
-            {
-                ProxyError.NotifyEvent(this, ex);
-                // Do not remove. Exceptions here can cause the Direct Project to not bind to SMTP.  
-            }
-        }
 
         #endregion
         

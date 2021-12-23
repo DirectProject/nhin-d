@@ -17,6 +17,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Net.Mail;
+using Health.Direct.Common.Mail;
+using Health.Direct.Common.Mime;
 using Health.Direct.Config.Store.Entity;
 using Xunit;
 
@@ -184,9 +186,9 @@ namespace Health.Direct.Config.Store.Tests
         {
             Address target = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
             MailAddress address = new MailAddress(BuildEmailAddress(1, 1));
-            Assert.True(target.Match(address));
+            Assert.True(Match(address, target.EmailAddress));
             address = new MailAddress(BuildEmailAddress(2, 1));
-            Assert.False(target.Match(address));
+            Assert.False(Match(address, target.EmailAddress));
 
         }
 
@@ -198,9 +200,9 @@ namespace Health.Direct.Config.Store.Tests
         {
             Address target = new Address(1, BuildEmailAddress(1, 1), BuildEmailAddressDisplayName(1, 1));
             string address = BuildEmailAddress(1, 1);
-            Assert.True(target.Match(address));
+            Assert.True(Match(address, target.EmailAddress));
             address = BuildEmailAddress(2, 1);
-            Assert.False(target.Match(address));
+            Assert.False(Match(address, target.EmailAddress));
 
         }
 
@@ -305,6 +307,21 @@ namespace Health.Direct.Config.Store.Tests
             Assert.Equal(domainID, target.DomainID);
             Assert.Equal(address, target.EmailAddress);
             Assert.Equal(displayName, target.DisplayName);
+        }
+
+        public bool Match(MailAddress address, string emailAddress)
+        {
+            if (address == null)
+            {
+                throw new ArgumentNullException(nameof(address));
+            }
+
+            return AddressFacts.Match(address.Address, emailAddress);
+        }
+
+        private static bool Match(string address, string emailAddress)
+        {
+            return MimeStandard.Equals(address, emailAddress);
         }
     }
 }

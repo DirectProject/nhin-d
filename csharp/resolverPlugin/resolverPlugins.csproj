@@ -37,25 +37,20 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Security" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\agent\agent.csproj" />
     <ProjectReference Include="..\common\common.csproj" />
     <ProjectReference Include="..\config\client\config.client.csproj" />
-    <ProjectReference Include="..\config\store\config.store.csproj" />
+    <ProjectReference Include="..\config\config.model\config.model.csproj" />
     <ProjectReference Include="..\gateway\smtpAgent\smtpAgent.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BundleReadme.txt" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.DirectoryServices.Protocols" Version="4.6.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="System.DirectoryServices.Protocols" Version="6.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="6.0.0" />
   </ItemGroup>
 </Project>

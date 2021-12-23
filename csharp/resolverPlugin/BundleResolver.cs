@@ -24,7 +24,7 @@ using Health.Direct.Common.Container;
 using Health.Direct.Common.Diagnostics;
 using Health.Direct.Config.Client;
 using Health.Direct.Config.Client.CertificateService;
-using Health.Direct.Config.Store;
+using Health.Direct.Config.Model;
 using Health.Direct.Common.Caching;
 using Health.Direct.Common.Certificates;
 

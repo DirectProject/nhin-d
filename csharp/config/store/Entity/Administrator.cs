@@ -15,8 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 
 namespace Health.Direct.Config.Store.Entity
 {

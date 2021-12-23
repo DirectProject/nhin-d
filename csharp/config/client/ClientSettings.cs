@@ -17,12 +17,12 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Xml;
 using System.Xml.Serialization;
-using System.ServiceModel;
-using Health.Direct.Config.Client.CertificateService;
-using Health.Direct.Config.Client.DomainManager;
-using Health.Direct.Config.Client.MonitorService;
-using Health.Direct.Config.Client.RecordRetrieval;
-using Health.Direct.Config.Client.SettingsManager;
+// using System.ServiceModel;
+// using Health.Direct.Config.Client.CertificateService;
+// using Health.Direct.Config.Client.DomainManager;
+// using Health.Direct.Config.Client.MonitorService;
+// using Health.Direct.Config.Client.RecordRetrieval;
+// using Health.Direct.Config.Client.SettingsManager;
 
 namespace Health.Direct.Config.Client
 {
@@ -44,8 +44,8 @@ namespace Health.Direct.Config.Client
         bool m_secure;
         int m_receiveTimeout = -1;
         int m_sendTimeout = -1;
-        EndpointAddress m_endpoint;
-        BasicHttpBinding m_binding;
+        // EndpointAddress m_endpoint;
+        // BasicHttpBinding m_binding;
 
         /// <summary>
         /// The Service Url
@@ -64,8 +64,8 @@ namespace Health.Direct.Config.Client
                     throw new ArgumentException("value was null or empty", "value");
                 }
                 m_url = value;
-                m_endpoint = new EndpointAddress(m_url);
-                m_binding = null;
+                // m_endpoint = new EndpointAddress(m_url);
+                // m_binding = null;
             }
         }
 
@@ -125,24 +125,24 @@ namespace Health.Direct.Config.Client
             }
         }
 
-        [XmlIgnore]
-        public EndpointAddress Endpoint
-        {
-            get
-            {
-                return m_endpoint;
-            }
-        }
-
-        [XmlIgnore]
-        public BasicHttpBinding Binding
-        {
-            get
-            {
-                this.EnsureBinding();
-                return m_binding;
-            }
-        }
+        // [XmlIgnore]
+        // public EndpointAddress Endpoint
+        // {
+        //     get
+        //     {
+        //         return m_endpoint;
+        //     }
+        // }
+        //
+        // [XmlIgnore]
+        // public BasicHttpBinding Binding
+        // {
+        //     get
+        //     {
+        //         this.EnsureBinding();
+        //         return m_binding;
+        //     }
+        // }
 
         /// <summary>
         /// Optional settings
@@ -186,78 +186,78 @@ namespace Health.Direct.Config.Client
             }
         }
 
-        void EnsureBinding()
-        {
-            if (m_binding != null)
-            {
-                return;
-            }
-
-            m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
-            if (m_receiveTimeout > 0)
-            {
-                m_binding.ReceiveTimeout = TimeSpan.FromSeconds(m_receiveTimeout);
-            }
-            if (m_sendTimeout > 0)
-            {
-                m_binding.SendTimeout = TimeSpan.FromSeconds(m_sendTimeout);
-            }
-        }
-
-        public DomainManagerClient CreateDomainManagerClient()
-        {
-            return new DomainManagerClient(this.Binding, this.Endpoint);
-        }
-
-        public virtual IAddressManager CreateAddressManagerClient()
-        {
-            return new AddressManagerClient(this.Binding, this.Endpoint);
-        }
-
-        public DnsRecordManagerClient CreateDnsRecordManagerClient()
-        {
-            return new DnsRecordManagerClient(this.Binding, this.Endpoint);
-        }
-
-        public CertificateStoreClient CreateCertificateStoreClient()
-        {
-            return new CertificateStoreClient(this.Binding, this.Endpoint);
-        }
-
-        public AnchorStoreClient CreateAnchorStoreClient()
-        {
-            return new AnchorStoreClient(this.Binding, this.Endpoint);
-        }
-
-        public BundleStoreClient CreateBundleStoreClient()
-        {
-            return new BundleStoreClient(this.Binding, this.Endpoint);
-        }
-
-        public RecordRetrievalServiceClient CreateRecordRetrievalClient()
-        {
-            return new RecordRetrievalServiceClient(this.Binding
-                , this.Endpoint);
-        }
-        
-        public virtual IPropertyManager CreatePropertyManagerClient()
-        {
-            return new PropertyManagerClient(this.Binding, this.Endpoint);
-        }
-
-        public BlobManagerClient CreateBlobManagerClient()
-        {
-            return new BlobManagerClient(this.Binding, this.Endpoint);
-        }
-
-        public virtual IMdnMonitor CreateMdnMonitorClient()
-        {
-            return new MdnMonitorClient(this.Binding, this.Endpoint);
-        }
-
-        public virtual ICertPolicyStore CreateCertPolicyStoreClient()
-        {
-            return new CertPolicyStoreClient(this.Binding, this.Endpoint);
-        }
+        // void EnsureBinding()
+        // {
+        //     if (m_binding != null)
+        //     {
+        //         return;
+        //     }
+        //
+        //     m_binding = BindingFactory.CreateBasic(m_maxReceivedMessageSize, m_secure);
+        //     if (m_receiveTimeout > 0)
+        //     {
+        //         m_binding.ReceiveTimeout = TimeSpan.FromSeconds(m_receiveTimeout);
+        //     }
+        //     if (m_sendTimeout > 0)
+        //     {
+        //         m_binding.SendTimeout = TimeSpan.FromSeconds(m_sendTimeout);
+        //     }
+        // }
+        //
+        // public DomainManagerClient CreateDomainManagerClient()
+        // {
+        //     return new DomainManagerClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public virtual IAddressManager CreateAddressManagerClient()
+        // {
+        //     return new AddressManagerClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public DnsRecordManagerClient CreateDnsRecordManagerClient()
+        // {
+        //     return new DnsRecordManagerClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public CertificateStoreClient CreateCertificateStoreClient()
+        // {
+        //     return new CertificateStoreClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public AnchorStoreClient CreateAnchorStoreClient()
+        // {
+        //     return new AnchorStoreClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public BundleStoreClient CreateBundleStoreClient()
+        // {
+        //     return new BundleStoreClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public RecordRetrievalServiceClient CreateRecordRetrievalClient()
+        // {
+        //     return new RecordRetrievalServiceClient(this.Binding
+        //         , this.Endpoint);
+        // }
+        //
+        // public virtual IPropertyManager CreatePropertyManagerClient()
+        // {
+        //     return new PropertyManagerClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public BlobManagerClient CreateBlobManagerClient()
+        // {
+        //     return new BlobManagerClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public virtual IMdnMonitor CreateMdnMonitorClient()
+        // {
+        //     return new MdnMonitorClient(this.Binding, this.Endpoint);
+        // }
+        //
+        // public virtual ICertPolicyStore CreateCertPolicyStoreClient()
+        // {
+        //     return new CertPolicyStoreClient(this.Binding, this.Endpoint);
+        // }
     }
 }

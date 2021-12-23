@@ -4,7 +4,8 @@
 
  Authors:
     Chris Lomonico chris.lomonico@surescripts.com
-  
+    Joe Shook     Joseph.Shook@Surescripts.com
+
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
@@ -14,90 +15,51 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.DnsResolver;
-using Security.Cryptography;
-using Security.Cryptography.X509Certificates;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Health.Direct.Common.Tests.Caching
 {
     public class DnsResponseToBinExample
     {
-        private readonly DnsClient m_client;
-        private const string DNSRECORDSEPATH = @"..\..\..\common.metadata\DnsRecords";
-        private const string DnsResponsePath = @"..\..\..\common.metadata\dnsresponses";
+        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly DnsClient _client;
+        private const string DNSRECORDSEPATH = @"DnsRecords";
+        private const string DnsResponsePath = @"dnsresponses";
 
         const string PublicDns = "8.8.8.8";         // Google
 
         public class CertData
         {
-            private string m_key = string.Empty;
-            private string m_friendlyname = string.Empty;
-            private string m_distinguishedName = string.Empty;
-            private string m_password = string.Empty;
+            public string Key { get; set; }
 
-            public string Key
-            {
-                get { return m_key; }
-                set { m_key = value; }
-            }
+            public string FriendlyName { get; set; }
 
-            public string Friendlyname
-            {
-                get { return m_friendlyname; }
-                set { m_friendlyname = value; }
-            }
+            public string DistinguishedName { get; set; }
 
-            public string DistinguishedName
-            {
-                get { return m_distinguishedName; }
-                set { m_distinguishedName = value; }
-            }
-
-            public string Password
-            {
-                get { return m_password; }
-                set { m_password = value; }
-            }
+            public string Password { get; set; }
 
             public CertData(string key
                 , string friendlyName
                 , string distinguishedName
                 , string password)
             {
-                m_key = key;
-                m_friendlyname = friendlyName;
-                m_distinguishedName = distinguishedName;
-                m_password = password;
+                Key = key;
+                FriendlyName = friendlyName;
+                DistinguishedName = distinguishedName;
+                Password = password;
             }
         }
 
-        public static IEnumerable<object[]> CertDataVals
+        public DnsResponseToBinExample(ITestOutputHelper testOutputHelper)
         {
-            get
-            {
-                for (int i = 1; i <= 10; i++)
-                {
-                    for (int t = 1; t <= 3; t++)
-                    {
-                        yield return new[] { new CertData(string.Format("domain{0}.test.com", i)
-                         , string.Format("domain{0}.test.com", i)
-                         , string.Format("CN=domain{0}.test.com", i)
-                         , "")};
-                    }
-                }
+            _testOutputHelper = testOutputHelper;
 
-            }
-        }
-
-        public DnsResponseToBinExample()
-        {
-
-            m_client = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
+            _client = new DnsClient(PublicDns) { Timeout = TimeSpan.FromSeconds(10) };
         }
 
         //---these "tests" are purely examples of how to create mock responses, they are skipped out as they alter the file system 
@@ -114,19 +76,14 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.ibm.com")]
         public void CreateAResponseDumps(string domain)
         {
-            DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
-            m_client.Resolve(DnsRequest.CreateA(domain)).Serialize(buff);
+            var buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
+            _client.Resolve(DnsRequest.CreateA(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
             string path = Path.Combine(DnsResponsePath, string.Format("aname.{0}.bin", domain)).Replace("www.", "");
-            Console.WriteLine("Creating {0}", path);
-            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
-            {
-                s.Write(bytes
-                        , 0
-                        , bytes.Length);
-                s.Close();
-            }
-
+            _testOutputHelper.WriteLine("Creating {0}", path);
+            using var s = new FileStream(path, FileMode.OpenOrCreate);
+            s.Write(bytes, 0, bytes.Length);
+            s.Close();
         }
 
         [Theory(Skip = "Alters file system")]
@@ -139,21 +96,17 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
         [InlineData("www.ibm.com")]
-        public void CreateSOAResponseDumps(string domain)
+        public void CreateSoaResponseDumps(string domain)
         {
-            DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
-            m_client.Resolve(DnsRequest.CreateSOA(domain)).Serialize(buff);
+            var buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
+            _client.Resolve(DnsRequest.CreateSOA(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
             string path = Path.Combine(DnsResponsePath, string.Format("soa.{0}.bin", domain)).Replace("www.", "");
-            Console.WriteLine("Creating {0}", path);
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
-            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
-            {
-                s.Write(bytes
-                        , 0
-                        , bytes.Length);
-                s.Close();
-            }
+            using var s = new FileStream(path, FileMode.OpenOrCreate);
+            s.Write(bytes, 0, bytes.Length);
+            s.Close();
         }
 
         [Theory(Skip = "Alters file system")]
@@ -166,21 +119,17 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.epic.com")]
         [InlineData("www.cerner.com")]
         [InlineData("www.ibm.com")]
-        public void CreateMXResponseDumps(string domain)
+        public void CreateMxResponseDumps(string domain)
         {
-            DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
-            m_client.Resolve(DnsRequest.CreateMX(domain)).Serialize(buff);
+            var buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
+            _client.Resolve(DnsRequest.CreateMX(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(DnsResponsePath, string.Format("mx.{0}.bin", domain)).Replace("www.", "");
-            Console.WriteLine("Creating {0}", path);
+            string path = Path.Combine(DnsResponsePath, $"mx.{domain}.bin").Replace("www.", "");
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
-            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
-            {
-                s.Write(bytes
-                        , 0
-                        , bytes.Length);
-                s.Close();
-            }
+            using var s = new FileStream(path, FileMode.OpenOrCreate);
+            s.Write(bytes, 0, bytes.Length);
+            s.Close();
         }
 
         [Theory(Skip = "Alters file system")]
@@ -195,13 +144,13 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("www.ibm.com")]
         public void CreateCertResponseDumps(string domain)
         {
-            DnsBuffer buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
-            m_client.Resolve(DnsRequest.CreateCERT(domain)).Serialize(buff);
+            var buff = new DnsBuffer(DnsStandard.MaxUdpMessageLength * 2);
+            _client.Resolve(DnsRequest.CreateCERT(domain)).Serialize(buff);
             byte[] bytes = buff.CreateReader().ReadBytes();
-            string path = Path.Combine(DnsResponsePath, string.Format("cert.{0}.bin", domain)).Replace("www.", "");
-            Console.WriteLine("Creating {0}", path);
+            string path = Path.Combine(DnsResponsePath, $"cert.{domain}.bin").Replace("www.", "");
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
-            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
+            using (var s = new FileStream(path, FileMode.OpenOrCreate))
             {
                 s.Write(bytes
                         , 0
@@ -210,7 +159,7 @@ namespace Health.Direct.Common.Tests.Caching
             }
         }
 
-        [Theory(Skip = "Alters file system")]
+        [Theory]
         [InlineData("microsoft.com")]
         [InlineData("yahoo.com")]
         [InlineData("google.com")]
@@ -222,17 +171,17 @@ namespace Health.Direct.Common.Tests.Caching
         [InlineData("ibm.com")]
         public void CreateDnsResourceRecords(string domain)
         {
-            DnsBuffer buff = new DnsBuffer();
+            var buff = new DnsBuffer();
             byte[] bytes;
-            AddressRecord arec = new AddressRecord(domain
+            var arec = new AddressRecord(domain
                 , "127.0.0.1")
             { TTL = 1000 };
             arec.Serialize(buff);
 
-            string path = Path.Combine(DNSRECORDSEPATH, string.Format("aname.{0}.bin", domain));
-            Console.WriteLine("Creating {0}", path);
+            string path = Path.Combine(DNSRECORDSEPATH, $"aname.{domain}.bin");
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
-            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
+            using (var s = new FileStream(path, FileMode.OpenOrCreate))
             {
                 s.Write(buff.Buffer
                         , 0
@@ -243,18 +192,18 @@ namespace Health.Direct.Common.Tests.Caching
 
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                Console.WriteLine("checking [{0}]", path);
+                _testOutputHelper.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
                 DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
                 arec = (AddressRecord)DnsResourceRecord.Deserialize(ref rdr);
             }
-            Console.WriteLine(arec.IPAddress);
-            Console.WriteLine(arec.TTL);
-            Console.WriteLine(arec.Name);
+            _testOutputHelper.WriteLine(arec.IPAddress.ToString());
+            _testOutputHelper.WriteLine(arec.TTL.ToString());
+            _testOutputHelper.WriteLine(arec.Name);
             //----------------------------------------------------------------------------------------------------------------
-            SOARecord soa = new SOARecord(domain
+            var soa = new SOARecord(domain
                 , domain + ".dom"
                 , "somebody"
                 , 1
@@ -266,8 +215,8 @@ namespace Health.Direct.Common.Tests.Caching
             buff = new DnsBuffer();
             soa.Serialize(buff);
 
-            path = Path.Combine(DNSRECORDSEPATH, string.Format("soa.{0}.bin", domain));
-            Console.WriteLine("Creating {0}", path);
+            path = Path.Combine(DNSRECORDSEPATH, $"soa.{domain}.bin");
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
             {
@@ -281,32 +230,30 @@ namespace Health.Direct.Common.Tests.Caching
             //---read the stream from the bytes
             using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                Console.WriteLine("checking [{0}]", path);
+                _testOutputHelper.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
-                DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
+                var rdr = new DnsBufferReader(bytes, 0, bytes.Length);
                 soa = (SOARecord)DnsResourceRecord.Deserialize(ref rdr);
             }
-            Console.WriteLine(soa.ResponsibleName);
-            Console.WriteLine(soa.SerialNumber);
-            Console.WriteLine(soa.Retry);
-            Console.WriteLine(soa.Refresh);
-            Console.WriteLine(soa.Expire);
-            Console.WriteLine(soa.Minimum);
-            Console.WriteLine(soa.TTL);
-            Console.WriteLine(soa.Name);
+            _testOutputHelper.WriteLine(soa.ResponsibleName);
+            _testOutputHelper.WriteLine(soa.SerialNumber.ToString());
+            _testOutputHelper.WriteLine(soa.Retry.ToString());
+            _testOutputHelper.WriteLine(soa.Refresh.ToString());
+            _testOutputHelper.WriteLine(soa.Expire.ToString());
+            _testOutputHelper.WriteLine(soa.Minimum.ToString());
+            _testOutputHelper.WriteLine(soa.TTL.ToString());
+            _testOutputHelper.WriteLine(soa.Name);
             //----------------------------------------------------------------------------------------------------------------
-            MXRecord mx = new MXRecord(domain
-                , string.Format("mx.{0}", domain)
-                , 1)
+            var mx = new MXRecord(domain, $"mx.{domain}", 1)
             { TTL = 2000 };
 
             buff = new DnsBuffer();
             mx.Serialize(buff);
 
-            path = Path.Combine(DNSRECORDSEPATH, string.Format("mx.{0}.bin", domain));
-            Console.WriteLine("Creating {0}", path);
+            path = Path.Combine(DNSRECORDSEPATH, $"mx.{domain}.bin");
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
-            using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
+            using (var s = new FileStream(path, FileMode.OpenOrCreate))
             {
                 s.Write(buff.Buffer
                         , 0
@@ -316,30 +263,30 @@ namespace Health.Direct.Common.Tests.Caching
 
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                Console.WriteLine("checking [{0}]", path);
+                _testOutputHelper.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
                 DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
                 mx = (MXRecord)DnsResourceRecord.Deserialize(ref rdr);
             }
-            Console.WriteLine(mx.Exchange);
-            Console.WriteLine(mx.Name);
-            Console.WriteLine(mx.Preference);
+            _testOutputHelper.WriteLine(mx.Exchange);
+            _testOutputHelper.WriteLine(mx.Name);
+            _testOutputHelper.WriteLine(mx.Preference.ToString());
 
             //----------------------------------------------------------------------------------------------------------------
             //---create the cert on the fly
-            CertRecord cert = new CertRecord(new DnsX509Cert(CreateNamedKeyCertificate(new CertData(domain
+            var cert = new CertRecord(new DnsX509Cert(CreateNamedKeyCertificate(new CertData(domain
                 , domain
-                , string.Format("CN={0}", domain)
+                , $"CN={domain}"
                 , ""))))
             { TTL = 2000 };
 
             buff = new DnsBuffer();
             cert.Serialize(buff);
 
-            path = Path.Combine(DNSRECORDSEPATH, string.Format("cert.{0}.bin", domain));
-            Console.WriteLine("Creating {0}", path);
+            path = Path.Combine(DNSRECORDSEPATH, $"cert.{domain}.bin");
+            _testOutputHelper.WriteLine("Creating {0}", path);
 
             using (FileStream s = new FileStream(path, FileMode.OpenOrCreate))
             {
@@ -351,71 +298,59 @@ namespace Health.Direct.Common.Tests.Caching
 
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                Console.WriteLine("checking [{0}]", path);
+                _testOutputHelper.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
                 DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
                 cert = (CertRecord)DnsResourceRecord.Deserialize(ref rdr);
             }
-            Console.WriteLine(cert.Name);
-            Console.WriteLine(cert.Cert.Certificate.NotBefore);
-            Console.WriteLine(cert.Cert.Certificate.NotAfter);
+            _testOutputHelper.WriteLine(cert.Name);
+            _testOutputHelper.WriteLine(cert.Cert.Certificate.NotBefore.ToString());
+            _testOutputHelper.WriteLine(cert.Cert.Certificate.NotAfter.ToString());
         }
 
-        public X509Certificate2 CreateNamedKeyCertificate(CertData data)
+        public X509Certificate2  CreateNamedKeyCertificate(CertData data)
         {
-            try
+            var sanBuilder = new SubjectAlternativeNameBuilder();
+            sanBuilder.AddDnsName(data.Key);
+
+            using (var rsa = RSA.Create(2048))
             {
-                CngKeyCreationParameters keyCreationParameters
-                    = new CngKeyCreationParameters
-                    {
-                        ExportPolicy =
-                                  CngExportPolicies.AllowExport |
-                                  CngExportPolicies.AllowPlaintextExport |
-                                  CngExportPolicies.AllowPlaintextArchiving |
-                                  CngExportPolicies.AllowArchiving,
-                        KeyUsage = CngKeyUsages.AllUsages
-                    };
 
-                X509Certificate2 cert;
-                X509CertificateCreationParameters configCreate
-                    = new X509CertificateCreationParameters(new X500DistinguishedName(data.DistinguishedName))
-                    {
-                        EndTime =
-                                  DateTime.Parse("01/01/2020",
-                                                 System.Globalization.
-                                                     DateTimeFormatInfo.
-                                                     InvariantInfo),
-                        StartTime =
-                                  DateTime.Parse("01/01/2010",
-                                                 System.Globalization.
-                                                     DateTimeFormatInfo.
-                                                     InvariantInfo)
-                    };
+                var certRequest = new CertificateRequest(
+                    data.DistinguishedName,
+                    rsa,
+                    HashAlgorithmName.SHA256,
+                    RSASignaturePadding.Pkcs1);
 
-                using (CngKey namedKey = CngKey.Create(CngAlgorithm2.Rsa, data.Key, keyCreationParameters))
+                // No CA
+                certRequest.CertificateExtensions.Add(
+                    new X509BasicConstraintsExtension(
+                        false,
+                        false, 
+                        0, 
+                        false));
+                
+                certRequest.CertificateExtensions.Add(
+                    new X509KeyUsageExtension(
+                        X509KeyUsageFlags.DigitalSignature | X509KeyUsageFlags.KeyEncipherment,
+                        true));
+
+                // Add the SubjectAlternativeName extension. New in .net 4.7.2 and core
+                certRequest.CertificateExtensions.Add(sanBuilder.Build());
+
+                var now = DateTimeOffset.UtcNow;
+                var cert = certRequest.CreateSelfSigned(now, now.AddDays(365));
+
+                Assert.True(cert.HasPrivateKey);
+
+                using (var certKey = cert.GetRSAPrivateKey())
                 {
-                    cert = namedKey.CreateSelfSignedCertificate(configCreate);
-                    cert.FriendlyName = data.Friendlyname;
-                    Assert.True(cert.HasPrivateKey);
-                    Assert.True(cert.HasCngKey());
-                    using (CngKey certKey = cert.GetCngPrivateKey())
-                    {
-                        Assert.Equal(CngAlgorithm2.Rsa, certKey.Algorithm);
-                    }
+                    Assert.Equal("RSA", certKey?.SignatureAlgorithm);
                 }
+
                 return cert;
-            }
-            finally
-            {
-                if (CngKey.Exists(data.Key))
-                {
-                    using (CngKey key = CngKey.Open(data.Key))
-                    {
-                        key.Delete();
-                    }
-                }
             }
         }
     }

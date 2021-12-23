@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace Health.Direct.MdnMonitor
@@ -9,24 +11,32 @@ namespace Health.Direct.MdnMonitor
     ///     Processed but delivery confirmation not requested
     ///     Dispatched
     /// </summary>
-    public class CleanDispositions : Cleanup, IJob
+    public class CleanDispositions : Cleanup<CleanDispositions>, IJob
     {
+        private ILogger<CleanDispositions> _logger;
+
+        /// <summary>
+        /// Create CleanDisposition Quartz.net job
+        /// </summary>
+        /// <param name="logger"></param>
+        public CleanDispositions(ILogger<CleanDispositions> logger)
+            : base(logger) { }
+
         /// <summary>
         /// Entry point called when trigger fires.
         /// </summary>
         /// <param name="context"></param>
-        public void Execute(JobExecutionContext context)
+        public async Task Execute(IJobExecutionContext context)
         {
             var settings = Load(context);
 
             try
             {
-                Store.Mdns.RemoveDispositions(TimeSpan.FromDays(settings.Days), settings.BulkCount);
+                await Store.Mdns.RemoveDispositions(TimeSpan.FromDays(settings.Days), settings.BulkCount);
             }
             catch (Exception e)
             {
-                Logger.Error("Error in job!");
-                Logger.Error(e.Message);
+                _logger.LogError(e, "Error in job!");
                 var je = new JobExecutionException(e);
                 throw je;
             }

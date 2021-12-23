@@ -92,14 +92,10 @@ namespace Health.Direct.Config.Store
             await db.SaveChangesAsync();
         }
 
-        public async IAsyncEnumerable<Administrator> Get(string lastUsername, int maxResults)
+        public async Task<List<Administrator>> Get(string lastUsername, int maxResults)
         {
             await using var db = this.Store.CreateContext();
-
-            foreach (var admin in await Get(db, lastUsername, maxResults))
-            {
-                yield return admin;
-            }
+            return await Get(db, lastUsername, maxResults);
         }
 
         //public bool CheckPasswordHash(string username, string passwordHash)
@@ -155,7 +151,7 @@ namespace Health.Direct.Config.Store
                 .SingleOrDefaultAsync();
         }
 
-        private static async Task<IEnumerable<Administrator>> Get(ConfigDatabase db, string lastUsername, int maxResults)
+        private static async Task<List<Administrator>> Get(ConfigDatabase db, string lastUsername, int maxResults)
         {
             if (db == null)
             {
