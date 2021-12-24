@@ -23,7 +23,32 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store;
 
-public class DomainManager : IEnumerable<Domain>
+public interface IDomainManager
+{
+    Task<Domain> Add(string name);
+    Task<Domain> Add(ConfigDatabase db, string name);
+    Task<Domain> Add(Domain domain);
+    void Add(ConfigDatabase db, Domain domain);
+    Task<int> Count();
+    Task<Domain> Get(string name);
+    Task<Domain> Get(ConfigDatabase db, string name);
+    Task<List<Domain>> Get(string[] names);
+    Task<List<Domain>> Get(ConfigDatabase db, string[] names);
+    Task<List<Domain>> Get(string[] names, EntityStatus? status);
+    Task<List<Domain>> Get(string groupName, EntityStatus? status);
+    Task<List<Domain>> Get(ConfigDatabase db, string[] names, EntityStatus? status);
+    Task<List<Domain>> Get(ConfigDatabase db, string agentName, EntityStatus? status);
+    Task<List<Domain>> Get(string lastDomain, int maxResults);
+    Task<List<Domain>> Get(ConfigDatabase db, string lastDomain, int maxResults);
+    Task<Domain> Get(long id);
+    Task<Domain> Get(ConfigDatabase db, long id);
+    Task Update(Domain domain);
+    Task Remove(string name);
+    Task Remove(ConfigDatabase db, string name);
+    IEnumerator<Domain> GetEnumerator();
+}
+
+public class DomainManager : IEnumerable<Domain>, IDomainManager
 {
     internal DomainManager(ConfigStore store)
     {
