@@ -89,7 +89,7 @@ namespace Health.Direct.Config.Store.Entity
             get { return m_new; }
         }
         public void Remove( ) {
-            //ConfigDatabase.RemoveAssociativeRecord(this);
+            //DirectDbContext.RemoveAssociativeRecord(this);
 
             CertPolicy originalCertPolicy = CertPolicy;
             originalCertPolicy.CertPolicyGroupMaps.Remove(this);

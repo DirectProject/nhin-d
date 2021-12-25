@@ -27,75 +27,44 @@ namespace Health.Direct.Config.Store;
 
 public class DnsRecordManager
 {
-    internal DnsRecordManager(ConfigStore store)
+    private readonly DirectDbContext _dbContext;
+
+    internal DnsRecordManager(DirectDbContext dbContext)
     {
-        Store = store;
+        _dbContext = dbContext;
     }
 
-    internal ConfigStore Store { get; }
 
     public async Task Add(DnsRecord record)
     {
-        await using ConfigDatabase db = Store.CreateContext();
-        Add(db, record);
-        await db.SaveChangesAsync();
-    }
-
-    public void Add(ConfigDatabase db, DnsRecord record)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
         if (record == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDnsRecord);
         }
 
-        db.DnsRecords.Add(record);
+        _dbContext.DnsRecords.Add(record);
+
+        await _dbContext.SaveChangesAsync();
     }
-
-    public async Task Add(DnsRecord[] dnsRecords)
+    
+    public async Task Add(List<DnsRecord> dnsRecords)
     {
-        await using var db = Store.CreateContext();
-        Add(db, dnsRecords);
-        await db.SaveChangesAsync();
-    }
-
-    public void Add(ConfigDatabase db
-        , DnsRecord[] dnsRecords)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-        if (dnsRecords == null || dnsRecords.Length.Equals(0))
+        if (!dnsRecords.Any())
         {
             return;
         }
-        foreach (DnsRecord dnsRecord in dnsRecords)
+        foreach (var dnsRecord in dnsRecords)
         {
-            db.DnsRecords.Add(dnsRecord);
-        }
-    }
-
-    public async Task<DnsRecord> Get(long recordID)
-    {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, recordID);
-    }
-
-    public async Task<DnsRecord> Get(ConfigDatabase db, long recordID)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
+            _dbContext.DnsRecords.Add(dnsRecord);
         }
 
-        return await db.DnsRecords
-            .SingleOrDefaultAsync(d => d.ID == recordID);
+        await _dbContext.SaveChangesAsync();
+    }
+    
+    public async Task<DnsRecord?> Get(long recordId)
+    {
+        return await _dbContext.DnsRecords
+            .SingleOrDefaultAsync(d => d.ID == recordId);
     }
 
     public async Task<List<DnsRecord>> Get(long[] recordIDs)
@@ -104,15 +73,12 @@ public class DnsRecordManager
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
         }
-
-        await using var db = Store.CreateReadContext();
-
-        return await db.DnsRecords
+        
+        return await _dbContext.DnsRecords
             .Where(d => recordIDs.Contains(d.ID))
             .ToListAsync();
     }
-
-
+    
     public async Task<List<DnsRecord>> Get(string domainName)
     {
         if (string.IsNullOrEmpty(domainName))
@@ -120,19 +86,11 @@ public class DnsRecordManager
             throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
         }
 
-        await using var db = Store.CreateReadContext();
-        return await Get(db, domainName);
-    }
-
-
-    public async Task<List<DnsRecord>> Get(ConfigDatabase db
-        , string domainName)
-    {
-        return await db.DnsRecords
+        return await _dbContext.DnsRecords
             .Where(d => d.DomainName == domainName)
             .ToListAsync();
     }
-
+    
     public async Task<List<DnsRecord>> Get(string domainName
         , Common.DnsResolver.DnsStandard.RecordType typeId)
     {
@@ -141,144 +99,65 @@ public class DnsRecordManager
             throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
         }
 
-        await using var db = Store.CreateReadContext();
-        return await Get(db, domainName, typeId);
+        return await _dbContext.DnsRecords
+            .Where(d => d.DomainName == domainName
+                        && d.TypeID == (int)typeId)
+            .ToListAsync();
     }
-
-
-    public async Task<List<DnsRecord>> Get(ConfigDatabase db
-        , string domainName
-        , Common.DnsResolver.DnsStandard.RecordType typeId)
-    {
-        return await db.DnsRecords
-                .Where(d => d.DomainName == domainName
-                    && d.TypeID == (int)typeId)
-                .ToListAsync();
-    }
-
+    
     public async Task<List<DnsRecord>> Get(long lastRecordId
         , int maxResults
         , Common.DnsResolver.DnsStandard.RecordType typeId)
     {
-        await using var db = Store.CreateReadContext();
 
-        return await Get(db
-            , lastRecordId
-            , maxResults
-            , typeId);
-    }
-
-    public async Task<List<DnsRecord>> Get(ConfigDatabase db
-        , long lastRecordId
-        , int maxResults
-        , Common.DnsResolver.DnsStandard.RecordType typeId)
-    {
-        var entities = await db.DnsRecords
+        return await _dbContext.DnsRecords
             .Where(a => a.ID > lastRecordId && a.TypeID == (int)typeId)
             .OrderBy(a => a.ID)
             .Take(maxResults)
             .ToListAsync();
-
-        return entities;
     }
+    
 
     public async Task<List<DnsRecord>> Get(long lastRecordId, int maxResults)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, lastRecordId, maxResults);
-    }
-
-    public async Task<List<DnsRecord>> Get(ConfigDatabase db, long lastRecordId, int maxResults)
-    {
-        var entities = await db.DnsRecords
+        return await _dbContext.DnsRecords
             .Where(a => a.ID > lastRecordId)
             .OrderBy(a => a.ID)
             .Take(maxResults)
             .ToListAsync();
-
-        return entities;
     }
-
+    
     /// <summary>
     /// simple method to remove an dns record by CertPolicyId 
     /// </summary>
     /// <param name="dnsRecord">DnsRecord instance to be removed</param>
     public async Task Remove(DnsRecord dnsRecord)
     {
-        await using var db = Store.CreateContext();
-        db.DnsRecords.Attach(dnsRecord);
-        Remove(db, dnsRecord);
-        await db.SaveChangesAsync();
+        _dbContext.DnsRecords.Attach(dnsRecord);
+        _dbContext.DnsRecords.Remove(dnsRecord);
+        await _dbContext.SaveChangesAsync();
     }
-
-    /// <summary>
-    /// simple method to remove an dns record by CertPolicyId 
-    /// </summary>
-    ///  <param name="db">database context to use</param>
-    /// <param name="dnsRecord">DnsRecord instance to be removed</param>
-    public void Remove(ConfigDatabase db, DnsRecord dnsRecord)
-    {
-        db.DnsRecords.Remove(dnsRecord);
-    }
-
+    
     /// <summary>
     /// simple method to remove an dns record by CertPolicyId 
     /// </summary>
     /// <param name="recordId">long holding the id of the record to be deleted</param>
     public async Task Remove(long recordId)
     {
-        await using var db = Store.CreateContext();
-        await Remove(db, recordId);
-    }
-
-    /// <summary>
-    /// simple method to remove an dns record by CertPolicyId 
-    /// </summary>
-    /// <param name="db">database context to use</param>
-    /// <param name="recordId">long holding the id of the record to be deleted</param>
-    public async Task Remove(ConfigDatabase db, long recordId)
-    {
-        var dnsRecord = await db.DnsRecords
+        var dnsRecord = await _dbContext.DnsRecords
             .Where(d => d.ID == recordId)
             .SingleOrDefaultAsync();
 
         if (dnsRecord != null)
         {
-            db.DnsRecords.Remove(dnsRecord);
+            _dbContext.DnsRecords.Remove(dnsRecord);
         }
-    }
 
+        await _dbContext.SaveChangesAsync();
+    }
+    
     public async Task Update(DnsRecord dnsRecord)
     {
-        await using ConfigDatabase db = Store.CreateContext();
-        Update(db, dnsRecord);
-        await db.SaveChangesAsync();
-    }
-
-    public async Task Update(IEnumerable<DnsRecord> dnsRecords)
-    {
-        if (dnsRecords == null)
-        {
-            throw new ArgumentNullException(nameof(dnsRecords));
-        }
-
-        await using var db = Store.CreateContext();
-        
-        foreach (var dnsRecord in dnsRecords)
-        {
-            Update(db, dnsRecord);
-        }
-
-        await db.SaveChangesAsync();
-    }
-
-    public void Update(ConfigDatabase db, DnsRecord dnsRecord)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
         if (dnsRecord == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDnsRecord);
@@ -290,15 +169,40 @@ public class DnsRecordManager
         var update = new DnsRecord();
         update.CopyFixed(update);
 
-        db.DnsRecords.Attach(update);
+        _dbContext.DnsRecords.Attach(update);
         update.ApplyChanges(dnsRecord);
+
+        await _dbContext.SaveChangesAsync();
     }
+
+    public async Task Update(IEnumerable<DnsRecord> dnsRecords)
+    {
+        if (dnsRecords == null)
+        {
+            throw new ArgumentNullException(nameof(dnsRecords));
+        }
+        
+        foreach (var dnsRecord in dnsRecords)
+        {
+            var update = new DnsRecord();
+            update.CopyFixed(update);
+
+            _dbContext.DnsRecords.Attach(update);
+            update.ApplyChanges(dnsRecord);
+        }
+
+        await _dbContext.SaveChangesAsync();
+    }
+
 
     public async Task<int> Count(Common.DnsResolver.DnsStandard.RecordType? recordType)
     {
-        await using var db = Store.CreateReadContext();
+        if (recordType == null)
+        {
+            return await _dbContext.DnsRecords.CountAsync();
+        }
 
-        return await db.DnsRecords.CountAsync(
+        return await _dbContext.DnsRecords.CountAsync(
             d => d.RecordType == recordType.Value);
     }
 }

@@ -54,12 +54,12 @@
 //                 throw new ArgumentNullException("property");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             this.Add(db, property);
 //             db.SubmitChanges();
 //         }
 //         
-//         public void Add(ConfigDatabase db, Property property)
+//         public void Add(DirectDbContext db, Property property)
 //         {
 //             if (db == null)
 //             {
@@ -71,12 +71,12 @@
 //
 //         public void Add(IEnumerable<Property> properties)
 //         {
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             this.Add(db, properties);
 //             db.SubmitChanges();
 //         }
 //
-//         public void Add(ConfigDatabase db, IEnumerable<Property> properties)
+//         public void Add(DirectDbContext db, IEnumerable<Property> properties)
 //         {
 //             if (db == null)
 //             {
@@ -88,11 +88,11 @@
 //         
 //         public Property Get(string name)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return Get(db, name);
 //         }
 //         
-//         public Property Get(ConfigDatabase db, string name)
+//         public Property Get(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -108,11 +108,11 @@
 //
 //         public Property[] Get(string[] names)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return Get(db, names).ToArray();
 //         }
 //
-//         public IEnumerable<Property> Get(ConfigDatabase db, string[] names)
+//         public IEnumerable<Property> Get(DirectDbContext db, string[] names)
 //         {
 //             if (db == null)
 //             {
@@ -128,11 +128,11 @@
 //
 //         public Property[] GetStartsWith(string namePrefix)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return GetStartsWith(db, namePrefix).ToArray();
 //         }
 //
-//         public IEnumerable<Property> GetStartsWith(ConfigDatabase db, string namePrefix)
+//         public IEnumerable<Property> GetStartsWith(DirectDbContext db, string namePrefix)
 //         {
 //             if (db == null)
 //             {
@@ -153,7 +153,7 @@
 //                 throw new ArgumentNullException("property");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             Set(db, property);
 //             db.SubmitChanges();
 //         }
@@ -165,7 +165,7 @@
 //                 throw new ArgumentNullException("properties");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             foreach (Property property in properties)
 //             {
 //                 Set(db, property);
@@ -173,7 +173,7 @@
 //             db.SubmitChanges();
 //         }
 //         
-//         protected void Set(ConfigDatabase db, Property property)
+//         protected void Set(DirectDbContext db, Property property)
 //         {
 //             if (db == null)
 //             {
@@ -199,7 +199,7 @@
 //                 throw new ArgumentException("name");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             this.Remove(db, name);
 //         }
 //
@@ -210,14 +210,14 @@
 //                 throw new ArgumentException("names");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             foreach(string name in names)
 //             {
 //                 Remove(db, name);
 //             }
 //         }
 //
-//         public void Remove(ConfigDatabase db, string name)
+//         public void Remove(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -233,7 +233,7 @@
 //         
 //         public IEnumerator<Property> GetEnumerator()
 //         {
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             foreach (Property property in db.Properties)
 //             {
 //                 yield return property;

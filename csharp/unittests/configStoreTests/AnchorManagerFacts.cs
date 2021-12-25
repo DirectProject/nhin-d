@@ -120,7 +120,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     [Fact, AutoRollback]
     public async Task SetStatusTest1()
     {
-        await using (ConfigDatabase db = CreateConfigDatabase())
+        await using (DirectDbContext db = CreateConfigDatabase())
         {
             foreach (string domain in TestDomainNames)
             {
@@ -219,7 +219,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     [Fact, AutoRollback]
     public async Task RemoveTest5()
     {
-        using (ConfigDatabase db = CreateConfigDatabase())
+        using (DirectDbContext db = CreateConfigDatabase())
         {
             AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
@@ -262,7 +262,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     [Fact, AutoRollback]
     public async Task RemoveTest2Async()
     {
-        using (ConfigDatabase db = CreateConfigDatabase())
+        using (DirectDbContext db = CreateConfigDatabase())
         {
             AnchorManager target = CreateManager();
             Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
@@ -294,7 +294,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     [Fact, AutoRollback]
     public async Task RemoveTest()
     {
-        await using (ConfigDatabase db = CreateConfigDatabase())
+        await using (DirectDbContext db = CreateConfigDatabase())
         {
             AnchorManager target = CreateManager();
             List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
@@ -455,7 +455,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     [Fact, AutoRollback]
     public async Task GetTest1()
     {
-        await using (ConfigDatabase db = CreateConfigDatabase())
+        await using (DirectDbContext db = CreateConfigDatabase())
         {
             AnchorManager target = CreateManager();
             List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
@@ -475,7 +475,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     [Fact, AutoRollback]
     public async Task GetTest()
     {
-        await using (ConfigDatabase db = CreateConfigDatabase())
+        await using (DirectDbContext db = CreateConfigDatabase())
         {
             AnchorManager target = CreateManager();
             string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
@@ -532,7 +532,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     public async Task AddTest(Anchor anc)
     {
         var target = CreateManager();
-        await using ConfigDatabase db = CreateConfigDatabase();
+        await using DirectDbContext db = CreateConfigDatabase();
         await AnchorUtil.RemoveAll(db);
         target.Add(db, anc);
         await db.SaveChangesAsync();

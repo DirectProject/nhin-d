@@ -163,7 +163,7 @@ namespace Health.Direct.Config.Store.Tests
             var mgr = CreateManager();
             const long domainId = 1;
 
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             //----------------------------------------------------------------------------------------------------
             //---make sure that we have max addresses for the given domain
             var addresses = await mgr.Get(db, domainId, string.Empty, MAXADDRESSCOUNT + 1);
@@ -257,7 +257,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task GetByDomainTest()
         {
             await InitAddressRecords();
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             await InitAddressRecords();
             var mgr = CreateManager();
             string domainName = BuildDomainName(1);
@@ -277,7 +277,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             await InitAddressRecords();
             var mgr = CreateManager();
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             var emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
             var actual = await mgr.Get(db, emailAddresses);
             Assert.Equal(emailAddresses.Length, actual.Count);
@@ -512,7 +512,7 @@ namespace Health.Direct.Config.Store.Tests
             await InitAddressRecords();
             AddressManager mgr = CreateManager();
             string emailAddress = BuildEmailAddress(1, 1);
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             Address add = await mgr.Get(db, emailAddress);
             Assert.Equal(emailAddress, add.EmailAddress);
         }
@@ -527,7 +527,7 @@ namespace Health.Direct.Config.Store.Tests
             AddressManager mgr = CreateManager();
 
             string[] emailAddresses = new[] { BuildEmailAddress(1, 1), BuildEmailAddress(2, 1), BuildEmailAddress(3, 1) };
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             IEnumerable<Address> actual = await mgr.Get(db, emailAddresses, EntityStatus.New);
             Assert.Equal(emailAddresses.Length, actual.Count());
 
@@ -546,7 +546,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             await InitAddressRecords();
             AddressManager mgr = CreateManager();
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             IEnumerable<Address> actual = await mgr.Get(db, addressIDs);
             Assert.Equal(addressIDs.Length, actual.Count());
@@ -583,7 +583,7 @@ namespace Health.Direct.Config.Store.Tests
 
             await InitAddressRecords();
             AddressManager mgr = CreateManager();
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             long[] addressIDs = new long[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
             IEnumerable<Address> actual = await mgr.Get(db, addressIDs, EntityStatus.New);
             Assert.Equal(addressIDs.Length, actual.Count());
@@ -621,7 +621,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             await InitAddressRecords();
             AddressManager mgr = CreateManager();
-            using (ConfigDatabase db = CreateConfigDatabase())
+            using (DirectDbContext db = CreateConfigDatabase())
             {
                 //----------------------------------------------------------------------------------------------------
                 //---get the full dictionary using the smtp domain name as the key and pick one to start at
@@ -739,7 +739,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task GetTest()
         {
             await InitAddressRecords();
-            await using (ConfigDatabase db = CreateConfigDatabase())
+            await using (DirectDbContext db = CreateConfigDatabase())
             {
                 AddressManager mgr = CreateManager();
 

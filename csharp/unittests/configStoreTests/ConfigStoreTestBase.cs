@@ -686,7 +686,7 @@ namespace Health.Direct.Config.Store.Tests
             List<string> domains = DnsRecordDomainNames.ToList();
 
 
-            await using (var db = new ConfigDatabase(ConnectionString))
+            await using (var db = new DirectDbContext(ConnectionString))
             {
                 await DnsRecordUtil.RemoveAll(db);
             }
@@ -754,21 +754,21 @@ namespace Health.Direct.Config.Store.Tests
 
             ConfigStore configStore = CreateConfigStore();
             await InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
-                                   , new ConfigDatabase(ConnectionString));
+                                   , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">CertPolicyManager instance used for controlling the certPolicy records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
         protected async Task InitCertPolicyRecords(CertPolicyManager mgr
-                                         , ConfigDatabase db)
+                                         , DirectDbContext db)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
@@ -802,7 +802,7 @@ namespace Health.Direct.Config.Store.Tests
         /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">CertPolicyGroupManager instance used for controlling the certPolicyGroup records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
@@ -814,7 +814,7 @@ namespace Health.Direct.Config.Store.Tests
             //---clean all existing records
 
 
-            await using var db = new ConfigDatabase(ConnectionString);
+            await using var db = new DirectDbContext(ConnectionString);
             await CertPolicyGroupUtil.RemoveAll(db);
             await db.SaveChangesAsync();
 
@@ -839,21 +839,21 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitDomainRecords()
         {
             await InitDomainRecords(new DomainManager(CreateConfigStore())
-                                   , new ConfigDatabase(ConnectionString));
+                                   , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify Domain records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">DomainManager instance used for controlling the Domain records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
         protected async Task InitDomainRecords(DomainManager mgr
-                                         , ConfigDatabase db)
+                                         , DirectDbContext db)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
@@ -882,7 +882,7 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitCertRecords()
         {
             await InitCertRecords(new CertificateManager(CreateConfigStore())
-                                 , new ConfigDatabase(ConnectionString));
+                                 , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
@@ -890,14 +890,14 @@ namespace Health.Direct.Config.Store.Tests
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
         /// <param name="mgr">CertificateManager instance used for controlling the Certificate records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
         protected async Task InitCertRecords(CertificateManager mgr
-                                       , ConfigDatabase db)
+                                       , DirectDbContext db)
         {
             await CertificateUtil.RemoveAll(db);
 
@@ -920,7 +920,7 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitAnchorRecords()
         {
             await InitAnchorRecords(new AnchorManager(CreateConfigStore())
-                                   , new ConfigDatabase(ConnectionString));
+                                   , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
@@ -928,14 +928,14 @@ namespace Health.Direct.Config.Store.Tests
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
         /// <param name="mgr">CertificateManager instance used for controlling the Certificate records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
         protected async Task InitAnchorRecords(AnchorManager mgr
-                                         , ConfigDatabase db)
+                                         , DirectDbContext db)
         {
             await AnchorUtil.RemoveAll(db);
             
@@ -963,21 +963,21 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitAddressRecords()
         {
             await InitAddressRecords(new AddressManager(CreateConfigStore())
-                                    , new ConfigDatabase(ConnectionString));
+                                    , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify address records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">AddressManager instance used for controlling the Address records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
         /// number of items using the consts above
         /// </remarks>
         protected async Task InitAddressRecords(AddressManager mgr
-                                          , ConfigDatabase db)
+                                          , DirectDbContext db)
         {
             //----------------------------------------------------------------------------------------------------
             //---init domain records as well we want them fresh too
@@ -1006,7 +1006,7 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitMdnRecords()
         {
             await InitMdnRecords(new MdnManager(CreateConfigStore())
-                                    , new ConfigDatabase(ConnectionString));
+                                    , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
@@ -1015,15 +1015,15 @@ namespace Health.Direct.Config.Store.Tests
         protected async Task InitOldMdnRecords()
         {
             await InitOldMdnRecords(new MdnManager(CreateConfigStore())
-                                    , new ConfigDatabase(ConnectionString));
+                                    , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
         /// This method will clean, load and verify MDN records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">MdnManager instance used for controlling the Mdn records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
-        protected async Task InitMdnRecords(MdnManager mgr, ConfigDatabase db)
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
+        protected async Task InitMdnRecords(MdnManager mgr, DirectDbContext db)
         {
             await MdnUtil.RemoveAll(db);
             await db.SaveChangesAsync();
@@ -1043,8 +1043,8 @@ namespace Health.Direct.Config.Store.Tests
         /// This method will clean, load and verify MDN records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">MdnManager instance used for controlling the Mdn records</param>
-        /// <param name="db">ConfigDatabase instance used as the target storage mechanism for the records</param>
-        protected async Task InitOldMdnRecords(MdnManager mgr, ConfigDatabase db)
+        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
+        protected async Task InitOldMdnRecords(MdnManager mgr, DirectDbContext db)
         {
             await MdnUtil.RemoveAll(db);
             mgr.Start(db, TestOldMdns.ToArray());
@@ -1236,15 +1236,10 @@ namespace Health.Direct.Config.Store.Tests
         {
             return (new Random().Next(1, MAXDOMAINCOUNT));
         }
-
-        protected static ConfigStore CreateConfigStore()
+        
+        protected static DirectDbContext CreateConfigDatabase()
         {
-            return new ConfigStore(ConnectionString);
-        }
-
-        protected static ConfigDatabase CreateConfigDatabase()
-        {
-            return new ConfigDatabase(ConnectionString);
+            return new DirectDbContext(ConnectionString);
         }
     }
 }

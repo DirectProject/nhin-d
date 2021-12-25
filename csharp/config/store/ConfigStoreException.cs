@@ -100,10 +100,10 @@ namespace Health.Direct.Config.Store
         {
         }
         
-        public ConfigStoreFault ToFault()
-        {
-            return new ConfigStoreFault(this.Error);
-        }
+        // public ConfigStoreFault ToFault()
+        // {
+        //     return new ConfigStoreFault(this.Error);
+        // }
 
         public static ConfigStoreError ToError(Exception ex)
         {
@@ -152,107 +152,107 @@ namespace Health.Direct.Config.Store
         }
     }
 
-    /// <summary>
-    /// Serializable - used for web services
-    /// </summary>
-    [DataContract(Namespace = ConfigStore.Namespace)]
-    public class ConfigStoreFault
-    {
-        string m_message;
-        
-        public ConfigStoreFault()
-            : this(ConfigStoreError.Unknown)
-        {
-        }
-        
-        public ConfigStoreFault(ConfigStoreError error)
-            : this(error, null)
-        {
-        }
-
-        public ConfigStoreFault(ConfigStoreError error, string message)
-        {
-            this.Error = error;
-            this.Message = message;
-        }
-
-        public ConfigStoreFault(ConfigStoreException ex)
-            : this(ex.Error, ex.Message)
-        {
-        }
-        
-        [DataMember]
-        public ConfigStoreError Error
-        {
-            get;
-            set;
-        }
-        
-        //
-        // Optional
-        //
-        [DataMember]
-        public string Message
-        {
-            get
-            {
-                return m_message ?? string.Empty;
-            }
-            set
-            {
-                m_message = value;
-            }
-        }
-        
-        public static ConfigStoreFault ToFault(Exception ex)
-        {
-            if (ex is ConfigStoreException ce)
-            {
-                return ce.ToFault();
-            }
-
-            if (ex is DbUpdateConcurrencyException conflict)
-            {
-                return new ConfigStoreFault(ConfigStoreError.Conflict, conflict.Message);
-            }
-
-            if (ex is SqlException sqlEx)
-            {
-                var errorCode = ConfigStoreError.DatabaseError;
-
-                switch (sqlEx.Number)
-                {
-                    case (int) SqlErrorCodes.DuplicatePrimaryKey:
-                    case (int) SqlErrorCodes.UniqueConstraintViolation:
-                        errorCode = ConfigStoreError.UniqueConstraint;
-                        break;    
-                    
-                    case (int) SqlErrorCodes.ForeignKeyViolation:
-                        errorCode = ConfigStoreError.ForeignKeyConstraint;
-                        break;                                                               
-                }
-                
-                return new ConfigStoreFault(errorCode, sqlEx.Message);
-            }
-
-            if (ex is DbException dbEx)
-            {
-                return new ConfigStoreFault(ConfigStoreError.DatabaseError, dbEx.Message);
-            }
-            
-            return new ConfigStoreFault(ConfigStoreError.Unknown, ex.Message);
-        }
-        
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(m_message))
-            {
-                return this.Error.ToString();
-            }
-            
-            return string.Format("ERROR={0};{1}", this.Error, m_message);
-        }
-    }
+    // /// <summary>
+    // /// Serializable - used for web services
+    // /// </summary>
+    // [DataContract(Namespace = ConfigStore.Namespace)]
+    // public class ConfigStoreFault
+    // {
+    //     string m_message;
+    //     
+    //     public ConfigStoreFault()
+    //         : this(ConfigStoreError.Unknown)
+    //     {
+    //     }
+    //     
+    //     public ConfigStoreFault(ConfigStoreError error)
+    //         : this(error, null)
+    //     {
+    //     }
+    //
+    //     public ConfigStoreFault(ConfigStoreError error, string message)
+    //     {
+    //         this.Error = error;
+    //         this.Message = message;
+    //     }
+    //
+    //     public ConfigStoreFault(ConfigStoreException ex)
+    //         : this(ex.Error, ex.Message)
+    //     {
+    //     }
+    //     
+    //     [DataMember]
+    //     public ConfigStoreError Error
+    //     {
+    //         get;
+    //         set;
+    //     }
+    //     
+    //     //
+    //     // Optional
+    //     //
+    //     [DataMember]
+    //     public string Message
+    //     {
+    //         get
+    //         {
+    //             return m_message ?? string.Empty;
+    //         }
+    //         set
+    //         {
+    //             m_message = value;
+    //         }
+    //     }
+    //     
+    //     public static ConfigStoreFault ToFault(Exception ex)
+    //     {
+    //         if (ex is ConfigStoreException ce)
+    //         {
+    //             return ce.ToFault();
+    //         }
+    //
+    //         if (ex is DbUpdateConcurrencyException conflict)
+    //         {
+    //             return new ConfigStoreFault(ConfigStoreError.Conflict, conflict.Message);
+    //         }
+    //
+    //         if (ex is SqlException sqlEx)
+    //         {
+    //             var errorCode = ConfigStoreError.DatabaseError;
+    //
+    //             switch (sqlEx.Number)
+    //             {
+    //                 case (int) SqlErrorCodes.DuplicatePrimaryKey:
+    //                 case (int) SqlErrorCodes.UniqueConstraintViolation:
+    //                     errorCode = ConfigStoreError.UniqueConstraint;
+    //                     break;    
+    //                 
+    //                 case (int) SqlErrorCodes.ForeignKeyViolation:
+    //                     errorCode = ConfigStoreError.ForeignKeyConstraint;
+    //                     break;                                                               
+    //             }
+    //             
+    //             return new ConfigStoreFault(errorCode, sqlEx.Message);
+    //         }
+    //
+    //         if (ex is DbException dbEx)
+    //         {
+    //             return new ConfigStoreFault(ConfigStoreError.DatabaseError, dbEx.Message);
+    //         }
+    //         
+    //         return new ConfigStoreFault(ConfigStoreError.Unknown, ex.Message);
+    //     }
+    //     
+    //     public override string ToString()
+    //     {
+    //         if (string.IsNullOrEmpty(m_message))
+    //         {
+    //             return this.Error.ToString();
+    //         }
+    //         
+    //         return string.Format("ERROR={0};{1}", this.Error, m_message);
+    //     }
+    // }
 
     /// <summary>
     /// Can't believe we have to do this...

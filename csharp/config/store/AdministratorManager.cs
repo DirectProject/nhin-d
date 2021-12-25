@@ -28,12 +28,12 @@ namespace Health.Direct.Config.Store
     /// </summary>
     public class AdministratorManager
     {
-        internal AdministratorManager(ConfigStore store)
-        {
-            Store = store;
-        }
+        private readonly DirectDbContext _dbContext;
 
-        private ConfigStore Store { get; }
+        internal AdministratorManager(DirectDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         /// <summary>
         /// Add an administrator to the database using the given database context
@@ -42,44 +42,70 @@ namespace Health.Direct.Config.Store
         /// <param name="administrator">administrator object</param>
         public async Task<Administrator> Add(Administrator administrator)
         {
-            await using var db = this.Store.CreateContext();
-            Add(db, administrator);
-            await db.SaveChangesAsync();
+            if (administrator == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAdministrator);
+            }
+
+            _dbContext.Administrators.Add(administrator);
+
+            await _dbContext.SaveChangesAsync();
 
             return administrator;
         }
 
         public async Task Update(Administrator administrator)
         {
-            await using var db = this.Store.CreateContext();
-            Update(db, administrator);
-            await db.SaveChangesAsync();
+            if (administrator == null)
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAdministrator);
+            }
+
+            var update = new Administrator(administrator);
+
+            _dbContext.Administrators.Attach(update);
+            update.UpdateFrom(administrator);
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<Administrator> Get(string username)
         {
-            await using var db = this.Store.CreateReadContext();
-            return await Get(db, username);
+            return await _dbContext.Administrators
+                .Where(a => a.Username == username)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<Administrator> Get(long administratorId)
         {
-            await using var db = this.Store.CreateReadContext();
-            return await Get(db, administratorId);
+            return await _dbContext.Administrators
+                .Where(a => a.ID == administratorId)
+                .SingleOrDefaultAsync();
         }
 
         public async Task Remove(string username)
         {
-            await using var db = this.Store.CreateContext();
-            await Remove(db, username);
-            await db.SaveChangesAsync();
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidUsername);
+            }
+
+            var entity = await _dbContext.Administrators
+                .Where(a => a.Username == username)
+                .SingleOrDefaultAsync();
+
+            if (entity != null)
+            {
+                _dbContext.Administrators.Remove(entity);
+            }
+
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task SetStatus(string username, EntityStatus status)
         {
-            await using var db = this.Store.CreateContext();
 
-            var entity = await db.Administrators
+            var entity = await _dbContext.Administrators
                 .Where(a => a.Username == username)
                 .SingleOrDefaultAsync();
 
@@ -89,119 +115,36 @@ namespace Health.Direct.Config.Store
                 entity.UpdateDate = DateTimeHelper.Now;
             }
 
-            await db.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<List<Administrator>> Get(string lastUsername, int maxResults)
         {
-            await using var db = this.Store.CreateContext();
-            return await Get(db, lastUsername, maxResults);
-        }
-
-        //public bool CheckPasswordHash(string username, string passwordHash)
-        //{
-        //    using (ConfigDatabase db = this.Store.CreateContext())
-        //    {
-        //        return CheckPasswordHash(db, username, passwordHash);
-        //    }
-        //}
-
-        private static void Add(ConfigDatabase db, Administrator administrator)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (administrator == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidAdministrator);
-            }
-
-            db.Administrators.Add(administrator);
-        }
-
-        private static void Update(ConfigDatabase db, Administrator administrator)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            if (administrator == null)
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidAdministrator);
-            }
-
-            var update = new Administrator(administrator);
-
-            db.Administrators.Attach(update);
-            update.UpdateFrom(administrator);
-        }
-
-        private static async Task<Administrator> Get(ConfigDatabase db, string username)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-            
-            return await db.Administrators
-                .Where(a => a.Username == username)
-                .SingleOrDefaultAsync();
-        }
-
-        private static async Task<List<Administrator>> Get(ConfigDatabase db, string lastUsername, int maxResults)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
-
-            return await db.Administrators
+            return await _dbContext.Administrators
                 .Where(a => String.Compare(a.Username, lastUsername ?? "") > 0)
                 .OrderBy(a => a.Username)
                 .Take(maxResults)
                 .ToListAsync();
         }
 
-        private static async Task<Administrator> Get(ConfigDatabase db, long administratorId)
-        {
-            if (db == null)
-            {
-                throw new ArgumentNullException(nameof(db));
-            }
+        //public bool CheckPasswordHash(string username, string passwordHash)
+        //{
+        //    using (DirectDbContext db = this.Store.CreateContext())
+        //    {
+        //        return CheckPasswordHash(db, username, passwordHash);
+        //    }
+        //}
 
-            return await db.Administrators
-                .Where(a => a.ID == administratorId)
-                .SingleOrDefaultAsync();
-        }
-                
-        private static async Task Remove(ConfigDatabase db, string username)
-        {
-            if (string.IsNullOrEmpty(username))
-            {
-                throw new ConfigStoreException(ConfigStoreError.InvalidUsername);
-            }
+      
 
-            var entity = await db.Administrators
-                .Where(a => a.Username == username)
-                .SingleOrDefaultAsync();
-
-            if (entity != null)
-            {
-                db.Administrators.Remove(entity);
-            }
-        }
-
-        //private static bool CheckPasswordHash(ConfigDatabase db, string username, string passwordHash)
+        //private static bool CheckPasswordHash(DirectDbContext db, string username, string passwordHash)
         //{
         //    if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(passwordHash))
         //    {
         //        return false;
         //    }
 
-        //    return db.Administrators.CheckPasswordHash(username, passwordHash);
+        //    return _dbContext.Administrators.CheckPasswordHash(username, passwordHash);
         //}
     }
 }

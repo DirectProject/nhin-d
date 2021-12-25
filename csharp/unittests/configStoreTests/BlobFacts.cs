@@ -127,7 +127,7 @@
 //             {
 //                 log.AutoFlush = true;
 //
-//                 using (ConfigDatabase db = m_store.CreateReadContext())
+//                 using (DirectDbContext db = m_store.CreateReadContext())
 //                 {
 //                     db.Log = log;
 //                     Assert.True(m_store.Blobs.Contains(db, name));
@@ -142,7 +142,7 @@
 //                     m_store.Blobs.Add(blob);
 //                 }
 //
-//                 using (ConfigDatabase db = m_store.CreateReadContext())
+//                 using (DirectDbContext db = m_store.CreateReadContext())
 //                 {
 //                     Assert.True(m_store.Blobs.ListNamesStartWith(db, name).Count() == 4);
 //                 }

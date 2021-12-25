@@ -28,7 +28,7 @@ namespace Health.Direct.Config.Service.Rest.Tests
                 services.AddScoped(sp =>
                 {
                     // Replace SQLite with the in memory provider for tests
-                    return new DbContextOptionsBuilder<ConfigDatabase>()
+                    return new DbContextOptionsBuilder<DirectDbContext>()
                         .UseInMemoryDatabase("Tests", root)
                         .UseApplicationServiceProvider(sp)
                         .Options;

@@ -36,39 +36,39 @@
 //         const string Sql_EnumAddressNext = "SELECT TOP ({0}) * from Addresses where EmailAddress > {1} order by EmailAddress asc";
 //         const string Sql_TruncateAddresses = "truncate table Addresses";
 //         
-//         static readonly Func<ConfigDatabase, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
-//             (ConfigDatabase db, string emailAddress) =>
+//         static readonly Func<DirectDbContext, string, IQueryable<Address>> Addresses = CompiledQuery.Compile(
+//             (DirectDbContext db, string emailAddress) =>
 //             from address in db.Addresses
 //             where address.EmailAddress == emailAddress
 //             select address
 //             );
 //
-//         static readonly Func<ConfigDatabase, long, long, int, IQueryable<Address>> DomainAddresses = CompiledQuery.Compile(
-//             (ConfigDatabase db, long domainID, long lastAddressID, int maxResults) =>
+//         static readonly Func<DirectDbContext, long, long, int, IQueryable<Address>> DomainAddresses = CompiledQuery.Compile(
+//             (DirectDbContext db, long domainID, long lastAddressID, int maxResults) =>
 //             (from address in db.Addresses
 //              where address.DomainID == domainID && address.CertPolicyId > lastAddressID
 //              orderby address.CertPolicyId
 //              select address).Take(maxResults)
 //             );
 //
-//         static readonly Func<ConfigDatabase, long, int, IQueryable<Address>> AllAddresses = CompiledQuery.Compile(
-//             (ConfigDatabase db, long lastAddressID, int maxResults) =>
+//         static readonly Func<DirectDbContext, long, int, IQueryable<Address>> AllAddresses = CompiledQuery.Compile(
+//             (DirectDbContext db, long lastAddressID, int maxResults) =>
 //             (from address in db.Addresses
 //              where address.CertPolicyId > lastAddressID
 //              orderby address.CertPolicyId
 //              select address).Take(maxResults)
 //             );
 //         
-//         static readonly Func<ConfigDatabase, long, IQueryable<Address>> IDToAddress = CompiledQuery.Compile(
-//             (ConfigDatabase db, long addressID) =>
+//         static readonly Func<DirectDbContext, long, IQueryable<Address>> IDToAddress = CompiledQuery.Compile(
+//             (DirectDbContext db, long addressID) =>
 //             from address in db.Addresses
 //             where address.CertPolicyId == addressID
 //             select address
 //             );
 //         
-//         public static ConfigDatabase GetDB(this Table<Address> table)
+//         public static DirectDbContext GetDB(this Table<Address> table)
 //         {
-//             return (ConfigDatabase)table.Context;
+//             return (DirectDbContext)table.Context;
 //         }
 //
 //         public static int GetCount(this Table<Address> table, long domainID)

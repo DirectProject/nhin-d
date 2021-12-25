@@ -8,26 +8,26 @@ namespace Health.Direct.Config.Store
     
     public class PasswordHash : IEquatable<PasswordHash>
     {
-        private string m_hashedPassword;
+        private readonly string _hashedPassword;
 
         public PasswordHash(string hashedPassword)
         {
             if (hashedPassword == null)
             {
-                throw new ArgumentNullException("hashedPassword");
+                throw new ArgumentNullException(nameof(hashedPassword));
             }
 
-            m_hashedPassword = hashedPassword;
+            _hashedPassword = hashedPassword;
         }
 
         public PasswordHash(Administrator user, string password)
         {
             if (user == null)
             {
-                throw new ArgumentNullException("user");
+                throw new ArgumentNullException(nameof(user));
             }
 
-            m_hashedPassword = HashPassword(user, password);
+            _hashedPassword = HashPassword(user, password);
         }
 
         private static string HashPassword(Administrator user, string password)
@@ -36,24 +36,14 @@ namespace Health.Direct.Config.Store
             return Convert.ToBase64String(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(source)));
         }
 
-        internal string PasswordHashDB { get; set; }
+        internal string? PasswordHashDB { get; set; }
 
        
-        public string HashedPassword
-        {
-            get
-            {
-                return m_hashedPassword;
-            }
-            private set
-            {
-                m_hashedPassword = value;
-            }
-        }
+        public string HashedPassword => _hashedPassword;
 
         public bool Equals(PasswordHash other)
         {
-            if (ReferenceEquals(other, null)) return false;
+            if (other == null) throw new ArgumentNullException(nameof(other));
 
             return (this.HashedPassword ?? "").Equals(other.HashedPassword ?? "", StringComparison.Ordinal);
         }
@@ -65,7 +55,7 @@ namespace Health.Direct.Config.Store
 
         public override int GetHashCode()
         {
-            return (m_hashedPassword != null ? m_hashedPassword.GetHashCode() : 0);
+            return (_hashedPassword != null ? _hashedPassword.GetHashCode() : 0);
         }
 
         public static bool operator ==(PasswordHash a, PasswordHash b)

@@ -27,50 +27,40 @@ namespace Health.Direct.Config.Store;
 
 public class CertPolicyManager : IEnumerable<CertPolicy>
 {
-    ICertPolicyValidator m_validator;
+    private readonly DirectDbContext _dbContext;
+    private readonly ICertPolicyValidator? _validator;
 
-    internal CertPolicyManager(ConfigStore store, ICertPolicyValidator validator)
+    internal CertPolicyManager(DirectDbContext dbContext, ICertPolicyValidator validator)
     {
-        Store = store;
-        m_validator = validator;
+        _dbContext = dbContext;
+        _validator = validator;
     }
 
-    internal CertPolicyManager(ConfigStore store)
+    internal CertPolicyManager(DirectDbContext dbContext)
     {
-        Store = store;
+        _dbContext = dbContext;
     }
-
-    internal ConfigStore Store { get; }
-
+    
     
     public async Task<CertPolicy> Add(CertPolicy policy)
     {
-        await using var db = Store.CreateContext();
-        Add(db, policy);
-        await db.SaveChangesAsync();
-
-        return policy;
-    }
-
-    public void Add(ConfigDatabase db, CertPolicy policy)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (policy == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicy);
         }
         policy.ValidateHasData();
 
-        if (!m_validator.IsValidLexicon(policy))
+        if (_validator != null && !_validator.IsValidLexicon(policy))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicy);
         }
 
-        db.CertPolicies.Add(policy);
+        _dbContext.CertPolicies.Add(policy);
+        await _dbContext.SaveChangesAsync();
+
+        return policy;
     }
+    
 
     public async Task Add(IEnumerable<CertPolicy> policies)
     {
@@ -78,52 +68,34 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         {
             throw new ArgumentNullException(nameof(policies));
         }
-
-        await using var db = Store.CreateContext();
+        
         foreach (CertPolicy policy in policies)
         {
-            Add(db, policy);
+            await Add(policy);
         }
-
-        await db.SaveChangesAsync();
     }
 
     public async Task<int> Count()
     {
-        await using var db = Store.CreateReadContext();
-        var joe = await db.CertPolicies.CountAsync();
-
-        return joe;
+        return await _dbContext.CertPolicies.CountAsync();
     }
 
 
-    public async Task<CertPolicy> Get(string name)
+    public async Task<CertPolicy?> Get(string name)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, name);
-    }
-
-    public async Task<CertPolicy> Get(ConfigDatabase db, string name)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (string.IsNullOrEmpty(name))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
         }
 
-        return await db.CertPolicies
+        return await _dbContext.CertPolicies
             .Where(cp => cp.Name == name)
             .SingleOrDefaultAsync();
     }
-
-    public async Task<CertPolicy> Get(long policyId)
+    
+    public async Task<CertPolicy?> Get(long policyId)
     {
-        await using var db = Store.CreateReadContext();
-
-        return await db.CertPolicies
+        return await _dbContext.CertPolicies
             .Where(cp => cp.CertPolicyId == policyId)
             .SingleOrDefaultAsync();
     }
@@ -134,35 +106,20 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
         }
-
-        await using var db = Store.CreateReadContext();
-
-        return await db.CertPolicies
+        
+        return await _dbContext.CertPolicies
             .Where(cp => policyIDs.Contains(cp.CertPolicyId))
             .ToListAsync();
     }
 
     public async Task<List<CertPolicy>> Get(long lastId, int maxResults)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, lastId, maxResults);
-    }
-
-    public async Task<List<CertPolicy>> Get(ConfigDatabase db, long lastId, int maxResults)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-
-        return await db.CertPolicies
+        return await _dbContext.CertPolicies
             .Where(cp => cp.CertPolicyId > lastId)
             .OrderBy(cp => cp.CertPolicyId)
             .Take(maxResults)
             .ToListAsync();
     }
-
 
     public async Task<List<CertPolicy>> GetIncomingByOwner(string owner)
     {
@@ -170,10 +127,8 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
-
-        await using var db = Store.CreateReadContext();
         
-        var certPolicies = await db.CertPolicies
+        var certPolicies = await _dbContext.CertPolicies
             .Include(cp => cp.CertPolicyGroupMaps
                 .Where(e => e.ForIncoming))
             .ThenInclude(cpGroup => cpGroup.CertPolicyGroup)
@@ -193,10 +148,8 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
-
-        await using var db = Store.CreateReadContext();
-
-        var certPolicies = await db.CertPolicies
+        
+        var certPolicies = await _dbContext.CertPolicies
             .Include(cp => cp.CertPolicyGroupMaps
                 .Where(e => e.ForIncoming
                          && e.PolicyUse == use))
@@ -217,10 +170,8 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
-
-        await using var db = Store.CreateReadContext();
-
-        var certPolicies = await db.CertPolicies
+        
+        var certPolicies = await _dbContext.CertPolicies
             .Include(cp => cp.CertPolicyGroupMaps
                 .Where(e => e.ForOutgoing))
             .ThenInclude(cpGroup => cpGroup.CertPolicyGroup)
@@ -241,9 +192,7 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
             throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        await using var db = Store.CreateReadContext();
-
-        var certPolicies = await db.CertPolicies
+        var certPolicies = await _dbContext.CertPolicies
             .Include(cp => cp.CertPolicyGroupMaps
                 .Where(e => e.ForOutgoing
                             && e.PolicyUse == use))
@@ -261,18 +210,6 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
 
     public async Task Update(CertPolicy policy)
     {
-        await using var db = Store.CreateContext();
-        Update(db, policy);
-        await db.SaveChangesAsync();
-    }
-
-
-    protected void Update(ConfigDatabase db, CertPolicy policy)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (policy == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
@@ -280,67 +217,37 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
 
         var update = new CertPolicy();
         update.CopyFixed(policy);
-        db.CertPolicies.Attach(update);
+        _dbContext.CertPolicies.Attach(update);
         update.ApplyChanges(policy);
-        //foreach (CertPolicyGroupMap certPolicyGroupMap in policy.CertPolicyGroupMap)
-        //{
-        //    if (certPolicyGroupMap.IsNew)
-        //    {
-        //        db.CertPolicyGroupMaps.InsertOnSubmit(certPolicyGroupMap);
-        //        if (certPolicyGroupMap.CertPolicyGroup.IsNew())
-        //        {
-        //            db.CertPolicyGroups.InsertOnSubmit(certPolicyGroupMap.CertPolicyGroup);
-        //        }
-        //    }
-        //}
 
+        await _dbContext.SaveChangesAsync();
     }
+    
 
     public async Task Remove(long policyId)
     {
-        await using var db = Store.CreateContext();
-        await Remove(db, policyId);
-        await db.SaveChangesAsync();
-    }
-
-    public async Task Remove(ConfigDatabase db, long policyId)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-        
-        var certPolicy = await db.CertPolicies
+        var certPolicy = await _dbContext.CertPolicies
             .SingleOrDefaultAsync(m => m.CertPolicyId == policyId);
 
         if (certPolicy != null)
         {
-            db.CertPolicies.Remove(certPolicy);
+            _dbContext.CertPolicies.Remove(certPolicy);
 
-            var groupMaps = await db.CertPolicyGroupMaps
+            var groupMaps = await _dbContext.CertPolicyGroupMaps
                 .Where(e => e.CertPolicyId == policyId)
                 .ToListAsync();
 
             foreach (var certPolicyGroupMap in groupMaps)
             {
-                db.CertPolicyGroupMaps.Remove(certPolicyGroupMap);
+                _dbContext.CertPolicyGroupMaps.Remove(certPolicyGroupMap);
             }
         }
-    }
 
+        await _dbContext.SaveChangesAsync();
+    }
+    
     public async Task Remove(long[] policyIds)
     {
-        await using var db = Store.CreateContext();
-        await Remove(db, policyIds);
-        // We don't commit, because we execute deletes directly
-    }
-
-    public async Task Remove(ConfigDatabase db, long[] policyIds)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (policyIds.IsNullOrEmpty())
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidIDs);
@@ -348,37 +255,26 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
 
         for (int i = 0; i < policyIds.Length; ++i)
         {
-            var certPolicy = await db.CertPolicies
+            var certPolicy = await _dbContext.CertPolicies
                 .SingleOrDefaultAsync(m => m.CertPolicyId == policyIds[i]);
 
             if (certPolicy != null)
             {
-                db.CertPolicies.Remove(certPolicy);
+                _dbContext.CertPolicies.Remove(certPolicy);
             }
         }
 
-        await db.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
-
+    
     public async Task Remove(string policyName)
     {
-        await using var db = Store.CreateContext();
-        await Remove(db, policyName);
-        // We don't commit, because we execute deletes directly
-    }
-
-    public async Task Remove(ConfigDatabase db, string policyName)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (string.IsNullOrEmpty(policyName))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidCertPolicyName);
         }
 
-        var certPolicyGroupMap = await db.CertPolicyGroupMaps
+        var certPolicyGroupMap = await _dbContext.CertPolicyGroupMaps
             .Include(m => m.CertPolicy)
             .Where(m => m.CertPolicy.Name == policyName)
             .ToListAsync();
@@ -389,15 +285,15 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
         //
         foreach (var policyGroupMap in certPolicyGroupMap)
         {
-            db.CertPolicyGroupMaps.Remove(policyGroupMap);
+            _dbContext.CertPolicyGroupMaps.Remove(policyGroupMap);
         }
     }
     
 
     public IEnumerator<CertPolicy> GetEnumerator()
     {
-        using var db = Store.CreateContext();
-        foreach (CertPolicy policy in db.CertPolicies)
+        
+        foreach (CertPolicy policy in _dbContext.CertPolicies)
         {
             yield return policy;
         }

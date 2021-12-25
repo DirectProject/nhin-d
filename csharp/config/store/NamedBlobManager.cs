@@ -50,12 +50,12 @@
 //                 throw new ArgumentNullException("blob");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             this.Add(db, blob);
 //             db.SubmitChanges();
 //         }
 //         
-//         public void Add(ConfigDatabase db, NamedBlob blob)
+//         public void Add(DirectDbContext db, NamedBlob blob)
 //         {
 //             if (db == null)
 //             {
@@ -70,11 +70,11 @@
 //         
 //         public NamedBlob Get(string name)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return this.Get(db, name);
 //         }
 //         
-//         public NamedBlob Get(ConfigDatabase db, string name)
+//         public NamedBlob Get(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -90,11 +90,11 @@
 //                         
 //         public NamedBlob[] GetNameStartsWith(string name)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return GetNameStartsWith(db, name).ToArray();
 //         }
 //
-//         public IEnumerable<NamedBlob> GetNameStartsWith(ConfigDatabase db, string name)
+//         public IEnumerable<NamedBlob> GetNameStartsWith(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -115,12 +115,12 @@
 //                 throw new ArgumentNullException("blob");
 //             }
 //
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             Update(db, blob);
 //             db.SubmitChanges();
 //         }
 //         
-//         protected void Update(ConfigDatabase db, NamedBlob blob)
+//         protected void Update(DirectDbContext db, NamedBlob blob)
 //         {
 //             if (db == null)
 //             {
@@ -147,7 +147,7 @@
 //             this.Update(new NamedBlob(name, item));
 //         }
 //
-//         protected void Update(ConfigDatabase db, string name, object item)
+//         protected void Update(DirectDbContext db, string name, object item)
 //         {
 //             if (item == null)
 //             {
@@ -160,11 +160,11 @@
 //
 //         public void Remove(string name)
 //         {
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             this.Remove(db, name);
 //         }
 //
-//         public void Remove(ConfigDatabase db, string name)
+//         public void Remove(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -176,11 +176,11 @@
 //         
 //         public string[] ListNamesStartWith(string prefix)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return this.ListNamesStartWith(db, prefix).ToArray();
 //         }
 //                 
-//         public IEnumerable<string> ListNamesStartWith(ConfigDatabase db, string prefix)
+//         public IEnumerable<string> ListNamesStartWith(DirectDbContext db, string prefix)
 //         {
 //             if (db == null)
 //             {
@@ -197,11 +197,11 @@
 //
 //         public bool Contains(string blobName)
 //         {
-//             using ConfigDatabase db = this.Store.CreateReadContext();
+//             using DirectDbContext db = this.Store.CreateReadContext();
 //             return this.Contains(db, blobName);
 //         }
 //         
-//         public bool Contains(ConfigDatabase db, string blobName)
+//         public bool Contains(DirectDbContext db, string blobName)
 //         {
 //             if (db == null)
 //             {
@@ -213,7 +213,7 @@
 //
 //         public IEnumerator<NamedBlob> GetEnumerator()
 //         {
-//             using ConfigDatabase db = this.Store.CreateContext();
+//             using DirectDbContext db = this.Store.CreateContext();
 //             foreach (NamedBlob blob in db.Blobs)
 //             {
 //                 yield return blob;

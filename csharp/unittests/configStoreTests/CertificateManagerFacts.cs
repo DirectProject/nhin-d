@@ -176,7 +176,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact, AutoRollback]
         public async Task SetStatusTest3()
         {
-            await using ConfigDatabase db = CreateConfigDatabase();
+            await using DirectDbContext db = CreateConfigDatabase();
             foreach (string domain in TestDomainNames)
             {
                 string subject = domain;
@@ -408,7 +408,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task GetTest10()
         {
             CertificateManager target = CreateManager();
-            await using (ConfigDatabase db = CreateConfigDatabase())
+            await using (DirectDbContext db = CreateConfigDatabase())
             {
                 const long lastCertID = 0;
                 const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
@@ -472,7 +472,7 @@ namespace Health.Direct.Config.Store.Tests
             CertificateManager target = CreateManager();
             long certID = GetRndCertID();
 
-            using (ConfigDatabase db = CreateConfigDatabase())
+            using (DirectDbContext db = CreateConfigDatabase())
             {
                 Certificate cert = await target.Get(db, certID);
                 Assert.NotNull(cert);
@@ -517,7 +517,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task GetTest3()
         {
             CertificateManager target = CreateManager();
-            using (ConfigDatabase db = CreateConfigDatabase())
+            using (DirectDbContext db = CreateConfigDatabase())
             {
                 string owner = string.Format("{0}", BuildDomainName(GetRndDomainID()));
                 EntityStatus? status = EntityStatus.New;
@@ -576,7 +576,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public async Task GetTest()
         {
-            await using (ConfigDatabase db = CreateConfigDatabase())
+            await using (DirectDbContext db = CreateConfigDatabase())
             {
                 CertificateManager target = CreateManager();
                 string owner = string.Format("{0}", BuildDomainName(GetRndDomainID()));
@@ -597,7 +597,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task AddTest2(Certificate cert)
         {
             CertificateManager target = CreateManager();
-            await using (ConfigDatabase db = CreateConfigDatabase())
+            await using (DirectDbContext db = CreateConfigDatabase())
             {
                 await CertificateUtil.RemoveAll(db);
             }
@@ -615,7 +615,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task AddTest1()
         {
             CertificateManager target = CreateManager();
-            await using (ConfigDatabase db = CreateConfigDatabase())
+            await using (DirectDbContext db = CreateConfigDatabase())
             {
                 await CertificateUtil.RemoveAll(db);
             }
@@ -632,7 +632,7 @@ namespace Health.Direct.Config.Store.Tests
         [MemberData("TestCertificates")]
         public async Task AddTest(Certificate cert)
         {
-            await using (ConfigDatabase db = CreateConfigDatabase())
+            await using (DirectDbContext db = CreateConfigDatabase())
             {
                 CertificateManager target = CreateManager();
                 await CertificateUtil.RemoveAll(db);

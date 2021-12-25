@@ -27,7 +27,7 @@ namespace Health.Direct.Config.Store.Tests;
 [Collection("ManagerFacts")]
 public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
 {
-    private readonly ConfigDatabase m_database;
+    private readonly DirectDbContext m_database;
     private readonly AdministratorManager m_manager;
     private readonly string m_username;
     private readonly string m_password;

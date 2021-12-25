@@ -26,136 +26,87 @@ namespace Health.Direct.Config.Store;
 public interface IDomainManager
 {
     Task<Domain> Add(string name);
-    Task<Domain> Add(ConfigDatabase db, string name);
     Task<Domain> Add(Domain domain);
-    void Add(ConfigDatabase db, Domain domain);
     Task<int> Count();
     Task<Domain> Get(string name);
-    Task<Domain> Get(ConfigDatabase db, string name);
     Task<List<Domain>> Get(string[] names);
-    Task<List<Domain>> Get(ConfigDatabase db, string[] names);
     Task<List<Domain>> Get(string[] names, EntityStatus? status);
-    Task<List<Domain>> Get(string groupName, EntityStatus? status);
-    Task<List<Domain>> Get(ConfigDatabase db, string[] names, EntityStatus? status);
-    Task<List<Domain>> Get(ConfigDatabase db, string agentName, EntityStatus? status);
+    Task<List<Domain>> Get(string agentName, EntityStatus? status);
     Task<List<Domain>> Get(string lastDomain, int maxResults);
-    Task<List<Domain>> Get(ConfigDatabase db, string lastDomain, int maxResults);
     Task<Domain> Get(long id);
-    Task<Domain> Get(ConfigDatabase db, long id);
     Task Update(Domain domain);
     Task Remove(string name);
-    Task Remove(ConfigDatabase db, string name);
     IEnumerator<Domain> GetEnumerator();
 }
 
 public class DomainManager : IEnumerable<Domain>, IDomainManager
 {
-    internal DomainManager(ConfigStore store)
-    {
-        Store = store;
-    }
+    private readonly DirectDbContext _dbContext;
 
-    internal ConfigStore Store { get; }
+    internal DomainManager(DirectDbContext dbContext)
+    {
+        _dbContext = dbContext;
+    }
 
     public async Task<Domain> Add(string name)
     {
-        await using var db = Store.CreateContext();
-        var domain = await Add(db, name);
-        await db.SaveChangesAsync();
-        return domain;
-    }
-    
-    public async Task<Domain> Add(ConfigDatabase db, string name)
-    {
-        var domain = new Domain(name);
-        Add(db, domain);
-        return domain;
-    }
+        if (!Domain.IsValidEmailDomain(name))
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+        }
 
+        var domain = new Domain(name);
+        _dbContext.Domains.Add(domain);
+        await _dbContext.SaveChangesAsync();
+        return domain;
+    }
+   
+   
     public async Task<Domain> Add(Domain domain)
     {
-        await using var db = Store.CreateContext();
-        Add(db, domain);
-        await db.SaveChangesAsync();
-
-        return domain;
-    }
-
-    public void Add(ConfigDatabase db, Domain domain)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (domain == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
-        
+
         if (!domain.IsValidEmailDomain())
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
-        
-        db.Domains.Add(domain);
+
+        _dbContext.Domains.Add(domain); ;
+        await _dbContext.SaveChangesAsync();
+
+        return domain;
     }
+    
     
     public async Task<int> Count()
     {
-        await using var db = Store.CreateReadContext();
-        return await db.Domains.CountAsync();
+        return await _dbContext.Domains.CountAsync();
     }
             
     public async Task<Domain> Get(string name)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, name);
-    }
-
-    public async Task<Domain> Get(ConfigDatabase db, string name)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (string.IsNullOrEmpty(name))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
         }
 
-        return await db.Domains
+        return await _dbContext.Domains
             .Where(d => d.Name.ToUpper() == name.ToUpper())
             .SingleOrDefaultAsync();
     }
+    
     
     public async Task<List<Domain>> Get(string[] names)
     {
         return await Get(names, null);
     }
-            
-    public async Task<List<Domain>> Get(ConfigDatabase db, string[] names)
-    {
-        return await Get(db, names, null);
-    }
-
+        
     public async Task<List<Domain>> Get(string[] names, EntityStatus? status)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, names, status);
-    }
-
-    public async Task<List<Domain>> Get(string groupName, EntityStatus? status)
-    {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, groupName, status);
-    }
-    
-    public async Task<List<Domain>> Get(ConfigDatabase db, string[] names, EntityStatus? status)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
+        
         if (names.IsNullOrEmpty())
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
@@ -163,23 +114,19 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
         
         if (status == null)
         {
-            return await db.Domains
+            return await _dbContext.Domains
                 .Where(d => names.Contains(d.Name))
                 .ToListAsync();
         }
 
-        return await db.Domains
+        return await _dbContext.Domains
             .Where(d => names.Contains(d.Name)
                         && d.Status == status)
             .ToListAsync();
     }
 
-    public async Task<List<Domain>> Get(ConfigDatabase db, string agentName, EntityStatus? status)
+    public async Task<List<Domain>> Get(string agentName, EntityStatus? status)
     {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (string.IsNullOrEmpty(agentName))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidAgentName);
@@ -187,121 +134,77 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
 
         if (status == null)
         {
-            return await db.Domains
+            return await _dbContext.Domains
                 .Where(d => d.AgentName == agentName)
                 .ToListAsync();
         }
 
-        return await db.Domains
+        return await _dbContext.Domains
             .Where(d => d.AgentName == agentName
                         && d.Status == status)
             .ToListAsync();
     }
-
+    
     public async Task<List<Domain>> Get(string lastDomain, int maxResults)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, lastDomain, maxResults);
-    }
-
-    public async Task<List<Domain>> Get(ConfigDatabase db, string lastDomain, int maxResults)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
         if (string.IsNullOrEmpty(lastDomain))
         {
-            return await db.Domains
+            return await _dbContext.Domains
                 .OrderBy(d => d.Name)
                 .Take(maxResults)
                 .ToListAsync();
         }
 
-        return await db.Domains
+        return await _dbContext.Domains
             .Where(d => String.Compare(d.Name, lastDomain) > 0)
             .OrderBy(d => d.Name)
             .Take(maxResults)
             .ToListAsync();
     }
 
+    
     public async Task<Domain> Get(long id)
     {
-        await using var db = Store.CreateContext();
-        return await Get(db, id);
-    }
-
-    public async Task<Domain> Get(ConfigDatabase db, long id)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-        return await db.Domains
+        return await _dbContext.Domains
             .Where(d => d.ID == id)
             .SingleOrDefaultAsync();
     }
 
     public async Task Update(Domain domain)
     {
-        await using var db = Store.CreateContext();
-        Update(db, domain);
-        await db.SaveChangesAsync();
-    }
-    
-    protected void Update(ConfigDatabase db, Domain domain)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (domain == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
 
-        var update = new Domain(); 
+        var update = new Domain();
         update.CopyFixed(domain);
 
-        db.Domains.Attach(update);
-        update.ApplyChanges(domain);           
+        _dbContext.Domains.Attach(update);
+        update.ApplyChanges(domain);
+        await _dbContext.SaveChangesAsync();
     }
-            
+    
     public async Task Remove(string name)
     {
-        await using ConfigDatabase db = Store.CreateContext();
-        await Remove(db, name);
-        await db.SaveChangesAsync();
-    }
-
-    public async Task Remove(ConfigDatabase db, string name)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-        
         if (string.IsNullOrEmpty(name))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
         }
 
-        var domains = await db.Domains
+        var domains = await _dbContext.Domains
             .Where(d => d.Name == name)
             .ToListAsync();
 
         foreach (var domain in domains)
         {
-            db.Domains.Remove(domain);
+            _dbContext.Domains.Remove(domain);
         }
     }
     
     public IEnumerator<Domain> GetEnumerator()
     {
-        using var db = Store.CreateContext();
-        foreach(var domain in db.Domains)
+        foreach(var domain in _dbContext.Domains)
         {
             yield return domain;
         }

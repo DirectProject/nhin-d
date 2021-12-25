@@ -128,7 +128,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             
             DnsRecordManager mgr = CreateManager();
-            ConfigDatabase db = null; 
+            DirectDbContext db = null; 
             DnsRecord dnsRecord = null; 
             mgr.Remove(db, dnsRecord);
             
@@ -142,7 +142,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             
             DnsRecordManager mgr = CreateManager();
-            ConfigDatabase db = null; 
+            DirectDbContext db = null; 
             long recordID = 0; 
             mgr.Remove(db, recordID);
             
@@ -172,7 +172,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             
             DnsRecordManager mgr = CreateManager();
-            ConfigDatabase db = null; 
+            DirectDbContext db = null; 
             long recordID = 0; 
             DnsRecord expected = null; 
             DnsRecord actual;
@@ -223,7 +223,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             
             DnsRecordManager mgr = CreateManager();
-            ConfigDatabase db = null; 
+            DirectDbContext db = null; 
             long lastRecordID = 0; 
             int maxResults = 0;
             Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID = Health.Direct.Common.DnsResolver.DnsStandard.RecordType.AAAA;
@@ -258,7 +258,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             
             DnsRecordManager mgr = CreateManager();
-            ConfigDatabase db = null; 
+            DirectDbContext db = null; 
             DnsRecord record = null; 
             mgr.Add(db, record);
             
@@ -285,7 +285,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             
             DnsRecordManager mgr = CreateManager();
-            ConfigDatabase db = null; 
+            DirectDbContext db = null; 
             DnsRecord[] dnsRecords = null; 
             mgr.Add(db, dnsRecords);
             

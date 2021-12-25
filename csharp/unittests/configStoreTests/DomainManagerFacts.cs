@@ -90,7 +90,7 @@ public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManag
 
         DomainManager target = CreateManager();
         Assert.Equal(MAXDOMAINCOUNT, (await target.Get(string.Empty, MAXDOMAINCOUNT + 1)).Count);
-        await using (ConfigDatabase db = CreateConfigDatabase())
+        await using (DirectDbContext db = CreateConfigDatabase())
         {
             await DomainUtil.RemoveAll(db);
         }
@@ -273,7 +273,7 @@ public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManag
     public async Task GetTest2Last()
     {
 
-        await using ConfigDatabase db = CreateConfigDatabase();
+        await using DirectDbContext db = CreateConfigDatabase();
         DomainManager mgr = CreateManager();
 
         //----------------------------------------------------------------------------------------------------
@@ -370,7 +370,7 @@ public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManag
     public async Task GetTest()
     {
         DomainManager mgr = CreateManager();
-        await using ConfigDatabase db = CreateConfigDatabase();
+        await using DirectDbContext db = CreateConfigDatabase();
         string[] names = new[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
 
         //----------------------------------------------------------------------------------------------------

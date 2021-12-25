@@ -25,18 +25,82 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store;
 
+public interface IAddressManager
+{
+    /// <summary>
+    /// Add a new email address
+    /// </summary>
+    /// <remarks>
+    ///  - Gets the domain of the address and ensures that it exists
+    ///  - Then tries to create an entry in the Address table
+    ///  - The address is created with EntityStatus.New
+    ///  - To use the address, you must enable it
+    /// </remarks>
+    /// <param name="mailAddress">Mail address object</param>
+    Task Add(MailAddress mailAddress);
+
+    /// <summary>
+    /// Add a new email address
+    /// </summary>
+    /// <remarks>
+    ///  - Gets the domain of the address and ensures that it exists
+    ///  - Then tries to create an entry in the Address table
+    ///  - The address is created in the given state
+    /// </remarks>
+    /// <param name="mailAddress">Mail address object</param>
+    /// <param name="status">entity status</param>
+    /// <param name="addressType"></param>
+    Task Add(MailAddress mailAddress, EntityStatus status, string addressType);
+
+    /// <summary>
+    /// Add an address to the store
+    /// </summary>
+    /// <param name="address">address object</param>        
+    Task<Address> Add(Address address);
+
+    /// <summary>
+    /// Add a set of addresses to the store in a single transaction
+    /// </summary>
+    /// <param name="addresses">address set</param>
+    Task Add(IEnumerable<Address> addresses);
+
+    Task Update(Address address);
+    Task Update(IEnumerable<Address> addresses);
+    Task<int> Count();
+    Task<int> Count(long domainId);
+
+    Task<List<Address>> GetAllForDomain(string domainName
+        , int maxResults);
+
+    Task<Address> Get(string emailAddress);
+    Task<List<Address>> Get(string[] emailAddresses);
+    Task<List<Address>> Get(string[] emailAddresses, bool domainSearchEnabled);
+    Task<List<Address>> Get(string[] emailAddresses, EntityStatus? status);
+    Task<List<Address>> Get(string[] emailAddresses, bool domainSearchEnabled, EntityStatus? status);
+    Task<List<Address>> Get(string emailAddress, int maxResults);
+    Task<List<Address>> Get(long domainId, string emailAddress, int maxResults);
+    Task<List<Address>> Get(long[] addressIDs);
+    Task<List<Address>> Get(long[] addressIDs, EntityStatus? status);
+    Task<List<Address>> Get(long addressID);
+    Task Remove(string emailAddress);
+    Task Remove(IEnumerable<string> emailAddresses);
+    Task RemoveDomain(long domainId);
+    Task SetStatus(long domainId, EntityStatus status);
+    IEnumerator<Address> GetEnumerator();
+}
 
 /// <summary>
 /// Used to manage configured addresses
 /// </summary>
-public class AddressManager : IEnumerable<Address>
+public class AddressManager : IEnumerable<Address>, IAddressManager
 {
-    internal AddressManager(ConfigStore store)
+    private readonly DirectDbContext _dbContext;
+
+    internal AddressManager(DirectDbContext dbContext)
     {
-        Store = store;
+        _dbContext = dbContext;
     }
     
-    internal ConfigStore Store { get; }
 
     /// <summary>
     /// Add a new email address
@@ -71,55 +135,42 @@ public class AddressManager : IEnumerable<Address>
             throw new ArgumentNullException(nameof(mailAddress));
         }
 
-        await using var db = Store.CreateContext();
-        await Add(db, mailAddress, status, addressType);
-        await db.SaveChangesAsync();
-    }
-
-    /// <summary>
-    /// Add a new email address within the given database context
-    /// The operation is performed within any transactions in the context
-    /// </summary>
-    /// <remarks>
-    ///  - Gets the domain of the address and ensures that it exists
-    ///  - Then tries to create an entry in the Address table
-    ///  - The address is created in the given state
-    /// </remarks>
-    /// <param name="db">db context</param>
-    /// <param name="mailAddress">Mail address object</param>
-    /// <param name="status">entity status</param>
-    /// <param name="addressType"></param>
-    public async Task<Address> Add(ConfigDatabase db, MailAddress mailAddress, EntityStatus status, string addressType)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
         if (mailAddress == null)
         {
             throw new ArgumentNullException(nameof(mailAddress));
         }
 
-        var domain = await Store.Domains.Get(db, mailAddress.Host);
+        var domain = await Get(mailAddress.Host);
         if (domain == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
 
-        var address = new Address(domain.ID, mailAddress) {Type = addressType, Status = status};
+        var address = new Address(domain.ID, mailAddress) { Type = addressType, Status = status };
 
-        return Add(db, address);
+        await Add(address);
+
+        await _dbContext.SaveChangesAsync();
     }
-    
+
     /// <summary>
     /// Add an address to the store
     /// </summary>
     /// <param name="address">address object</param>        
     public async Task<Address> Add(Address address)
     {
-        await using var db = Store.CreateContext();
-        Add(db, address);
-        await db.SaveChangesAsync();
+        if (address == null)
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+        }
+
+        if (!address.IsValidMailAddress())
+        {
+            throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+        }
+
+        _dbContext.Addresses.Add(address);
+        await _dbContext.SaveChangesAsync();
 
         return address;
     }
@@ -135,49 +186,32 @@ public class AddressManager : IEnumerable<Address>
             throw new ArgumentNullException(nameof(addresses));
         }
 
-        await using var db = Store.CreateContext();
-
         foreach(var address in addresses)
         {
-            Add(db, address);
+            _dbContext.Addresses.Add(address);
         }
             
-        await db.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
     
-    /// <summary>
-    /// Add an address to the database using the given database context
-    /// The address will be added within the context's currently active transaction 
-    /// </summary>
-    /// <param name="db">database context to use</param>
-    /// <param name="address">address object</param>
-    public Address Add(ConfigDatabase db, Address address)
+    
+    public async Task Update(Address address)
     {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-        
         if (address == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
         }
-        
         if (!address.IsValidMailAddress())
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
         }
-        
-        var entity = db.Addresses.Add(address);
 
-        return entity.Entity;
-    }
-    
-    public async Task Update(Address address)
-    {
-        await using var db = Store.CreateContext();
-        Update(db, address);
-        await db.SaveChangesAsync();
+        var update = new Address();
+        update.CopyFixed(address);
+
+        _dbContext.Addresses.Attach(update);
+        update.ApplyChanges(address);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task Update(IEnumerable<Address> addresses)
@@ -187,68 +221,39 @@ public class AddressManager : IEnumerable<Address>
             throw new ArgumentNullException(nameof(addresses));
         }
 
-        await using var db = Store.CreateContext();
         
         foreach(var address in addresses)
         {
-            Update(db, address);
+            if (!address.IsValidMailAddress())
+            {
+                throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
+            }
+
+            var update = new Address();
+            update.CopyFixed(address);
+
+            _dbContext.Addresses.Attach(update);
+            update.ApplyChanges(address);
         }
 
-        await db.SaveChangesAsync();
-    }
-    
-    void Update(ConfigDatabase db, Address address)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-        if (address == null)
-        {
-            throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
-        }
-        if (!address.IsValidMailAddress())
-        {
-            throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
-        }
-        
-        var update = new Address();
-        update.CopyFixed(address);
-        
-        db.Addresses.Attach(update);
-        update.ApplyChanges(address);             
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<int> Count()
     {
-        await using var db = Store.CreateReadContext();
-        return await db.Addresses.CountAsync();
+        return await _dbContext.Addresses.CountAsync();
     }
 
-    public async Task<int> Count(long domainID)
+    public async Task<int> Count(long domainId)
     {
-        await using var db = Store.CreateReadContext();
-        return await db.Addresses.CountAsync(a => a.DomainID == domainID);
+        return await _dbContext.Addresses.CountAsync(a => a.DomainID == domainId);
     }
 
     public async Task<List<Address>> GetAllForDomain(string domainName
                     , int maxResults)
     {
-        await using var db = Store.CreateReadContext();
-        return await GetAllForDomain(db, domainName, maxResults);
-    }
 
-    public async Task<List<Address>> GetAllForDomain(ConfigDatabase db
-                               , string domainName
-                               , int maxResults)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-        var entities = await db.Addresses
+        var entities = await _dbContext.Addresses
             .Include(a => a.Domain)
             .Where(a => a.Domain.Name.ToUpper().Contains(domainName.ToUpper()))
             .OrderBy(a => a.EmailAddress)
@@ -257,25 +262,14 @@ public class AddressManager : IEnumerable<Address>
 
         return entities;
     }
-           
+    
     public async Task<Address> Get(string emailAddress)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, emailAddress);
-    }
-    
-    public async Task<Address> Get(ConfigDatabase db, string emailAddress)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-        return await db.Addresses
+        return await _dbContext.Addresses
             .Where(a => a.EmailAddress == emailAddress)
             .SingleOrDefaultAsync();
     }
-
+    
     public async Task<List<Address>> Get(string[] emailAddresses)
     {
         return await Get(emailAddresses, false, null);
@@ -286,11 +280,7 @@ public class AddressManager : IEnumerable<Address>
         return await Get(emailAddresses, domainSearchEnabled, null);
     }
 
-    public async Task<List<Address>> Get(ConfigDatabase db, string[] emailAddresses)
-    {
-        return await Get(db, emailAddresses, null);
-    }
-
+    
     public async Task<List<Address>> Get(string[] emailAddresses, EntityStatus? status)
     {
         return await Get(emailAddresses, false, status);
@@ -298,8 +288,7 @@ public class AddressManager : IEnumerable<Address>
 
     public async Task<List<Address>> Get(string[] emailAddresses, bool domainSearchEnabled, EntityStatus? status)
     {
-        using var db = Store.CreateReadContext();
-        var addresses = await Get(db, emailAddresses, status);
+        var addresses = await Get(emailAddresses, status);
         
         if (domainSearchEnabled)
         {
@@ -317,6 +306,7 @@ public class AddressManager : IEnumerable<Address>
                 }
                 await AutoMapDomains(enclosureEmailAddress, addressList, status);
             }
+
             return addressList;
         }
 
@@ -327,7 +317,9 @@ public class AddressManager : IEnumerable<Address>
     private async Task AutoMapDomains(string enclosureEmailAddress, List<Address> addressList, EntityStatus? status)
     {
         var mailAddress = new MailAddress(enclosureEmailAddress);
-        var domain = await Store.Domains.Get(mailAddress.Host);
+        var domain = await _dbContext.Domains
+            .Where(d => d.Name == mailAddress.Host)
+            .SingleOrDefaultAsync();
 
         if (domain == null || 
             (status.HasValue && domain.Status != status)
@@ -338,82 +330,37 @@ public class AddressManager : IEnumerable<Address>
         address.Status = domain.Status;
         addressList.Add(address);
     }
-
-
-    public async Task<List<Address>> Get(ConfigDatabase db, string[] emailAddresses, EntityStatus? status)
+    
+    public async Task<List<Address>> Get(string emailAddress, int maxResults)
     {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
-        VerifyEmailAddresses(emailAddresses);
-
-        if (status == null)
-        {
-            return await db.Addresses
-                .Where(a => emailAddresses.Contains(a.EmailAddress))
-                .ToListAsync();
-        }
-
-        return await db.Addresses
-            .Where(a => emailAddresses.Contains(a.EmailAddress)
-                        && a.Status == status)
-            .ToListAsync();
-    }
-
-    public async Task<List<Address>> Get(string lastAddressID, int maxResults)
-    {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, lastAddressID, maxResults);
-    }
-
-    public async Task<List<Address>> Get(ConfigDatabase db, string emailAddress, int maxResults)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
         if (string.IsNullOrEmpty(emailAddress))
         {
-            return await db.Addresses
+            return await _dbContext.Addresses
                 .OrderBy(a => a.EmailAddress)
                 .Take(maxResults)
                 .ToListAsync();
         }
 
-        return await db.Addresses
+        return await _dbContext.Addresses
             .Where(a => String.Compare(a.EmailAddress, emailAddress) > 0)
             .OrderBy(a => a.EmailAddress)
             .Take(maxResults)
             .ToListAsync();
     }
 
-    public async Task<List<Address>> Get(long domainID, string lastAddressID, int maxResults)
+    public async Task<List<Address>> Get(long domainId, string emailAddress, int maxResults)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, domainID, lastAddressID, maxResults);
-    }
-
-    public async Task<List<Address>> Get(ConfigDatabase db, long domainID, string emailAddress, int maxResults)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-
         if (string.IsNullOrEmpty(emailAddress))
         {
-            return await db.Addresses
-                .Where(a => a.DomainID == domainID)
+            return await _dbContext.Addresses
+                .Where(a => a.DomainID == domainId)
                 .OrderBy(a => a.EmailAddress)
                 .Take(maxResults)
                 .ToListAsync();
         }
 
-        return await db.Addresses
-            .Where(a => a.DomainID == domainID
+        return await _dbContext.Addresses
+            .Where(a => a.DomainID == domainId
                         && String.Compare(a.EmailAddress, emailAddress) > 0)
             .OrderBy(a => a.EmailAddress)
             .Take(maxResults)
@@ -424,116 +371,73 @@ public class AddressManager : IEnumerable<Address>
     {
         return await Get(addressIDs, null);
     }
-
-    public async Task<List<Address>> Get(ConfigDatabase db, long[] addressIDs)
-    {
-        return await Get(db, addressIDs, null);
-    }
-
+    
     public async Task<List<Address>> Get(long[] addressIDs, EntityStatus? status)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, addressIDs, status);
-    }
-
-    public async Task<List<Address>> Get(ConfigDatabase db, long[] addressIDs, EntityStatus? status)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-        
         if (status == null)
         {
-            return await db.Addresses
+            return await _dbContext.Addresses
                 .Where(a => addressIDs.Contains(a.ID))
                 .ToListAsync();
         }
         
-        return await db.Addresses
+        return await _dbContext.Addresses
             .Where(a => addressIDs.Contains(a.ID))
             .ToListAsync();
     }
     
     public async Task<List<Address>> Get(long addressID)
     {
-        await using var db = Store.CreateReadContext();
-        return await Get(db, addressID);
-    }
-    
-    public async Task<List<Address>> Get(ConfigDatabase db, long addressID)
-    {
-        if (db == null)
-        {
-            throw new ArgumentNullException(nameof(db));
-        }
-        
-        return await db.Addresses
+        return await _dbContext.Addresses
             .Where(a => a.ID == addressID)
             .ToListAsync();
     }
-            
-    public async Task Remove(string emailAddress)
-    {
-        await using var db = Store.CreateContext();
-        await Remove(db, emailAddress);
-        await db.SaveChangesAsync();
-    }
     
-    public async Task Remove(ConfigDatabase db, string emailAddress)
+    public async Task Remove(string emailAddress)
     {
         if (string.IsNullOrEmpty(emailAddress))
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidEmailAddress);
         }
 
-        var addresses = await db.Addresses
+        var addresses = await _dbContext.Addresses
             .Where(a => a.EmailAddress == emailAddress)
             .ToListAsync();
 
         foreach (var address in addresses)
         {
-            db.Addresses.Remove(address);
-        }
-    }
-
-    public async Task Remove(IEnumerable<string> emailAddresses)
-    {
-        await using var db = Store.CreateContext();
-
-        foreach(string emailAddress in emailAddresses)
-        {
-            await Remove(db, emailAddress);
+            _dbContext.Addresses.Remove(address);
         }
 
-        await db.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
     
-    public async Task RemoveDomain(long domainID)
+    public async Task Remove(IEnumerable<string> emailAddresses)
     {
-        await using var db = Store.CreateContext();
-        await RemoveDomain(db, domainID);
-        await db.SaveChangesAsync();
-    }
+        foreach(string emailAddress in emailAddresses)
+        {
+            await Remove(emailAddress);
+        }
 
-    public async Task RemoveDomain(ConfigDatabase db, long domainId)
+        await _dbContext.SaveChangesAsync();
+    }
+    
+    public async Task RemoveDomain(long domainId)
     {
-        var addresses = await db.Addresses
+        var addresses = await _dbContext.Addresses
             .Where(a => a.DomainID == domainId)
             .ToListAsync();
 
         foreach (var address in addresses)
         {
-            db.Addresses.Remove(address);
+            _dbContext.Addresses.Remove(address);
         }
+        await _dbContext.SaveChangesAsync();
     }
     
-
     public async Task SetStatus(long domainId, EntityStatus status)
     {
-        await using var db = Store.CreateContext();
-
-        var addresses = await db.Addresses
+        var addresses = await _dbContext.Addresses
             .Where(a => a.DomainID == domainId)
             .ToListAsync();
 
@@ -545,7 +449,7 @@ public class AddressManager : IEnumerable<Address>
             }
         }
 
-        await db.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
     
     void VerifyEmailAddresses(string[] emailAddresses)
@@ -566,8 +470,7 @@ public class AddressManager : IEnumerable<Address>
 
     public IEnumerator<Address> GetEnumerator()
     {
-        using var db = Store.CreateContext();
-        foreach (Address address in db.Addresses)
+        foreach (Address address in _dbContext.Addresses)
         {
             yield return address;
         }

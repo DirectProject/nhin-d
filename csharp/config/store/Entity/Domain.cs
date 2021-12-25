@@ -140,7 +140,7 @@ namespace Health.Direct.Config.Store.Entity
         {
             if (string.IsNullOrEmpty(domainName))
             {
-                throw new ArgumentException("value was null or empty", "domainName");
+                throw new ArgumentException("value was null or empty", nameof(domainName));
             }
             try
             {
