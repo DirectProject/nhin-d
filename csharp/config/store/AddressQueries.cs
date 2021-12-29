@@ -78,12 +78,12 @@
 //                     select address.CertPolicyId).Count();
 //         }
 //         
-//         public static Address Get(this Table<Address> table, string emailAddress)
+//         public static Address GetByAgentName(this Table<Address> table, string emailAddress)
 //         {
 //             return Addresses(table.GetDB(), emailAddress).SingleOrDefault();
 //         }
 //
-//         public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses, EntityStatus? status)
+//         public static IEnumerable<Address> GetByAgentName(this Table<Address> table, string[] emailAddresses, EntityStatus? status)
 //         {
 //             if (emailAddresses.IsNullOrEmpty())
 //             {
@@ -97,7 +97,7 @@
 //                    select address;
 //         }
 //
-//         public static IEnumerable<Address> Get(this Table<Address> table, string[] emailAddresses)
+//         public static IEnumerable<Address> GetByAgentName(this Table<Address> table, string[] emailAddresses)
 //         {
 //             if (emailAddresses.IsNullOrEmpty())
 //             {
@@ -111,17 +111,17 @@
 //                    select address;
 //         }
 //
-//         public static IQueryable<Address> Get(this Table<Address> table, long domainID, long lastAddressID, int maxResults)
+//         public static IQueryable<Address> GetByAgentName(this Table<Address> table, long domainID, long lastAddressID, int maxResults)
 //         {
 //             return DomainAddresses(table.GetDB(), domainID, lastAddressID, maxResults);
 //         }
 //
-//         public static IQueryable<Address> Get(this Table<Address> table, long lastAddressID, int maxResults)
+//         public static IQueryable<Address> GetByAgentName(this Table<Address> table, long lastAddressID, int maxResults)
 //         {
 //             return AllAddresses(table.GetDB(), lastAddressID, maxResults);
 //         }
 //
-//         public static IQueryable<Address> Get(this Table<Address> table, long[] ids)
+//         public static IQueryable<Address> GetByAgentName(this Table<Address> table, long[] ids)
 //         {
 //             //
 //             // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
@@ -131,7 +131,7 @@
 //                    select address;
 //         }
 //
-//         public static IQueryable<Address> Get(this Table<Address> table, long[] ids, EntityStatus status)
+//         public static IQueryable<Address> GetByAgentName(this Table<Address> table, long[] ids, EntityStatus status)
 //         {
 //             //
 //             // We cannot precompile this (throws at runtime) because ids.Length can change at runtime
@@ -141,7 +141,7 @@
 //                    select address;
 //         }
 //         
-//         public static Address Get(this Table<Address> table, long addressID)
+//         public static Address GetByAgentName(this Table<Address> table, long addressID)
 //         {
 //             return IDToAddress(table.GetDB(), addressID).FirstOrDefault();
 //         }

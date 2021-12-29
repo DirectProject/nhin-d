@@ -59,7 +59,7 @@
 //             for (int i = 0; i < 10; ++i)
 //             {
 //                 NamedBlob blobGet = null;
-//                 Assert.Null(Record.Exception(() => blobGet = m_store.Blobs.Get(name)));
+//                 Assert.Null(Record.Exception(() => blobGet = m_store.Blobs.GetByAgentName(name)));
 //
 //                 TestUserSettings settingsDest = null;
 //
@@ -70,7 +70,7 @@
 //
 //                 Assert.Null(Record.Exception(() => m_store.Blobs.Update(new NamedBlob(name, settingsDest))));
 //
-//                 Assert.Null(Record.Exception(() => blobGet = m_store.Blobs.Get(name)));
+//                 Assert.Null(Record.Exception(() => blobGet = m_store.Blobs.GetByAgentName(name)));
 //
 //                 Assert.Null(Record.Exception(() => settingsDest = blobGet.GetObject<TestUserSettings>()));
 //                 Assert.True(string.Equals(settingsDest.FirstName, newFirstName));
@@ -87,7 +87,7 @@
 //             Assert.Null(Record.Exception(() => m_store.Blobs.Add(blobSrc)));
 //
 //             NamedBlob blobGet = null;
-//             Assert.Null(Record.Exception(() => blobGet = m_store.Blobs.Get(name)));
+//             Assert.Null(Record.Exception(() => blobGet = m_store.Blobs.GetByAgentName(name)));
 //
 //             TestUserSettings settingsDest = null;
 //             Assert.Null(Record.Exception(() => settingsDest = blobGet.GetObject<TestUserSettings>()));

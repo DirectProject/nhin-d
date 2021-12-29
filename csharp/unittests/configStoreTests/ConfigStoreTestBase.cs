@@ -17,6 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,28 +25,33 @@ using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
 using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Health.Direct.Config.Store.Tests
 {
     public class ConfigStoreTestBase
     {
-        private const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        protected const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
 
-        protected const int MAXDOMAINCOUNT = 10; //---number should be <= .cer file count in metadata folder
-        protected const int MAXSMTPCOUNT = 3;
-        protected const int MAXADDRESSCOUNT = 3;
-        protected const int MAXCERTPEROWNER = 3;  //---number cannot be greater than the certs per domain in metadata\cert folder (see pattern domain[x].test.com.[y] where min(max(y)) = this number)
+        protected const int MaxDomainCount = 10; //---number should be <= .cer file count in metadata folder
+        protected const int MaxSmtpCount = 3;
+        protected const int MaxAddressCount = 3;
+        protected const int MaxCertPerOwner = 3;  //---number cannot be greater than the certs per domain in metadata\cert folder (see pattern domain[x].test.com.[y] where min(max(y)) = this number)
 
-        protected const int PREFERENCE = 2;
-        protected const long STARTID = 1;
-        private const string DOMAINNAMEPATTERN = "domain{0}.test.com";
-        private const string ADDRESSPATTERN = "test@address{0}.domain{1}.com";
-        private const string SMTPDOMAINNAMEPATTERN = "smtp{0}.domain{1}.test.com";
-        private const string ADDRESSDISPLAYNAMEPATTERN = "domain[{0}] add[{1}]";
-        private const string DNSRECORDSEPATH = @"DnsRecords";
-        private const string CERTSRECORDSPATH = @"certs";
-        protected const string CERT_PASSWORD = "passw0rd!";
+        protected const int Preference = 2;
+        protected const long StartId = 1;
+        private const string DomainNamePattern = "domain{0}.test.com";
+        private const string AddressPattern = "test@address{0}.domain{1}.com";
+        private const string SmtpDomainNamePattern = "smtp{0}.domain{1}.test.com";
+        private const string AddressDisplayNamePattern = "domain[{0}] add[{1}]";
+        private const string DnsRecordsPath = @"DnsRecords";
+        private const string CertsRecordsPath = @"certs";
+        protected const string CertPassword = "passw0rd!";
 
         protected Dictionary<string, DnsResponse> m_DomainResponses;
 
@@ -57,10 +63,6 @@ namespace Health.Direct.Config.Store.Tests
         private static readonly string ErrorLinePreamble = new string('!', PreambleWidth);
         private static readonly string SuccessLinePreamble = new string('-', PreambleWidth);
 
-        protected static MdnManager CreateManager()
-        {
-            return new MdnManager(CreateConfigStore());
-        }
 
         /// <summary>
         /// Default ctor. Will log to <see cref="Console.Out"/>.
@@ -84,13 +86,14 @@ namespace Health.Direct.Config.Store.Tests
         /// <remarks>
         /// Will not dump to output if the dump was disable with the ctor set false.
         /// </remarks>
+        /// <param name="testOutputHelper"><see cref="ITestOutputHelper"/></param>
         /// <param name="msg">The message to dump</param>
-        protected void DumpError(string msg)
+        protected void DumpError(ITestOutputHelper testOutputHelper, string msg)
         {
             if (!m_dumpEnabled) return;
 
-            DumpLine(ErrorLinePreamble);
-            Dump(msg);
+            DumpLine(testOutputHelper, ErrorLinePreamble);
+            Dump(testOutputHelper, msg);
         }
 
         /// <summary>
@@ -100,12 +103,12 @@ namespace Health.Direct.Config.Store.Tests
         /// Will not dump to output if the dump was disable with the ctor set false.
         /// </remarks>
         /// <param name="msg">The message to dump</param>
-        protected void DumpSuccess(string msg)
+        protected void DumpSuccess(ITestOutputHelper testOutputHelper, string msg)
         {
             if (!m_dumpEnabled) return;
 
-            DumpLine(SuccessLinePreamble);
-            Dump(msg);
+            DumpLine(testOutputHelper, SuccessLinePreamble);
+            Dump(testOutputHelper, msg);
         }
 
         /// <summary>
@@ -113,11 +116,12 @@ namespace Health.Direct.Config.Store.Tests
         /// with <paramref name="format"/> and <paramref name="args"/>. A preamble of '-'s will
         /// begin the message.
         /// </summary>
+        /// <param name="testOutputHelper"><see cref="ITestOutputHelper"/></param>
         /// <param name="format">The format of the message</param>
         /// <param name="args">The values to format</param>
-        protected void DumpSuccess(string format, params object[] args)
+        protected void DumpSuccess(ITestOutputHelper testOutputHelper, string format, params object[] args)
         {
-            DumpSuccess(string.Format(format, args));
+            DumpSuccess(testOutputHelper, string.Format(format, args));
         }
 
         /// <summary>
@@ -126,12 +130,13 @@ namespace Health.Direct.Config.Store.Tests
         /// <remarks>
         /// Will not dump to output if the dump was disable with the ctor set false.
         /// </remarks>
+        /// <param name="testOutputHelper"><see cref="ITestOutputHelper"/></param>
         /// <param name="msg">The message to dump</param>
-        protected void Dump(string msg)
+        protected void Dump(ITestOutputHelper testOutputHelper, string msg)
         {
             if (!m_dumpEnabled) return;
 
-            DumpLine(string.Format("{0:mm:ss.ff} - {1}", DateTime.UtcNow, msg));
+            DumpLine(testOutputHelper, $"{DateTime.UtcNow:mm:ss.ff} - {msg}");
         }
 
         /// <summary>
@@ -139,19 +144,21 @@ namespace Health.Direct.Config.Store.Tests
         /// with <paramref name="format"/> and <paramref name="args"/>.
         /// </summary>
         /// <param name="format">The format of the message</param>
+        /// /// <param name="testOutputHelper"><see cref="ITestOutputHelper"/></param>
         /// <param name="args">The values to format</param>
-        protected void Dump(string format, params object[] args)
+        protected void Dump(ITestOutputHelper testOutputHelper, string format, params object[] args)
         {
-            Dump(string.Format(format, args));
+            Dump(testOutputHelper, string.Format(format, args));
         }
 
         /// <summary>
         /// dumps out message to the console
         /// </summary>
+        /// <param name="testOutputHelper"><see cref="ITestOutputHelper"/></param>
         /// <param name="msg"></param>
-        private static void DumpLine(string msg)
+        private static void DumpLine(ITestOutputHelper testOutputHelper, string msg)
         {
-            Console.Out.WriteLine(msg);
+            testOutputHelper.WriteLine(msg);
         }
 
         /// <summary>
@@ -175,11 +182,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
-                    for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                    for (int t = 1; t <= MaxCertPerOwner; t++)
                     {
-                        yield return new[] { GetCertificateFromTestCertPfx(i, t) };
+                        yield return new object[] { GetCertificateFromTestCertPfx(i, t) };
                     }
                 }
 
@@ -196,11 +203,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
-                    for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                    for (int t = 1; t <= MaxCertPerOwner; t++)
                     {
-                        yield return new[] { GetAnchorFromTestCertPfx(i, t) };
+                        yield return new object[] { GetAnchorFromTestCertPfx(i, t) };
                     }
                 }
 
@@ -217,11 +224,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
-                    for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                    for (int t = 1; t <= MaxCertPerOwner; t++)
                     {
-                        yield return new[] { GetTestCertFromPfx(i, t) };
+                        yield return new object[] { GetTestCertFromPfx(i, t) };
                     }
 
                 }
@@ -239,11 +246,11 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
-                    for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                    for (int t = 1; t <= MaxCertPerOwner; t++)
                     {
-                        yield return new[] { GetCertBytesTestCertPfx(i, t) };
+                        yield return new object[] { GetCertBytesTestCertPfx(i, t) };
                     }
                 }
 
@@ -257,7 +264,7 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                for (int t = 1; t <= MAXDOMAINCOUNT; t++)
+                for (int t = 1; t <= MaxDomainCount; t++)
                 {
                     yield return BuildDomainName(t);
 
@@ -377,18 +384,18 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// Gets the TestMXDomainNames of the MXManagerTests
         /// </summary>
-        protected static IEnumerable<KeyValuePair<long, KeyValuePair<int, string>>> TestMXDomainNames
+        protected static IEnumerable<KeyValuePair<long, KeyValuePair<int, string>>> TestMxDomainNames
         {
             get
             {
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
-                    for (int t = 1; t <= MAXSMTPCOUNT; t++)
+                    for (int t = 1; t <= MaxSmtpCount; t++)
                     {
                         //----------------------------------------------------------------------------------------------------
                         //---use i as the domain id, t as preference
                         yield return new KeyValuePair<long, KeyValuePair<int, string>>(i
-                                                                                      , new KeyValuePair<int, string>(t, BuildSMTPDomainName(i, t)));
+                                                                                      , new KeyValuePair<int, string>(t, BuildSmtpDomainName(i, t)));
                     }
                 }
 
@@ -402,9 +409,9 @@ namespace Health.Direct.Config.Store.Tests
         {
             get
             {
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
-                    for (int t = 1; t <= MAXADDRESSCOUNT; t++)
+                    for (int t = 1; t <= MaxAddressCount; t++)
                     {
                         //----------------------------------------------------------------------------------------------------
                         //---use i as the domain id, t as preference
@@ -430,11 +437,11 @@ namespace Health.Direct.Config.Store.Tests
                     BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, MdnStatus.Started);
 
                 // Processed expired.  Dispatch not requested
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     yield return
                         BuildMdn(Guid.NewGuid().ToString()
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , $"Name{i}@nhind.hsgincubator.com"
                         , "ProcessExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Started
@@ -444,11 +451,11 @@ namespace Health.Direct.Config.Store.Tests
                 }
 
                 // Processed expired. Dispatch requested
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     yield return
                         BuildMdn(Guid.NewGuid().ToString()
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , $"Name{i}@nhind.hsgincubator.com"
                         , "ProcessExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Started
@@ -457,12 +464,12 @@ namespace Health.Direct.Config.Store.Tests
                 }
 
                 // Processed but no dispatch requested
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     string msgId = Guid.NewGuid().ToString();
                     yield return
                     BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "Processed@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Started
@@ -471,7 +478,7 @@ namespace Health.Direct.Config.Store.Tests
 
                     yield return
                     BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "Processed@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Processed
@@ -480,12 +487,12 @@ namespace Health.Direct.Config.Store.Tests
                 }
 
                 // Processed and dispatch requested, 
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     string msgId = Guid.NewGuid().ToString();
                     yield return
                     BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessedAndDispatchRequested@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Started
@@ -494,7 +501,7 @@ namespace Health.Direct.Config.Store.Tests
 
                     yield return
                     BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessedAndDispatchRequested@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Processed
@@ -520,13 +527,13 @@ namespace Health.Direct.Config.Store.Tests
                     BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", null, MdnStatus.Started);
 
                 // Dispatched 10 days ago.
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     //First record is started
                     string msgId = Guid.NewGuid().ToString();
                     yield return
                         BuildMdn(msgId
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , $"Name{i}@nhind.hsgincubator.com"
                         , "DispatchedExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Started
@@ -536,7 +543,7 @@ namespace Health.Direct.Config.Store.Tests
                     //sedond record is dispatched
                     yield return
                         BuildMdn(msgId
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , $"Name{i}@nhind.hsgincubator.com"
                         , "DispatchedExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Dispatched
@@ -545,23 +552,23 @@ namespace Health.Direct.Config.Store.Tests
                 }
 
                 // Processed 10 days ago
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     //First record is started
                     string msgId = Guid.NewGuid().ToString();
                     yield return
                         BuildMdn(msgId
-                        , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                        , $"Name{i}@nhind.hsgincubator.com"
                         , "ProcessExpired@domain1.test.com"
                         , "To dispatch or not dispatch"
                         , MdnStatus.Started
                         , false
                         , DateTimeHelper.Now.AddDays(-10).AddSeconds(-10));
 
-                    //sedond record is dispatched
+                    //second record is dispatched
                     yield return
                        BuildMdn(msgId
-                       , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                       , $"Name{i}@nhind.hsgincubator.com"
                        , "ProcessExpired@domain1.test.com"
                        , "To dispatch or not dispatch"
                        , MdnStatus.Processed
@@ -570,12 +577,12 @@ namespace Health.Direct.Config.Store.Tests
                 }
 
                 // Processed but now times out for dispatch
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     string msgId = Guid.NewGuid().ToString();
 
                     yield return BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessedThenTimeoutDispatch@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Started
@@ -583,7 +590,7 @@ namespace Health.Direct.Config.Store.Tests
                     , DateTimeHelper.Now.AddDays(-20).AddSeconds(-10));  //Original message 20 days ago
 
                     yield return BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessedThenTimeoutDispatch@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Processed
@@ -591,7 +598,7 @@ namespace Health.Direct.Config.Store.Tests
                     , DateTimeHelper.Now.AddDays(-10));
 
                     yield return BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessedThenTimeoutDispatch@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.TimedOut
@@ -602,12 +609,12 @@ namespace Health.Direct.Config.Store.Tests
                 }
 
                 // Timed out for Process
-                for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+                for (int i = 1; i <= MaxDomainCount; i++)
                 {
                     string msgId = Guid.NewGuid().ToString();
 
                     yield return BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessExpired@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.Started
@@ -616,7 +623,7 @@ namespace Health.Direct.Config.Store.Tests
 
 
                     yield return BuildMdn(msgId
-                    , string.Format("Name{0}@nhind.hsgincubator.com", i)
+                    , $"Name{i}@nhind.hsgincubator.com"
                     , "ProcessExpired@domain2.test.com"
                     , "To dispatch or not dispatch"
                     , MdnStatus.TimedOut
@@ -657,15 +664,15 @@ namespace Health.Direct.Config.Store.Tests
         /// Simple method to return a list containing all MX domain names
         /// </summary>
         /// <returns>List of type string containing all domain names</returns>
-        protected static List<string> AllMXDomainNames()
+        protected static List<string> AllMxDomainNames()
         {
-            var names = new List<string>(MAXDOMAINCOUNT * MAXSMTPCOUNT);
+            var names = new List<string>(MaxDomainCount * MaxSmtpCount);
 
-            for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+            for (int i = 1; i <= MaxDomainCount; i++)
             {
-                for (int t = 1; t <= MAXSMTPCOUNT; t++)
+                for (int t = 1; t <= MaxSmtpCount; t++)
                 {
-                    names.Add(BuildSMTPDomainName(i, t));
+                    names.Add(BuildSmtpDomainName(i, t));
                 }
             }
 
@@ -681,18 +688,16 @@ namespace Health.Direct.Config.Store.Tests
         /// they must be copied to the metadata\dns responses folder in this project and marked as copy to output
         /// directory, if newer
         /// </remarks>
-        protected async Task InitDnsRecords()
+        protected async Task InitDnsRecords(DirectDbContext dbContext)
         {
-            List<string> domains = DnsRecordDomainNames.ToList();
-
+            var domains = DnsRecordDomainNames.ToList();
 
             await using (var db = new DirectDbContext(ConnectionString))
             {
                 await DnsRecordUtil.RemoveAll(db);
             }
 
-            var mgr = new DnsRecordManager(CreateConfigStore());
-            
+            var mgr = new DnsRecordManager(dbContext);
 
             //----------------------------------------------------------------------------------------------------
             //---go through all domains and load up the corresponding record types
@@ -700,19 +705,19 @@ namespace Health.Direct.Config.Store.Tests
             {
                 await mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.MX
-                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<MXRecord>(Path.Combine(DnsRecordsPath
                         , $"mx.{domainName}.bin"))
                     , $"some test notes for mx domain{domainName}"));
 
                 await mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.SOA
-                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<SOARecord>(Path.Combine(DnsRecordsPath
                         , $"soa.{domainName}.bin"))
                     , $"some test notes for soa domain{domainName}"));
 
                 await mgr.Add(new DnsRecord(domainName
                     , (int)DnsStandard.RecordType.ANAME
-                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DNSRECORDSEPATH
+                    , LoadAndVerifyDnsRecordFromBin<AddressRecord>(Path.Combine(DnsRecordsPath
                         , $"aname.{domainName}.bin"))
                     , $"some test notes for aname domain{domainName}"));
 
@@ -720,7 +725,7 @@ namespace Health.Direct.Config.Store.Tests
         }
 
         /// <summary>
-        /// loads and verifies the dnsrecords from the bin associated bin files, ensuring that the types
+        /// loads and verifies the dns records from the bin associated bin files, ensuring that the types
         /// match up
         /// </summary>
         /// <typeparam name="T">Type of record that is expected</typeparam>
@@ -732,51 +737,50 @@ namespace Health.Direct.Config.Store.Tests
 
             //----------------------------------------------------------------------------------------------------
             //---read the stream from the bytes
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
                 //Console.WriteLine("checking [{0}]", path);
                 bytes = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
-                DnsBufferReader rdr = new DnsBufferReader(bytes, 0, bytes.Length);
-                DnsResourceRecord rec = DnsResourceRecord.Deserialize(ref rdr);
-                Assert.Equal(rec.GetType(), typeof(T));
+                var rdr = new DnsBufferReader(bytes, 0, bytes.Length);
+                var rec = DnsResourceRecord.Deserialize(ref rdr);
+                Assert.Equal(typeof(T), rec.GetType());
 
             }
             return bytes;
         }
 
         /// <summary>
-        /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
+        /// This method will clean, load and verify CertPolicy records in the DB for testing purposes
         /// </summary>
-        protected async Task InitCertPolicyRecords()
+        protected async Task InitCertPolicyRecords(DirectDbContext dbContext)
         {
             //var dataLoadOptions = new DataLoadOptions();
             //dataLoadOptions.LoadWith<CertPolicy>(c => c.CertPolicyGroupMap);
 
-            ConfigStore configStore = CreateConfigStore();
-            await InitCertPolicyRecords(new CertPolicyManager(configStore, new CertPolicyParseValidator())
+            await InitCertPolicyRecords(new CertPolicyManager(dbContext, new CertPolicyParseValidator())
                                    , new DirectDbContext(ConnectionString));
         }
 
         /// <summary>
-        /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
+        /// This method will clean, load and verify CertPolicy records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">CertPolicyManager instance used for controlling the certPolicy records</param>
         /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
+        /// number of items using the constants above
         /// </remarks>
-        protected async Task InitCertPolicyRecords(CertPolicyManager mgr
-                                         , DirectDbContext db)
+        protected async Task InitCertPolicyRecords(CertPolicyManager mgr, DirectDbContext db)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
-            await CertPolicyUtil.RemoveAll(db);
+            //await CertPolicyUtil.RemoveAll(db);
             await db.SaveChangesAsync();
-            foreach (CertPolicy val in TestCertPolicies)
+
+            foreach (var val in TestCertPolicies)
             {
-                mgr.Add(db, val);
+                await mgr.Add(val);
             }
 
             //----------------------------------------------------------------------------------------------------
@@ -785,104 +789,93 @@ namespace Health.Direct.Config.Store.Tests
 
             foreach (CertPolicy val in TestCertPolicies)
             {
-                Assert.NotNull(mgr.Get(db, val.Name));
+                Assert.NotNull(await mgr.Get(val.Name));
             }
         }
 
         /// <summary>
-        /// This method will clean, load and verify CertPolcyGroup records in the DB for testing purposes
+        /// This method will clean, load and verify CertPolicyGroup records in the DB for testing purposes
         /// </summary>
-        protected async Task InitCertPolicyGroupRecords()
+        protected async Task InitCertPolicyGroupRecords(DirectDbContext dbContext)
         {
-            var configStore = CreateConfigStore();
-            await InitCertPolicyGroupRecords(new CertPolicyGroupManager(configStore));
+            await InitCertPolicyGroupRecords(new CertPolicyGroupManager(dbContext), dbContext);
         }
 
         /// <summary>
-        /// This method will clean, load and verify CertPolcy records in the DB for testing purposes
+        /// This method will clean, load and verify CertPolicy records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">CertPolicyGroupManager instance used for controlling the certPolicyGroup records</param>
-        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
+        /// <param name="dbContext">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
+        /// number of items using the constants above
         /// </remarks>
-        protected async Task InitCertPolicyGroupRecords(CertPolicyGroupManager mgr)
+        protected async Task InitCertPolicyGroupRecords(CertPolicyGroupManager mgr, DirectDbContext dbContext)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
 
 
-            await using var db = new DirectDbContext(ConnectionString);
-            await CertPolicyGroupUtil.RemoveAll(db);
-            await db.SaveChangesAsync();
+            //await CertPolicyGroupUtil.RemoveAll(dbContext);
+            await dbContext.SaveChangesAsync();
 
             foreach (CertPolicyGroup val in TestCertPolicyGroups)
             {
-                mgr.Add(db, val);
+                await mgr.Add(val);
             }
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            await db.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
 
             foreach (CertPolicyGroup val in TestCertPolicyGroups)
             {
-                Assert.NotNull(mgr.Get(db, val.Name));
+                Assert.NotNull(await mgr.Get(val.Name));
             }
         }
 
         /// <summary>
         /// This method will clean, load and verify Domain records in the DB for testing purposes
         /// </summary>
-        protected async Task InitDomainRecords()
+        public static void InitDomainRecords(DirectDbContext dbContext)
         {
-            await InitDomainRecords(new DomainManager(CreateConfigStore())
-                                   , new DirectDbContext(ConnectionString));
+            InitDomainRecords(new DomainManager(dbContext), dbContext);
         }
 
         /// <summary>
         /// This method will clean, load and verify Domain records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">DomainManager instance used for controlling the Domain records</param>
-        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
+        /// <param name="dbContext">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
+        /// number of items using the constants above
         /// </remarks>
-        protected async Task InitDomainRecords(DomainManager mgr
-                                         , DirectDbContext db)
+        protected static void InitDomainRecords(DomainManager mgr, DirectDbContext dbContext)
         {
             //----------------------------------------------------------------------------------------------------
             //---clean all existing records
-            await DomainUtil.RemoveAll(db);
-            
+            // await DomainUtil.RemoveAll(dbContext);
+
             foreach (string val in TestDomainNames)
             {
-                mgr.Add(db, new Domain(val));
+                dbContext.Domains.Add(new Domain(val));
             }
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
-            await db.SaveChangesAsync();
-
-            foreach (string val in TestDomainNames)
-            {
-                Assert.NotNull(mgr.Get(val));
-            }
-
+            dbContext.SaveChanges();
         }
 
         /// <summary>
         /// This method will clean, load and verify Certificate records based on the certs stored in the
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
-        protected async Task InitCertRecords()
+        protected async Task InitCertRecords(DirectDbContext dbContext)
         {
-            await InitCertRecords(new CertificateManager(CreateConfigStore())
-                                 , new DirectDbContext(ConnectionString));
+            await InitCertRecords(new CertificateManager(dbContext), dbContext);
         }
 
         /// <summary>
@@ -890,22 +883,19 @@ namespace Health.Direct.Config.Store.Tests
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
         /// <param name="mgr">CertificateManager instance used for controlling the Certificate records</param>
-        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
+        /// <param name="dbContext">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
+        /// number of items using the constants above
         /// </remarks>
-        protected async Task InitCertRecords(CertificateManager mgr
-                                       , DirectDbContext db)
+        protected async Task InitCertRecords(CertificateManager mgr, DirectDbContext dbContext)
         {
-            await CertificateUtil.RemoveAll(db);
+            // await CertificateUtil.RemoveAll(dbContext);
 
-            for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+            for (int i = 1; i <= MaxDomainCount; i++)
             {
-                //----------------------------------------------------------------------------------------------------
-                //---cheezy but will add MAXCERTPEROWNER certs per each relative domain
-                for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                for (int t = 1; t <= MaxCertPerOwner; t++)
                 {
                     await mgr.Add(GetCertificateFromTestCertPfx(i, t));
                 }
@@ -917,10 +907,9 @@ namespace Health.Direct.Config.Store.Tests
         /// This method will clean, load and verify Anchor records based on the certs stored in the
         /// metadata\certs folder into the db for testing purposes
         /// </summary>
-        protected async Task InitAnchorRecords()
+        protected async Task InitAnchorRecords(DirectDbContext dbContext)
         {
-            await InitAnchorRecords(new AnchorManager(CreateConfigStore())
-                                   , new DirectDbContext(ConnectionString));
+            await InitAnchorRecords(new AnchorManager(dbContext), dbContext);
         }
 
         /// <summary>
@@ -932,22 +921,18 @@ namespace Health.Direct.Config.Store.Tests
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
+        /// number of items using the constants above
         /// </remarks>
         protected async Task InitAnchorRecords(AnchorManager mgr
                                          , DirectDbContext db)
         {
-            await AnchorUtil.RemoveAll(db);
-            
-            for (int i = 1; i <= MAXDOMAINCOUNT; i++)
+            //await AnchorUtil.RemoveAll(db);
+
+            for (int i = 1; i <= MaxDomainCount; i++)
             {
-                //----------------------------------------------------------------------------------------------------
-                //---cheezy but will add MAXCERTPEROWNER certs per each relative domain
-                for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                for (int t = 1; t <= MaxCertPerOwner; t++)
                 {
-                    Anchor anc = GetAnchorFromTestCertPfx(i, t);
-                    //----------------------------------------------------------------------------------------------------
-                    //---cheezey but flags all as incoming and outgoing
+                    var anc = GetAnchorFromTestCertPfx(i, t);
 
                     anc.ForIncoming = true;
                     anc.ForOutgoing = true;
@@ -960,42 +945,36 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// This method will clean, load and verify address records in the DB for testing purposes
         /// </summary>
-        protected async Task InitAddressRecords()
+        protected async Task InitAddressRecords(DirectDbContext dbContext)
         {
-            await InitAddressRecords(new AddressManager(CreateConfigStore())
-                                    , new DirectDbContext(ConnectionString));
+            await InitAddressRecords(new AddressManager(dbContext), dbContext);
         }
 
         /// <summary>
         /// This method will clean, load and verify address records in the DB for testing purposes
         /// </summary>
         /// <param name="mgr">AddressManager instance used for controlling the Address records</param>
-        /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
+        /// <param name="dbContext">DirectDbContext instance used as the target storage mechanism for the records</param>
         /// <remarks>
         /// this approach goes out to db each time it is called, however it ensures that clean records
         /// are present for every test that is execute, if it is taking too long, simply cut down on the
-        /// number of items using the consts above
+        /// number of items using the constants above
         /// </remarks>
-        protected async Task InitAddressRecords(AddressManager mgr
-                                          , DirectDbContext db)
+        protected async Task InitAddressRecords(AddressManager mgr, DirectDbContext dbContext)
         {
             //----------------------------------------------------------------------------------------------------
             //---init domain records as well we want them fresh too
-            await InitDomainRecords(new DomainManager(CreateConfigStore()), db);
-            foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
+            InitDomainRecords(new DomainManager(dbContext), dbContext);
+            foreach (var kp in TestAddressNames)
             {
                 //----------------------------------------------------------------------------------------------------
                 //---create new address entry with the domain id (kp.key) and the address 
-                mgr.Add(db, new Address(kp.Key, kp.Value.Value, BuildEmailAddressDisplayName(kp.Key, kp.Value.Key)) { Type = "SMTP" });
+                await mgr.Add(new Address(kp.Key, kp.Value.Value, BuildEmailAddressDisplayName(kp.Key, kp.Value.Key)) { Type = "SMTP" });
             }
 
-            //----------------------------------------------------------------------------------------------------
-            //---submit changes to db and verify existence of records
-            await db.SaveChangesAsync();
-
-            foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
+            foreach (var kp in TestAddressNames)
             {
-                Assert.NotNull(mgr.Get(kp.Value.Value));
+                Assert.NotNull(await mgr.Get(kp.Value.Value));
             }
         }
 
@@ -1003,19 +982,9 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         /// This method will clean, load and verify MDN records in the DB for testing purposes
         /// </summary>
-        protected async Task InitMdnRecords()
+        protected async Task InitMdnRecords(DirectDbContext dbContext)
         {
-            await InitMdnRecords(new MdnManager(CreateConfigStore())
-                                    , new DirectDbContext(ConnectionString));
-        }
-
-        /// <summary>
-        /// This method will clean, load and verify MDN records in the DB for testing purposes
-        /// </summary>
-        protected async Task InitOldMdnRecords()
-        {
-            await InitOldMdnRecords(new MdnManager(CreateConfigStore())
-                                    , new DirectDbContext(ConnectionString));
+            await InitMdnRecords(new MdnManager(dbContext), dbContext);
         }
 
         /// <summary>
@@ -1025,18 +994,18 @@ namespace Health.Direct.Config.Store.Tests
         /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         protected async Task InitMdnRecords(MdnManager mgr, DirectDbContext db)
         {
-            await MdnUtil.RemoveAll(db);
+            //await MdnUtil.RemoveAll(db);
             await db.SaveChangesAsync();
-            mgr.Start(db, TestMdns.ToArray());
+            await mgr.Start(TestMdns.ToArray());
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
             await db.SaveChangesAsync();
 
-            foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
-            {
-                //Assert.NotNull(mgr.Get(kp.Value.Value));
-            }
+            // foreach (var kp in TestAddressNames)
+            // {
+            //     Assert.NotNull(await mgr.GetByAgentName(kp.Value.Value));
+            // }
         }
 
         /// <summary>
@@ -1046,174 +1015,170 @@ namespace Health.Direct.Config.Store.Tests
         /// <param name="db">DirectDbContext instance used as the target storage mechanism for the records</param>
         protected async Task InitOldMdnRecords(MdnManager mgr, DirectDbContext db)
         {
-            await MdnUtil.RemoveAll(db);
-            mgr.Start(db, TestOldMdns.ToArray());
+            //await MdnUtil.RemoveAll(db);
+            await mgr.Start(TestOldMdns.ToArray());
 
             //----------------------------------------------------------------------------------------------------
             //---submit changes to db and verify existence of records
             await db.SaveChangesAsync();
 
-            foreach (KeyValuePair<long, KeyValuePair<int, string>> kp in TestAddressNames)
-            {
-                //Assert.NotNull(mgr.Get(kp.Value.Value));
-            }
+            // foreach (var kp in TestAddressNames)
+            // {
+            //     Assert.NotNull(await mgr.GetByAgentName(kp.Value.Value));
+            // }
         }
 
         /// <summary>
-        ///  Simple method that yeilds a uniform means for setting up an address name
+        ///  Simple method that yields a uniform means for setting up an address name
         /// </summary>
-        /// <param name="domainID">domain id to be used to build the string</param>
-        /// <param name="addressID">address id number used to build the string</param>
-        /// <returns>a commonly formatted string based on the domainID and address domain id</returns>
-        protected static String BuildEmailAddress(long domainID, int addressID)
+        /// <param name="domainId">domain id to be used to build the string</param>
+        /// <param name="addressId">address id number used to build the string</param>
+        /// <returns>a commonly formatted string based on the domainId and address domain id</returns>
+        protected static string BuildEmailAddress(long domainId, int addressId)
         {
-            return string.Format(ADDRESSPATTERN, addressID, domainID);
+            return string.Format(AddressPattern, addressId, domainId);
         }
 
         /// <summary>
         /// provides uniform manner for creating email address display names
         /// </summary>
-        /// <param name="domainID">domain id used in address string</param>
-        /// <param name="addressID">address id used in address string</param>
+        /// <param name="domainId">domain id used in address string</param>
+        /// <param name="addressId">address id used in address string</param>
         /// <returns></returns>
-        protected static String BuildEmailAddressDisplayName(long domainID, int addressID)
+        protected static string BuildEmailAddressDisplayName(long domainId, int addressId)
         {
-            return string.Format(ADDRESSDISPLAYNAMEPATTERN, domainID, addressID);
+            return string.Format(AddressDisplayNamePattern, domainId, addressId);
         }
 
         /// <summary>
-        ///  Simple method that yeilds a uniform means for setting up a specific SMTP domain name
+        ///  Simple method that yields a uniform means for setting up a specific SMTP domain name
         /// </summary>
-        /// <param name="domainID">domain id to be used to build the string</param>
-        /// <param name="SMTPDomainID">smtp id number used to build the string</param>
-        /// <returns>a commonly formatted string based on the domainID and smtp domain id</returns>
-        protected static String BuildSMTPDomainName(long domainID, int SMTPDomainID)
+        /// <param name="domainId">domain id to be used to build the string</param>
+        /// <param name="smtpDomainId">smtp id number used to build the string</param>
+        /// <returns>a commonly formatted string based on the domainId and smtp domain id</returns>
+        protected static string BuildSmtpDomainName(long domainId, int smtpDomainId)
         {
-            return string.Format(SMTPDOMAINNAMEPATTERN, SMTPDomainID, domainID);
+            return string.Format(SmtpDomainNamePattern, smtpDomainId, domainId);
         }
 
         /// <summary>
-        /// Simple method that yeilds a uniform means for setting up a specific domain name
+        /// Simple method that yields a uniform means for setting up a specific domain name
         /// </summary>
-        /// <param name="domainID">domain id to be used to build the string</param>
-        /// <returns>a commonly formatted string based on the domainID</returns>
-        protected static String BuildDomainName(long domainID)
+        /// <param name="domainId">domain id to be used to build the string</param>
+        /// <returns>a commonly formatted string based on the domainId</returns>
+        protected static string BuildDomainName(long domainId)
         {
-            return string.Format(DOMAINNAMEPATTERN, domainID);
+            return string.Format(DomainNamePattern, domainId);
         }
 
         /// <summary>
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
-        /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="domainId">long containing the id of the relative domain for which the pfx file is to be loaded</param>
         /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
-        protected static Anchor GetAnchorFromTestCertPfx(long domainID, int subId)
+        protected static Anchor GetAnchorFromTestCertPfx(long domainId, int subId)
         {
-            if (domainID > MAXDOMAINCOUNT || domainID <= 0)
+            if (domainId > MaxDomainCount || domainId <= 0)
             {
-                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Domain CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            if (subId > MAXCERTPEROWNER || subId <= 0)
+            if (subId > MaxCertPerOwner || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Cert sub CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
-                , CERTSRECORDSPATH
-                , domainID
-                , subId);
+
+            string path = $@"{CertsRecordsPath}\domain{domainId}.test.com.{subId}.pfx";
             Anchor cert;
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
-            {
-                cert = new Anchor(string.Format("CN=domain{0}.test.com", domainID)
-                                  , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
-                                  , CERT_PASSWORD);
-                //cert.Owner = string.Format("domain{0}.test.com", domainID);
-                //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
-            }
+
+            using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
+            cert = new Anchor($"CN=domain{domainId}.test.com"
+                , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
+                , CertPassword);
+            //cert.Owner = string.Format("domain{0}.test.com", domainId);
+            //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             return cert;
         }
 
         /// <summary>
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
-        /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="domainId">long containing the id of the relative domain for which the pfx file is to be loaded</param>
         /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
-        protected static Certificate GetCertificateFromTestCertPfx(long domainID, int subId)
+        protected static Certificate GetCertificateFromTestCertPfx(long domainId, int subId)
         {
-            if (domainID > MAXDOMAINCOUNT || domainID <= 0)
+            if (domainId > MaxDomainCount || domainId <= 0)
             {
-                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Domain CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            if (subId > MAXCERTPEROWNER || subId <= 0)
+            if (subId > MaxCertPerOwner || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Cert sub CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
-                , CERTSRECORDSPATH
-                , domainID
-                , subId);
+
+
+            string path = $@"{CertsRecordsPath}\domain{domainId}.test.com.{subId}.pfx";
             Certificate cert;
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+
+            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read))
             {
-                cert = new Certificate(string.Format("domain{0}.test.com", domainID)
-                                       , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
-                                       , CERT_PASSWORD);
-                //cert.Owner = string.Format("domain{0}.test.com", domainID);
+                cert = new Certificate($"domain{domainId}.test.com"
+                    , new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length)
+                                       , CertPassword);
+                //cert.Owner = string.Format("domain{0}.test.com", domainId);
                 //cert.Data = new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
             }
+
             return cert;
         }
 
-        protected static DisposableX509Certificate2 GetDisposableTestCertFromPfx(long domainID, int subId)
+        protected static DisposableX509Certificate2 GetDisposableTestCertFromPfx(long domainId, int subId)
         {
-            var cert = GetCertificateFromTestCertPfx(domainID, subId);
+            var cert = GetCertificateFromTestCertPfx(domainId, subId);
             return new DisposableX509Certificate2(cert.Data);
         }
 
         /// <summary>
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
-        /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="domainId">long containing the id of the relative domain for which the pfx file is to be loaded</param>
         /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
-        protected static System.Security.Cryptography.X509Certificates.X509Certificate2 GetTestCertFromPfx(long domainID, int subId)
+        protected static System.Security.Cryptography.X509Certificates.X509Certificate2 GetTestCertFromPfx(long domainId, int subId)
         {
-            if (domainID > MAXDOMAINCOUNT || domainID <= 0)
+            if (domainId > MaxDomainCount || domainId <= 0)
             {
-                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Domain CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            if (subId > MAXCERTPEROWNER || subId <= 0)
+            if (subId > MaxCertPerOwner || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Cert sub CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            string path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
-                , CERTSRECORDSPATH
-                , domainID
-                , subId);
-            return new System.Security.Cryptography.X509Certificates.X509Certificate2(path, CERT_PASSWORD);
+            string path = $@"{CertsRecordsPath}\domain{domainId}.test.com.{subId}.pfx";
+
+            return new System.Security.Cryptography.X509Certificates.X509Certificate2(path, CertPassword);
         }
 
         /// <summary>
         /// attempts to load up a Certificate instance from the metadata, testing pfx file associated with the domain
         /// </summary>
-        /// <param name="domainID">long containing the id of the relative domain for which the pfx file is to be loaded</param>
+        /// <param name="domainId">long containing the id of the relative domain for which the pfx file is to be loaded</param>
         /// <param name="subId"></param>
         /// <returns>Certificate instance populated with data from the related pfx file</returns>
-        protected static byte[] GetCertBytesTestCertPfx(long domainID, int subId)
+        protected static byte[] GetCertBytesTestCertPfx(long domainId, int subId)
         {
-            if (domainID > MAXDOMAINCOUNT || domainID <= 0)
+            if (domainId > MaxDomainCount || domainId <= 0)
             {
-                throw new Exception(string.Format("Domain CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Domain CertPolicyId is out of range (1-{MaxDomainCount}");
             }
-            if (subId > MAXCERTPEROWNER || subId <= 0)
+            if (subId > MaxCertPerOwner || subId <= 0)
             {
-                throw new Exception(string.Format("Cert sub CertPolicyId is out of range (1-{0}", MAXDOMAINCOUNT));
+                throw new Exception($"Cert sub CertPolicyId is out of range (1-{MaxDomainCount}");
             }
             var path = string.Format(@"{0}\domain{1}.test.com.{2}.pfx"
-                , CERTSRECORDSPATH
-                , domainID
+                , CertsRecordsPath
+                , domainId
                 , subId);
             using var fs = new FileStream(path, FileMode.Open, FileAccess.Read);
             return new BinaryReader(fs).ReadBytes((int)new FileInfo(path).Length);
@@ -1223,23 +1188,53 @@ namespace Health.Direct.Config.Store.Tests
         /// generates a random cert id within the allotted range
         /// </summary>
         /// <returns>long random cert id</returns>
-        protected int GetRndCertID()
+        protected int GetRndCertId()
         {
-            return (new Random().Next(1, MAXCERTPEROWNER * MAXDOMAINCOUNT));
+            return (new Random().Next(1, MaxCertPerOwner * MaxDomainCount));
         }
 
         /// <summary>
         /// generates a random cert id within the allotted range
         /// </summary>
         /// <returns>long random cert id</returns>
-        protected int GetRndDomainID()
+        protected int GetRndDomainId()
         {
-            return (new Random().Next(1, MAXDOMAINCOUNT));
+            return (new Random().Next(1, MaxDomainCount));
         }
-        
+
         protected static DirectDbContext CreateConfigDatabase()
         {
-            return new DirectDbContext(ConnectionString);
+            var dbProvider = Environment.GetEnvironmentVariable("Config.Store.DbProvider");
+            DbContextOptions options;
+
+            switch (dbProvider)
+            {
+                case "Sqlite":
+                    options = new DbContextOptionsBuilder<DirectDbContext>()
+                    .UseSqlite("Filename=Test.db")
+                    .EnableSensitiveDataLogging()
+                    .Options;
+                    break;
+
+                case "SqlServer":
+                    options = new DbContextOptionsBuilder<DirectDbContext>()
+                       .UseSqlServer(ConnectionString)
+                       .EnableSensitiveDataLogging()
+                       .Options;
+                    break;
+
+                default:
+                    options = new DbContextOptionsBuilder<DirectDbContext>()
+                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                        .Options;
+                    break;
+            }
+            
+            var dbContext = new DirectDbContext(options);
+            dbContext.Database.EnsureDeleted();
+            dbContext.Database.EnsureCreated();
+
+            return dbContext;
         }
     }
 }

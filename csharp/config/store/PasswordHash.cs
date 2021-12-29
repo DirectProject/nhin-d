@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Health.Direct.Config.Store.Entity;
 
+#nullable disable
+
 namespace Health.Direct.Config.Store
 {
     

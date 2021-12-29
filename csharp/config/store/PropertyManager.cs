@@ -86,13 +86,13 @@
 //             db.Properties.InsertAllOnSubmit(properties);
 //         }
 //         
-//         public Property Get(string name)
+//         public Property GetByAgentName(string name)
 //         {
 //             using DirectDbContext db = this.Store.CreateReadContext();
-//             return Get(db, name);
+//             return GetByAgentName(db, name);
 //         }
 //         
-//         public Property Get(DirectDbContext db, string name)
+//         public Property GetByAgentName(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -103,16 +103,16 @@
 //                 throw new ArgumentException("name");
 //             }
 //             
-//             return db.Properties.Get(name).SingleOrDefault();
+//             return db.Properties.GetByAgentName(name).SingleOrDefault();
 //         }
 //
-//         public Property[] Get(string[] names)
+//         public Property[] GetByAgentName(string[] names)
 //         {
 //             using DirectDbContext db = this.Store.CreateReadContext();
-//             return Get(db, names).ToArray();
+//             return GetByAgentName(db, names).ToArray();
 //         }
 //
-//         public IEnumerable<Property> Get(DirectDbContext db, string[] names)
+//         public IEnumerable<Property> GetByAgentName(DirectDbContext db, string[] names)
 //         {
 //             if (db == null)
 //             {
@@ -123,7 +123,7 @@
 //                 throw new ArgumentException("names");
 //             }
 //
-//             return db.Properties.Get(names);
+//             return db.Properties.GetByAgentName(names);
 //         }
 //
 //         public Property[] GetStartsWith(string namePrefix)
@@ -180,7 +180,7 @@
 //                 throw new ArgumentNullException("db");
 //             }
 //
-//             Property existing = this.Get(db, property.Name);
+//             Property existing = this.GetByAgentName(db, property.Name);
 //             if (existing == null)
 //             {
 //                 db.Properties.InsertOnSubmit(property);

@@ -15,59 +15,44 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 */
 
 using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
-using Xunit.Abstractions;
-using DbUpdateConcurrencyException = Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException;
-using DbUpdateException = Microsoft.EntityFrameworkCore.DbUpdateException;
+
 
 namespace Health.Direct.Config.Store.Tests
 {
 
     [Collection("ManagerFacts")]
-
     public class MdnManagerFacts : ConfigStoreTestBase
     {
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly DirectDbContext _dbContext;
+        private readonly MdnManager _mdnManager;
 
-        public MdnManagerFacts(ITestOutputHelper testOutputHelper)
+        public MdnManagerFacts()
         {
-            _testOutputHelper = testOutputHelper;
+            _dbContext = CreateConfigDatabase();
+            _dbContext.Database.EnsureCreated();
+            _mdnManager = new MdnManager(_dbContext);
         }
 
-        /// <summary>
-        ///A test for Store
-        ///</summary>
-        [Fact]
-        public void StoreTest()
-        {
-            var target = CreateManager();
-            var actual = target.Store;
-            Assert.Equal(target.Store, actual);
-        }
 
         /// <summary>
         ///A test for Add
         ///</summary>
-        [Fact]
+        [SkippableFact]
         public async Task AddTest()
         {
-            var target = CreateManager();
-            await using (var db = CreateConfigDatabase())
-            {
-                await MdnUtil.RemoveAll(db);
-            }
-            Assert.Equal(0, await target.Count());
+            Skip.IfNot(_dbContext.Database.IsInMemory());
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            Assert.Equal(0, await _mdnManager.Count());
             string messageId = Guid.NewGuid().ToString();
             var mdn = BuildMdn(messageId, "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
 
-            await target.Start(new Mdn[] { mdn });
-            mdn = await target.Get(mdn.MdnIdentifier);
+            await _mdnManager.Start(new[] { mdn });
+            mdn = await _mdnManager.Get(mdn.MdnIdentifier);
             Assert.Equal(MdnStatus.Started, mdn.Status);
             Assert.Equal("To dispatch or not dispatch", mdn.SubjectValue);
         }
@@ -75,52 +60,53 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for duplicate key violation.
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task AddExceptionTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
             string messageId = Guid.NewGuid().ToString();
             var mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", MdnStatus.Started);
-            Assert.Contains(
-                "Cannot insert duplicate key", 
-                Assert.ThrowsAsync<DbUpdateException>(async () => 
-                    await target
-                        .Start(new Mdn[] { mdn })).Result.InnerException?.Message ?? string.Empty);
+            await Assert.ThrowsAsync<DbUpdateException>(async () => 
+                    await _mdnManager
+                        .Start(new Mdn[] { mdn }));
         }
 
         /// <summary>
-        ///A test for Get
+        ///A test for GetByAgentName
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task GetByMdnIdentifierTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
-            Assert.Equal(61, await target.Count());
-            Assert.NotNull(await target.Get("9C2458C2370E2C00E2E8701EE3064B6B"));
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
+            Assert.Equal(61, await _mdnManager.Count());
+            Assert.NotNull(await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B"));
         }
 
         /// <summary>
         ///A test for Update
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task UpdateStatusTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
-            var mdn = await target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
+            var mdn = await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
             mdn.Status = MdnStatus.Processed;
             mdn.Id = 0;
-            await target.Update(mdn);
-            mdn = await target.Get("0335BF2715F5607DE9FC5BF249BEF7F9");
+            await _mdnManager.Update(mdn);
+            mdn = await _mdnManager.Get("0335BF2715F5607DE9FC5BF249BEF7F9");
             Assert.Equal(MdnStatus.Processed, mdn.Status);
             mdn.Status = MdnStatus.Dispatched;
             mdn.Id = 0;
-            await target.Update(mdn);
-            mdn = await target.Get("543AE91DFFDE40754BCB0A11CEEED059");
+            await _mdnManager.Update(mdn);
+            mdn = await _mdnManager.Get("543AE91DFFDE40754BCB0A11CEEED059");
             Assert.Equal(MdnStatus.Dispatched, mdn.Status);
 
         }
@@ -128,12 +114,13 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Update
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task UpdateDispatchedTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
-            var mdn = await target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
+            var mdn = await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
             //
@@ -142,8 +129,8 @@ namespace Health.Direct.Config.Store.Tests
             //
             mdn.Status = MdnStatus.Dispatched;
             mdn.Id = 0;
-            await target.Update(mdn);
-            mdn = await target.Get("543AE91DFFDE40754BCB0A11CEEED059");
+            await _mdnManager.Update(mdn);
+            mdn = await _mdnManager.Get("543AE91DFFDE40754BCB0A11CEEED059");
             Assert.Equal(MdnStatus.Dispatched, mdn.Status);
 
         }
@@ -151,12 +138,13 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for Update
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task UpdateTimeoutTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
-            var mdn = await target.Get("9C2458C2370E2C00E2E8701EE3064B6B");
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
+            var mdn = await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B");
             Assert.Equal(MdnStatus.Started, mdn.Status);
 
             //
@@ -164,63 +152,65 @@ namespace Health.Direct.Config.Store.Tests
             // An external timer will move to Timed out
             //
 
-            await target.TimeOut(mdn);
-            mdn = await target.Get("68167934227A8EBF247E6AC345CC02D1");
+            await _mdnManager.TimeOut(mdn);
+            mdn = await _mdnManager.Get("68167934227A8EBF247E6AC345CC02D1");
             Assert.Equal(MdnStatus.TimedOut, mdn.Status);
         }
 
         /// <summary>
         ///A test for Expired Mdn Processed
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task GetProcessExpiredTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
 
             //timespan and max records set
-            var mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 10);
+            var mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 10);
             Assert.Equal(10, mdns.Count);
 
             //timespan and max records set
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 5);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 5);
             Assert.Equal(5, mdns.Count);
 
             //timespan and max records set
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 40);
             
             Assert.Equal(20, mdns.Count);
 
             //timespan and max records set
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(11), 40);
-            Assert.Equal(0, mdns.Count);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(11), 40);
+            Assert.Empty(mdns);
 
-            //default maxrecords set
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10));
+            //default max records set
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10));
             Assert.Equal(10, mdns.Count);
 
-            //default expieredLimit and maxResults
-            mdns = await target.GetExpiredProcessed();
+            //default expiredLimit and maxResults
+            mdns = await _mdnManager.GetExpiredProcessed();
             Assert.Equal(10, mdns.Count);
         }
 
         /// <summary>
         ///A test for Expired Mdn Processed
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task ProcessingProcessExpiredTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
 
             //timespan and max records set
-            var mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
+            var mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count);
-            await target.TimeOut(mdns);
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
+            await _mdnManager.TimeOut(mdns);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
             Assert.Equal(18, mdns.Count);
-            await target.TimeOut(mdns);
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
+            await _mdnManager.TimeOut(mdns);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 20);
             Assert.Empty(mdns);
         }
 
@@ -228,81 +218,84 @@ namespace Health.Direct.Config.Store.Tests
         /// <summary>
         ///A test for expired Mdn Dispatched
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task GetDispatchedExpiredTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
 
             //timespan and max records set
-            var mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 20);
+            var mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(10), 20);
             Assert.Equal(10, mdns.Count);
 
             //timespan and max records set
-            mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 10);
+            mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(10), 10);
             Assert.Equal(10, mdns.Count);
 
             //timespan and max records set
             //Nothing this old yet.
-            mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(11), 10);
-            Assert.Equal(0, mdns.Count);
+            mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(11), 10);
+            Assert.Empty(mdns);
 
             //timespan and max records set
-            mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 5);
+            mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(10), 5);
             Assert.Equal(5, mdns.Count);
 
             //default expiredLimit (10 minutes) and maxResults (10)
-            mdns = await target.GetExpiredDispatched();
+            mdns = await _mdnManager.GetExpiredDispatched();
             Assert.Equal(10, mdns.Count);
         }
 
         /// <summary>
         ///A test for Expired Mdn Dispatched
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task ProcessingDispatchedExpiredTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
 
             //timespan and max records set
-            var mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 2);
+            var mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count);
 
-            await target.TimeOut(mdns);
+            await _mdnManager.TimeOut(mdns);
 
-            mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 20);
+            mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(10), 20);
             Assert.Equal(8, mdns.Count);
 
-            await target.TimeOut(mdns);
+            await _mdnManager.TimeOut(mdns);
 
-            mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(10), 10);
-            Assert.Equal(0, mdns.Count);
+            mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(10), 10);
+            Assert.Empty(mdns);
         }
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task GetTimeoutTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
 
             //This would run often enough to keep the Mdns table peformant
-            List<Mdn> mdns = await target.GetTimedOut();
+            var mdns = await _mdnManager.GetTimedOut();
             Assert.Empty(mdns);
 
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count);
 
-            await target.TimeOut(mdns);
+            await _mdnManager.TimeOut(mdns);
 
-            mdns = await target.GetTimedOut();
+            mdns = await _mdnManager.GetTimedOut();
             Assert.Equal(2, mdns.Count);
 
-            await target.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
-            mdns = await target.GetTimedOut();
+            await _mdnManager.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
+            mdns = await _mdnManager.GetTimedOut();
             Assert.Empty(mdns);
 
             //
@@ -310,100 +303,101 @@ namespace Health.Direct.Config.Store.Tests
             //
 
             //Update thread one
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count);
 
-            await target.TimeOut(mdns);
+            await _mdnManager.TimeOut(mdns);
 
             //update thread two
-            mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
+            mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(10), 2);
             Assert.Equal(2, mdns.Count);
 
-            await target.TimeOut(mdns);
+            await _mdnManager.TimeOut(mdns);
 
-            mdns = await target.GetTimedOut();
+            mdns = await _mdnManager.GetTimedOut();
             Assert.Equal(4, mdns.Count);
 
-            await target.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
-            mdns = await target.GetTimedOut();
+            await _mdnManager.RemoveTimedOut(TimeSpan.FromSeconds(1), 100);
+            mdns = await _mdnManager.GetTimedOut();
             Assert.Empty(mdns);
         }
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task CleanProcessedAndDispatched()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
+
+            await InitMdnRecords(_dbContext);
 
             //
-            // Ensure all test data is procesed or dispatched 
+            // Ensure all test data is processed or dispatched 
             //
             {
-                var mdns = await target.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100);
+                var mdns = await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100);
                 foreach (var mdn in mdns)
                 {
                     mdn.Status = MdnStatus.Processed;
                     mdn.Id = 0;
-                    await target.Update(mdn);
+                    await _mdnManager.Update(mdn);
                 }
 
-                mdns = await target.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100);
+                mdns = await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100);
                 foreach (var mdn in mdns)
                 {
                     mdn.Status = MdnStatus.Dispatched;
                     mdn.Id = 0;
-                    await target.Update(mdn);
+                    await _mdnManager.Update(mdn);
                 }
             }
-            Assert.Empty((await target.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100)));
-            Assert.Empty((await target.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100)));
+            Assert.Empty((await _mdnManager.GetExpiredProcessed(TimeSpan.FromMinutes(0), 100)));
+            Assert.Empty((await _mdnManager.GetExpiredDispatched(TimeSpan.FromMinutes(0), 100)));
 
             System.Threading.Thread.Sleep(1000);
-            await target.RemoveDispositions(TimeSpan.FromSeconds(.001), 100);
-            Assert.Equal(0, await target.Count());
+            await _mdnManager.RemoveDispositions(TimeSpan.FromSeconds(.001), 100);
+            Assert.Equal(0, await _mdnManager.Count());
         }
 
         /// <summary>
         ///A test for expired Mdn Dispatched Timer
         ///</summary>
-        [Fact]
+        [SkippableFact ]
         public async Task DuplicateMdnTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            Skip.IfNot(_dbContext.Database.IsSqlServer());
 
             string messageId = Guid.NewGuid().ToString();
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", "pRocessed");
 
             //Record first processed.
-            await target.Update(new Mdn[] { mdn });
+            await _mdnManager.Update(new[] { mdn });
 
             mdn.Id = 0;
             //Throw duplicate processed
             Assert.Equal(ConfigStoreError.DuplicateProcessedMdn, 
                 Assert.ThrowsAsync<ConfigStoreException>(async () =>
-                    await target.Update(mdn)).Result.Error);
+                    await _mdnManager.Update(mdn)).Result.Error);
 
             mdn.Id = 0;
             //Record first dispatched.
             mdn.Status = "disPatched";
-            await target.Update(mdn);
+            await _mdnManager.Update(mdn);
 
             mdn.Id = 0;
             //Throw duplicate dispatched
             Assert.Equal(ConfigStoreError.DuplicateDispatchedMdn, 
                 Assert.ThrowsAsync<ConfigStoreException>(async () =>
-                    await target.Update(mdn)).Result.Error);
+                    await _mdnManager.Update(mdn)).Result.Error);
 
+            _dbContext.ChangeTracker.Clear();
             mdn = BuildMdn(Guid.NewGuid().ToString(), "Name1@nhind.hsgincubator.com", "FailedTest@domain1.test.com", "To dispatch or not dispatch", "fAiled");
-            await target.Start(new Mdn[] { mdn });
+            await _mdnManager.Start(new[] { mdn });
 
             Assert.Equal(ConfigStoreError.DuplicateFailedMdn, 
                 Assert.ThrowsAsync<ConfigStoreException>(async () =>
-                    await target.Update(mdn)).Result.Error);
+                    await _mdnManager.Update(mdn)).Result.Error);
         }
 
         /// <summary>
@@ -412,14 +406,14 @@ namespace Health.Direct.Config.Store.Tests
         //[Fact ] May want this check to go into the timeout job.
         public async Task MissingAggregateMdnTest()
         {
-            var target = CreateManager();
-            await InitMdnRecords();
+            
+            await InitMdnRecords(_dbContext);
 
             string messageId = Guid.NewGuid().ToString();
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com",
                                "Missing@domain1.test.com", "To dispatch or not dispatch", "pRocessed");
 
-            Assert.Equal(ConfigStoreError.MdnUncorrelated, Assert.ThrowsAsync<ConfigStoreException>(async () => await target.Update(new Mdn[] { mdn })).GetAwaiter().GetResult().Error);
+            Assert.Equal(ConfigStoreError.MdnUncorrelated, Assert.ThrowsAsync<ConfigStoreException>(async () => await _mdnManager.Update(new Mdn[] { mdn })).GetAwaiter().GetResult().Error);
         }
     }
 }

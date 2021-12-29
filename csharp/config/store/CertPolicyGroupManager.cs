@@ -60,7 +60,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
     }
 
     /// <summary>
-    /// Get PolicyGroup by name
+    /// GetByAgentName PolicyGroup by name
     /// </summary>
     /// <param name="name">Name of the policy</param>
     /// <returns></returns>
@@ -81,7 +81,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
     }
     
     /// <summary>
-    /// Get PolicyGroupOwnerMap by name with owners
+    /// GetByAgentName PolicyGroupOwnerMap by name with owners
     /// </summary>
     /// <param name="name">Name of the policy</param>
     /// <returns></returns>
@@ -177,7 +177,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
         await _dbContext.SaveChangesAsync();
     }
 
-    protected async Task AddPolicyUse(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
+    public async Task AddPolicyUse(string policyName, string groupName, CertPolicyUse policyUse, bool incoming, bool outgoing)
     {
         if (string.IsNullOrEmpty(policyName))
         {
@@ -209,7 +209,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
         await _dbContext.SaveChangesAsync();
     }
     
-    protected async Task AssociateToOwner(string groupName, string owner)
+    public async Task AssociateToOwner(string groupName, string owner)
     {
         if (string.IsNullOrEmpty(owner))
         {
@@ -329,7 +329,7 @@ public class CertPolicyGroupManager : IEnumerable<CertPolicyGroup>
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task RemovePolicy(DirectDbContext db, CertPolicyGroupMap[] map)
+    public async Task RemovePolicy(CertPolicyGroupMap[] map)
     {
         if (map.IsNullOrEmpty())
         {

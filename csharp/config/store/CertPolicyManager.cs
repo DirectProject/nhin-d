@@ -215,10 +215,7 @@ public class CertPolicyManager : IEnumerable<CertPolicy>
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
 
-        var update = new CertPolicy();
-        update.CopyFixed(policy);
-        _dbContext.CertPolicies.Attach(update);
-        update.ApplyChanges(policy);
+        _dbContext.CertPolicies.Attach(policy);
 
         await _dbContext.SaveChangesAsync();
     }

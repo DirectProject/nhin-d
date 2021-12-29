@@ -11,15 +11,19 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Hellang.Middleware.ProblemDetails" Version="6.3.0" />
 		<PackageReference Include="MartinCostello.Logging.XUnit" Version="0.1.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-		<InternalsVisibleTo Include="config.service.rest.tests" />
+		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\store\config.store.csproj" />
+		<InternalsVisibleTo Include="config.service.rest.tests" />
 	</ItemGroup>
 
 </Project>

@@ -14,19 +14,29 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
+using System.Configuration;
 using Health.Direct.Config.Store;
+using Hellang.Middleware.ProblemDetails;
+using Hellang.Middleware.ProblemDetails.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddProblemDetails(ConfigureProblemDetails);
 
-builder.Services.AddControllers();
+// Add services to the container.
+builder.Services.AddControllers()
+    .AddProblemDetailsConventions();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<IDomainManager, DomainManager>();
+builder.Services.AddScoped<DirectDbContext>(_ =>
+    new DirectDbContext(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IDomainManager, DomainManager>();
 
 var app = builder.Build();
+
+app.UseProblemDetails();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -43,8 +53,28 @@ app.MapControllers();
 
 app.Run();
 
+void ConfigureProblemDetails(ProblemDetailsOptions options)
+{
+    var isExceptionDetailEnabled = builder.Configuration.GetValue<bool>("ExceptionDetailEnabled");
+    // This is the default behavior; only include exception details in a development environment.
+    options.IncludeExceptionDetails = (ctx, ex) => builder.Environment.IsDevelopment() || isExceptionDetailEnabled;
 
+    //Application Errors
+    options.MapToStatusCode<DbUpdateException>(StatusCodes.Status400BadRequest);
+
+    // This will map NotImplementedException to the 501 Not Implemented status code.
+    options.MapToStatusCode<NotImplementedException>(StatusCodes.Status501NotImplemented);
+
+    // This will map HttpRequestException to the 503 Service Unavailable status code.
+    options.MapToStatusCode<HttpRequestException>(StatusCodes.Status503ServiceUnavailable);
+
+    // Because exceptions are handled polymorphically, this will act as a "catch all" mapping, which is why it's added last.
+    // If an exception other than NotImplementedException and HttpRequestException is thrown, this will handle it.
+    options.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+}
 //
 // I added this to allow the XUnitTest to work.
 //
 public partial class Program { }
+
+

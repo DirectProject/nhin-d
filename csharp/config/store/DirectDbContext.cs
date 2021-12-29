@@ -49,6 +49,10 @@ public class DirectDbContext : DbContext
                 new DebugLoggerProvider()
         });
 
+    public DirectDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
+    {
+    }
+
     public DirectDbContext(string connectionString)
     {
         _connectionString = connectionString;
@@ -72,8 +76,6 @@ public class DirectDbContext : DbContext
         DnsRecords.AsNoTracking();
         Bundles.AsNoTracking();
         Mdns.AsNoTracking();
-
-
     }
 
     /// <inheritdoc />

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
 using Health.Direct.Config.Store.Entity;
@@ -25,74 +26,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store;
 
-public interface IAddressManager
-{
-    /// <summary>
-    /// Add a new email address
-    /// </summary>
-    /// <remarks>
-    ///  - Gets the domain of the address and ensures that it exists
-    ///  - Then tries to create an entry in the Address table
-    ///  - The address is created with EntityStatus.New
-    ///  - To use the address, you must enable it
-    /// </remarks>
-    /// <param name="mailAddress">Mail address object</param>
-    Task Add(MailAddress mailAddress);
-
-    /// <summary>
-    /// Add a new email address
-    /// </summary>
-    /// <remarks>
-    ///  - Gets the domain of the address and ensures that it exists
-    ///  - Then tries to create an entry in the Address table
-    ///  - The address is created in the given state
-    /// </remarks>
-    /// <param name="mailAddress">Mail address object</param>
-    /// <param name="status">entity status</param>
-    /// <param name="addressType"></param>
-    Task Add(MailAddress mailAddress, EntityStatus status, string addressType);
-
-    /// <summary>
-    /// Add an address to the store
-    /// </summary>
-    /// <param name="address">address object</param>        
-    Task<Address> Add(Address address);
-
-    /// <summary>
-    /// Add a set of addresses to the store in a single transaction
-    /// </summary>
-    /// <param name="addresses">address set</param>
-    Task Add(IEnumerable<Address> addresses);
-
-    Task Update(Address address);
-    Task Update(IEnumerable<Address> addresses);
-    Task<int> Count();
-    Task<int> Count(long domainId);
-
-    Task<List<Address>> GetAllForDomain(string domainName
-        , int maxResults);
-
-    Task<Address> Get(string emailAddress);
-    Task<List<Address>> Get(string[] emailAddresses);
-    Task<List<Address>> Get(string[] emailAddresses, bool domainSearchEnabled);
-    Task<List<Address>> Get(string[] emailAddresses, EntityStatus? status);
-    Task<List<Address>> Get(string[] emailAddresses, bool domainSearchEnabled, EntityStatus? status);
-    Task<List<Address>> Get(string emailAddress, int maxResults);
-    Task<List<Address>> Get(long domainId, string emailAddress, int maxResults);
-    Task<List<Address>> Get(long[] addressIDs);
-    Task<List<Address>> Get(long[] addressIDs, EntityStatus? status);
-    Task<List<Address>> Get(long addressID);
-    Task Remove(string emailAddress);
-    Task Remove(IEnumerable<string> emailAddresses);
-    Task RemoveDomain(long domainId);
-    Task SetStatus(long domainId, EntityStatus status);
-    IEnumerator<Address> GetEnumerator();
-}
 
 /// <summary>
 /// Used to manage configured addresses
 /// </summary>
-public class AddressManager : IEnumerable<Address>, IAddressManager
+public class AddressManager : IEnumerable<Address>
 {
     private readonly DirectDbContext _dbContext;
 
@@ -140,7 +78,10 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
             throw new ArgumentNullException(nameof(mailAddress));
         }
 
-        var domain = await Get(mailAddress.Host);
+        var domain = await _dbContext.Domains
+            .Where(d => d.Name.ToUpper() == mailAddress.Host.ToUpper())
+            .SingleOrDefaultAsync();
+        
         if (domain == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
@@ -157,7 +98,7 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
     /// Add an address to the store
     /// </summary>
     /// <param name="address">address object</param>        
-    public async Task<Address> Add(Address address)
+    public async Task<Address?> Add(Address address)
     {
         if (address == null)
         {
@@ -205,12 +146,9 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
         }
-
-        var update = new Address();
-        update.CopyFixed(address);
-
-        _dbContext.Addresses.Attach(update);
-        update.ApplyChanges(address);
+        
+        _dbContext.Addresses.Attach(address);
+        
         await _dbContext.SaveChangesAsync();
     }
 
@@ -220,7 +158,6 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
         {
             throw new ArgumentNullException(nameof(addresses));
         }
-
         
         foreach(var address in addresses)
         {
@@ -229,11 +166,7 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
                 throw new ConfigStoreException(ConfigStoreError.InvalidAddress);
             }
 
-            var update = new Address();
-            update.CopyFixed(address);
-
-            _dbContext.Addresses.Attach(update);
-            update.ApplyChanges(address);
+            _dbContext.Addresses.Attach(address);
         }
 
         await _dbContext.SaveChangesAsync();
@@ -263,10 +196,10 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
         return entities;
     }
     
-    public async Task<Address> Get(string emailAddress)
+    public async Task<Address?> Get(string emailAddress)
     {
         return await _dbContext.Addresses
-            .Where(a => a.EmailAddress == emailAddress)
+            .Where(a => a.EmailAddress.ToUpper() == emailAddress.ToUpper())
             .SingleOrDefaultAsync();
     }
     
@@ -283,7 +216,19 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
     
     public async Task<List<Address>> Get(string[] emailAddresses, EntityStatus? status)
     {
-        return await Get(emailAddresses, false, status);
+        VerifyEmailAddresses(emailAddresses);
+
+        if (status == null)
+        {
+            return await _dbContext.Addresses
+                .Where(a => emailAddresses.Select(e => e.ToUpper()).Contains(a.EmailAddress.ToUpper()))
+                .ToListAsync();
+        }
+
+        return await _dbContext.Addresses
+            .Where(a => emailAddresses.Select(e => e.ToUpper()).Contains(a.EmailAddress.ToUpper())
+                        && a.Status == status)
+            .ToListAsync();
     }
 
     public async Task<List<Address>> Get(string[] emailAddresses, bool domainSearchEnabled, EntityStatus? status)
@@ -318,7 +263,7 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
     {
         var mailAddress = new MailAddress(enclosureEmailAddress);
         var domain = await _dbContext.Domains
-            .Where(d => d.Name == mailAddress.Host)
+            .Where(d => d.Name.ToUpper() == mailAddress.Host.ToUpper())
             .SingleOrDefaultAsync();
 
         if (domain == null || 
@@ -342,7 +287,7 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
         }
 
         return await _dbContext.Addresses
-            .Where(a => String.Compare(a.EmailAddress, emailAddress) > 0)
+            .Where(a => String.Compare(a.EmailAddress.ToUpper(), emailAddress.ToUpper()) > 0)
             .OrderBy(a => a.EmailAddress)
             .Take(maxResults)
             .ToListAsync();
@@ -361,7 +306,7 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
 
         return await _dbContext.Addresses
             .Where(a => a.DomainID == domainId
-                        && String.Compare(a.EmailAddress, emailAddress) > 0)
+                        && String.Compare(a.EmailAddress.ToUpper(), emailAddress.ToUpper()) > 0)
             .OrderBy(a => a.EmailAddress)
             .Take(maxResults)
             .ToListAsync();
@@ -401,7 +346,7 @@ public class AddressManager : IEnumerable<Address>, IAddressManager
         }
 
         var addresses = await _dbContext.Addresses
-            .Where(a => a.EmailAddress == emailAddress)
+            .Where(a => a.EmailAddress.ToUpper() == emailAddress.ToUpper())
             .ToListAsync();
 
         foreach (var address in addresses)

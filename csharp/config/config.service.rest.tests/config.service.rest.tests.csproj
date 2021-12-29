@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\unittests\configStoreTests\config.store.tests.csproj" />
     <ProjectReference Include="..\config.service.rest\config.service.rest\config.service.rest.csproj" />
   </ItemGroup>
 

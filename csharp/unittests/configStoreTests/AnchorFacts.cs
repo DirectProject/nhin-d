@@ -141,7 +141,7 @@ namespace Health.Direct.Config.Store.Tests
         public void IDTest()
         {
             Anchor target = new Anchor();
-            long expected = new Random().Next(1, MAXCERTPEROWNER * MAXDOMAINCOUNT);
+            long expected = new Random().Next(1, MaxCertPerOwner * MaxDomainCount);
             target.ID = expected;
             long actual = target.ID;
             Assert.Equal(expected, actual);
@@ -244,10 +244,10 @@ namespace Health.Direct.Config.Store.Tests
         public void ToX509CollectionTest()
         {
             X509Certificate2Collection expected = new X509Certificate2Collection();
-            List<Anchor> certs = new List<Anchor>(MAXDOMAINCOUNT);
-            for (int i = 0; i < MAXDOMAINCOUNT; i++)
+            List<Anchor> certs = new List<Anchor>(MaxDomainCount);
+            for (int i = 0; i < MaxDomainCount; i++)
             {
-                for (int t = 1; t <= MAXCERTPEROWNER; t++)
+                for (int t = 1; t <= MaxCertPerOwner; t++)
                 {
                     expected.Add(GetTestCertFromPfx(i + 1, t));
                     certs.Add(GetAnchorFromTestCertPfx(i + 1, t));

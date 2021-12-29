@@ -24,7 +24,14 @@ public class CertPolicyGroupDomainMapEntityMap : IEntityTypeConfiguration<CertPo
 {
     public void Configure(EntityTypeBuilder<CertPolicyGroupDomainMap> builder)
     {
-        builder.HasKey(e => new { e.Owner, e.CertPolicyGroupId });
+        builder.HasKey(e => e.ID);
+
+        builder.Property(e => e.ID)
+            .HasColumnName("MapId")
+            .ValueGeneratedOnAdd();
+
+        builder.HasIndex(e => new { e.Owner, e.CertPolicyGroupId })
+            .IsUnique();
 
         builder.ToTable("CertPolicyGroupDomainMap");
 
@@ -35,15 +42,5 @@ public class CertPolicyGroupDomainMapEntityMap : IEntityTypeConfiguration<CertPo
         builder.Property(e => e.CreateDate)
             .HasColumnType("datetime")
             .HasDefaultValueSql("(getdate())");
-
-        builder.Property(e => e.ID)
-            .HasColumnName("MapId")
-            .ValueGeneratedOnAdd();
-
-        builder.HasOne(d => d.CertPolicyGroup)
-            .WithMany(p => p.CertPolicyGroupDomainMaps)
-            .HasForeignKey(d => d.CertPolicyGroupId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_CertPolicyGroupDomainMap_CertPolicyGroups");
     }
 }

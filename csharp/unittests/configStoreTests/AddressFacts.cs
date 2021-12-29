@@ -257,7 +257,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddressConstructorTest3()
         {
-            const long domainID = STARTID;
+            const long domainID = StartId;
             string address = BuildEmailAddress(1, 1);
             Address target = new Address(domainID, address);
             Assert.Equal(domainID, target.DomainID);
@@ -287,7 +287,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddressConstructorTest1()
         {
-            const long domainID = STARTID;
+            const long domainID = StartId;
             MailAddress address = new MailAddress(BuildEmailAddress(1, 1));
             Address target = new Address(domainID, address);
             Assert.Equal(domainID, target.DomainID);
@@ -300,7 +300,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void AddressConstructorTest()
         {
-            const long domainID = STARTID;
+            const long domainID = StartId;
             string address = BuildEmailAddress(1, 1);
             string displayName = BuildEmailAddressDisplayName(1, 1);
             Address target = new Address(domainID, address, displayName);

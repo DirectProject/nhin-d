@@ -24,9 +24,9 @@ public class DomainEntityMap : IEntityTypeConfiguration<Domain>
 {
     public void Configure(EntityTypeBuilder<Domain> builder)
     {
-        builder.HasKey(e => e.Name);
+        builder.HasKey(e => e.ID);
 
-        builder.HasIndex(e => e.ID, "IX_Domains_DomainID")
+        builder.HasIndex(e => e.Name)
             .IsUnique();
         
         builder.Property(e => e.Name)
@@ -44,6 +44,7 @@ public class DomainEntityMap : IEntityTypeConfiguration<Domain>
 
         builder.Property(e => e.ID)
             .ValueGeneratedOnAdd()
+            .UseIdentityColumn()
             .HasColumnName("DomainID");
 
         builder.Property(e => e.UpdateDate)

@@ -24,7 +24,7 @@ public class AdministratorEntityMap : IEntityTypeConfiguration<Administrator>
 {
     public void Configure(EntityTypeBuilder<Administrator> builder)
     {
-        builder.HasKey(e => e.Username);
+        builder.HasKey(e => e.ID);
 
         builder.Property(e => e.Username)
             .HasMaxLength(50)
@@ -40,7 +40,7 @@ public class AdministratorEntityMap : IEntityTypeConfiguration<Administrator>
 
         builder.Ignore(e => e.PasswordHash);
             
-        builder.Property(e => e.PasswordHashDB)
+        builder.Property(e => e.PasswordHashDb)
             .HasColumnName("PasswordHash")
             .HasMaxLength(50)
             .IsUnicode(false);

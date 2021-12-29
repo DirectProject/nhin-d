@@ -24,10 +24,9 @@ public class CertificateEntityMap : IEntityTypeConfiguration<Certificate>
 {
     public void Configure(EntityTypeBuilder<Certificate> builder)
     {
-        builder.HasKey(e => new { e.Owner, e.Thumbprint });
+        builder.HasIndex(e => new { e.Owner, e.Thumbprint });
 
-        builder.HasIndex(e => e.ID, "IX_Certificates_CertificateID")
-            .IsUnique();
+        builder.HasKey(e => e.ID);
 
         builder.Property(e => e.Owner)
             .HasMaxLength(400)

@@ -29,6 +29,8 @@ public class MdnEntityMap : IEntityTypeConfiguration<Mdn>
         builder.HasIndex(e => e.MdnIdentifier, "IX_Mdns_MdnIdentifier")
             .IsUnique();
 
+        builder.HasKey(e => e.Id);
+
         builder.Property(e => e.Id)
             .HasColumnName("MdnId");
 

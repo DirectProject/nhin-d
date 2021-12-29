@@ -228,8 +228,16 @@ public class CertificateManager : IX509CertificateIndex
             throw new ConfigStoreException(ConfigStoreError.InvalidOwnerName);
         }
 
-        await _dbContext.Database.ExecuteSqlRawAsync("DELETE from Certificates where Owner = {0}", ownerName);
-  
+        // await _dbContext.Database.ExecuteSqlRawAsync("DELETE from Certificates where Owner = {0}", ownerName);
+
+        var certificates = _dbContext.Certificates
+            .Where(c => c.Owner == ownerName)
+            .Select(c => new Certificate() { ID = c.ID });
+
+        _dbContext.ChangeTracker.Clear();
+        _dbContext.RemoveRange(certificates);
+        
+        await _dbContext.SaveChangesAsync();
     }
     
     public X509Certificate2Collection this[string subjectName]

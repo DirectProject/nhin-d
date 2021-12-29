@@ -117,7 +117,7 @@ namespace Health.Direct.Config.Store.Entity
             set;
         }
         
-        public string Type
+        public string? Type
         {
             get;
             set;

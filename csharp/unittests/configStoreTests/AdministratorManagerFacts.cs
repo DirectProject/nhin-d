@@ -20,38 +20,37 @@ using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Xunit;
-using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests;
 
 [Collection("ManagerFacts")]
 public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
 {
-    private readonly DirectDbContext m_database;
-    private readonly AdministratorManager m_manager;
-    private readonly string m_username;
-    private readonly string m_password;
+    private readonly DirectDbContext _dbContext;
+    private readonly AdministratorManager _adminManager;
+    private readonly string _username;
+    private readonly string _password;
 
     public AdministratorManagerFacts()
     {
-        m_database = CreateConfigDatabase();
-        m_manager = new AdministratorManager(CreateConfigStore());
-        m_username = Guid.NewGuid().ToString("N");
-        m_password = "asdf1234";
+        _dbContext = CreateConfigDatabase();
+        _adminManager = new AdministratorManager(_dbContext);
+        _username = Guid.NewGuid().ToString("N");
+        _password = "asdf1234";
     }
 
     public void Dispose()
     {
-        m_database.Dispose();
+        _dbContext.Dispose();
     }
 
     [Fact]
     public async Task<Administrator> Add()
     {
-        var origAdmin = new Administrator(m_username, m_password);
-        await m_manager.Add(origAdmin);
+        var origAdmin = new Administrator(_username, _password);
+        await _adminManager.Add(origAdmin);
 
-        var admin = (m_database.Administrators.Where(a => a.Username == m_username)).SingleOrDefault();
+        var admin = (_dbContext.Administrators.Where(a => a.Username == _username)).SingleOrDefault();
 
         Assert.NotNull(admin);
         Assert.True(admin.ID > 0);
@@ -59,7 +58,7 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
         Assert.Equal(origAdmin.CreateDate, admin.CreateDate, new DbDateTimeComparer());
         Assert.Equal(origAdmin.UpdateDate, admin.UpdateDate, new DbDateTimeComparer());
         Assert.Equal(origAdmin.Status, admin.Status);
-        Assert.True(admin.CheckPassword(m_password));
+        Assert.True(admin.CheckPassword(_password));
 
         return admin;
     }
@@ -71,9 +70,9 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
 
         origAdmin.Status = EntityStatus.Enabled;
         origAdmin.SetPassword("qwerty");
-        await m_manager.Update(origAdmin);
+        await _adminManager.Update(origAdmin);
 
-        var admin = (m_database.Administrators.Where(a => a.Username == m_username)).SingleOrDefault();
+        var admin = (_dbContext.Administrators.Where(a => a.Username == _username)).SingleOrDefault();
 
         Assert.NotNull(admin);
         Assert.True(admin.ID > 0);
@@ -87,40 +86,40 @@ public class AdministratorManagerFacts : ConfigStoreTestBase, IDisposable
     [Fact]
     public async Task GetByUsername()
     {
-        Add();
+        await Add();
 
-        var admin = await m_manager.Get(m_username);
+        var admin = await _adminManager.Get(_username);
         Assert.NotNull(admin);
-        Assert.Equal(m_username, admin.Username);
+        Assert.Equal(_username, admin.Username);
         Assert.Equal(EntityStatus.New, admin.Status);
-        Assert.True(admin.CheckPassword(m_password));
+        Assert.True(admin.CheckPassword(_password));
     }
 
     [Fact]
-    public async Task GetByID()
+    public async Task GetById()
     {
         var added = await Add();
 
-        var admin = await m_manager.Get(added.ID);
+        var admin = await _adminManager.Get(added.ID);
         Assert.NotNull(admin);
-        Assert.Equal(m_username, admin.Username);
+        Assert.Equal(_username, admin.Username);
     }
 
     [Fact]
     public async Task Remove()
     {
         await Add();
-        await m_manager.Remove(m_username);
-        Assert.Null(await m_manager.Get(m_username));
+        await _adminManager.Remove(_username);
+        Assert.Null(await _adminManager.Get(_username));
     }
 
     [Fact]
     public async Task SetStatus()
     {
         await Add();
-        await m_manager.SetStatus(m_username, EntityStatus.Disabled);
+        await _adminManager.SetStatus(_username, EntityStatus.Disabled);
 
-        var admin = await m_manager.Get(m_username);
+        var admin = await _adminManager.Get(_username);
         Assert.NotNull(admin);
         Assert.Equal(EntityStatus.Disabled, admin.Status);
     }

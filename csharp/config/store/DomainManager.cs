@@ -28,12 +28,12 @@ public interface IDomainManager
     Task<Domain> Add(string name);
     Task<Domain> Add(Domain domain);
     Task<int> Count();
-    Task<Domain> Get(string name);
+    Task<Domain?> Get(string name);
     Task<List<Domain>> Get(string[] names);
     Task<List<Domain>> Get(string[] names, EntityStatus? status);
-    Task<List<Domain>> Get(string agentName, EntityStatus? status);
+    Task<List<Domain>> GetByAgentName(string agentName, EntityStatus? status);
     Task<List<Domain>> Get(string lastDomain, int maxResults);
-    Task<Domain> Get(long id);
+    Task<Domain?> Get(long id);
     Task Update(Domain domain);
     Task Remove(string name);
     IEnumerator<Domain> GetEnumerator();
@@ -43,10 +43,11 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
 {
     private readonly DirectDbContext _dbContext;
 
-    internal DomainManager(DirectDbContext dbContext)
+    public  DomainManager(DirectDbContext dbContext)
     {
         _dbContext = dbContext;
     }
+
 
     public async Task<Domain> Add(string name)
     {
@@ -86,7 +87,7 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
         return await _dbContext.Domains.CountAsync();
     }
             
-    public async Task<Domain> Get(string name)
+    public async Task<Domain?> Get(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -125,7 +126,7 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .ToListAsync();
     }
 
-    public async Task<List<Domain>> Get(string agentName, EntityStatus? status)
+    public async Task<List<Domain>> GetByAgentName(string agentName, EntityStatus? status)
     {
         if (string.IsNullOrEmpty(agentName))
         {
@@ -162,8 +163,7 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .ToListAsync();
     }
 
-    
-    public async Task<Domain> Get(long id)
+    public async Task<Domain?> Get(long id)
     {
         return await _dbContext.Domains
             .Where(d => d.ID == id)
@@ -218,5 +218,5 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
     }
 
     #endregion
-    
+
 }

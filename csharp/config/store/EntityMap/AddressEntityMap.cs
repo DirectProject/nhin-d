@@ -26,14 +26,14 @@ public class AddressEntityMap : IEntityTypeConfiguration<Address>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Address> builder)
     {
-        builder.HasKey(e => e.EmailAddress);
+        builder.HasKey(e => e.ID);
         
-        builder.HasIndex(e => e.ID, "IX_Addresses_AddressID")
-            .IsUnique();
-
         builder.Property(e => e.EmailAddress)
             .HasMaxLength(400)
             .IsUnicode(false);
+
+        builder.HasIndex(e => e.EmailAddress)
+            .IsUnique();
 
         builder.Property(e => e.ID)
             .ValueGeneratedOnAdd()

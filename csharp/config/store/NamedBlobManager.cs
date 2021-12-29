@@ -68,13 +68,13 @@
 //             db.Blobs.InsertOnSubmit(blob);
 //         }
 //         
-//         public NamedBlob Get(string name)
+//         public NamedBlob GetByAgentName(string name)
 //         {
 //             using DirectDbContext db = this.Store.CreateReadContext();
-//             return this.Get(db, name);
+//             return this.GetByAgentName(db, name);
 //         }
 //         
-//         public NamedBlob Get(DirectDbContext db, string name)
+//         public NamedBlob GetByAgentName(DirectDbContext db, string name)
 //         {
 //             if (db == null)
 //             {
@@ -85,7 +85,7 @@
 //                 throw new ArgumentException("name");
 //             }
 //             
-//             return db.Blobs.Get(name).SingleOrDefault();
+//             return db.Blobs.GetByAgentName(name).SingleOrDefault();
 //         }
 //                         
 //         public NamedBlob[] GetNameStartsWith(string name)

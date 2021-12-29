@@ -15,63 +15,37 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Xunit;
-using Xunit.Samples;
+using Xunit.Abstractions;
 
 namespace Health.Direct.Config.Store.Tests;
 
-public class AnchorManagerTestFixture : ConfigStoreTestBase, IAsyncLifetime
-{
-    /// <summary>
-    /// Called immediately after the class has been created, before it is used.
-    /// </summary>
-    public Task InitializeAsync()
-    {
-        return InitAnchorRecords();
-        ;
-    }
-
-    /// <summary>
-    /// Called when an object is no longer needed. Called just before <see cref="M:System.IDisposable.Dispose" />
-    /// if the class also implements that.
-    /// </summary>
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
-}
 
 [Collection("ManagerFacts")]
-public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManagerTestFixture>
+public class AnchorManagerFacts : ConfigStoreTestBase
 {
-    private new static AnchorManager CreateManager()
+    private readonly ITestOutputHelper _testOutputHelper;
+    private readonly DirectDbContext _dbContext;
+    private readonly AnchorManager _anchorManager;
+
+    public AnchorManagerFacts(ITestOutputHelper testOutputHelper)
     {
-        return new AnchorManager(CreateConfigStore());
+        _testOutputHelper = testOutputHelper;
+        _dbContext = CreateConfigDatabase();
+        _anchorManager = new AnchorManager(_dbContext);
     }
-
-    public void SetFixture(AnchorManagerTestFixture data)
-    {
-
-    }
-
+    
     /// <summary>
     /// property to expose enumerable testing Anchor certificate instances
     /// </summary>
     /// <remarks>
     /// Relates to .cer files in the metadata/certs folder; all files should be copied to output dir if newer
     /// </remarks>
-    public new static IEnumerable<object[]> TestAnchors
-    {
-        get
-        {
-            return ConfigStoreTestBase.TestAnchors;
-        }
-    }
+    public new static IEnumerable<object[]> TestAnchors => ConfigStoreTestBase.TestAnchors;
 
     /// <summary>
     /// property to expose enumerable test certs extracted from pfx files in metadata\certs folder
@@ -79,14 +53,7 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     /// <remarks>
     /// Relates to .cer files in the metadata/certs folder; all files should be copied to output dir if newer
     /// </remarks>
-    public new static IEnumerable<object[]> TestCerts
-    {
-        get
-        {
-            return ConfigStoreTestBase.TestCerts;
-
-        }
-    }
+    public new static IEnumerable<object[]> TestCerts => ConfigStoreTestBase.TestCerts;
 
     /// <summary>
     /// property to expose enumerable test cert bytpes extracted from pfx files in metadata\certs folder
@@ -94,322 +61,225 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     /// <remarks>
     /// Relates to .cer files in the metadata/certs folder; all files should be copied to output dir if newer
     /// </remarks>
-    public new static IEnumerable<object[]> TestCertsBytes
-    {
-        get
-        {
-            return ConfigStoreTestBase.TestCertsBytes;
+    public new static IEnumerable<object[]> TestCertsBytes => ConfigStoreTestBase.TestCertsBytes;
 
-        }
-    }
-
-    /// <summary>
-    ///A test for Store
-    ///</summary>
-    [Fact, AutoRollback]
-    public void StoreTest()
-    {
-        AnchorManager mgr = CreateManager();
-        ConfigStore actual = mgr.Store;
-        Assert.Equal(mgr.Store, actual);
-    }
 
     /// <summary>
     ///A test for SetStatus
     ///</summary>
-    [Fact, AutoRollback]
-    public async Task SetStatusTest1()
-    {
-        await using (DirectDbContext db = CreateConfigDatabase())
-        {
-            foreach (string domain in TestDomainNames)
-            {
-
-                string subject = "CN=" + domain;
-                AnchorManager target = CreateManager();
-                var actual = await target.Get(subject);
-                Dump(string.Format("SetStatusTest1 Subject[{0}] which has [{1}] related certs.", subject, actual?.Count ?? -1));
-                Assert.NotNull(actual);
-                Assert.Equal(MAXCERTPEROWNER, actual.Count);
-                foreach (Anchor cert in actual)
-                {
-                    Assert.Equal(EntityStatus.New, cert.Status);
-                }
-
-                await target.SetStatus(db, subject, EntityStatus.Enabled);
-                await db.SaveChangesAsync();
-                actual = await target.Get(subject);
-                Assert.NotNull(actual);
-                Assert.Equal(MAXCERTPEROWNER, actual.Count);
-                foreach (Anchor cert in actual)
-                {
-                    Assert.Equal(EntityStatus.Enabled, cert.Status);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    ///A test for SetStatus
-    ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task SetStatusTest()
     {
-
+        await InitAnchorRecords(_dbContext);
         foreach (string domain in TestDomainNames)
         {
             string subject = "CN=" + domain;
-            AnchorManager target = CreateManager();
-            List<Anchor> actual = await target.Get(subject);
-            Dump(string.Format("SetStatusTest1 Subject[{0}] which has [{1}] related certs.", subject, actual?.Count ?? -1));
+            
+            var actual = await _anchorManager.Get(subject);
+            Dump(_testOutputHelper, $"SetStatusTest1 Subject[{subject}] which has [{actual?.Count ?? -1}] related certs.");
             Assert.NotNull(actual);
-            Assert.Equal(MAXCERTPEROWNER, actual.Count);
+            Assert.Equal(MaxCertPerOwner, actual.Count);
+
             foreach (Anchor cert in actual)
             {
                 Assert.Equal(EntityStatus.New, cert.Status);
             }
 
-            await target.SetStatus(subject, EntityStatus.Enabled);
-            actual = await target.Get(subject);
+            await _anchorManager.SetStatus(subject, EntityStatus.Enabled);
+            actual = await _anchorManager.Get(subject);
             Assert.NotNull(actual);
-            Assert.Equal(MAXCERTPEROWNER, actual.Count);
-            foreach (Anchor cert in actual)
+            Assert.Equal(MaxCertPerOwner, actual.Count);
+
+            foreach (var cert in actual)
             {
                 Assert.Equal(EntityStatus.Enabled, cert.Status);
             }
         }
     }
-
-    /// <summary>
-    ///A test for RemoveAll
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task RemoveAllTest1()
-    {
-        AnchorManager target = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-        await using (var db = CreateConfigDatabase())
-        {
-            await AnchorUtil.RemoveAll(db);
-        }
-        Assert.Empty((await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)));
-    }
-
-    /// <summary>
-    ///A test for RemoveAll
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task RemoveAllTest()
-    {
-        AnchorManager target = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-
-        await using (var db = CreateConfigDatabase())
-        {
-            await AnchorUtil.RemoveAll(db);
-            await db.SaveChangesAsync();
-        }
-
-        Assert.Equal(0, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-    }
-
+    
     /// <summary>
     ///A test for Remove
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task RemoveTest5()
     {
-        using (DirectDbContext db = CreateConfigDatabase())
-        {
-            AnchorManager target = CreateManager();
-            Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-            long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
-            await target.Remove(db, certificateIDs);
-            await db.SaveChangesAsync();
-            Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER - certificateIDs.Length, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-        }
+        await InitAnchorRecords(_dbContext);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
+        long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
+        await _anchorManager.Remove(certificateIDs);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner - certificateIDs.Length, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
     }
 
     /// <summary>
     ///A test for Remove
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task RemoveTest4()
     {
-        AnchorManager target = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
+        await InitAnchorRecords(_dbContext);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
         long[] certificateIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
-        await target.Remove(certificateIDs);
-        Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER - certificateIDs.Length, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
+        await _anchorManager.Remove(certificateIDs);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner - certificateIDs.Length, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
     }
 
     /// <summary>
     ///A test for Remove
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task RemoveTest3()
     {
-        AnchorManager target = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-        string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-        await target.Remove(ownerName);
-        Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER - MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
+        await InitAnchorRecords(_dbContext);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
+        string ownerName = $"CN={BuildDomainName(GetRndDomainId())}";
+        await _anchorManager.Remove(ownerName);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner - MaxCertPerOwner, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
     }
 
     /// <summary>
     ///A test for Remove
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task RemoveTest2Async()
     {
-        using (DirectDbContext db = CreateConfigDatabase())
-        {
-            AnchorManager target = CreateManager();
-            Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-            string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-            await target.Remove(db, ownerName);
-            await db.SaveChangesAsync();
-            Assert.Equal(MAXDOMAINCOUNT * MAXCERTPEROWNER - MAXCERTPEROWNER, (await target.Get(-1, MAXDOMAINCOUNT * MAXCERTPEROWNER + 1)).Count);
-        }
+        await InitAnchorRecords(_dbContext);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
+        string ownerName = $"CN={BuildDomainName(GetRndDomainId())}";
+        await _anchorManager.Remove(ownerName);
+        Assert.Equal(MaxDomainCount * MaxCertPerOwner - MaxCertPerOwner, (await _anchorManager.Get(-1, MaxDomainCount * MaxCertPerOwner + 1)).Count);
     }
 
     /// <summary>
     ///A test for Remove
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task RemoveTest1()
     {
-        AnchorManager target = CreateManager();
-        List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
+        await InitAnchorRecords(_dbContext);
+        var certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
         string owner = certs[0].Owner;
         string thumbprint = certs[0].Thumbprint;
-        Assert.NotNull(target.Get(owner, thumbprint));
-        await target.Remove(owner, thumbprint);
-        Assert.Null(await target.Get(owner, thumbprint));
+        Assert.NotNull(_anchorManager.Get(owner, thumbprint));
+        await _anchorManager.Remove(owner, thumbprint);
+        Assert.Null(await _anchorManager.Get(owner, thumbprint));
     }
 
     /// <summary>
     ///A test for Remove
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task RemoveTest()
     {
-        await using (DirectDbContext db = CreateConfigDatabase())
-        {
-            AnchorManager target = CreateManager();
-            List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
-            string owner = certs[0].Owner;
-            string thumbprint = certs[0].Thumbprint;
-            Assert.NotNull(target.Get(owner, thumbprint));
-            await target.Remove(db, owner, thumbprint);
-            await db.SaveChangesAsync();
-            Assert.Null(await target.Get(owner, thumbprint));
-        }
+        await InitAnchorRecords(_dbContext);
+        var certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
+        string owner = certs[0].Owner;
+        string thumbprint = certs[0].Thumbprint;
+        Assert.NotNull(await _anchorManager.Get(owner, thumbprint));
+        await _anchorManager.Remove(owner, thumbprint);
+        Assert.Null(await _anchorManager.Get(owner, thumbprint));
     }
 
     /// <summary>
     ///A test for GetOutgoing
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetOutgoingTest1()
     {
-        AnchorManager target = CreateManager();
-        string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-        await target.SetStatus(ownerName, EntityStatus.Enabled);
-        List<Anchor> actual = await target.GetOutgoing(ownerName, null);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
-        actual = await target.GetOutgoing(ownerName, EntityStatus.Enabled);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
-        actual = await target.GetOutgoing(ownerName, EntityStatus.New);
+        await InitAnchorRecords(_dbContext);
+        string ownerName = $"CN={BuildDomainName(GetRndDomainId())}";
+        await _anchorManager.SetStatus(ownerName, EntityStatus.Enabled);
+        var actual = await _anchorManager.GetOutgoing(ownerName, null);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        actual = await _anchorManager.GetOutgoing(ownerName, EntityStatus.Enabled);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        actual = await _anchorManager.GetOutgoing(ownerName, EntityStatus.New);
         Assert.Empty(actual);
     }
 
     /// <summary>
     ///A test for GetOutgoing
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetOutgoingTest()
     {
-        AnchorManager target = CreateManager();
-        string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-        List<Anchor> actual = await target.GetOutgoing(ownerName);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
-        await target.SetStatus(ownerName, EntityStatus.Enabled);
-        actual = await target.GetOutgoing(ownerName);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
+        await InitAnchorRecords(_dbContext);
+        string ownerName = $"CN={BuildDomainName(GetRndDomainId())}";
+        var actual = await _anchorManager.GetOutgoing(ownerName);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        await _anchorManager.SetStatus(ownerName, EntityStatus.Enabled);
+        actual = await _anchorManager.GetOutgoing(ownerName);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
     }
 
     /// <summary>
     ///A test for GetIncoming
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetIncomingTest1()
     {
-        AnchorManager target = CreateManager();
-        string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-        await target.SetStatus(ownerName, EntityStatus.Enabled);
-        List<Anchor> actual = await target.GetIncoming(ownerName, null);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
-        actual = await target.GetIncoming(ownerName, EntityStatus.Enabled);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
-        actual = await target.GetIncoming(ownerName, EntityStatus.New);
+        await InitAnchorRecords(_dbContext);
+        string ownerName = $"CN={BuildDomainName(GetRndDomainId())}";
+        await _anchorManager.SetStatus(ownerName, EntityStatus.Enabled);
+        var actual = await _anchorManager.GetIncoming(ownerName, null);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        actual = await _anchorManager.GetIncoming(ownerName, EntityStatus.Enabled);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        actual = await _anchorManager.GetIncoming(ownerName, EntityStatus.New);
         Assert.Empty(actual);
     }
 
     /// <summary>
     ///A test for GetIncoming
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetIncomingTest()
     {
-        AnchorManager target = CreateManager();
-        string ownerName = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-        List<Anchor> actual = await target.GetIncoming(ownerName);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
-        await target.SetStatus(ownerName, EntityStatus.Enabled);
-        actual = await target.GetIncoming(ownerName);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
+        await InitAnchorRecords(_dbContext);
+        string ownerName = $"CN={BuildDomainName(GetRndDomainId())}";
+        var actual = await _anchorManager.GetIncoming(ownerName);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        await _anchorManager.SetStatus(ownerName, EntityStatus.Enabled);
+        actual = await _anchorManager.GetIncoming(ownerName);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest6()
     {
-        AnchorManager target = CreateManager();
-        await using (var db = CreateConfigDatabase())
-        {
-            const long lastCertID = 0;
-            const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
-            IEnumerable<Anchor> actual = await target.Get(db, lastCertID, maxResults);
-            Assert.Equal(MAXCERTPEROWNER * MAXDOMAINCOUNT, actual.Count());
-        }
+        await InitAnchorRecords(_dbContext);
+        const long lastCertId = 0;
+        const int maxResults = MaxCertPerOwner * MaxDomainCount + 1;
+        IEnumerable<Anchor> actual = await _anchorManager.Get(lastCertId, maxResults);
+        Assert.Equal(MaxCertPerOwner * MaxDomainCount, actual.Count());
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest5()
     {
-        AnchorManager target = CreateManager();
-        const long lastCertID = 0;
-        const int maxResults = MAXCERTPEROWNER * MAXDOMAINCOUNT + 1;
-        IEnumerable<Anchor> actual = await target.Get(lastCertID, maxResults);
-        Assert.Equal(MAXCERTPEROWNER * MAXDOMAINCOUNT, actual.Count());
+        await InitAnchorRecords(_dbContext);
+        const long lastCertId = 0;
+        const int maxResults = MaxCertPerOwner * MaxDomainCount + 1;
+        IEnumerable<Anchor> actual = await _anchorManager.Get(lastCertId, maxResults);
+        Assert.Equal(MaxCertPerOwner * MaxDomainCount, actual.Count());
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest4()
     {
-        AnchorManager target = CreateManager();
+        await InitAnchorRecords(_dbContext);
         long[] certIDs = new long[] { 1, 2, 3, 4, 5, 6, 7 };
-        List<Anchor> actual = await target.Get(certIDs);
+        var actual = await _anchorManager.Get(certIDs);
         Assert.Equal(certIDs.Length, actual.Count);
+
         foreach (Anchor cert in actual)
         {
             Assert.Contains(cert.ID, certIDs);
@@ -417,15 +287,15 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest3()
     {
-        AnchorManager target = CreateManager();
-        string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-        List<Anchor> actual = await target.Get(owner);
-        Assert.Equal(MAXCERTPEROWNER, actual.Count);
+        await InitAnchorRecords(_dbContext);
+        string owner = $"CN={BuildDomainName(GetRndDomainId())}";
+        var actual = await _anchorManager.Get(owner);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
         foreach (Anchor cert in actual)
         {
             Assert.Equal(owner, cert.Owner);
@@ -433,75 +303,64 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest2()
     {
-        AnchorManager target = CreateManager();
-        List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
-        int i = GetRndCertID();
+        await InitAnchorRecords(_dbContext);
+        var certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
+        int i = GetRndCertId();
         string owner = certs[i].Owner;
         string thumbprint = certs[i].Thumbprint;
         Anchor expected = certs[i];
-        Anchor actual = await target.Get(owner, thumbprint);
+        Anchor actual = await _anchorManager.Get(owner, thumbprint);
         Assert.Equal(expected.Owner, actual.Owner);
         Assert.Equal(expected.Thumbprint, actual.Thumbprint);
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest1()
     {
-        await using (DirectDbContext db = CreateConfigDatabase())
-        {
-            AnchorManager target = CreateManager();
-            List<Anchor> certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
-            int i = GetRndCertID();
-            string owner = certs[i].Owner;
-            string thumbprint = certs[i].Thumbprint;
-            Anchor expected = certs[i];
-            Anchor actual = await target.Get(db, owner, thumbprint);
-            Assert.Equal(expected.Owner, actual.Owner);
-            Assert.Equal(expected.Thumbprint, actual.Thumbprint);
-        }
+        await InitAnchorRecords(_dbContext);
+        var certs = this.GetCleanEnumerable<Anchor>(TestAnchors);
+        int i = GetRndCertId();
+        string owner = certs[i].Owner;
+        string thumbprint = certs[i].Thumbprint;
+        Anchor expected = certs[i];
+        Anchor actual = await _anchorManager.Get(owner, thumbprint);
+        Assert.Equal(expected.Owner, actual.Owner);
+        Assert.Equal(expected.Thumbprint, actual.Thumbprint);
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task GetTest()
     {
-        await using (DirectDbContext db = CreateConfigDatabase())
+        await InitAnchorRecords(_dbContext);
+        string owner = $"CN={BuildDomainName(GetRndDomainId())}";
+        List<Anchor> actual = await _anchorManager.Get(owner);
+        Assert.Equal(MaxCertPerOwner, actual.Count);
+        foreach (Anchor cert in actual)
         {
-            AnchorManager target = CreateManager();
-            string owner = string.Format("CN={0}", BuildDomainName(GetRndDomainID()));
-            List<Anchor> actual = await target.Get(db, owner);
-            Assert.Equal(MAXCERTPEROWNER, actual.Count);
-            foreach (Anchor cert in actual)
-            {
-                Assert.Equal(owner, cert.Owner);
-            }
+            Assert.Equal(owner, cert.Owner);
         }
     }
 
     /// <summary>
     ///A test for Add
     ///</summary>
-    [Theory, AutoRollback]
+    [Theory]
     [MemberData("TestAnchors")]
     public async Task AddTest2(Anchor anc)
     {
-        AnchorManager target = CreateManager();
-        await using (var db = CreateConfigDatabase())
-        {
-            await AnchorUtil.RemoveAll(db);
-        }
-        await target.Add(anc);
-        Anchor certNew = await target.Get(anc.Owner, anc.Thumbprint); //---should always be 1 (table was truncated above);
+        await _anchorManager.Add(anc);
+        Anchor certNew = await _anchorManager.Get(anc.Owner, anc.Thumbprint); //---should always be 1 (table was truncated above);
         Assert.NotNull(anc);
         Assert.Equal(anc.Owner, certNew.Owner);
         Assert.Equal(anc.Thumbprint, certNew.Thumbprint);
@@ -510,33 +369,25 @@ public class AnchorManagerFacts : ConfigStoreTestBase, IClassFixture<AnchorManag
     /// <summary>
     ///A test for Add
     ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task AddTest1()
     {
-        AnchorManager target = CreateManager();
-        await using (var db = CreateConfigDatabase())
-        {
-            await AnchorUtil.RemoveAll(db);
-        }
         List<Anchor> certs = GetCleanEnumerable<Anchor>(TestAnchors);
-        await target.Add(certs);
-        List<Anchor> actual = await target.Get(0, MAXCERTPEROWNER * MAXDOMAINCOUNT + 1);
+        await _anchorManager.Add(certs);
+        var actual = await _anchorManager.Get(0, MaxCertPerOwner * MaxDomainCount);
         Assert.Equal(certs.Count, actual.Count);
     }
 
     /// <summary>
     ///A test for Add
     ///</summary>
-    [Theory, AutoRollback]
+    [Theory]
     [MemberData(nameof(TestAnchors))]
     public async Task AddTest(Anchor anc)
     {
-        var target = CreateManager();
-        await using DirectDbContext db = CreateConfigDatabase();
-        await AnchorUtil.RemoveAll(db);
-        target.Add(db, anc);
-        await db.SaveChangesAsync();
-        var certNew = await target.Get(anc.Owner, anc.Thumbprint); //---should always be 1 (table was truncated above);
+        await _anchorManager.Add(anc);
+        
+        var certNew = await _anchorManager.Get(anc.Owner, anc.Thumbprint); //---should always be 1 (table was truncated above);
         Assert.NotNull(anc);
         Assert.Equal(anc.Owner, certNew.Owner);
         Assert.Equal(anc.Thumbprint, certNew.Thumbprint);

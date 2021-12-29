@@ -25,7 +25,10 @@ public class AnchorEntityMap : IEntityTypeConfiguration<Anchor>
 {
     public void Configure(EntityTypeBuilder<Anchor> builder)
     {
-        builder.HasKey(e => new { e.Owner, e.Thumbprint });
+        builder.HasKey(e => e.ID);
+
+        builder.HasIndex(e => new { e.Owner, e.Thumbprint })
+            .IsUnique();
 
         builder.Property(e => e.Owner)
             .HasMaxLength(400)

@@ -28,7 +28,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void UpdateDateTest()
         {
-            Domain target = new Domain(BuildDomainName(GetRndDomainID()));
+            Domain target = new Domain(BuildDomainName(GetRndDomainId()));
             DateTime expected = DateTime.UtcNow;
             target.UpdateDate = expected;
             DateTime actual = target.UpdateDate;
@@ -41,7 +41,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void StatusTest()
         {
-            Domain target = new Domain(BuildDomainName(GetRndDomainID()));
+            Domain target = new Domain(BuildDomainName(GetRndDomainId()));
             const EntityStatus expected = EntityStatus.Disabled;
             target.Status = expected;
             EntityStatus actual = target.Status;
@@ -56,7 +56,7 @@ namespace Health.Direct.Config.Store.Tests
         public void NameTest()
         {
             Domain target = new Domain();
-            string expected = BuildDomainName(GetRndDomainID());
+            string expected = BuildDomainName(GetRndDomainId());
             target.Name = expected;
             string actual = target.Name;
             Assert.Equal(expected, actual);
@@ -69,7 +69,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void IDTest()
         {
-            long expected = GetRndDomainID();
+            long expected = GetRndDomainId();
             Domain target = new Domain(BuildDomainName(expected)) { ID = expected };
             long actual = target.ID;
             Assert.Equal(expected, actual);
@@ -82,7 +82,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void CreateDateTest()
         {
-            Domain target = new Domain(BuildDomainName(GetRndDomainID()));
+            Domain target = new Domain(BuildDomainName(GetRndDomainId()));
             DateTime expected = DateTime.UtcNow;
             target.CreateDate = expected;
             DateTime actual = target.CreateDate;
@@ -96,7 +96,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact(Skip = "ODO this passes now in .NET Core.  Hmmm... ")]
         public void IsValidEmailDomainTest1()
         {
-            Domain target = new Domain(BuildDomainName(GetRndDomainID()));
+            Domain target = new Domain(BuildDomainName(GetRndDomainId()));
             Assert.True(target.IsValidEmailDomain());
             //TODO this passes now in .NET Core.  Hmmm... 
             target.Name = "bunk.";
@@ -109,7 +109,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact(Skip = "ODO this passes now in .NET Core.  Hmmm... ")]
         public void IsValidEmailDomainTest()
         {
-            Assert.True(Domain.IsValidEmailDomain(BuildDomainName(GetRndDomainID())));
+            Assert.True(Domain.IsValidEmailDomain(BuildDomainName(GetRndDomainId())));
             //TODO this passes now in .NET Core.  Hmmm... 
             Assert.False(Domain.IsValidEmailDomain("bunk."));
 
@@ -121,7 +121,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void CopyFixedTest()
         {
-            Domain source = new Domain(BuildDomainName(GetRndDomainID()));
+            Domain source = new Domain(BuildDomainName(GetRndDomainId()));
             Domain target = new Domain();
             target.CopyFixed(source);
             Assert.Equal(source.ID, target.ID);
@@ -136,7 +136,7 @@ namespace Health.Direct.Config.Store.Tests
         [Fact]
         public void ApplyChangesTest()
         {
-            Domain source = new Domain(BuildDomainName(GetRndDomainID()));
+            Domain source = new Domain(BuildDomainName(GetRndDomainId()));
             Domain target = new Domain();
             source.Status = EntityStatus.Disabled;
             Assert.NotEqual(source.Status, target.Status);

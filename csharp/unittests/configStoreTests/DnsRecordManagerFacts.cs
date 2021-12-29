@@ -24,40 +24,33 @@ namespace Health.Direct.Config.Store.Tests
     [Collection("ManagerFacts")]
     public class DnsRecordManagerFacts : ConfigStoreTestBase
     {
-        private new static DnsRecordManager CreateManager()
-        {
-            return new DnsRecordManager(CreateConfigStore());
-        }
+        private readonly DirectDbContext _dbContext;
+        private readonly DnsRecordManager _dnsRecordManager;
 
-        /// <summary>
-        ///A test for Store
-        ///</summary>
-        [Fact]
-        public void StoreTest()
+        public DnsRecordManagerFacts()
         {
-            DnsRecordManager mgr = CreateManager();
-            ConfigStore actual = mgr.Store;
-            Assert.Equal(mgr.Store, actual);
+            _dbContext = CreateConfigDatabase();
+            _dnsRecordManager = new DnsRecordManager(_dbContext);
         }
 
         [Fact]
         public async Task GetTest10()
         {
-            await InitDnsRecords();
+            await InitDnsRecords(_dbContext);
 
-            DnsRecordManager mgr = CreateManager();
-            List<DnsRecord> recs = await mgr.Get("microsoft.com");
+            
+            List<DnsRecord> recs = await _dnsRecordManager.Get("microsoft.com");
             Assert.Equal(3, recs.Count);
-            recs = await mgr.Get("microsoft11.com");
+            recs = await _dnsRecordManager.Get("microsoft11.com");
             Assert.Equal(0, recs.Count);
 
-            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.AAAA);
+            recs = await _dnsRecordManager.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.AAAA);
             Assert.Equal(0, recs.Count);
-            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.SOA);
+            recs = await _dnsRecordManager.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.SOA);
             Assert.Equal(1, recs.Count);
-            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.MX);
+            recs = await _dnsRecordManager.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.MX);
             Assert.Equal(1, recs.Count);
-            recs = await mgr.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.ANAME);
+            recs = await _dnsRecordManager.Get("microsoft.com", Common.DnsResolver.DnsStandard.RecordType.ANAME);
             Assert.Equal(1, recs.Count);
         }
 
@@ -70,14 +63,14 @@ namespace Health.Direct.Config.Store.Tests
         {
             InitDnsRecords();
 
-            DnsRecordManager mgr = CreateManager();
-            DnsRecord dnsRecord = await mgr.Get(1);
+            
+            DnsRecord dnsRecord = await _dnsRecordManager.GetByAgentName(1);
             dnsRecord.RecordData = System.Text.Encoding.UTF8.GetBytes("this is a test");
             dnsRecord.Notes = "these are the notes";
             dnsRecord.DomainName = "someothername.com";
-            mgr.Update(dnsRecord);
+            _dnsRecordManager.Update(dnsRecord);
 
-            dnsRecord = await mgr.Get(1);
+            dnsRecord = await _dnsRecordManager.GetByAgentName(1);
             Assert.Equal("these are notes", dnsRecord.Notes);
  
 
@@ -88,9 +81,9 @@ namespace Health.Direct.Config.Store.Tests
         public void UpdateTest()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             IEnumerable<DnsRecord> dnsRecords = null; 
-            mgr.Update(dnsRecords);
+            _dnsRecordManager.Update(dnsRecords);
             
         }
 
@@ -101,9 +94,9 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest3()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             long recordID = 0; 
-            mgr.Remove(recordID);
+            _dnsRecordManager.Remove(recordID);
             
         }
 
@@ -114,9 +107,9 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest2()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DnsRecord dnsRecord = null; 
-            mgr.Remove(dnsRecord);
+            _dnsRecordManager.Remove(dnsRecord);
             
         }
 
@@ -127,10 +120,10 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest1()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DirectDbContext db = null; 
             DnsRecord dnsRecord = null; 
-            mgr.Remove(db, dnsRecord);
+            _dnsRecordManager.Remove(db, dnsRecord);
             
         }
 
@@ -141,95 +134,95 @@ namespace Health.Direct.Config.Store.Tests
         public void RemoveTest()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DirectDbContext db = null; 
             long recordID = 0; 
-            mgr.Remove(db, recordID);
+            _dnsRecordManager.Remove(db, recordID);
             
         }
 
         /// <summary>
-        ///A test for Get
+        ///A test for GetByAgentName
         ///</summary>
         [Fact()]
         public void GetTest4()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             long[] recordIDs = null; 
             DnsRecord[] expected = null; 
             DnsRecord[] actual;
-            actual = await mgr.Get(recordIDs);
+            actual = await _dnsRecordManager.GetByAgentName(recordIDs);
             Assert.Equal(expected, actual);
             
         }
 
         /// <summary>
-        ///A test for Get
+        ///A test for GetByAgentName
         ///</summary>
         [Fact()]
         public void GetTest3()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DirectDbContext db = null; 
             long recordID = 0; 
             DnsRecord expected = null; 
             DnsRecord actual;
-            actual = await mgr.Get(db, recordID);
+            actual = await _dnsRecordManager.GetByAgentName(db, recordID);
             Assert.Equal(expected, actual);
             
         }
 
         /// <summary>
-        ///A test for Get
+        ///A test for GetByAgentName
         ///</summary>
         [Fact()]
         public void GetTest2()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             long recordID = 0; 
             DnsRecord expected = null; 
             DnsRecord actual;
-            actual = await mgr.Get(recordID);
+            actual = await _dnsRecordManager.GetByAgentName(recordID);
             Assert.Equal(expected, actual);
             
         }
 
         /// <summary>
-        ///A test for Get
+        ///A test for GetByAgentName
         ///</summary>
         [Fact()]
         public void GetTest1()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             long lastRecordID = 0; 
             int maxResults = 0;
             Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID = Health.Direct.Common.DnsResolver.DnsStandard.RecordType.AAAA;
             DnsRecord[] expected = null; 
             DnsRecord[] actual;
-            actual = await mgr.Get(lastRecordID, maxResults, typeID);
+            actual = await _dnsRecordManager.GetByAgentName(lastRecordID, maxResults, typeID);
             Assert.Equal(expected, actual);
             
         }
 
         /// <summary>
-        ///A test for Get
+        ///A test for GetByAgentName
         ///</summary>
         [Fact()]
         public void GetTest()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DirectDbContext db = null; 
             long lastRecordID = 0; 
             int maxResults = 0;
             Health.Direct.Common.DnsResolver.DnsStandard.RecordType typeID = Health.Direct.Common.DnsResolver.DnsStandard.RecordType.AAAA;
             IEnumerable<DnsRecord> expected = null; 
             IEnumerable<DnsRecord> actual;
-            actual = await mgr.Get(db, lastRecordID, maxResults, typeID);
+            actual = await _dnsRecordManager.GetByAgentName(db, lastRecordID, maxResults, typeID);
             Assert.Equal(expected, actual);
             
         }
@@ -241,11 +234,11 @@ namespace Health.Direct.Config.Store.Tests
         public void CountTest()
         {
 
-            DnsRecordManager mgr = CreateManager();
+            
             Nullable<Health.Direct.Common.DnsResolver.DnsStandard.RecordType> recordType = new Nullable<Health.Direct.Common.DnsResolver.DnsStandard.RecordType>(); 
             int expected = 0; 
             int actual;
-            actual = mgr.Count(recordType);
+            actual = _dnsRecordManager.Count(recordType);
             Assert.Equal(expected, actual);
             
         }
@@ -257,10 +250,10 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest3()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DirectDbContext db = null; 
             DnsRecord record = null; 
-            mgr.Add(db, record);
+            _dnsRecordManager.Add(db, record);
             
         }
 
@@ -271,9 +264,9 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest2()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DnsRecord record = null; 
-            mgr.Add(record);
+            _dnsRecordManager.Add(record);
             
         }
 
@@ -284,10 +277,10 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest1()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DirectDbContext db = null; 
             DnsRecord[] dnsRecords = null; 
-            mgr.Add(db, dnsRecords);
+            _dnsRecordManager.Add(db, dnsRecords);
             
         }
 
@@ -298,9 +291,9 @@ namespace Health.Direct.Config.Store.Tests
         public void AddTest()
         {
             
-            DnsRecordManager mgr = CreateManager();
+            
             DnsRecord[] dnsRecords = null; 
-            mgr.Add(dnsRecords);
+            _dnsRecordManager.Add(dnsRecords);
             
         }
 
@@ -311,7 +304,7 @@ namespace Health.Direct.Config.Store.Tests
         public void DnsRecordManagerConstructorTest()
         {
 
-            DnsRecordManager mgr = CreateManager();
+            
         }
         */
     }

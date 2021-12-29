@@ -48,6 +48,6 @@ public class CertPolicyEntityMap : IEntityTypeConfiguration<CertPolicy>
         builder.Property(e => e.Name)
             .HasMaxLength(255)
             .IsUnicode(false);
-        
+
     }
 }

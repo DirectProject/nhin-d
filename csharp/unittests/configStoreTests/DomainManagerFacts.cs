@@ -20,136 +20,47 @@ using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Config.Store.Entity;
 using Xunit;
-using Xunit.Samples;
 
 namespace Health.Direct.Config.Store.Tests;
 
-public class DomainManagerTestFixture : ConfigStoreTestBase, IAsyncLifetime
-{
-    /// <summary>
-    /// Called immediately after the class has been created, before it is used.
-    /// </summary>
-    public Task InitializeAsync()
-    {
-        return InitDomainRecords();
-    }
-
-    /// <summary>
-    /// Called when an object is no longer needed. Called just before <see cref="M:System.IDisposable.Dispose" />
-    /// if the class also implements that.
-    /// </summary>
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
-    }
-}
-
 [Collection("ManagerFacts")]
-public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManagerTestFixture>
+public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
 {
-    private new static DomainManager CreateManager()
+    private readonly DirectDbContext _dbContext;
+    private readonly DomainManager _domainManager;
+
+    public DomainManagerFacts()
     {
-        return new DomainManager(CreateConfigStore());
+        _dbContext = CreateConfigDatabase();
+        _domainManager = new DomainManager(_dbContext);
     }
 
-    /// <summary>
-    ///A test for Store
-    ///</summary>
-    [Fact]
-    public void StoreTest()
+    /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.</summary>
+    /// <returns>A task that represents the asynchronous dispose operation.</returns>
+    public void Dispose()
     {
-        DomainManager target = CreateManager();
-        ConfigStore actual = target.Store;
-        Assert.Equal(target.Store, actual);
-    }
-
-    /// <summary>
-    ///A test for RemoveAll
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task RemoveAllTest1()
-    {
-
-        var target = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT, (await target.Get(string.Empty, MAXDOMAINCOUNT + 1)).Count);
-
-        await using (var db = CreateConfigDatabase())
-        {
-            await DomainUtil.RemoveAll(db);
-        }
-
-        Assert.Empty((await target.Get(string.Empty, MAXDOMAINCOUNT + 1)));
-    }
-
-    /// <summary>
-    ///A test for RemoveAll
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task RemoveAllTest()
-    {
-
-        DomainManager target = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT, (await target.Get(string.Empty, MAXDOMAINCOUNT + 1)).Count);
-        await using (DirectDbContext db = CreateConfigDatabase())
-        {
-            await DomainUtil.RemoveAll(db);
-        }
-        Assert.Empty((await target.Get(string.Empty, MAXDOMAINCOUNT + 1)));
-    }
-
-    /// <summary>
-    ///A test for Remove
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task RemoveTest1()
-    {
-
-        var target = CreateManager();
-        var name = BuildDomainName(GetRndDomainID());
-        Assert.NotNull(await target.Get(name));
-        await target.Remove(name);
-        Assert.Null(await target.Get(name));
-    }
-
-    /// <summary>
-    ///A test for Remove
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task RemoveTest()
-    {
-
-        var target = CreateManager();
-        string name = BuildDomainName(GetRndDomainID());
-        Assert.NotNull(target.Get(name));
-        await using (var db = CreateConfigDatabase())
-        {
-            await target.Remove(db, name);
-            await db.SaveChangesAsync();
-        }
-        Assert.Null(await target.Get(name));
+        _dbContext.Dispose();
     }
 
     /// <summary>
     ///A test for GetEnumerator
     ///</summary>
     [Fact]
-    public void GetEnumeratorTest()
+    public async Task GetEnumeratorTest()
     {
-
-        IEnumerable<Domain> mgr = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT, mgr.Count());
+        InitDomainRecords(_dbContext);
+        Assert.Equal(MaxDomainCount, await _domainManager.Count());
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
     [Fact]
     public async Task GetTest7()
     {
-
-        DomainManager target = CreateManager();
-        string[] names = TestDomainNames.ToArray();
-        var actual = await target.Get(names);
+        InitDomainRecords(_dbContext);
+        var names = TestDomainNames.ToArray();
+        var actual = await _domainManager.Get(names);
         Assert.Equal(names.Length, actual.Count);
         foreach (var dom in actual)
         {
@@ -158,16 +69,14 @@ public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManag
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
     [Fact]
     public async Task GetTest6()
     {
-
-        DomainManager target = CreateManager();
-        string[] names = TestDomainNames.ToArray();
-        await using var db = CreateConfigDatabase();
-        var actual = await target.Get(db, names);
+        InitDomainRecords(_dbContext);
+        var names = TestDomainNames.ToArray();
+        var actual = await _domainManager.Get(names);
         Assert.Equal(names.Length, actual.Count);
         foreach (Domain dom in actual)
         {
@@ -176,223 +85,124 @@ public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManag
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
     [Fact]
     public async Task GetTest5()
     {
-
-        DomainManager target = CreateManager();
-        string name = BuildDomainName(GetRndDomainID());
-        var actual = await target.Get(name);
+        InitDomainRecords(_dbContext);
+        string name = BuildDomainName(GetRndDomainId());
+        var actual = await _domainManager.Get(name);
         Assert.Equal(name, actual.Name);
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
     [Fact]
     public async Task GetTest4()
     {
-
-        DomainManager target = CreateManager();
-        string name = BuildDomainName(GetRndDomainID());
-        await using var db = CreateConfigDatabase();
-        var actual = await target.Get(db, name);
+        InitDomainRecords(_dbContext);
+        string name = BuildDomainName(GetRndDomainId());
+        var actual = await _domainManager.Get(name);
         Assert.Equal(name, actual.Name);
     }
 
     /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
     [Fact]
     public async Task GetTest3Last()
     {
 
-        DomainManager mgr = CreateManager();
+        InitDomainRecords(_dbContext);
 
         //----------------------------------------------------------------------------------------------------
         //---get the full dictionary using the domain name as the key and pick one to start at
-        Dictionary<string, Domain> mxsAll = mgr.ToDictionary(p => p.Name);
+        Dictionary<string, Domain> mxsAll = _domainManager.ToDictionary(p => p.Name);
 
-        Assert.Equal(MAXDOMAINCOUNT, mxsAll.Count);
+        Assert.Equal(MaxDomainCount, mxsAll.Count);
 
-        int pos = GetRndDomainID();
+        int pos = GetRndDomainId();
         //----------------------------------------------------------------------------------------------------
         //---grab the key at position pos-1 in the array, and use that as the "last" name to be passed in
-        string[] allKeys = mxsAll.Keys.ToArray();
+        string[] allKeys = mxsAll.Keys.OrderBy(k => k).ToArray();
         string val = allKeys[pos - 1];
 
-        var mxs = await mgr.Get(val, MAXDOMAINCOUNT + 1);
+        var mxs = await _domainManager.Get(val, MaxDomainCount + 1);
 
         //----------------------------------------------------------------------------------------------------
         //---expected that the count of mxs will be  max count - pos
-        Assert.Equal(MAXDOMAINCOUNT - pos, mxs.Count);
+        Assert.Equal(MaxDomainCount - pos, mxs.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---try one with a limited number less than pos
-        mxs = await mgr.Get(allKeys[0], pos - 1);
+        mxs = await _domainManager.Get(allKeys[0], pos - 1);
         Assert.Equal(pos - 1, mxs.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---get the last item and see to ensure that no records are returned
         val = allKeys.Last();
-        mxs = await mgr.Get(val, MAXDOMAINCOUNT + 1);
+        mxs = await _domainManager.Get(val, MaxDomainCount + 1);
         Assert.Equal(0, mxs.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---get the first item and see to ensure that MAX - 1 records are returned
-        val = mxsAll.Keys.ToArray().First();
-        mxs = await mgr.Get(val, MAXDOMAINCOUNT + 1);
-        Assert.Equal(MAXDOMAINCOUNT - 1, mxs.Count);
+        val = mxsAll.Keys.OrderBy(k => k).ToArray().First();
+        mxs = await _domainManager.Get(val, MaxDomainCount + 1);
+        Assert.Equal(MaxDomainCount - 1, mxs.Count);
     }
 
     [Fact]
     public async Task GetTest3First()
     {
+        InitDomainRecords(_dbContext);
 
-        DomainManager mgr = CreateManager();
-
-        var mxs = await mgr.Get(String.Empty, MAXDOMAINCOUNT + 1);
-
-        //----------------------------------------------------------------------------------------------------
-        //---expected that all of the records will be returned
-        Assert.Equal(MAXDOMAINCOUNT, mxs.Count);
-
-        //----------------------------------------------------------------------------------------------------
-        //---try one with a limited number less than max count
-        int pos = GetRndDomainID();
-        mxs = await mgr.Get(String.Empty, pos - 1);
-        Assert.Equal(pos - 1, mxs.Count);
-    }
-
-    /// <summary>
-    ///A test for Get
-    ///</summary>
-    [Fact]
-    public async Task GetTest2Last()
-    {
-
-        await using DirectDbContext db = CreateConfigDatabase();
-        DomainManager mgr = CreateManager();
-
-        //----------------------------------------------------------------------------------------------------
-        //---get the full dictionary using the domain name as the key and pick one to start at
-        Dictionary<string, Domain> mxsAll = mgr.ToDictionary(p => p.Name);
-
-        Assert.Equal(MAXDOMAINCOUNT, mxsAll.Count);
-
-        int pos = GetRndDomainID();
-        //----------------------------------------------------------------------------------------------------
-        //---grab the key at position pos-1 in the array, and use that as the "last" name to be passed in
-        string[] allKeys = mxsAll.Keys.ToArray();
-        string val = allKeys[pos - 1];
-
-        var mxs = await mgr.Get(db, val, MAXDOMAINCOUNT + 1);
-
-        //----------------------------------------------------------------------------------------------------
-        //---expected that the count of mxs will be  max count - pos
-        Assert.Equal(MAXDOMAINCOUNT - pos, mxs.Count);
-
-        //----------------------------------------------------------------------------------------------------
-        //---try one with a limited number less than pos
-        mxs = await mgr.Get(db, allKeys[0], pos - 1);
-        Assert.Equal(pos - 1, mxs.Count);
-
-        //----------------------------------------------------------------------------------------------------
-        //---get the last item and see to ensure that no records are returned
-        val = allKeys.Last();
-        mxs = await mgr.Get(val, MAXDOMAINCOUNT + 1);
-        Assert.Empty(mxs);
-
-        //----------------------------------------------------------------------------------------------------
-        //---get the first item and see to ensure that MAX - 1 records are returned
-        val = allKeys.First();
-        mxs = await mgr.Get(db, val, MAXDOMAINCOUNT + 1);
-        Assert.Equal(MAXDOMAINCOUNT - 1, mxs.Count);
-    }
-
-    [Fact]
-    public async Task GetTest2First()
-    {
-
-        await using var db = CreateConfigDatabase();
-        DomainManager mgr = CreateManager();
-
-        var mxs = await mgr.Get(db, String.Empty, MAXDOMAINCOUNT + 1);
+        var mxs = await _domainManager.Get(String.Empty, MaxDomainCount + 1);
 
         //----------------------------------------------------------------------------------------------------
         //---expected that all of the records will be returned
-        Assert.Equal(MAXDOMAINCOUNT, mxs.Count);
+        Assert.Equal(MaxDomainCount, mxs.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---try one with a limited number less than max count
-        int pos = GetRndDomainID();
-        mxs = await mgr.Get(db, String.Empty, pos - 1);
+        int pos = GetRndDomainId();
+        mxs = await _domainManager.Get(String.Empty, pos - 1);
         Assert.Equal(pos - 1, mxs.Count);
     }
-
+    
     /// <summary>
-    ///A test for Get
-    ///</summary>
-    [Fact]
-    public async Task GetTest1()
-    {
-        DomainManager mgr = CreateManager();
-
-        string[] names = new[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
-
-        //----------------------------------------------------------------------------------------------------
-        //---new status should still yield 3 results
-        var actual = await mgr.Get(names, EntityStatus.New);
-        Assert.Equal(names.Length, actual.Count);
-
-        //----------------------------------------------------------------------------------------------------
-        //---pass in null and expect matching results
-        actual = await mgr.Get(names, null);
-        Assert.Equal(names.Length, actual.Count);
-
-        //----------------------------------------------------------------------------------------------------
-        //---disabled status should still yield no results
-        actual = await mgr.Get(names, EntityStatus.Disabled);
-        Assert.Equal(0, actual.Count);
-
-        //----------------------------------------------------------------------------------------------------
-        //---null pref should still yield same results
-        actual = await mgr.Get(names, EntityStatus.Enabled);
-        Assert.Equal(0, actual.Count);
-    }
-
-    /// <summary>
-    ///A test for Get
+    ///A test for GetByAgentName
     ///</summary>
     [Fact]
     public async Task GetTest()
     {
-        DomainManager mgr = CreateManager();
-        await using DirectDbContext db = CreateConfigDatabase();
+        InitDomainRecords(_dbContext);
+
         string[] names = new[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
 
         //----------------------------------------------------------------------------------------------------
         //---new status should still yield 3 results
-        var actual = await mgr.Get(db, names, EntityStatus.New);
+        var actual = await _domainManager.Get(names, EntityStatus.New);
         Assert.Equal(names.Length, actual.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---pass in null and expect matching results
-        actual = await mgr.Get(db, names, null);
+        actual = await _domainManager.Get(names, null);
         Assert.Equal(names.Length, actual.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---disabled status should still yield no results
-        actual = await mgr.Get(db, names, EntityStatus.Disabled);
+        actual = await _domainManager.Get(names, EntityStatus.Disabled);
         Assert.Empty(actual);
 
         //----------------------------------------------------------------------------------------------------
         //---null pref should still yield same results
-        actual = await mgr.Get(db, names, EntityStatus.Enabled);
-        Assert.Equal(0, actual.Count);
+        actual = await _domainManager.Get(names, EntityStatus.Enabled);
+        Assert.Empty(actual);
     }
+
+    
 
     /// <summary>
     ///A test for Count
@@ -400,85 +210,20 @@ public class DomainManagerFacts : ConfigStoreTestBase, IClassFixture<DomainManag
     [Fact]
     public async Task CountTest()
     {
-        DomainManager mgr = CreateManager();
-        Assert.Equal(MAXDOMAINCOUNT, await mgr.Count());
+        InitDomainRecords(_dbContext);
+        Assert.Equal(MaxDomainCount, await _domainManager.Count());
     }
 
     /// <summary>
     ///A test for Add
     ///</summary>
-    [Fact, AutoRollback]
-    public async Task AddTest3()
-    {
-        await using var db = CreateConfigDatabase();
-        DomainManager target = CreateManager();
-        await DomainUtil.RemoveAll(db);
-        Assert.Equal(0, await target.Count());
-        string name = BuildDomainName(GetRndDomainID());
-        await target.Add(db, name);
-        await db.SaveChangesAsync();
-        Assert.NotNull(await target.Get(name));
-    }
-
-    /// <summary>
-    ///A test for Add
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task AddTest2()
-    {
-        var target = CreateManager();
-        await using (var db = CreateConfigDatabase())
-        {
-            await DomainUtil.RemoveAll(db);
-        }
-
-        Assert.Equal(0, await target.Count());
-        string name = BuildDomainName(GetRndDomainID());
-        await target.Add(name);
-        Assert.NotNull(await target.Get(name));
-    }
-
-    /// <summary>
-    ///A test for Add
-    ///</summary>
-    [Fact, AutoRollback]
-    public async Task AddTest1()
-    {
-        var target = CreateManager();
-
-        await using (var db = CreateConfigDatabase())
-        {
-            await DomainUtil.RemoveAll(db);
-        }
-
-        Assert.Equal(0, await target.Count());
-        await using (var db = CreateConfigDatabase())
-        {
-            string name = BuildDomainName(GetRndDomainID());
-            Domain domain = new Domain(name);
-            target.Add(db, domain);
-            await db.SaveChangesAsync();
-            Assert.NotNull(await target.Get(name));
-        }
-    }
-
-    /// <summary>
-    ///A test for Add
-    ///</summary>
-    [Fact, AutoRollback]
+    [Fact]
     public async Task AddTest()
     {
-        var target = CreateManager();
-
-        await using (var db = CreateConfigDatabase())
-        {
-            await DomainUtil.RemoveAll(db);
-        }
-
-        Assert.Equal(0, await target.Count());
-        string name = BuildDomainName(GetRndDomainID());
+        Assert.Equal(0, await _domainManager.Count());
+        string name = BuildDomainName(GetRndDomainId());
         var domain = new Domain(name);
-        await target.Add(domain);
-        Assert.NotNull(await target.Get(name));
+        await _domainManager.Add(domain);
+        Assert.NotNull(await _domainManager.Get(name));
     }
 }

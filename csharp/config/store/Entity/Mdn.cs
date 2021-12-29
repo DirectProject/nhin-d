@@ -125,7 +125,7 @@ namespace Health.Direct.Config.Store.Entity
             }
         }
 
-        public string SubjectValue { get; set; }
+        public string? SubjectValue { get; set; }
 
         public string Status
         {

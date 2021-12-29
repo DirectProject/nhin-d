@@ -24,7 +24,8 @@ public class CertPolicyGroupMapEntityMap : IEntityTypeConfiguration<CertPolicyGr
 {
     public void Configure(EntityTypeBuilder<CertPolicyGroupMap> builder)
     {
-        builder.HasKey(e => new { e.CertPolicyGroupId, e.ForOutgoing, e.CertPolicyId, e.PolicyUse, e.ForIncoming });
+        builder.HasIndex(e => new { e.CertPolicyGroupId, e.ForOutgoing, e.CertPolicyId, e.PolicyUse, e.ForIncoming })
+            .IsUnique();
 
         builder.ToTable("CertPolicyGroupMap");
 
@@ -39,13 +40,13 @@ public class CertPolicyGroupMapEntityMap : IEntityTypeConfiguration<CertPolicyGr
         builder.HasOne(d => d.CertPolicyGroup)
             .WithMany(p => p.CertPolicyGroupMaps)
             .HasForeignKey(d => d.CertPolicyGroupId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
+            .OnDelete(DeleteBehavior.ClientCascade)
             .HasConstraintName("FK_CertPolicyGroupMap_CertPolicyGroups");
 
         builder.HasOne(d => d.CertPolicy)
             .WithMany(p => p.CertPolicyGroupMaps)
             .HasForeignKey(d => d.CertPolicyId)
-            .OnDelete(DeleteBehavior.ClientSetNull)
+            .OnDelete(DeleteBehavior.ClientCascade)
             .HasConstraintName("FK_CertPolicyGroupMap_CertPolicies");
     }
 }

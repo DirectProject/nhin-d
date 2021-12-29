@@ -61,22 +61,19 @@ namespace Health.Direct.Config.Store
                 throw new ConfigStoreException(ConfigStoreError.InvalidAdministrator);
             }
 
-            var update = new Administrator(administrator);
-
-            _dbContext.Administrators.Attach(update);
-            update.UpdateFrom(administrator);
-
+            _dbContext.Administrators.Attach(administrator);
+            
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<Administrator> Get(string username)
+        public async Task<Administrator?> Get(string username)
         {
             return await _dbContext.Administrators
                 .Where(a => a.Username == username)
                 .SingleOrDefaultAsync();
         }
 
-        public async Task<Administrator> Get(long administratorId)
+        public async Task<Administrator?> Get(long administratorId)
         {
             return await _dbContext.Administrators
                 .Where(a => a.ID == administratorId)

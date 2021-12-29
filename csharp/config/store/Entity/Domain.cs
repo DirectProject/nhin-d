@@ -71,7 +71,7 @@ namespace Health.Direct.Config.Store.Entity
                 m_name = value;
             }
         }
-        public string AgentName
+        public string? AgentName
         {
             get
             {

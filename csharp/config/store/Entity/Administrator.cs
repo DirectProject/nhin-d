@@ -63,25 +63,19 @@ namespace Health.Direct.Config.Store.Entity
                 throw new ConfigStoreException(ConfigStoreError.InvalidPassword);
             }
 
-            return PasswordHash == new PasswordHash(this, password);
+            return PasswordHashDb == new PasswordHash(this, password).HashedPassword;
         }
 
         public long ID { get; set; }
 
         public string Username { get; set; }
 
-        internal string PasswordHashDB { get; set; }
+        internal string PasswordHashDb { get; set; } = string.Empty;
 
         public PasswordHash PasswordHash
         {
-            get
-            {
-                return new PasswordHash(PasswordHashDB);
-            }
-            set
-            {
-                PasswordHashDB = value != null ? value.HashedPassword : null;
-            }
+            get => new PasswordHash(PasswordHashDb);
+            set => PasswordHashDb = value?.HashedPassword ?? string.Empty;
         }
 
         
