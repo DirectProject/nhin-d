@@ -29,13 +29,13 @@ public interface IDomainManager
     Task<Domain> Add(Domain domain);
     Task<int> Count();
     Task<Domain?> Get(string name);
-    Task<List<Domain>> Get(string[] names);
-    Task<List<Domain>> Get(string[] names, EntityStatus? status);
+    Task<List<Domain>> Get(List<string> names);
+    Task<List<Domain>> Get(List<string> names, EntityStatus? status);
     Task<List<Domain>> GetByAgentName(string agentName, EntityStatus? status);
     Task<List<Domain>> Get(string lastDomain, int maxResults);
     Task<Domain?> Get(long id);
     Task Update(Domain domain);
-    Task Remove(string name);
+    Task<bool> Remove(string name);
     IEnumerator<Domain> GetEnumerator();
 }
 
@@ -43,13 +43,13 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
 {
     private readonly DirectDbContext _dbContext;
 
-    public  DomainManager(DirectDbContext dbContext)
+    public DomainManager(DirectDbContext dbContext)
     {
         _dbContext = dbContext;
     }
 
 
-    public async Task<Domain> Add(string name)
+    public virtual async Task<Domain> Add(string name)
     {
         if (!Domain.IsValidEmailDomain(name))
         {
@@ -61,9 +61,9 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
         await _dbContext.SaveChangesAsync();
         return domain;
     }
-   
-   
-    public async Task<Domain> Add(Domain domain)
+
+
+    public virtual async Task<Domain> Add(Domain domain)
     {
         if (domain == null)
         {
@@ -91,14 +91,14 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
 
         return domain;
     }
-    
-    
-    public async Task<int> Count()
+
+
+    public virtual async Task<int> Count()
     {
         return await _dbContext.Domains.CountAsync();
     }
-            
-    public async Task<Domain?> Get(string name)
+
+    public virtual async Task<Domain?> Get(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -109,21 +109,21 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .Where(d => d.Name.ToUpper() == name.ToUpper())
             .SingleOrDefaultAsync();
     }
-    
-    
-    public async Task<List<Domain>> Get(string[] names)
+
+
+    public virtual async Task<List<Domain>> Get(List<string> names)
     {
         return await Get(names, null);
     }
-        
-    public async Task<List<Domain>> Get(string[] names, EntityStatus? status)
+
+    public virtual async Task<List<Domain>> Get(List<string> names, EntityStatus? status)
     {
-        
+
         if (names.IsNullOrEmpty())
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomainName);
         }
-        
+
         if (status == null)
         {
             return await _dbContext.Domains
@@ -137,7 +137,7 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .ToListAsync();
     }
 
-    public async Task<List<Domain>> GetByAgentName(string agentName, EntityStatus? status)
+    public virtual async Task<List<Domain>> GetByAgentName(string agentName, EntityStatus? status)
     {
         if (string.IsNullOrEmpty(agentName))
         {
@@ -156,8 +156,8 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
                         && d.Status == status)
             .ToListAsync();
     }
-    
-    public async Task<List<Domain>> Get(string lastDomain, int maxResults)
+
+    public virtual async Task<List<Domain>> Get(string lastDomain, int maxResults)
     {
         if (string.IsNullOrEmpty(lastDomain))
         {
@@ -174,29 +174,28 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .ToListAsync();
     }
 
-    public async Task<Domain?> Get(long id)
+    public virtual async Task<Domain?> Get(long id)
     {
         return await _dbContext.Domains
             .Where(d => d.ID == id)
             .SingleOrDefaultAsync();
     }
 
-    public async Task Update(Domain domain)
+    public virtual async Task Update(Domain domain)
     {
         if (domain == null)
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
         }
 
-        var update = new Domain();
-        update.CopyFixed(domain);
+        domain.UpdateDate = DateTimeHelper.Now;
+        _dbContext.Domains.Attach(domain);
+        _dbContext.Entry(domain).State = EntityState.Modified;
 
-        _dbContext.Domains.Attach(update);
-        update.ApplyChanges(domain);
         await _dbContext.SaveChangesAsync();
     }
-    
-    public async Task Remove(string name)
+
+    public virtual async Task<bool> Remove(string name)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -207,15 +206,24 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .Where(d => d.Name == name)
             .ToListAsync();
 
+        if (!domains.Any())
+        {
+            return false;
+        }
+
         foreach (var domain in domains)
         {
             _dbContext.Domains.Remove(domain);
         }
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
     }
-    
+
     public IEnumerator<Domain> GetEnumerator()
     {
-        foreach(var domain in _dbContext.Domains)
+        foreach (var domain in _dbContext.Domains)
         {
             yield return domain;
         }

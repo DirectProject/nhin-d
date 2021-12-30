@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests;
@@ -58,9 +59,9 @@ public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
     public async Task GetTest7()
     {
         InitDomainRecords(_dbContext);
-        var names = TestDomainNames.ToArray();
+        var names = TestDomainNames.ToList();
         var actual = await _domainManager.Get(names);
-        Assert.Equal(names.Length, actual.Count);
+        Assert.Equal(names.Count, actual.Count);
         foreach (var dom in actual)
         {
             Assert.Contains(dom.Name, names);
@@ -74,9 +75,9 @@ public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
     public async Task GetTest6()
     {
         InitDomainRecords(_dbContext);
-        var names = TestDomainNames.ToArray();
+        var names = TestDomainNames.ToList();
         var actual = await _domainManager.Get(names);
-        Assert.Equal(names.Length, actual.Count);
+        Assert.Equal(names.Count(), actual.Count);
         foreach (Domain dom in actual)
         {
             Assert.Contains(dom.Name, names);
@@ -178,17 +179,17 @@ public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
     {
         InitDomainRecords(_dbContext);
 
-        string[] names = new[] { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
+        var names = new List<string> { BuildDomainName(1), BuildDomainName(2), BuildDomainName(3) };
 
         //----------------------------------------------------------------------------------------------------
         //---new status should still yield 3 results
         var actual = await _domainManager.Get(names, EntityStatus.New);
-        Assert.Equal(names.Length, actual.Count);
+        Assert.Equal(names.Count, actual.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---pass in null and expect matching results
         actual = await _domainManager.Get(names, null);
-        Assert.Equal(names.Length, actual.Count);
+        Assert.Equal(names.Count, actual.Count);
 
         //----------------------------------------------------------------------------------------------------
         //---disabled status should still yield no results
@@ -224,5 +225,48 @@ public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
         var domain = new Domain(name);
         await _domainManager.Add(domain);
         Assert.NotNull(await _domainManager.Get(name));
+    }
+
+    [Fact]
+    public async Task RemoveTest()
+    {
+        Assert.Equal(0, await _domainManager.Count());
+        string name = BuildDomainName(GetRndDomainId());
+        var domain = new Domain(name);
+        await _domainManager.Add(domain);
+        Assert.NotNull(await _domainManager.Get(name));
+
+        await _domainManager.Remove(name);
+        Assert.Null(await _domainManager.Get(name));
+    }
+
+
+
+    [Fact]
+    public async Task UpdateTest()
+    {
+        Assert.Equal(0, await _domainManager.Count());
+        string name = BuildDomainName(GetRndDomainId());
+        var domain = new Domain(name)
+        {
+            AgentName = "Agent1"
+        };
+        await _domainManager.Add(domain);
+        var originalDomain = await _domainManager.Get(name);
+        originalDomain!.AgentName.Should().Be("Agent1");
+        var originalUpdateDate = originalDomain.UpdateDate.ToString("dd-MMM-yyyy HH:m:s:ffff tt zzz");
+        var originalCreate = originalDomain.CreateDate.ToString();
+
+        _dbContext.ChangeTracker.Clear();
+
+        originalDomain.AgentName = "Agent2";
+        await _domainManager.Update(originalDomain);
+
+        _dbContext.ChangeTracker.Clear();
+        var changedDomain = await _domainManager.Get(name);
+        changedDomain!.AgentName.Should().Be("Agent2");
+
+        Assert.Equal(originalCreate, changedDomain.CreateDate.ToString());
+        Assert.NotEqual(originalUpdateDate, changedDomain.UpdateDate.ToString("dd-MMM-yyyy HH:m:s:ffff tt zzz"));
     }
 }

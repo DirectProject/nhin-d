@@ -30,9 +30,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,37 +42,55 @@ namespace Health.Direct.Config.Service.Rest.Tests;
 
 public class ApiTestFixture : WebApplicationFactory<Program>
 {
-    public ITestOutputHelper Output { get; set; }
+    public ITestOutputHelper? Output { get; set; }
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
-                // Remove the app's ApplicationDbContext registration.
-                var descriptor = services.SingleOrDefault(
+            // Remove the ApplicationDbContext registration.
+            var descriptor = services.SingleOrDefault(
+            d => d.ServiceType ==
+                 typeof(DbContextOptions<DirectDbContext>));
+
+            if (descriptor != null)
+            {
+                services.Remove(descriptor);
+            }
+            
+            services.AddDbContext<DirectDbContext>(ConfigStoreTestBase.DbContextOptions);
+            
+            descriptor = services.SingleOrDefault(
                 d => d.ServiceType ==
-                     typeof(DbContextOptions<DirectDbContext>));
+                     typeof(IDomainManager));
 
             if (descriptor != null)
             {
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<DirectDbContext>(options =>
-                ConfigStoreTestBase.DbContextOptions(options));
+            services.AddScoped<IDomainManager>(sp =>
+            {
+                var mock = new Mock<DomainManager>(sp.GetRequiredService<DirectDbContext>()){ CallBase = true };
+                mock.SetupAllProperties();
+                mock.Setup(e => e.Remove(It.Is<string>(s => s == "throw.domain.test"))).Throws<Exception>();
+                mock.Setup(e => e.Update(It.Is<Store.Entity.Domain>(d => d.Name == "throw.domain.test"))).Throws<Exception>();
+                mock.Setup(e => e.Add(It.Is<Store.Entity.Domain>(d => d.Name == "throw.domain.test"))).Throws<Exception>();
+                mock.Setup(e => e.Get(It.Is<List<string>>(s => s.Any(n => n == "throw.domain.test")), null)).Throws<Exception>();
+                mock.Setup(e => e.Get(It.Is<string>(s => s == "throw.domain.test"))).Throws<Exception>();
+                mock.Setup(e => e.Get(It.Is<long>(s => s == 999))).Throws<Exception>();
 
+                return mock.Object;
+            }); 
+            
             var sp = services.BuildServiceProvider();
 
-            using (var scope = sp.CreateScope())
+            using var scope = sp.CreateScope();
             {
                 var scopedServices = scope.ServiceProvider;
                 var db = scopedServices.GetRequiredService<DirectDbContext>();
-                var logger = scopedServices
-                    .GetRequiredService<ILogger<WebApplicationFactory<Program>>>();
-
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
-
                 SeedData(db);
             }
 
@@ -88,20 +108,36 @@ public class ApiTestFixture : WebApplicationFactory<Program>
         ConfigStoreTestBase.InitDomainRecords(db);
 
 
-        var domain = new Store.Entity.Domain()
+        var domain = new Store.Entity.Domain
         {
             AgentName = "TestAgent",
             Name = "GetDomainById.test",
-            Status = Store.EntityStatus.Enabled
+            Status = EntityStatus.Enabled
         };
 
         db.Domains.Add(domain);
 
-        domain = new Store.Entity.Domain()
+        domain = new Store.Entity.Domain
         {
-            AgentName = "TestAgent",
             Name = "GetDomainByName.test",
-            Status = Store.EntityStatus.Enabled
+            AgentName = "TestAgent",
+            Status = EntityStatus.Enabled
+        };
+
+        db.Domains.Add(domain);
+
+        domain = new Store.Entity.Domain
+        {
+            Name = "deleteDomain.test.direct",
+            AgentName = "TestAgent"
+        };
+
+        db.Domains.Add(domain);
+
+        domain = new Store.Entity.Domain
+        {
+            Name = "updateDomain.test.direct",
+            AgentName = "TestAgent"
         };
 
         db.Domains.Add(domain);
@@ -113,15 +149,13 @@ public class ApiTestFixture : WebApplicationFactory<Program>
 public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFixture>
 {
     private readonly HttpClient _client;
-    private string _dbProviderName;
 
-    public DomainControllerTest(ApiTestFixture fixture, ITestOutputHelper output)
+    public DomainControllerTest(ApiTestFixture fixture, ITestOutputHelper? output)
     {
         if (fixture == null) throw new ArgumentNullException(nameof(fixture));
 
         fixture.Output = output;
         _client = fixture.CreateClient();
-        _dbProviderName = Environment.GetEnvironmentVariable("Config.Store.DbProvider");
     }
 
 
@@ -142,7 +176,19 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         var result = await _client.GetFromJsonAsync<Domain>("api/domain/11");
 
         // Assert
-        result.AgentName.Should().BeEquivalentTo("TestAgent");
+        result!.AgentName.Should().BeEquivalentTo("TestAgent");
+
+        // Act
+        var response = await _client.GetAsync("api/domain/1999");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            await _client.GetFromJsonAsync<Domain>("api/domain/999"));
+        // Assert Exception
+        exception.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
     }
 
     [Fact]
@@ -152,45 +198,84 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         var result = await _client.GetFromJsonAsync<Domain>("api/domain/domainName/GetDomainByName.test");
 
         // Assert
-        result.AgentName.Should().BeEquivalentTo("TestAgent");
+        result!.AgentName.Should().BeEquivalentTo("TestAgent");
+
+        // Act
+        var response = await _client.GetAsync("api/domain/domainName/not.hear.test");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainName/throw.domain.test"));
+        // Assert Exception
+        exception.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
     }
 
     [Fact]
     public async Task GetDomainsByName()
     {
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=throw.domain.test"));
+        // Assert Exception
+        exception.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+
         // Act single
         var result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=GetDomainById.test");
 
         // Assert single
-        result.Single().Status.Should().Be(EntityStatus.Enabled);
-        result.Single().AgentName.Should().BeEquivalentTo("TestAgent");
+        result!.Single().Status.Should().Be(EntityStatus.Enabled);
+        result!.Single().AgentName.Should().BeEquivalentTo("TestAgent");
 
-        // Act two with status filter
-        var url = QueryHelpers.AddQueryString("/api/domains/domainNames", "name", "domain1.test.com");
+
+        // Arrange
+        var url = QueryHelpers.AddQueryString("/api/domain/domainNames", "name", "domain1.test.com");
         url = QueryHelpers.AddQueryString(url, "name", "GetDomainById.test");
-        url = QueryHelpers.AddQueryString(url, "status", "New");
+        
+        // Act two with status filter
+        result = await _client.GetFromJsonAsync<List<Domain>>(url);
 
         // Assert one New status
-        result.Single().Status.Should().Be(EntityStatus.Enabled);
-        result.Single().AgentName.Should().BeEquivalentTo("TestAgent");
+        result!.Count.Should().Be(2);
 
-        // Assert BadRequest
+        // Arrange
+        url = QueryHelpers.AddQueryString("/api/domain/domainNames", "name", "domain1.test.com");
+        url = QueryHelpers.AddQueryString(url, "name", "GetDomainById.test");
+        url = QueryHelpers.AddQueryString(url, "status", "Enabled");
 
-        var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
+        // Act two with status filter
+        result = await _client.GetFromJsonAsync<List<Domain>>(url);
+
+        // Assert one New status
+        result!.Single().Status.Should().Be(EntityStatus.Enabled);
+        result!.Single().AgentName.Should().BeEquivalentTo("TestAgent");
+
+        // Act
+        exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
             await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames"));
-
+        // Assert BadRequest
         exception.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        
     }
 
     [Fact]
     public async Task GetDomainByAgentName()
     {
         // Act
-        var result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/agentName/TestAgent");
+        var result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/agentName/TestAgent?status=Enabled");
 
         // Assert
-        result.All(d => d.Status == EntityStatus.Enabled).Should().BeTrue();
-        result.All(d => d.AgentName == "TestAgent").Should().BeTrue();
+        result!.All(d => d.Status == EntityStatus.Enabled).Should().BeTrue();
+        result!.All(d => d.AgentName == "TestAgent").Should().BeTrue();
+
+
+        // Act
+        var response = await _client.GetAsync("api/domain/agentName/NoAgent");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -205,27 +290,28 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         };
 
         // Act
-        var response = await _client.PostAsJsonAsync<Domain>("/api/domain", domain);
+        var response = await _client.PostAsJsonAsync("/api/domain", domain);
 
         // Assert
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<Domain>();
 
-        result.Name.Should().BeEquivalentTo(domain.Name);
+        result!.Name.Should().BeEquivalentTo(domain.Name);
         result.Status.Should().Be(EntityStatus.New);
         result.AgentName.Should().Be("SpecialAgent");
         result.SecurityStandard.Should().Be(SecurityStandard.Fips1402);
 
         // Act 
-        response = await _client.PostAsJsonAsync<Domain>("/api/domain", domain);
-        var exception = Record.Exception(() => response.EnsureSuccessStatusCode());
+        response = await _client.PostAsJsonAsync("/api/domain", domain);
+        var responseInner = response;
+        var exception = Record.Exception(() => responseInner.EnsureSuccessStatusCode());
         Assert.NotNull(exception);
         Assert.IsType<HttpRequestException>(exception);
         var problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 
         
         // Assert Duplicate
-        problemDetails.Status.Should().Be(StatusCodes.Status409Conflict);
+        problemDetails!.Status.Should().Be(StatusCodes.Status409Conflict);
         problemDetails.Detail.Should().Be(ConfigStoreError.UniqueConstraint.ToString());
         problemDetails.Type.Should().Be("https://httpstatuses.com/409");
        
@@ -239,15 +325,86 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         };
 
         // Act 
-        response = await _client.PostAsJsonAsync<Domain>("/api/domain", domain);
-        exception = Record.Exception(() => response.EnsureSuccessStatusCode());
+        response = await _client.PostAsJsonAsync("/api/domain", domain);
+        var responseInner2 = response;
+        exception = Record.Exception(() => responseInner2.EnsureSuccessStatusCode());
         Assert.NotNull(exception);
         Assert.IsType<HttpRequestException>(exception);
         problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
 
         // Assert validation
-        problemDetails.Status.Should().Be(StatusCodes.Status400BadRequest);
+        problemDetails!.Status.Should().Be(StatusCodes.Status400BadRequest);
         problemDetails.Detail.Should().Be("Error=DomainNameLength");
         problemDetails.Type.Should().Be("https://httpstatuses.com/400");
+
+
+        // Arrange Exception
+        domain.Name = "throw.domain.test";
+        // Act
+        response = await _client.PostAsJsonAsync($"/api/domain", domain);
+        // Assert Exception
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task DeleteDomainTest()
+    {
+        // Arrange
+        var domain = new Domain()
+        {
+            Name = "deleteDomain.test.direct",
+            AgentName = "TestAgent"
+        };
+
+        var result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=deleteDomain.test.direct");
+        Assert.NotNull(result);
+        Assert.True(result!.Any());
+        
+        // Act
+        var deleteResult = await _client.DeleteAsync($"/api/domain/deleteDomain.test.direct");
+
+        // Assert
+        deleteResult.EnsureSuccessStatusCode();
+
+        result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=deleteDomain.test.direct");
+        result!.Any().Should().BeFalse();
+
+        // Act 
+        deleteResult = await _client.DeleteAsync($"/api/domain/deleteDomain.test.direct");
+        // Assert not found
+        deleteResult.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        // Act
+        deleteResult = await _client.DeleteAsync($"/api/domain/throw.domain.test");
+        // Assert Exception
+        deleteResult.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task UpdateDomainTest()
+    {
+        // Arrange
+        var domains = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=updateDomain.test.direct");
+        Assert.NotNull(domains);
+        Assert.True(domains!.Any());
+        var domain = domains.Single();
+        domain.AgentName.Should().Be("TestAgent");
+        domain.AgentName = "TestAgent2";
+
+        // Act
+        var response = await _client.PutAsJsonAsync($"/api/domain/{domain.ID}", domain);
+        response.EnsureSuccessStatusCode();
+
+        // Assert
+        domains = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=updateDomain.test.direct");
+        Assert.NotNull(domains);
+        domains!.Single().AgentName.Should().Be("TestAgent2");
+
+        // Arrange Exception
+        domain.Name = "throw.domain.test";
+        // Act
+        response = await _client.PutAsJsonAsync($"/api/domain/{domain.ID}", domain);
+        // Assert Exception
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
     }
 }

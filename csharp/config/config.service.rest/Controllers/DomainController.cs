@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -78,7 +79,7 @@ public class DomainController : ControllerBase
     [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(DomainExample))]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Domain), Description = "Returns a domain")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(long id)
     {
         try
         {
@@ -126,7 +127,7 @@ public class DomainController : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "Missing domain names")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
     public async Task<IActionResult> Get(
-        [FromQuery(Name = "name")] string[] domainNames,
+        [FromQuery(Name = "name")] List<string> domainNames,
         [FromQuery] EntityStatus? status)
     {
         if (!domainNames.Any()) return BadRequest();
@@ -168,8 +169,7 @@ public class DomainController : ControllerBase
         {
             _logger.LogError(ex, "Error calling {0}", nameof(Get));
 
-            if (ex.InnerException is SqlException
-                || ex.InnerException is SqliteException)
+            if (ex.InnerException is SqlException or SqliteException or PostgresException)
             {
                 if (ex.InnerException.Message.Contains("duplicate")
                     || ex.InnerException.Message.Contains("UNIQUE"))
@@ -226,7 +226,7 @@ public class DomainController : ControllerBase
         {
             await _domainManager.Update(domain);
 
-            return Ok();
+            return NoContent(); // success 204 but not returning the result.
         }
         catch (Exception ex)
         {
@@ -241,9 +241,14 @@ public class DomainController : ControllerBase
     {
         try
         {
-            await _domainManager.Remove(domainName);
+            var response = await _domainManager.Remove(domainName);
 
-            return Ok();
+            if (response)
+            {
+                return Ok();
+            }
+
+            return NotFound();
         }
         catch (Exception ex)
         {
@@ -252,4 +257,3 @@ public class DomainController : ControllerBase
         }
     }
 }
-
