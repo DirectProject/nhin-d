@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests

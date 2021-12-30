@@ -19,7 +19,6 @@ using System;
 using System.Net.Mail;
 using Health.Direct.Common.Mail;
 using Health.Direct.Common.Mime;
-using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests

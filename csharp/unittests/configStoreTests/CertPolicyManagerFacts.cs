@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
 using Xunit;
 using Xunit.Abstractions;

@@ -16,7 +16,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Threading.Tasks;
-using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -45,7 +44,7 @@ namespace Health.Direct.Config.Store.Tests
         public async Task AddTest()
         {
             Skip.IfNot(_dbContext.Database.IsInMemory());
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             Assert.Equal(0, await _mdnManager.Count());
             string messageId = Guid.NewGuid().ToString();
@@ -63,7 +62,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task AddExceptionTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
             string messageId = Guid.NewGuid().ToString();
@@ -79,7 +78,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task GetByMdnIdentifierTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
             Assert.Equal(61, await _mdnManager.Count());
@@ -92,7 +91,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task UpdateStatusTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
             var mdn = await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B");
@@ -117,7 +116,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task UpdateDispatchedTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
             var mdn = await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B");
@@ -141,7 +140,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task UpdateTimeoutTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
             var mdn = await _mdnManager.Get("9C2458C2370E2C00E2E8701EE3064B6B");
@@ -163,7 +162,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task GetProcessExpiredTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
 
@@ -199,7 +198,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task ProcessingProcessExpiredTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
 
@@ -221,7 +220,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task GetDispatchedExpiredTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
 
@@ -253,7 +252,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task ProcessingDispatchedExpiredTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
 
@@ -278,7 +277,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task GetTimeoutTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
 
@@ -328,7 +327,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task CleanProcessedAndDispatched()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             await InitMdnRecords(_dbContext);
 
@@ -366,7 +365,7 @@ namespace Health.Direct.Config.Store.Tests
         [SkippableFact ]
         public async Task DuplicateMdnTest()
         {
-            Skip.IfNot(_dbContext.Database.IsSqlServer());
+            Skip.IfNot(_dbContext.Database.IsSqlServer() || _dbContext.Database.IsNpgsql());
 
             string messageId = Guid.NewGuid().ToString();
             Mdn mdn = BuildMdn("945cc145-431c-4119-a8c6-7f557e52fd7d", "Name1@nhind.hsgincubator.com", "Name1@domain1.test.com", "To dispatch or not dispatch", "pRocessed");

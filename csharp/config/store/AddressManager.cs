@@ -18,10 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store;

@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using Health.Direct.Config.Store.Entity;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<RootNamespace>Health.Direct.Config.Store</RootNamespace>
+				
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\common\common.csproj" />
+	</ItemGroup>
+
+</Project>

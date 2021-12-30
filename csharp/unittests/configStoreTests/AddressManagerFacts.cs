@@ -21,7 +21,6 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using Health.Direct.Config.Store.Entity;
 using Xunit;
 using Xunit.Abstractions;
 

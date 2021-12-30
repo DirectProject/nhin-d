@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>Health.Direct.Config.Store</RootNamespace>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\common\common.csproj" />
+		<ProjectReference Include="..\config.store.common\config.store.common.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Using Include="Health.Direct.Config.Store.Entity" />
+		<Using Include="Microsoft.EntityFrameworkCore" />
+		<Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders" />
+	</ItemGroup>
+</Project>

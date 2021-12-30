@@ -19,7 +19,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store;
@@ -241,7 +240,7 @@ public class MdnManager : IEnumerable<Mdn>
     }
     public async Task<List<Mdn>> GetExpiredProcessed(TimeSpan expiredLimit, int maxResults)
     {
-        var expiredDateLimit = DateTime.Now - expiredLimit;
+        var expiredDateLimit = DateTimeHelper.Now - expiredLimit;
 
         return await _dbContext.Mdns
             .FromSqlRaw(@"  ;With timeOuts as (
@@ -277,7 +276,7 @@ public class MdnManager : IEnumerable<Mdn>
     }
     public async Task<List<Mdn>> GetExpiredDispatched(TimeSpan expiredLimit, int maxResults)
     {
-        var expiredDateLimit = DateTime.Now - expiredLimit;
+        var expiredDateLimit = DateTimeHelper.Now - expiredLimit;
 
         return await _dbContext.Mdns.FromSqlRaw(@"  ;With timeOuts as (
 	                        Select MessageId
@@ -317,7 +316,7 @@ public class MdnManager : IEnumerable<Mdn>
 
     public async Task RemoveTimedOut(TimeSpan limitTime, int bulkCount)
     {
-        var expiredDateLimit = DateTime.Now - limitTime;
+        var expiredDateLimit = DateTimeHelper.Now - limitTime;
 
         await _dbContext.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
                             ;With Candidates as (
@@ -347,7 +346,7 @@ public class MdnManager : IEnumerable<Mdn>
     
     public async Task RemoveDispositions(TimeSpan limitTime, int bulkCount)
     {
-        var expiredDateLimit = DateTime.Now - limitTime;
+        var expiredDateLimit = DateTimeHelper.Now - limitTime;
 
         await _dbContext.Database.ExecuteSqlRawAsync(@"  --CTE Common table expression
                 ;With Candidates as (

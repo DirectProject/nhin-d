@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="Info">
 	<PropertyGroup>
 		<RootNamespace>Health.Direct.Config.Store</RootNamespace>
 		<AssemblyName>Health.Direct.Config.Store</AssemblyName>
@@ -6,7 +6,9 @@
 		<AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
 		<TargetFramework>net60</TargetFramework>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<Configurations>Debug;Release;Npgsql</Configurations>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -19,19 +21,50 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\common\common.csproj" />
 		<ProjectReference Include="..\..\policy\policy.csproj" />
+		<ProjectReference Include="..\config.store.common\config.store.common.csproj" />
 	</ItemGroup>
+
+
+	<Target Name="Info">
+		<Message Text="ConfigStoreDbProvider:: $(ConfigStoreDbProvider)" Importance="High" />
+		<Message Text="$(Configuration)" Importance ="High" />
+		<Message Text="Npgsql" Condition=" '$(ConfigStoreDbProvider)' == 'Npgsql' " Importance="High" />
+	</Target>
+
+	<Choose>
+		<When Condition=" '$(Configuration)' == 'Npgsql' ">
+			<ItemGroup>
+				<ProjectReference Include="..\config.store.Npgsql\config.store.Npgsql.csproj" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<ProjectReference Include="..\config.store.sqlserver\config.store.sqlserver.csproj" />
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+
+
 	<ItemGroup>
 		<Compile Remove="MX.cs" />
 		<Compile Remove="MXManager.cs" />
 		<Compile Remove="MXQueries.cs" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.0" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2" />
 		<PackageReference Include="Xunit.SkippableFact" Version="1.4.13" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Health.Direct.Config.Store.Entity" />
+		<Using Include="Microsoft.EntityFrameworkCore" />
+		<Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<Folder Include="Properties\" />
 	</ItemGroup>

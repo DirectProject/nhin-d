@@ -17,18 +17,14 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Common.Certificates;
 using Health.Direct.Common.DnsResolver;
-using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore.Storage;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,6 +33,7 @@ namespace Health.Direct.Config.Store.Tests
     public class ConfigStoreTestBase
     {
         protected const string ConnectionString = @"Data Source=(LocalDb)\Projects;Initial Catalog=DirectConfig;Integrated Security=SSPI;";
+        protected const string NpgsqlConnectionString = "Host=localhost;Port=5432;Database=directDb;Username=admin;Password=admin1234";
 
         protected const int MaxDomainCount = 10; //---number should be <= .cer file count in metadata folder
         protected const int MaxSmtpCount = 3;
@@ -692,10 +689,10 @@ namespace Health.Direct.Config.Store.Tests
         {
             var domains = DnsRecordDomainNames.ToList();
 
-            await using (var db = new DirectDbContext(ConnectionString))
-            {
-                await DnsRecordUtil.RemoveAll(db);
-            }
+            // await using (var db = new DirectDbContext(ConnectionString))
+            // {
+            //     await DnsRecordUtil.RemoveAll(db);
+            // }
 
             var mgr = new DnsRecordManager(dbContext);
 
@@ -1204,37 +1201,47 @@ namespace Health.Direct.Config.Store.Tests
 
         protected static DirectDbContext CreateConfigDatabase()
         {
-            var dbProvider = Environment.GetEnvironmentVariable("Config.Store.DbProvider");
-            DbContextOptions options;
+            var optionsBuilder = new DbContextOptionsBuilder<DirectDbContext>();
+            DbContextOptions(optionsBuilder);
 
-            switch (dbProvider)
-            {
-                case "Sqlite":
-                    options = new DbContextOptionsBuilder<DirectDbContext>()
-                    .UseSqlite("Filename=Test.db")
-                    .EnableSensitiveDataLogging()
-                    .Options;
-                    break;
-
-                case "SqlServer":
-                    options = new DbContextOptionsBuilder<DirectDbContext>()
-                       .UseSqlServer(ConnectionString)
-                       .EnableSensitiveDataLogging()
-                       .Options;
-                    break;
-
-                default:
-                    options = new DbContextOptionsBuilder<DirectDbContext>()
-                        .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                        .Options;
-                    break;
-            }
-            
-            var dbContext = new DirectDbContext(options);
+            var dbContext = new DirectDbContext(optionsBuilder.Options);
             dbContext.Database.EnsureDeleted();
             dbContext.Database.EnsureCreated();
 
             return dbContext;
+        }
+
+        static InMemoryDatabaseRoot root = new InMemoryDatabaseRoot();
+
+        public static void DbContextOptions(DbContextOptionsBuilder optionsBuilder)
+        {
+            var dbProvider = Environment.GetEnvironmentVariable("ConfigStoreDbProvider");
+            
+            switch (dbProvider)
+            {
+                case "Sqlite":
+                    optionsBuilder
+                        .UseSqlite("Filename=Test.db")
+                        .EnableSensitiveDataLogging();
+                    break;
+
+                case "SqlServer":
+                    optionsBuilder
+                        .UseSqlServer(ConnectionString)
+                        .EnableSensitiveDataLogging();
+                    break;
+
+                case "Npgsql":
+                    optionsBuilder
+                        .UseNpgsql(NpgsqlConnectionString)
+                        .EnableSensitiveDataLogging();
+                    break;
+
+                default:
+                    optionsBuilder
+                        .UseInMemoryDatabase("MemoryDb", root);
+                    break;
+            }
         }
     }
 }

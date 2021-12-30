@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Health.Direct.Config.Store.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store

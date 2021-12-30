@@ -18,7 +18,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Mail;
 using Health.Direct.Common;
 using Health.Direct.Common.Certificates;
-using Health.Direct.Config.Store.Entity;
 
 namespace Health.Direct.Config.Store
 {

@@ -1,5 +1,4 @@
 ﻿using System;
-using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
 using Health.Direct.Policy.Impl;
 

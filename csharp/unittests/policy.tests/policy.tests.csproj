@@ -18,6 +18,7 @@
     <AssemblyTitle>policy.tests</AssemblyTitle>
     <Product>policy.tests</Product>
     <Copyright>Copyright ©  2013</Copyright>
+    
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <NoWarn>1591</NoWarn>

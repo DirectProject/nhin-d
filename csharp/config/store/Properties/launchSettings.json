@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "config.store": {
+      "commandName": "Project",
+      "commandLineArgs": "-p ConfigStoreDbProvider=Npgsql"
+    }
+  }
+}

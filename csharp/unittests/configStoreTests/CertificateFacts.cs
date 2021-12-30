@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Health.Direct.Common.Certificates;
-using Health.Direct.Config.Store.Entity;
 using Xunit;
 
 namespace Health.Direct.Config.Store.Tests

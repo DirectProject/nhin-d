@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<!-- Default values for configuration variables -->
+		<ErrorReport>send</ErrorReport>
+		<!-- Project name -->
+		<RootNamespace>Health.Direct.Config.Client</RootNamespace>
+		<AssemblyName>Health.Direct.Config.Client</AssemblyName>
+		<!-- Project output -->
+		<OutputPath>bin\$(Configuration)\</OutputPath>
+		<DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
+		<!-- Framework dependencies -->
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<!-- Default build options -->
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<RunCodeAnalysis>false</RunCodeAnalysis>
+		<!-- Deployment options -->
+		<PublishUrl>publish\</PublishUrl>
+		<Install>true</Install>
+		<InstallFrom>Disk</InstallFrom>
+		<UpdateEnabled>false</UpdateEnabled>
+		<UpdateMode>Foreground</UpdateMode>
+		<UpdateInterval>7</UpdateInterval>
+		<UpdateIntervalUnits>Days</UpdateIntervalUnits>
+		<UpdatePeriodically>false</UpdatePeriodically>
+		<UpdateRequired>false</UpdateRequired>
+		<MapFileExtensions>true</MapFileExtensions>
+		<ApplicationRevision>0</ApplicationRevision>
+		<ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+		<IsWebBootstrapper>false</IsWebBootstrapper>
+		<UseApplicationTrust>false</UseApplicationTrust>
+		<BootstrapperEnabled>true</BootstrapperEnabled>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\..\GlobalAssemblyInfo.cs" Link="Properties\GlobalAssemblyInfo.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\common\common.csproj" />
+		<ProjectReference Include="..\config.model\config.model.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Steeltoe.Common" Version="3.1.2" />
+		<PackageReference Include="Steeltoe.Common.Http" Version="3.1.2" />
+		<PackageReference Include="Steeltoe.Discovery.ClientBase" Version="3.1.2" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
+	</ItemGroup>
+</Project>

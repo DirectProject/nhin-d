@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Health.Direct.Config.Model;
+using Health.Direct.Config.Store;
 using Microsoft.Extensions.Logging;
 
 namespace Health.Direct.Config.Client
@@ -27,8 +28,6 @@ namespace Health.Direct.Config.Client
         Task<long> Count();
 
         Task<IEnumerable<Domain>> GetByDomainNames(IEnumerable<string> domainNames, CancellationToken token, EntityStatus? status = null);
-
-        Task<IEnumerable<Domain>> GetByAnyNames(IEnumerable<string> domainNames, CancellationToken token, EntityStatus? status = null);
 
         Task<Domain> GetByDomainName(string domainName, CancellationToken token, EntityStatus? status = null);
         
@@ -167,10 +166,6 @@ namespace Health.Direct.Config.Client
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Domain>> GetByAnyNames(IEnumerable<string> domainNames, CancellationToken token, EntityStatus? status = null)
-        {
-            throw new NotImplementedException();
-        }
 
         public Task<Domain> GetByDomainName(string domainName, CancellationToken token, EntityStatus? status = null)
         {

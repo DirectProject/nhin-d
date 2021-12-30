@@ -1,45 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Health.Direct.Config.Store.Tests</RootNamespace>
-    <AssemblyName>Health.Direct.Config.Store.Tests</AssemblyName>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
-    <TargetFramework>net60</TargetFramework>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <Compile Include="..\AutoRollbackAttribute.cs" Link="AutoRollbackAttribute.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\common.metadata\common.metadata.csproj" />
-    <ProjectReference Include="..\..\common\common.csproj" />
-    <ProjectReference Include="..\..\config\store\config.store.csproj" />
-    <ProjectReference Include="..\..\policy\policy.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="4.18.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.console" Version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="MXFacts.cs" />
-    <Compile Remove="MXManagerFacts.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<RootNamespace>Health.Direct.Config.Store.Tests</RootNamespace>
+		<AssemblyName>Health.Direct.Config.Store.Tests</AssemblyName>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\..\build\DirectProject.snk</AssemblyOriginatorKeyFile>
+		<TargetFramework>net60</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\AutoRollbackAttribute.cs" Link="AutoRollbackAttribute.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\common.metadata\common.metadata.csproj" />
+		<ProjectReference Include="..\..\common\common.csproj" />
+		<ProjectReference Include="..\..\config\store\config.store.csproj" />
+		<ProjectReference Include="..\..\policy\policy.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentAssertions" Version="4.18.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2" />
+		<PackageReference Include="xunit" Version="2.4.1" />
+		<PackageReference Include="xunit.runner.console" Version="2.4.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+		<PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.255803">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Health.Direct.Config.Store.Entity" />
+		<Using Include="Microsoft.EntityFrameworkCore" />
+		<Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Remove="MXFacts.cs" />
+		<Compile Remove="MXManagerFacts.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
 </Project>

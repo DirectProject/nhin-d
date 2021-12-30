@@ -17,7 +17,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Health.Direct.Config.Store.Entity;
 using Health.Direct.Policy.Extensions;
 using Xunit;
 using Xunit.Abstractions;

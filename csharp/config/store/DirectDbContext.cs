@@ -15,8 +15,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 
-using Health.Direct.Config.Store.Entity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 
@@ -94,7 +92,11 @@ public class DirectDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        var assemblyWithConfigurations = GetType().Assembly;
+        var assemblyWithConfigurations = typeof(Address).Assembly;
+        
         modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
+        modelBuilder.HasCollation("direct_collation", locale: "en-u-ks-primary", provider: "icu", deterministic: false);
+        modelBuilder.UseDefaultColumnCollation("direct_collation");
+        
     }
 }

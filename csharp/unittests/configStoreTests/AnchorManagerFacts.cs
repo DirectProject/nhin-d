@@ -18,7 +18,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Health.Direct.Config.Store.Entity;
 using Xunit;
 using Xunit.Abstractions;
 

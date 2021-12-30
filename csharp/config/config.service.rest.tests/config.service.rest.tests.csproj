@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<RootNamespace>Health.Direct.Config.Service.Rest.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
+    
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +25,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\unittests\configStoreTests\config.store.tests.csproj" />
-    <ProjectReference Include="..\config.service.rest\config.service.rest\config.service.rest.csproj" />
+    <ProjectReference Include="..\config.model\config.model.csproj" />
+    <ProjectReference Include="..\config.service.rest\config.service.rest.csproj" />
   </ItemGroup>
 
 </Project>

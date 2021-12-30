@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Health.Direct.Common.Extensions;
-using Health.Direct.Config.Store.Entity;
+using Health.Direct.Policy.X509;
 using Microsoft.EntityFrameworkCore;
 
 namespace Health.Direct.Config.Store;
@@ -73,6 +73,17 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
         if (!domain.IsValidEmailDomain())
         {
             throw new ConfigStoreException(ConfigStoreError.InvalidDomain);
+        }
+
+        if (!_dbContext.Database.IsRelational())
+        {
+            var exists = _dbContext.Domains
+                .Any(d => d.Name == domain.Name);
+
+            if (exists)
+            {
+                throw new ConfigStoreException(ConfigStoreError.UniqueConstraint);
+            }
         }
 
         _dbContext.Domains.Add(domain); ;
