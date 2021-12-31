@@ -41,15 +41,17 @@ public class DomainController : ControllerBase
         _logger = logger;
     }
 
-    // GET: api/<DomainController>
-    [HttpGet("page/{pageSize}/{lastDomainName}")]
+    // GET: api/<DomainController>/page/<pageSize>?lastDomain
+    [HttpGet("page/{pageSize}")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<Domain>), Description = "Returns list of domains")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
-    public async Task<IActionResult> EnumerateDomains([FromRoute] string lastDomainName, [FromRoute] int pageSize)
+    public async Task<IActionResult> PageDomains(
+        [FromRoute] int pageSize,
+        [FromQuery] string? lastDomainName)
     {
         try
         {
-            var domains = await _domainManager.Get(lastDomainName, pageSize);
+            var domains = await _domainManager.Get(lastDomainName ?? string.Empty, pageSize);
 
             if (domains.Any())
             {
@@ -168,46 +170,56 @@ public class DomainController : ControllerBase
         catch (DbUpdateException ex)
         {
             _logger.LogError(ex, "Error calling {0}", nameof(Get));
-
-            if (ex.InnerException is SqlException or SqliteException or PostgresException)
+            
+            if (ex.InnerException != null && 
+                (ex.InnerException.Message.Contains("duplicate")
+                 || ex.InnerException.Message.Contains("UNIQUE")))
             {
-                if (ex.InnerException.Message.Contains("duplicate")
-                    || ex.InnerException.Message.Contains("UNIQUE"))
+                var problemDetails = new ProblemDetails()
                 {
-                    var problemDetails = new ProblemDetails()
-                    {
-                        Status = StatusCodes.Status409Conflict,
-                        Detail = ConfigStoreError.UniqueConstraint.ToString(),
-                        Type = "https://httpstatuses.com/409"
-                    };
+                    Status = StatusCodes.Status409Conflict,
+                    Detail = ConfigStoreError.UniqueConstraint.ToString(),
+                    Type = "https://httpstatuses.com/409"
+                };
 
-                    throw new ProblemDetailsException(problemDetails);
-                }
-                else
-                {
-                    var problemDetails = new ProblemDetails()
-                    {
-                        Status = StatusCodes.Status400BadRequest,
-                        Detail = "Check the logs",
-                        Type = "https://httpstatuses.com/400"
-                    };
-
-                    throw new ProblemDetailsException(problemDetails);
-                }
+                throw new ProblemDetailsException(problemDetails);
             }
+            else
+            {
+                var problemDetails = new ProblemDetails()
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = "Check the logs",
+                    Type = "https://httpstatuses.com/400"
+                };
 
-            throw;
+                throw new ProblemDetailsException(problemDetails);
+            }
         }
         catch (ConfigStoreException ex)
         {
             _logger.LogError(ex, "Error calling {0}", nameof(Get));
+            ProblemDetails problemDetails;
 
-            var problemDetails = new ProblemDetails()
+            if (ex.Error is ConfigStoreError.UniqueConstraint 
+                or ConfigStoreError.Conflict)
             {
-                Status = StatusCodes.Status409Conflict,
-                Detail = ex.Error.ToString(),
-                Type = "https://httpstatuses.com/409"
-            };
+                problemDetails = new ProblemDetails()
+                {
+                    Status = StatusCodes.Status409Conflict,
+                    Detail = ex.Error.ToString(),
+                    Type = "https://httpstatuses.com/409"
+                };
+            }
+            else
+            {
+                problemDetails = new ProblemDetails()
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Detail = ex.Error.ToString(),
+                    Type = "https://httpstatuses.com/400"
+                };
+            }
 
             throw new ProblemDetailsException(problemDetails);
         }

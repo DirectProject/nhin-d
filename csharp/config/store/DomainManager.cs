@@ -86,7 +86,7 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             }
         }
 
-        _dbContext.Domains.Add(domain); ;
+        _dbContext.Domains.Add(domain);
         await _dbContext.SaveChangesAsync();
 
         return domain;

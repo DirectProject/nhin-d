@@ -79,6 +79,7 @@ public class ApiTestFixture : WebApplicationFactory<Program>
                 mock.Setup(e => e.Get(It.Is<List<string>>(s => s.Any(n => n == "throw.domain.test")), null)).Throws<Exception>();
                 mock.Setup(e => e.Get(It.Is<string>(s => s == "throw.domain.test"))).Throws<Exception>();
                 mock.Setup(e => e.Get(It.Is<long>(s => s == 999))).Throws<Exception>();
+                mock.Setup(e => e.Get(It.Is<string>(s => s == "throw.domain.test"), It.IsAny<int>())).Throws<Exception>();
 
                 return mock.Object;
             }); 
@@ -128,7 +129,7 @@ public class ApiTestFixture : WebApplicationFactory<Program>
 
         domain = new Store.Entity.Domain
         {
-            Name = "deleteDomain.test.direct",
+            Name = "xyz.deleteDomain.test.direct",
             AgentName = "TestAgent"
         };
 
@@ -334,7 +335,7 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
 
         // Assert validation
         problemDetails!.Status.Should().Be(StatusCodes.Status400BadRequest);
-        problemDetails.Detail.Should().Be("Error=DomainNameLength");
+        problemDetails.Detail.Should().Be($"Error={ConfigStoreError.DomainNameLength}");
         problemDetails.Type.Should().Be("https://httpstatuses.com/400");
 
 
@@ -344,6 +345,23 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         response = await _client.PostAsJsonAsync($"/api/domain", domain);
         // Assert Exception
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+
+
+        // Arrange Invalid Email Exception
+        domain.Name = "@_throw.domain.test";
+        // Act
+        response = await _client.PostAsJsonAsync($"/api/domain", domain);
+        // Assert Exception
+        var responseInner3 = response;
+        exception = Record.Exception(() => responseInner3.EnsureSuccessStatusCode());
+        Assert.NotNull(exception);
+        Assert.IsType<HttpRequestException>(exception);
+        problemDetails = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+
+        // Assert validation
+        problemDetails!.Status.Should().Be(StatusCodes.Status400BadRequest);
+        problemDetails.Detail.Should().Be($"{ConfigStoreError.InvalidDomain}");
+        problemDetails.Type.Should().Be("https://httpstatuses.com/400");
     }
 
     [Fact]
@@ -352,25 +370,25 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         // Arrange
         var domain = new Domain()
         {
-            Name = "deleteDomain.test.direct",
+            Name = "xyz.deleteDomain.test.direct",
             AgentName = "TestAgent"
         };
 
-        var result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=deleteDomain.test.direct");
+        var result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=xyz.deleteDomain.test.direct");
         Assert.NotNull(result);
         Assert.True(result!.Any());
         
         // Act
-        var deleteResult = await _client.DeleteAsync($"/api/domain/deleteDomain.test.direct");
+        var deleteResult = await _client.DeleteAsync($"/api/domain/xyz.deleteDomain.test.direct");
 
         // Assert
         deleteResult.EnsureSuccessStatusCode();
 
-        result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=deleteDomain.test.direct");
+        result = await _client.GetFromJsonAsync<List<Domain>>("api/domain/domainNames?name=xyz.deleteDomain.test.direct");
         result!.Any().Should().BeFalse();
 
         // Act 
-        deleteResult = await _client.DeleteAsync($"/api/domain/deleteDomain.test.direct");
+        deleteResult = await _client.DeleteAsync($"/api/domain/xyx.deleteDomain.test.direct");
         // Assert not found
         deleteResult.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
@@ -406,5 +424,41 @@ public class DomainControllerTest : ConfigStoreTestBase, IClassFixture<ApiTestFi
         response = await _client.PutAsJsonAsync($"/api/domain/{domain.ID}", domain);
         // Assert Exception
         response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+    }
+
+    [Fact]
+    public async Task PageDomains()
+    {
+        // Act
+        var results = await _client.GetFromJsonAsync<List<Domain>>("api/domain/page/2");
+
+        // Assert
+        results!.Count.Should().Be(2);
+
+        // Act
+        results = await _client.GetFromJsonAsync<List<Domain>>($"api/domain/page/2?lastDomainName=domain1.test.com");
+
+        results.First().Name.Should().Be("domain10.test.com");
+        results.Last().Name.Should().Be("domain2.test.com");
+
+        // Act
+        results = await _client.GetFromJsonAsync<List<Domain>>($"api/domain/page/2?lastDomainName={results.Last().Name}");
+
+        // Assert
+        results!.Count.Should().Be(2);
+        results.First().Name.Should().Be("domain3.test.com");
+        results.Last().Name.Should().Be("domain4.test.com");
+
+        // Act
+        var response = await _client.GetAsync("api/domain/page/2/?LastDomainName=xyz.not.hear.test");
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        // Act
+        var exception = await Assert.ThrowsAsync<HttpRequestException>(async () =>
+            await _client.GetFromJsonAsync<List<Domain>>("api/domain/page/2?lastDomainName=throw.domain.test"));
+        // Assert Exception
+        exception.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
     }
 }
