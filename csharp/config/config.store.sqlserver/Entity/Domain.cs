@@ -141,13 +141,14 @@ namespace Health.Direct.Config.Store.Entity
             }
             try
             {
-                MailAddress address = new MailAddress("unknown.user@" + domainName);
+                var address = new MailAddress("unknown.user@" + domainName);
                 return address.Host.Equals(domainName, StringComparison.OrdinalIgnoreCase);
             }
             catch
             {
+                // ignored
             }
-            
+
             return false;
             
         }

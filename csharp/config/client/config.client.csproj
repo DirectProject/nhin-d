@@ -45,6 +45,7 @@
 		<ProjectReference Include="..\config.model\config.model.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
 		<PackageReference Include="Steeltoe.Common" Version="3.1.2" />
 		<PackageReference Include="Steeltoe.Common.Http" Version="3.1.2" />
 		<PackageReference Include="Steeltoe.Discovery.ClientBase" Version="3.1.2" />

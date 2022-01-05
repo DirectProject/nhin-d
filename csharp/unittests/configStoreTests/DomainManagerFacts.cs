@@ -234,9 +234,9 @@ public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
         string name = BuildDomainName(GetRndDomainId());
         var domain = new Domain(name);
         await _domainManager.Add(domain);
-        Assert.NotNull(await _domainManager.Get(name));
+        var result = await _domainManager.Get(name);
 
-        await _domainManager.Remove(name);
+        await _domainManager.Remove(result!.ID);
         Assert.Null(await _domainManager.Get(name));
     }
 

@@ -19,10 +19,7 @@ using Health.Direct.Config.Rest.Swagger;
 using Health.Direct.Config.Store;
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.Filters;
 
@@ -32,8 +29,8 @@ namespace Health.Direct.Config.Rest.Controllers;
 [ApiController]
 public class DomainController : ControllerBase
 {
-    private IDomainManager _domainManager;
-    private ILogger<DomainController> _logger;
+    private readonly IDomainManager _domainManager;
+    private readonly ILogger<DomainController> _logger;
 
     public DomainController(IDomainManager domainManager, ILogger<DomainController> logger)
     {
@@ -47,32 +44,26 @@ public class DomainController : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
     public async Task<IActionResult> PageDomains(
         [FromRoute] int pageSize,
-        [FromQuery] string? lastDomainName)
+        [FromQuery] string? lastDomainName,
+        CancellationToken token)
     {
-        try
-        {
-            var domains = await _domainManager.Get(lastDomainName ?? string.Empty, pageSize);
+        var domains = await _domainManager.Get(lastDomainName ?? string.Empty, pageSize, token);
 
-            if (domains.Any())
-            {
-                return Ok(domains);
-            }
-
-            return NotFound();
-        }
-        catch (Exception ex)
+        if (domains.Any())
         {
-            _logger.LogError(ex, "Error calling {0}", nameof(Get));
-            throw;
+            return Ok(domains);
         }
+
+        return NotFound();
     }
 
+    // GET: api/<DomainController>/count
     [HttpGet("count")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(int), Description = "Returns number of domains")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
-    public async Task<IActionResult> GetDomainCount()
+    public async Task<IActionResult> GetDomainCount(CancellationToken token)
     {
-        var result = await _domainManager.Count();
+        var result = await _domainManager.Count(token);
 
         return Ok(result);
     }
@@ -81,73 +72,77 @@ public class DomainController : ControllerBase
     [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(DomainExample))]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Domain), Description = "Returns a domain")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
-    public async Task<IActionResult> Get(long id)
+    public async Task<IActionResult> Get(long id, CancellationToken token)
     {
-        try
+        var domain = await _domainManager.Get(id, token);
+        if (domain == null)
         {
-            var domain = await _domainManager.Get(id);
-            if (domain == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
 
-            return Ok(domain);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error calling {0}", nameof(Get));
-            throw;
-        }
+        return Ok(domain);
     }
 
-    [HttpGet("domainName/{name}")]
+    [HttpGet("byDomainName/{name}")]
     [SwaggerResponseExample((int)HttpStatusCode.OK, typeof(DomainExample))]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(Domain), Description = "Returns a domain")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
-    public async Task<IActionResult> Get(string name)
+    public async Task<IActionResult> Get(string name, CancellationToken token)
     {
-        try
+        var domain = await _domainManager.Get(name, token);
+        if (domain == null)
         {
-            var domain = await _domainManager.Get(name);
-            if (domain == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
 
-            return Ok(domain);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error calling {0}", nameof(Get));
-            throw;
-        }
+        return Ok(domain);
     }
 
 
-    [HttpGet("domainNames")]
+    [HttpGet("byDomainNames")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<Domain>), Description = "Returns list of domains")]
     [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "Missing domain names")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
     public async Task<IActionResult> Get(
         [FromQuery(Name = "name")] List<string> domainNames,
-        [FromQuery] EntityStatus? status)
+        [FromQuery] EntityStatus? status,
+        CancellationToken token)
     {
         if (!domainNames.Any()) return BadRequest();
 
-        var result = await _domainManager.Get(domainNames, status);
+        var result = await _domainManager.Get(domainNames, status, token);
 
         return Ok(result);
     }
 
 
-    [HttpGet("agentName/{name}")]
+    [HttpGet("byAgentName/{name}")]
     [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<Domain>), Description = "Returns list of domains")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
     public async Task<IActionResult> GetByAgentName(
         [FromRoute] string name,
-        [FromQuery] EntityStatus? status)
+        [FromQuery] EntityStatus? status,
+        CancellationToken token)
     {
-        var result = await _domainManager.GetByAgentName(name, status);
+        var result = await _domainManager.GetByAgentName(name, status, token);
+
+        if (!result.Any()) return NotFound();
+
+        return Ok(result);
+    }
+
+
+    [HttpGet("domainNames")]
+    [HttpGet("domainNames/{agentName}")]
+    [SwaggerResponse((int)HttpStatusCode.OK, Type = typeof(List<Domain>), Description = "Returns list of domains")]
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
+    public async Task<IActionResult> GetDomainNames(
+        [FromRoute] string? agentName,
+        CancellationToken token)
+    {
+        var result = agentName == null
+            ? await _domainManager.GetDomainNames(token)
+            : await _domainManager.GetDomainNames(agentName, token);
 
         if (!result.Any()) return NotFound();
 
@@ -159,19 +154,19 @@ public class DomainController : ControllerBase
     [SwaggerResponse((int)HttpStatusCode.Created, Type = typeof(Domain), Description = "Returns created domain")]
     [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
 
-    public async Task<IActionResult> Post([FromBody] Domain domain)
+    public async Task<IActionResult> Post([FromBody] Domain domain, CancellationToken token)
     {
         try
         {
-            var result = await _domainManager.Add(domain);
+            var result = await _domainManager.Add(domain, token);
 
             return Created(result.ID.ToString(), result);
         }
         catch (DbUpdateException ex)
         {
             _logger.LogError(ex, "Error calling {0}", nameof(Get));
-            
-            if (ex.InnerException != null && 
+
+            if (ex.InnerException != null &&
                 (ex.InnerException.Message.Contains("duplicate")
                  || ex.InnerException.Message.Contains("UNIQUE")))
             {
@@ -201,7 +196,7 @@ public class DomainController : ControllerBase
             _logger.LogError(ex, "Error calling {0}", nameof(Get));
             ProblemDetails problemDetails;
 
-            if (ex.Error is ConfigStoreError.UniqueConstraint 
+            if (ex.Error is ConfigStoreError.UniqueConstraint
                 or ConfigStoreError.Conflict)
             {
                 problemDetails = new ProblemDetails()
@@ -232,40 +227,30 @@ public class DomainController : ControllerBase
 
     // PUT api/<DomainController>/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, [FromBody] Domain domain)
+    [SwaggerResponse((int)HttpStatusCode.OK, Description = "Returns 200")]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "Missing or invalid domain object")]
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
+    public async Task<IActionResult> Put([FromRoute] long id, [FromBody] Domain domain, CancellationToken token)
     {
-        try
-        {
-            await _domainManager.Update(domain);
+        await _domainManager.Update(domain, token);
 
-            return NoContent(); // success 204 but not returning the result.
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error calling {0}", nameof(Get));
-            throw;
-        }
+        return NoContent(); // success 204 but not returning the result.
     }
 
     // DELETE api/<DomainController>/5
-    [HttpDelete("{domainName}")]
-    public async Task<IActionResult> Delete(string domainName)
+    [HttpDelete("{id}")]
+    [SwaggerResponse((int)HttpStatusCode.OK, Description = "Returns 200")]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest, Description = "Missing or invalid domain object")]
+    [SwaggerResponse((int)HttpStatusCode.InternalServerError, Description = "Unexpected error")]
+    public async Task<IActionResult> Delete([FromRoute] long id, CancellationToken token)
     {
-        try
-        {
-            var response = await _domainManager.Remove(domainName);
+        var response = await _domainManager.Remove(id, token);
 
-            if (response)
-            {
-                return Ok();
-            }
-
-            return NotFound();
-        }
-        catch (Exception ex)
+        if (response)
         {
-            _logger.LogError(ex, "Error calling {0}", nameof(Get));
-            throw;
+            return Ok();
         }
+
+        return NotFound();
     }
 }
