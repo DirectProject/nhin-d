@@ -150,7 +150,7 @@
 	      <groupId>org.hibernate</groupId>
 	      <artifactId>hibernate-core</artifactId>
 	      <type>jar</type>
-	      <version>3.3.2.GA</version>
+	      <version>5.4.24.Final</version>
 	   </dependency> 	
 	   <dependency>
 	      <groupId>org.hibernate</groupId>
