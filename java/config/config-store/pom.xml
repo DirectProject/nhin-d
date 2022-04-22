@@ -494,7 +494,7 @@
 		<password>nhind</password>
 		<originalDataSetFile>../../src/test/data/sample-data.xml</originalDataSetFile>
 		<exportedDataSetFile>${project.build.directory}/dbunit/exported-dataset.xml</exportedDataSetFile>
-		<spring.version>4.3.9.RELEASE</spring.version>	
+		<spring.version>5.3.19</spring.version>	
 	</properties>
 	<distributionManagement>
 		<site>
