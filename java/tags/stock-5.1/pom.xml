@@ -189,7 +189,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-expression</artifactId>
-			<version>3.2.3.RELEASE</version>
+			<version>5.2.21.RELEASE</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>	
