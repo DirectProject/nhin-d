@@ -23,6 +23,7 @@ public interface IDomainManager
     Task<Domain> Add(string name, CancellationToken token = default);
     Task<Domain> Add(Domain domain, CancellationToken token = default);
     Task<int> Count(CancellationToken token = default);
+    Task<List<Domain>> GetAll(CancellationToken token = default);
     Task<Domain?> Get(string name, CancellationToken token = default);
     Task<List<Domain>> Get(List<string> names, CancellationToken token = default);
     Task<List<Domain>> Get(List<string> names, EntityStatus? status, CancellationToken token = default);
@@ -36,7 +37,7 @@ public interface IDomainManager
     IEnumerator<Domain> GetEnumerator();
 }
 
-public class DomainManager : IEnumerable<Domain>, IDomainManager
+public class DomainManager : IAsyncEnumerable<Domain>, IDomainManager
 {
     private readonly DirectDbContext _dbContext;
 
@@ -94,6 +95,11 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
     public virtual async Task<int> Count(CancellationToken token = default)
     {
         return await _dbContext.Domains.CountAsync(token);
+    }
+
+    public async Task<List<Domain>> GetAll(CancellationToken token = default)
+    {
+        return await _dbContext.Domains.ToListAsync(cancellationToken: token);
     }
 
     public virtual async Task<Domain?> Get(string name, CancellationToken token = default)
@@ -233,21 +239,21 @@ public class DomainManager : IEnumerable<Domain>, IDomainManager
             .ToListAsync(cancellationToken: token);
     }
 
-
     public IEnumerator<Domain> GetEnumerator()
     {
+        throw new NotImplementedException();
+    }
+    
+    /// <summary>Returns an enumerator that iterates asynchronously through the collection.</summary>
+    /// <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken" /> that may be used to cancel the asynchronous iteration.</param>
+    /// <returns>An enumerator that can be used to iterate asynchronously through the collection.</returns>
+    public async IAsyncEnumerator<Domain> GetAsyncEnumerator(CancellationToken cancellationToken = new CancellationToken())
+    {
+        await Task.Delay(0, cancellationToken);
+
         foreach (var domain in _dbContext.Domains)
         {
             yield return domain;
         }
     }
-
-    #region IEnumerable Members
-
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    #endregion
 }

@@ -164,7 +164,7 @@ public class DomainController : ControllerBase
         }
         catch (DbUpdateException ex)
         {
-            _logger.LogError(ex, "Error calling {0}", nameof(Get));
+            _logger.LogError(ex, "Error calling {0}", nameof(Post));
 
             if (ex.InnerException != null &&
                 (ex.InnerException.Message.Contains("duplicate")

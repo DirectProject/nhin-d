@@ -31,6 +31,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "config.store.common", "..\c
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "config.store.sqlserver", "..\config\config.store.sqlserver\config.store.sqlserver.csproj", "{B74C16E0-EF1C-4FC8-862C-553D30B14918}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "agent", "..\agent\agent.csproj", "{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "smtpAgent", "..\gateway\smtpAgent\smtpAgent.csproj", "{3C057E1D-D2C6-47DB-9085-D66055B314CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "smtpagent.tests", "..\unittests\smtpAgent\smtpagent.tests.csproj", "{DFE50EE9-7169-4C1A-A39D-83BD290A1625}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +128,24 @@ Global
 		{B74C16E0-EF1C-4FC8-862C-553D30B14918}.Npgsql|Any CPU.Build.0 = Debug|Any CPU
 		{B74C16E0-EF1C-4FC8-862C-553D30B14918}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B74C16E0-EF1C-4FC8-862C-553D30B14918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}.Npgsql|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}.Npgsql|Any CPU.Build.0 = Debug|Any CPU
+		{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFFBCF6E-DC7D-4056-A84E-4393AAE31B25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C057E1D-D2C6-47DB-9085-D66055B314CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C057E1D-D2C6-47DB-9085-D66055B314CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C057E1D-D2C6-47DB-9085-D66055B314CD}.Npgsql|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C057E1D-D2C6-47DB-9085-D66055B314CD}.Npgsql|Any CPU.Build.0 = Debug|Any CPU
+		{3C057E1D-D2C6-47DB-9085-D66055B314CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C057E1D-D2C6-47DB-9085-D66055B314CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE50EE9-7169-4C1A-A39D-83BD290A1625}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE50EE9-7169-4C1A-A39D-83BD290A1625}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE50EE9-7169-4C1A-A39D-83BD290A1625}.Npgsql|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE50EE9-7169-4C1A-A39D-83BD290A1625}.Npgsql|Any CPU.Build.0 = Debug|Any CPU
+		{DFE50EE9-7169-4C1A-A39D-83BD290A1625}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE50EE9-7169-4C1A-A39D-83BD290A1625}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

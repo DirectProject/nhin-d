@@ -119,7 +119,7 @@ public class DomainManagerFacts : ConfigStoreTestBase, IDisposable
 
         //----------------------------------------------------------------------------------------------------
         //---get the full dictionary using the domain name as the key and pick one to start at
-        Dictionary<string, Domain> mxsAll = _domainManager.ToDictionary(p => p.Name);
+        Dictionary<string, Domain> mxsAll = (await _domainManager.GetAll()).ToDictionary(p => p.Name);
 
         Assert.Equal(MaxDomainCount, mxsAll.Count);
 

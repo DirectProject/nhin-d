@@ -7,7 +7,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>2cd3eaec-660a-491e-858d-de873b7c89a1</UserSecretsId>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-		<DockerfileContext>..\..\..\build</DockerfileContext>
+		<DockerfileContext>../../build</DockerfileContext>
 	</PropertyGroup>
 
 	<ItemGroup>
