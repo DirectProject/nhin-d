@@ -23,6 +23,7 @@ import org.xbill.DNS.Rcode;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
 import org.xbill.DNS.Type;
+import org.apache.commons.lang.StringUtils;
 
 public abstract class AbstractDNSStore implements DNSStore
 {
@@ -72,6 +73,35 @@ public abstract class AbstractDNSStore implements DNSStore
 			System.setProperty(JCE_PROVIDER_STRING_SYS_PARAM, name);
 	}
 	
+    /**
+     * Validate queryName 
+     * Return false if queryName is empty ("" or "."), or TLS (ex: com , org)
+     * @param queryName
+     * @return
+     */
+    static boolean validQueryName(String queryName){
+        if (StringUtils.isBlank(queryName)){
+            return false;
+        }
+        if (".".equalsIgnoreCase(queryName)){
+            return false;
+        }
+        String s = queryName.trim();
+        while (s.length() > 0 && s.endsWith(".")){
+            s = s.substring(0, s.length() - 1);
+        }
+        while (s.length() > 0 && s.startsWith(".")){
+            s = s.substring(0, 1);
+        }
+        String[] parts = s.split("\\.");
+
+        if (parts.length <= 1){
+            return false;
+        }
+
+        return true;
+    }
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -108,6 +138,25 @@ public abstract class AbstractDNSStore implements DNSStore
         }
 
         Name name = queryRecord.getName();
+	
+        /**
+         * Reject for invalid queryName
+         */
+        if (!validQueryName(name.toString())){
+            LOGGER.warn(String.format("Invalid queryName[%s], returning empty result", queryName));
+            final Message response = new Message(request.getHeader().getID());
+            response.getHeader().setFlag(Flags.QR);
+
+            if (request.getHeader().getFlag(Flags.RD)) {
+                response.getHeader().setFlag(Flags.RD);
+            }
+            response.addRecord(queryRecord, Section.QUESTION);
+            response.getHeader().setFlag(Flags.AA);
+            response.getHeader().setRcode(Rcode.NOERROR);
+            return response;
+        }
+
+	
     	int type = queryRecord.getType();
     	String typeString = null;
     	try {
