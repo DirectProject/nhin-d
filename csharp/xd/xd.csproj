@@ -75,6 +75,7 @@
     <Compile Include="Name.cs" />
     <Compile Include="ExternalIdentifier.cs" />
     <Compile Include="Slot.cs" />
+    <Compile Include="StringWriterWithEncoding.cs" />
     <Compile Include="XdError.cs" />
     <Compile Include="XDMetadataConsumer.cs" />
     <Compile Include="XdMetadataException.cs" />
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\common\common.csproj">
       <Project>{87A47BBF-C056-43C8-8C4A-34D25A63D1F9}</Project>
       <Name>common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\xd.common\xd.common.csproj">
+      <Project>{25dddde7-3ba6-4e66-8870-a95abdf0549e}</Project>
+      <Name>xd.common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

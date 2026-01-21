@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  
 */
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,22 +29,32 @@ namespace Health.Direct.Xdm
 {
     public class XDMZipPackager : IPackager<ZipFile>
     {
-        // Use Default
-        private XDMZipPackager() { }
+        private XDMZipPackager(Encoding encoding)
+        {
+            this.TextEncoding = encoding;
+        }
 
-
-        private static readonly XDMZipPackager m_Instance = new XDMZipPackager();
+        private static readonly ConcurrentDictionary<Encoding, XDMZipPackager> PackagerCache = new ConcurrentDictionary<Encoding, XDMZipPackager>();
 
         /// <summary>
-        /// The default instance
+        /// Gets the text encoding to use. 
+        /// Currently this is only implemented when writing the XD metadata XML.
         /// </summary>
-        public static XDMZipPackager Default
-        {
-            get
-            {
-                return m_Instance;
-            }
-        }
+        public Encoding TextEncoding { get; private set; }
+
+        /// <summary>
+        /// The default instance. Uses <see cref="Encoding.Unicode"/> as its text encoding.
+        /// </summary>
+        public static XDMZipPackager Default => 
+            GetPackager(Encoding.Unicode);
+
+        /// <summary>
+        /// Gets an <see cref="XDMZipPackager"/> instance with the given encoding.
+        /// Only one instance is created for each encoding.
+        /// </summary>
+        /// <param name="textEncoding">The text encoding to use. Currently only affects the generated metadata XML.</param>
+        public static XDMZipPackager GetPackager(Encoding textEncoding) => 
+            PackagerCache.GetOrAdd(textEncoding, new XDMZipPackager(textEncoding));
 
         /// <summary>
         /// Unpackages an XDM-encoded zip file
@@ -147,7 +158,7 @@ namespace Health.Direct.Xdm
         {
             
             StringBuilder sb = new StringBuilder();
-            using (StringWriter w = new StringWriter(sb))
+            using (StringWriter w = new StringWriterWithEncoding(sb, this.TextEncoding))
             {
                 package.Generate().Save(w);
             }

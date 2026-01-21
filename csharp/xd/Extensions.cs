@@ -16,6 +16,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Health.Direct.Xd
 {
@@ -77,5 +78,23 @@ namespace Health.Direct.Xd
             if (strings == null || strings.Count() == 0) return null;
             return strings.Skip(1).Aggregate(strings.First(), (a, s) => a + sep + s);
         }
-    }
+ 
+        /// <summary>
+        /// Sets the namespace of this element and all child elements to the given <see cref="XNamespace"/>
+        /// when not already set.
+        /// </summary>
+        /// <param name="el">The root element at which to start setting namespaces.</param>
+        /// <param name="ns">The namespace to use.</param>
+        public static void SetDefaultNamespace(this XElement el, XNamespace ns)
+        {
+            if (string.IsNullOrEmpty(el.Name.NamespaceName))
+            {
+                el.Name = ns + el.Name.LocalName;
+            }
+            foreach (var e in el.Elements())
+            {
+                e.SetDefaultNamespace(ns);
+            }
+        }
+   }
 }

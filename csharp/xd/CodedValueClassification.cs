@@ -94,9 +94,9 @@ namespace Health.Direct.Xd
 
         private void Initialize(string codingScheme, string label)
         {
-            this.Add(new Name(label),
-                     new Slot(XDMetadataStandard.Slots.CodingScheme, codingScheme));
-        }
+             this.Add(new Slot(XDMetadataStandard.Slots.CodingScheme, codingScheme),
+                     new Name(label));
+       }
 
     }
 }

@@ -57,7 +57,11 @@ namespace Health.Direct.Xd
             package.Author = ConsumeAuthor(packageXEl.Classification(XDMetadataStandard.UUIDs.SubmissionSetAuthor));
             package.Comments = packageXEl.DescriptionValue();
             package.ContentTypeCode = ConsumeCodedValue(packageXEl.Classification(XDMetadataStandard.UUIDs.ContentTypeCode));
-            package.IntendedRecipients.AddAll(packageXEl.SlotValues<Recipient>(XDMetadataStandard.Slots.IntendedRecipient, r => Recipient.FromXONXCNXTN(r)));
+            var intendedRecipients = packageXEl.SlotValues<Recipient>(XDMetadataStandard.Slots.IntendedRecipient, r => Recipient.FromXONXCNXTN(r));
+            if (intendedRecipients != null)
+            {
+                package.IntendedRecipients.AddAll(intendedRecipients);
+            }
             package.PatientId = packageXEl.ExternalIdentifierValue<PatientID>(XDMetadataStandard.UUIDs.SubmissionSetPatientId, s => PatientID.FromEscapedCx(s));
             package.SourceId = packageXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.SubmissionSetSourceId);
             package.SubmissionTime = packageXEl.SlotValue<DateTime?>(XDMetadataStandard.Slots.SubmissionTime, s => HL7Util.DateTimeFromHL7Value(s));
@@ -91,7 +95,11 @@ namespace Health.Direct.Xd
             doc.PracticeSetting = ConsumeCodedValue(docXEl.Classification(XDMetadataStandard.UUIDs.PracticeSetting));
             doc.Size = docXEl.SlotValue<int?>(XDMetadataStandard.Slots.Size, s => Parse(s));
             doc.SourcePtId = docXEl.SlotValue<PatientID>(XDMetadataStandard.Slots.SourcePatientID, s => PatientID.FromEscapedCx(s));
-            doc.Patient = Person.FromSourcePatientInfoValues(docXEl.SlotValues(XDMetadataStandard.Slots.SourcePatientInfo));
+            var sourcePatientInfo = docXEl.SlotValues(XDMetadataStandard.Slots.SourcePatientInfo);
+            if (sourcePatientInfo != null)
+            {
+                doc.Patient = Person.FromSourcePatientInfoValues(sourcePatientInfo);
+            }
             doc.Title = docXEl.NameValue();
             // Ignore TypeCode
             doc.UniqueId = docXEl.ExternalIdentifierValue(XDMetadataStandard.UUIDs.DocumentUniqueIdIdentityScheme);
@@ -103,19 +111,31 @@ namespace Health.Direct.Xd
         static Author ConsumeAuthor(XElement authorXEl)
         {
             Author a = new Author();
-            a.Person = Person.FromXCN(authorXEl.SlotValue(XDMetadataStandard.Slots.AuthorPerson));
-            foreach (Institution i in (authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorInstitutions).Select(i => Institution.FromXON(i))))
+
+            var authorPerson = authorXEl.SlotValue(XDMetadataStandard.Slots.AuthorPerson);
+            if (authorPerson != null)
             {
-                a.Institutions.Add(i);
+                a.Person = Person.FromXCN(authorPerson);
             }
-            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorRoles))
+
+            var authorInstitutions = authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorInstitutions);
+            if (authorInstitutions != null)
             {
-                a.Roles.Add(s);
+                a.Institutions.AddRange(authorInstitutions.Select(i => Institution.FromXON(i)));
             }
-            foreach (string s in authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorSpecialities))
+
+            var authorRoles = authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorRoles);
+            if (authorRoles != null)
             {
-                a.Specialities.Add(s);
+                a.Roles.AddRange(authorRoles);
             }
+
+            var authorSpecialties = authorXEl.SlotValues(XDMetadataStandard.Slots.AuthorSpecialities);
+            if (authorSpecialties != null)
+            {
+                a.Specialities.AddRange(authorSpecialties);
+            }
+
             return a;
         }
 

@@ -19,6 +19,8 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
+using Health.Direct.Xd.Common.ebXml;
+
 namespace Health.Direct.Xd
 {
     /// <summary>
@@ -49,7 +51,7 @@ namespace Health.Direct.Xd
         /// </summary>
         public static Association OriginalDocumentAssociation(string submissionSetId, string documentEntryId)
         {
-            return new Association("HasMember", submissionSetId, documentEntryId,
+            return new Association(AssociationKind.HasMember, submissionSetId, documentEntryId,
                 new Slot(XDMetadataStandard.Slots.SubmissionSetStatus, "Original"));
         }
     }

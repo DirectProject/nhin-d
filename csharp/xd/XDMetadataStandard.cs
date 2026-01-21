@@ -344,6 +344,10 @@ namespace Health.Direct.Xd
             /// </summary>
             public const string AuthorSpecialities = "authorSpecialty";
 
+            /// The slot name for authorTelecommunication
+            /// </summary>
+            public const string AuthorTelecommunication = "authorTelecommunication";
+
             /// <summary>
             /// The slot name for hash
             /// </summary>

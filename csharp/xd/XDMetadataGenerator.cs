@@ -96,6 +96,8 @@ namespace Health.Direct.Xd
                 packageList.Add(doc);
                 packageList.Add(assoc);
             }
+            submitObjectsRequest.SetDefaultNamespace(XDMetadataStandard.Ns.Rim);
+
             return submitObjectsRequest;
         }
 
@@ -106,18 +108,18 @@ namespace Health.Direct.Xd
         {
             string packageId = MakeUUID();
             XElement packageMetadata = new XElement(XDMetadataStandard.Elts.SubmissionSet,
-                                                    new XAttribute(XDMetadataStandard.Attrs.Id, packageId),
-                                                    new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId));
+                                                    new XAttribute(XDMetadataStandard.Attrs.Id, packageId));
 
             List<Pair<Object, Func<XObject>>> specs = 
             new List<Pair<Object, Func<XObject>>>
             {   
-                // XSD requires the following order: name, description, slots, classifications, external identifiers
-                Map(dp.Title,             () => new Name(dp.Title)),
-                Map(dp.Comments,          () => new Description(dp.Comments)),
-                Map(dp.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId, AuthorSlots(dp.Author))),
+                // XSD requires the following order: slots, name, description, classifications, external identifiers
                 Map(dp.IntendedRecipients,() => new Slot(XDMetadataStandard.Slots.IntendedRecipient, dp.IntendedRecipients.Select(r => r.ToXONXCNXTN()))),
                 Map(dp.SubmissionTime,    () => new Slot(XDMetadataStandard.Slots.SubmissionTime, dp.SubmissionTime.ToHL7Date())),
+                Map(dp.Title,             () => new Name(dp.Title)),
+                Map(dp.Comments,          () => new Description(dp.Comments)),
+                Map(packageId,            () => new Classification(XDMetadataStandard.UUIDs.SubmissionSetClassification, packageId)),
+                Map(dp.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.SubmissionSetAuthor, "", packageId, AuthorSlots(dp.Author))),
                 Map(dp.ContentTypeCode,   () => new CodedValueClassification(XDAttribute.ContentTypeCode, packageId, dp.ContentTypeCode)),
                 Map(dp.PatientId,         () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetPatientId, dp.PatientId.ToEscapedCx(), "XDSSubmissionSet.patientId")),
                 Map(dp.SourceId,          () => new ExternalIdentifier(XDMetadataStandard.UUIDs.SubmissionSetSourceId, dp.SourceId, "XDSSubmissionSet.sourceId")),
@@ -159,10 +161,7 @@ namespace Health.Direct.Xd
             new List<Pair<Object, Func<XObject>>>
             {
                 Map(dm.MediaType,         () => new XAttribute(XDMetadataStandard.Attrs.MimeType, dm.MediaType) ),
-                // XSD requires the following order: name, description, slots, classifications, external identifiers
-                Map(dm.Title,             () => new Name(dm.Title) ),
-                Map(dm.Comments,          () => new Description(dm.Comments)),
-                Map(dm.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName, AuthorSlots(dm.Author))),
+                // XSD requires the following order: slots, name, description, classifications, external identifiers
                 Map(dm.CreatedOn,         () => new Slot(XDMetadataStandard.Slots.CreationTime, dm.CreatedOn.ToHL7Date())),
                 Map(dm.Hash,              () => new Slot(XDMetadataStandard.Slots.Hash, dm.Hash)),
                 Map(dm.LanguageCode,      () => new Slot(XDMetadataStandard.Slots.LanguageCode, dm.LanguageCode)),
@@ -173,6 +172,9 @@ namespace Health.Direct.Xd
                 Map(dm.SourcePtId,        () => new Slot(XDMetadataStandard.Slots.SourcePatientID, dm.SourcePtId.ToEscapedCx()) ),
                 Map(dm.Patient,           () => new Slot(XDMetadataStandard.Slots.SourcePatientInfo, dm.Patient.ToSourcePatientInfoValues(dm.SourcePtId))),
                 Map(dm.Uri,               () => new Slot(XDMetadataStandard.Slots.Uri, UriValues(dm.Uri))),
+                Map(dm.Title,             () => new Name(dm.Title) ),
+                Map(dm.Comments,          () => new Description(dm.Comments)),
+                Map(dm.Author,            () => new MultiSlotClassification(XDMetadataStandard.UUIDs.DocumentAuthor, "", documentName, AuthorSlots(dm.Author))),
                 Map(dm.Class,             () => new CodedValueClassification(XDAttribute.ClassCode, documentName, dm.Class)),
                 Map(dm.Confidentiality,   () => new CodedValueClassification(XDAttribute.ConfidentialityCode, documentName, dm.Confidentiality)),
                 Map(dm.EventCodes,        () => EventCodeClassifications(dm.EventCodes, documentName)),
@@ -220,14 +222,16 @@ namespace Health.Direct.Xd
         {
             if (a == null)
                 yield break;
-            if (a.Specialities != null)
+            if (a.Specialities != null && a.Specialities.Any())
                 yield return new Slot(XDMetadataStandard.Slots.AuthorSpecialities, a.Specialities);
-            if (a.Roles != null)
+            if (a.Roles != null && a.Roles.Any())
                 yield return new Slot(XDMetadataStandard.Slots.AuthorRoles, a.Roles);
-            if (a.Institutions != null)
+            if (a.Institutions != null && a.Institutions.Any())
                 yield return new Slot(XDMetadataStandard.Slots.AuthorInstitutions, a.Institutions.Select(i => i.ToXON()));
             if (a.Person != null)
                 yield return new Slot(XDMetadataStandard.Slots.AuthorPerson, a.Person.ToXCN());
+            if (a.TelecomAddress.Email != null)
+                yield return new Slot(XDMetadataStandard.Slots.AuthorTelecommunication, a.TelecomAddress.ToXTN());
         }
 
         /// <summary>
