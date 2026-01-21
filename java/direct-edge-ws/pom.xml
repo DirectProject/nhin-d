@@ -443,7 +443,7 @@
 	<properties>
 		<cxf-version>2.2.10</cxf-version>
 		<spring-version>3.0.5.RELEASE</spring-version>
-		<spring-security-version>3.0.5.RELEASE</spring-security-version>
+		<spring-security-version>5.2.10.RELEASE</spring-security-version>
 	</properties>
 
 </project>
