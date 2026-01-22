@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>5.2.22.RELEASE</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -286,7 +286,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
-			<version>3.0.4.RELEASE</version>
+			<version>5.2.22.RELEASE</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.commons</groupId>
