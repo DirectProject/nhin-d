@@ -505,7 +505,7 @@
 		</repository>
 	</distributionManagement>
 	<properties>
-		<spring.security.version>3.0.5.RELEASE</spring.security.version>
+		<spring.security.version>5.5.7</spring.security.version>
 		<cxf.maven.artifact.version>2.2.9</cxf.maven.artifact.version>
 	</properties>
 </project>
